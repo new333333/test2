@@ -406,3 +406,6 @@ var ss_showHideAllDashboardComponentsUrl = "<ssf:url
 </script>
 
 </c:if>
+<c:if test="${!ss_show_all_dashboard_components}">
+<br/>
+</c:if>

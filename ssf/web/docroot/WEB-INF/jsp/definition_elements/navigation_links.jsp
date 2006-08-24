@@ -1,6 +1,6 @@
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_smallprint">
+<div class="ss_smallprint" style="margin-bottom:8px;">
 <c:if test="${!empty ssDefinitionEntry.parentBinder.id}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />

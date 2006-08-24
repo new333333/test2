@@ -33,6 +33,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
 <c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
+<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 
 <c:set var="ss_form_background_color" value="#CCFFFF" scope="request"/>
 <c:set var="ss_form_component_background_color" value="#66FFFF" scope="request"/>
@@ -111,6 +112,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
+	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 	
 	<c:set var="ss_form_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_form_component_background_color" value="#FFFFFF" scope="request"/>
@@ -299,6 +301,10 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   text-decoration: none;
   display: inline;
   }
+
+.ss_edit_button {
+	color:${edit_text_color};
+}
 
 /* Help system */
 .ss_helpSpot {
