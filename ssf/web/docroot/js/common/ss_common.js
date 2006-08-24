@@ -1684,10 +1684,14 @@ var ss_helpSystem = {
 			helpSpotTd2.className = "ss_helpSpotTitle";
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
-			var helpSpotTitle = "";
+			helpSpotGif.setAttribute("height", "15");
+			helpSpotGif.setAttribute("width", "15");
+			var helpSpotTitle = document.createElement("nobr");
+			var helpSpotTitleText = "";
 			if (nodes[i].getAttribute("title")) {
-				helpSpotTitle = nodes[i].getAttribute("title");
+				helpSpotTitleText = nodes[i].getAttribute("title");
 			}
+			helpSpotTitle.appendChild(document.createTextNode(helpSpotTitleText));
 			
 			//Build a table containing the image and the title
 			helpSpotNode.appendChild(helpSpotA);
@@ -1699,7 +1703,7 @@ var ss_helpSystem = {
 			helpSpotTd1.appendChild(helpSpotGif);
 			var aObj = document.createElement("a");
 			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');");
-			aObj.appendChild(document.createTextNode(helpSpotTitle));
+			aObj.appendChild(helpSpotTitle);
 			helpSpotTd2.appendChild(aObj);
 			
 			ss_helpSystemNodes[ss_helpSystemNextNodeId] = helpSpotNode;
@@ -2096,7 +2100,7 @@ var ss_helpSystem = {
 			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
-			s += "  <td align=\"center\" colspan=\"3\">"+ss_helpInstructions+"<br /></td>";
+			s += "  <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\">"+ss_helpInstructions+"</span><br /></td>";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
 			s += "  <td align=\"center\" colspan=\"3\"><a href=\"#\" \n";
