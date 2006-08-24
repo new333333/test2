@@ -184,7 +184,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         checkAddEntryAllowed(binder);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
-        return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems);
+        return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
     }
 
     public void checkAddEntryAllowed(ProfileBinder binder) {
@@ -228,7 +228,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         checkAddEntryAllowed(binder);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
-        return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems);
+        return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
     }
 
 

@@ -59,12 +59,12 @@ public class Tag  {
     }
  	public boolean isOwner(DefinableEntity entity) {
  		if (entity == null) return false;
- 		if (entity.getEntityIdentifier().equals(entityId)) return true;
+ 		if (entity.getEntityIdentifier().equals(ownerId)) return true;
  		return false;
  	}
  	public boolean isOwner(EntityIdentifier entityId) {
  		if (entityId == null) return false;
- 		if (this.entityId.equals(entityId)) return true;
+ 		if (this.entityId.equals(ownerId)) return true;
  		return false;
  	}
 	/**

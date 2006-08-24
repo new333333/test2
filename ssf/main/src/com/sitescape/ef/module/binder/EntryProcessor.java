@@ -24,11 +24,11 @@ public interface EntryProcessor extends BinderProcessor {
 	public ArrayList getBinderEntries_entriesArray(Hits hits);
 	public void indexEntries(Binder binder);	
     
-    public Long addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
+    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
     	throws WriteFilesException;
     public void deleteEntry(Binder binder, Entry entry);
     public Entry getEntry(Binder binder, Long entryId);
-    public Long modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments)
+    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments)
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);

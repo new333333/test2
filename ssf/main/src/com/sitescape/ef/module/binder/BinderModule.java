@@ -11,9 +11,11 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -79,6 +81,11 @@ public interface BinderModule {
 	public void setTag(Long binderId, String newtag, boolean community) throws AccessControlException;
 	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
+	public void addSubscription(Long binderId);
+	public Subscription getSubscription(Long binderId);
+	public void deleteSubscription(Long binderId);
+	public void modifySubscription(Long binderId, Map updates);
+	
     public boolean hasBinders(Binder binder);
     
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 

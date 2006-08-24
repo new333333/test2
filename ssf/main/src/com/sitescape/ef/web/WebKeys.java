@@ -285,6 +285,7 @@ public class WebKeys {
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
+    public static final String SUBSCRIPTION="ssSubscription";
     public static final String TOOLBAR="ssToolbar";
     public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";
     public static final String USERS="ssUsers";

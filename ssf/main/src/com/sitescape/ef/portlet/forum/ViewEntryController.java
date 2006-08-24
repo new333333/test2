@@ -2,14 +2,13 @@ package com.sitescape.ef.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Iterator;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -21,26 +20,21 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.security.AccessControlException;
 
 
 public class ViewEntryController extends  SAbstractController {
@@ -82,6 +76,12 @@ public class ViewEntryController extends  SAbstractController {
 	        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
 	        //force reload of listing for state change
 	        response.setRenderParameter("ssReloadUrl", "");
+		} else if (formData.containsKey("subscribeBtn")) {
+	        getFolderModule().addSubscription(folderId, entryId);
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+		} else if (formData.containsKey("unsubscribeBtn")) {
+	        getFolderModule().deleteSubscription(folderId, entryId);
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -233,6 +233,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
 		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folderId,Long.valueOf(entryId)));
+		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(folderId,Long.valueOf(entryId)));
 		if (entry == null) {
 			DefinitionHelper.getDefinition(null, model, "//item[@name='entryView']");
 			return model;

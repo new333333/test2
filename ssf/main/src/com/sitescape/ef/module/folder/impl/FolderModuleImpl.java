@@ -34,10 +34,12 @@ import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.jobs.FillEmailSubscription;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -54,6 +56,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
@@ -145,7 +148,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         	def = parentFolder.getEntryDef();
         }
         
-        return loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+        return loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems).getId();
 
     }
  
@@ -163,7 +166,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         	def = folder.getDefaultEntryDef();
         }
         
-        return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems);
+        return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems).getId();
     }
     public void checkAddEntryAllowed(Folder folder) {
         getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
@@ -177,7 +180,11 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
         checkAddReplyAllowed(entry);
-        return processor.addReply(entry, def, inputData, fileItems);
+        FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
+        Date stamp = reply.getCreation().getDate();
+        scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
+        
+        return reply.getId();
     }
     public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException {
     	//TODO: this check is missing workflow checks??
@@ -201,7 +208,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     			if (a != null) atts.add(a);
     		}
     	}
+    	Date stamp = entry.getModification().getDate();
         processor.modifyEntry(folder, entry, inputData, fileItems, atts);
+        if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
     }
 
     public void checkModifyEntryAllowed(FolderEntry entry) {
@@ -214,7 +223,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
 		checkTransitionOutStateAllowed(entry, stateId);
 		checkTransitionInStateAllowed(entry, stateId, toState);
+    	Date stamp = entry.getWorkflowChange().getDate();
         processor.modifyWorkflowState(folder, entry, stateId, toState);
+        if (!stamp.equals(entry.getWorkflowChange().getDate())) scheduleSubscription(folder, entry, stamp);
     }
 
     public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
@@ -252,8 +263,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         //TODO - Check some access
+    	Date stamp = entry.getWorkflowChange().getDate();
         processor.setWorkflowResponse(folder, entry, stateId, inputData);
-
+        if (!stamp.equals(entry.getWorkflowChange().getDate())) scheduleSubscription(folder, entry, stamp);
+        
     }
 
     public List applyEntryFilter(Definition entryFilter) {
@@ -529,6 +542,39 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         checkAddEntryAllowed(destination);
         processor.moveEntry(folder, entry, destination);
     }
+    public void addSubscription(Long folderId, Long entryId) {
+    	//getEntry check read access
+		FolderEntry entry = getEntry(folderId, entryId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+		if (s == null) {
+			s = new Subscription(user.getId(), entry.getEntityIdentifier());
+			getCoreDao().save(s);
+		}  	
+    }
+    public Subscription getSubscription(Long folderId, Long entryId) {
+    	//getEntry check read access
+		FolderEntry entry = getEntry(folderId, entryId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+    }
+    public void deleteSubscription(Long folderId, Long entryId) {
+    	//getEntry check read access
+		FolderEntry entry = getEntry(folderId, entryId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+		if (s != null) getCoreDao().delete(s);
+    }
+    public void modifySubscription(Long folderId, Long entryId, Map updates) {
+		FolderEntry entry = getEntry(folderId, entryId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+		if (s == null) {
+			s = new Subscription(user.getId(), entry.getEntityIdentifier());
+			getCoreDao().save(s);		
+		}
+    	ObjectBuilder.updateObject(s, updates);
+    }
 	public List getCommunityTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
@@ -787,7 +833,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	
     	return folders;
    	}*/
-
+    private void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
+  		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder, FillEmailSubscription.PROCESSOR_KEY);
+  		//if anyone subscribed to the topLevel entry, notify them of a change
+  		FolderEntry parent = entry.getTopEntry();
+  		if (parent == null) parent = entry;
+  		if (!getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier()).isEmpty())
+  			process.schedule(folder.getId(), entry.getId(), when);
+    	
+    }
     /**
      * Helper classs to return folder unseen counts as an objects
      * @author Janet McCann

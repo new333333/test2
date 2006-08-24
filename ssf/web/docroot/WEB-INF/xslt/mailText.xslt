@@ -5,16 +5,20 @@
 <xsl:stylesheet version="1.0"
 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="text" encoding="utf-8" indent="no"/>
+<xsl:param name="TOC" select="'true'"/>
+
 <xsl:template match="/">
  <xsl:apply-templates select="mail"/>
 </xsl:template>
 
 <xsl:template match="mail">
+<xsl:if test="$TOC = 'true'">
 <xsl:value-of select="topFolder/@changeCount"/>
 <xsl:text> changed entries in </xsl:text>
 <xsl:value-of select="topFolder/@title"/>
 <xsl:text>
 </xsl:text>
+</xsl:if>
 <xsl:for-each select="folder">
 <xsl:text>
 _________________________________________________________

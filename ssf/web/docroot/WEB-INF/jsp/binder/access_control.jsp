@@ -160,7 +160,7 @@
       text="No roles have been defined. Please contact the zone administrator to define "/></span>]
   </c:if>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_form" name="rolesForm" method="post" 
+<form class="ss_form" name="${renderResponse.namespace}rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -187,14 +187,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="rolesForm" formElement="users" type="user"/>
+  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="users" type="user"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="rolesForm" formElement="groups" type="group"/>
+  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="groups" type="group"/>
 </td>
 </tr>
 <tr>
@@ -216,7 +216,7 @@
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.modifyRole" 
     text="Modify role membership"/></legend>
   <c:if test="${!empty ssFunctionMap}">
-<form class="ss_style" name="rolesForm" method="post" 
+<form class="ss_style" name="${renderResponse.namespace}rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure_access_control"/>
@@ -239,7 +239,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="rolesForm" formElement="users" 
+  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="users" 
     type="user" userList="${function.value.ssUsers}"/>
 </td>
 </tr>
@@ -247,7 +247,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="rolesForm" formElement="groups" 
+  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="groups" 
     type="group" userList="${function.value.ssGroups}"/>
 </td>
 </tr>

@@ -18,7 +18,7 @@ import com.sitescape.ef.security.AccessControlException;
  */
 public interface FolderCoreProcessor extends EntryProcessor {
 
-    public Long addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
+    public FolderEntry addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public Map getEntryTree(Folder parentFolderId, FolderEntry entry) throws AccessControlException;
 }

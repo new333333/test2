@@ -20,9 +20,11 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.lucene.Hits;
@@ -286,80 +288,40 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
 	}
-	/**
-	 * Get community tags owned by the entry
-	 * @param binderId
-	 * @param entryId
-	 * @return
-	 */
-	
-	public List getCommunityTags(Long binderId, Long entryId) {
-		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
-	}
-	
-	/**
-	 * Get personal tags owned by the entry
-	 * @param binderId
-	 * @param entryId
-	 * @return
-	 */
-	public List getPersonalTags(Long binderId, Long entryId) {
-		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-		List tags = new ArrayList<Tag>();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
-	}
 
-	/**
-	 * Modify a tag owned by this entry
-	 * @param binderId
-	 * @param entryId
-	 * @param tagId
-	 * @param updates
-	 */
-	public void modifyTag(Long binderId, Long entryId, String tagId, String newTag) {
+    public void addSubscription(Long binderId) {
+    	//getEntry check read access
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-	   	Tag tag = coreDao.loadTagById(tagId);
-	   	tag.setName(newTag);
-	   	coreDao.update(tag);
-	}
-	/**
-	 * Add a tag owned by this entry
-	 * @param binderId
-	 * @param entryId
-	 * @param updates
-	 */
-	public void setTag(Long binderId, Long entryId, String newTag, boolean community) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+		if (s == null) {
+			s = new Subscription(user.getId(), binder.getEntityIdentifier());
+			getCoreDao().save(s);
+		}  	
+    }
+    public Subscription getSubscription(Long binderId) {
+    	//getEntry check read access
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-	   	Tag tag = new Tag();
-	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
-	   	tag.setPublic(community);
-	  	tag.setName(newTag);
-	  	coreDao.save(tag);   	
-	}
-	/**
-	 * Delete a tag owned by this entry
-	 * @param binderId
-	 * @param entryId
-	 * @param tagId
-	 */
-	public void deleteTag(Long binderId, Long entryId, String tagId) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+    }
+    public void deleteSubscription(Long binderId) {
+    	//getEntry check read access
 		Binder binder = loadBinder(binderId);
-		Entry entry = loadEntryProcessor(binder).getEntry(binder, entryId);
-	   	Tag tag = coreDao.loadTagById(tagId);
-	   	getCoreDao().delete(tag);
-	}
-	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+		if (s != null) getCoreDao().delete(s);
+    }
+    public void modifySubscription(Long binderId, Map updates) {
+		Binder binder = loadBinder(binderId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
+		if (s == null) {
+			s = new Subscription(user.getId(), binder.getEntityIdentifier());
+			getCoreDao().save(s);		
+		}
+    	ObjectBuilder.updateObject(s, updates);
+    }	
 	public List executeSearchQuery(Binder binder, Document searchQuery) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);

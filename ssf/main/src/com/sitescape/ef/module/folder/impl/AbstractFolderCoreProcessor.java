@@ -369,7 +369,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************
-   public Long addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
+   public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
    	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
@@ -409,7 +409,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		throw new WriteFilesException(filesErrors);
     	}
     	else {
-    		return entry.getId();
+    		return entry;
     	}
     }
         

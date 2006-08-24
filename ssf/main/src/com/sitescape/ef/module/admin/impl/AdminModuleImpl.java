@@ -19,7 +19,6 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
@@ -106,10 +105,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    		for (Iterator iter=principals.iterator(); iter.hasNext();) {
    			//	make sure user exists and is in this zone
    			p = getProfileDao().loadPrincipal((Long)iter.next(),companyId);
-   			notifyUsers.add(new Notification(binder, p));   			
+   			notifyUsers.add(p);   			
    		}
 
-   		current.setDefaultDistribution(notifyUsers);
+   		current.setDistribution(notifyUsers);
     }
  
  

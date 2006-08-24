@@ -3,7 +3,6 @@
 <c:if test="${empty ss_history_bar_loaded}">
 <c:set var="ss_history_bar_imageId" value="0" scope="request"/>
 <c:set var="ss_history_bar_loaded" value="1" scope="request"/>
-
 <script type="text/javascript">
 if (!ss_history_bar_loaded || ss_history_bar_loaded == "undefined" ) {
 var ss_entryList = new Array();
@@ -32,7 +31,7 @@ var ss_baseHistoryUrl = '<ssf:url
           folderId="${ssFolder.id}"
           action="view_folder_entry"
           operation="view_entry"
-          actionUrl="false"
+          actionUrl="true"
           />';
           
 }
@@ -55,7 +54,7 @@ if (false) {
           folderId="${ssFolder.id}"
           action="view_folder_entry"        
           operation="entry_previous"
-          actionUrl="false"
+          actionUrl="true"
           />"
           onClick="ss_getLastEntryId('${ss_history_bar_imageId}');return false;" ><img 
           alt="<ssf:nlt tag="nav.firstEntry" text="First entry"/>" id="ss_first"
@@ -70,7 +69,7 @@ if (false) {
           folderId="${ssFolder.id}"
           action="view_folder_entry"        
           operation="entry_previous"
-          actionUrl="false"
+          actionUrl="true"
           />"
           onClick="ss_getNextEntryId('${ss_history_bar_imageId}');return false;" ><img 
           alt="<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>" id="ss_prev"
@@ -84,7 +83,7 @@ if (false) {
           folderId="${ssFolder.id}"
           action="view_folder_entry"
           operation="entry_next"
-          actionUrl="false"
+          actionUrl="true"
           />"
           onClick="ss_getPreviousEntryId('${ss_history_bar_imageId}');return false;" ><img 
           alt="<ssf:nlt tag="nav.nextEntry" text="Next entry"/>" id="ss_next"
@@ -100,7 +99,7 @@ if (false) {
           folderId="${ssFolder.id}"
           action="view_folder_entry"
           operation="entry_next"
-          actionUrl="false"
+          actionUrl="true"
           />"
           onClick="ss_getFirstEntryId('${ss_history_bar_imageId}');return false;" ><img 
           alt="<ssf:nlt tag="nav.lastEntry" text="Last entry"/>" id="ss_last"

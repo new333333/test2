@@ -146,7 +146,6 @@ function ss_userListInterceptCR(e) {
     </ul>
   </div>
 </div>
-<input type="hidden" name="<%= userListElementName %>">
 </td>
 <td valign="top">
   <div style="margin:0px; padding:0px;"><img 
@@ -205,7 +204,7 @@ function ss_userListInterceptCR(e) {
   ss_DragDrop.makeListContainer( document.getElementById('added_<%= userListElementName %>'));
   ss_DragDrop.makeListContainer( document.getElementById('available_<%= userListElementName %>'));
 
-function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
+function ss_saveUserListData_${prefix}() {
 	var elementObj = document.getElementById('<%= userListElementName %>');
 	var addedObj = document.getElementById('added_<%= userListElementName %>');
 
@@ -218,13 +217,13 @@ function ss_saveUserListData_<portlet:namespace/>_${prefix}() {
 	return true;
 }
 
-function ss_userListKeyPress_<portlet:namespace/>_${prefix}(e) {
+function ss_userListKeyPress_${prefix}(e) {
 	//Save the current list of selected user ids
-	ss_saveUserListData_<portlet:namespace/>_${prefix}()
+	ss_saveUserListData_${prefix}()
 	//Then call the general keyPress handler
 	ss_userListInterceptCR(e)
 }
 
-ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_<portlet:namespace/>_${prefix});
-ss_createEventObj('ss_userListKeyPress_<portlet:namespace/>_${prefix}', 'KEYPRESS');
+ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_${prefix});
+ss_createEventObj('ss_userListKeyPress_${prefix}', 'KEYPRESS');
 </script>

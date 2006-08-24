@@ -25,4 +25,20 @@
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" 
   entry="${ssDefinitionEntry}" />
+  
+<br>
+<form class="ss_style ss_form" method="post" action="" style="display:inline;">
+	<c:choose>
+	<c:when test="${empty ssSubscription}">
+	<input type="submit" class="ss_submit" name="subscribeBtn" 
+		     value="<ssf:nlt tag="button.subscribe"/>">
+	</c:when>
+	<c:otherwise>
+	<input type="submit" class="ss_submit" name="unsubscribeBtn" 
+		     value="<ssf:nlt tag="button.unsubscribe"/>">
+	</c:otherwise>
+	</c:choose>
+	
+	
+  </form>
 </div>

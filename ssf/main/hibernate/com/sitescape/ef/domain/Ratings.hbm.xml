@@ -8,7 +8,6 @@
       <key-property name="entityId"/>
       <key-property name="entityType"/>
     </composite-id>
-    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
    <property name="rating"/>
   </class>
 </hibernate-mapping>

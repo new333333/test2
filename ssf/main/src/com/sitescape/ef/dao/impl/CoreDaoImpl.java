@@ -1,66 +1,62 @@
 package com.sitescape.ef.dao.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.orm.hibernate3.HibernateCallback;
-
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
+import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
-import org.hibernate.Criteria;
-import org.hibernate.ReplicationMode;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.HashMap;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.TitleException;
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.VersionAttachment;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.CustomAttributeListElement;
-import com.sitescape.ef.domain.DefinitionInvalidOperation;
-
-import com.sitescape.ef.util.LongIdComparator;
-
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.NoBinderByTheIdException;
-import com.sitescape.ef.domain.NoBinderByTheNameException;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoConfigurationByTheIdException;
-import com.sitescape.ef.domain.NoTagByTheIdException;
-import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EmailAlias;
-import com.sitescape.ef.domain.PostingDef;
-
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.domain.Attachment;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.CustomAttributeListElement;
+import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinitionInvalidOperation;
+import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.NoBinderByTheIdException;
+import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.NoConfigurationByTheIdException;
+import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
+import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
+import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.VersionAttachment;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.util.Constants;
+import com.sitescape.ef.util.LongIdComparator;
 import com.sitescape.util.Validator;
 /**
  * @author Jong Kim
@@ -138,9 +134,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
 	       				.setLong("owner", binder.getId().longValue())
 	       				.executeUpdate();
-		   			session.createQuery("DELETE com.sitescape.ef.domain.Notification where binder=:owner")
-		   				.setLong("owner", binder.getId().longValue())
-		   				.executeUpdate();
 		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where binderId=:owner")
 		   				.setLong("owner", binder.getId().longValue())
 		   				.executeUpdate();
@@ -149,11 +142,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				Statement s = connect.createStatement();
 		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
 		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
+		   				s.executeUpdate("delete from SS_Notifications where binderId=" + binder.getId());
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
 		   			}
    		   			//delete ratings/visits for these entries
  		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
+     	   				.setLong("entityId", binder.getId())
+		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
+		   				.executeUpdate();
+   		   			
+   		   			//delete subscriptions to  these entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId=:entityId and entityType=:entityType")
      	   				.setLong("entityId", binder.getId())
 		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
 		   				.executeUpdate();
@@ -221,6 +221,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
+	   				.setLong("entityId", entity.getId())
+	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   				.executeUpdate();
+	   			//delete subscriptions to these entries
+	   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
 	   				.executeUpdate();
@@ -716,15 +721,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	
 	public Tag loadTagById(final String tagId) {
-		return (Tag)getHibernateTemplate().execute(
-	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
-	                 	return session.createCriteria(Tag.class)
-                 		.add(Expression.eq("id", tagId));
-	                }
-	            }
-	        );
-		
+        return (Tag)getHibernateTemplate().get(Tag.class, tagId);	
 	}
 	
 	public List loadAllTagsByEntity(final EntityIdentifier entityId) {
@@ -789,4 +786,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}	
+	public List loadSubscriptionByEntity(final EntityIdentifier entityId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Subscription.class)
+                 		.add(Expression.eq("id.entityId", entityId.getEntityId()))
+       					.add(Expression.eq("id.entityType", entityId.getEntityType().getValue()))
+	                 	.list();
+	                }
+	            }
+	        );
+		
+	}
+
 }

@@ -18,10 +18,10 @@ import com.sitescape.ef.security.AccessControlException;
 public interface BinderProcessor {
     public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
-    public Long addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
+    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
   	public void deleteBinder(Binder binder) throws AccessControlException;
-    public Long modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
+    public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);
 }

@@ -34,6 +34,7 @@ import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.UserEntityPK;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
 import com.sitescape.ef.domain.NoGroupByTheIdException;
@@ -88,6 +89,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	   				Statement s = connect.createStatement();
       	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in " + 
       	   						"(select p.id from SS_Principals p where  p.parentBinder=" + profiles.getId() + ")");
+      	   				s.executeUpdate("delete from SS_Notifications where principalId in " + 
+      	   						"(select p.id from SS_Principals p where  p.parentBinder=" + profiles.getId() + ")");
       	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
@@ -114,16 +117,30 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			  				" p.parentBinder=:profile)")
  				   			.setEntity("profile", profiles)
  				         	.executeUpdate();
-		   			//delete ratings/visits owned by these users
+		   			//delete ratings/visits owned by these principals
  		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where principalId in " + 
  			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
 		   			  			" p.parentBinder=:profile)")
 				   		.setEntity("profile", profiles)
 		   				.executeUpdate();
-	       			List types = new ArrayList();
+		   			//delete subscriptions owned by these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where principalId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=:profile)")
+				   		.setEntity("profile", profiles)
+		   				.executeUpdate();
+
+		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
-	       			
+
+	       			//delete subscriptions to these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId in " + 
+ 			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
+		   			  			" p.parentBinder=:profile) and entityType in (:tList)")
+				   		.setEntity("profile", profiles)
+		   				.executeUpdate();
+ 	       			
 		   			//delete ratings/visits for these principals
  		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in " + 
  			   				"(select p.id from com.sitescape.ef.domain.Principal p where " +
@@ -190,6 +207,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	   			try {
        	   				Statement s = connect.createStatement();
       	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in (" + inList.toString() + ")");
+      	   				s.executeUpdate("delete from SS_Notifications where principalId in (" + inList.toString() + ")");
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
@@ -212,9 +230,20 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   					.setParameterList("pList", ids)
 		   				.executeUpdate();
 
-	       			List types = new ArrayList();
+		   			//delete subscriptions owned by these users
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where principalId in (:pList)")
+	   					.setParameterList("pList", ids)
+		   				.executeUpdate();
+
+ 		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
+	       			//delete subscriptions to these principals
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId in (:pList) and entityType in (:tList)")
+ 	   					.setParameterList("pList", ids)
+	   					.setParameterList("tList", types)
+		   				.executeUpdate();
+ 	       			
 		   			//delete ratings/visits for by these principals
  		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType in (:tList)")
  	   					.setParameterList("pList", ids)
@@ -617,5 +646,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	public Rating loadRating(Long userId, EntityIdentifier entityId) {
     	UserEntityPK id = new UserEntityPK(userId, entityId);
         return (Rating)getHibernateTemplate().get(Rating.class, id);	
+	}
+	public Subscription loadSubscription(Long userId, EntityIdentifier entityId) {
+    	UserEntityPK id = new UserEntityPK(userId, entityId);
+        return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
 	}
 }

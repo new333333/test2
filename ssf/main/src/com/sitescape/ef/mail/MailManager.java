@@ -24,6 +24,7 @@ public interface MailManager {
 	public static final String NOTIFY_SUBJECT="notify.subject";
 	
 	public Date sendNotifications(Long folderId, Date start);
+	public void fillSubscription(Long folderId, Long entryId, Date stamp);
 	public void receivePostings(ScheduleInfo info);
 	public boolean sendMail(MimeMessage msg);
 	public boolean sendMail(String mailSenderName, java.io.InputStream input);

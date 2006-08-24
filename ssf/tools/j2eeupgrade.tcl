@@ -170,15 +170,13 @@ array set ::j2ee_CustomAttributes_class_MAP {
     parent 		{parent uuid}
 }
 				
-array set ::j2ee_Notification_class_MAP {
-   id           {id uuid}
-   lockVersion  {lockVersion int32}
-   forum		{forum int32}
-   notificationDef {notificationDef uuid32}
+array set ::j2ee_Subscription_class_MAP {
+   id			{id uuid}
+   principalId    {principalId int32}
+   entityId		{entityId int32}
+   entityType		{entityType int}
    style		{style int32}
-   sendTo    {sendTo int32}
-   emailAddress {emailAddress "varchar 256"}
-   enabled      {enabled boolean}
+   disabled      {disabled boolean}
 }
 #array set ::j2ee_Command_class_MAP {
 #   id           {id uuid}
@@ -1508,30 +1506,30 @@ proc doNotifications {zoneName forumName ats} {
 	foreach group [wim property get -aca $zoneName -name $forumName notifyDefaultGroups] {
 		try {
 			set id $::groupIds($group)
-			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,binder,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
+			wimsql_rw "INSERT INTO SS_Notifications (binderId,principalId) values ($forumId,$id);"
 		}
 	}
 
 	foreach user [wim property get -aca $zoneName -name $forumName notifyDefaultUsers] {
 		try {
 			set id $::userIds($user)
-			wimsql_rw "INSERT INTO SS_Notifications (id,lockVersion,binder,type,sendTo) values ('[newuuid]',1,$forumId,'N',$id);"
+			wimsql_rw "INSERT INTO SS_Notifications (binderId,principalId) values ($forumId,$id);"
 		}
 	}
 
 	set nattrs(lockVersion) 1
-	set nattrs(binder) $forumId
-	set nattrs(type) "U"
+	set nattrs(entityId) $forumId
+	set nattrs(entityType) 2
 	set nattrs(style) 1
 	set nattrs(disabled) 0
 	foreach user [wim property get -aca $zoneName -name $forumName notifyEnabledUsers] {
 		try {
 			set nattrs(id) [newuuid]
-			set nattrs(sendTo) $::userIds($user)
-            set results [setupColVals ::j2ee_Notifications_class_MAP natts insert]
+			set nattrs(principalId) $::userIds($user)
+            set results [setupColVals ::j2ee_Subscription_class_MAP natts insert]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
-			wimsql_rw "INSERT INTO SS_Notifications $cmd ;" [lindex $cmdList 1]
+			wimsql_rw "INSERT INTO SS_Subscriptions $cmd ;" [lindex $cmdList 1]
 		}
 	}
 
@@ -1539,25 +1537,25 @@ proc doNotifications {zoneName forumName ats} {
 	foreach user [wim property get -aca $zoneName -name $forumName notifyEnabledUsersIndiv] {
 		try {
 			set nattrs(id) [newuuid]
-			set nattrs(sendTo) $::userIds($user)
-            set results [setupColVals ::j2ee_Notifications_class_MAP natts insert]
+			set nattrs(principalId) $::userIds($user)
+            set results [setupColVals ::j2ee_Subscription_class_MAP natts insert]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
-			wimsql_rw "INSERT INTO SS_Notifications $cmd ;" [lindex $cmdList 1]
+			wimsql_rw "INSERT INTO SS_Subscriptions $cmd ;" [lindex $cmdList 1]
 		}
 	}
 
 	set nattrs(disabled) 1
-	unset nattrs(style) 
+	set nattrs(style) 1
 	#users explicitly overriding default lists to stop mail
 	foreach user [wim property get -aca $zoneName -name $forumName notifyDisabledUsers] {
 		try {
 			set nattrs(id) [newuuid]
-			set nattrs(sendTo) $::userIds($user)
-            set results [setupColVals ::j2ee_Notifications_class_MAP natts insert]
+			set nattrs(principalId) $::userIds($user)
+            set results [setupColVals ::j2ee_Subscription_class_MAP natts insert]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
-			wimsql_rw "INSERT INTO SS_Notifications $cmd ;" [lindex $cmdList 1]
+			wimsql_rw "INSERT INTO SS_Subscriptions $cmd ;" [lindex $cmdList 1]
 		}
 	}
 

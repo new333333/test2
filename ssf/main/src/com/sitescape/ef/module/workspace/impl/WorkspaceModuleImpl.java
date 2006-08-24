@@ -234,7 +234,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 //        	def = parentWorkspace.getFolderDef();
         }
         
-        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
+        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems).getId();
 
     }
  
@@ -252,7 +252,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 //        	def = parentWorkspace.getDefaultWorkspaceDef();
         }
         
-        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems);
+        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
     }
  
     public void checkAddWorkspaceAllowed(Workspace parentWorkspace) {
