@@ -50,6 +50,7 @@ public class WebKeys {
     public static final String URL_OPERATION2="operation2";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_VALUE = "value";
+	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
     //Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";

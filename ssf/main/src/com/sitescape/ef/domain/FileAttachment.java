@@ -112,7 +112,15 @@ public class FileAttachment extends Attachment {
 	   }
 	   return null;
    }
-   
+   public VersionAttachment findFileVersionById(String versionId) {
+	   List vList = getFileVersions();
+	   for(int i = 0; i < vList.size(); i++) {
+		   VersionAttachment v = (VersionAttachment) vList.get(i);
+		   if(v.getId().equals(versionId))
+			   return v;
+	   }
+	   return null;
+   }   
    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
