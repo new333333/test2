@@ -49,7 +49,7 @@ public class ViewFileController extends SAbstractController {
 		FileAttachment topAtt = (FileAttachment)entity.getAttachment(fileId);
 		if (topAtt != null) {
 			//see if we want a version
-			String versionId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_VERSION_ID); 
+			String versionId = RequestUtils.getStringParameter(request, WebKeys.URL_VERSION_ID, ""); 
 			if (Validator.isNull(versionId)) {
 				fa = topAtt;
 			} else {
