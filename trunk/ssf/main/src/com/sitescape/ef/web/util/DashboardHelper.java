@@ -533,7 +533,7 @@ public class DashboardHelper {
 			componentListItem.put(DashboardHelper.Id, id);
 			componentListItem.put(DashboardHelper.Scope, scope);
 			componentListItem.put(DashboardHelper.Visible, true);
-			componentList.add(componentListItem);
+			componentList.add(0, componentListItem);
 			
 			//Increment the next component id
 			dashboard.put(DashboardHelper.NextComponent, new Integer(++nextComponent));

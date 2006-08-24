@@ -144,5 +144,5 @@
 	</div>
   </div>
 </div>
-<div style="margin:6px; padding:0px;"><img 
+<div style="margin:3px; padding:0px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
