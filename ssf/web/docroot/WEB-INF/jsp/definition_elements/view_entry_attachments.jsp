@@ -25,7 +25,9 @@
 		<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
 </ssf:ifSupportsEditInPlace>
 <br>
+<c:set var="versionCount" value="0"/>
 <c:forEach var="fileVersion" items="${selection.fileVersions}">
+<c:if test="${versionCount > 0}">
 &nbsp;&nbsp;&nbsp;<a style="text-decoration: none;"
   href="<ssf:url 
     webPath="viewFile"
@@ -35,6 +37,8 @@
     <ssf:param name="versionId" value="${fileVersion.id}"/>
     </ssf:url>">v${fileVersion.versionNumber}</a>
 <br>
+</c:if>
+<c:set var="versionCount" value="${versionCount + 1}"/>
 </c:forEach>
 </c:forEach>
 </span>
