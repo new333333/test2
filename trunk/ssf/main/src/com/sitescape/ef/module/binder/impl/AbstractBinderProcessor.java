@@ -104,7 +104,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	
 	//***********************************************************************************************************	
-    public Long addBinder(final Binder parent, Definition def, Class clazz, 
+    public Binder addBinder(final Binder parent, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
@@ -159,7 +159,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		throw new WriteFilesException(filesErrors);
     	}
     	else {
-    		return binder.getId();
+    		return binder;
     	}
     }
 
@@ -235,7 +235,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  	
  	
     //***********************************************************************************************************
-    public Long modifyBinder(final Binder binder, final InputDataAccessor inputData, 
+    public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
     		Map fileItems, final Collection deleteAttachments) 
     		throws AccessControlException, WriteFilesException {
 	
@@ -290,7 +290,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		throw new WriteFilesException(filesErrors);
     	}
     	else {
-    		return binder.getId();
+    		return;
     	}
 	}
 

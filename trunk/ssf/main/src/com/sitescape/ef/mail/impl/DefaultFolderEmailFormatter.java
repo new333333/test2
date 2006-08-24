@@ -42,15 +42,15 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserNotification;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.MailManager;
@@ -103,23 +103,65 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
  		
     }
 	/**
-	 * Determine which users have access to which entries.
+	 * Determine which users have access to the entry.
+	 * Return a map from locale to a collection of email Addresses
+	 */
+	public Map buildDigestDistributionList(FolderEntry entry, Collection subscriptions) {
+		//Users wanting digest style messages
+		List users = getDigestUsers(subscriptions);
+		return buildDistributionMap(entry, users);
+	}
+	public Map buildMessageDistributionList(FolderEntry entry, Collection subscriptions) {
+		//Users wanting digest style messages
+		List users = getMessageUsers(subscriptions);
+		return buildDistributionMap(entry, users);
+	}
+	private Map buildDistributionMap(FolderEntry entry, Collection users) {
+		Map languageMap = new HashMap();
+		//check access to folder/entry and build lists of users to receive mail
+		List checkList = new ArrayList();
+		//remove users that don't have access to the entry
+		for (Iterator iter=users.iterator(); iter.hasNext();) {
+			User u = (User)iter.next();
+			if (!Validator.isNull(u.getEmailAddress())) {
+				try {
+					AccessUtils.readCheck(entry);
+					checkList.add(u);
+				} catch (Exception ex) {};
+			}
+		}
+		Set email;
+		for (Iterator iter=checkList.iterator(); iter.hasNext();) {
+			User u = (User)iter.next();
+			email = (Set)languageMap.get(u.getLocale());
+			if (email != null) {
+				email.add(u.getEmailAddress().trim());
+			} else {
+				email = new HashSet();
+				email.add(u.getEmailAddress().trim());
+				languageMap.put(u.getLocale(), email);
+			}
+		}
+		return languageMap;
+	}
+	/**
+	 * Determine which users have access to the entry.
 	 * Return a list of Object[].  Each Object[0] contains a list of entries,
-	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
+	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of users
 	 * using that locale that have access to the entries.
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the message	
 	 */
-	public List buildDigestDistributionList(Folder folder, Collection entries) {
+	public List buildDigestDistributionList(Folder folder, Collection entries, Collection subscriptions) {
  		NotificationDef nDef = folder.getNotificationDef();
  		List notifications = nDef.getDistribution(); 
 		String [] emailAddrs = nDef.getEmailAddress();
 		List result = new ArrayList();
 		//done if no-one is interested
-		if ((emailAddrs.length == 0) && (notifications.size() == 0)) return result;
+		if ((emailAddrs.length == 0) && notifications.isEmpty() && subscriptions.isEmpty()) return result;
 
 		//Users wanting digest style messages
-		List users = getDigestUsers(folder);
+		List users = getDigestUsers(folder, subscriptions);
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (Iterator iter=users.iterator(); iter.hasNext();) {
@@ -179,15 +221,15 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the message	
 	 */
-	public List buildMessageDistributionList(Folder folder, Collection entries) {
+	public List buildMessageDistributionList(Folder folder, Collection entries, Collection subscriptions) {
  		NotificationDef nDef = folder.getNotificationDef();
  		List notifications = nDef.getDistribution(); 
 		//done if no-one is interested
 		List result = new ArrayList();
-		if (notifications.size() == 0) return result;
+		if (notifications.isEmpty() && subscriptions.isEmpty()) return result;
 
 		//Users wanting digest style messages
-		List users = getMessageUsers(folder);
+		List users = getMessageUsers(subscriptions);
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (Iterator iter=users.iterator(); iter.hasNext();) {
@@ -258,31 +300,27 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return from;
 	}
 
-	private List getDigestUsers(Folder folder) {
+	private List getDigestUsers(Folder folder, Collection subscriptions) {
 		List notifications = folder.getNotificationDef().getDistribution();
 		Set userIds = new HashSet();
 		//Build id set to build user list
 		//get all users setup by admin
 		for (int i=0; i<notifications.size();++i) {
-			Notification notify = (Notification)notifications.get(i);
-			if (!(notify instanceof UserNotification))
-				userIds.add(notify.getSendTo().getId());
+			Principal p = (Principal)notifications.get(i);
+				userIds.add(p.getId());
 		}
 		//turn list of users and groups into list of only users
 		userIds = getProfileDao().explodeGroups(userIds);
 		
 		//now alter list to handle users that made request themselves
-		for (int i=0; i<notifications.size();++i) {
-			Notification notify = (Notification)notifications.get(i);
-			if ((notify instanceof UserNotification)) {
-				UserNotification userNotify = (UserNotification)notify;
-				if (userNotify.isDisabled()) {
-					userIds.remove(userNotify.getSendTo().getId());
-				} else if (userNotify.getStyle() == UserNotification.DIGEST_STYLE_EMAIL_NOTIFICATION) {
-					userIds.add(userNotify.getSendTo().getId());
-				} else {
-					userIds.remove(userNotify.getSendTo().getId());
-				}
+		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
+			Subscription notify = (Subscription)iter.next();
+			if (notify.isDisabled()) {
+				userIds.remove(notify.getId().getPrincipalId());
+			} else if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
+				userIds.add(notify.getId().getPrincipalId());
+			} else {
+				userIds.remove(notify.getId().getPrincipalId());
 			}
 		}
 		
@@ -290,22 +328,34 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
  		return getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
  		
 	}
-	private List getMessageUsers(Folder folder) {
-		List notifications = folder.getNotificationDef().getDistribution();
+	private List getDigestUsers(Collection subscriptions) {
+		Set userIds = new HashSet();
+	
+		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
+			Subscription notify = (Subscription)iter.next();
+			if (!notify.isDisabled() && 
+					(notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION)) {
+				userIds.add(notify.getId().getPrincipalId());
+			} 
+		}
+		
+		
+ 		return getProfileDao().loadEnabledUsers(userIds,  RequestContextHolder.getRequestContext().getZoneName());
+
+		
+	}
+	private List getMessageUsers(Collection subscriptions) {
 		Set userIds = new HashSet();
 		//Build id set to build user list
 		//get all users setup by admin
-		for (int i=0; i<notifications.size();++i) {
-			Notification notify = (Notification)notifications.get(i);
-			if ((notify instanceof UserNotification)) {
-				UserNotification userNotify = (UserNotification)notify;
-				if (!userNotify.isDisabled() && (userNotify.getStyle() == UserNotification.MESSAGE_STYLE_EMAIL_NOTIFICATION)) {
-					userIds.add(userNotify.getSendTo().getId());
-				}
+		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
+			Subscription notify = (Subscription)iter.next();
+			if (!notify.isDisabled() && (notify.getStyle() == Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION)) {
+					userIds.add(notify.getId().getPrincipalId());
 			}
 		}
 		
- 		return getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
+ 		return getProfileDao().loadEnabledUsers(userIds, RequestContextHolder.getRequestContext().getZoneName());
 	}
 	private int checkDate(HistoryStamp dt1, Date dt2) {
 		if (dt1 == null) return -1;
@@ -378,11 +428,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return trans.newTransformer();
 	}
 
-	protected String doTransform(Document document, String zoneName, String type, Locale locale) {
+	protected String doTransform(Document document, String zoneName, String type, Locale locale, boolean oneEntry) {
 		StreamResult result = new StreamResult(new StringWriter());
 		try {
 			Transformer trans = getTransformer(zoneName, type);
 			trans.setParameter("Lang", locale.toString());
+			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
 			trans.transform(new DocumentSource(document), result);
 		} catch (Exception ex) {
 			return ex.getMessage();
@@ -434,8 +485,43 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		
 		
-		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale()));
+		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), true));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), true));
+		
+		return result;
+	}
+	public Map buildNotificationMessage(Folder folder, FolderEntry entry,  Notify notify) {
+	    Map result = new HashMap();
+	    if (notify.getStartDate() == null) return result;
+		Document mailDigest = DocumentHelper.createDocument();
+		
+    	Element rootElement = mailDigest.addElement("mail");
+		Element element;
+		Element fElement=null;
+		ArrayList parentChain = new ArrayList();
+		Folder topFolder = folder.getTopFolder();
+		if (topFolder == null) topFolder = folder;
+		element = rootElement.addElement("topFolder");
+     	element.addAttribute("title", folder.getTitle());
+		fElement = rootElement.addElement("folder");
+		doFolder(fElement, folder);
+ 		
+		FolderEntry parent = entry.getParentEntry();
+		while (parent != null) {
+			parentChain.add(parent);
+			parent=parent.getParentEntry();
+		}
+		for (int pos=parentChain.size()-1; pos>=0; --pos) {
+			element = fElement.addElement("folderEntry");
+			parent = (FolderEntry)parentChain.get(pos);
+			doEntry(element, parent, notify, false);
+		}
+					
+		element = fElement.addElement("folderEntry");
+		doEntry(element, entry, notify, true);
+		
+		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
 		
 		return result;
 	}

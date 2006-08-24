@@ -91,5 +91,5 @@ public interface CoreDao {
 	public List loadPersonalTags(EntityIdentifier ownerId);
 	public List loadAllTagsByEntity(EntityIdentifier entityId);
 	public Tag loadTagById(String id);
-
+	public List loadSubscriptionByEntity(final EntityIdentifier entityId);
  }

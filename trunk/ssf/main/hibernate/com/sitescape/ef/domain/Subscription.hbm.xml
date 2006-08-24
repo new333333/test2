@@ -2,12 +2,13 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_Ratings" name="com.sitescape.ef.domain.Visits">
+  <class table="SS_Subscriptions" name="com.sitescape.ef.domain.Subscription">
     <composite-id name="id" class="com.sitescape.ef.domain.UserEntityPK">
       <key-property name="principalId"/>
       <key-property name="entityId"/>
       <key-property name="entityType"/>
     </composite-id>
-   <property name="reads"/>
+    <property name="style"/>
+   <property name="disabled"/>
   </class>
 </hibernate-mapping>

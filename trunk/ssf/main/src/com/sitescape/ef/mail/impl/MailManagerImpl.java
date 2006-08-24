@@ -2,68 +2,58 @@
 package com.sitescape.ef.mail.impl;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
-import java.util.Date;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
-
+import java.util.Map;
+import java.util.Set;
 
 import javax.activation.DataSource;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
-import javax.mail.Session;
 import javax.mail.search.SearchTerm;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.springframework.jndi.JndiAccessor;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.NotificationDef;
-import com.sitescape.ef.domain.Notification;
-import com.sitescape.ef.domain.UserNotification;
+import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.User;
+import com.sitescape.ef.jobs.FailedEmail;
+import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.jobs.SendEmail;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.JavaMailSender;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.PortabilityUtil;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.jobs.FailedEmail;
-import com.sitescape.ef.jobs.SendEmail;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.MailParseException;
-import org.springframework.mail.MailSendException;
-import org.springframework.mail.MailAuthenticationException;
-import org.springframework.jndi.JndiAccessor;
-import com.sitescape.util.Validator;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 /**
  * The public methods exposed by this implementation are not transaction 
  * demarcated. If transactions are needed, the FolderEmailProcessors will be 
@@ -249,6 +239,66 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		}
 		
 	}
+	public void fillSubscription(Long folderId, Long entryId, Date stamp) {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, zoneName);
+		Folder folder = entry.getParentFolder();
+		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+		//subscriptions are made to toplevel entries only
+		FolderEntry parent = entry.getTopEntry();
+		if (parent == null) parent = entry;
+		List subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
+		if (subscriptions.isEmpty()) return;
+		Map digestResults = processor.buildDigestDistributionList(entry, subscriptions);
+		// Users wanting individual, message style email
+		Map messageResults = processor.buildMessageDistributionList(entry, subscriptions);
+
+
+		JavaMailSender mailSender = getMailSender(folder);
+		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
+		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+		mHelper.setEntry(entry);
+
+		for (int i=0; i<digestResults.size(); ++i) {
+			
+			//Use spring callback to wrap exceptions into something more useful than javas 
+			try {
+				mHelper.setType(Notify.SUMMARY);
+				for (Iterator iter=digestResults.entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					mHelper.setLocale((Locale)e.getKey());
+					mHelper.setToAddrs((Set)e.getValue());
+					mailSender.send(mHelper);
+				}
+			} catch (MailSendException sx) {
+	    		logger.error("Error sending mail:" + sx.getMessage());
+		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
+ 	    	} catch (Exception ex) {
+	       		logger.error(ex.getMessage());
+	    	} 
+		}
+		
+		for (int i=0; i<messageResults.size(); ++i) {
+			
+			//Use spring callback to wrap exceptions into something more useful than javas 
+			try {
+				mHelper.setType(Notify.FULL);
+				for (Iterator iter=messageResults.entrySet().iterator(); iter.hasNext();) {
+					Map.Entry e = (Map.Entry)iter.next();
+					mHelper.setLocale((Locale)e.getKey());
+					mHelper.setToAddrs((Set)e.getValue());
+					mailSender.send(mHelper);
+				}
+			} catch (MailSendException sx) {
+	    		logger.error("Error sending mail:" + sx.getMessage());
+		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
+ 	    	} catch (Exception ex) {
+	       		logger.error(ex.getMessage());
+	    	} 
+		}
+	}
 	/**
 	 * Send email notifications for recent changes
 	 */
@@ -262,10 +312,11 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
  		if (entries.isEmpty()) {
 			return until;
 		}
- 		
-		List digestResults = processor.buildDigestDistributionList(folder, entries);
+ 		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
+
+		List digestResults = processor.buildDigestDistributionList(folder, entries, subscriptions);
 		// Users wanting individual, message style email
-		List messageResults = processor.buildMessageDistributionList(folder, entries);
+		List messageResults = processor.buildMessageDistributionList(folder, entries, subscriptions);
 		
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
@@ -387,6 +438,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		Folder folder;
 		Collection toAddrs;
 		Collection entries;
+		Object entry;
 		MimeMessage message;
 		String messageType;
 		Date startDate;
@@ -400,6 +452,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		}
 		protected void setToAddrs(Collection toAddrs) {
 			this.toAddrs = toAddrs;			
+		}
+		protected void setEntry(Object entry) {
+			this.entry = entry;
+			
 		}
 		protected void setEntries(Collection entries) {
 			this.entries = entries;
@@ -441,7 +497,11 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			helper.setFrom(from);
 
 			mimeMessage.addHeader("Content-Transfer-Encoding", "8bit");
-			Map result = processor.buildNotificationMessage(folder, entries, notify);
+			Map result ;
+			if (entry != null)
+				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
+			else
+				result = processor.buildNotificationMessage(folder, entries, notify);
 			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
 			Set atts = notify.getAttachments();
 			for (Iterator iter=atts.iterator(); iter.hasNext();) {

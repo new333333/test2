@@ -25,7 +25,7 @@
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="presence.configure.buddies" 
     text="Buddies"/></legend>
- <form class="ss_style" name="buddyForm" method="post" 
+ <form class="ss_style" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL>
 		  <portlet:param name="action" value="configure"/>
@@ -37,7 +37,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="buddyForm" formElement="users" 
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="users" 
     type="user" userList="${ssUsers}"/>
 </td>
 </tr>
@@ -45,7 +45,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="buddyForm" formElement="groups" 
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="groups" 
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>
@@ -53,9 +53,7 @@
 <tr>
 <td colspan="2">
 <input type="submit" class="ss_submit" name="applyBtn"
- value="<ssf:nlt tag="button.apply" text="Apply"/>">&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn"
- value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+ value="<ssf:nlt tag="button.apply" text="Apply"/>">
 </td>
 </tr>
 </table>

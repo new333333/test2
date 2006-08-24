@@ -17,7 +17,6 @@ import com.sitescape.ef.domain.UserEntityPK;
 public class Rating {
     private UserEntityPK id;
     private Long rating = Long.valueOf(0);
-    private long lockVersion;
     
     protected Rating() {
     	//keep protected so only called by hibernate 
@@ -28,15 +27,6 @@ public class Rating {
     public Rating(UserEntityPK key) {
        	setId(key);
      }
-    /**
-     * @hibernate.version type="long" column="lockVersion"
-     */
-    public long getLockVersion() {
-        return this.lockVersion;
-    }
-    public void setLockVersion(long lockVersion) {
-        this.lockVersion = lockVersion;
-    }
     /**
 	* @hibernate.composite-id
 	**/

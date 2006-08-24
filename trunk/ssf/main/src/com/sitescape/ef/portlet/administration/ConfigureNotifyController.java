@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Notification;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
@@ -73,11 +72,11 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			NotificationDef notify = folder.getNotificationDef();
 			model.put(WebKeys.NOTIFICATION, notify); 
-			List defaultDistribution = folder.getNotificationDef().getDefaultDistribution();
+			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();
 			Set uList = new HashSet();
 			for (int i=0; i<defaultDistribution.size(); ++i) {
-				Principal id = ((Notification)defaultDistribution.get(i)).getSendTo();
+				Principal id = ((Principal)defaultDistribution.get(i));
 				if (id.getEntityIdentifier().getEntityType().name().equals(EntityType.group.name()))
 						 gList.add(id); 
 				else uList.add(id);

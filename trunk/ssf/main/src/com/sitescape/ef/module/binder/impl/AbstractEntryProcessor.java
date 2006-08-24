@@ -69,7 +69,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	//***********************************************************************************************************	
-    public Long addEntry(final Binder binder, Definition def, Class clazz, 
+    public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
@@ -111,7 +111,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		throw new WriteFilesException(filesErrors);
         	}
         	else {
-        		return entry.getId();
+        		return entry;
         	}
         } finally {
            	cleanupFiles(fileUploadItems);       	
@@ -215,7 +215,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
  	
    //***********************************************************************************************************
-    public Long modifyEntry(final Binder binder, final Entry entry, 
+    public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, final Collection deleteAttachments)  
     		throws WriteFilesException {
 	
@@ -247,7 +247,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		throw new WriteFilesException(filesErrors);
 	    	}
 	    	else {
-	    		return entry.getId();
+	    		return;
 	    	} 
 	    }finally {
 		    cleanupFiles(fileUploadItems);

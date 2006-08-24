@@ -5,6 +5,7 @@ import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.util.InvokeUtil;
@@ -20,9 +21,9 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
 	    	doElement(element, obj);
 	    	return true;
 	    }
-	    protected boolean build(Element element, Notify notifyDef, Entry entry, String dataElemName, Map args) {
+	    protected boolean build(Element element, Notify notifyDef, DefinableEntity entity, String dataElemName, Map args) {
 		   	try {
-		   		Object obj = InvokeUtil.invokeGetter(entry, dataElemName);
+		   		Object obj = InvokeUtil.invokeGetter(entity, dataElemName);
 		    	doElement(element, obj);
 			} catch (com.sitescape.ef.util.ObjectPropertyNotFoundException ex) {
 		   		return false;

@@ -10,7 +10,7 @@ import com.sitescape.ef.domain.FileAttachment;
 public class Notify {
 	public static final String FULL="full";
 	public static final String SUMMARY="summary";
-
+	
 	protected boolean full=false;
 	protected Locale locale;
 	protected DateFormat dateFormat;

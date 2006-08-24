@@ -7,10 +7,13 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
+import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.domain.User;
 
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
@@ -92,6 +95,11 @@ public interface FolderModule {
 	public void indexFolderTree(Long folderId);
     public void indexEntries(Long folderId);
     public void setTag(Long binderId, Long entryId, String tag, boolean community);
+    
+    public void addSubscription(Long folderId, Long entryId); 
+    public void deleteSubscription(Long folderId, Long entryId);
+    public Subscription getSubscription(Long folderId, Long entryId); 
+    public void modifySubscription(Long folderId, Long entryId, Map updates); 
     
     public Map getCommonEntryElements();
 

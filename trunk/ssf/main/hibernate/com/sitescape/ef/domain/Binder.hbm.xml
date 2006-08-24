@@ -52,11 +52,11 @@
     <property name="pathName" length="1024"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
-      <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="distribution">
-        <key column="binder"/>
-        <one-to-many class="com.sitescape.ef.domain.Notification"/>
-      </bag>
-      <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+	  <bag inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
+      	<key column="binderId"/>
+ 	     <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="principalId"/>
+    	</bag>
+       <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
     </component>

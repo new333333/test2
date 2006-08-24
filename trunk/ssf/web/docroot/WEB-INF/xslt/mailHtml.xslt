@@ -7,6 +7,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:output method="html" encoding="utf-8" indent="yes"/>
 
 <xsl:param name="Lang" select="'en_US'"/>
+<xsl:param name="TOC" select="'true'"/>
 <xsl:variable name="StringFile" select="document('strings.xml')"/>
 <xsl:variable name="PrimaryLang" select="substring-before($Lang,'_')"/>
 
@@ -40,6 +41,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:template>
 
 <xsl:template match="mail">
+<xsl:if test="$TOC = 'true'">
 <xsl:if test="topFolder/@changeCount = '1'">
 <xsl:value-of select="topFolder/@changeCount"/>&nbsp;
 <xsl:call-template name="getString">
@@ -81,19 +83,20 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:for-each>
 </xsl:for-each>
 <hr size="1" color="black" noshade="true"/>
-<span style="font-family: arial, helvetica,
-  sans-serif; font-size: 13px;"><b>
-<xsl:call-template name="getString">
-  <xsl:with-param name="stringName" select="'forumLabel'"/>
-</xsl:call-template>
-:&nbsp;<xsl:value-of select="topFolder/@title"/></b></span>
-<br/><br/>
 <a href="#toc"><span style="font-family:
   arial, helvetica, sans-serif; font-size: 13px;">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'TOC'"/>
 </xsl:call-template>
 </span></a>
+<br/><br/>
+</xsl:if>
+<span style="font-family: arial, helvetica,
+  sans-serif; font-size: 13px;"><b>
+<xsl:call-template name="getString">
+  <xsl:with-param name="stringName" select="'forumLabel'"/>
+</xsl:call-template>
+:&nbsp;<xsl:value-of select="topFolder/@title"/></b></span>
 <br/>
 <xsl:for-each select="folder">
 <xsl:for-each select="folderEntry">
@@ -127,7 +130,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		</xsl:if>
 		<br/>
 		<xsl:for-each select="attribute">
-		<xsl:value-of select="@caption"/>&nbsp;
+		<b><xsl:value-of select="@caption"/></b>&nbsp;
 		<xsl:choose>
 		<xsl:when test="@type = 'selectbox'">
 			<xsl:for-each select="value">

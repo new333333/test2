@@ -15,6 +15,7 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Visits;
@@ -103,6 +104,7 @@ public interface ProfileDao {
     public SeenMap loadSeenMap(Long userId);
 	public Visits loadVisit(Long userId, EntityIdentifier entityId);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
+	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
      
     public SFQuery queryAllPrincipals(FilterControls filter, String zoneName) throws DataAccessException;
  }
