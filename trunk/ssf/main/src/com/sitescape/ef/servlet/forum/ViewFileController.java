@@ -16,6 +16,7 @@ import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 import org.springframework.web.bind.RequestUtils;
 
 public class ViewFileController extends SAbstractController {
@@ -43,12 +44,19 @@ public class ViewFileController extends SAbstractController {
 		}
 		//Set up the beans needed by the jsps
 		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
-		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
-		
-		FileAttachment fa = (FileAttachment)entity.getAttachment(fileId);
-		
+		String viewType = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
+		FileAttachment fa=null;
+		FileAttachment topAtt = (FileAttachment)entity.getAttachment(fileId);
+		if (topAtt != null) {
+			//see if we want a version
+			String versionId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_VERSION_ID); 
+			if (Validator.isNull(versionId)) {
+				fa = topAtt;
+			} else {
+				fa = topAtt.findFileVersionById(versionId);
+			}
+		}
 		if (fa != null) {
-			
 			String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 			response.setContentType(mimeTypes.getContentType(shortFileName));

@@ -31,7 +31,8 @@
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}" >
-    <ssf:param name="fileId" value="${fileVersion.id}"/>
+    <ssf:param name="fileId" value="${selection.id}"/>
+    <ssf:param name="versionId" value="${fileVersion.id}"/>
     </ssf:url>">v${fileVersion.versionNumber}</a>
 <br>
 </c:forEach>
