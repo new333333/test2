@@ -12,7 +12,7 @@ var ss_helpInstructions ="<ssf:nlt tag="help.instructions"/>";
 
 ss_helpSystem.outputHelpWelcomeHtml();
 
-var ss_helpSpotGifSrc = "<html:imagesPath/>icons/help.png";
+var ss_helpSpotGifSrc = "<html:imagesPath/>pics/help_spot.gif";
 
 </script>
 

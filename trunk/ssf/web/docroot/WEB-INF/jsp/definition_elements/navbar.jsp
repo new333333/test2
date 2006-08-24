@@ -34,8 +34,8 @@ function ss_turnOffDebugMode() {
 
 <% // Favorites link %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/favorites_button" align="bottom" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+  <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="top" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.favoritesButton"/>" showTitleFlag="show">
   <a href="javascript: ;"
   onClick="ss_showFavoritesPane();return false;"
   ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
@@ -47,8 +47,8 @@ function ss_turnOffDebugMode() {
 
 <% // My workspace %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" align="left" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="top" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>" showTitleFlag="show">
   <div id="ss_navbarMyWorkspaceButton">
   <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
     alt="<ssf:nlt tag="navigation.myWorkspace"/>" />
@@ -60,8 +60,8 @@ function ss_turnOffDebugMode() {
 
 <% // Search form %>
 <td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/search_button" align="left" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+  <ssHelpSpot helpId="personal_toolbar/search_button" valign="top" align="center" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.searchButton"/>" showTitleFlag="hide">
     <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
       alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
@@ -74,8 +74,8 @@ function ss_turnOffDebugMode() {
 
 <% // Clipboard %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/clipboard_button" align="left" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
+  <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="top" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.clipboardButton"/>" showTitleFlag="hide">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
     alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
   <br>
@@ -85,8 +85,8 @@ function ss_turnOffDebugMode() {
 
 <% // Help toggle %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/help_button" align="left" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.helpButton"/>">
+  <ssHelpSpot helpId="personal_toolbar/help_button" valign="top" offsetX="0" offsetY="0"
+    title="<ssf:nlt tag="helpSpot.helpButton"/>" showTitleFlag="hide">
   <a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
   src="<html:imagesPath/>icons/help.png" 
   alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
