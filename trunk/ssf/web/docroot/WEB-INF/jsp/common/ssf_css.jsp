@@ -27,6 +27,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_link_color" value="#009900" scope="request"/>
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
+<c:set var="ss_style_light_color" value="#999999" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
@@ -106,6 +107,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
+	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
 	
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
@@ -198,6 +200,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 .ss_gray {
   color: ${ss_style_gray_color};   
+  }
+
+.ss_light {
+  color: ${ss_style_light_color};   
   }
 
 .ss_border_light {

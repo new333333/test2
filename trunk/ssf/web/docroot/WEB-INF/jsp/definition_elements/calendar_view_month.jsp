@@ -15,9 +15,9 @@ function setFilteredEntry(id) {
    <fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
-<a href="${set_day_view}"><ssf:nlt tag="calendar.day" text="Day"/>
+<a href="${set_day_view}"><ssf:nlt tag="calendar.Day" text="Day"/>
 </a><c:out value="${delimiter}" />
-<a href="${set_week_view}"><ssf:nlt tag="calendar.week" text="Week"/></a>
+<a href="${set_week_view}"><ssf:nlt tag="calendar.Week" text="Week"/></a>
 &nbsp;&nbsp;&nbsp;
 </span>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
@@ -29,7 +29,8 @@ function setFilteredEntry(id) {
 %>
 
 <tr>
-<td width="1%" class="ss_fineprint ss_gray" align="center">week</td>
+<td width="1%" class="ss_fineprint ss_gray" align="center"><ssf:nlt 
+  tag="calendar.week" text="week"/></td>
 <c:forEach var="dayabbrev" items="${ssCalendarViewBean.dayHeaders}">
 <td width="13%" class="ss_bold" align="center">
 ${dayabbrev}</td>

@@ -30,7 +30,7 @@
     entryId="${ssDefinitionEntry.id}"/>">
 <%= docNumber %>
 <c:if test="${empty ssDefinitionEntry.title}">
-  <span class="ss_gray">
+  <span class="ss_light">
     --<ssf:nlt tag="entry.noTitle"/>--
   </span>
 </c:if>

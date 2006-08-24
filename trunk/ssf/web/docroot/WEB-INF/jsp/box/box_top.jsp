@@ -87,16 +87,21 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		  style="margin:4px 20px;"></span></div></td>
 	  </c:if>
 
-	  <td align="center" width="80%"><div align="center"
 	  <c:if test="<%= showMoveIcon %>">
-	    onMouseDown="<%= showMoveRoutine %>"
+	    <td width="35%"><div onMouseDown="<%= showMoveRoutine %>"
+	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
+	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
-	    style="margin:0px; 
-	  <c:if test="<%= showMoveIcon %>">
-	    cursor:move; 
-	  </c:if>
-	      padding:0px;"><%= title %></div></td>
+
+	  <td align="center"><div align="center"
+	    style="margin:0px; padding:0px;"><%= title %></div></td>
 	
+	  <c:if test="<%= showMoveIcon %>">
+	    <td width="35%"><div onMouseDown="<%= showMoveRoutine %>"
+	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
+	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
+	  </c:if>
+
 	  <c:if test="<%= showCloseIcon %>">
 		<td align="right" width="10%"><span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 

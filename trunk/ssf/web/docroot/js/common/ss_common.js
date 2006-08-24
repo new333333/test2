@@ -2634,6 +2634,11 @@ function ss_setFavoritesPaneSize() {
 	}
 }
 
+//Routine to configure the columns of a folder
+function ss_configureColumns(binderId) {
+	var configObj
+}
+
 function ss_dashboardInitialization() {
 	//Turn off ie's 3d table look
 	var dashboardTable = document.getElementById('ss_dashboardTable');

@@ -5,6 +5,6 @@
     folderId="${ssDefinitionEntry.id}" 
     action="view_workspace"/>">
 <c:if test="${empty ssDefinitionEntry.title}">
-    <span class="ss_gray">--no title--</span>
+    <span class="ss_light">--no title--</span>
     </c:if><c:out value="${ssDefinitionEntry.title}"/></a>
 </span></p>
