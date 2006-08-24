@@ -18,9 +18,9 @@ function setFilteredEntry(id) {
    <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
-<a href="${set_day_view}"><ssf:nlt tag="calendar.day" text="Day"/></a>
+<a href="${set_day_view}"><ssf:nlt tag="calendar.Day" text="Day"/></a>
 <c:out value="${delimiter}" />
-<a href="${set_month_view}"><ssf:nlt tag="calendar.month" text="Month"/></a>
+<a href="${set_month_view}"><ssf:nlt tag="calendar.Month" text="Month"/></a>
 &nbsp;&nbsp;&nbsp;
 </span>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>

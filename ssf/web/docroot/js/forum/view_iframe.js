@@ -133,12 +133,19 @@ function ss_startDragDiv(type) {
 	ss_divDragMoveType = type;
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
 
+	ss_divDragObj = document.getElementById('ss_showentrydiv')
     if (isNSN || isNSN6 || isMoz5) {
     } else {
         ss_divOffsetX = window.event.offsetX
         ss_divOffsetY = window.event.offsetY
+        //Search the parent tree looking for 'ss_showentrydiv', summing the offsets along the way
+        var offsetParent = window.event.srcElement.offsetParent
+        while (offsetParent != null) {
+        	if (offsetParent.id == 'ss_showentrydiv') break;
+        	ss_divOffsetX += parseInt(offsetParent.offsetLeft)
+        	offsetParent = offsetParent.offsetParent;
+        }
     }
-	ss_divDragObj = document.getElementById('ss_showentrydiv')
 	
     ss_startingToDragDiv = 1;
     if (self.document.onmousemove) ss_divDragSavedMouseMove = self.document.onmousemove;

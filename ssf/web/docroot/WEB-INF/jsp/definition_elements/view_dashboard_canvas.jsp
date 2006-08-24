@@ -77,7 +77,7 @@
 	<%
 		String ss_dashboardTitle = NLT.get("dashboard.configure");
 	%>
-	<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_smallprint ss_gray" 
+	<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_smallprint ss_light" 
 	  titleId="ss_addDashboardContent" menuClass="ss_dashboard_menu" menuWidth="300px">
 		<ul class="ss_dropdownmenu" 
 		  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">

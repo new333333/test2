@@ -41,7 +41,7 @@ function ${ssNamespace}_presenceTimout() {
 </td>
 <td align="right">
 <div id="${ssNamespace}_refreshDate">
-<span class="ss_smallprint ss_gray"><ssf:nlt 
+<span class="ss_smallprint ss_light"><ssf:nlt 
 tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" 
 type="time" /></span>
 </div>

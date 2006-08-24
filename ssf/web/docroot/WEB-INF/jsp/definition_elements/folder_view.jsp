@@ -134,5 +134,9 @@ var ss_displayStyle = "<%= displayStyle %>";
  </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>
+<div align="right">
+  <a href="#" onClick="ss_configureColumns('${ssBinder.id}');return false;">
+    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
+</div>
 </div>
 

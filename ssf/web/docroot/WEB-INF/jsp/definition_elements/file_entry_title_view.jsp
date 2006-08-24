@@ -18,6 +18,6 @@
     action="view_folder_entry"
     entryId="${ssDefinitionEntry.id}"/>">
 <c:if test="${empty ssDefinitionEntry.title}">
-    <span class="ss_gray">--<ssf:nlt tag="entry.noTitle"/>--</span>
+    <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
 </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>
 </div>
