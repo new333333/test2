@@ -18,10 +18,12 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 
 <c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
 var ss_entryWindowTop = ${ss_entryWindowTop};
 var ss_entryWindowLeft = ${ss_entryWindowLeft};
 </c:if>
 <c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+var ss_entryWindowTopOriginal = -1;
 var ss_entryWindowTop = -1;
 var ss_entryWindowLeft = -1;
 </c:if>

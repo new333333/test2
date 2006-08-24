@@ -8,7 +8,6 @@ var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;
 var ss_nextUrl = ""
-var ss_scrollTopOffset = 4;
 var ss_entryHeightHighWaterMark = 0
 	//ss_debug("init: "+ss_entryWindowLeft)
 
@@ -66,7 +65,14 @@ function ss_positionEntryDiv() {
     	ss_entryWindowLeft = parseInt(maxEntryWidth - ss_entryWindowWidth);
     }
 	if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
-		//ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+		ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+	} else if (ss_entryWindowTop > parseInt(parseInt(self.document.body.scrollTop) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
+		ss_entryWindowTop = ss_entryWindowTopOriginal;
+		if (ss_entryWindowTop < parseInt(self.document.body.scrollTop)) {
+			ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+		} else if (ss_entryWindowTop > parseInt(parseInt(self.document.body.scrollTop) + parseInt(ss_getWindowHeight()) - ss_scrollbarWidth)) {
+			ss_entryWindowTop = parseInt(self.document.body.scrollTop + ss_scrollTopOffset);
+		}
 	}
     if (ss_entryWindowLeft < 0) ss_entryWindowLeft = 0;
 
@@ -201,7 +207,7 @@ function ss_divDrag(evt) {
         } else {
             dObjLeft = evt.clientX - ss_divOffsetX;
             dObjTop = evt.clientY - ss_divOffsetY;
-    		//IE requires fix-up if wndow is scrolled
+    		//IE requires fix-up if window is scrolled
     		dObjTop += parseInt(self.document.body.scrollTop)
     		dObjLeft += parseInt(self.document.body.scrollLeft)
         }
@@ -246,6 +252,7 @@ function ss_divStopDrag(evt) {
     }
     setTimeout("ss_entryClearDrag();",100);
     ss_draggingDiv = false;
+    ss_entryWindowTopOriginal = ss_entryWindowTop;
     setTimeout("ss_saveEntryWidth(ss_entryWindowWidth, ss_entryWindowTop, ss_entryWindowLeft);", 500)
     return false
 }
