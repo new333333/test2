@@ -6,15 +6,13 @@
  */
 package com.sitescape.ef.domain;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.SPropsUtil;
 
 
 /**
@@ -58,23 +56,23 @@ public class FileAttachment extends Attachment {
     }
     
     
-    public List getFileVersions() {
+    /**
+     * Return list of versions, sorted with newest first
+     * @return
+     */
+    public Set getFileVersions() {
     	if (fileVersions == null) fileVersions=new ArrayList();
-    	return fileVersions;
+    	Set result = new TreeSet(new VersionComparator());
+    	result.addAll(fileVersions);
+    	return result;
     }
-    public void setFileVersions(Collection newVersions) {
-     	fileVersions = CollectionUtil.mergeAsSet(getFileVersions(), newVersions);
-     	for (Iterator iter=newVersions.iterator(); iter.hasNext();) {
-     		VersionAttachment v = (VersionAttachment)iter.next();
-     		v.setParentAttachment(this);
-     		v.setOwner(getOwner());
-     	}
-    }
+
     public void addFileVersion(VersionAttachment v) {
     	if (v == null) return;
     	v.setParentAttachment(this);
     	v.setOwner(getOwner());
-    	getFileVersions().add(v);
+    	if (fileVersions == null) fileVersions=new ArrayList();
+    	fileVersions.add(v);
     }
     /**
      * Remove a version attachment.  Will get deleted from persistent store
@@ -84,18 +82,19 @@ public class FileAttachment extends Attachment {
        	if (v == null) return;
     	v.setParentAttachment(null);
     	v.setOwner((AnyOwner)null);
-    	getFileVersions().remove(v);   	
+       	if (fileVersions == null) fileVersions=new ArrayList();
+        fileVersions.remove(v);   	
     }
     /**
      * Remove a version attachment with the specified number.  Will get deleted from persistent store
      * @param v
      */
    public void removeFileVersion(int versionNumber) {
-    	List vList = getFileVersions();
-    	for (int i=0; i<vList.size(); ++i) {
-    		VersionAttachment v = (VersionAttachment)vList.get(i);
+	   	if (fileVersions == null) fileVersions=new ArrayList();
+    	for (int i=0; i<fileVersions.size(); ++i) {
+    		VersionAttachment v = (VersionAttachment)fileVersions.get(i);
     		if (v.getVersionNumber() == versionNumber) {
-    			vList.remove(v);
+    			fileVersions.remove(v);
     			v.setOwner((AnyOwner)null);
     			v.setParentAttachment(null);
     			break;
@@ -104,18 +103,18 @@ public class FileAttachment extends Attachment {
     }
    
    public VersionAttachment findFileVersion(String versionName) {
-	   List vList = getFileVersions();
-	   for(int i = 0; i < vList.size(); i++) {
-		   VersionAttachment v = (VersionAttachment) vList.get(i);
-		   if(v.getVersionName().equals(versionName))
+	   if (fileVersions == null) fileVersions=new ArrayList();
+	   for(int i = 0; i < fileVersions.size(); i++) {
+		   VersionAttachment v = (VersionAttachment) fileVersions.get(i);
+		   if (v.getVersionName().equals(versionName))
 			   return v;
 	   }
 	   return null;
    }
    public VersionAttachment findFileVersionById(String versionId) {
-	   List vList = getFileVersions();
-	   for(int i = 0; i < vList.size(); i++) {
-		   VersionAttachment v = (VersionAttachment) vList.get(i);
+	   if (fileVersions == null) fileVersions=new ArrayList();
+	   for(int i = 0; i < fileVersions.size(); i++) {
+		   VersionAttachment v = (VersionAttachment) fileVersions.get(i);
 		   if(v.getId().equals(versionId))
 			   return v;
 	   }
@@ -245,6 +244,25 @@ public class FileAttachment extends Attachment {
     			// This shouldn't happen, since we are Cloneable
     			throw new InternalError();
     		}
+    	}
+    }
+    /**
+     * Order version from highest to lowest
+     * @author Janet McCann
+     *
+     */
+    public static class VersionComparator implements Comparator {
+    	public int compare(Object obj1, Object obj2) {
+    		VersionAttachment f1,f2;
+    		f1 = (VersionAttachment)obj1;
+    		f2 = (VersionAttachment)obj2;
+    				
+    		if (f1 == f2) return 0;
+    		if (f1==null) return 1;
+    		if (f2 == null) return -1;
+    		if (f1.getVersionNumber() == f2.getVersionNumber()) return 0;
+    		if (f1.getVersionNumber() > f2.getVersionNumber()) return -1;
+    		return 1;
     	}
     }
 
