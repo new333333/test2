@@ -70,6 +70,24 @@ public class ListFolderController  extends SAbstractForumController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
 					PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FOLDER_COLUMNS)) {
+			if (formData.containsKey("okBtn")) {
+				Map columns = new HashMap();
+				String[] columnNames = new String[] {"number", "title", "state", "author", "date"};
+				for (int i = 0; i < columnNames.length; i++) {
+					columns.put(columnNames[i], PortletRequestUtils.getStringParameter(request, columnNames[i], ""));
+				}
+				getProfileModule().setUserProperty(user.getId(), binderId, 
+						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, columns);
+				//Reset the column positions to the default
+			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
+			} else if (formData.containsKey("defaultBtn")) {
+				getProfileModule().setUserProperty(user.getId(), binderId, 
+						ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS, null);
+				//Reset the column positions to the default
+			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
+			}
 		}
 		response.setRenderParameters(request.getParameterMap());
 		

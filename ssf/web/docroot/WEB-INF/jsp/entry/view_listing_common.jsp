@@ -75,7 +75,7 @@ function ss_showForumEntry(url, callbackRoutine) {
 <%
 	}
 %>
-	fetch_url(url, callbackRoutine);
+	ss_fetch_url(url, callbackRoutine);
 }
 
 var ss_highlightBgColor = "${ss_folder_line_highlight_color}"

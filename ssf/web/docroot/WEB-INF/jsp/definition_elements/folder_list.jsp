@@ -7,7 +7,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_view.jsp" %>
 </c:if>
 <c:if test="${ss_folderViewStyle == 'file'}">
-<jsp:include page="/WEB-INF/jsp/definition_elements/file_library.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/file_folder_view.jsp" />
 </c:if>
 <c:if test="${ss_folderViewStyle == 'blog'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/blog.jsp" />
