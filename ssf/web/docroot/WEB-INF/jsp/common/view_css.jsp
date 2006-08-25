@@ -66,12 +66,12 @@ var ss_forumColorsCssUrl = "<ssf:url
     </ssf:url>"
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
-	document.createStyleSheet(ss_forumColorsCssUrl);
+	//document.createStyleSheet(ss_forumColorsCssUrl);
 	document.createStyleSheet(niftyCornersCssUrl);
 	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
-	ss_createStyleSheet(ss_forumColorsCssUrl);
+	//ss_createStyleSheet(ss_forumColorsCssUrl);
 	ss_createStyleSheet(niftyCornersCssUrl);
 	//ss_createStyleSheet(htmlareaCssUrl);
 }
@@ -95,7 +95,7 @@ function ss_notLoggedIn() {
 </script>
 
 <c:set var="ss_color_theme" value="debug" scope="request"/>
-<c:set var="ss_skipCssStyles" value="true" scope="request"/>
+<c:set var="ss_skipCssStyles" value="false" scope="request"/>
 <style>
 <jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />
 </style>
