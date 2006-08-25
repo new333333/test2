@@ -10,6 +10,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 // Select a color theme: "blackandwhite" or "debug"
 %>
 <c:set var="ss_color_theme" value="blackandwhite" scope="request"/>
+<c:if test="${!empty ssCssTheme}">
+  <c:set var="ss_color_theme" value="${ssCssTheme}" scope="request"/>
+</c:if>
 <%
 //Color theme: "debug"
 %>
@@ -169,6 +172,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 </c:if>
+
+<c:if test="${empty ss_skipCssStyles}">
 
 .ss_portlet_style, .ss_portlet_style * {
 <c:if test="${!empty ss_portlet_style_background_color}">
@@ -997,4 +1002,4 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 /* end of Tab div styling */
 
-
+</c:if>

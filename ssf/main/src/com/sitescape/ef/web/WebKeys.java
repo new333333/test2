@@ -39,6 +39,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
     public static final String URL_BINDER_TYPE="binderType";
+	public static final String URL_CSS_THEME="theme";
     public static final String URL_DEBUG="enableDebug";
     public static final String URL_DOWNLOAD_FILE="download";
 	public static final String URL_ENTRY_ID = "entryId";
@@ -52,7 +53,8 @@ public class WebKeys {
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
-    //Preferences
+
+	//Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.presence.user.list";
 	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.presence.group.list";
@@ -163,6 +165,7 @@ public class WebKeys {
 	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
+    public static final String CSS_THEME="ssCssTheme";
     public static final String DASHBOARD="ssDashboard";
     public static final String DASHBOARD_BEAN_MAP="beans";
     public static final String DASHBOARD_COMPONENT_ID="ssComponentId";
