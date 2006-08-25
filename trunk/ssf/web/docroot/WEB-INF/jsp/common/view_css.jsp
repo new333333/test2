@@ -60,12 +60,18 @@ var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
 var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
 //var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmleditor/htmlarea.css";
+var ss_forumColorsCssUrl = "<ssf:url
+    webPath="viewCss">
+    <ssf:param name="theme" value=""/>
+    </ssf:url>"
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
+	document.createStyleSheet(ss_forumColorsCssUrl);
 	document.createStyleSheet(niftyCornersCssUrl);
 	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
+	ss_createStyleSheet(ss_forumColorsCssUrl);
 	ss_createStyleSheet(niftyCornersCssUrl);
 	//ss_createStyleSheet(htmlareaCssUrl);
 }
@@ -89,6 +95,7 @@ function ss_notLoggedIn() {
 </script>
 
 <c:set var="ss_color_theme" value="debug" scope="request"/>
+<c:set var="ss_skipCssStyles" value="true" scope="request"/>
 <style>
 <jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />
 </style>
