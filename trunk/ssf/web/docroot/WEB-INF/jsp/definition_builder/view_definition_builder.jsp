@@ -91,7 +91,7 @@ function loadDiv(option, itemId, itemName) {
 	if (itemName != "") {url += "\&itemName=" + itemName;}
 	url += "\&rn=" + rn++
 	//alert(url)
-	fetch_url(url, loadDivCallback)
+	ss_fetch_url(url, loadDivCallback)
 }
 
 function hideDisplayDiv() {

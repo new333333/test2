@@ -37,7 +37,7 @@ function ss_showMessageInDiv(str) {
 }
 
 function ss_showForumEntry(url, callbackRoutine) {
-	fetch_url(url, callbackRoutine);
+	ss_fetch_url(url, callbackRoutine);
 }
 
 function ss_showEntryInDiv(str) {

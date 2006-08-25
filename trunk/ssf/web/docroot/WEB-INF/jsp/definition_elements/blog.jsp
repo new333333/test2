@@ -149,7 +149,7 @@ function ss_showBlogReplies(id) {
 		    	</ssf:url>"
 			url += "\&entryId=" + id
 			url += "\&rn=" + rn++
-			fetch_url(url, ss_showBlogRepliesCallback, id);
+			ss_fetch_url(url, ss_showBlogRepliesCallback, id);
 		}
 	}
 }

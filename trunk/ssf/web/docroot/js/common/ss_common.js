@@ -26,6 +26,9 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 	var isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	
+	//Random number seed (for building urls that are unique)
+	var ss_random = Math.round(Math.random()*999999);
+	
 	//zIndex map
 	var ssLightboxZ = 2000;
 	var ssHelpZ = 2000;
@@ -212,6 +215,18 @@ function ss_moveObjectToBody(obj) {
     	obj.parentNode.removeChild(obj);
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
+}
+
+//Function to create a named div in the body
+function ss_createDivInBody(divId, className) {
+	var divObj = document.getElementById(divId);
+	if (divObj == null) {
+		divObj = document.createElement("div");
+		divObj.id = divId;
+		divObj.className = className;
+		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
+	}
+	return divObj;
 }
 
 //Routines to show or hide an object
@@ -1416,7 +1431,7 @@ function setWindowHighWaterMark(divName) {
 }
 
 //Routines to support getting stuff from the server without reloading the page
-function getXMLObj() {
+function ss_getXMLObj() {
 	var req;
     // branch for native XMLHttpRequest object
     if (window.XMLHttpRequest) {
@@ -1428,19 +1443,19 @@ function getXMLObj() {
     return req;
 }
 
-function fetch_url(url, callbackRoutine, callbackData) {
+function ss_fetch_url(url, callbackRoutine, callbackData) {
 	if (url == undefined) {return}
 	if (callbackData == undefined) callbackData = "";
-	fetch_url_debug("Request to fetch url: " + url)
+	ss_fetch_url_debug("Request to fetch url: " + url)
 	var x;
-	x = getXMLObj();
+	x = ss_getXMLObj();
 	x.open("GET", url, true);
 	x.onreadystatechange = function() {
 		if (x.readyState != 4) {
 			return;
 		}
-		fetch_url_debug("status: " + x.status + ", received " + x.responseText);
-		fetch_url_debug("callbackRoutine " + callbackRoutine);
+		ss_fetch_url_debug("status: " + x.status + ", received " + x.responseText);
+		ss_fetch_url_debug("callbackRoutine " + callbackRoutine);
         if (x.status == 200) {
         	callbackRoutine(x.responseText, callbackData)        	
         } else {
@@ -1450,11 +1465,11 @@ function fetch_url(url, callbackRoutine, callbackData) {
         }
 	}
 	x.send(null);
-	fetch_url_debug(" waiting... url = " + url);
+	ss_fetch_url_debug(" waiting... url = " + url);
 	delete x;
 }                
 
-function fetch_url_debug(str) {
+function ss_fetch_url_debug(str) {
     //ss_debug(str);
 }
 
@@ -2252,7 +2267,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 		url += "\&_scope=" + formObj._scope.value;
 	}
 	url += "\&rn=" + ss_dbrn++
-	if (callbackRoutine != "") fetch_url(url, callbackRoutine, divId);
+	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, divId);
 }
 function ss_showComponentCallback(s, divId) {
 	var targetDiv = document.getElementById(divId);
@@ -2639,8 +2654,35 @@ function ss_setFavoritesPaneSize() {
 }
 
 //Routine to configure the columns of a folder
-function ss_configureColumns(binderId) {
-	var configObj
+function ss_configureColumns(obj, binderId) {
+	url = obj.href
+	url = ss_replaceSubStr(url, 'ss_randomNumberPlaceholder', ss_random++)
+	divId = 'ss_folder_column_menu';
+	var divObj = ss_createDivInBody(divId, 'ss_popupMenu');
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	divObj.style.visibility = "hidden";
+	
+	ss_fetch_url(url, ss_configureColumnsCallback, divId);
+}
+function ss_configureColumnsCallback(s, divId) {
+	var targetDiv = document.getElementById(divId);
+	if (targetDiv) {
+		ss_debug(s)
+		targetDiv.innerHTML = s;
+		targetDiv.style.display = "block";
+		var x = parseInt(ss_getWindowWidth() / 2);
+		var y = parseInt(ss_getWindowHeight() / 2);
+		x = parseInt(x - ss_getObjectWidth(targetDiv) / 2)
+		y = parseInt(y - ss_getObjectHeight(targetDiv) / 2)
+		targetDiv.style.left = x;
+		targetDiv.style.top = y;
+		targetDiv.style.visibility = "visible";
+		//Signal that the layout changed
+		if (ssf_onLayoutChange) ssf_onLayoutChange();
+	}
+}
+function ss_configureColumnsSetActionUrl(formObj) {
+	formObj.action = ss_saveFolderColumnsUrl;
 }
 
 function ss_dashboardInitialization() {

@@ -98,6 +98,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
       
+    public static final String FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
     public static final String FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
     public static final String FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
@@ -125,6 +126,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT = "save_dashboard_layout";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_WIDTH = "save_entry_width";
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
+	public static final String FORUM_OPERATION_SAVE_FOLDER_COLUMNS = "save_folder_columns";
 	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
 	public static final String FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String FORUM_OPERATION_SHOW_HELP_PANEL = "show_help_panel";
@@ -219,6 +221,7 @@ public class WebKeys {
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
     public static final String FOLDER = "ssFolder";
+    public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
     public static final String FOLDER_DEFINTION_MAP="ssFolderDefinitionMap";
     public static final String FOLDER_ENTRY_WIDTH="folderEntryWidth";

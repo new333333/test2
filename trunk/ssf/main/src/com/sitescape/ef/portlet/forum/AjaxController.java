@@ -96,12 +96,14 @@ public class AjaxController  extends SAbstractController {
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			
-			//Check for calls from "fetch_url" (which don't output in xml format)
+			//Check for calls from "ss_fetch_url" (which don't output in xml format)
 			if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
+				return new ModelAndView("forum/fetch_url_return", model);
+			} else if(op.equals(WebKeys.FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -154,6 +156,9 @@ public class AjaxController  extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
 			return ajaxSaveColumnPositions(request, response, context);
+			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
+			return ajaxConfigureFolderColumns(request, response, context);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
 			return ajaxSaveEntryWidth(request, response, context);
@@ -339,6 +344,21 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/save_column_positions_return", model);
+	}
+	
+	private ModelAndView ajaxConfigureFolderColumns(RenderRequest request, 
+			RenderResponse response, Map context) throws Exception {
+		Map model = (Map) context.get("model");
+		Map statusMap = (Map) context.get("statusMap");
+		model.put(WebKeys.AJAX_STATUS, statusMap);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(binderId));
+		Map columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+		model.put(WebKeys.FOLDER_COLUMNS, columns);
+
+		return new ModelAndView("forum/configure_folder_columns_return", model);
 	}
 	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 

@@ -1,7 +1,6 @@
 <% // Folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
-<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
 <%
 	String displayStyle = ssUser.getDisplayStyle();
@@ -154,8 +153,23 @@ var ss_displayStyle = "<%= displayStyle %>";
 </c:forEach>
 </ssf:slidingTable>
 <div align="right">
-  <a href="#" onClick="ss_configureColumns('${ssBinder.id}');return false;">
+  <a href="<ssf:url
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="configure_folder_columns" />
+	<ssf:param name="binderId" value="${ssBinder.id}" />
+	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
+<script type="text/javascript">
+var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="operation" value="save_folder_columns"/>
+		</portlet:actionURL>";
+</script>
 </div>
 </div>
 
