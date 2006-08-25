@@ -173,7 +173,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 </c:if>
 
-<c:if test="${empty ss_skipCssStyles}">
+<c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
 
 .ss_portlet_style, .ss_portlet_style * {
 <c:if test="${!empty ss_portlet_style_background_color}">
