@@ -88,6 +88,7 @@ public class AddFolderController extends SAbstractController {
 					if (result.isEmpty()) {
 						result.add(getBinderModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
 					}
+					model.put(WebKeys.CONFIGURATIONS, result);
 				} else {
 					getFolderModule().checkAddFolderAllowed((Folder)binder);
 					List result = getBinderModule().getConfigurations(Definition.FOLDER_VIEW);

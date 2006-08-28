@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
@@ -92,37 +93,40 @@ public class AccessUtils  {
       }     	
 	
 	public static void readCheck(Entry entry) throws AccessControlException {
+		readCheck(RequestContextHolder.getRequestContext().getUser(), entry);
+	}
+	public static void readCheck(User user, Entry entry) throws AccessControlException {
     	if (entry instanceof WorkflowSupport)
-    		readCheck(entry.getParentBinder(), (WorkflowSupport)entry);
+    		readCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
     	else 
-    		readCheck(entry.getParentBinder(), (Entry)entry);
+    		readCheck(user, entry.getParentBinder(), (Entry)entry);
     		
    }
-	public static void readCheck(Binder binder, Entry entry) {
+	private static void readCheck(User user, Binder binder, Entry entry) {
        	try {
-       		getAccessManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-       		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
-    				getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_READ);
+       		if (user.getId().equals(entry.getCreation().getPrincipal())) 
+    				getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
        		else throw ex;
        	}
     }
-    public static void readCheck(Binder binder, WorkflowSupport entry) {
+    private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
 		if (!entry.hasAclSet()) {
-	       	readCheck(binder, (Entry)entry);
+	       	readCheck(user, binder, (Entry)entry);
 	    } else {         	
 	       	//entry has a workflow
 	       	//see if owner can read
 	       	if (entry.checkOwner(AccessType.READ)) {
-	    	   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+	    	   if (user.getId().equals(entry.getCreatorId())) {
 	    		   if (binder.isWidenRead()) return;
-	    		   if (getAccessManager().testOperation(binder, WorkAreaOperation.CREATOR_READ)) return;
+	    		   if (getAccessManager().testOperation(user, binder, WorkAreaOperation.CREATOR_READ)) return;
 	    	   }
 	       }
 		    //see if folder default is enabled.
 	       if (entry.checkWorkArea(AccessType.READ)) {
 	    	   try {
-	    		   getAccessManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES); 
+	    		   getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES); 
 	           		return;
 	    	   } catch (OperationAccessControlException ex) {
 	    		   //at this point we can stop if workflow cannot widen access
@@ -130,44 +134,47 @@ public class AccessUtils  {
 	    	   }
 	       }
 	       //if fails this test exception is thrown
-	       getAccessManager().checkAcl(binder, entry, AccessType.READ, false, false);
+	       getAccessManager().checkAcl(user, binder, entry, AccessType.READ, false, false);
 	       if (binder.isWidenRead()) return;
 	       //make sure acl list is sub-set of binder access
-	       		getAccessManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);     	   
-	       }
+	       	getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);     	   
+	    }
 	}
     public static void modifyCheck(Entry entry) throws AccessControlException {
-    	if (entry instanceof WorkflowSupport)
-    		modifyCheck(entry.getParentBinder(), (WorkflowSupport)entry);
+		modifyCheck(RequestContextHolder.getRequestContext().getUser(), entry);
+    }
+    public static void modifyCheck(User user, Entry entry) throws AccessControlException {
+		if (entry instanceof WorkflowSupport)
+    		modifyCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
     	else 
-    		modifyCheck(entry.getParentBinder(), (Entry)entry);
+    		modifyCheck(user, entry.getParentBinder(), (Entry)entry);
     		
    }
-    public static void modifyCheck(Binder binder, Entry entry) {
+    private static void modifyCheck(User user, Binder binder, Entry entry) {
        	try {
-       		getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);
+       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
-      			getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_MODIFY);
+      		if (user.getId().equals(entry.getCreation().getPrincipal())) 
+      			getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
       		else throw ex;
       	}
     }
-     public static void modifyCheck(Binder binder, WorkflowSupport entry) {
+     private static void modifyCheck(User user, Binder binder, WorkflowSupport entry) {
         if (!entry.hasAclSet()) {
-        	modifyCheck(binder, (Entry)entry);
+        	modifyCheck(user, binder, (Entry)entry);
         } else {         	
         	//entry has a workflow
         	//see if owner can modify
         	if (entry.checkOwner(AccessType.WRITE)) {
-    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    		   if (user.getId().equals(entry.getCreatorId())) {
     			   if (binder.isWidenModify()) return;
-    			   if (getAccessManager().testOperation(binder, WorkAreaOperation.CREATOR_MODIFY)) return;
+    			   if (getAccessManager().testOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY)) return;
     		   }
     	   }
 		    //see if folder default is enabled.
     	   if (entry.checkWorkArea(AccessType.WRITE)) {
     		   try {
-    			   getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES); 
+    			   getAccessManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES); 
     	       		return;
     		   } catch (OperationAccessControlException ex) {
     			   //at this point we can stop if workflow cannot widen access
@@ -175,10 +182,10 @@ public class AccessUtils  {
     		   }
     	   }
     	   //if fail this test exception is thrown
-    	   getAccessManager().checkAcl(binder, (AclControlled)entry, AccessType.WRITE, false, false);
+    	   getAccessManager().checkAcl(user, binder, (AclControlled)entry, AccessType.WRITE, false, false);
     	   if (binder.isWidenModify()) return;
     	   //make sure acl list is sub-set of binder access
-    	   		getAccessManager().checkOperation(binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
+    	   getAccessManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
         }    	
     }
      public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
@@ -224,37 +231,40 @@ public class AccessUtils  {
          throw new AclAccessControlException(user.getName(), type); 
      }
      public static void deleteCheck(Entry entry) throws AccessControlException {
+    	 deleteCheck(RequestContextHolder.getRequestContext().getUser(), entry);
+     }
+     public static void deleteCheck(User user, Entry entry) throws AccessControlException {
      	if (entry instanceof WorkflowSupport)
-     		deleteCheck(entry.getParentBinder(), (WorkflowSupport)entry);
+     		deleteCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
      	else 
-     		deleteCheck(entry.getParentBinder(), (Entry)entry);
+     		deleteCheck(user, entry.getParentBinder(), (Entry)entry);
      		
     }
-    public static void deleteCheck(Binder binder, Entry entry) throws AccessControlException {
+    private static void deleteCheck(User user, Binder binder, Entry entry) throws AccessControlException {
       	try {
-       		getAccessManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);
+       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.DELETE_ENTRIES);
        	} catch (OperationAccessControlException ex) {
-      		if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreation().getPrincipal())) 
-   				getAccessManager().checkOperation(binder, WorkAreaOperation.CREATOR_DELETE);
+      		if (user.getId().equals(entry.getCreation().getPrincipal())) 
+   				getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
       		else throw ex;
       	}   
     }
-    public static void deleteCheck(Binder binder, WorkflowSupport entry)  throws AccessControlException {
+    private static void deleteCheck(User user, Binder binder, WorkflowSupport entry)  throws AccessControlException {
         if (!entry.hasAclSet()) {
-        	deleteCheck(binder, (Entry)entry);
+        	deleteCheck(user, binder, (Entry)entry);
         } else {         	
         	//entry has a workflow
         	//see if owner can delete
         	if (entry.checkOwner(AccessType.DELETE)) {
-    		   if (RequestContextHolder.getRequestContext().getUser().getId().equals(entry.getCreatorId())) {
+    		   if (user.getId().equals(entry.getCreatorId())) {
     			   if (binder.isWidenDelete()) return;
-    			   if (getAccessManager().testOperation(binder, WorkAreaOperation.CREATOR_DELETE)) return;
+    			   if (getAccessManager().testOperation(user, binder, WorkAreaOperation.CREATOR_DELETE)) return;
     		   }
     	   }
 		    //see if folder default is enabled.
     	   if (entry.checkWorkArea(AccessType.DELETE)) {
     		   try {
-    			   getAccessManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES); 
+    			   getAccessManager().checkOperation(user, binder, WorkAreaOperation.DELETE_ENTRIES); 
     	       		return;
     		   } catch (OperationAccessControlException ex) {
     			   //at this point we can stop if workflow cannot widen access
@@ -262,10 +272,10 @@ public class AccessUtils  {
     		   }
     	   }
     	   //if fails this test exception is thrown
-    	   getAccessManager().checkAcl(binder, entry, AccessType.DELETE, false, false);
+    	   getAccessManager().checkAcl(user, binder, entry, AccessType.DELETE, false, false);
     	   if (binder.isWidenDelete()) return;
     	   //make sure acl list is sub-set of binder access
-    	   getAccessManager().checkOperation(binder, WorkAreaOperation.DELETE_ENTRIES);     	   
+    	   getAccessManager().checkOperation(user, binder, WorkAreaOperation.DELETE_ENTRIES);     	   
         }    	
     }
    	    

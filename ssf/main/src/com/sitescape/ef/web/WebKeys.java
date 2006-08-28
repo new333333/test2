@@ -76,7 +76,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_WS_LISTING = "view_ws_listing";
 	public static final String ACTION_VIEW_FOLDER_ENTRY = "view_folder_entry";
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
-	public static final String FORUM_AJAX_REQUEST = "__ajax_request";
+	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_NOTIFY_CONFIGURE="configure_notify";
 	public static final String ACTION_POSTING_CONFIGURE="configure_posting";
@@ -144,6 +144,8 @@ public class WebKeys {
 	public static final String OPERATION_POSTING_ALIASES="alias";
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
+	public static final String OPERATION_SUBSCRIBE="subscribe";
+    public static final String OPERATION_UNSUBSCRIBE="unsubscribe";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";

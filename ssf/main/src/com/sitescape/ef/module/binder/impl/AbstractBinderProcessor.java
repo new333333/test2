@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.Term;
-import org.dom4j.Document;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -17,8 +16,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -28,7 +25,6 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -37,8 +33,8 @@ import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.pipeline.Conduit;
@@ -50,8 +46,6 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.util.Validator;
 /**
  *
  * 

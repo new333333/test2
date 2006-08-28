@@ -1,5 +1,11 @@
 package com.sitescape.ef.portlet.forum;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -7,18 +13,11 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
@@ -26,7 +25,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
  * @author Peter Hurley
  *
  */
-public class ModifyEntryController extends SAbstractForumController {
+public class ModifyEntryController extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
@@ -91,7 +90,6 @@ public class ModifyEntryController extends SAbstractForumController {
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
-		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map model = new HashMap();	
@@ -105,18 +103,14 @@ public class ModifyEntryController extends SAbstractForumController {
 			model.put(WebKeys.BINDER, entry.getParentFolder());
 			path = WebKeys.VIEW_MOVE_ENTRY;
 		} else {
-			try {
-				Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
-				entry  = getFolderModule().getEntry(folderId, entryId);
+			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+			entry  = getFolderModule().getEntry(folderId, entryId);
 				
-				model.put(WebKeys.ENTRY, entry);
-				model.put(WebKeys.FOLDER, entry.getParentFolder());
-				model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-				DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
-				path = WebKeys.VIEW_MODIFY_ENTRY;
-			} catch (NoDefinitionByTheIdException nd) {
-				return returnToViewForum(request, response, formData, folderId);
-			}
+			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.FOLDER, entry.getParentFolder());
+			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
+			path = WebKeys.VIEW_MODIFY_ENTRY;
 		} 
 			
 		return new ModelAndView(path, model);

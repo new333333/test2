@@ -125,7 +125,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			User u = (User)iter.next();
 			if (!Validator.isNull(u.getEmailAddress())) {
 				try {
-					AccessUtils.readCheck(entry);
+					AccessUtils.readCheck(u, entry);
 					checkList.add(u);
 				} catch (Exception ex) {};
 			}
@@ -740,7 +740,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				WorkflowControlledEntry e = (WorkflowControlledEntry)iter.next();
 //TODO: this isn't accounting for the binder override
 				try {
-					AccessUtils.readCheck(e);
+					AccessUtils.readCheck(user, e);
 					this.entries.add(e);
 				} catch (Exception ex) {};
 			}

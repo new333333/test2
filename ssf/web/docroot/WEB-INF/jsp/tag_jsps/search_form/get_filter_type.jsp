@@ -1,27 +1,10 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <%@ page contentType="text/xml" %>
-<%@ page import="java.util.Map" %>
-<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
+<taconite-root xml:space="preserve">
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
-<taconite-root>
-<%
-	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
-%>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message">
-		  <script type="text/javascript">
-		    if (self.ss_notLoggedIn) self.ss_notLoggedIn();
-		  </script>
-		</div
-	</taconite-replace>
-<%
-	} else {
-%>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
-	</taconite-replace>
-
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 	<taconite-replace contextNodeID="entryList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div id="entryList<c:out value="${ss_filterTermNumber}"/>" 
 	style="display:inline;">
@@ -62,7 +45,5 @@
 	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	style="visibility:visible; display:inline;">
 	 </div></taconite-replace>
-<%
-	}
-%>	
+</c:if>
 </taconite-root>

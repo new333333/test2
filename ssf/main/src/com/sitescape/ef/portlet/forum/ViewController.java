@@ -52,7 +52,7 @@ public class ViewController  extends SAbstractController {
 		String pName = pConfig.getPortletName();
 		if ("ss_forum".equals(pName) || Validator.isNull(pName)) {
 			//Build the toolbar and add it to the model
-			buildForumToolbar(model);
+			buildForumToolbar(response.getNamespace(), model);
 		
 			//This is the portlet view; get the configured list of folders to show
 			String[] preferredBinderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
@@ -143,14 +143,15 @@ public class ViewController  extends SAbstractController {
 	}
 
 
-	protected void buildForumToolbar(Map<String,Object> model) {
+	protected void buildForumToolbar(String prefix, Map<String,Object> model) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 
 		//The "Show unseen" menu
 		String url = "javascript: ;";
 		Map<String,Object> qualifiers = new HashMap<String,Object>();
-		qualifiers.put("onClick", "if (ss_getUnseenCounts) {ss_getUnseenCounts()};return false;");
+		String name= prefix + "_getUnseenCounts";
+		qualifiers.put("onClick", "if (" + name+ ") {" + name + "()};return false;");
 		toolbar.addToolbarMenu("1_showunseen", NLT.get("toolbar.showUnseen"), url, qualifiers);
 
 		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
