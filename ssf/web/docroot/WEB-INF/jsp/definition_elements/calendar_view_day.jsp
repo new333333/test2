@@ -11,7 +11,7 @@ function setFilteredEntry(id) {
 <table border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
 <tr class="ss_toolbar_color">
 <td colspan="2"><span>
-<fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
+<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
 <a href="${set_week_view}"><ssf:nlt tag="calendar.Week" text="Week"/></a>

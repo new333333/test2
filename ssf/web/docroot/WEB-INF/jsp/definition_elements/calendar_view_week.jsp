@@ -15,7 +15,7 @@ function setFilteredEntry(id) {
 <td colspan="2">
 <span>
 <ssf:nlt tag="calendar.begining" text="Week beginning"/>
-   <fmt:formatDate value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
+   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
 <a href="${set_day_view}"><ssf:nlt tag="calendar.Day" text="Day"/></a>

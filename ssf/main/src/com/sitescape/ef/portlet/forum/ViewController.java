@@ -20,6 +20,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Workspace;
@@ -98,12 +99,12 @@ public class ViewController  extends SAbstractController {
 	 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION);
 	 		//if action in the url, assume this is an ajax update call
 	 		if (!Validator.isNull(action)) {
-				Map statusMap = new HashMap();
-				model.put(WebKeys.AJAX_STATUS, statusMap);	
 				model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
 				model.put(WebKeys.DASHBOARD_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_ID, ""));
 				response.setContentType("text/xml");
 	 			if (!WebHelper.isUserLoggedIn(request)) {
+					Map statusMap = new HashMap();
+					model.put(WebKeys.AJAX_STATUS, statusMap);	
 	 				
 	 				//Signal that the user is not logged in. 
 	 				//  The code on the calling page will output the proper translated message.
@@ -115,7 +116,8 @@ public class ViewController  extends SAbstractController {
 	 				model.put(WebKeys.USERS, getProfileModule().getUsers(p));
 	 				p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groupList"));
 	 				model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
-					return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
+	 				model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+	 				return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
 	 			}
 			} else {
 	 			Set ids = new HashSet();		

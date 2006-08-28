@@ -42,7 +42,7 @@ function ${ssNamespace}_presenceTimout() {
 <td align="right">
 <div id="${ssNamespace}_refreshDate">
 <span class="ss_smallprint ss_light"><ssf:nlt 
-tag="presence.last.refresh"/> <fmt:formatDate value="<%= new java.util.Date() %>" 
+tag="presence.last.refresh"/> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= new java.util.Date() %>" 
 type="time" /></span>
 </div>
 </td>
