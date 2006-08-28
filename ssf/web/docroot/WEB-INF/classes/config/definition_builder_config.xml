@@ -993,7 +993,7 @@
 			</property>
 		</properties>
 		<options>
-			<option name="folderTitleView" initial="true" />
+			<option name="folderTitleView" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
@@ -1486,7 +1486,7 @@
 		</operations>
 
 		<options>
-			<option name="profileTitle" caption="__profile_title" initial="true" />
+			<option name="profileTitle" caption="__profile_title" />
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
@@ -1586,7 +1586,7 @@
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
-			<option name="workspaceTitleView" initial="true" />
+			<option name="workspaceTitleView" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
@@ -1701,7 +1701,7 @@
 			</property>
 		</properties>
 		<options>
-			<option name="folderTitleView" initial="true" />
+			<option name="folderTitleView" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
 			<option name="folderDataItem" caption="__folder_data_item" 
