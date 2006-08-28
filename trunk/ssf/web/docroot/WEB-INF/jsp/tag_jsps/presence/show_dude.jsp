@@ -48,7 +48,7 @@
     '<%= presenceUserTitle %>', 
     '${ss_presence_userStatus}', 
     '<%= presenceUserZonName %>', 
-    '<fmt:formatDate value="${ss_presence_sweep_time}" type="both" pattern="EEEE, HH:mm" />', 
+    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}');return false;"

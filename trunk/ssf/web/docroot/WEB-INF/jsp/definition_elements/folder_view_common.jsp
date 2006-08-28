@@ -170,9 +170,9 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
   
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn>
-    <span <%= seenStyle %>><fmt:formatDate 
+    <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._modificationDate}" type="both" 
-	 pattern="dd MMMM yyyy, HH:mm" /> GMT</span>
+	 timeStyle="short" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
  </c:if>
 </ssf:slidingTableRow>

@@ -40,9 +40,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 <br>
 <span class="ss_italic ss_smallprint">
-<fmt:formatDate 
+<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
-	 pattern="dd MMMM yyyy, HH:mm" />
+	 timeStyle="short" dateStyle="medium" />
  by <c:out value="${ssDefinitionEntry.creation.principal.title}"/>
 </span>
 <br>

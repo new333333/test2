@@ -54,21 +54,22 @@ public class User extends Principal {
     }
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
-		if ((timeZoneName == null) || timeZoneName.length() ==0) {
+		if (Validator.isNull(timeZoneName)) {
 			timeZone = TimeZone.getDefault();
 		} else {
 			timeZone = TimeZone.getTimeZone(timeZoneName);
 		}
 		return timeZone;
+	
 	}
 
 	public String getTitle() {
 		// title is set by hibernate access=field
 		//title is only kept in the db for sql queries
 		String val = super.getTitle();
-    	if (!Validator.isNull(val)) return val;
+    	if (Validator.isNotNull(val)) return val;
     	val = setupTitle();
-    	if (!Validator.isNull(val)) return val;
+    	if (Validator.isNotNull(val)) return val;
     	return getName();		
 	}
 	public void setTitle(String title) {
@@ -78,11 +79,11 @@ public class User extends Principal {
     	String val;
     	StringBuffer tBuf = new StringBuffer();
     	val = getFirstName();
-    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	val = getMiddleName();
-    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	val = getLastName();
-    	if (!Validator.isNull(val)) tBuf.append(val + " ");
+    	if (Validator.isNotNull(val)) tBuf.append(val + " ");
     	return tBuf.toString().trim();
     	
     }
