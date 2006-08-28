@@ -473,6 +473,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(parent.getParentBinder())); // Just for testing
     	if (parent instanceof WorkflowSupport)
     		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
     			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);    			
