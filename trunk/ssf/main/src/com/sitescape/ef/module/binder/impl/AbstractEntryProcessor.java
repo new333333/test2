@@ -615,7 +615,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 
     protected int getBinderEntries_maxEntries(int maxChildEntries) {
-        if (maxChildEntries == 0) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
+        if (maxChildEntries == 0 || maxChildEntries == Integer.MAX_VALUE) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
         return maxChildEntries;
     }
      
