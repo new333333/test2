@@ -109,7 +109,7 @@ public class SeenMap {
      		    ret = true;
     		}
     	} else {
-    		if (seen.compareTo(modDate) > 0) {
+    		if (seen.compareTo(modDate) >= 0) {
     			ret = true; 
     		}
     	}
