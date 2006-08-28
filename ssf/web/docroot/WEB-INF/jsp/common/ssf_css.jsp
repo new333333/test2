@@ -4,6 +4,9 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
+<c:if test="${!empty ss_skipCssStyles && ss_skipCssStyles == true}">
+<%@ page contentType="text/css" %>
+</c:if>
 
 <%
 // Color values used in ss styles, highlighting, borders, and headers

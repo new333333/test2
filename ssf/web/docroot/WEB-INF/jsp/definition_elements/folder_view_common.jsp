@@ -26,6 +26,11 @@
 %>
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle %>";
+var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="operation" value="save_folder_columns"/>
+		</portlet:actionURL>";
 </script>
 
 <div class="ss_folder">
@@ -33,6 +38,25 @@ var ss_displayStyle = "<%= displayStyle %>";
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
 <div style="margin:0px;">
+<%
+	if (ssUser.getDisplayStyle() != null && 
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+%>
+<div align="right" style="margin:0px 4px 0px 0px;">
+  <a href="<ssf:url
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="configure_folder_columns" />
+	<ssf:param name="binderId" value="${ssBinder.id}" />
+	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
+    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
+</div>
+<%
+	}
+%>
 <div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
@@ -113,7 +137,9 @@ var ss_displayStyle = "<%= displayStyle %>";
     folderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
+    onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
+    onMouseOver="ss_showTitleOptions(this, '${entry1._docId}');"
+    onMouseOut="ss_hideTitleOptions(this, '${entry1._docId}');"
     ><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
@@ -152,6 +178,10 @@ var ss_displayStyle = "<%= displayStyle %>";
 </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>
+<%
+	if (ssUser.getDisplayStyle() == null || 
+	        !ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+%>
 <div align="right">
   <a href="<ssf:url
 	adapter="true" 
@@ -163,13 +193,9 @@ var ss_displayStyle = "<%= displayStyle %>";
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
-<script type="text/javascript">
-var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
-		<portlet:param name="action" value="${action}"/>
-		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		<portlet:param name="operation" value="save_folder_columns"/>
-		</portlet:actionURL>";
-</script>
 </div>
+<%
+	}
+%>
 </div>
 

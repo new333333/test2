@@ -26,6 +26,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
@@ -135,10 +136,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 //		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildWorkspaceToolbar(req, response, ws, ws.getId().toString()).getToolbar());
+		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
 		
 	}  
-	protected Toolbar buildWorkspaceToolbar(RenderRequest request, RenderResponse response, Workspace workspace, String forumId) {
+	protected void buildWorkspaceToolbar(RenderRequest request, 
+			RenderResponse response, Map model, Workspace workspace, 
+			String forumId) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu
@@ -229,7 +232,25 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
 		} catch (AccessControlException ac) {};
 		
-		return toolbar;
+		//	The "Add penlets" menu
+		Map qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_addDashboardComponents();return false;");
+		toolbar.addToolbarMenu("4_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+
+		//The "Footer" menu
+		//RSS link 
+		Toolbar footerToolbar = new Toolbar();
+		footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), UrlUtil.getFeedURL(request, forumId));
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
+		
+		footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
+		
+		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 	}
 		
 	public static class WsTreeBuilder implements DomTreeBuilder {

@@ -52,6 +52,7 @@ var ss_saveColumnPositionsUrl = "<ssf:url
 	<ssf:param name="binderId" value="<%= slidingTableFolderId %>" />
 	</ssf:url>"
 </script>
+<script type="text/javascript" src="<html:rootPath/>js/sliding_table/sliding_table_common.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/sliding_table/sliding_table.js"></script>
 <script type="text/javascript">
 <%
