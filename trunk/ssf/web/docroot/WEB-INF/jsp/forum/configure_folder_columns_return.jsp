@@ -1,13 +1,11 @@
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<%@ page import="java.util.Map" %>
-<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
-<%
-	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
-%>
+
+<c:choose>
+<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 <span><ssf:nlt tag="general.notLoggedIn"/></span>
-<%
-	} else {
-%>
+</c:when>
+<c:otherwise>
+
 <c:set var="numberChecked" value=""/>
 <c:if test="${!empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
@@ -42,6 +40,5 @@
 </div>
 </form>
 </div>
-<%
-	}
-%>	
+</c:otherwise>
+</c:choose>

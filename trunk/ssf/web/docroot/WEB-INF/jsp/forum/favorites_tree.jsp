@@ -1,24 +1,11 @@
 <% // Favorites tree %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
+<%@ page contentType="text/xml" %>
 <taconite-root xml:space="preserve">
-<%
-	if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
-%>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
-	</taconite-replace>
-<%
-	} else {
-%>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
-	</taconite-replace>
-<%
-	}
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
-%>
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 	<taconite-replace-children contextNodeID="ss_favorites" parseInBrowser="true">
 
 <div style="margin:2px;">
@@ -56,5 +43,5 @@
 </div>
 
 	</taconite-replace-children>
-
+</c:if>
 </taconite-root>

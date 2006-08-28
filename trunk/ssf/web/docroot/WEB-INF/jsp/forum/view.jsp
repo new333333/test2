@@ -18,7 +18,7 @@
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
-<div id="ss_showfolder" class="ss_portlet_style ss_portlet">
+<div class="ss_portlet_style ss_portlet">
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
@@ -26,11 +26,6 @@
 <c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
 </c:if>
-<script type="text/javascript">
-function ss_showNotLoggedInMsg() {
-	alert(ss_not_logged_in);
-}
-</script>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -52,7 +47,7 @@ function ss_showNotLoggedInMsg() {
 					<c:forEach var="folder" items="${ssFolderList}">
 					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
 					  <tr>
-					  <td><span id="count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
+					  <td><span id="<portlet:namespace/>_count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td>
 						<a href="<portlet:renderURL windowState="maximized">
@@ -79,10 +74,10 @@ function ss_showNotLoggedInMsg() {
 </div>
 <script type="text/javascript">
 var count = 0
-function ss_getUnseenCounts() {
+function <portlet:namespace/>_getUnseenCounts() {
 	ss_setupStatusMessageDiv()
 	<c:forEach var="folder" items="${ssFolderList}">
-		document.getElementById("count_<c:out value="${folder.id}"/>").style.color = "silver";
+		document.getElementById("<portlet:namespace/>_count_<c:out value="${folder.id}"/>").style.color = "silver";
 	</c:forEach>
 	var url = "<ssf:url 
     	adapter="true" 
@@ -92,26 +87,19 @@ function ss_getUnseenCounts() {
 		<ssf:param name="operation" value="unseen_counts" />
     	</ssf:url>"
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addFormElements("unseenCountForm")
+	ajaxRequest.addFormElements("<portlet:namespace/>_unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);
 	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_preRequest(obj) {
-	alert('preRequest: ' + obj.getQueryString());
-}
-function ss_postRequest(obj) {
-	//alert('postRequest: ' + obj.getXMLHttpRequestObject().responseText);
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		if (self.ss_showNotLoggedInMsg) self.ss_showNotLoggedInMsg();
-	}
-}
+
+
 </script>
-<form class="ss_portlet_style ss_form" id="unseenCountForm" style="display:none;">
+<form class="ss_portlet_style ss_form" id="<portlet:namespace/>_unseenCountForm" style="display:none;">
 <input type="hidden" name="forumList" value="<%= folderIdList %>">
+<input type="hidden" name="ssNamespace" value="<portlet:namespace/>">
 </form>
 
 

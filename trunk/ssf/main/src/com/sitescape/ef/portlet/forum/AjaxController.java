@@ -39,7 +39,10 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.portlet.forum.SAbstractForumController.TreeBuilder;
+import com.sitescape.ef.portlet.forum.ListFolderController.TreeBuilder;
+
+import com.sitescape.util.Validator;
+
 /**
  * @author Peter Hurley
  *
@@ -51,17 +54,17 @@ public class AjaxController  extends SAbstractController {
 			Map formData = request.getParameterMap();
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
-				ajaxSaveColumnPositions(request, response, formData);
+				ajaxSaveColumnPositions(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER)) {
-				ajaxAddFavoriteBinder(request, response, formData);
+				ajaxAddFavoriteBinder(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY)) {
-				ajaxAddFavoritesCategory(request, response, formData);
+				ajaxAddFavoritesCategory(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
-				ajaxSaveFavorites(request, response, formData);
+				ajaxSaveFavorites(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
-				ajaxSaveRating(request, response, formData);
+				ajaxSaveRating(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT)) {
-				ajaxSaveDashboardLayout(request, response, formData);
+				ajaxSaveDashboardLayout(request, response);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
 				ajaxShowHideAllDashboardComponents(request, response);
@@ -69,27 +72,17 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				ajaxChangeDashboardComponent(request, response);
-			}
+			} 
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		Map unseenCounts = new HashMap();
-		Map statusMap = new HashMap();
-		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 
-		Map context = new HashMap();
-		context.put("model", model);
-		context.put("unseenCounts", unseenCounts);
-		context.put("statusMap", statusMap);
-		context.put("formData", formData);
-		context.put("op", op);
-		context.put("op2", op2);
-
 		if (!WebHelper.isUserLoggedIn(request)) {
+			Map model = new HashMap();
+			Map statusMap = new HashMap();
 			
 			//Signal that the user is not logged in. 
 			//  The code on the calling page will output the proper translated message.
@@ -109,7 +102,6 @@ public class AjaxController  extends SAbstractController {
 			
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
-				model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 				return new ModelAndView("forum/unseen_counts", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
 				return new ModelAndView("forum/save_column_positions_return", model);
@@ -126,7 +118,7 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-				return new ModelAndView("binder/get_entry_elements", model);
+				return new ModelAndView("binder/get_condition_entry_element", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
@@ -141,131 +133,119 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/favorites_tree", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
 				return new ModelAndView("forum/ajax_return", model);
-			}
+			} 
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
 		//The user is logged in
 		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
-			return ajaxGetUnseenCounts(request, response, context);
+			return ajaxGetUnseenCounts(request, response);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER) || 
-				op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) || 
+				op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) ||
+				op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE) ||
 				op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
-			return ajaxGetFavoritesTree(request, response, context);
-			
+			return ajaxGetFavoritesTree(request, response);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
-			return ajaxSaveColumnPositions(request, response, context);
+			return new ModelAndView("forum/save_column_positions_return");
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
-			return ajaxConfigureFolderColumns(request, response, context);
+			return ajaxConfigureFolderColumns(request, response);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
-			return ajaxSaveEntryWidth(request, response, context);
+			return ajaxSaveEntryWidth(request, response);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
-			return ajaxSaveEntryHeight(request, response, context);
+			return ajaxSaveEntryHeight(request, response);
 			
 		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
-			return ajaxUserListSearch(request, response, context);
+			return ajaxUserListSearch(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
-			return ajaxGetFilterData(request, response, context);
+			return ajaxGetFilterData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-			return ajaxGetSearchFormData(request, response, context);
+			return ajaxGetSearchFormData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
-			return ajaxGetConditionData(request, response, context);
+			return ajaxGetConditionData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
-			return ajaxGetWorkspaceTree(request, response, context);
-
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE)) {
-			return ajaxGetFavoritesTree(request, response, context);
+			return ajaxGetWorkspaceTree(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) || 
 				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-			return ajaxGetDashboardComponent(request, response, context);
+			return ajaxGetDashboardComponent(request, response);
 
 		} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
-			return ajaxGetBlogReplies(request, response, context);
+			return ajaxGetBlogReplies(request, response);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
-			return ajaxGetEntryRating(request, response, context);
+			return ajaxGetEntryRating(request, response);
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
-			return ajaxShowHelpPanel(request, response, context);
-		}
+			return ajaxShowHelpPanel(request, response);
+		} 
 		
-		return ajaxReturn(request, response, context);
+		return ajaxReturn(request, response);
 	} 
 	
-	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response, 
-			Map formData) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		//Save the user's placement of columns in this folder
-		String columnPositions = ((String[])formData.get("column_positions"))[0];
-		if (!columnPositions.equals("")) {
+		String columnPositions = PortletRequestUtils.getStringParameter(request, "column_positions", "");
+		if (Validator.isNotNull(columnPositions)) {
 			//Save the column positions
-		   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+		   	getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
 		}
 	}
 	
-	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response,
-			Map formData) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) throws Exception {
 		//Add a binder to the favorites list
-		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		Binder binder = getBinderModule().getBinder(Long.valueOf(binderId));
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
-		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId, PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
-		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
-	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response,
-			Map formData) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) throws Exception {
 		//Add a category to the favorites list
-		String category = ((String[])formData.get("category"))[0];
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		String category = PortletRequestUtils.getStringParameter(request, "category", "");
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
 		favorites = f.addCategory(category, "");
-		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
-	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response,
-			Map formData) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
 		//Save the order of the favorites list
-		String movedItemId = ((String[])formData.get("movedItemId"))[0];
-		String favoritesList = ((String[])formData.get("favorites"))[0];
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		String movedItemId = PortletRequestUtils.getStringParameter(request, "movedItemId", "");
+		String favoritesList = PortletRequestUtils.getStringParameter(request, "favorites", "");
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
 		favorites = f.saveOrder(movedItemId, favoritesList);
-		getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
 	}
 	
-	private void ajaxSaveRating(ActionRequest request, ActionResponse response,
-			Map formData) {
+	private void ajaxSaveRating(ActionRequest request, ActionResponse response) throws Exception {
 		//Save the order of the favorites list
-		String rating = ((String[])formData.get("rating"))[0];
-		String entryId = ((String[])formData.get("entryId"))[0];
-		String binderId = ((String[])formData.get("binderId"))[0];
-		getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
+		Long rating = new Long(PortletRequestUtils.getRequiredLongParameter(request, "rating"));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "entryId"));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "binderId"));				
+		getFolderModule().setUserRating(binderId, entryId, rating);
 	}
 	
 	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
@@ -279,20 +259,17 @@ public class AjaxController  extends SAbstractController {
 		getProfileModule().setUserProperty(user.getId(), binderId, 
 				ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, showAllComponents);
 	}
-	private void ajaxSaveDashboardLayout(ActionRequest request, ActionResponse response,
-			Map formData) {
+	private void ajaxSaveDashboardLayout(ActionRequest request, 
+			ActionResponse response) throws Exception {
 		//Save the order of the dashboard components
-		String layout = ((String[])formData.get("dashboard_layout"))[0];
-		String binderId = ((String[])formData.get("binderId"))[0];
-		//getFolderModule().setUserRating(new Long(binderId), new Long(entryId), new Long(rating));
+		String layout = PortletRequestUtils.getStringParameter(request, "dashboard_layout", "");
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+							RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
 		Favorites f = new Favorites(favorites);
 		Document favTree = f.getFavoritesTree();
@@ -301,60 +278,42 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.FAVORITES_TREE_DELETE, favTreeDelete);
 
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/favorites_tree", model);
 	}
 	
 	private ModelAndView ajaxGetUnseenCounts(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map unseenCounts = (Map) context.get("unseenCounts");
-		Map statusMap = (Map) context.get("statusMap");
-		List folderIds = new ArrayList();
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		String[] forumList = new String[0];
 		if (PortletRequestUtils.getStringParameter(request, "forumList") != null) {
 			forumList = PortletRequestUtils.getStringParameter(request, "forumList").split(" ");
 		}
+		List folderIds = new ArrayList();
 		for (int i = 0; i < forumList.length; i++) {
 			folderIds.add(new Long(forumList[i]));
 		}
+		Map unseenCounts = new HashMap();
 		unseenCounts = getFolderModule().getUnseenCounts(folderIds);
 
 		response.setContentType("text/xml");
 		
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
-		model.put(WebKeys.AJAX_STATUS, statusMap);
+		model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
 		return new ModelAndView("forum/unseen_counts", model);
 
 	}
 
 	private ModelAndView ajaxReturn(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
+				RenderResponse response) throws Exception {
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
-		return new ModelAndView("forum/ajax_return", model);
+		return new ModelAndView("forum/ajax_return");
 	}
-	
-	private ModelAndView ajaxSaveColumnPositions(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
-		return new ModelAndView("forum/save_column_positions_return", model);
-	}
-	
-	private ModelAndView ajaxConfigureFolderColumns(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(binderId));
+	private ModelAndView ajaxConfigureFolderColumns(RenderRequest request, 
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		UserProperties userProperties = getProfileModule().getUserProperties(null, binderId);
 		Map columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
 
@@ -362,52 +321,39 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		User user = RequestContextHolder.getRequestContext().getUser();
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		//Save the user's selected entry width, etc.
-		String entryWidth = "";
-		if (formData.containsKey("entry_width")) entryWidth = ((String[])formData.get("entry_width"))[0];
-		String entryHeight = "";
-		if (formData.containsKey("entry_height")) entryHeight = ((String[])formData.get("entry_height"))[0];
-		String entryTop = "";
-		if (formData.containsKey("entry_top")) entryTop = ((String[])formData.get("entry_top"))[0];
-		String entryLeft = "";
-		if (formData.containsKey("entry_left")) entryLeft = ((String[])formData.get("entry_left"))[0];
+		String entryWidth = PortletRequestUtils.getStringParameter(request, "entry_width");
+		String entryHeight = PortletRequestUtils.getStringParameter(request, "entry_height");
+		String entryTop = PortletRequestUtils.getStringParameter(request, "entry_top");
+		String entryLeft = PortletRequestUtils.getStringParameter(request, "entry_left");
 		
-		if (!entryWidth.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
-		if (!entryHeight.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
-		if (!entryTop.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_TOP, entryTop);
-		if (!entryLeft.equals("")) getProfileModule().setUserProperty(user.getId(), WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
+		if (Validator.isNotNull(entryWidth)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_WIDTH, entryWidth);
+		if (Validator.isNotNull(entryHeight)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		if (Validator.isNotNull(entryTop)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_TOP, entryTop);
+		if (Validator.isNotNull(entryLeft)) getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
 		
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/save_entry_width_return", model);
 	}
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String entryHeight = ((String[])formData.get("entry_height"))[0];
-		if (!entryHeight.equals("")) {
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String entryHeight = PortletRequestUtils.getStringParameter(request, "entry_height");
+		if (Validator.isNotNull(entryHeight)) {
 			//Save the entry width
-			String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		   	getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
 		}
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/save_entry_height_return", model);
 	}
 	
 	private ModelAndView ajaxUserListSearch(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();;
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
 		String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
@@ -452,32 +398,29 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
 		model.put("listDivId", listDivId);
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("forum/user_list_search", model);
 	}
 	
 	private ModelAndView ajaxGetFilterData(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		String op = (String) context.get("op");
-		String op2 = (String) context.get("op2");
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
 			
-		String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
+		String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, "");
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
-		String filterTermNumberMax = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
+		String filterTermNumberMax = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, "");
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
-			if (formData.containsKey(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber)) {
-				String defId = ((String[])formData.get(WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber))[0];
+			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber);
+			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
 					model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
 					Map elementData = getFolderModule().getCommonEntryElements();
@@ -490,13 +433,12 @@ public class AjaxController  extends SAbstractController {
 			}
 		}
 		
-		if (formData.containsKey("elementName" + filterTermNumber)) {
-			String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
+		String elementName = PortletRequestUtils.getStringParameter(request,"elementName" + filterTermNumber);
+		if (Validator.isNotNull(elementName)) {
 			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
 
 		
-    	model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
@@ -509,33 +451,28 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
 			return new ModelAndView("binder/get_element_value", model);
 		} else {
-			model.put(WebKeys.FILTER_VALUE_TYPE, "");
-			if (formData.containsKey("elementValueDateType" + filterTermNumber)) {
-				model.put(WebKeys.FILTER_VALUE_TYPE, 
-						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
-			}
+			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request, 
+					"elementValueDateType" + filterTermNumber, ""));
 			return new ModelAndView("binder/get_element_value_data", model);
 		}
 	}
 	
 	private ModelAndView ajaxGetSearchFormData(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		String op = (String) context.get("op");
-		String op2 = (String) context.get("op2");
-		String filterTermNumber = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER))[0];
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, "");
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
-		String filterTermNumberMax = ((String[])formData.get(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX))[0];
+		String filterTermNumberMax = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, "");
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
-			if (formData.containsKey(WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber)) {
-				String defId = ((String[])formData.get(WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber))[0];
+			String defId = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber);
+			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
 					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, "");
 					Map elementData = getFolderModule().getCommonEntryElements();
@@ -548,13 +485,12 @@ public class AjaxController  extends SAbstractController {
 			}
 		}
 		
-		if (formData.containsKey("elementName" + filterTermNumber)) {
-			String elementName = ((String[])formData.get("elementName" + filterTermNumber))[0];
+		String elementName = PortletRequestUtils.getStringParameter(request, "elementName" + filterTermNumber);
+		if (Validator.isNotNull(elementName)) {
 			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
 
 		
-    	model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
@@ -567,45 +503,39 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
 			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
 		} else {
-			model.put(WebKeys.FILTER_VALUE_TYPE, "");
-			if (formData.containsKey("elementValueDateType" + filterTermNumber)) {
-				model.put(WebKeys.FILTER_VALUE_TYPE, 
-						((String[])formData.get("elementValueDateType" + filterTermNumber))[0]);
-			}
+			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request,
+					"elementValueDateType" + filterTermNumber, ""));
 			return new ModelAndView("tag_jsps/search_form/get_element_value_data", model);
 		}
 	}
 	
 	private ModelAndView ajaxGetConditionData(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		String op = (String) context.get("op");
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//Get the definition id (if present)
-		if (formData.containsKey(WebKeys.CONDITION_ENTRY_DEF_ID)) {
-			String defId = ((String[])formData.get(WebKeys.CONDITION_ENTRY_DEF_ID))[0];
+		String defId = PortletRequestUtils.getStringParameter(request,WebKeys.CONDITION_ENTRY_DEF_ID);
+		if (Validator.isNotNull(defId)) {
 			model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
 			Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 		}
 		
-		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_NAME)) {
-			String name = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_NAME))[0];
+		String name = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_NAME);
+		if (Validator.isNotNull(name)) {
 			model.put(WebKeys.CONDITION_ELEMENT_NAME, name);
 		}
 		
-		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_OPERATION)) {
-			String value = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_OPERATION))[0];
+		String value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_OPERATION);
+		if (Validator.isNotNull(value)) {
 			model.put(WebKeys.CONDITION_ELEMENT_OPERATION, value);
 		}
 		
-		if (formData.containsKey(WebKeys.CONDITION_ELEMENT_VALUE)) {
-			String value = ((String[])formData.get(WebKeys.CONDITION_ELEMENT_VALUE))[0];
+		value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_VALUE);
+		if (Validator.isNotNull(value)) {
 			model.put(WebKeys.CONDITION_ELEMENT_VALUE, value);
 		}
 		
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element", model);
@@ -617,15 +547,14 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxGetWorkspaceTree(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map formData = (Map) context.get("formData");
-		Map statusMap = (Map) context.get("statusMap");
-		String op2 = (String) context.get("op2");
-		if (formData.containsKey("binderId")) {
-			model.put("ss_tree_treeName", ((String[])formData.get("treeName"))[0]);
-			model.put("ss_tree_binderId", ((String[])formData.get("binderId"))[0]);
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, "binderId");
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+//		Map formData = (Map) context.get("formData");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
+		if (binderId != null) {
+			model.put("ss_tree_treeName", PortletRequestUtils.getStringParameter(request, "treeName", ""));
+			model.put("ss_tree_binderId", binderId.toString());
 			model.put("ss_tree_topId", op2);
 			Binder binder = getBinderModule().getBinder(binderId);
 			Long topId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_OPERATION2);
@@ -661,12 +590,11 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 		}
 		response.setContentType("text/xml");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		return new ModelAndView("tag_jsps/tree/get_tree_div", model);
 	}
 	
 	private void ajaxChangeDashboardComponent(ActionRequest request, 
-			ActionResponse response) throws Exception {
+				ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String componentId = op2;
@@ -684,13 +612,11 @@ public class AjaxController  extends SAbstractController {
 		}
 	}
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		String op = (String) context.get("op");
-		String op2 = (String) context.get("op2");
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String componentId = op2;
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
@@ -711,10 +637,8 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("definition_elements/view_dashboard_component", model);
 	}
 	private ModelAndView ajaxGetBlogReplies(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		FolderEntry entry = null;
@@ -748,13 +672,10 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("definition_elements/blog/view_blog_replies_content", model);
 	}
 	private ModelAndView ajaxGetEntryRating(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		Map formData = (Map) context.get("formData");
-		String ratingDivId = ((String[])formData.get("ratingDivId"))[0];
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String ratingDivId = PortletRequestUtils.getStringParameter(request, "ratingDivId");
 		model.put(WebKeys.RATING_DIV_ID, ratingDivId);
-		model.put(WebKeys.AJAX_STATUS, statusMap);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Entry entry = getFolderModule().getEntry(binderId, entryId);
@@ -765,14 +686,12 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("forum/rating_return", model);
 	}
 	private ModelAndView ajaxShowHelpPanel(RenderRequest request, 
-			RenderResponse response, Map context) throws Exception {
-		Map model = (Map) context.get("model");
-		Map statusMap = (Map) context.get("statusMap");
-		model.put(WebKeys.AJAX_STATUS, statusMap);
+				RenderResponse response) throws Exception {
+		Map model = new HashMap();
 		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
 				WebKeys.HELP_PANEL_ID, "ss_help_panel");
 		model.put(WebKeys.HELP_PANEL_ID, helpPanelId);
-		String op2 = (String) context.get("op2");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		//See if the site has overridden the mapping for this help page
 		String jsp = SPropsUtil.getString("help_system." + op2, "");
 		if (jsp.equals("")) {
@@ -783,4 +702,5 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
 		return new ModelAndView("forum/help_panel", model);
 	}
+
 }
