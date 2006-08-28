@@ -106,11 +106,11 @@
 		    </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
 		  </c:if>
 
-		  <li><a href="#" onClick="ss_changeStyles(ss_forumColorDebugCssUrl);return false;"><span
-		    id="ss_dashboard_menu_controls">Change color to 'debug'</span></a></li>
+		  <li><a href="#" onClick="ss_changeStyles('debug');return false;"><span
+		    id="ss_dashboard_menu_controls">Change color to 'debug' [test code]</span></a></li>
 
-		  <li><a href="#" onClick="ss_changeStyles(ss_forumColorBlackAndWhiteCssUrl);return false;"><span
-		    id="ss_dashboard_menu_controls">Change color to 'blackandwhite'</span></a></li>
+		  <li><a href="#" onClick="ss_changeStyles('blackandwhite');return false;"><span
+		    id="ss_dashboard_menu_controls">Change color to 'blackandwhite' [test code]</span></a></li>
 
 		</ul>
 	</ssf:menu>

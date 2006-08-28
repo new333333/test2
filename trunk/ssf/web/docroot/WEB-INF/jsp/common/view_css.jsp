@@ -67,21 +67,33 @@ function ss_loadDojoFiles() {
 }
 ss_createOnLoadObj('ss_loadDojoFiles', ss_loadDojoFiles);
 
-function ss_createStyleSheet(url) {
+function ss_createStyleSheet(url, title, enabled) {
+	if (enabled == null || enabled == "") enabled = false;
 	var styles = "@import url('" + " " + url + " " + "');";
 	var newSS = document.createElement('link');
 	newSS.rel = 'stylesheet';
+	if (title != null && title != "") {
+		newSS.setAttribute("title", title);
+		newSS.disabled = true;
+		if (enabled == true) {
+			newSS.disabled = false;
+		}
+	}
 	//newSS.href = 'data:text/css,' + escape(styles);
 	newSS.href = url;
 	document.getElementsByTagName("head")[0].appendChild(newSS);
 }
-function ss_changeStyles(url) {
-	ss_fetch_url(url, ss_changeStylesCallback);
-}
-function ss_changeStylesCallback(s) {
-	var newSS = document.createElement('style');
-	newSS.innerHTML = s;
-	document.getElementsByTagName("body")[0].appendChild(newSS);
+function ss_changeStyles(title) {
+	var i, a, main;
+	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if (a.getAttribute("rel").indexOf("style") != -1 && 
+				a.getAttribute("title") != null && a.getAttribute("title") != "" ) {
+			a.disabled = true;
+			if (a.getAttribute("title") == title) {
+				a.disabled = false;
+			}
+		}
+	}
 }
 
 var ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -102,15 +114,22 @@ var ss_forumColorBlackAndWhiteCssUrl = "<ssf:url
     </ssf:url>"
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
-	document.createStyleSheet(ss_forumColorsCssUrl);
+	//document.createStyleSheet(ss_forumColorsCssUrl);
+	document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+	document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
 	document.createStyleSheet(niftyCornersCssUrl);
 	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
-	ss_createStyleSheet(ss_forumColorsCssUrl);
+	//ss_createStyleSheet(ss_forumColorsCssUrl);
+	ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+	ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
 	ss_createStyleSheet(niftyCornersCssUrl);
 	//ss_createStyleSheet(htmlareaCssUrl);
 }
+
+//Set the user's desired style
+ss_changeStyles('blackandwhite');
 
 //Help system url (used to request a help panel to be shown).
 var ss_helpSystemUrl = "<ssf:url 

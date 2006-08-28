@@ -31,6 +31,6 @@ public class ViewCssController extends SAbstractController {
 		response.setHeader(
 				"Last-Modified", df.format(d));
 		String viewPath = "common/ssf_css";
-		return new ModelAndView(viewPath);
+		return new ModelAndView(viewPath, model);
 	}
 }
