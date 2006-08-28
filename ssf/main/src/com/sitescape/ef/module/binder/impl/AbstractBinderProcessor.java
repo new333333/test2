@@ -453,7 +453,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			// This is modification. We must first delete existing document(s) from the index.
 			
 			// Since all matches will be deleted, this will also delete the attachments 
-	        IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+			IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+			IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
+	        
 		}
 		
         // Create an index document from the entry object.
