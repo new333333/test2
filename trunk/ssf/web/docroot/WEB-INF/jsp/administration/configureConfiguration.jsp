@@ -97,11 +97,11 @@ function <portlet:namespace/>_onsub(obj) {
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:otherwise>
           </c:choose>
       </c:forEach>
@@ -120,11 +120,11 @@ function <portlet:namespace/>_onsub(obj) {
       <c:choose>
         <c:when test="${empty ssFolderDefinitionMap[item.key]}">
   	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-  	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+  	      <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
   	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	      <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	      <c:set var="folderViewCount" value="1"/>
 	    </c:otherwise>
       </c:choose>
@@ -143,11 +143,11 @@ function <portlet:namespace/>_onsub(obj) {
           <c:choose>
 	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:when>
 	        <c:otherwise>
 	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	        </c:otherwise>
           </c:choose>
         </c:if>
@@ -165,11 +165,11 @@ function <portlet:namespace/>_onsub(obj) {
 	  <c:choose>
 	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	      <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	    </c:when>
 	    <c:otherwise>
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	      <c:out value="${item.value.title}"/> (<c:out value="${item.value.name}"/>)<br/>
+	      <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
 	    </c:otherwise>
 	  </c:choose>
     </c:forEach>
@@ -185,7 +185,7 @@ function <portlet:namespace/>_onsub(obj) {
 	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>
-	    <td><c:out value="${item.value.title}"/></td>
+	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
