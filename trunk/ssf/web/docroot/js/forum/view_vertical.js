@@ -1,6 +1,8 @@
 //Javascript routines for viewing vertical style folders
 
 var ss_folderDivHeight = 400;
+var ss_folderDivHeightLast = 400;
+var ss_folderDivHeightMinMove = 2;
 var ss_bottomHeight = 100;
 var ss_minFolderDivHeight = 100;
 var ss_minEntryDivHeight = 100;
@@ -199,7 +201,12 @@ function ss_divDrag(evt) {
 	    if (ss_folderDivHeight < ss_minFolderDivHeight) {
 	        ss_folderDivHeight = ss_minFolderDivHeight;
 	    }
-	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
+	    var change = parseInt(ss_folderDivHeight - ss_folderDivHeightLast);
+	    if ((change > 0 && change > ss_folderDivHeightMinMove) || 
+	    		(change < 0 && parseInt(change + ss_folderDivHeightMinMove) < 0)) {
+	    	ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
+	    	ss_folderDivHeightLast = ss_folderDivHeight;
+	    }
 	    
 	    var lightBox = document.getElementById('ss_entry_light_box')
     	lightBox.style.width = parseInt(ss_getBodyWidth()) + 'px';
@@ -217,6 +224,8 @@ function ss_divStopDrag(evt) {
 	ss_startingToDragDiv = 0;
     if (!evt && window.event) evt = window.event;
     if (ss_divDragObj) {
+		var tableDivObj = document.getElementById(ss_folderTableId)
+	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
         ss_slidingTableMouseOverInfoDisabled = false;;
 
 	    self.document.onmousemove = ss_divDragSavedMouseMove;

@@ -60,7 +60,8 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
     cursor:n-resize; top:<%= sliderDivOffset %>px;"
 ><table cellspacing="0" cellpadding="0" style="width:95%">
 <tr>
-<td><img style="visibility:hidden; height:<%= String.valueOf(sliderDivHeight) %>px;" src="<html:imagesPath/>pics/1pix.gif"></td>
+<td><img style="visibility:hidden; height:<%= String.valueOf(sliderDivHeight) %>px;" 
+  src="<html:imagesPath/>pics/1pix.gif"></td>
 </tr></table></div>
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 

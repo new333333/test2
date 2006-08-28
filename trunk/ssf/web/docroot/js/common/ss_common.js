@@ -35,7 +35,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ssHelpSpotZ = 2001;
 	var ssHelpPanelZ = 2003;
 	var ssHelpWelcomeZ = 2002;
-	var ssMenuZ = 100;
+	var ssMenuZ = 500;
 	var ssDragOnTopZ = 100000;
 	var ssEntryZ = 50;
 	var ssDragEntryZ = 400;
@@ -1416,6 +1416,15 @@ function ss_openUrlInWindow(obj,windowName) {
 	return false;
 }
 
+//Routine to pop up a window with a url (used in common toolbar code)
+function ss_toolbarPopupUrl(url) {
+	var width = ss_getWindowWidth();
+	if (width < 600) width=600;
+	var height = ss_getWindowHeight();
+	if (height < 600) height=600;
+	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
+}
+
 //Routine to show a div at the bottom of the highest size attained by the window
 function setWindowHighWaterMark(divName) {
 	var currentPageHeight = ss_getBodyHeight()
@@ -2667,13 +2676,16 @@ function ss_configureColumns(obj, binderId) {
 function ss_configureColumnsCallback(s, divId) {
 	var targetDiv = document.getElementById(divId);
 	if (targetDiv) {
-		ss_debug(s)
+		var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+		lightBox.onclick = function(e) {ss_configureColumnsCancel();};
 		targetDiv.innerHTML = s;
 		targetDiv.style.display = "block";
 		var x = parseInt(ss_getWindowWidth() / 2);
 		var y = parseInt(ss_getWindowHeight() / 2);
-		x = parseInt(x - ss_getObjectWidth(targetDiv) / 2)
-		y = parseInt(y - ss_getObjectHeight(targetDiv) / 2)
+	    var bodyX = self.document.body.scrollLeft
+	    var bodyY = self.document.body.scrollTop
+		x = parseInt(x + bodyX - ss_getObjectWidth(targetDiv) / 2)
+		y = parseInt(y + bodyY - ss_getObjectHeight(targetDiv) / 2)
 		targetDiv.style.left = x;
 		targetDiv.style.top = y;
 		targetDiv.style.visibility = "visible";
@@ -2683,6 +2695,10 @@ function ss_configureColumnsCallback(s, divId) {
 }
 function ss_configureColumnsSetActionUrl(formObj) {
 	formObj.action = ss_saveFolderColumnsUrl;
+}
+function ss_configureColumnsCancel() {
+	ss_hideLightbox();
+	ss_hideDiv('ss_folder_column_menu');
 }
 
 function ss_dashboardInitialization() {
@@ -2823,4 +2839,9 @@ function ss_postSavePenletLayoutRequest(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
+}
+
+function ss_showTitleOptions(obj, id) {
+}
+function ss_hideTitleOptions(obj, id) {
 }

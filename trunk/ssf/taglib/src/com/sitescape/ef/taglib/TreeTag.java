@@ -626,6 +626,7 @@ public class TreeTag extends TagSupport {
 			boolean hcn = (e.attributeValue("treeHasChildren") == "1") ? true : false;
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
+			String action = e.attributeValue("action", "");
 	
 			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 				if ((String) recursedNodes.get(j) != "1") {
@@ -698,11 +699,15 @@ public class TreeTag extends TagSupport {
 	
 			//jspOut.print("&nbsp;");
 			if (!displayOnly) {
-				String classField = "ss_twA";
+				String classField = "class=\"ss_twA\"";
 				if (!className.equals("")) classField = "class=\"ss_twA "+className+"\"";
 				jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
-					jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+					if (action.equals("")) {
+						jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this);}\" ");
+					} else {
+						jspOut.print("onClick=\"if (self."+this.treeName+"_showId) {return "+this.treeName+"_showId('"+s_id+"', this,'"+action+"');}\" ");
+					}
 				}
 				jspOut.print(">");
 			}

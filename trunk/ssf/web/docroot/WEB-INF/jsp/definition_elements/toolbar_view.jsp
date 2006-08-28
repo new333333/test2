@@ -5,15 +5,6 @@ String ss_portletNamespace = renderResponse.getNamespace();
 <c:if test="${empty ss_toolbar_style}">
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
 </c:if>
-<script type="text/javascript">
-function ss_toolbarPopupUrl(url) {
-	var width = ss_getWindowWidth();
-	if (width < 600) width=600;
-	var height = ss_getWindowHeight();
-	if (height < 600) height=600;
-	self.window.open(url, "_blank", "resizable=yes,scrollbars=yes,width="+width+",height="+height);
-}
-</script>
 <div class="${ss_toolbar_style}">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">

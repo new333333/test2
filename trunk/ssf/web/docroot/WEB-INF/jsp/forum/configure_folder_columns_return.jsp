@@ -35,7 +35,7 @@
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
   &nbsp;&nbsp;&nbsp;
   <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_hideDiv('ss_folder_column_menu');return false;">
+  onClick="ss_configureColumnsCancel();return false;">
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="submit" name="defaultBtn" value="<ssf:nlt tag="button.restoreDefaults"/>">
   
