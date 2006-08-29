@@ -276,11 +276,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 	//Rouitine to make sure a definition has all of the proper attributes as defined in the config file
 	//  This is useful to propagate new attributes added to the config definition xml file
-	public void validateDefinitionAttributes(Definition def) {
+	private void validateDefinitionAttributes(Definition def) {
 		Document defDoc = def.getDefinition();
 		if (updateDefinitionAttributes(defDoc)) setDefinition(def, defDoc);
 	}
-	public boolean updateDefinitionAttributes(Document defDoc) {
+	private boolean updateDefinitionAttributes(Document defDoc) {
 		boolean defChanged = false;
 		Element defRoot = defDoc.getRootElement();
 		this.getDefinitionConfig();
@@ -308,7 +308,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return defChanged;
 	}
 	
-	public void saveDefinitionLayout(String id, InputDataAccessor inputData) {
+	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
 		Definition def = getDefinition(id);
 		Document defDoc = def.getDefinition();
 		
@@ -843,7 +843,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
-	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
+	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
 		if (!sourceItemId.equals(targetItemId.toString())) {
 			this.getDefinitionConfig();
