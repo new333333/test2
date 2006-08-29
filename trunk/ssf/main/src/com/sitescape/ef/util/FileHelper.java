@@ -67,11 +67,28 @@ public class FileHelper {
 		if(source.renameTo(dest))
 			return;
 		
-		// Simple renaming didn't do the trick. We will have to copy the content.
-		FileCopyUtils.copy(source, dest);
-		
-		// Delete the source.
-		delete(source);
+		try {
+			// Simple renaming didn't do the trick. We will have to copy the content.
+			FileCopyUtils.copy(source, dest);
+			
+			// Make sure we preserve the last modification date.
+			dest.setLastModified(source.lastModified());
+			
+			// Delete the source.
+			delete(source);
+		}
+		catch(IOException e) {
+			// If anything went wrong, we can't just return. 
+			// We have to do our best to restore the state back to where it was
+			// prior to move. One thing we can do is to delete the half-baked
+			// destination file.
+			try {
+				delete(dest);
+			}
+			catch(IOException e2) {
+				// Nothing more we can do...
+			}
+		}
 	}
 
     public static boolean deleteRecursively(File dir) {

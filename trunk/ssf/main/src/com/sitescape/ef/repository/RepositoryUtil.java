@@ -139,6 +139,18 @@ public class RepositoryUtil {
 		}
 	}
 
+	public static void readVersion(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, String versionName, OutputStream out)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			session.readVersion(binder, entry, relativeFilePath, versionName, out);
+		} finally {
+			session.close();
+		}
+	}
+
 	public static InputStream read(String repositoryServiceName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
@@ -146,6 +158,18 @@ public class RepositoryUtil {
 
 		try {
 			return session.read(binder, entry, relativeFilePath);
+		} finally {
+			session.close();
+		}
+	}
+
+	public static InputStream readVersion(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, String versionName)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			return session.readVersion(binder, entry, relativeFilePath, versionName);
 		} finally {
 			session.close();
 		}
@@ -224,4 +248,18 @@ public class RepositoryUtil {
 			append(entry.getTypedId()).
 			append(separator).toString();
 	}
+	
+	public static void miniMove(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, String newRelativeFilePath)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			session.miniMove(binder, entry, relativeFilePath, newRelativeFilePath);
+		} finally {
+			session.close();
+		}
+	}
+
+
 }

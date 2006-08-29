@@ -206,14 +206,12 @@ public class FileRepositorySession implements RepositorySession {
 		// Delete temp file if exists
 		File tempFile = getTempFile(binder, entry, relativeFilePath);
 		
-		if(tempFile.exists()) {
-			try {
-				FileHelper.delete(tempFile);
-			}
-			catch(IOException e) {
-				logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]");
-				throw new UncheckedIOException(e);
-			}
+		try {
+			FileHelper.delete(tempFile);
+		}
+		catch(IOException e) {
+			logger.error("Error deleting file [" + tempFile.getAbsolutePath() + "]");
+			throw new UncheckedIOException(e);
 		}
 		
 		// Delete all existing version files
@@ -261,6 +259,26 @@ public class FileRepositorySession implements RepositorySession {
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}	
+	}
+
+	public void readVersion(Binder binder, DefinableEntity entry, 
+			String relativeFilePath, String versionName, OutputStream out) 
+		throws RepositoryServiceException, UncheckedIOException {
+		int fileInfo = fileInfo(binder, entry, relativeFilePath);
+		
+		if(fileInfo == VERSIONED_FILE) {
+			File versionFile = getVersionFile(binder, entry, relativeFilePath, versionName);
+			
+			readFile(versionFile, out);
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It is not versioned"); 
+		}
+		else {
+			throw new RepositoryServiceException("Cannot read file " + relativeFilePath + 
+					" for entry " + entry.getTypedId() + ": It does not exist"); 
+		}
 	}
 
 	public InputStream readVersion(Binder binder, DefinableEntity entry, 
@@ -471,6 +489,35 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 	
+	public void miniMove(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String newRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		File tempFile = getTempFile(binder, entity, relativeFilePath);
+		
+		if(tempFile.exists()) {
+			File newTempFile = getTempFile(binder, entity, newRelativeFilePath);			
+			move(tempFile, newTempFile);
+		}
+		
+		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
+		
+		String versionName;
+		File versionFile, newVersionFile;
+		for(int i = 0; i < versionFileNames.length; i++) {
+			versionName = getVersionName(versionFileNames[i]);
+			versionFile = getVersionFileFromVersionFileName(binder, entity, relativeFilePath, versionFileNames[i]);
+			newVersionFile = getVersionFile(binder, entity, newRelativeFilePath, versionName);
+			move(versionFile, newVersionFile);
+		}
+		
+		File unversionedFile = getUnversionedFile(binder, entity, relativeFilePath);
+
+		if(unversionedFile.exists()) {
+			File newUnversionedFile = getUnversionedFile(binder, entity, newRelativeFilePath);
+			move(unversionedFile, newUnversionedFile);
+		}
+	}
+
 	/**
 	 * Returns latest snapshot of the file (which is either the latest version
 	 * of the file or the working copy in progress which is created when the 
@@ -712,4 +759,14 @@ public class FileRepositorySession implements RepositorySession {
 					" for entry " + entry.getTypedId() + ": It does not exist"); 
 		}					
 	}
+	
+	private void move(File source, File target) throws UncheckedIOException {
+		try {
+			FileHelper.move(source, target);
+		} catch (IOException e) {
+			logger.error("Error moving file [" + source.getAbsolutePath() + "] to [" + target.getAbsolutePath() + "]");			
+			throw new UncheckedIOException(e);
+		}
+	}
+	
 }

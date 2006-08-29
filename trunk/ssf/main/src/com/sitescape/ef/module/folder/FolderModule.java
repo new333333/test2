@@ -135,4 +135,7 @@ public interface FolderModule {
     	throws AccessControlException;
     
     public Set<String> getSubfoldersTitles(Folder folder);
+    
+    public Set<Folder> getSubfolders(Folder folder);
+
 }

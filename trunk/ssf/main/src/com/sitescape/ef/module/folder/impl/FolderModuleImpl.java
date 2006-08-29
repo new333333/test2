@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -810,6 +811,20 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     	
     	return titles;    	
+    }
+    
+    public Set<Folder> getSubfolders(Folder folder) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+
+        Set<Folder> subFolders = new HashSet<Folder>();
+   		
+    	for(Object o : folder.getFolders()) {
+    		Folder f = (Folder) o;
+    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+    			subFolders.add(f);
+    	}
+    	
+    	return subFolders;    	
     }
     
     /*

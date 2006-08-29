@@ -76,4 +76,22 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
 	   }
    }
 
+   protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
+		   InputDataAccessor inputData, Map entryData) {
+	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData);
+	   
+	   if(!inputData.exists("_renameFileTo"))
+		   return;
+	   
+	   // We have a request for renaming the library file associated with
+	   // the file folder entry.
+	   String toName = inputData.getSingleValue("_renameFileTo");
+	   FileAttachment fa = (FileAttachment) inputData.getSingleObject("_renameFileTo_fa");
+	   
+	   getFileModule().renameFile(binder, entry, fa, toName);
+	   
+	   // If you're still here, the file renaming was successful.
+	   // We can change the title of the entry now. 
+	   entry.setTitle(toName);
+   }
 }

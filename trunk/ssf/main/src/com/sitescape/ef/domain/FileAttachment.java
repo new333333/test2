@@ -67,6 +67,12 @@ public class FileAttachment extends Attachment {
     	return result;
     }
 
+    public List getFileVersionsUnsorted() {
+    	if(fileVersions == null)
+    		fileVersions = new ArrayList();
+    	return fileVersions;
+    }
+    
     public void addFileVersion(VersionAttachment v) {
     	if (v == null) return;
     	v.setParentAttachment(this);
