@@ -7,19 +7,19 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  *
  */
 public class DefinitionInvalidException extends UncheckedCodedException {
-	private static final String DefinitionInvalidException_ErrorCode = "errorcode.definition.invalid";
-	 
-	   public DefinitionInvalidException(String id) {
-	        super(DefinitionInvalidException_ErrorCode, new Object[]{id});
-	    }
-	    public DefinitionInvalidException(String id, String message) {
-	        super(DefinitionInvalidException_ErrorCode,  new Object[]{id}, message);
-	    }
-	    public DefinitionInvalidException(String id, String message, Throwable cause) {
-	        super(DefinitionInvalidException_ErrorCode, new Object[]{id}, message, cause);
-	    }
-	    public DefinitionInvalidException(String id, Throwable cause) {
-	        super(DefinitionInvalidException_ErrorCode,  new Object[]{id}, cause);
-	    }
-
+    public DefinitionInvalidException(String errorCode) {
+    	super(errorCode);
+    }
+    public DefinitionInvalidException(String errorCode, Object[] errorArgs) {
+        super(errorCode, errorArgs);
+    }
+    public DefinitionInvalidException(String errorCode, Object[] errorArgs, String message) {
+        super(errorCode, errorArgs, message);
+    }
+    public DefinitionInvalidException(String errorCode, Object[] errorArgs, String message, Throwable cause) {
+        super(errorCode, errorArgs, message, cause);
+    }
+    public DefinitionInvalidException(String errorCode, Object[] errorArgs, Throwable cause) {
+        super(errorCode, errorArgs, cause);
+    }
 }
