@@ -558,7 +558,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				String name = inputData.getSingleValue("propertyId_name");
 				if (uniqueNames.containsKey(name)) {
 					//This name is not unique
-					throw new DefinitionInvalidException(defId, NLT.get("definition.error.nameNotUnique")+ " ("+name+")");
+					throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
 				}
 			}
 
@@ -641,7 +641,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//See if the user entered a valid name
 							if (!value.equals("") && !value.matches(characterMask)) {
 								//The value is not well formed, go complain to the user
-								throw new DefinitionInvalidException(defId, NLT.get("definition.error.invalidCharacter") + " - " + value);
+								throw new DefinitionInvalidException("definition.error.invalidCharacter", new Object[] {defId, value});
 							}
 						}
 						Element newPropertyEle = configProperty.createCopy();
@@ -653,7 +653,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("integer")) {
 							if (value.matches("[^0-9]")) {
 								//The value is not a valid integer
-								throw new DefinitionInvalidException(defId, NLT.get("definition.error.notAnInteger") + " (" +configProperty.attributeValue("caption") + ")");
+								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
 							}
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("selectbox") || type.equals("itemSelect") || 
@@ -737,7 +737,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							!name.equals(itemNamePropertyValue) && 
 							uniqueNames.containsKey(name)) {
 						//This name is not unique
-						throw new DefinitionInvalidException(defId, NLT.get("definition.error.nameNotUnique")+" ("+name+")");
+						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
 					} else if (!name.equals("") && !name.equals(itemNamePropertyValue)) {
 						//The name is being changed. Check if this is a workflow state
 						if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
@@ -746,8 +746,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							//TODO ???Add code to check if any entries are in this state
 							//  If code is added to support changing state names, make sure to fix up
 							//  the toState property, the initialState property, and the startState property.
-							throw new DefinitionInvalidException(defId, 
-									"Error: this state name cannot be changed because some entries are in this state.");
+							throw new DefinitionInvalidException("???", new Object[] {defId});
+
+							//throw new DefinitionInvalidException(defId, 
+							//		"Error: this state name cannot be changed because some entries are in this state.");
 						}
 					}
 				}
@@ -808,8 +810,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						item.attributeValue("name", "").equals("state")) {
 					//This is a workflow state. Make sure no entries are using that state
 					//TODO ???Add code to check if any entries are in this state
-					throw new DefinitionInvalidException(defId, 
-							"Error: this state name cannot be deleted because some entries are in this state.");
+					throw new DefinitionInvalidException("???", new Object[] {defId});
+
+					//throw new DefinitionInvalidException(defId, 
+					//		"Error: this state name cannot be deleted because some entries are in this state.");
 				}
 
 				//Find the selected item type in the configuration document
@@ -867,7 +871,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								targetItem.add(sourceItem);
 							} else {
 								//The target item is not designed to accept this item as a child
-								throw new DefinitionInvalidException(defId, NLT.get("definition.error.illegalMoveInto"));
+								throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
 							}
 						} else if (position.equals("above")) {
 							//Get the parent of the target item
@@ -891,11 +895,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						setDefinition(def, definitionTree);
 					} else {
 						//Target item is no longer defined as a valid item
-						throw new DefinitionInvalidException(defId, NLT.get("definition.error.noElement"));
+						throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
 					}
 				} else {
 					//The item to be moved is no longer defined as a valid item
-					throw new DefinitionInvalidException(defId, NLT.get("definition.error.noElement"));
+					throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
 				}
 			}
 		}
