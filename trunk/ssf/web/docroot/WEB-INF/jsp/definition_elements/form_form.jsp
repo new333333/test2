@@ -5,6 +5,7 @@
 	Element item = (Element) request.getAttribute("item");
 	String enctype = "application/x-www-form-urlencoded";
 	if (item.selectSingleNode(".//item[@name='file']") != null || 
+			item.selectSingleNode(".//item[@name='fileEntryTitle']") != null || 
 			item.selectSingleNode(".//item[@name='graphic']") != null || 
 			item.selectSingleNode(".//item[@name='attachFiles']") != null) {
 		enctype = "multipart/form-data";
