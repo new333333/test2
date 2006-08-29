@@ -1704,15 +1704,24 @@ var ss_helpSystem = {
 			var helpSpotTr = document.createElement("tr");
 			var helpSpotTd1 = document.createElement("td");
 			var helpSpotTd2 = document.createElement("td");
-			helpSpotTd2.setAttribute("nowrap", "nowrap");
-			helpSpotTd2.className = "ss_helpSpotTitle";
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
+			// Hack to get proper display of help icon, next 2 lines  (GF)
 			helpSpotGif.setAttribute("height", "15");
 			helpSpotGif.setAttribute("width", "15");
+            // Title can be 'show' or 'hide' (default)			
+			if (nodes[i].getAttribute("titleFlag")) {
+			    helpSpotTitleFlag = nodes[i].getAttribute("titleFlag");
+			    if (helpSpotTitleFlag != 'hide') {
+			        helpSpotTd2.setAttribute("nowrap", "nowrap");
+			        helpSpotTd2.className = "ss_helpSpotTitle";
+			    }
+			} else {
+			    helpSpotTitleFlag = 'hide'; 
+			}
 			var helpSpotTitle = document.createElement("nobr");
 			var helpSpotTitleText = "";
-			if (nodes[i].getAttribute("title")) {
+			if (nodes[i].getAttribute("title") && helpSpotTitleFlag != 'hide') {
 				helpSpotTitleText = nodes[i].getAttribute("title");
 			}
 			helpSpotTitle.appendChild(document.createTextNode(helpSpotTitleText));
@@ -1724,11 +1733,17 @@ var ss_helpSystem = {
 			helpSpotTbody.appendChild(helpSpotTr);
 			helpSpotTr.appendChild(helpSpotTd1);
 			helpSpotTr.appendChild(helpSpotTd2);
-			helpSpotTd1.appendChild(helpSpotGif);
 			var aObj = document.createElement("a");
 			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');");
-			aObj.appendChild(helpSpotTitle);
-			helpSpotTd2.appendChild(aObj);
+			// Associate link either to the text ('show' text) or the icon ('hide' text)
+			if (helpSpotTitleFlag != 'hide') {
+			    helpSpotTd1.appendChild(helpSpotGif);
+			    aObj.appendChild(helpSpotTitle);
+			    helpSpotTd2.appendChild(aObj);
+			} else {
+			    aObj.appendChild(helpSpotGif);
+			    helpSpotTd1.appendChild(aObj);
+			}
 			
 			ss_helpSystemNodes[ss_helpSystemNextNodeId] = helpSpotNode;
 	        helpSpotNode.setAttribute("id", "ss_help_spot" + ss_helpSystemNextNodeId);
@@ -1907,7 +1922,8 @@ var ss_helpSystem = {
 		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
 		    var width = parseInt(dojo.style.getContentBoxWidth(helpSpot));
 		    var height = parseInt(dojo.style.getContentBoxHeight(helpSpot));
-			this.showHelpPanel(id, "ss_help_panel", parseInt(left + width/2), parseInt(top + height + 5))
+//			this.showHelpPanel(id, "ss_help_panel", parseInt(left + width/2), parseInt(top + height + 5))
+			this.showHelpPanel(id, "ss_help_panel", parseInt(left + 3), parseInt(top + height - 8))
 		}
 	},
 	
@@ -2064,7 +2080,7 @@ var ss_helpSystem = {
 		if (obj != null) {
 			ss_helpSystemHighlights[ss_helpSystemHighlights.length] = id;
 			ss_helpSystemHighlightsBorder[id] = obj.style.border;
-			obj.style.border = "red 3px solid";
+			obj.style.border = "red 2px solid";
 			if (ss_helpSystemHighlightsBorderTimer[id]) 
 			    clearTimeout(ss_helpSystemHighlightsBorderTimer[id]);
 			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', 4)", 200);
@@ -2100,9 +2116,9 @@ var ss_helpSystem = {
 		var obj = document.getElementById(id);
 		//ss_debug("  border color: " + obj.style.borderTopColor)
 		if (obj.style.borderTopColor == "red") {
-			obj.style.border = "white 3px solid";
+			obj.style.border = "white 2px solid";
 		} else {
-			obj.style.border = "red 3px solid";
+			obj.style.border = "red 2px solid";
 		}
 		if (count-- >= 0) {
 			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', "+count+")", 200);

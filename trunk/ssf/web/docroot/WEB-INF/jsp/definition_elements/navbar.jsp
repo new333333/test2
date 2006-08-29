@@ -34,25 +34,26 @@ function ss_turnOffDebugMode() {
 
 <% // Favorites link %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="top" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.favoritesButton"/>" showTitleFlag="show">
+  <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="5"
+    title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+  <div id="ss_navbarFavoritesButton">
   <a href="javascript: ;"
-  onClick="ss_showFavoritesPane();return false;"
-  ><img border="0" src="<html:imagesPath/>icons/favorites.png" 
+  onClick="ss_showFavoritesPane();return false;"><img border="0" src="<html:imagesPath/>icons/favorites.png" 
   alt="<ssf:nlt tag="navigation.favorites" text="Favorites"/>" /></a>
-  <br/>
+  <br />
   <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
+  </div>
   </ssHelpSpot>
 </td>
 
 <% // My workspace %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="top" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>" showTitleFlag="show">
+  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="bottom" align="left" offsetX="10" offsetY="5"
+  title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
   <div id="ss_navbarMyWorkspaceButton">
   <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
     alt="<ssf:nlt tag="navigation.myWorkspace"/>" />
-  <br>
+  <br />
   <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
   </div>
   </ssHelpSpot>
@@ -60,13 +61,13 @@ function ss_turnOffDebugMode() {
 
 <% // Search form %>
 <td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/search_button" valign="top" align="center" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.searchButton"/>" showTitleFlag="hide">
+  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="5"
+    title="<ssf:nlt tag="helpSpot.searchButton"/>">
     <div id="ss_navbarSearchButton">
     <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
       alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
-      type="text" size="25"/><input type="submit" value="Go"/>
-    <br>
+      type="text" size="25"/><input type="submit" value="Go" />
+    <br />
     <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
     </div>
   </ssHelpSpot>
@@ -74,24 +75,28 @@ function ss_turnOffDebugMode() {
 
 <% // Clipboard %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="top" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.clipboardButton"/>" showTitleFlag="hide">
+   <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="bottom" align="left" offsetX="10" offsetY="5"
+    title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
+  <div id="ss_navbarClipboardButton">
   <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
     alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
-  <br>
+  <br />
   <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
+  </div>
   </ssHelpSpot>
 </td>
 
 <% // Help toggle %>
 <td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/help_button" valign="top" offsetX="0" offsetY="0"
-    title="<ssf:nlt tag="helpSpot.helpButton"/>" showTitleFlag="hide">
+  <ssHelpSpot helpId="personal_toolbar/help_button" valign="bottom" align="left" offsetX="10" offsetY="5"
+    title="<ssf:nlt tag="helpSpot.helpButton"/>">
+  <div id="ss_navbarHelpButton">
   <a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
   src="<html:imagesPath/>icons/help.png" 
   alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-  <br>
+  <br />
   <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+  </div>
   </ssHelpSpot>
 </td>
 
