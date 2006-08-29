@@ -324,6 +324,14 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   background-color:${ss_style_background_color};
   }
 
+.ss_popupTitleOptions {
+  position:absolute;
+  border:1px solid black;
+  margin:4px;
+  padding:2px;
+  background-color:${ss_style_background_color};
+  }
+
 .ss_edit_button {
 	color:${edit_text_color};
 }
