@@ -24,142 +24,28 @@ ss_presencePopupGraphics["phone"] = new Image();
 ss_presencePopupGraphics["phone"].src = '<html:imagesPath/>pics/sym_s_gray_phone.gif';
 ss_presencePopupGraphics["sched"] = new Image();
 ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif';
+
+var ss_ostatus_none = ' <ssf:nlt tag="presence.none"/>'
+var ss_ostatus_away = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
+var ss_ostatus_online = ' <ssf:nlt tag="presence.isOnline" text="is online"/>';
+var ss_ostatus_offline = ' <ssf:nlt tag="presence.isOffline" text="is offline"/>';
+var ss_ostatus_at = '<ssf:nlt tag="presence.statusAt" text="status at"/>';
+var ss_ostatus_sendIm = '<ssf:nlt tag="presence.sendIM" text="Send instant message..."/>';
+var ss_ostatus_startIm = '<ssf:nlt tag="presence.startIM" text="Start instant meeting..."/>';
+var ss_ostatus_schedIm = '<ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/>';
+var ss_ostatus_call = '<ssf:nlt tag="presence.call" text="Call..."/>';
+var ss_ostatus_sendMail = '<ssf:nlt tag="presence.sendMail" text="Send mail"/>';
+var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/>';
+
 </script>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>
 </c:if>
 <script type="text/javascript">
 
 function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
-    var obj
-    var m = ''
-    var imgid = "ppgpres${ssDashboardId}"
-    var ostatus = " <ssf:nlt tag="presence.none"/>"
-    obj = self.document.getElementById('ss_presencePopUp${ssDashboardId}')
-    ss_moveObjectToBody(obj)
-    m += '<div style="position: relative; background: #666; margin: 4px;">'
-    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
-
-    m += '<table class="ss_style ss_graymenu" border="0" cellspacing="0" cellpadding="3">';
-    m += '<tr>';
-    if (status >= 0) {
-        if (status & 1) {
-            if (status & 16) {
-                ostatus = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
-                imgid = "ppgpresaway${ssDashboardId}"
-            } else {
-                ostatus = ' <ssf:nlt tag="presence.isOnline" text="is online"/>';
-                imgid = "ppgpreson${ssDashboardId}"
-            }
-        } else {
-            ostatus = ' <ssf:nlt tag="presence.isOffline" text="is offline"/>';
-            imgid = "ppgpresoff${ssDashboardId}"
-        }
-    }
-    m += '<td class="ss_bglightgray" valign=top><img src="" alt="" id=' +imgid +'></td>';
-    m += '<td><span>' + userTitle;
-    m += ostatus;
-    if (status >= 0) {
-        m += '</span><br><span class="ss_fineprint ss_gray">(<ssf:nlt tag="presence.statusAt" text="status at"/> ' + sweepTime + ')</span>';
-    }
-    m += '</td></tr>';
-    if (screenName != '') {
-        if (current == '') {
-            m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg${ssDashboardId}"></td>';
-            if (status == 0) {
-                m += '<td class="ss_fineprint ss_gray"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></td>';
-            } else {
-                m += '<td><a class="ss_graymenu" href="iic:im?screenName=' + screenName + '"><ssf:nlt tag="presence.sendIM" text="Send instant message..."/></a></td>';
-            }
-            m += '</tr>';
-        }
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg${ssDashboardId}"></td>';
-        m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '"><ssf:nlt tag="presence.startIM" text="Start instant meeting..."/></a></td></tr>';
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched${ssDashboardId}"></td>';
-        m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/></a></td></tr>';
-        m += '<tr>';
-<c:if test="${ss_presence_zonBridge == 'enabled'}">
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone${ssDashboardId}"></td>';
-        m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');"><ssf:nlt tag="presence.call" text="Call..."/></a></td></tr>';
-</c:if>
-	}
-	if (userId != '' && current == '') {
-        if (email != '') {
-            m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail${ssDashboardId}"></td>';
-            bodyText = escape(window.location.href);
-            m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'"><ssf:nlt tag="presence.sendMail" text="Send mail"/> (' + email + ')...</a></td></tr>';
-        }
-        m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard${ssDashboardId}"></td>';
-        m += '<td><a class="ss_graymenu" href="' + vcard + '"><ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/></a></td></tr>';
-    }
-    m += '</table>'
-
-    m += '</div>'
-    m += '</div>'
-
-    obj.innerHTML = m;
-
-    ss_activateMenuLayer('ss_presencePopUp${ssDashboardId}');
-    if (self.document.images["ppgpres${ssDashboardId}"]) {
-        self.document.images["ppgpres${ssDashboardId}"].src = ss_presencePopupGraphics["pres"].src;
-    }
-    if (self.document.images["ppgpreson${ssDashboardId}"]) {
-        self.document.images["ppgpreson${ssDashboardId}"].src = ss_presencePopupGraphics["preson"].src;
-    }
-    if (self.document.images["ppgpresoff${ssDashboardId}"]) {
-        self.document.images["ppgpresoff${ssDashboardId}"].src = ss_presencePopupGraphics["presoff"].src;
-    }
-    if (self.document.images["ppgpresaway${ssDashboardId}"]) {
-        self.document.images["ppgpresaway${ssDashboardId}"].src = ss_presencePopupGraphics["presaway"].src;
-    }
-    if (self.document.images["ppgimsg${ssDashboardId}"]) {
-        self.document.images["ppgimsg${ssDashboardId}"].src = ss_presencePopupGraphics["imsg"].src;
-    }
-    if (self.document.images["ppgimtg${ssDashboardId}"]) {
-        self.document.images["ppgimtg${ssDashboardId}"].src = ss_presencePopupGraphics["imtg"].src;
-    }
-    if (self.document.images["ppgmail${ssDashboardId}"]) {
-        self.document.images["ppgmail${ssDashboardId}"].src = ss_presencePopupGraphics["mail"].src;
-    }
-    if (self.document.images["ppgvcard${ssDashboardId}"]) {
-        self.document.images["ppgvcard${ssDashboardId}"].src = ss_presencePopupGraphics["vcard"].src;
-    }
-    if (self.document.images["ppgphone${ssDashboardId}"]) {
-        self.document.images["ppgphone${ssDashboardId}"].src = ss_presencePopupGraphics["phone"].src;
-    }
-    if (self.document.images["ppgsched${ssDashboardId}"]) {
-        self.document.images["ppgsched${ssDashboardId}"].src = ss_presencePopupGraphics["sched"].src;
-    }
-    // move the div up if it scrolls off the bottom
-    var mousePosX = parseInt(ss_getClickPositionX());
-    var mousePosY = parseInt(ss_getClickPositionY());
-    if (mousePosY != 0) {
-        var divHt = parseInt(ss_getDivHeight('ss_presencePopUp${ssDashboardId}'));
-        var windowHt = parseInt(ss_getWindowHeight());
-        var scrollHt = self.document.body.scrollTop;
-        var diff = scrollHt + windowHt - mousePosY;
-        if (divHt > 0) {
-            if (diff <= divHt) {
-               ss_positionDiv('ss_presencePopUp${ssDashboardId}', mousePosX, mousePosY - divHt);
-            }
-        }
-        //See if we need to make the portlet longer to hold the pop-up menu
-        var sizerObj = document.getElementById('ss_presence_sizer_div${ssDashboardId}');
-        if (sizerObj != null) {
-        	var menuTop = ss_getDivTop('ss_presencePopUp${ssDashboardId}');
-        	var menuHeight = ss_getDivHeight('ss_presencePopUp${ssDashboardId}');
-        	var sizerTop = ss_getDivTop('ss_presence_sizer_div${ssDashboardId}');
-        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div${ssDashboardId}');
-        	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
-        	if (deltaSizerHeight > 0) {
-        		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));
-        	}
-        }
-    }
+	var ssDashboardId = '${ssDashboardId}';
+	var ssPresenceZonBridge = '${ss_presence_zonBridge}';
+	ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssDashboardId, ssPresenceZonBridge);
 }
 </script>
 <div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden;"></div>
