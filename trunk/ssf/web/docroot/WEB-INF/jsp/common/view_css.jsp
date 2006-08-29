@@ -19,7 +19,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
 var undefined;
+var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_rootPath = "<html:rootPath/>";
+var ss_imagesPath = "<html:imagesPath/>";
 
 function ss_loadJsFile(rootPath, jsFile) {
 	var spath = rootPath + jsFile;
@@ -79,8 +81,8 @@ function ss_createStyleSheet(url, title, enabled) {
 			newSS.disabled = false;
 		}
 	}
-	//newSS.href = 'data:text/css,' + escape(styles);
-	newSS.href = url;
+	newSS.href = 'data:text/css,' + escape(styles);
+	//newSS.href = url;
 	document.getElementsByTagName("head")[0].appendChild(newSS);
 }
 function ss_changeStyles(title) {
@@ -95,11 +97,17 @@ function ss_changeStyles(title) {
 		}
 	}
 }
+var ss_defaultStyleSheet = 'blackandwhite';
+ss_changeStyles(ss_defaultStyleSheet);
+function ss_setDefaultStyleSheet() {
+	//Set the user's desired style
+	ss_changeStyles(ss_defaultStyleSheet);
+}
+ss_createOnLoadObj('ss_setDefaultStyleSheet', ss_setDefaultStyleSheet);
 
-var ss_urlBase = self.location.protocol + "//" + self.location.host;
-var ss_forumCssUrl = ss_urlBase + "<html:rootPath/>css/forum.css";
-var niftyCornersCssUrl = ss_urlBase + "<html:rootPath/>css/nifty_corners.css";
-//var htmlareaCssUrl = ss_urlBase + "<html:rootPath/>js/htmleditor/htmlarea.css";
+var ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
+var niftyCornersCssUrl = ss_urlBase + ss_rootPath + "css/nifty_corners.css";
+//var htmlareaCssUrl = ss_urlBase + ss_rootPath + "js/htmleditor/htmlarea.css";
 var ss_forumColorsCssUrl = "<ssf:url
     webPath="viewCss">
     <ssf:param name="theme" value=""/>
@@ -114,22 +122,19 @@ var ss_forumColorBlackAndWhiteCssUrl = "<ssf:url
     </ssf:url>"
 if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumCssUrl);
-	//document.createStyleSheet(ss_forumColorsCssUrl);
-	document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+	document.createStyleSheet(ss_forumColorsCssUrl);
 	document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
+	document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
 	document.createStyleSheet(niftyCornersCssUrl);
 	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
-	//ss_createStyleSheet(ss_forumColorsCssUrl);
-	ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+	ss_createStyleSheet(ss_forumColorsCssUrl);
 	ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
+	ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
 	ss_createStyleSheet(niftyCornersCssUrl);
 	//ss_createStyleSheet(htmlareaCssUrl);
 }
-
-//Set the user's desired style
-ss_changeStyles('blackandwhite');
 
 //Help system url (used to request a help panel to be shown).
 var ss_helpSystemUrl = "<ssf:url 
