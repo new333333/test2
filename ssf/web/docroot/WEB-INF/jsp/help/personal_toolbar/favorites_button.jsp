@@ -21,6 +21,9 @@ style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.subtopicth
 </div>
 <br/>
 
+<script type="text/javascript">
+ss_helpSystem.highlight('ss_navbarFavoritesButton');
+</script>
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
 <span class="ss_gray">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></span>
