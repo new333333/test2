@@ -401,6 +401,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void moveBinder(Binder source, Binder destination) {
     	source.getParentBinder().removeBinder(source);
     	destination.addBinder(source);
+ 		// The path changes since its parent changed.
+ 		source.setPathName(destination.getPathName() + "/" + source.getTitle());
     }
 
     

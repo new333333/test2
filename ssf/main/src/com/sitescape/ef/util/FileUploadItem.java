@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -180,5 +181,17 @@ public class FileUploadItem {
 	
 	public File getTempFile()  throws IOException {
 		return SPropsUtil.getTempFile(CONVERT_FILE_PREFIX);
+	}
+	
+	/**
+	 * Returns modification date or <code>null</code>.
+	 * 
+	 * @return
+	 */
+	public Date getModDate() {
+		if(mf instanceof FileModDateSupport)
+			return ((FileModDateSupport) mf).getModDate();
+		else
+			return null;
 	}
 }

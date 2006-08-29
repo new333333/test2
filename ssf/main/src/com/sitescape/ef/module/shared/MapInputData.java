@@ -40,4 +40,8 @@ public class MapInputData implements InputDataAccessor {
 	public boolean exists(String key) {
 		return source.containsKey(key);
 	}
+
+	public Object getSingleObject(String key) {
+		return source.get(key);
+	}
 }

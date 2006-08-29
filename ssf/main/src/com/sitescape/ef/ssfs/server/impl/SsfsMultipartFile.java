@@ -5,20 +5,31 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Date;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-public class SsfsMultipartFile implements MultipartFile {
+import com.sitescape.ef.util.FileModDateSupport;
+
+public class SsfsMultipartFile implements MultipartFile, FileModDateSupport {
 
 	private String fileName;
 	private InputStream content;
+	private Date modDate;
 
 	public SsfsMultipartFile(String fileName, InputStream content) {
 		this.fileName = fileName;
 		this.content = content;
 	}
 
+	public SsfsMultipartFile(String fileName, InputStream content, 
+			Date modificationDate) {
+		this.fileName = fileName;
+		this.content = content;
+		this.modDate = modificationDate;
+	}
+	
 	public String getName() {
 		throw new UnsupportedOperationException();
 	}
@@ -68,6 +79,10 @@ public class SsfsMultipartFile implements MultipartFile {
 					"Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
 		}
 		FileCopyUtils.copy(content, new BufferedOutputStream(new FileOutputStream(dest)));
+	}
+
+	public Date getModDate() {
+		return modDate;
 	}
 
 }

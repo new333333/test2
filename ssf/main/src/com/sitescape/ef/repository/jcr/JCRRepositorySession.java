@@ -7,12 +7,17 @@ import java.util.Calendar;
 
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
+import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
+import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
+import javax.jcr.lock.LockException;
+import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.Version;
+import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionHistory;
 
 import org.springframework.util.FileCopyUtils;
@@ -148,6 +153,20 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
+
+	public void readVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName, OutputStream out) 
+	throws RepositoryServiceException, UncheckedIOException {
+		InputStream is = readVersion(binder, entity, relativeFilePath, versionName);
+		
+		try {
+			FileCopyUtils.copy(is, out);
+		} 
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}	
+	}
+	
 	public InputStream readVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -216,6 +235,29 @@ public class JCRRepositorySession implements RepositorySession {
 		catch(RepositoryException e) {
 			throw new RepositoryServiceException(e);
 		}	
+	}
+
+	public void miniMove(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String newRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		String fileNodePath = getFileNodePath(binder, entity, relativeFilePath);
+		String newFileNodePath = getFileNodePath(binder, entity, newRelativeFilePath);
+
+		try {
+			session.move(fileNodePath, newFileNodePath);
+		} catch (ItemExistsException e) {
+			throw new RepositoryServiceException(e);
+		} catch (PathNotFoundException e) {
+			throw new RepositoryServiceException(e);
+		} catch (VersionException e) {
+			throw new RepositoryServiceException(e);
+		} catch (ConstraintViolationException e) {
+			throw new RepositoryServiceException(e);
+		} catch (LockException e) {
+			throw new RepositoryServiceException(e);
+		} catch (RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}
 	}
 
 	private int getFileInfo(Binder binder, DefinableEntity entity, 

@@ -110,10 +110,12 @@ public class WebdavRepositorySession implements RepositorySession {
 	
 	public void read(Binder binder, DefinableEntity entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException, UncheckedIOException {	
+		InputStream is = read(binder, entry, relativeFilePath);
+		
 		try {
-			readResource(wdr, getResourcePath(binder, entry, relativeFilePath), out);
-		} catch (IOException e) {
-			logError(wdr);
+			FileCopyUtils.copy(is, out);
+		} 
+		catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
 	}
@@ -128,10 +130,23 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public InputStream readVersion(Binder binder, DefinableEntity entry, String relativeFilePath, 
+	public void readVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName, OutputStream out) 
+	throws RepositoryServiceException, UncheckedIOException {
+		InputStream is = readVersion(binder, entity, relativeFilePath, versionName);
+		
+		try {
+			FileCopyUtils.copy(is, out);
+		} 
+		catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}		
+	}
+	
+	public InputStream readVersion(Binder binder, DefinableEntity entity, String relativeFilePath, 
 			String versionName) throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String versionResourcePath = getVersionResourcePath(wdr, binder, entry, 
+			String versionResourcePath = getVersionResourcePath(wdr, binder, entity, 
 					relativeFilePath, versionName);			
 			
 			return wdr.getMethodData(versionResourcePath);
@@ -203,6 +218,9 @@ public class WebdavRepositorySession implements RepositorySession {
 			// operation is noop. 
 			boolean result = wdr.versionControlMethod(resourcePath);
 
+			if(!result)
+				throw new RepositoryServiceException("Failed to put [" + resourcePath + "] under version control");
+			
 			if(!isCheckedOut(wdr, resourcePath)) {
 				result = wdr.checkoutMethod(resourcePath);
 				if(!result)
@@ -361,6 +379,20 @@ public class WebdavRepositorySession implements RepositorySession {
 		}	
 	}
 	
+	public void miniMove(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String newRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			String resourcePath = getResourcePath(binder, entity, relativeFilePath);
+			String newResourcePath = getResourcePath(binder, entity, newRelativeFilePath);
+			
+			moveResource(wdr, resourcePath, newResourcePath);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new UncheckedIOException(e);
+		}
+	}
+	
 	/**
 	 * Converts the value of the Location response header to a valid resource
 	 * path. The DeltaV spec (section 4.4) shows an example of CHECKIN method
@@ -466,7 +498,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	private String createResource(SWebdavResource wdr, Binder binder,
 			DefinableEntity entry, String relativeFilePath, InputStream is,
 			boolean versioned)
-			throws IOException {
+			throws RepositoryServiceException, IOException {
 		boolean result = false;
 
 		// Get the path for the file resource.
@@ -488,9 +520,15 @@ public class WebdavRepositorySession implements RepositorySession {
 		// Write the file.
 		result = wdr.putMethod(resourcePath, is);
 		
+		if(!result)
+			throw new RepositoryServiceException("Failed to write [" + resourcePath + "]");
+		
 		if(versioned) {
 			// Put the file under version control.
 			result = wdr.versionControlMethod(resourcePath);
+			
+			if(!result)
+				throw new RepositoryServiceException("Failed to put [" + resourcePath + "] under version control");
 		
 			return getCheckedInVersionName(wdr, resourcePath);
 		}
@@ -499,9 +537,18 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 	
+	private void moveResource(SWebdavResource wdr, String resourcePath, 
+			String newResourcePath) throws RepositoryServiceException, 
+			IOException {
+		boolean result = wdr.moveMethod(resourcePath, newResourcePath);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to move [" + resourcePath + "] to [" + newResourcePath + "]");
+	}
+	
 	private void updateResource(SWebdavResource wdr, Binder binder,
 			DefinableEntity entry, String relativeFilePath, InputStream in)
-			throws IOException {
+			throws RepositoryServiceException, IOException {
 		boolean result = false;
 
 		/*
@@ -518,16 +565,22 @@ public class WebdavRepositorySession implements RepositorySession {
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, in);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to write [" + resourcePath + "]");
 	}
 
 	private void deleteResource(SWebdavResource wdr, Binder binder,
 			DefinableEntity entry, String relativeFilePath)
-			throws IOException {
+			throws RepositoryServiceException, IOException {
 		// Get the path for the file resource.
 		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
 
 		// Delete the file.
 		boolean result = wdr.deleteMethod(resourcePath);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to delete [" + resourcePath + "]");
 	}
 	
 	private void readResource(SWebdavResource wdr, String resourcePath,

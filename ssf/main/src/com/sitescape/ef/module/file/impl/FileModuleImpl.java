@@ -234,13 +234,25 @@ public class FileModuleImpl implements FileModule {
 	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-    	RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+		if(fa instanceof VersionAttachment) {
+			RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entry, 
+					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName(), out);			
+		}
+		else {
+			RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName(), out);
+		}
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
-		return RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+		if(fa instanceof VersionAttachment) {
+			return RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entry, 
+					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName());
+		}
+		else {
+			return RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
 				fa.getFileItem().getName());
+		}
 	}
 	
 	public boolean scaledFileExists(Binder binder, 
@@ -567,6 +579,30 @@ public class FileModuleImpl implements FileModule {
    		}
    		
    		return null;
+	}
+	
+	/**
+	 * Rename the file.
+	 *  
+	 * Important: Unlike many other methods in this class, this method
+	 * assumes that the caller is responsible for transaction demarcation
+	 * with respect to updating the metadata in the database. 
+	 * This inconsistency is here merely to improve efficiency slightly.
+	 */
+	public void renameFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, String newName) 
+	throws UncheckedIOException, RepositoryServiceException {
+		// Rename the file in the repository
+		RepositoryUtil.miniMove(fa.getRepositoryServiceName(), binder, entity, 
+				fa.getFileItem().getName(), newName);
+		// Change our metadata - note that all that needs to change is the
+		// file name. Other things such as mod date, etc., remain unchanged.
+		fa.getFileItem().setName(newName);
+		
+		for(Iterator i = fa.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+			VersionAttachment v = (VersionAttachment) i.next();
+			v.getFileItem().setName(newName);
+		}
 	}
 	
 	private void triggerUpdateTransaction() {
@@ -1019,19 +1055,25 @@ public class FileModuleImpl implements FileModule {
     		throw new InternalException();
     	}
     	
-    	if(versionName != null) {
-    		try {
-    			updateFileAttachment(fAtt, user, versionName, fui.getSize());
-    		}
-    		catch(IOException e) {
-    			throw new UncheckedIOException(e);
-    		}
-    	}
+		try {
+			updateFileAttachment(fAtt, user, versionName, fui.getSize(), fui.getModDate());
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			Principal user, String versionName, long contentLength) {
-		fAtt.setModification(new HistoryStamp(user));
+			Principal user, String versionName, long contentLength,
+			Date modDate) {
+    	HistoryStamp now = new HistoryStamp(user);
+    	HistoryStamp mod;
+    	if(modDate != null)
+    		mod = new HistoryStamp(user, modDate);
+    	else
+    		mod = now;
+    	
+		fAtt.setModification(mod);
 		
 		FileItem fItem = fAtt.getFileItem();
 		fItem.setLength(contentLength);
@@ -1042,8 +1084,11 @@ public class FileModuleImpl implements FileModule {
 			fAtt.setLastVersion(new Integer(versionNumber));
 			
 			VersionAttachment vAtt = new VersionAttachment();
-			vAtt.setCreation(fAtt.getModification());
-			vAtt.setModification(vAtt.getCreation());
+			// Creation time is always current real time, whereas modification
+			// time could be anything that the caller specified it to be
+			// (only the latter contains useful business value). 
+			vAtt.setCreation(now);
+			vAtt.setModification(fAtt.getModification());
 			vAtt.setFileItem(fItem);
 			vAtt.setVersionNumber(versionNumber);
 			vAtt.setVersionName(versionName);
@@ -1128,7 +1173,12 @@ public class FileModuleImpl implements FileModule {
 		FileAttachment fAtt = new FileAttachment();
 		fAtt.setOwner(entry);
 		fAtt.setCreation(new HistoryStamp(user));
-		fAtt.setModification(fAtt.getCreation());
+		HistoryStamp mod;
+		if(fui.getModDate() != null) // mod date specified
+			mod = new HistoryStamp(user, fui.getModDate());
+		else // set mod date equal to creation date
+			mod = fAtt.getCreation();
+		fAtt.setModification(mod);
     	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
@@ -1144,12 +1194,22 @@ public class FileModuleImpl implements FileModule {
     	return fAtt;
 	}
 	
+	/**
+	 * This method is called ONLY WHEN a new file is being created
+	 * (not to be confused with updateVersionAttachment which is called when
+	 * a file is being updated). 
+	 * 
+	 * @param fAtt
+	 * @param versionName
+	 */
 	private void createVersionAttachment(FileAttachment fAtt, String versionName) {
 		fAtt.setLastVersion(new Integer(1));
 
 		VersionAttachment vAtt = new VersionAttachment();
+		// Since this is the only version for the file, we can safely set its
+		// dates equal to those of FileAttachment.
 		vAtt.setCreation(fAtt.getCreation());
-		vAtt.setModification(vAtt.getCreation());
+		vAtt.setModification(vAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
 
 		vAtt.setVersionNumber(1);
@@ -1482,7 +1542,7 @@ public class FileModuleImpl implements FileModule {
 			// of the file. 
 			long contentLength = session.getContentLength(binder, entity, 
 					relativeFilePath, versionName);
-			updateFileAttachment(fa, changeOwner, versionName, contentLength);
+			updateFileAttachment(fa, changeOwner, versionName, contentLength, null);
 			metadataDirty = true;
 		}   			
 		
@@ -1536,4 +1596,5 @@ public class FileModuleImpl implements FileModule {
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
+
 }

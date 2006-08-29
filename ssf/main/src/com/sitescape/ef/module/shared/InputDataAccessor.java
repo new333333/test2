@@ -28,4 +28,17 @@ public interface InputDataAccessor {
 	 * @return
 	 */
 	public boolean exists(String key);
+	
+	/**
+	 * Returns as a single object the value associated with the key.
+	 * If there are multiple values associated with the key, this will return
+	 * the first value. Returns <code>null</code> if no value exists for this key.
+	 * Sort of catch-all method, which provides a hook for passing arbitrary
+	 * objects that are not necessarily strings. 
+	 * 
+	 * value. 
+	 * @param key
+	 * @return
+	 */
+	public Object getSingleObject(String key);
 }

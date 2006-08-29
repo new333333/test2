@@ -215,6 +215,10 @@ public interface RepositorySession {
 			DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
+	public void readVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName, OutputStream out) 
+		throws RepositoryServiceException, UncheckedIOException;
+	
 	/**
 	 * Returns an <code>InputStream</code> from which to read the content of
 	 * the specified version of the file resource from the repository.
@@ -400,4 +404,22 @@ public interface RepositorySession {
 			DefinableEntity entity, String relativeFilePath, 
 			String versionName) throws RepositoryServiceException,
 			UncheckedIOException;
+	
+	/**
+	 * Moves the file resource. 
+	 * This method is named miniMove to distinguish it from full-blown move
+	 * operation, since this move is intra-entity (as opposed to inter-entity).
+	 * In other word, the move takes place only within the confinement of the 
+	 * same entity. 
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param relativeFilePath
+	 * @param newRelativeFilePath
+	 * @throws RepositoryServiceException
+	 * @throws UncheckedIOException
+	 */
+	public void miniMove(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String newRelativeFilePath) 
+		throws RepositoryServiceException, UncheckedIOException;
 }

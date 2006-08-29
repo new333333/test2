@@ -62,4 +62,9 @@ public class DomInputData implements InputDataAccessor {
 		else
 			return false;
 	}
+
+	public Object getSingleObject(String key) {
+		return getSingleValue(key);
+	}
+
 }

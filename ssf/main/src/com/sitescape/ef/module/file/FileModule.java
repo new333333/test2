@@ -366,4 +366,9 @@ public interface FileModule {
 	throws RepositoryServiceException, UncheckedIOException;
     
 	public FolderEntry findFileFolderEntry(Binder fileFolder, String title);
-}
+	
+	public void renameFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, String newName) 
+		throws UncheckedIOException, RepositoryServiceException;
+
+}	

@@ -22,4 +22,7 @@ public class EmptyInputData implements InputDataAccessor{
 		return false;
 	}
 
+	public Object getSingleObject(String key) {
+		return null;
+	}
 }
