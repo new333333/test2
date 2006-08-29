@@ -31,7 +31,7 @@ public class ViewDefinitionXmlController extends SAbstractController {
 		//See if there is an operation to perform
 		if (formData.containsKey("saveLayout")) {
 			//This is a request to save the x,y layout of the workflow state graph
-			getDefinitionModule().saveDefinitionLayout(selectedItem, new MapInputData(formData));
+			getDefinitionModule().setDefinitionLayout(selectedItem, new MapInputData(formData));
 		}
 		
 		//Pass the selection id to be shown on to the rendering phase

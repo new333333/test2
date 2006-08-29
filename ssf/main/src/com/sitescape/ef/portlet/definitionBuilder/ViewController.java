@@ -110,7 +110,7 @@ public class ViewController extends SAbstractController {
 						String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 						String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 						String location = PortletRequestUtils.getStringParameter(request, "moveTo", "");
-						getDefinitionModule().moveItem(selectedItem, itemId, targetItemId, location);
+						getDefinitionModule().modifyItemLocation(selectedItem, itemId, targetItemId, location);
 					}
 					
 				} else if (operation.equals("selectId")) {

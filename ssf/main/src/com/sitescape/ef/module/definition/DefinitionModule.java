@@ -41,7 +41,7 @@ public interface DefinitionModule {
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData);
-	public void saveDefinitionLayout(String id, InputDataAccessor inputData);
+	public void setDefinitionLayout(String id, InputDataAccessor inputData);
 
 	/**
 	 * Adds an item to an item in a definition tree.
@@ -61,7 +61,7 @@ public interface DefinitionModule {
 	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
-	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
+	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
 	
 	/**
 	 * Routine to process the input data and return a map of only the entry data
