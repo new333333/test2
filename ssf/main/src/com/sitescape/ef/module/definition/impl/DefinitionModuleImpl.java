@@ -810,7 +810,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						item.attributeValue("name", "").equals("state")) {
 					//This is a workflow state. Make sure no entries are using that state
 					//TODO ???Add code to check if any entries are in this state
-					throw new DefinitionInvalidException("???", new Object[] {defId});
+					throw new DefinitionInvalidException("definition.error.cannotDelete", new Object[] {defId});
 
 					//throw new DefinitionInvalidException(defId, 
 					//		"Error: this state name cannot be deleted because some entries are in this state.");
