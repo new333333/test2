@@ -19,9 +19,9 @@ import com.sitescape.util.Validator;
 public class BinderConfig extends PersistentTimestampObject implements AclControlled {
 	private String zoneName, title;
 	private int definitionType;
-	private String definitions, workflowAssociations;//initialized by hiberate access=field
-    private PersistentAclSet aclSet; 
+	private PersistentAclSet aclSet; 
     private String iId;
+    private SSBlobSerializable definitions,workflows; //assigned by hibernate access="field"
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
@@ -94,50 +94,20 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     	this.definitionType = definitionType;
     }
     public List getDefinitionIds() {
-    	List result = new ArrayList();
-    	if (Validator.isNull(definitions)) return result;
-    	String [] defs = definitions.split(",");
-    	for (int i=0; i<defs.length; ++i) {
-    		String t = defs[i];
-    		if (Validator.isNotNull(t)) result.add(t.trim());
-    	}
-     	return result;
+    	if (definitions == null) return new ArrayList();
+    	return (List)definitions.getValue();
     }
     public void setDefinitionIds(List definitions) {
-    	StringBuffer buf = new StringBuffer();
-    	for (int i=0; i<definitions.size(); ++i) {
-    		String t = (String)definitions.get(i);
-    		if (Validator.isNotNull(t)) {
-    			buf.append(t.trim());
-    			buf.append(',');
-    		}   		
-    	}
-    	this.definitions = buf.toString(); 
+ 	   //immutable type, requires new object
+    	this.definitions = new SSBlobSerializable(definitions); 
     }
     public Map getWorkflowIds() {
-    	Map result = new HashMap();
-    	if (Validator.isNull(workflowAssociations)) return result;
-    	String [] defs = workflowAssociations.split(";");
-    	for (int i=0; i<defs.length; ++i ) {
-    		if (Validator.isNull(defs[i])) continue;
-     		String[] n = defs[i].split(",");
-     		if ((n.length == 2) &&
-     				Validator.isNotNull(n[0]) &&
-     				Validator.isNotNull(n[1])) result.put(n[0], n[1]);
-    	}
-     	return result;
-   }
-   public void setWorkflowIds(Map workflowAssociations) {
-	   StringBuffer buf = new StringBuffer();
-	   for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
-		   Map.Entry me = (Map.Entry)iter.next();
-		   if (Validator.isNull((String)me.getValue())) continue;
-		   buf.append(me.getKey());
-		   buf.append(',');
-		   buf.append(me.getValue().toString());
-		   buf.append(';');
-	   }
-	   this.workflowAssociations = buf.toString(); 
+    	if (workflows == null) return new HashMap();
+    	return (Map)workflows.getValue();
+    }
+   public void setWorkflowIds(Map workflows) {
+	   //immutable type, requires new object
+	   this.workflows = new SSBlobSerializable(workflows);
    }
  
 }

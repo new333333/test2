@@ -26,8 +26,8 @@
     <property name="definitionType"/>
     <property name="internalId" length="32"/>
     <property name="zoneName" length="100" not-null="true"/>
- 	<property name="definitions" access="field" length="128"/>
- 	<property name="workflowAssociations" access="field" length="256"/>
+    <property name="definitions" access="field" type="com.sitescape.ef.dao.util.SSBlobSerializableType"/>
+ 	<property name="workflows" access="field" type="com.sitescape.ef.dao.util.SSBlobSerializableType"/>
     <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
