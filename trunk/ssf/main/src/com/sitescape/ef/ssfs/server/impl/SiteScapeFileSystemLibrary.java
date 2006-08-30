@@ -205,10 +205,15 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		String info = objectInfo(uri, objMap);
 		if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The object does not exist");
-		else if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+			Binder binder = getLeafBinder(objMap);
+			if(!isFileFolder(binder))
+				throw new NoAccessException("Can not remove binder that is not file folder");
 			removeFolder(uri, objMap);
-		else
+		}
+		else {
 			removeResource(uri, objMap);
+		}
 	}
 
 	/*
@@ -446,8 +451,27 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoSuchObjectException("The source object does not exist");
 		}
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
-			if(!isFileFolder(getLeafBinder(sourceMap)))
-				throw new NoAccessException("Can not rename binder that is not file folder");
+			if(!isFileFolder(getLeafBinder(sourceMap))) {
+				// Important: It is important not to use NoAccessException or 
+				// AlreadyExistsException here. 1) If NoAccessException is thrown
+				// while user is trying to rename a non-file folder binder
+				// through Windows Explorer, the Explorer will try instead to
+				// achieve similar 'rename' effect by creating a new folder
+				// with the new name followed by deleting the old folder.
+				// It that is allowed to proceed, the existing non-file folder
+				// binder is deleted from the system, and a new file folder
+				// is created. That kind of indirect deletion is NEVER allowed 
+				// in Aspen. 2) If AlreadyExistsException is thrown, Explorer
+				// will display an error message like the following - "Can not
+				// rename <xyz>. A file with the name you specified already
+				// exists. Specify a different filename." This error message
+				// is mis-leading, so should be avoided. 
+				
+				throw new SiteScapeFileSystemException("Can not move or rename binder that is not file folder", true);
+				
+				// throw new AlreadyExistsException("Can not move or rename binder that is not file folder");
+				//throw new NoAccessException("Can not move or rename binder that is not file folder");
+			}
 		}
 		
 		Map targetMap = new HashMap();
