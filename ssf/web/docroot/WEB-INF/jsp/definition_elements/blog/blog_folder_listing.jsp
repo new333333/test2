@@ -5,6 +5,11 @@
       <td class="ss_blog_content" width="80%" valign="top">
 		  <c:forEach var="entry" items="${ssFolderEntries}" >
 			<div class="ss_blog_content" style="margin:2px 8px 20px 2px;">
+			  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
+			  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
+			  <c:if test="${!empty entry._workflowStateCaption}">
+			  <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
+			  </c:if>
 			  <ssf:displayConfiguration 
 			    configDefinition="${ssBlogEntries[entry._docId].ssConfigDefinition}" 
 			    configElement="${ssBlogEntries[entry._docId].ssConfigElement}" 
