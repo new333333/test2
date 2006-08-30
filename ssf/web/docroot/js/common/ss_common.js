@@ -29,6 +29,9 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	//Random number seed (for building urls that are unique)
 	var ss_random = Math.round(Math.random()*999999);
 	
+	//Files that don't pop-up in a new window when viewing them (space separated)
+	var ss_files_that_do_not_pop_up = "doc xls ppt";
+	
 	//zIndex map
 	var ssLightboxZ = 2000;
 	var ssHelpZ = 2000;
@@ -958,8 +961,8 @@ function ss_getElementsByClass(classPattern, node, tag) {
 	for (i = 0, j = 0; i < elsLen; i++) {
 		if (pattern.test(els[i].className) ) {
 			classElements[j] = els[i];
-		j++;
-	}
+			j++;
+		}
 	}
 	return classElements;
 }
@@ -2624,7 +2627,7 @@ function ss_showFavoritesPane() {
 	var fObj2 = self.document.getElementById("ss_favorites_table")
 	var w = ss_getObjectWidth(fObj)
 	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_bottom") + ss_favoritesPaneTopOffset))
-	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_bottom")))
+	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites")))
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom") + ss_favoritesPaneLeftOffset);
 	ss_showDiv("ss_favorites_pane");
 	ss_hideObj("ss_favorites_form_div");
@@ -2992,7 +2995,7 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
 }
 
 function ss_showTitleOptions(obj, id) {
-return
+	var marginOffset = 4;
 	var divObj = document.getElementById('ss_titleOptions'+id);
 	if (divObj == null) {
 		divObj = ss_createDivInBody('ss_titleOptions'+id, 'ss_popupTitleOptions');
@@ -3000,20 +3003,76 @@ return
 		imgObj.src = ss_imagesPath + "pics/sym_s_show_title_options.gif";
 		divObj.appendChild(imgObj);
 		divObj.onmouseover = ss_showTitleOptionsExpanded
+		divObj.onmouseout = ss_hideTitleOptionsExpanded
 	}
-	var outerObj = obj;
 	divObj.style.display = "block";
 	divObj.style.visibility = "hidden";
-	var x = parseInt(dojo.style.getAbsolutePosition(outerObj, true).x + dojo.style.getContentBoxWidth(outerObj))
-	var y = dojo.style.getAbsolutePosition(outerObj, true).y
-	divObj.style.top = y + "px";
+	var x = parseInt(dojo.style.getAbsolutePosition(obj, true).x + dojo.style.getContentBoxWidth(obj))
+	var y = dojo.style.getAbsolutePosition(obj, true).y
+	divObj.style.top = parseInt(y - marginOffset) + "px";
 	divObj.style.left = x + "px";
 	divObj.style.zIndex = ssMenuZ;
 	divObj.style.visibility = "visible";
 }
+var ss_titleOptionsDivTimers;
 function ss_hideTitleOptions(obj, id) {
-	//ss_hideDiv('ss_titleOptions'+id);
+	if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
+	if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
+	ss_titleOptionsDivTimers[id] = setTimeout("ss_hideDiv('ss_titleOptions"+id+"');", 800);
 }
 function ss_showTitleOptionsExpanded(evt) {
-	ss_debug('mouseover '+evt.currentTarget)
+	if ((!evt)&&(window["event"])){
+		var evt = window.event;
+	}
+	if (!evt.target) { evt.target = evt.srcElement; }
+	
+	var prefix = 'ss_titleOptions';
+	var id = "";
+	if (evt.target != null && evt.target.id != null && evt.target.id != "") {
+		if (evt.target.id.indexOf(prefix) == 0) {
+			//We have one of our popup divs, go open it
+			id = evt.target.id.substr(prefix.length);
+			ss_debug('show '+id)
+			if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
+			if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
+			
+		}
+	}
+}
+function ss_hideTitleOptionsExpanded(evt) {
+	if ((!evt)&&(window["event"])){
+		var evt = window.event;
+	}
+	if (!evt.target) { evt.target = evt.srcElement; }
+	
+	var prefix = 'ss_titleOptions';
+	var id = "";
+	if (evt.target != null && evt.target.id != null && evt.target.id != "") {
+		if (evt.target.id.indexOf(prefix) == 0) {
+			//We have one of our popup divs, hide it
+			id = evt.target.id.substr(prefix.length);
+			if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
+			if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
+			ss_debug('hide '+id)
+			ss_hideTitleOptions(evt.target, id);
+		}
+	}
+}
+
+function ss_launchUrlInNewWindow(obj, fileName) {
+	ss_debug(fileName)
+	var pattern = /\.([^/\.]*)$/
+	var results = pattern.exec(fileName)
+	if (results != null) {
+		ss_debug(results[0]);
+		var docList = ss_files_that_do_not_pop_up.split(" ")
+		for (var i = 0; i < docList.length; i++) {
+			if (results[0] == docList[i] || results[0] == "."+docList[i]) {
+				return true
+			}
+		}
+	}
+	var w = window.open(obj.href, "_blank")
+	w.focus();
+	return false;
 }

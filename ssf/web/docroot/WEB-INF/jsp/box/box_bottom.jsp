@@ -20,9 +20,10 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 </div>
 <script type="text/javascript">
 function ss_roundBox() {
-	if(!NiftyCheck()) return;
-	Rounded("div.ss_box_top_rounded","top","${boxBgColor}","${boxColor}","smooth");
-	Rounded("div.ss_box_bottom_rounded","bottom","${boxBgColor}","${boxColor}","smooth");
+	if (self.NiftyCheck && self.NiftyCheck != null && self.NiftyCheck()) {
+		Rounded("div.ss_box_top_rounded","top","${boxBgColor}","${boxColor}","smooth");
+		Rounded("div.ss_box_bottom_rounded","bottom","${boxBgColor}","${boxColor}","smooth");
+	}
 }
 ss_createOnLoadObj('ss_roundBox', ss_roundBox);
 </script>
