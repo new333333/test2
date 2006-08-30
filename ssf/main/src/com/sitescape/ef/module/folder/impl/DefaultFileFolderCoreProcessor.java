@@ -2,17 +2,22 @@
 package com.sitescape.ef.module.folder.impl;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
@@ -93,5 +98,24 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
 	   // If you're still here, the file renaming was successful.
 	   // We can change the title of the entry now. 
 	   entry.setTitle(toName);
+   }
+   
+   protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+	   super.addEntry_fillIn(binder, entry, inputData, entryData);	   
+	   takeCareOfLastModDate(entry, inputData);
+   }
+      
+   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+	   super.modifyEntry_fillIn(binder, entry, inputData, entryData);
+	   takeCareOfLastModDate(entry, inputData);
+   }
+
+   private void takeCareOfLastModDate(Entry entry, InputDataAccessor inputData) {
+	   Date lastModDate = (Date) inputData.getSingleObject("_lastModifiedDate");
+	   if(lastModDate != null) {
+		   // We have a caller-supplied last-modified date.
+	        User user = RequestContextHolder.getRequestContext().getUser();
+	        entry.setModification(new HistoryStamp(user, lastModDate));
+	   }
    }
 }
