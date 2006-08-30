@@ -22,6 +22,7 @@ import com.sitescape.ef.ssfs.NoAccessException;
 import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
+import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.ef.util.SpringContextUtil;
 
 public class DispatchServer extends GenericServlet {
@@ -145,6 +146,15 @@ public class DispatchServer extends GenericServlet {
 				logger.error(e.getMessage(), e);
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
 				return;			
+			}
+			catch(SiteScapeFileSystemException e) {
+				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);		
+				if(e.isWarning())
+					logger.warn(e);
+				else
+					logger.error(e.getMessage(), e);
+				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getMessage());
+				return;
 			}
 			catch(Exception e) {
 				req.setAttribute(CrossContextConstants.ERROR, CrossContextConstants.ERROR_GENERAL);				
