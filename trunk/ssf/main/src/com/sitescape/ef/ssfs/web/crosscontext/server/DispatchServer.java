@@ -216,7 +216,7 @@ public class DispatchServer extends GenericServlet {
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_COPY_OBJECT)) {
 			boolean overwrite = ((Boolean) req.getAttribute(CrossContextConstants.OVERWRITE)).booleanValue();
-			boolean recursive = ((Boolean) req.getAttribute(CrossContextConstants.OVERWRITE)).booleanValue();
+			boolean recursive = ((Boolean) req.getAttribute(CrossContextConstants.RECURSIVE)).booleanValue();
 			ssfs.copyObject(sourceUri, targetUri, overwrite, recursive);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_MOVE_OBJECT)) {
