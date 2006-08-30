@@ -67,7 +67,31 @@ public class MacroParameters {
     public MacroParameters(boolean recursive, boolean overwrite, boolean deleteCreate) {
         setBooleanParameter( RECURSIVE, recursive );
         setBooleanParameter( OVERWRITE, overwrite );
-        setBooleanParameter( DELETE_CREATE, (overwrite && deleteCreate) );
+        // 8/29/06 JK - With regard to Aspen, we made an executive design decision 
+        // that all delete requests made through WebDAV for any Aspen object MUST
+        // be explicit. In other words, only explicitly issued delete command can 
+        // delete a Aspen object permanently. All other commands that "imply" 
+        // deletion (eg. copying with overwrite=true) are NOT allowed to carry
+        // out the implicit deletion. 
+        // Interestingly enough, this design decision is well aligned with the
+        // Delta V spec that had to clarify some of the regular COPY semantics
+        // to make it more intuitive in light of supporting versioning. For more
+        // details, see RFC 3253, Section 1.7. 
+        // For the reason described above, I'm making this change here so that
+        // the deleteCreate parameter specified by the caller is always ignored.
+        // Instead, it will be always changed to false. 
+        // Note that this change may cause incorrect behavior for MOVE operation
+        // though. As described in the RFC mentioned above, a MOVE request with
+        // overwrite=true is supposed to perform the DELETE on the target prior
+        // to performing the MOVE. Since this same class is used to encapsulate
+        // parameters for both operations, this change can inadvertently affect
+        // the behavior of MOVE operation. However, fortunately, we decided that
+        // we do NOT support/implement MOVE operation in Aspen. Hence, this
+        // shouldn't be a serious problem (at least until we change our mind
+        // about not implementing MOVE operation...)
+        
+        //setBooleanParameter( DELETE_CREATE, (overwrite && deleteCreate) );
+        setBooleanParameter( DELETE_CREATE, false ); // always false
     }
     
     /**
