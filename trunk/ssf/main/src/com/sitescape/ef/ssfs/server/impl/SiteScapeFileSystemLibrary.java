@@ -397,7 +397,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
 			if(!isFileFolder(getLeafBinder(sourceMap)))
-				throw new NoAccessException("Can not copy binder that is not file folder");
+				throw new TypeMismatchException("Can not copy binder that is not file folder"); //$$$
 		}
 		
 		Map targetMap = new HashMap();
@@ -412,7 +412,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			}
 			else {
 				if(!isFileFolder(getLeafBinder(targetMap)))
-					throw new NoAccessException("Can not copy into a binder that is not a file folder");
+					throw new TypeMismatchException("Can not copy into a binder that is not a file folder");
 				
 				copyFileFolder((Folder) getLeafBinder(sourceMap), 
 						(Folder) getLeafBinder(targetMap), recursive);
@@ -429,7 +429,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// If the source is a file folder entry, the target's parent binder
 				// must be a file folder.
 				if(!isFileFolder(targetParentBinder))
-					throw new NoAccessException("Can not copy file entry into binder that is not file folder");
+					throw new TypeMismatchException("Can not copy file entry into binder that is not file folder"); //$$$
 				
 				copyFileFolderEntry(getFileFolderEntry(sourceMap), 
 						(Folder) targetParentBinder, getLastElemName(targetMap));
@@ -481,7 +481,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// Because we only allow "rename" (no change to parent) but not "move"
 			// (parent change), we do not allow this operation unless both the 
 			// source and the target share the same parent. 
-			throw new NoAccessException("Cannot move: It is not allowed");
+			throw new SiteScapeFileSystemException("Cannot move: It is not allowed", true); // $$$
 		}
 		
 		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
@@ -897,7 +897,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
 		
-		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
+		InputDataAccessor inputData;
+		
+		if(modDate != null) {
+			// We need to tell the system to use this client-supplied mod date
+			// for the newly created entry (instead of current time). 
+			Map data = new HashMap();
+			data.put("_lastModifiedDate", modDate);
+			inputData = new MapInputData(data);
+		}
+		else {
+			inputData = new EmptyInputData(); // No non-file input data
+		}
 		
 		try {
 			getFolderModule().addEntry(folder.getId(), def.getId(), inputData, fileItems);
@@ -923,7 +934,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
 		
-		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
+		InputDataAccessor inputData;
+		
+		if(modDate != null) {
+			// We need to tell the system to use this client-supplied mod date
+			// for the newly created entry (instead of current time). 
+			Map data = new HashMap();
+			data.put("_lastModifiedDate", modDate);
+			inputData = new MapInputData(data);
+		}
+		else {
+			inputData = new EmptyInputData(); // No non-file input data
+		}
 
 		try {
 			getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
