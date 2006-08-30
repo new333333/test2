@@ -34,22 +34,38 @@
 		<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
 </ssf:ifSupportsEditInPlace>
 
-<br>
 <c:set var="versionCount" value="0"/>
 <c:forEach var="fileVersion" items="${fileHandle.fileVersions}">
+<c:set var="versionCount" value="${versionCount + 1}"/>
+</c:forEach>
+<c:if test="${!empty fileHandle.fileVersions && versionCount > 1}">
+<div class="ss_indent_medium">
+<span class="ss_bold"><ssf:nlt tag="entry.PreviousVersions"/></span>
+<br>
+<c:set var="versionCount" value="0"/>
+<table class="ss_compact20">
+<c:forEach var="fileVersion" items="${fileHandle.fileVersions}">
 <c:if test="${versionCount > 0}">
-&nbsp;&nbsp;&nbsp;<a style="text-decoration: none;"
+<tr>
+<td class="ss_compact20"><a style="text-decoration: none;"
   href="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
     <ssf:param name="versionId" value="${fileVersion.id}"/>
-    </ssf:url>">v${fileVersion.versionNumber}</a>
-<br>
+    </ssf:url>"><ssf:nlt tag="entry.version"/> ${fileVersion.versionNumber}</a></td>
+<td class="ss_compact20"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+     value="${fileVersion.modification.date}" type="both" 
+	 timeStyle="short" dateStyle="short" /></td>
+<td class="ss_compact20"><span class="ss_smallprint">(${fileVersion.fileItem.lengthKB}KB)</span></td>
+</tr>
 </c:if>
 <c:set var="versionCount" value="${versionCount + 1}"/>
 </c:forEach>
+</table>
+</div>
 <br>
+</c:if>
 
 </div>

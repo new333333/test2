@@ -2995,6 +2995,7 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
 }
 
 function ss_showTitleOptions(obj, id) {
+return
 	var marginOffset = 4;
 	var divObj = document.getElementById('ss_titleOptions'+id);
 	if (divObj == null) {
@@ -3016,11 +3017,13 @@ function ss_showTitleOptions(obj, id) {
 }
 var ss_titleOptionsDivTimers;
 function ss_hideTitleOptions(obj, id) {
+return
 	if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
 	if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
 	ss_titleOptionsDivTimers[id] = setTimeout("ss_hideDiv('ss_titleOptions"+id+"');", 800);
 }
 function ss_showTitleOptionsExpanded(evt) {
+return
 	if ((!evt)&&(window["event"])){
 		var evt = window.event;
 	}
@@ -3040,6 +3043,7 @@ function ss_showTitleOptionsExpanded(evt) {
 	}
 }
 function ss_hideTitleOptionsExpanded(evt) {
+return
 	if ((!evt)&&(window["event"])){
 		var evt = window.event;
 	}
@@ -3060,11 +3064,9 @@ function ss_hideTitleOptionsExpanded(evt) {
 }
 
 function ss_launchUrlInNewWindow(obj, fileName) {
-	ss_debug(fileName)
 	var pattern = /\.([^/\.]*)$/
 	var results = pattern.exec(fileName)
 	if (results != null) {
-		ss_debug(results[0]);
 		var docList = ss_files_that_do_not_pop_up.split(" ")
 		for (var i = 0; i < docList.length; i++) {
 			if (results[0] == docList[i] || results[0] == "."+docList[i]) {

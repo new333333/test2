@@ -35,15 +35,24 @@
   }
   
 .ss_indent_small {
-  margin: 2px;
+  margin: 2px 2px 2px 2px;
   }
   
 .ss_indent_medium {
-  margin: 5px;
+  margin: 2px 2px 2px 5px;
   }
   
 .ss_indent_large {
-  margin: 8px;
+  margin: 2px 2px 2px 8px;
+  }
+  
+table.ss_compact20 {
+  margin:0px;
+  padding:0px;
+  }
+td.ss_compact20 {
+  margin:0px 0px 0px 0px;
+  padding:0px 20px 0px 0px;
   }
   
 /* ss_gray is specified in view_css so its colors can be set up
