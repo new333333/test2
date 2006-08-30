@@ -8,13 +8,13 @@
 <br>
 <span>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
-<a style="text-decoration: none;"
-  href="<ssf:url 
+<a style="text-decoration: none;" href="<ssf:url 
     webPath="viewFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}" >
     <ssf:param name="fileId" value="${selection.id}"/>
-    </ssf:url>"><c:out value="${selection.fileItem.name} "/></a>
+    </ssf:url>" 
+    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"><c:out value="${selection.fileItem.name} "/></a>
     
 <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
 <a style="text-decoration: none;"

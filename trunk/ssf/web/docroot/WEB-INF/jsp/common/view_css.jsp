@@ -35,14 +35,14 @@ function ss_loadJsFile(rootPath, jsFile) {
 }
 
 if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded == "undefined" ) {
+	//ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
-	ss_loadJsFile(ss_rootPath, "js/common/nifty_corners.js");
+	//ss_loadJsFile(ss_rootPath, "js/common/nifty_corners.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_drag.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_dragdrop.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_coordinates.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-	//ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
 	ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
 	ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
 	ss_loadJsFile(ss_rootPath, "js/dojo/src/math/Math.js");
@@ -125,14 +125,14 @@ if (document.createStyleSheet) {
 	document.createStyleSheet(ss_forumColorsCssUrl);
 	document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
 	document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-	document.createStyleSheet(niftyCornersCssUrl);
+	//document.createStyleSheet(niftyCornersCssUrl);
 	//document.createStyleSheet(htmlareaCssUrl);
 } else {
 	ss_createStyleSheet(ss_forumCssUrl);
 	ss_createStyleSheet(ss_forumColorsCssUrl);
 	ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
 	ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-	ss_createStyleSheet(niftyCornersCssUrl);
+	//ss_createStyleSheet(niftyCornersCssUrl);
 	//ss_createStyleSheet(htmlareaCssUrl);
 }
 
@@ -161,10 +161,11 @@ var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 
 //Routine to round the corners of the rounded box tag
 function ss_rounded() {
-	if(!NiftyCheck()) return;
-	Rounded("div.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
-	Rounded("div.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
-	Rounded("div.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
+	if (self.NiftyCheck != null && self.NiftyCheck()) {
+		Rounded("div.ss_rounded", "all", "${ss_style_background_color}", "${ss_form_background_color}", "smooth");
+		Rounded("div.ss_rounded_border", "all", "${ss_style_background_color}", "transparent", "border smooth");
+		Rounded("div.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
+	}
 }
 ss_createOnLoadObj('ss_rounded', ss_rounded);
 

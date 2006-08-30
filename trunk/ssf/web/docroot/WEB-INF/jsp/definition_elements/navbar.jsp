@@ -43,6 +43,7 @@ function ss_turnOffDebugMode() {
   <br />
   <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
   </div>
+  <div id="ss_navbar_favorites"></div>
   </ssHelpSpot>
 </td>
 
