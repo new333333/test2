@@ -1099,6 +1099,7 @@ public class FileModuleImpl implements FileModule {
 			vAtt.setFileItem(fItem);
 			vAtt.setVersionNumber(versionNumber);
 			vAtt.setVersionName(versionName);
+			vAtt.setRepositoryServiceName(fAtt.getRepositoryServiceName());
 			fAtt.addFileVersion(vAtt);
 		}
 	}
@@ -1221,6 +1222,7 @@ public class FileModuleImpl implements FileModule {
 
 		vAtt.setVersionNumber(1);
 		vAtt.setVersionName(versionName);
+		vAtt.setRepositoryServiceName(fAtt.getRepositoryServiceName());
 		fAtt.addFileVersion(vAtt);
 	}
 	
