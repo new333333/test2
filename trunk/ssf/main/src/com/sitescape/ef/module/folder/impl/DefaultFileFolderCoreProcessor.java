@@ -14,6 +14,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.TitleException;
@@ -32,18 +33,59 @@ import com.sitescape.ef.util.FileUploadItem;
 public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
 	
 	/*
-	 * Make sure we have a title upload item 
+	 * Perform additional validation on the files. 
 	 * (non-Javadoc)
 	 * @see com.sitescape.ef.module.binder.impl.AbstractEntryProcessor#addEntry_filterFiles(com.sitescape.ef.domain.Binder, java.util.List)
 	 */
-	protected FilesErrors addEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
-    	FilesErrors errors = getFileModule().filterFiles(binder, fileUploadItems);
+	protected FilesErrors addEntry_filterFiles(Binder binder, Definition def, 
+			Map entryData, List fileUploadItems) throws FilterException, TitleException {
+		FilesErrors errors = super.addEntry_filterFiles(binder, def, entryData, fileUploadItems);
+		
+		// Make sure 1) we still have a title upload item after the filtering
+		// and 2) the title itself does not cause a conflict with existing objects.
+		
     	for (int i=0; i<fileUploadItems.size(); ++i) {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
-    		if (fui.getType() == FileUploadItem.TYPE_TITLE) return errors;
+    		if (fui.getType() == FileUploadItem.TYPE_TITLE) {
+    			getFolderDao().validateTitle((Folder) binder, fui.getOriginalFilename());
+    			return errors;
+    		}
     	}
+    	
+    	// If we're here, it means that the title file failed the filtering. 
     	throw new TitleException("");
     }
+	
+	/*
+	 * Perform additional validation on the files
+	 * (non-Javadoc)
+	 * @see com.sitescape.ef.module.binder.impl.AbstractEntryProcessor#modifyEntry_filterFiles(com.sitescape.ef.domain.Binder, com.sitescape.ef.domain.Entry, java.util.Map, java.util.List)
+	 */
+    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
+    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
+    	FilesErrors errors = super.modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+    	
+    	// If user specified a title file with different name, and the file 
+    	// passed the filtering, then make sure that the new name does not
+    	// cause a conflict with existing objects. 
+    	
+    	for (int i=0; i<fileUploadItems.size(); ++i) {
+    		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
+    		if (fui.getType() == FileUploadItem.TYPE_TITLE) {
+    			String newTitle = fui.getOriginalFilename();
+    			if(!newTitle.equalsIgnoreCase(entry.getTitle())) {
+    				getFolderDao().validateTitle((Folder) binder, newTitle);
+    			}
+    			return errors;
+    		}
+    	}
+    	
+    	// If we're here, it means either that the user didn't upload a title
+    	// file, or he did but it failed the filtering. Either case, we 
+    	// proceed normally.
+    	return errors;
+    }
+
 	/*
 	 * If file failed to be copied, delete entire entry
 	 *  (non-Javadoc)
@@ -51,7 +93,7 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
 	 */
 	protected FilesErrors addEntry_processFiles(Binder binder, 
     		Entry entry, List fileUploadItems, FilesErrors filesErrors) {
-		FilesErrors errors = getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
+		FilesErrors errors = super.addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
 	   	for (int i=0; i<fileUploadItems.size(); ++i) {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
     		if (fui.getType() == FileUploadItem.TYPE_TITLE) return errors;
@@ -80,7 +122,7 @@ public class DefaultFileFolderCoreProcessor extends DefaultFolderCoreProcessor {
    				("_fileEntryTitle".equals(a.getName()))) throw new TitleException("");
 	   }
    }
-
+   
    protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
 		   InputDataAccessor inputData, Map entryData) {
 	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData);

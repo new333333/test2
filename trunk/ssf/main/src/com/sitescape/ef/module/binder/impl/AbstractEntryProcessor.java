@@ -34,6 +34,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
@@ -78,7 +79,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
         try {
-        	FilesErrors filesErrors = addEntry_filterFiles(binder, fileUploadItems);
+        	FilesErrors filesErrors = addEntry_filterFiles(binder, def, entryData, fileUploadItems);
         	final Entry entry = addEntry_create(def, clazz);
         
         	// 	The following part requires update database transaction.
@@ -118,7 +119,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
    
-    protected FilesErrors addEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    protected FilesErrors addEntry_filterFiles(Binder binder, Definition def, 
+    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 
@@ -224,7 +226,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 	    
 	    try {
-	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, fileUploadItems);
+	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
 	    
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
@@ -254,7 +256,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    }
 	}
 
-    protected FilesErrors modifyEntry_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
+    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
+    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
 

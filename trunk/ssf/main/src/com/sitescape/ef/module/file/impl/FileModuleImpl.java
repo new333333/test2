@@ -775,14 +775,21 @@ public class FileModuleImpl implements FileModule {
         				entry.addAttachment(fAtt);
         			}
         		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
-        			// name must be unique
         			String title = fui.getOriginalFilename();
+        			/* The following title validation is commented out. Instead,
+        			 * the checking is performed earlier in the cycle _before_
+        			 * the enclosing entry is created or updated in the database
+        			 * (see *_filterFiles methods in DefaultFileFolderCoreProcessor).
+        			 * This is to prevent the situation where a bogus/broken entry 
+        			 * with empty title is created and remain in the database upon
+        			 * title validation failure. 
+        			// name must be unique
         			if (!title.equalsIgnoreCase(entry.getTitle())) {
         				if (binder instanceof Folder) 
         					getFolderDao().validateTitle((Folder)binder, title);
         				else
         					getCoreDao().validateTitle(binder, title);
-        			}       			
+        			}*/    			
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
         			if (ca != null) {
         				//exist, move to attachments
