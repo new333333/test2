@@ -196,7 +196,7 @@ public class QueryBuilder {
 			    	termText += "~" + nearText;
 			    }
 			} else {
-				termText = fieldName + ":" + child.getText();
+				termText = fieldName + ":(" + child.getText() + ")";
 			}
 		}
 		return termText;
