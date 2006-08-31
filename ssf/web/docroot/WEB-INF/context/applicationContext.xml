@@ -10,6 +10,10 @@
 	<bean id="propertyPlaceholderConfigurer" 
 		class="com.sitescape.ef.util.PropertyPlaceholderConfigurer" 
 		depends-on="sPropsUtil">	
+		<!-- As explained above, this custom configurer gets properties values
+		     from SpropsUtil, NOT from the properties file specified below.
+		     In other words, the following 'location' property is ignored,
+		     but nevertheless present here to satisfy initialization requirement. -->
 		<property name="location"><value>config/ssf.properties</value></property>								
 	</bean>
 
