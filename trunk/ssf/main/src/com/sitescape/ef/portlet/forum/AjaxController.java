@@ -112,7 +112,8 @@ public class AjaxController  extends SAbstractController {
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
+					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA) ||
+					op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
 				return new ModelAndView("binder/get_entry_elements", model);
 			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
 					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
@@ -164,7 +165,8 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
+				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA) || 
+				op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
 			return ajaxGetFilterData(request, response);
 
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
@@ -431,9 +433,16 @@ public class AjaxController  extends SAbstractController {
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				}
 			}
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_WORKFLOW_DEF_ID+filterTermNumber);
+			if (Validator.isNotNull(defId)) {
+				model.put(WebKeys.FILTER_WORKFLOW_DEF_ID, defId);
+				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
+				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+			}
 		}
 		
-		String elementName = PortletRequestUtils.getStringParameter(request,"elementName" + filterTermNumber);
+		String elementName = PortletRequestUtils.getStringParameter(request, "elementName" + filterTermNumber, "");
 		if (Validator.isNotNull(elementName)) {
 			model.put(WebKeys.FILTER_ENTRY_ELEMENT_NAME, elementName);
 		}
@@ -445,11 +454,17 @@ public class AjaxController  extends SAbstractController {
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
 	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+			model.put(WebKeys.WORKFLOW_DEFINTION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
 			return new ModelAndView("binder/get_filter_type", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("binder/get_entry_elements", model);
 		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("binder/get_element_value", model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+			model.put(WebKeys.FILTER_TYPE, "workflow");
+			return new ModelAndView("binder/get_entry_elements", model);
 		} else {
 			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request, 
 					"elementValueDateType" + filterTermNumber, ""));

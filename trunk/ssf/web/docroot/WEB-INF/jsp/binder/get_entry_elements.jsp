@@ -7,8 +7,9 @@
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
 	<taconite-replace contextNodeID="elementList<c:out value="${ss_filterTermNumber}"/>" 
-	parseInBrowser="true"><div 
-	   id="elementList<c:out value="${ss_filterTermNumber}"/>" 
+	parseInBrowser="true">
+	 <c:if test="${ss_filterType == 'entry'}">
+	   <div id="elementList<c:out value="${ss_filterTermNumber}"/>" 
 	   style="visibility:visible; display:inline;"><select
 	   name="elementName<c:out value="${ss_filterTermNumber}"/>" 
 	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_element_values')">
@@ -22,7 +23,21 @@
 	         <option value="<c:out value="${element.key}"/>"><c:out value="${element.value.caption}"/></option>
 	       </c:if>
 	     </c:forEach>
-	   </select></div></taconite-replace>
+	   </select></div>
+	 </c:if>
+	 
+	 <c:if test="${ss_filterType == 'workflow'}">
+	   <div id="elementList<c:out value="${ss_filterTermNumber}"/>" 
+	   style="visibility:visible; display:inline;"><select
+	   name="stateName<c:out value="${ss_filterTermNumber}"/>" >
+	     <option value="" selected="selected"><ssf:nlt 
+	       tag="filter.selectState"/></option>
+	     <c:forEach var="state" items="${ssWorkflowDefinitionStateData}">
+	       <option value="<c:out value="${state.key}"/>"><c:out value="${state.value.caption}"/></option>
+	     </c:forEach>
+	   </select></div>
+	 </c:if>
+	</taconite-replace>
 
 	<taconite-replace contextNodeID="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	parseInBrowser="true"><div 

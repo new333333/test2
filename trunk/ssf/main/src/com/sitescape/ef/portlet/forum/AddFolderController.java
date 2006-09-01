@@ -78,6 +78,8 @@ public class AddFolderController extends SAbstractController {
 		Binder binder = getBinderModule().getBinder(binderId);
     	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
+		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		model.put(WebKeys.OPERATION, action);
 
 		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
 		if (Validator.isNull(defId)) {

@@ -18,10 +18,8 @@
     	<select name="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
     	   id="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
     	  onChange="ss_getFilterSelectionBox(this, 'ss_entry_def_id', 'get_entry_elements')">
-    	  <option value="" selected="selected"><ssf:nlt 
-    	    tag="filter.selectElement" text="--select an entry type--"/></option>
-    	  <option value="_common"><ssf:nlt 
-    	    tag="filter.commonElements" text="--common elements (e.g., title)--"/></option>
+    	  <option value="" selected="selected"><ssf:nlt tag="filter.selectElement"/></option>
+    	  <option value="_common"><ssf:nlt tag="filter.commonElements"/></option>
 		    <c:forEach var="item" items="${ssEntryDefinitionMap}">
 		        <option value="<c:out value="${item.value.id}"/>"><c:out 
 		          value="${item.value.title}"/></option>
@@ -35,7 +33,15 @@
     	</select>
 	  </c:if>
 	  <c:if test="${ss_filterType == 'workflow'}">
-	    [workflows and workflow states will be listed here]
+    	<select name="ss_workflow_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	   id="ss_workflow_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	  onChange="ss_getFilterSelectionBox(this, 'ss_workflow_def_id', 'get_workflow_states')">
+    	  <option value="" selected="selected"><ssf:nlt tag="filter.selectWorkflow"/></option>
+		  <c:forEach var="item" items="${ssWorkflowDefinitionMap}">
+		    <option value="<c:out value="${item.value.id}"/>"><c:out 
+		      value="${item.value.title}"/></option>
+		  </c:forEach>
+    	</select>
 	  </c:if>
 	  <input type="hidden" name="filterType<c:out value="${ss_filterTermNumber}"/>"
 	    value="<c:out value="${ss_filterType}"/>"/>

@@ -47,6 +47,8 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
+		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		model.put(WebKeys.OPERATION, action);
  		
 		//TODO: need to make the display type a config option
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
@@ -96,7 +98,6 @@ public class ViewController  extends SAbstractController {
 				
 		    return new ModelAndView("workspacetree/view", model);			
 		} else if ("ss_presence".equals(pName)) {
-	 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION);
 	 		//if action in the url, assume this is an ajax update call
 	 		if (!Validator.isNull(action)) {
 				model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
