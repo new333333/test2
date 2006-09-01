@@ -15,7 +15,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -36,11 +35,13 @@ public class WebdavRepositorySession implements RepositorySession {
 	}
 	
 	public void close() throws RepositoryServiceException, UncheckedIOException{
-		try {
-			wdr.close();
-			wdr = null;
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+		if(wdr != null) {
+			try {
+				wdr.close();
+				wdr = null;
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
 		}
 	}
 
