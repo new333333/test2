@@ -29,6 +29,7 @@ public class SearchObject implements Serializable {
 		if (qp == null) {
 			logger.info("QueryParser instantiating new QP");
 			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new WhitespaceAnalyzer());
+			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		}
 		//}
 	}
