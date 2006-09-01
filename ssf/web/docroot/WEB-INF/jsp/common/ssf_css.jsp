@@ -1,6 +1,9 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
-
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
+<% // Define the user's choice of skins (right now there is only one) %>
+<c:set var="ss_user_skin" value="r1" scope="request"/>
+
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
@@ -1012,5 +1015,68 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
   } 
 
 /* end of Tab div styling */
+
+
+/* -------------------Skins-------------------- */
+/* global toolbar: */
+.ss_global_toolbar{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
+	height:60px;
+<c:if test="<%= isIE %>">
+	margin-bottom:0px;
+</c:if>
+<c:if test="<%= !isIE %>">
+	margin-bottom:36px;
+</c:if>
+}
+.ss_global_toolbar_links{
+	float:right;
+	margin-top:4px;
+	margin-right:50px;
+}
+* html .ss_global_toolbar_links {
+	margin-right:25px;
+}
+.ss_global_toolbar_links li {
+	float:left;
+	margin-left:19px;
+}
+.ss_global_toolbar_links li div {
+	display:block;
+	padding-top:32px;
+	color:#484848;
+	text-align:center;
+}
+.ss_global_toolbar_favs div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/favs.gif) no-repeat top;
+}
+.ss_global_toolbar_myworkspace div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/workspace.gif) no-repeat top;
+}
+.ss_global_toolbar_clipboard div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
+}
+.ss_global_toolbar_help div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
+}
+.ss_global_toolbar_search {
+	float:right;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/searchback.gif);
+	width:198px;
+	height:48px;
+	position:relative;
+}
+.ss_global_toolbar_search .form-text {
+	position:absolute;
+	top:16px;
+	left:17px;
+	width:127px;
+}
+.ss_global_toolbar_search .go {
+	position:absolute;
+	top:15px;
+	left:152px;
+
+}
 
 </c:if>
