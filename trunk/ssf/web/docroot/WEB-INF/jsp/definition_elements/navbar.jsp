@@ -2,6 +2,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script>
 <c:if test="${ssUserProperties.debugMode}">
+<!-- Start of debug window -->
   <div style="border:1px solid black;">
   <div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">
     <table cellspacing="0" cellpadding="0" style="background-color:#CECECE; width:100%;">
@@ -26,83 +27,69 @@ function ss_turnOffDebugMode() {
   </div>
   </div>
   <br/>
+<!-- End of debug window -->
 </c:if>
 
-<div align="right">
-<table cellspacing="0" cellpadding="0" >
-<tr>
+<!-- Start of global toolbar -->
+<div class="ss_global_toolbar">
+  <ul class="ss_global_toolbar_links ss_font-x-small">
 
-<% // Favorites link %>
-<td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="5"
-    title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-  <div id="ss_navbarFavoritesButton">
-  <a href="javascript: ;"
-  onClick="ss_showFavoritesPane();return false;"><img border="0" src="<html:imagesPath/>icons/favorites.png" 
-  alt="<ssf:nlt tag="navigation.favorites" text="Favorites"/>" /></a>
-  <br />
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
-  </div>
-  <div id="ss_navbar_favorites"></div>
-  </ssHelpSpot>
-</td>
+<!-- Favorites -->
+    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
+      <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+	    <div id="ss_navbarFavoritesButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
+	    </div>
+	    <div id="ss_navbar_favorites" style="visibility:hidden;"></div>
+	  </ssHelpSpot>
+	</li>
 
-<% // My workspace %>
-<td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="bottom" align="left" offsetX="10" offsetY="5"
-  title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-  <div id="ss_navbarMyWorkspaceButton">
-  <img border="0" src="<html:imagesPath/>icons/workspace.gif" 
-    alt="<ssf:nlt tag="navigation.myWorkspace"/>" />
-  <br />
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
-  </div>
-  </ssHelpSpot>
-</td>
+<!-- My workspace -->
+	<li class="ss_global_toolbar_myworkspace" onClick="alert('Go to My Workspace (tbd)');">
+	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+	    <div id="ss_navbarMyWorkspaceButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
+	    </div>
+	  </ssHelpSpot>
+	</li>
 
-<% // Search form %>
-<td align="center" nowrap="nowrap" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="5"
-    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-    <div id="ss_navbarSearchButton">
-    <img border="0" src="<html:imagesPath/>pics/sym_s_search.gif" 
-      alt="<ssf:nlt tag="navigation.search" text="Search"/>" /><input
-      type="text" size="25"/><input type="submit" value="Go" />
-    <br />
-    <span class="ss_fineprint"><ssf:nlt tag="navigation.search" text="Search"/></span>
-    </div>
-  </ssHelpSpot>
-</td>
+<!-- Clipboard -->
+	<li class="ss_global_toolbar_clipboard" onClick="alert('Show the clipboard (tbd)');">
+	  <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	      title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
+	    <div id="ss_navbarClipboardButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
+	    </div>
+	  </ssHelpSpot>
+	</li>
 
-<% // Clipboard %>
-<td align="center" style="padding:0px 0px 0px 20px;">
-   <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="bottom" align="left" offsetX="10" offsetY="5"
-    title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
-  <div id="ss_navbarClipboardButton">
-  <img border="0" src="<html:imagesPath/>icons/clipboard.png" 
-    alt="<ssf:nlt tag="navigation.clipboard" text="Clipboard"/>" />
-  <br />
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
-  </div>
-  </ssHelpSpot>
-</td>
+<!-- Help button -->
+	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();">
+	  <ssHelpSpot helpId="personal_toolbar/help_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
+	    <div id="ss_navbarHelpButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+	    </div>
+	  </ssHelpSpot>
+	</li>
 
-<% // Help toggle %>
-<td align="center" style="padding:0px 0px 0px 20px;">
-  <ssHelpSpot helpId="personal_toolbar/help_button" valign="bottom" align="left" offsetX="10" offsetY="5"
-    title="<ssf:nlt tag="helpSpot.helpButton"/>">
-  <div id="ss_navbarHelpButton">
-  <a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
-  src="<html:imagesPath/>icons/help.png" 
-  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-  <br />
-  <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
-  </div>
-  </ssHelpSpot>
-</td>
+  </ul>
 
-</tr>
-</table>
+<!-- Search form -->
+	<div class="ss_global_toolbar_search">
+		<form action="#">
+		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
+		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+		    <div id="ss_navbarSearchButton">
+			  <input name="" type="text" class="form-text" /> <input class="go" name="" type="image" value="go" 
+			    src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/go.gif" />
+		    </div>
+		  </ssHelpSpot>
+		</form>
+	</div>
+
 
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
@@ -154,6 +141,9 @@ var ss_favoritesShowIdUrl = "<portlet:renderURL windowState="maximized">
 
 </c:if>
 </div>
+
+
+<!-- Start of favorites pane -->
 <div class="ss_style" id="ss_favorites_pane" 
   style="position:absolute; visibility:hidden;
   border:solid 1px black; height:200px;">
@@ -213,4 +203,6 @@ var ss_favoritesShowIdUrl = "<portlet:renderURL windowState="maximized">
   </div>
   </div>
 </div>
+<!-- End of favorites pane -->
+
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
