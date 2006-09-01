@@ -214,6 +214,7 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		     reported in the Aspen issue database (issue #116). -->
 		<mkdir dir="${temp.dir}/common/endorsed" />
 		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
+		<copy file="lib/xercesImpl.jar" todir="${temp.dir}/common/endorsed" />
 		<delete file="temp/liferay/WEB-INF/lib/xercesImpl.java" />
 		
 		<mkdir dir="${dist.dir}" />
