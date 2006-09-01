@@ -156,10 +156,13 @@ public class RepositoryUtil {
 			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
+		InputStream in = null;
 		try {
-			return session.read(binder, entry, relativeFilePath);
+			in = session.read(binder, entry, relativeFilePath);
+			return new SessionWrappedInputStream(in, session);
 		} finally {
-			session.close();
+			if(in == null)
+				session.close();
 		}
 	}
 
@@ -168,10 +171,13 @@ public class RepositoryUtil {
 			throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
 
+		InputStream in = null;
 		try {
-			return session.readVersion(binder, entry, relativeFilePath, versionName);
+			in = session.readVersion(binder, entry, relativeFilePath, versionName);
+			return new SessionWrappedInputStream(in, session);
 		} finally {
-			session.close();
+			if(in == null)
+				session.close();
 		}
 	}
 
