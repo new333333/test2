@@ -201,5 +201,16 @@ public class DefinitionHelper {
 		
 		return defDoc;
 	}
-		
+
+	public static boolean checkIfBinderShowingDashboard(Binder binder) {
+		Definition def = binder.getEntryDef();
+		if (def == null) getInstance().getDefinitionModule().setDefaultBinderDefinition(binder);
+		Document defDoc = def.getDefinition();
+		if (defDoc != null) {
+			if (defDoc.getRootElement().selectSingleNode("//item[@name='dashboardCanvas']") != null) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

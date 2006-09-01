@@ -77,7 +77,6 @@ public interface DefinitionModule {
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
 	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getEntryDefinitionElements(String id);
-
-
+	public Map getWorkflowDefinitionStates(String id);
 
 }

@@ -36,6 +36,8 @@ public class FilterHelper {
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeEntry = "entry";
    	public final static String FilterTypeWorkflow = "workflow";
+   	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
+   	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	
    	//formData fields and values
    	private final static String FilterNameField = "filterName";
@@ -47,6 +49,10 @@ public class FilterHelper {
    	public final static String FilterElementNameCaptionField = "elementNameCaption";
    	public final static String FilterElementValueField = "elementValue";
    	public final static String FilterElementValueTypeField = "elementValueType";
+   	public final static String FilterWorkflowDefIdField = "ss_workflow_def_id";
+   	public final static String FilterWorkflowDefIdCaptionField = "ss_workflow_def_id_caption";
+   	public final static String FilterWorkflowStateNameField = "stateName";
+   	public final static String FilterWorkflowStateNameCaptionField = "stateNameCaption";
 	
 	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
@@ -63,8 +69,8 @@ public class FilterHelper {
 		//Get the terms out of the formData
 		Integer maxTermNumber = new Integer(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX));
 		for (int i = 1; i <= maxTermNumber.intValue(); i++) {
-			String filterType = PortletRequestUtils.getStringParameter(request, FilterTypeField + String.valueOf(i));
-			if (!filterType.equals("")) {
+			String filterType = PortletRequestUtils.getStringParameter(request, FilterTypeField + String.valueOf(i), "");
+			if (filterType != null && !filterType.equals("")) {
 				//Found a possible term
 				if (formData.containsKey("deleteTerm")) {
 					String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER);
@@ -110,7 +116,15 @@ public class FilterHelper {
 						}
 					}
 				} else if (filterType.equals(FilterTypeWorkflow)) {
-					
+					//Get the workflow definition and state
+					String defId = PortletRequestUtils.getStringParameter(request, FilterWorkflowDefIdField + String.valueOf(i), "");
+					String state = PortletRequestUtils.getStringParameter(request, FilterWorkflowStateNameField + String.valueOf(i), "");
+					if (!defId.equals("") && !state.equals("")) {
+						Element filterTerm = filterTerms.addElement(FilterTerm);
+						filterTerm.addAttribute(FilterType, filterType);
+						filterTerm.addAttribute(FilterWorkflowDefId, defId);
+						filterTerm.addAttribute(FilterWorkflowStateName, state);
+					}
 				}
 			}
 		}
@@ -181,7 +195,29 @@ public class FilterHelper {
     			}
     			searchFilterData.put(FilterElementValueField+ String.valueOf(i+1), valueMap);
     		} else if (filterType.equals(FilterTypeWorkflow)) {
-    			//TODO Add the workflow boolean term
+    			//This is a workflow state term. 
+    			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
+    			String stateName = filterTerm.attributeValue(FilterHelper.FilterWorkflowStateName, "");
+    			String defIdCaption = defId;
+    			String stateNameCaption = stateName;
+    			Definition def;
+ 				//Get the definition title
+				try {
+					def = DefinitionHelper.getDefinition(defId);
+ 					defIdCaption = def.getTitle();
+					Document defDoc = def.getDefinition();
+					Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+stateName+"']");
+					if (item != null) {
+						Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
+						if (captionEle != null) stateNameCaption = NLT.getDef(captionEle.attributeValue("value", stateName));
+					}
+				} catch (Exception ex) {/*skip*/}
+    			
+    			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeWorkflow);
+    			searchFilterData.put(FilterWorkflowDefIdField+ String.valueOf(i+1), defId);
+    			searchFilterData.put(FilterWorkflowDefIdCaptionField+ String.valueOf(i+1), defIdCaption);
+    			searchFilterData.put(FilterWorkflowStateNameField+ String.valueOf(i+1), stateName);
+    			searchFilterData.put(FilterWorkflowStateNameCaptionField+ String.valueOf(i+1), stateNameCaption);
     		}
     	}
    		
@@ -236,7 +272,24 @@ public class FilterHelper {
     				}
     			}
     		} else if (filterType.equals(FilterTypeWorkflow)) {
-    			//TODO Add the workflow boolean term
+    			//This is a workflow state term. Build booleans from the state name.
+    			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
+    			String stateName = filterTerm.attributeValue(FilterHelper.FilterWorkflowStateName, "");
+				Element field;
+				Element child;
+				Element andField = orField;
+    			if (!defId.equals("")) {
+    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
+	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText(defId);
+    			}
+    			
+    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    	child.setText(stateName);
     		}
     	}
     	//qTree.asXML();

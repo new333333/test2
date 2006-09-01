@@ -251,6 +251,11 @@ ss_filterTermNumberMax++;
 				<option value="<%= (String) ss_searchFilterData.get("ss_entry_def_id" + String.valueOf(i)) %>" 
 				  selected><%= (String) ss_searchFilterData.get("ss_entry_def_id_caption" + String.valueOf(i)) %></option>
 <%
+				} else if (ss_searchFilterData.containsKey("ss_workflow_def_id" + String.valueOf(i))) {
+%>
+				<option value="<%= (String) ss_searchFilterData.get("ss_workflow_def_id" + String.valueOf(i)) %>" 
+				  selected><%= (String) ss_searchFilterData.get("ss_workflow_def_id_caption" + String.valueOf(i)) %></option>
+<%
 				}
 %>
 		      </select>
@@ -273,6 +278,13 @@ ss_filterTermNumberMax++;
 				<select name="elementName<%= String.valueOf(i) %>" size="1" multiple>
 				  <option value="<%= (String) ss_searchFilterData.get("elementName" + String.valueOf(i)) %>" selected>
 				    <%= (String) ss_searchFilterData.get("elementNameCaption" + String.valueOf(i)) %></option>
+				</select>
+<%
+			} else if (ss_searchFilterData.containsKey("stateName" + String.valueOf(i))) {
+%>
+				<select name="stateName<%= String.valueOf(i) %>" size="1" multiple>
+				  <option value="<%= (String) ss_searchFilterData.get("stateName" + String.valueOf(i)) %>" selected>
+				    <%= (String) ss_searchFilterData.get("stateNameCaption" + String.valueOf(i)) %></option>
 				</select>
 <%
 			}

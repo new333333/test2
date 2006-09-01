@@ -1483,4 +1483,44 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return dataElements;
     }
 
+	//Routine to get the data elements for use in search queries
+    public Map getWorkflowDefinitionStates(String id) {
+		//Get a map for the results
+    	Map dataStates = new TreeMap();
+		
+		Definition def = getDefinition(id);
+		this.getDefinitionConfig();
+		//Get the base configuration definition file root (i.e., not the entry's definition file)
+		Element configRoot = this.definitionConfig.getRootElement();
+		
+		Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
+			//root is the root of the entry's definition
+			Element root = definitionTree.getRootElement();
+			
+			//Get a list of all of the state items in the definition 
+			Iterator itItems = root.selectNodes("item[@name='workflowProcess']/item[@name='state']").listIterator();
+			while (itItems.hasNext()) {
+				//Get a map to store the results in
+				Map itemData = new HashMap();
+				
+				Element nextItem = (Element) itItems.next();
+				String itemName = (String) nextItem.attributeValue("name", "");
+				itemData.put("type", itemName);
+					
+				String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");	
+				if (Validator.isNull(nameValue)) nameValue = itemName;
+						
+				String captionValue = DefinitionUtils.getPropertyValue(nextItem, "caption");							
+				if (Validator.isNull(captionValue)) captionValue = nameValue;							
+				itemData.put("caption", NLT.getDef(captionValue));
+								
+				//Add this state to the results
+				dataStates.put(nameValue, itemData);
+			}
+		}
+   	
+    	return dataStates;
+    }
+
 }

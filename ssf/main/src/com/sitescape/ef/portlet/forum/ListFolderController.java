@@ -429,9 +429,13 @@ public class ListFolderController extends  SAbstractController {
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 
 		//	The "Add penlets" menu
-		Map qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_addDashboardComponents();return false;");
-		folderToolbar.addToolbarMenu("3_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+		//See if the dashboard is being shown in the definition
+		if (DefinitionHelper.checkIfBinderShowingDashboard(folder)) {
+			//This folder is showing the dashboard
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents();return false;");
+			folderToolbar.addToolbarMenu("3_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+		}
 
 		//The "Footer" menu
 		if (folder.isTop()) {

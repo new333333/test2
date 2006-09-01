@@ -81,6 +81,8 @@ public class ModifyBinderController extends AbstractBinderController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Map model = new HashMap();	
+		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
 		if (op.equals(WebKeys.OPERATION_MOVE)) {

@@ -112,6 +112,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String FORUM_OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String FORUM_OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String FORUM_OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String FORUM_OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String FORUM_OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -225,6 +226,7 @@ public class WebKeys {
     public static final String FILTER_SELECTED_FILTER_NAME="ss_selectedFilter";
     public static final String FILTER_TYPE="ss_filterType";
     public static final String FILTER_VALUE_TYPE="ss_filterValueType";
+    public static final String FILTER_WORKFLOW_DEF_ID = "ss_workflow_def_id";
     public static final String FOLDER = "ssFolder";
     public static final String FOLDER_COLUMNS="folderColumns";
     public static final String FOLDER_COLUMN_POSITIONS="folderColumnPositions";
@@ -259,6 +261,7 @@ public class WebKeys {
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NOTIFICATION="ssNotification";
     public static final String NLT_VALUE="value";
+    public static final String OPERATION="ssOperation";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
@@ -308,6 +311,8 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_GROUP="group";
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
+    public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
+    public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
     public static final String WORKFLOW_QUESTION_TEXT="ssWorkflowQuestionText";
     public static final String WORKFLOW_QUESTION_RESPONSES="ssWorkflowQuestionResponses";

@@ -30,7 +30,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_random = Math.round(Math.random()*999999);
 	
 	//Files that don't pop-up in a new window when viewing them (space separated)
-	var ss_files_that_do_not_pop_up = "doc xls ppt";
+	var ss_files_that_do_not_pop_up = "doc xls";
 	
 	//zIndex map
 	var ssLightboxZ = 2000;
@@ -186,10 +186,15 @@ function ss_reloadOpener(fallBackUrl) {
 	if (self.window != self.top) {
 		if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
 			parent.location.replace(parent.ss_reloadUrl);
+		} else {
+			parent.location.href = fallBackUrl;
 		}
 	} else if (self.opener) {
 		if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
 			self.opener.location.replace(self.opener.ss_reloadUrl);
+			setTimeout('self.window.close();', 200)
+		} else {
+			self.opener.location.href = fallBackUrl;
 			setTimeout('self.window.close();', 200)
 		}
 	} else {

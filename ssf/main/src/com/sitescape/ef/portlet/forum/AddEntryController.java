@@ -48,11 +48,13 @@ public class AddEntryController extends SAbstractController {
 			MapInputData inputData = new MapInputData(formData);
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
+				setupViewEntry(response, folderId, entryId);
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
+				//Show the parent entry when this operation finishes
+				setupViewEntry(response, folderId, id);
 			}
-			setupViewEntry(response, folderId, entryId);
 			//flag reload of folder listing
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
@@ -76,17 +78,17 @@ public class AddEntryController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-		Map model;
+		Map model = new HashMap();
 		Map formData1 = request.getParameterMap();
 		Map formData = new HashMap((Map)formData1);
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		model.put(WebKeys.OPERATION, action);
 		String path = WebKeys.VIEW_ADD_ENTRY;
 		
 		//See if this is an "add entry" or an "add reply" request
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
-			model = new HashMap();
 			Folder folder = getFolderModule().getFolder(folderId);
 			//Adding an entry; get the specific definition
 			Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
@@ -105,7 +107,6 @@ public class AddEntryController extends SAbstractController {
 		} else {
 	    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 	    	request.setAttribute(WebKeys.URL_ENTRY_ID,entryId.toString());
-	    	model = new HashMap();
 	    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 	    	model.put(WebKeys.DEFINITION_ENTRY, entry);
 	    	Folder folder = entry.getParentFolder();
