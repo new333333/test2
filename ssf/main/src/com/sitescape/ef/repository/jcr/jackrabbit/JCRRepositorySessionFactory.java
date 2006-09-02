@@ -111,7 +111,7 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
 		try {
-			return new JCRRepositorySession(createSession(workspaceName), mimeTypes);
+			return new JCRRepositorySession(workspaceName, createSession(workspaceName), mimeTypes);
 		} catch (RepositoryException e) {
 			throw new RepositoryServiceException(e);
 		}
