@@ -38,10 +38,12 @@ import com.sitescape.util.Validator;
 
 public class JCRRepositorySession implements RepositorySession {
 
+	protected String workspaceName;
 	protected Session session;
 	protected FileTypeMap mimeTypes;
 	
-	public JCRRepositorySession(Session session, FileTypeMap mimeTypes) {
+	public JCRRepositorySession(String workspaceName, Session session, FileTypeMap mimeTypes) {
+		this.workspaceName = workspaceName;
 		this.session = session;
 		this.mimeTypes = mimeTypes;
 	}
@@ -244,7 +246,13 @@ public class JCRRepositorySession implements RepositorySession {
 		String newFileNodePath = getFileNodePath(binder, entity, newRelativeFilePath);
 
 		try {
-			session.move(fileNodePath, newFileNodePath);
+			Node dirNode = getRootNode();
+			String absFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + fileNodePath;
+			String newAbsFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + newFileNodePath;
+			
+			session.move(absFileNodePath, newAbsFileNodePath);
+			
+			session.save();
 		} catch (ItemExistsException e) {
 			throw new RepositoryServiceException(e);
 		} catch (PathNotFoundException e) {
