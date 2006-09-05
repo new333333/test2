@@ -27,9 +27,14 @@
 	 </c:if>
 	 
 	 <c:if test="${ss_filterType == 'workflow'}">
+	   <c:set var="workflowSelectBoxSize" value="1"/>
+	   <c:forEach var="state" items="${ssWorkflowDefinitionStateData}">
+	     <c:set var="workflowSelectBoxSize" value="${workflowSelectBoxSize + 1}"/>
+	   </c:forEach>
 	   <div id="elementList<c:out value="${ss_filterTermNumber}"/>" 
 	   style="visibility:visible; display:inline;"><select
-	   name="stateName<c:out value="${ss_filterTermNumber}"/>" >
+	   name="ss_stateNameData<c:out value="${ss_filterTermNumber}"/>" multiple="multiple" 
+	   size="${workflowSelectBoxSize}">
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="filter.selectState"/></option>
 	     <c:forEach var="state" items="${ssWorkflowDefinitionStateData}">
