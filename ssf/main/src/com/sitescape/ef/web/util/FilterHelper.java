@@ -51,8 +51,7 @@ public class FilterHelper {
    	public final static String FilterElementValueTypeField = "elementValueType";
    	public final static String FilterWorkflowDefIdField = "ss_workflow_def_id";
    	public final static String FilterWorkflowDefIdCaptionField = "ss_workflow_def_id_caption";
-   	public final static String FilterWorkflowStateNameField = "stateName";
-   	public final static String FilterWorkflowStateNameCaptionField = "stateNameCaption";
+   	public final static String FilterWorkflowStateNameField = "ss_stateNameData";
 	
 	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
@@ -118,12 +117,15 @@ public class FilterHelper {
 				} else if (filterType.equals(FilterTypeWorkflow)) {
 					//Get the workflow definition and state
 					String defId = PortletRequestUtils.getStringParameter(request, FilterWorkflowDefIdField + String.valueOf(i), "");
-					String state = PortletRequestUtils.getStringParameter(request, FilterWorkflowStateNameField + String.valueOf(i), "");
-					if (!defId.equals("") && !state.equals("")) {
+					String[] states = (String[])formData.get(FilterWorkflowStateNameField + String.valueOf(i));
+					if (!defId.equals("") && states != null && states.length > 0) {
 						Element filterTerm = filterTerms.addElement(FilterTerm);
 						filterTerm.addAttribute(FilterType, filterType);
 						filterTerm.addAttribute(FilterWorkflowDefId, defId);
-						filterTerm.addAttribute(FilterWorkflowStateName, state);
+						for (int i2 = 0; i2 < states.length; i2++) {
+							Element newTerm = filterTerm.addElement(FilterWorkflowStateName);
+							newTerm.setText(states[i2]);
+						}
 					}
 				}
 			}
@@ -196,28 +198,38 @@ public class FilterHelper {
     			searchFilterData.put(FilterElementValueField+ String.valueOf(i+1), valueMap);
     		} else if (filterType.equals(FilterTypeWorkflow)) {
     			//This is a workflow state term. 
+    			Definition def = null;
+    			Document defDoc = null;
     			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
-    			String stateName = filterTerm.attributeValue(FilterHelper.FilterWorkflowStateName, "");
     			String defIdCaption = defId;
-    			String stateNameCaption = stateName;
-    			Definition def;
- 				//Get the definition title
 				try {
+	 				//Get the definition title
 					def = DefinitionHelper.getDefinition(defId);
  					defIdCaption = def.getTitle();
-					Document defDoc = def.getDefinition();
-					Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+stateName+"']");
-					if (item != null) {
-						Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
-						if (captionEle != null) stateNameCaption = NLT.getDef(captionEle.attributeValue("value", stateName));
-					}
+					defDoc = def.getDefinition();
 				} catch (Exception ex) {/*skip*/}
-    			
+				
+    			//String stateName = filterTerm.attributeValue(FilterHelper.FilterWorkflowStateName, "");
+    			Iterator itTermStates = filterTerm.selectNodes(FilterHelper.FilterWorkflowStateName).iterator();
+    			Map stateNameMap = new HashMap();
+    			while (itTermStates.hasNext()) {
+    				String stateName = ((Element) itTermStates.next()).getText();
+    				if (!stateName.equals("")) {
+    	    			String stateNameCaption = stateName;
+    					try {
+    						Element item = (Element)defDoc.getRootElement().selectSingleNode("//item/properties/property[@name='name' and @value='"+stateName+"']");
+    						if (item != null) {
+    							Element captionEle = (Element) item.selectSingleNode("../property[@name='caption']");
+    							if (captionEle != null) stateNameCaption = NLT.getDef(captionEle.attributeValue("value", stateName));
+    						}
+        					stateNameMap.put(stateName, stateNameCaption);
+    					} catch (Exception ex) {/*skip*/}
+    				}
+    			}
     			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeWorkflow);
     			searchFilterData.put(FilterWorkflowDefIdField+ String.valueOf(i+1), defId);
     			searchFilterData.put(FilterWorkflowDefIdCaptionField+ String.valueOf(i+1), defIdCaption);
-    			searchFilterData.put(FilterWorkflowStateNameField+ String.valueOf(i+1), stateName);
-    			searchFilterData.put(FilterWorkflowStateNameCaptionField+ String.valueOf(i+1), stateNameCaption);
+    			searchFilterData.put(FilterWorkflowStateNameField+ String.valueOf(i+1), stateNameMap);
     		}
     	}
    		
@@ -267,14 +279,14 @@ public class FilterHelper {
     	    			
     	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
     	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
-    	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+    	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	    	    	child.setText(value);
     				}
     			}
     		} else if (filterType.equals(FilterTypeWorkflow)) {
     			//This is a workflow state term. Build booleans from the state name.
     			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
-    			String stateName = filterTerm.attributeValue(FilterHelper.FilterWorkflowStateName, "");
 				Element field;
 				Element child;
 				Element andField = orField;
@@ -286,10 +298,19 @@ public class FilterHelper {
 	    	    	child.setText(defId);
     			}
     			
-    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
-    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	    	child.setText(stateName);
+    	    	//Add an OR field with all of the desired states
+    			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+    			Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();
+    			while (itTermStates.hasNext()) {
+    				String stateName = ((Element) itTermStates.next()).getText();
+    				if (!stateName.equals("")) {
+    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    					child2.setText(stateName);
+    				}
+    			}
     		}
     	}
     	//qTree.asXML();

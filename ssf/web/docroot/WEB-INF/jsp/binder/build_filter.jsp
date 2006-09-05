@@ -52,7 +52,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -280,11 +280,22 @@ ss_filterTermNumberMax++;
 				    <%= (String) ss_searchFilterData.get("elementNameCaption" + String.valueOf(i)) %></option>
 				</select>
 <%
-			} else if (ss_searchFilterData.containsKey("stateName" + String.valueOf(i))) {
+			} else if (ss_searchFilterData.containsKey("ss_stateNameData" + String.valueOf(i))) {
+				Map stateNameMap = (Map) ss_searchFilterData.get("ss_stateNameData" + String.valueOf(i));
 %>
-				<select name="stateName<%= String.valueOf(i) %>" size="1" multiple>
-				  <option value="<%= (String) ss_searchFilterData.get("stateName" + String.valueOf(i)) %>" selected>
-				    <%= (String) ss_searchFilterData.get("stateNameCaption" + String.valueOf(i)) %></option>
+				<select name="stateName<%= String.valueOf(i) %>" 
+				  size="<%= String.valueOf(stateNameMap.entrySet().size()) %>" multiple>
+<%
+				Iterator itStates = stateNameMap.entrySet().iterator();
+				while (itStates.hasNext()) {
+					Map.Entry state = (Map.Entry)itStates.next();
+					String stateName = (String)state.getKey();
+					String stateNameCaption = (String)state.getValue();
+%>
+					<option name="<%= stateName %>" selected><%= stateNameCaption %></option>
+<%
+					}
+%>
 				</select>
 <%
 			}
