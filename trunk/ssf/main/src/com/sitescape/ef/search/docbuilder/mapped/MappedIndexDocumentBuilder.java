@@ -102,7 +102,7 @@ public class MappedIndexDocumentBuilder implements IndexDocumentBuilder {
         ObjectIndexMapping.UrlProperty urlProperty = classSpec.getUrlProperty();
         if(urlProperty != null) {
             String urlPropertyValue = (String) urlProperty.getGetter().get(obj);
-            Field urlField = Field.UnIndexed(urlProperty.getField(), urlPropertyValue);
+            Field urlField = new Field(urlProperty.getField(), urlPropertyValue, Field.Store.YES, Field.Index.NO);
             doc.add(urlField);
         }
         
