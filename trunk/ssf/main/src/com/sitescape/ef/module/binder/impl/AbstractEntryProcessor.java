@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.binder.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -583,7 +584,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	            	if (fld.name().toLowerCase().indexOf("date") > 0) {
 	            		try {
 	            			ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
-	            		} catch (Exception e) {ent.put(fld.name(),new Date());
+	            		} catch (ParseException e) {ent.put(fld.name(),new Date());
 	            		}
 	            	} else if (!ent.containsKey(fld.name())) {
 	            		ent.put(fld.name(), fld.stringValue());
