@@ -64,12 +64,12 @@ public class BasicIndexUtils {
     }
     
     public static void addUid(Document doc, String uid) {
-        doc.add(Field.Keyword(UID_FIELD, uid));    
-        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), false, true, false));
+        doc.add(new Field(UID_FIELD, uid, Field.Store.YES, Field.Index.UN_TOKENIZED));    
+        doc.add(new Field(THIS_CLASS_FIELD, getClassName(uid), Field.Store.NO, Field.Index.UN_TOKENIZED));
     }
     
     public static void addDocType(Document doc, String docType) {
-        doc.add(Field.Keyword(DOC_TYPE_FIELD, docType));
+        doc.add(new Field(DOC_TYPE_FIELD, docType, Field.Store.YES, Field.Index.UN_TOKENIZED));
     }
     
     /*
@@ -126,7 +126,7 @@ public class BasicIndexUtils {
     }
     
     public static  Field allTextField(String text) {
-        return new Field(ALL_TEXT_FIELD, text, false, true, true);
+        return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
     }   
     public static void addReadAcls(Document doc, AclContainer container, Object entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 
@@ -143,12 +143,12 @@ public class BasicIndexUtils {
 	        // I'm not sure if putting together a long string value is more
 	        // efficient than processing multiple short strings... We will see.
 	        if (pIds.length() != 0)
-	          racField = new Field(READ_ACL_FIELD, pIds.toString(), true, true, true);
+	          racField = new Field(READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);
 	        else
-	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
+	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
         }
         else {
-            racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, true, true, true);
+            racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
         }
         
         doc.add(racField);
