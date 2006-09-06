@@ -24,7 +24,7 @@ public class FieldBuilderCheck extends AbstractFieldBuilder {
             return new Field[0];
         }
         else {
-            Field field = new Field(makeFieldName(dataElemName), val.toString(), false, true, false);
+            Field field = new Field(makeFieldName(dataElemName), val.toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
             return new Field[] {field};
         }
     }
