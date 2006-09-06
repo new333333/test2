@@ -117,9 +117,29 @@ public interface FolderModule {
      */
     public List<String> getFolderIds(Integer type);
     
+    /**
+     * Reserve the entry.
+     * 
+     * @param folderId
+     * @param entryId
+     * @throws AccessControlException
+     * @throws ReservedByAnotherUserException
+     * @throws FilesLockedByOtherUsersException
+     */
     public void reserveEntry(Long folderId, Long entryId)
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
+    
+    /**
+     * Cancel reservation on the entry.
+     * 
+     * @param folderId
+     * @param entryId
+     * @throws AccessControlException
+     * @throws ReservedByAnotherUserException
+     */
+    public void unreserveEntry(Long folderId, Long entryId)
+		throws AccessControlException, ReservedByAnotherUserException;
     
     /**
      * Finds file folder entry by title. If no matching entry is found

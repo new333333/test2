@@ -735,44 +735,40 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		// We must check if any of the files in the entry is locked
     		// by another user. 
     		
-    		// Make sure that the lock states are current before examining them.
+    		// Make sure that the file lock states are current before examining them.
     		getFileModule().RefreshLocks(folder, entry);
     		
     		// Now that lock states are up-to-date, we can examine them.
     		
-    		if(entry.getLockedFileCount() > 0) { // At least one effective lock
-	    		boolean allOwnedBySameUser = true;
-	    		List fAtts = entry.getFileAttachments();
-	    		for(int i = 0; i < fAtts.size(); i++) {
-	    			FileAttachment fa = (FileAttachment) fAtts.get(i);
-	    			if(fa.getFileLock() != null && !fa.getFileLock().getOwner().equals(user)) {
-	    				allOwnedBySameUser = false;
-	    				break;
-	    			}
-	    		}	
-	    		if(allOwnedBySameUser) {
-	    			// All remaining effective locks are owned by the same user.
-	    			// Proceed and reserve the entry.
-	    			entry.setReservation(user);
-	    		}
-	    		else { // One or more lock is held by someone else.
-	    			// Build error information.
-	    			List<FileLockInfo> info = new ArrayList<FileLockInfo>();
-		    		for(int i = 0; i < fAtts.size(); i++) {
-		    			FileAttachment fa = (FileAttachment) fAtts.get(i);
-		    			if(fa.getFileLock() != null) {
-		    				info.add(new FileLockInfo
-		    						(fa.getRepositoryServiceName(), 
-		    								fa.getFileItem().getName(), 
-		    								fa.getFileLock().getOwner()));
-		    			}
-		    		}		    			
-		    		throw new FilesLockedByOtherUsersException(info);
-	    		}
-    		}
-    		else { // No effective lock
+    		boolean atLeastOneFileLockedByAnotherUser = false;
+    		List fAtts = entry.getFileAttachments();
+    		for(int i = 0; i < fAtts.size(); i++) {
+    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+    			if(fa.getFileLock() != null && !fa.getFileLock().getOwner().equals(user)) {
+    				atLeastOneFileLockedByAnotherUser = true;
+    				break;
+    			}
+    		}	
+    		
+    		if(!atLeastOneFileLockedByAnotherUser) {
+    			// All remaining effective locks are owned by the same user
+    			// or there are no effective locks at all.
     			// Proceed and reserve the entry.
     			entry.setReservation(user);
+    		}
+    		else { // One or more lock is held by someone else.
+    			// Build error information.
+    			List<FileLockInfo> info = new ArrayList<FileLockInfo>();
+	    		for(int i = 0; i < fAtts.size(); i++) {
+	    			FileAttachment fa = (FileAttachment) fAtts.get(i);
+	    			if(fa.getFileLock() != null) {
+	    				info.add(new FileLockInfo
+	    						(fa.getRepositoryServiceName(), 
+	    								fa.getFileItem().getName(), 
+	    								fa.getFileLock().getOwner()));
+	    			}
+	    		}		    			
+	    		throw new FilesLockedByOtherUsersException(info);
     		}
     	}
     	else {	
@@ -787,6 +783,40 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     }
     
+    public void unreserveEntry(Long folderId, Long entryId)
+	throws AccessControlException, ReservedByAnotherUserException {
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+
+        // I will skip checking the user's access right for this operation.
+        // If the user previously reserved the entry successfully, it is
+        // inconceivable that the user no longer has the right to unreserve
+        // the entry (although it is possible in theory...). If the user
+        // hasn't been able to reserve it previously, unreserve won' work
+        // anyway. So either way, we can skip the access checking. 
+    	//checkModifyEntryAllowed(entry);
+
+        User user = RequestContextHolder.getRequestContext().getUser();
+    	
+    	HistoryStamp reservation = entry.getReservation();
+    	if(reservation == null) { 
+    		// The entry is not currently reserved by anyone. 
+    		// Nothing to do. 
+    	}
+    	else {
+    		if(reservation.getPrincipal().equals(user)) {
+    			// The entry is currently reserved by the same user. 
+    			// Cancel the reservation.
+    			entry.clearReservation();
+    		}
+    		else {
+    			// The entry is currently reserved by another user. 
+    			throw new ReservedByAnotherUserException(entry);
+    		}
+    	}
+    }
+
     public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
 	throws AccessControlException {
     	FolderEntry entry = getFileModule().findFileFolderEntry(fileFolder, title);
