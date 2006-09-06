@@ -633,6 +633,29 @@
 	</tag>
 
 	<tag>
+		<name>toolbar</name>
+		<tag-class>com.sitescape.ef.taglib.ToolbarTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>toolbar</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.web.util.Toolbar</type>
+		</attribute>		
+		<attribute>
+			<name>style</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>item</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+	</tag>
+
+	<tag>
 		<name>tree</name>
 		<tag-class>com.sitescape.ef.taglib.TreeTag</tag-class>
 		<body-content>JSP</body-content>
