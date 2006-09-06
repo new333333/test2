@@ -1,6 +1,6 @@
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_smallprint" style="margin-bottom:8px;">
+<div class="ss_breadcrumb">
 <c:if test="${!empty ssDefinitionEntry.parentBinder.id}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />
@@ -14,7 +14,7 @@
 		Binder nextBinder = (Binder) parentTree.pop();
 %>
 <c:set var="nextBinder" value="<%= nextBinder %>"/>
-<a style="text-decoration: none;" 
+<a
 <c:if test="${nextBinder.entityIdentifier.entityType == 'folder'}">
   href="<ssf:url 
   folderId="${nextBinder.id}" 
@@ -35,8 +35,7 @@
 	}
 %>
 </c:if>
-<span class="ss_bold">
-<a style="text-decoration: none;" 
+<a
 <c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'folderEntry'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
@@ -58,6 +57,6 @@
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${ssDefinitionEntry.title}" /></a></span>
+<c:out value="${ssDefinitionEntry.title}" /></a>
 </div>
-
+<div class="ss_clear"></div>

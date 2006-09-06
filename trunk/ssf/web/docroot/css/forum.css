@@ -46,6 +46,10 @@
   margin: 2px 2px 2px 8px;
   }
   
+.ss_compact {
+  margin:0px;
+  padding:0px;
+  }
 table.ss_compact20 {
   margin:0px;
   padding:0px;
@@ -177,7 +181,6 @@ span.ss_toolLeft {
 /* div.ss_toolbar is dynamically defined in view_css.jsp to specify the background color */
 /* Link text on the toolbar */
 a.ss_toolbar_item {
-  display: inline;
   text-align: left;
   font-weight: bold;
   text-decoration: none;
@@ -189,7 +192,6 @@ a.ss_toolbar_item {
   }
 
 a.ss_toolbar_item:hover {
-  display: inline;
   font-weight: bold;
   text-align: left;
   text-decoration: underline;
@@ -298,7 +300,7 @@ div.ss_widgetContent {
 /* ------------------------------------------------------------------------ */
 /* folder styles */
 /* folders use ss_entryTitle */
-div.ss_folder {
+.ss_folder {
   width: 100%;
   }
 

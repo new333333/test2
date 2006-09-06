@@ -1,29 +1,42 @@
 <% // Toolbar viewer %>
 <%
 String ss_portletNamespace = renderResponse.getNamespace();
+
+// General variables
+Integer nameCount = (Integer) renderRequest.getAttribute("ss_menu_tag_name_count");
+if (nameCount == null) {
+	nameCount = new Integer(0);
+}
+
+nameCount = new Integer(nameCount.intValue() + 1);
+renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intValue()));
+
+String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
+String menuDivWidth = "300px";
+
 %>
 <c:if test="${empty ss_toolbar_style}">
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
 </c:if>
-<div class="${ss_toolbar_style}">
-<c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
-    <span class="${ss_toolbar_style}_item"><c:out value="${delimiter}" /></span>
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
-
-     <ssf:menu title="${toolbarMenu.value.title}" 
-       titleId="toolbar_${toolbarMenu.key}" menuClass="${ss_toolbar_style}_menu" >
+     <li id="parent_<%= menuTagDivId %><portlet:namespace/>">
+     <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
+	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');"
+	 >${toolbarMenu.value.title}</a>
+      <div id="<%= menuTagDivId %><portlet:namespace/>" 
+        class="${ss_toolbar_style}_submenu" style="width:<%= menuDivWidth %>;">
+      <ul class="${ss_toolbar_style}_submenu">
 	  <c:forEach var="toolbarMenuCategory" items="${toolbarMenu.value.categories}">
 	    <c:if test="${empty toolbarMenuCategory.key}">
 	      <span class="ss_bold"><c:out value="${toolbarMenuCategory.key}" /></span>
 	    </c:if>
-	    <ul class="ss_dropdownmenu">
 	      <c:forEach var="toolbarMenuCategoryItem" items="${toolbarMenuCategory.value}">
 	        <c:set var="popup" value="false"/>
 	        <c:if test="${toolbarMenuCategoryItem.value.qualifiers.popup}">
 	          <c:set var="popup" value="true"/>
 	        </c:if>
-	        <li class="ss_dropdownmenu">
+	        <li>
 	          <c:choose>
 	            <c:when test="${!empty toolbarMenuCategoryItem.value.url}">
 	        	  <a 
@@ -52,9 +65,15 @@ String ss_portletNamespace = renderResponse.getNamespace();
 	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
 	      </c:forEach>
-	    </ul>
-      </c:forEach>
-     </ssf:menu>
+       </c:forEach>
+      </ul>
+      </div>
+<%
+	nameCount = new Integer(nameCount.intValue() + 1);
+	renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intValue()));
+	menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
+%>
+     </li>
 
     </c:if>
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
@@ -64,7 +83,7 @@ String ss_portletNamespace = renderResponse.getNamespace();
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
-	      <a 
+	      <li><a 
 	        class="${ss_toolbar_style}_item" 
 	        href="${toolbarMenu.value.url}"
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
@@ -76,10 +95,10 @@ String ss_portletNamespace = renderResponse.getNamespace();
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	      ><span class="${ss_toolbar_style}_item"><c:out 
-	        value="${toolbarMenu.value.title}" /></span></a>
+	        value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
-	      <a 
+	      <li><a 
 	        class="${ss_toolbar_style}_item"
 	        href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
@@ -97,14 +116,12 @@ String ss_portletNamespace = renderResponse.getNamespace();
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
 	 	  ><span class="${ss_toolbar_style}_item"><c:out 
-	 	    value="${toolbarMenu.value.title}" /></span></a>
+	 	    value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:when>
 	    <c:otherwise>
-	      <a class="${ss_toolbar_style}_item" href=""><span class="${ss_toolbar_style}_item"
-	        ><c:out value="${toolbarMenu.value.title}" /></span></a>
+	      <li><a class="${ss_toolbar_style}_item" href=""><span class="${ss_toolbar_style}_item"
+	        ><c:out value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:otherwise>
 	  </c:choose>
     </c:if>
-  <c:set var="delimiter" value=" | "/>
 </c:forEach>
-</div>

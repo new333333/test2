@@ -12,7 +12,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <a name="ss_top_of_folder"></a>
-<div id="ss_showfolder" class="ss_style ss_portlet">
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
@@ -37,13 +37,19 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
+<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+	<div class="ss_decor-border3">
+		<div class="ss_decor-border4">
+			<div class="ss_rounden-content">
+
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<div class="ss_content_inner">
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar"/>
+</div>
 </c:if>
 
+<div class="ss_content_inner">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
@@ -84,7 +90,6 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
   </ssf:box>
 </div>
 </div>
-<div id="ss_showfolder_bottom" class="ss_style ss_portlet">&nbsp;</div>
 
 <form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
 <input type="hidden" name="entry_height">
@@ -95,5 +100,13 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <c:set var="ss_toolbar" value="${ssFooterToolbar}" scope="request" />
 <c:set var="ss_toolbar_style" value="ss_footer_toolbar" scope="request" />
 <br/>
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
 </c:if>
+
+			</div>
+		</div>
+	</div>
+	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
+</div>
+

@@ -15,9 +15,7 @@
 <%
 	}
 %>
-<c:set var="ss_toolbar" value="${ssFolderEntryToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar" />
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 

@@ -29,7 +29,7 @@ String offsetLeft = ParamUtil.get(request, "offsetLeft", "");
 
 %>
 <div id="parent_<%= menuTagDivId %><portlet:namespace/>" style="display:inline;"
-   class="<%= titleClass %>"><a class="<%= titleClass %>"
+   ><a 
 id="<%= titleId %>" href="javascript: ;" 
 	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
 ><span class="<%= titleClass %>"><%= title %></span></a></div>

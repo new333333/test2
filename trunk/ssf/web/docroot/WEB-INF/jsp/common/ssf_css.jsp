@@ -1018,6 +1018,85 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 
 /* -------------------Skins-------------------- */
+.ss_content_outer {
+	padding-bottom:100px;
+	margin-top:1px;
+	background:url(images/back1.gif) repeat;
+}
+.ss_content_inner {
+	width:100%;
+	padding:0px 2px 0px 10px;
+}
+.ss_clear {
+	clear:both;
+	height:1px;
+	font-size:0px;
+}
+/* round corners: */
+.ss_decor-round-corners-top1{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border1.gif) repeat-x;
+}
+.ss_decor-round-corners-top1 div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner1.gif) no-repeat left;
+}
+.ss_decor-round-corners-top1 div div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner2.gif) no-repeat right;
+	height:19px;
+}
+.ss_decor-round-corners-bottom1{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border2.gif) repeat-x;
+}
+.ss_decor-round-corners-bottom1 div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner3.gif) no-repeat left;
+}
+.ss_decor-round-corners-bottom1 div div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner4.gif) no-repeat right;
+	height:19px;
+}
+.ss_decor-border3{
+	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
+}
+.ss_decor-border4{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
+}
+
+
+.ss_decor-round-corners-top2{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-x top;
+}
+.ss_decor-round-corners-top2 div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner1.gif) no-repeat left ;
+}
+.ss_decor-round-corners-top2 div div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner2.gif) no-repeat right;
+	height:10px;
+	font-size:1px;
+}
+.ss_decor-round-corners-top2 div div.ss_utils{
+	background:none;
+}
+.ss_decor-round-corners-bottom2{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-x bottom;
+	margin-bottom:10px;
+}
+.ss_decor-round-corners-bottom2 div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner3.gif) no-repeat left;
+}
+.ss_decor-round-corners-bottom2 div div{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner4.gif) no-repeat right;
+	height:10px;
+	font-size:1px;
+}
+.ss_decor-border5{
+	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
+}
+.ss_decor-border6{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y right;
+}
+.ss_rounden-content{
+	padding:0px 35px 10px 10px;
+}
+
 /* global toolbar: */
 .ss_global_toolbar{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
@@ -1078,5 +1157,191 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	left:152px;
 
 }
+
+/* tabs: */
+.ss_tabs{
+	margin-left:45px;
+	margin-top:10px;
+	position:relative;
+<c:if test="<%= !isIE %>">
+	top:-12px;
+</c:if>
+<c:if test="<%= isIE %>">
+	top:10px;
+</c:if>	
+}
+.ss_tabs li{
+	float:left;
+	height:35px;
+	position:relative;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
+}
+.ss_tabs li.ss_decor-finish-tabs{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/ulback.gif) no-repeat right;
+	width:4px;
+}
+.ss_tabs li.ss_tabs_active{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
+}
+.ss_tabs li.ss_tabs_longtab{
+	/*background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/longtab.gif) no-repeat;*/
+}
+.tabs li.shorttab{
+	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/shorttab.gif) no-repeat;*/
+}
+.ss_tabs li a{
+	font:bold 14px "Trebuchet MS", Arial, sans-serif;
+	color:#5A3C68;
+	display:block;
+	padding-left:12px;
+	margin-right:35px;
+	padding-top:12px;
+	padding-bottom:4px;
+}
+.ss_tabs li a:hover{
+	text-decoration:none;
+}
+.ss_tabs li.ss_tabs_icon1 a{
+	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/tabicon1.gif) no-repeat 13px 2px;*/
+}
+.ss_tabs li.ss_tabs_icon2 a{
+	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/tabicon2.gif) no-repeat 13px 2px;*/
+}
+.ss_tabs li a.ss_tabs_tabclose{
+	position:absolute;
+	margin-right:8px;
+	padding-left:0px;
+	background:none;
+	right:0px;
+	z-index:2;
+}
+.ss_tabs li.ss_active a.ss_tabs_tabclose{
+	display:none;
+}
+#ss_tabs_undertabs{
+	position:relative;
+	margin-top:2px;
+<c:if test="<%= !isIE %>">
+	top:20px;
+</c:if>
+<c:if test="<%= isIE %>">
+	top:2px;
+</c:if>	
+}
+.ss_tabs_tabwrap1{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif) no-repeat left top;
+}
+li.ss_tabs_active .ss_tabs_tabwrap1{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left top;
+
+}
+.ss_tabs_tabend{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.gif) no-repeat right top;
+	position:absolute;
+	right:-1px;
+	width:15px;
+	height:35px;
+	z-index:1;
+
+}
+li.ss_tabs_active .ss_tabs_tabend{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.gif) no-repeat right top;
+
+}
+.ss_tabs_tabwrap2{
+}
+.ss_tabs_tabwrap3{
+}
+
+/* breadcrumbs */
+.ss_breadcrumb {
+	color:#5A3C68;
+	border:1px solid #EBEBEB;
+	padding:5px;
+	margin-top:10px;
+	margin-bottom:0px;
+	font:bold 12px "Trebuchet MS", Arial, sans-serif;
+	float:left;
+}
+.ss_breadcrumb a{
+	color:#5A3C68;
+	font:bold 12px "Trebuchet MS", Arial, sans-serif;
+}
+
+/* actions: */
+.ss_actions_bar {
+	width:100%;
+	margin:0px;
+	padding:0px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+	height:23px;
+	line-height:23px;
+	border-left:1px solid #9687A7;
+}
+.ss_actions_bar_background {
+	margin:0px;
+	padding:0px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+}
+.ss_actions_bar li {
+	float:left;
+	font-weight:bold;
+	border-right:1px solid #9687A7;
+	border-left:1px solid #FFF;
+	position:relative;
+}
+.ss_actions_bar li.ss_actions_bar_last-child {
+	border-right:none;
+}
+.ss_actions_bar li a {
+	color:#5A3C68;
+	display:block;
+	padding:0px 15px;
+}
+.ss_actions_bar li a:hover, .ss_actions_bar li a.ss_active {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x;
+	text-decoration:none;
+}
+.ss_actions_bar.ss_actions_bar_lower {
+	margin:0px 3px;
+}
+div.ss_actions_bar_submenu {
+	margin:0px;
+	padding:0px;
+	text-align:left;
+	position:absolute;
+	display:none;
+	z-index:500;
+}
+ul.ss_actions_bar_submenu {
+	position:relative;
+	top:-10px;
+	left:-20px;
+	background:#EFEEF3;
+	border:1px solid #907FA3;
+	border-top:none;
+	padding:4px;
+}
+.ss_actions_bar_submenu li a {
+	float:none;
+	border-bottom:1px solid #E0DFEF;
+	border-right-style:none;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 10px;
+}
+.ss_actions_bar_submenu div {
+	background:none;
+}
+.ss_actions_bar_submenu a:hover {
+	background:none;
+	text-decoration:underline;
+}
+
+/* Footer */
+.ss_bottomlinks {
+	text-align:center;
+	margin:5px 0px;
+	color:#8E8FA7;
+}
+
 
 </c:if>

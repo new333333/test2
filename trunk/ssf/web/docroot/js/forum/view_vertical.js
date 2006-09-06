@@ -9,8 +9,8 @@ var ss_minEntryDivHeight = 100;
 var ss_scrollTopOffset = 4;
 var ss_scrollbarHeight = 20;
 var ss_positioningEntryDiv = 0;
-var ss_marginLeft = 2
-var ss_marginRight = 2
+var ss_marginLeft = 40
+var ss_marginRight = 40
 var ss_entryHeightHighWaterMark = 0
 
 function ss_setEntryDivHeight() {
@@ -34,7 +34,6 @@ function ss_positionEntryDiv() {
 	ss_showEntryDiv()
 
     var wObj = self.document.getElementById('ss_showfolder')
-    var wObjB = self.document.getElementById('ss_showfolder_bottom')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
