@@ -30,7 +30,7 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
             
         Field allTextField = BasicIndexUtils.allTextField(text);
         
-        Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, true, true, true); 
+        Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
 
         
         return new Field[] {allTextField, descField};
