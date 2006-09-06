@@ -26,12 +26,12 @@ public class ProfileIndexUtils  {
     
     public static void addName(Document doc, User user) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = Field.Keyword(LOGINNAME_FIELD, user.getName());
+        Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }    
     public static void addName(Document doc, Group user) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = Field.Keyword(GROUPNAME_FIELD, user.getName());
+        Field docNumField = new Field(GROUPNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }      
    
