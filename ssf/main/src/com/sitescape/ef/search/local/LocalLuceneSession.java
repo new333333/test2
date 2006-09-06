@@ -125,7 +125,7 @@ public class LocalLuceneSession implements LuceneSession {
         }
         
         try {
-            indexReader.delete(term);
+            indexReader.deleteDocuments(term);
         } 
         catch (IOException e) {
             throw new LuceneException("Could not delete documents from the index [" + indexPath + "]", e);
@@ -258,7 +258,7 @@ public class LocalLuceneSession implements LuceneSession {
 	        try {
 		        for(int i = 0; i < length; i++) {
 		            int docId = hits.id(i);
-		            indexReader.delete(docId);
+		            indexReader.deleteDocument(docId);
 		        }
 	        }
 	        catch(IOException e) {
