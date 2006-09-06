@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="true" table="SS_FolderEntries" name="com.sitescape.ef.domain.FolderEntry">
+    <!--<cache usage="read-write"/>-->
     <id unsaved-value="null" name="id" type="long" node="@id">
       <generator class="native"/>
     </id>
@@ -80,7 +81,6 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <property name="lockedFileCount" access="field"/>
     <property name="definitionType"/>
     <component name="averageRating" class="com.sitescape.ef.domain.AverageRating">
       <property name="average" column="rating_average"/>

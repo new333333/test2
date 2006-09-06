@@ -8,11 +8,5 @@ public interface Reservable extends PersistentLongId {
     
     public void setReservation(User owner);    
     
-    public void setLockedFileCount(int lockedFileCount);
-    
-    public int getLockedFileCount();
-    
-    public void incrLockedFileCount();
-    
-    public void decrLockedFileCount();
+    public void clearReservation();
 }

@@ -1431,9 +1431,7 @@ public class FileModuleImpl implements FileModule {
 			}
 
 			fa.setFileLock(null); // Clear the lock
-			if(entity instanceof Reservable) {
-				((Reservable)entity).decrLockedFileCount(); // Decrement lock count
-			}
+
 			metadataDirty = true;
 		}
     	
@@ -1450,24 +1448,17 @@ public class FileModuleImpl implements FileModule {
     private boolean closeExpiredLocks(Binder binder, DefinableEntity entity,
     		boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-    	if((entity instanceof Reservable) &&
-    			((Reservable)entity).getLockedFileCount() <= 0) {
-    		// A little optimization for reservable entity.
-    		return false; 
-    	}
-    	else {
-        	boolean metadataDirty = false; 
-        	
-    		// Iterate over file attachments and close each expired lock.
-    		List fAtts = entity.getFileAttachments();
-    		for(int i = 0; i < fAtts.size(); i++) {
-    			FileAttachment fa = (FileAttachment) fAtts.get(i);
-    			if(closeExpiredLock(binder, entity, fa, commit))
-    				metadataDirty = true;
-    		}
+    	boolean metadataDirty = false; 
+    	
+		// Iterate over file attachments and close each expired lock.
+		List fAtts = entity.getFileAttachments();
+		for(int i = 0; i < fAtts.size(); i++) {
+			FileAttachment fa = (FileAttachment) fAtts.get(i);
+			if(closeExpiredLock(binder, entity, fa, commit))
+				metadataDirty = true;
+		}
 
-    		return metadataDirty;
-    	}
+		return metadataDirty;
     }
     
     /*
@@ -1508,9 +1499,7 @@ public class FileModuleImpl implements FileModule {
 				}
 
 				fa.setFileLock(null); // Clear the expired lock
-				if(entity instanceof Reservable) {
-					((Reservable)entity).decrLockedFileCount(); // Decrement lock count
-				}
+
 				metadataDirty = true;	
         	}
     	}

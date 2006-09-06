@@ -99,23 +99,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         setReservation(new HistoryStamp(owner));
     }    
     
-    public void setLockedFileCount(int lockedFileCount) {
-    	this.lockedFileCount = lockedFileCount; // auto boxing
-    }
-    
-    public int getLockedFileCount() {
-    	if(lockedFileCount == null)
-    		return 0;
-    	else 
-    		return lockedFileCount;
-    }
-    
-    public void incrLockedFileCount() {
-    	setLockedFileCount(getLockedFileCount()+1);
-    }
-    
-    public void decrLockedFileCount() {
-    	setLockedFileCount(getLockedFileCount()-1);
+    public void clearReservation() {
+    	this.reservation = null;
     }
 
     /** 	
