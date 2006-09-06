@@ -23,12 +23,12 @@ public class IndexUtils  {
 
     public static void addDocNumber(Document doc, FolderEntry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = Field.Keyword(DOCNUMBER_FIELD, entry.getDocNumber());
+        Field docNumField = new Field(DOCNUMBER_FIELD, entry.getDocNumber(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     }    
     public static void addSortNumber(Document doc, FolderEntry entry) {
     	//Add the id of the creator (no, not that one...)
-        Field docNumField = Field.Keyword(SORTNUMBER_FIELD, entry.getHKey().getSortKey());
+        Field docNumField = new Field(SORTNUMBER_FIELD, entry.getHKey().getSortKey(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
     } 
     public static void addFolderId(Document doc, Folder folder) {
@@ -36,7 +36,7 @@ public class IndexUtils  {
     	//Add the folder parentage to the document in the index
         Folder parentFolder = folder.getParentFolder();
         while (parentFolder != null) {
-        	Field parentFolderField = Field.Keyword(PARENT_FOLDERID_FIELD, parentFolder.getId().toString());
+        	Field parentFolderField = new Field(PARENT_FOLDERID_FIELD, parentFolder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(parentFolderField);
         	parentFolder = parentFolder.getParentFolder();
         }
@@ -44,14 +44,14 @@ public class IndexUtils  {
     	//Add the top folder id to the document in the index
         Folder topFolder = folder.getTopFolder();
         if (topFolder == null) topFolder = folder;
-        Field topFolderField = Field.Keyword(TOP_FOLDERID_FIELD, topFolder.getId().toString());
+        Field topFolderField = new Field(TOP_FOLDERID_FIELD, topFolder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(topFolderField);
     }   
     
     public static void addReservedByPrincipalId(Document doc, FolderEntry entry) {
     	//Add the id of the reserver
         if (entry.getReservation() != null && entry.getReservation().getPrincipal() != null) {
-        	Field reservedByIdField = Field.Keyword(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString());
+        	Field reservedByIdField = new Field(RESERVEDBYID_FIELD, entry.getReservation().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(reservedByIdField);
         }
     }   
