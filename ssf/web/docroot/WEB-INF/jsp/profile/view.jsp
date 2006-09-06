@@ -16,9 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_portlet_style ss_portlet">
-<c:set var="ss_toolbar" value="${ssToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
 
 <table width="100%">
 <tr><td><c:out value="${ssUser.title}"/></td></tr>

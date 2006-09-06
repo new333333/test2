@@ -37,14 +37,13 @@
 	</div>
   </form>
 </div>
-</div>
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
 <c:set var="ss_toolbar_count" value="0"/>
 <c:set var="ss_dashboard_control_count" value="0" scope="request"/>
 <c:set var="ss_component_count" value="0" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
-<div style="width:100%;">
+<div>
 <table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
 <tr>
   <td valign="middle" nowrap width="2%">

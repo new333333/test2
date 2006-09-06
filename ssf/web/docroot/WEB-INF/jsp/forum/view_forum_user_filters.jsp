@@ -14,18 +14,18 @@
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
 	}
 %>
-<div style="display:inline;" id="<portlet:namespace/>ss_filter_select">
-<span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span>
-<div style="display:inline; border:1px solid black; padding:2px 0px 1px 0px;">
-<form name="ss_filterSelect" style="display:inline;"
+<table class="ss_actions_bar_background">
+<tr>
+<td valign="top"><span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span></td>
+<td valign="top"><form class="ss_compact ss_actions_bar_background" 
+    name="ss_filterSelect" style="display:inline;"
 	action="<portlet:actionURL windowState="maximized">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
-		</portlet:actionURL>" method="post" style="display:inline;">
-<div id="ss_filterTitle" style="display:inline;">
-<ssf:menu title="<%= filterName %>" titleId="ss_filterTitle">
-<ul>
+		</portlet:actionURL>" method="post" >
+<ssf:menu title="<%= filterName %>" titleId="ss_filterTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu">
+<ul class="ss_actions_bar_submenu">
 <li><a href="javascript: ;" 
   onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
 >--<ssf:nlt tag="none" text="none"/>--</a></li>
@@ -36,16 +36,8 @@
 </c:forEach>
 </ul>
 </ssf:menu>
-</div>
 <input type="hidden" name="select_filter">
 </form>
-</div>&nbsp;&nbsp;&nbsp;<a href="<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="build_filter"/>
-		<portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		</portlet:renderURL>"
-><span class="ss_fineprint"><ssf:nlt tag="edit" text="edit"/></span></a>
-</div>
 <script type="text/javascript">
 function ss_changeUserFilter(obj, filter) {
 	var loading = "&nbsp;(<ssf:nlt tag="loading" text="loading"/>)&nbsp;"
@@ -54,4 +46,13 @@ function ss_changeUserFilter(obj, filter) {
 	document.forms.ss_filterSelect.submit();
 }
 </script>
+</td>
+<td valign="top" nowrap><a href="<portlet:renderURL windowState="maximized">
+		<portlet:param name="action" value="build_filter"/>
+		<portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		</portlet:renderURL>"
+><span class="ss_fineprint">&nbsp;&nbsp;&nbsp;<ssf:nlt tag="edit" text="edit"/></span></a></td>
+</tr>
+</table>
 

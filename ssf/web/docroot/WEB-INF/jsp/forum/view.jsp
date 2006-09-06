@@ -22,9 +22,7 @@
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
-<c:set var="ss_toolbar" value="${ssForumToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar" item="true" />
 </c:if>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">

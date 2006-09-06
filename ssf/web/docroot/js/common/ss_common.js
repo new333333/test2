@@ -164,6 +164,7 @@ function ss_navigation_goto(url) {
 //If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
 function ss_openUrlInPortlet(url, popup) {
 	//Is this a request to pop up?
+	ss_debug(url)
 	if (popup) {
 		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
 		return false;
@@ -177,6 +178,7 @@ function ss_openUrlInPortlet(url, popup) {
 		setTimeout('self.window.close();', 200)
 		return false
 	} else {
+		ss_debug('return true')
 		return true
 	}
 }
@@ -987,6 +989,7 @@ function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, op
 	if (!ss_menuDivClones[divId]) {
 		ss_menuDivClones[divId] = divId;
 		var tempNode = divObj.cloneNode( true );
+		tempNode.id = divId;
 		tempNode.style.zIndez = ssMenuZ;
 		divObj.parentNode.removeChild(divObj)
 		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
@@ -2168,7 +2171,6 @@ var ss_helpSystem = {
 			s += "  <td>&nbsp;</td>\n";
 			s += "  </tr>\n";
 			s += "  </table>\n";
-			s += "  </div>\n";
 			s += "</div>\n";
 			//alert(s)
 			document.writeln(s);
@@ -3082,4 +3084,28 @@ function ss_launchUrlInNewWindow(obj, fileName) {
 	var w = window.open(obj.href, "_blank")
 	w.focus();
 	return false;
+}
+
+//UI support
+
+function ss_showSubmenu(obj) {
+	ss_debug('ss_showSubmenu')
+	var ulElements = obj.parentNode.getElementsByTagName('ul')
+	for (var i = 0; i < ulElements.length; i++) {
+		if (ulElements[i].parentNode == obj.parentNode && 
+		    	ulElements[i].className.indexOf('submenu') >= 0) {
+			ss_debug('  show ul '+i)
+			ulElements[i].style.zIndex = parseInt(ssMenuZ)
+			ulElements[i].style.display = 'block'
+		}
+	}
+}
+function ss_hideSubmenu(obj) {
+	ss_debug('ss_hideSubmenu')
+	var ulElements = obj.getElementsByTagName('ul')
+	for (var i = 0; i < ulElements.length; i++) {
+		if (ulElements[i].parentNode == obj) {
+			ulElements[i].style.display = 'none'
+		}
+	}
 }

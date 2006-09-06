@@ -28,5 +28,5 @@ String menuClass = ParamUtil.get(request, "menuClass", "ss_toolbar_menu");
 String menuDivWidth = ParamUtil.get(request, "menuWidth", "200px");
 
 %>
-<div class="ss_style ss_portlet <%= menuClass %>" style="width:<%= menuDivWidth %>;" 
+<div class="<%= menuClass %>" style="width:<%= menuDivWidth %>;" 
   id="<%= menuTagDivId %><portlet:namespace/>">

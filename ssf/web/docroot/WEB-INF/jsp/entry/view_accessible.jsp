@@ -8,7 +8,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
-<div id="ss_showfolder" class="ss_style ss_portlet" style="display:block; margin:2;">
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer" style="display:block; margin:2;">
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
@@ -18,13 +18,19 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
+<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+	<div class="ss_decor-border3">
+		<div class="ss_decor-border4">
+			<div class="ss_rounden-content">
+
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
-<c:set var="ss_toolbar" value="${ssFolderToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<div class="ss_content_inner">
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar"/>
+</div>
 </c:if>
 
+<div class="ss_content_inner">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
@@ -46,5 +52,13 @@ function ss_showForumEntryInIframe(url) {
 <c:set var="ss_toolbar" value="${ssFooterToolbar}" scope="request" />
 <c:set var="ss_toolbar_style" value="ss_footer_toolbar" scope="request" />
 <br/>
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
 </c:if>
+
+			</div>
+		</div>
+	</div>
+	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
+</div>
+

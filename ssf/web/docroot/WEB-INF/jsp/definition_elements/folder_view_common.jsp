@@ -61,25 +61,25 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
-<table cellspacing="0" cellpadding="0" width="95%">
-<tr><td align="left" width="20%">
-<% // Then include the navigation widgets for this view %>
+
+<% // Add the toolbar with the navigation widgets, commands and filter %>
+<ssf:toolbar style="ss_actions_bar">
+
+<ssf:toolbar style="ss_actions_bar" item="true">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-</td>
-<td align="left" width="50%">
+</ssf:toolbar>
+
 <% // Entry toolbar %>
 <c:if test="${!empty ssEntryToolbar}">
-<c:set var="ss_toolbar" value="${ssEntryToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_entry_toolbar" scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/toolbar_view.jsp" %>
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar" item="true" />
 </c:if>
-</td>
-<td width="30%" nowarp>
+
+<ssf:toolbar style="ss_actions_bar" item="true" >
 <%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-</td>
-<td align="right">&nbsp;</td>
-</tr>
-</table>
+</ssf:toolbar>
+
+</ssf:toolbar>
+
 </div>
 </div>
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
