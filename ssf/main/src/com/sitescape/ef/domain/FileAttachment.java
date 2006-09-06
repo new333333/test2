@@ -55,9 +55,31 @@ public class FileAttachment extends Attachment {
         this.lastVersion = lastVersion;
     }
     
+    /**
+     * Returns the highest existing version number, or -1 if no version exists. 
+     * @return
+     */
+    public int getHighestVersionNumber() {
+    	if(fileVersions == null || fileVersions.size() == 0)
+    		return -1;
+    	
+    	int result = Integer.MIN_VALUE;
+    	
+    	for(int i = 0; i < fileVersions.size(); i++) {
+    		VersionAttachment va = (VersionAttachment) fileVersions.get(i);
+    		int no = va.getVersionNumber();
+    		if(no > result)
+    			result = no;
+    	}
+    	
+    	return result;
+    }
     
     /**
-     * Return list of versions, sorted with newest first
+     * Return list of versions, sorted with highest first.
+     * Important: Note that the version with the highest version number is NOT 
+     * necessarily one that has the latest modification time. They are orthogonal
+     * concepts. 
      * @return
      */
     public Set getFileVersions() {

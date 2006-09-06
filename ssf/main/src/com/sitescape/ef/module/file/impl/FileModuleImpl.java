@@ -605,6 +605,11 @@ public class FileModuleImpl implements FileModule {
 		}
 	}
 	
+	public void deleteVersion(Binder binder, DefinableEntity entity, VersionAttachment va) {
+		// TODO Auto-generated method stub
+		// $$$
+	}
+
 	private void triggerUpdateTransaction() {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {  
@@ -1594,5 +1599,4 @@ public class FileModuleImpl implements FileModule {
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
-
 }

@@ -486,7 +486,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, Map entryData, List fileData) {
-    	indexEntry(entry.getParentFolder(), entry, fileData, true);
+    	indexEntry(entry.getParentFolder(), entry, fileData, null, true);
     }
     
     protected void addReply_startWorkflow(FolderEntry entry) {
