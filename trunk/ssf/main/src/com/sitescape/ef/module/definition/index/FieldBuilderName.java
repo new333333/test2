@@ -24,9 +24,9 @@ public class FieldBuilderName extends AbstractFieldBuilder {
          else {
 	         Field allTextField = BasicIndexUtils.allTextField(val);
 	
-	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, true, true, true); 
+	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 
 	            
-	         Field name1Field = Field.Keyword(EntityIndexUtils.NAME1_FIELD, val.substring(0, 1));
+	         Field name1Field = new Field(EntityIndexUtils.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
 	        
 	         return new Field[] {allTextField, nameField, name1Field};
          }
