@@ -11,6 +11,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.repository.RepositoryServiceException;
 
 /**
@@ -371,4 +372,6 @@ public interface FileModule {
 			FileAttachment fa, String newName) 
 		throws UncheckedIOException, RepositoryServiceException;
 
+	public void deleteVersion(Binder binder, DefinableEntity entity,
+			VersionAttachment va); //throws VersionDeletionException; 
 }	

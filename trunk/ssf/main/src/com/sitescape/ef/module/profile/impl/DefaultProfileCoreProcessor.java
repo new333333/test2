@@ -176,7 +176,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         		if (result1 || result2) return Boolean.TRUE;
         		return Boolean.FALSE;
         	}});
-	    if (changed.booleanValue() == true) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);		
+	    if (changed.booleanValue() == true) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);		
 		
 	}
 	public boolean syncEntry_fillIn(Entry entry, InputDataAccessor inputData, Map entryData) {
@@ -231,7 +231,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);	
 	    }
 		
 	}

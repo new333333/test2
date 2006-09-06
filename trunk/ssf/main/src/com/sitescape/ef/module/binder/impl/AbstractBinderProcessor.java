@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -224,7 +225,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void addBinder_indexAdd(Binder parent, Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems) {
         
-    	indexBinder(binder, fileUploadItems, true);
+    	indexBinder(binder, fileUploadItems, null, true);
     }
  	
  	
@@ -242,50 +243,59 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) getCoreDao().validateTitle(binder.getParentBinder(), newTitle);
 	    		
 	    }
-	    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
+	    try {
+		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
+	
+	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
+	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 
-	    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
-	    
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		String oldTitle = binder.getTitle();
-        		modifyBinder_fillIn(binder, inputData, entryData);
-	            modifyBinder_removeAttachments(binder, deleteAttachments);    
-        		modifyBinder_postFillIn(binder, inputData, entryData);
-        		//if title changed, must update path infor for all child folders
-        		String newTitle = binder.getTitle();
-        		//case matters here
-        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
-        			if (binder.getParentBinder() != null) {
-        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + newTitle);
-        			} else {
-        				//must be top
-        				binder.setPathName("/" + newTitle);
-        			}
-         			List children = new ArrayList(binder.getBinders());
-        			//if we index the path, need to reindex all these folders
-        			while (!children.isEmpty()) {
-        				Binder child = (Binder)children.get(0);
-        				child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
-        				children.remove(0);
-        				children.addAll(child.getBinders());
-        			}
-        		}
-        		return null;
-        	}});
-        modifyBinder_indexRemoveFiles(binder, deleteAttachments);
-	    modifyBinder_indexAdd(binder, inputData, fileUploadItems);
-	    
-	    cleanupFiles(fileUploadItems);
-	    
-    	if (filesErrors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(filesErrors);
-    	}
-    	else {
-    		return;
-    	}
+	    	// The following part requires update database transaction.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		String oldTitle = binder.getTitle();
+	        		modifyBinder_fillIn(binder, inputData, entryData);
+		            modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex);    
+	        		modifyBinder_postFillIn(binder, inputData, entryData);
+	        		//if title changed, must update path infor for all child folders
+	        		String newTitle = binder.getTitle();
+	        		//case matters here
+	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
+	        			if (binder.getParentBinder() != null) {
+	        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + newTitle);
+	        			} else {
+	        				//must be top
+	        				binder.setPathName("/" + newTitle);
+	        			}
+	         			List children = new ArrayList(binder.getBinders());
+	        			//if we index the path, need to reindex all these folders
+	        			while (!children.isEmpty()) {
+	        				Binder child = (Binder)children.get(0);
+	        				child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
+	        				children.remove(0);
+	        				children.addAll(child.getBinders());
+	        			}
+	        		}
+	        		return null;
+	        	}});
+		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
+		    
+	    	// Since index update is implemented as removal followed by add, 
+	    	// the update requests must be added to the removal and then add
+	    	// requests respectively. 
+	    	filesToDeindex.addAll(filesToReindex);
+	        modifyBinder_indexRemoveFiles(binder, filesToDeindex);
+		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex);
+		    
+	    	if (filesErrors.getProblems().size() > 0) {
+	    		// At least one error occured during the operation. 
+	    		throw new WriteFilesException(filesErrors);
+	    	}
+	    	else {
+	    		return;
+	    	}
+	    } finally {
+		    cleanupFiles(fileUploadItems);
+	    }
 	}
 
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
@@ -321,37 +331,54 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntryBuilder.updateEntry(binder, entryData);
 
     }
-    protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments) {
-    	removeAttachments(binder, binder, deleteAttachments);
+    protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
+    		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex) {
+    	removeAttachments(binder, binder, deleteAttachments, filesToDeindex, filesToReindex);
     }
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
     }
     
     protected void modifyBinder_indexAdd(Binder binder, 
-    		InputDataAccessor inputData, List fileUploadItems) {
-    	indexBinder(binder, fileUploadItems, false);
+    		InputDataAccessor inputData, List fileUploadItems,
+    		Collection<FileAttachment> filesToIndex) {
+    	indexBinder(binder, fileUploadItems, filesToIndex, false);
     }
-    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection attachments) {
-    	removeFilesIndex(binder, attachments);
+    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex) {
+    	removeFilesIndex(binder, filesToDeindex);
     }
  
-    protected void removeFilesIndex(DefinableEntity entity, Collection attachments) {
+    protected void removeFilesIndex(DefinableEntity entity, Collection<FileAttachment> filesToDeindex) {
 		//remove index entry
-    	for (Iterator iter=attachments.iterator(); iter.hasNext();) {
-    		Attachment a = (Attachment)iter.next();
-    		if (a instanceof FileAttachment) {
-    			removeFileFromIndex((FileAttachment)a);
-    		}
-    	}    	
+    	for(FileAttachment fa : filesToDeindex) {
+    		removeFileFromIndex(fa);
+    	}
     }
-    protected void removeAttachments(Binder binder, DefinableEntity entity, Collection deleteAttachments) {
+    protected void removeAttachments(Binder binder, DefinableEntity entity, 
+    		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
+    		List<FileAttachment> filesToReindex) {
     	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
     		Attachment a = (Attachment)iter.next();
     		//see if associated with a customAttribute
     		if (a instanceof FileAttachment) {
-    			FileAttachment fa = (FileAttachment)a;
-    			getFileModule().deleteFile(binder, entity, fa, null);
+    			if(a instanceof VersionAttachment) {
+    				// Check if we are removing the highest version of the file.
+    				// This check must be done _before_ calling deleteVersion on
+    				// the file module, since it modifies the metadata.
+    				VersionAttachment va = (VersionAttachment) a;
+    				FileAttachment fa = va.getParentAttachment();
+    				if(fa.getHighestVersionNumber() == va.getVersionNumber()) {
+    					// Since we're removing the highest version, we need to re-index
+    					// the file with the content from the next highest version.
+    					filesToReindex.add(fa);
+    				}
+    				// Delete from the repository the file associated with the version.
+    				getFileModule().deleteVersion(binder, entity, va);
+    			}
+    			else {
+    				filesToDeindex.add((FileAttachment) a);
+        			getFileModule().deleteFile(binder, entity, (FileAttachment) a, null);    				
+    			}
     		} else {
     			entity.removeAttachment(a);
     		}
@@ -422,19 +449,29 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * Index binder and optionally its attached files.
      * 
      * @param biner
-     * @param fileUploadItems If this is null, all attached files currently in
-     * the entry are indexed as well. If this is non-null, only those files
-     * in the list are indexed. 
+     * @param fileUploadItems uploaded files or <code>null</code>. 
+     * At minimum, those files in the list must be indexed.  
+     * @param filesToIndex a list of FileAttachments or <code>null</code>. 
+     * At minimum, those files in the list must be indexed. 
      * @param newEntry
      */
-    protected void indexBinder(Binder binder,
-    		List fileUploadItems, boolean newEntry) {
-    	if(fileUploadItems != null) {
-    		indexBinder(binder, findCorrespondingFileAttachments(binder, fileUploadItems), fileUploadItems, newEntry);
-    	}
-    	else {
-    		indexBinder(binder, binder.getFileAttachments(), null, newEntry);
-    	}
+    protected void indexBinder(Binder binder, List fileUploadItems, 
+    		Collection<FileAttachment> filesToIndex, boolean newEntry) {
+    	// Logically speaking, the only files we need to index are the ones
+    	// that have been uploaded (fileUploadItems) and the ones explicitly
+    	// specified (in the filesToIndex). In ideal world, indexing only
+    	// those subset will yield better performance. However, the way 
+    	// file indexing currently works is that, whenever some aspect of its 
+    	// enclosing entry changes, it deletes not only the entry but also all 
+    	// file attachments from the index, because each file index entry 
+    	// actually duplicates the common data from the entry itself. (see 
+    	// overloaded indexEntry method in this class). Therefore, we must 
+    	// (re)index "all" the file attachments in the entry regardless of 
+    	// whether a particular file content has changed or not. 
+    	// Consequently we obtain and pass "all" the attachments to the 
+    	// following method and ignore the filesToIndex list (for now).
+
+    	indexBinder(binder, binder.getFileAttachments(), fileUploadItems, newEntry);
     }
     
     /**
@@ -472,7 +509,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
-        		fui = (FileUploadItem) fileUploadItems.get(i);
+        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
         	indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui);
         	if(indexDoc != null) {       		
         		// Register the index document for indexing.
@@ -637,6 +674,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     }
     	
+    /*
     protected List findCorrespondingFileAttachments(DefinableEntity entity, List fileUploadItems) {
     	List fileAttachments = new ArrayList();
     	for(int i = 0; i < fileUploadItems.size(); i++) {
@@ -647,7 +685,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		fileAttachments.add(i, fa);
     	}
     	return fileAttachments;
-    }
+    }*/
     
     protected void cleanupFiles(List fileUploadItems) {
         for(int i = 0; i < fileUploadItems.size(); i++) {
@@ -664,4 +702,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	IndexSynchronizationManager.deleteDocuments(new Term(
     			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
+    
+	protected FileUploadItem findFileUploadItem(List fileUploadItems, String repositoryName, String fileName) {
+		for(int i = 0; i < fileUploadItems.size(); i++) {
+			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+			if(fui.getRepositoryServiceName().equals(repositoryName) &&
+					fui.getOriginalFilename().equals(fileName))
+				return fui;
+		}
+		return null;
+	}
 }

@@ -197,7 +197,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems) {
         
-    	indexEntry(binder, entry, fileUploadItems, true);
+    	indexEntry(binder, entry, fileUploadItems, null, true);
     }
  
  
@@ -230,11 +230,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    try {
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
 	    
+	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
+	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
+	    	
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
-	                modifyEntry_removeAttachments(binder, entry, deleteAttachments);
+	                modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData);
 	    			return null;
 	    		}});
@@ -242,9 +245,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
 	    	modifyEntry_startWorkflow(entry);
 
-	    	modifyEntry_indexRemoveFiles(binder, entry, deleteAttachments);
-	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems);
-	    
+	    	// Since index update is implemented as removal followed by add, 
+	    	// the update requests must be added to the removal and then add
+	    	// requests respectively. 
+	    	filesToDeindex.addAll(filesToReindex);
+	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex);
+	    	
+	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex);
 	    
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -267,11 +274,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Entry entry, List fileUploadItems, FilesErrors filesErrors) {
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
-    protected void modifyEntry_removeAttachments(Binder binder, Entry entry, Collection deleteAttachments) {
-       	removeAttachments(binder, entry, deleteAttachments);
+    protected void modifyEntry_removeAttachments(Binder binder, Entry entry, 
+    		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
+    		List<FileAttachment> filesToReindex) {
+       	removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
     }
-    protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection attachments) {
-    	removeFilesIndex(entry, attachments);
+    protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex) {
+    	removeFilesIndex(entry, filesToDeindex);
     }
 
     protected void modifyEntry_startWorkflow(Entry entry) {
@@ -314,8 +323,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
-    		InputDataAccessor inputData, List fileUploadItems) {
-    	indexEntry(binder, entry, fileUploadItems, false);
+    		InputDataAccessor inputData, List fileUploadItems, 
+    		Collection<FileAttachment> filesToIndex) {
+    	indexEntry(binder, entry, fileUploadItems, filesToIndex, false);
     }
 
     //***********************************************************************************************************   
@@ -462,7 +472,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		//flush any changes so any exiting changes don't get lost on the evict
    		getCoreDao().flush();
    		//index just the binder first
-   		indexBinder(binder, null, false);
+   		indexBinder(binder, null, null, false);
    		SFQuery query = indexEntries_getQuery(binder);
 	   	
 	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
@@ -543,7 +553,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
     //***********************************************************************************************************
    	public void reindexEntry(Entry entry) {
-   		indexEntry(entry.getParentBinder(), entry, null, false);
+   		indexEntry(entry.getParentBinder(), entry, null, null, false);
    	}
    	public void reindexEntries(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
@@ -784,19 +794,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * 
      * @param biner
      * @param entry
-     * @param fileUploadItems If this is null, all attached files currently in
-     * the entry are indexed as well. If this is non-null, only those files
-     * in the list are indexed. 
+     * @param fileUploadItems uploaded files or <code>null</code>. 
+     * At minimum, those files in the list must be indexed.  
+     * @param filesToIndex a list of FileAttachments or <code>null</code>. 
+     * At minimum, those files in the list must be indexed. 
      * @param newEntry
      */
-    protected void indexEntry(Binder binder, Entry entry,
-    		List fileUploadItems, boolean newEntry) {
-    	if(fileUploadItems != null) {
-    		indexEntry(binder, entry, findCorrespondingFileAttachments(entry, fileUploadItems), fileUploadItems, newEntry);
-    	}
-    	else {
-    		indexEntry(binder, entry, entry.getFileAttachments(), null, newEntry);
-    	}
+    protected void indexEntry(Binder binder, Entry entry, List fileUploadItems, 
+    		Collection<FileAttachment> filesToIndex, boolean newEntry) {
+    	// Logically speaking, the only files we need to index are the ones
+    	// that have been uploaded (fileUploadItems) and the ones explicitly
+    	// specified (in the filesToIndex). In ideal world, indexing only
+    	// those subset will yield better performance. However, the way 
+    	// file indexing currently works is that, whenever some aspect of its 
+    	// enclosing entry changes, it deletes not only the entry but also all 
+    	// file attachments from the index, because each file index entry 
+    	// actually duplicates the common data from the entry itself. (see 
+    	// overloaded indexEntry method in this class). Therefore, we must 
+    	// (re)index "all" the file attachments in the entry regardless of 
+    	// whether a particular file content has changed or not. 
+    	// Consequently we obtain and pass "all" the attachments to the 
+    	// following method and ignore the filesToIndex list (for now).
+    	
+    	indexEntry(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry);
     }
     
     /**
@@ -806,9 +826,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param entry
      * @param fileAttachments list of FileAttachments that need to be (re)indexed.
      * Only those files explicitly listed in this list are indexed. 
-     * @param fileUploadItems This may be <code>null</code> in which case the 
-     * contents of the files must be obtained from repositories. If non-null,
-     * the files in this list are used for indexing and the elements positionally
+     * @param fileUploadItems a list of uploaded files or a <code>null</code>.
+     * If each FileAttachment in fileAttachments list finds a corresponding
+     * uploaded file in this list, the content of the uploaded file can be
+     * used for indexing. Otherwise, the file content must be obtained from
+     * the repository. Note that the elements in this list do not positionally
      * correspond to the elements in fileAttachments list. 
      * @param newEntry
      */
@@ -832,7 +854,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
-        		fui = (FileUploadItem) fileUploadItems.get(i);
+        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
         	indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
         	if(indexDoc != null) {
         		// Register the index document for indexing.
