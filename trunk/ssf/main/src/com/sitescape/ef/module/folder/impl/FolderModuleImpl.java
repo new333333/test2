@@ -1,5 +1,6 @@
 package com.sitescape.ef.module.folder.impl;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -432,6 +433,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         if (folders.size() > 0) {
 	        Hits hits = getRecentEntries(folders);
 	        Map unseenCounts = new HashMap();
+	        Date modifyDate = new Date();
 	        for (int i = 0; i < hits.length(); i++) {
 				String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
 				String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
@@ -439,7 +441,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 				if (entryIdString != null && !entryIdString.equals("")) {
 					entryId = new Long(entryIdString);
 				}
-				Date modifyDate = DateField.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+				try {
+					modifyDate = DateTools.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+				} catch (ParseException pe) {} // no need to do anything
 				Counter cnt = (Counter)unseenCounts.get(folderIdString);
 				if (cnt == null) {
 					cnt = new Counter();
