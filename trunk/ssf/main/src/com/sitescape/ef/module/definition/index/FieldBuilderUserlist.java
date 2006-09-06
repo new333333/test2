@@ -30,7 +30,7 @@ public class FieldBuilderUserlist extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
 	        val = Long.valueOf((String)it.next());
-	        field = new Field(fieldName, val.toString(), false, true, false);
+	        field = new Field(fieldName, val.toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
         }
         
