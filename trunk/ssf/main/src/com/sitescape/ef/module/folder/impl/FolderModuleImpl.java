@@ -193,15 +193,22 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
     }
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-			throws AccessControlException, WriteFilesException {
+			throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
     	modifyEntry(binderId, id, inputData, new HashMap(), null);
     }
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, 
+    		WriteFilesException, ReservedByAnotherUserException {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkModifyEntryAllowed(entry);
+        
+        User user = RequestContextHolder.getRequestContext().getUser();
+        HistoryStamp reservation = entry.getReservation();
+        if(reservation != null && !reservation.getPrincipal().equals(user))
+        	throw new ReservedByAnotherUserException(entry);
+        
     	List atts = new ArrayList();
     	if (deleteAttachments != null) {
     		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {

@@ -54,9 +54,10 @@ public interface FolderModule {
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
     public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
+    		Map fileItems, Collection deleteAttachments) throws AccessControlException, 
+    		WriteFilesException, ReservedByAnotherUserException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
-    	throws AccessControlException, WriteFilesException;
+    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void checkModifyEntryAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
