@@ -816,7 +816,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
     	
-    	indexEntry(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry);
+    	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), fileUploadItems, newEntry);
     }
     
     /**
@@ -834,7 +834,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * correspond to the elements in fileAttachments list. 
      * @param newEntry
      */
-	protected void indexEntry(Binder binder, Entry entry,
+	protected void indexEntryWithAttachments(Binder binder, Entry entry,
 			List fileAttachments, List fileUploadItems, boolean newEntry) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.

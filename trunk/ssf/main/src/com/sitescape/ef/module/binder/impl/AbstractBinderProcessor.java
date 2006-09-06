@@ -471,7 +471,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Consequently we obtain and pass "all" the attachments to the 
     	// following method and ignore the filesToIndex list (for now).
 
-    	indexBinder(binder, binder.getFileAttachments(), fileUploadItems, newEntry);
+    	indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry);
     }
     
     /**
@@ -486,7 +486,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * correspond to the elements in fileAttachments list. 
      * @param newEntry
      */
-	protected void indexBinder(Binder binder,
+	protected void indexBinderWithAttachments(Binder binder,
 			List fileAttachments, List fileUploadItems, boolean newEntry) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
