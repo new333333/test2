@@ -1217,7 +1217,7 @@ public class FileModuleImpl implements FileModule {
 		// Since this is the only version for the file, we can safely set its
 		// dates equal to those of FileAttachment.
 		vAtt.setCreation(fAtt.getCreation());
-		vAtt.setModification(vAtt.getModification());
+		vAtt.setModification(fAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
 
 		vAtt.setVersionNumber(1);
