@@ -172,7 +172,7 @@ public class IndexObject  {
         try {
             openIndexReader();
             try {
-                retval = indexReader.delete(term);
+                retval = indexReader.deleteDocuments(term);
             } catch (IOException ioe) {}
         } finally {
             closeReader();
@@ -189,7 +189,6 @@ public class IndexObject  {
      */
     public synchronized int deleteDocuments(Query query) throws RemoteException {
     	logger.info("deleteDocuments:QUERY = " + query.toString());
-    	int retval = 0;
         Hits hits;
         commit();
         try {
@@ -197,7 +196,7 @@ public class IndexObject  {
             if (hits.length() <= 0) return 0;
             openIndexReader();
             for (int i = 0; i < hits.length(); i++) {
-                indexReader.delete(hits.id(i));
+                indexReader.deleteDocument(hits.id(i));
             }
         } catch (IOException ioe) {
             throw new RemoteException("Couldn't open reader");
@@ -261,7 +260,7 @@ public class IndexObject  {
             for (int i=0; i<delQ.size(); i++) {
                 SsfDocument sdoc = (SsfDocument)delQ.dequeue();
                 try {
-                    indexReader.delete(new Term("_uid", sdoc.getUID()));
+                    indexReader.deleteDocuments(new Term("_uid", sdoc.getUID()));
                 } catch (IOException ioe) {
                     throw new RemoteException("Error emptying the Delete Queue: ", ioe);
                 }
