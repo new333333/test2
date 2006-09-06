@@ -3,6 +3,7 @@ package com.sitescape.ef.search.docbuilder.mapped;
 import java.util.Date;
 import java.util.Iterator;
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
@@ -124,34 +125,38 @@ public class MappedIndexDocumentBuilder implements IndexDocumentBuilder {
         if(fieldSpec instanceof ObjectIndexMapping.FieldText) {
             ObjectIndexMapping.FieldText fieldText = (ObjectIndexMapping.FieldText) fieldSpec;
             String propertyStrValue = property.getToStringConverter().toString(propertyValue);
-            field = Field.Text(fieldText.getName(), propertyStrValue, fieldText.getStoreTermVector());
+            field = new Field(fieldText.getName(), propertyStrValue, Field.Store.YES, Field.Index.TOKENIZED, 
+            		(fieldText.getStoreTermVector() ? Field.TermVector.YES:Field.TermVector.NO) );
         }
         else if(fieldSpec instanceof ObjectIndexMapping.FieldUnstored) {
             ObjectIndexMapping.FieldUnstored fieldUnstored = (ObjectIndexMapping.FieldUnstored) fieldSpec;
             String propertyStrValue = property.getToStringConverter().toString(propertyValue);
-            field = Field.UnStored(fieldUnstored.getName(), propertyStrValue, fieldUnstored.getStoreTermVector());
+            field = new Field(fieldUnstored.getName(), propertyStrValue, Field.Store.NO, Field.Index.TOKENIZED,
+            		(fieldUnstored.getStoreTermVector() ? Field.TermVector.YES:Field.TermVector.NO) );
         }
         else if(fieldSpec instanceof ObjectIndexMapping.FieldUnindexed) {
             ObjectIndexMapping.FieldUnindexed fieldUnindexed = (ObjectIndexMapping.FieldUnindexed) fieldSpec;
             String propertyStrValue = property.getToStringConverter().toString(propertyValue);
-            field = Field.UnStored(fieldUnindexed.getName(), propertyStrValue);            
+            field = new Field(fieldUnindexed.getName(), propertyStrValue, Field.Store.YES, Field.Index.NO);            
         }
         else if(fieldSpec instanceof ObjectIndexMapping.FieldKeyword) {
             ObjectIndexMapping.FieldKeyword fieldKeyword = (ObjectIndexMapping.FieldKeyword) fieldSpec;
             if(fieldKeyword.getType().equals("java.util.Date")) {
                 Date propertyDateValue = property.getToDateConverter().toDate(propertyValue);
-                field = Field.Keyword(fieldKeyword.getName(), propertyDateValue);
+                field = new Field(fieldKeyword.getName(), DateTools.dateToString(propertyDateValue,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
             }
             else { // java.lang.String
                 String propertyStrValue = property.getToStringConverter().toString(propertyValue);
-                field = Field.Keyword(fieldKeyword.getName(), propertyStrValue);
+                field = new Field(fieldKeyword.getName(), propertyStrValue, Field.Store.YES, Field.Index.UN_TOKENIZED);
             }
         }
         else if(fieldSpec instanceof ObjectIndexMapping.FieldField) {
             ObjectIndexMapping.FieldField fieldField = (ObjectIndexMapping.FieldField) fieldSpec;
             String propertyStrValue = property.getToStringConverter().toString(propertyValue);
-            field = new Field(fieldField.getName(), propertyStrValue, fieldField.getStore(), 
-                    fieldField.getIndex(), fieldField.getToken(), fieldField.getStore());
+            field = new Field(fieldField.getName(), propertyStrValue, 
+            			(fieldField.getStore() ? Field.Store.YES : Field.Store.NO),
+            			(fieldField.getIndex() ? (fieldField.getToken() ? Field.Index.TOKENIZED : Field.Index.UN_TOKENIZED) : Field.Index.NO),
+            			(fieldField.getStore() ? Field.TermVector.YES : Field.TermVector.NO));
         }
         return field;
     }
