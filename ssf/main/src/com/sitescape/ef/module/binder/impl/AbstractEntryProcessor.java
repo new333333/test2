@@ -1,6 +1,7 @@
 package com.sitescape.ef.module.binder.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.document.DateField;
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.index.Term;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -579,9 +580,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	            while (flds.hasMoreElements()) {
 	            	fld = (Field)flds.nextElement();
 	            	//TODO This hack needs to go.
-	            	if (fld.name().toLowerCase().indexOf("date") > 0) 
-	            		ent.put(fld.name(),DateField.stringToDate(fld.stringValue()));
-	            	else if (!ent.containsKey(fld.name())) {
+	            	if (fld.name().toLowerCase().indexOf("date") > 0) {
+	            		try {
+	            			ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
+	            		} catch (Exception e) {ent.put(fld.name(),new Date());
+	            		}
+	            	} else if (!ent.containsKey(fld.name())) {
 	            		ent.put(fld.name(), fld.stringValue());
 	            	} else {
 	            		Object obj = ent.get(fld.name());
