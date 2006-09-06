@@ -30,7 +30,7 @@ public class FieldBuilderSelect extends AbstractFieldBuilder {
         int i = 0;
         for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
             val = (String) it.next();
-	        field = new Field(fieldName, val, false, true, false);
+	        field = new Field(fieldName, val, Field.Store.NO, Field.Index.UN_TOKENIZED);
 	        fields[i] = field;
         }
         
