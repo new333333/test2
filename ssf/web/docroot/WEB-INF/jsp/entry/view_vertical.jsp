@@ -72,14 +72,17 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:relative; margin:0px 0px 0px 2px; 
+  style="position:relative; margin:0px 0px 0px 2px; left:-1px;
     top:<%= sliderDivOffset %>px;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
     <ssf:param name="box_class" value="ss_style" />
+    <ssf:param name="box_style" value="margin:0px;" />
     <ssf:param name="box_color" value="${ss_folder_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     <ssf:param name="box_title" useBody="true">
+    <!-- Set width to 0 to indicate "100%" -->
+    <ssf:param name="box_width" value="0" />
       <div class="ss_folder_border">
       <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
       </div>
