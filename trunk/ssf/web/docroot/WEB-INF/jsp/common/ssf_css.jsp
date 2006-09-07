@@ -1336,9 +1336,9 @@ div.ss_actions_bar_submenu {
 .ss_actions_bar_submenu div {
 	background:none;
 }
-.ss_actions_bar_submenu a:hover {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
+.ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
 	text-decoration:underline;
+	background-color:#FBFAFF;
 }
 
 /* Footer */
