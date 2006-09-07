@@ -74,7 +74,6 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 <ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_fineprint ss_bottomlinks"/>
 </c:if>
 
-
 			</div>
 		</div>
 	</div>

@@ -18,13 +18,20 @@
 var ss_reloadUrl = "${ss_reloadUrl}";
 </script>
 
-<div class="ss_style ss_portlet">
+<div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer">
 
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
+
+<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+	<div class="ss_decor-border3">
+		<div class="ss_decor-border4">
+			<div class="ss_rounden-content">
+				
+<div class="ss_content_inner">
 
 <% // Workspace toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -41,6 +48,18 @@ var ss_reloadUrl = "${ss_reloadUrl}";
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   entry="${ssBinder}" />
+</div>
+<% // Footer toolbar %>
+<c:if test="${!empty ssFooterToolbar}">
+<br/>
+<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_fineprint ss_bottomlinks"/>
+</c:if>
+
+			</div>
+		</div>
+	</div>
+	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
 </div>
 </c:if>
 

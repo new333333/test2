@@ -33,6 +33,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_files_that_do_not_pop_up = "doc xls";
 	
 	//zIndex map
+	var ssPortletZ = 5
 	var ssLightboxZ = 2000;
 	var ssHelpZ = 2000;
 	var ssHelpSpotZ = 2001;
@@ -226,6 +227,33 @@ function ss_moveObjectToBody(obj) {
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
 }
+
+var ss_originalSSParentNodes = new Array();
+var ss_originalSSChildNodeNumbers = new Array();
+function ss_moveDivToTopOfBody(divId) {
+	var obj = document.getElementById(divId);
+	if (obj == null) return;
+    var bodyObj = document.getElementsByTagName("body").item(0);
+    if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
+    	//move the object to the body (at the top)
+    	ss_originalSSParentNodes[divId] = obj.parentNode;
+		ss_originalSSChildNodeNumbers[divId] = 0;
+		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
+			if (obj.parentNode.childNodes.item(i) == obj) break;
+		}
+		obj.parentNode.removeChild(obj);
+		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
+		obj.style.zIndex = ssPortletZ;
+    } else {
+		if (ss_originalSSParentNodes[divId] != null) {
+			bodyObj.removeChild(obj);
+			ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(ss_originalSSChildNodeNumbers[divId]))
+		}
+	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
 
 //Function to create a named div in the body
 function ss_createDivInBody(divId, className) {

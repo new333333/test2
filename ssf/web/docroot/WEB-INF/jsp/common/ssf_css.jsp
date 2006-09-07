@@ -1270,6 +1270,7 @@ li.ss_tabs_active .ss_tabs_tabend{
 
 /* actions: */
 .ss_actions_bar {
+	list-style-type:none;
 	width:100%;
 	margin:0px;
 	padding:0px;
@@ -1315,6 +1316,7 @@ div.ss_actions_bar_submenu {
 	z-index:500;
 }
 ul.ss_actions_bar_submenu {
+	list-style-type:none;
 	position:relative;
 	top:-10px;
 	left:-20px;

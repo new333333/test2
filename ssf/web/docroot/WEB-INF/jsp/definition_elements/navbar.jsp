@@ -46,7 +46,7 @@ function ss_turnOffDebugMode() {
 	</li>
 
 <!-- My workspace -->
-	<li class="ss_global_toolbar_myworkspace" onClick="alert('Go to My Workspace (tbd)');">
+	<li class="ss_global_toolbar_myworkspace" onClick="ss_moveDivToTopOfBody('ss_portlet_content');return false;">
 	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="bottom" align="left" offsetX="10" offsetY="45"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
