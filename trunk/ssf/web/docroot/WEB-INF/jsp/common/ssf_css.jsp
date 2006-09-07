@@ -1021,7 +1021,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_content_outer {
 	padding-bottom:100px;
 	margin-top:1px;
-	background:url(images/back1.gif) repeat;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back1.gif) repeat;
 }
 .ss_content_inner {
 	width:100%;
@@ -1315,9 +1315,8 @@ div.ss_actions_bar_submenu {
 	display:none;
 	z-index:500;
 }
-ul.ss_actions_bar_submenu {
-	list-style-type:none;
-	position:relative;
+.ss_actions_bar_submenu {
+	position:absolute;
 	top:-10px;
 	left:-20px;
 	background:#EFEEF3;
@@ -1325,17 +1324,20 @@ ul.ss_actions_bar_submenu {
 	border-top:none;
 	padding:4px;
 }
-.ss_actions_bar_submenu li a {
+.ss_actions_bar_submenu li  {
 	float:none;
+	padding:0px 15px;
+	font-weight:bold;
 	border-bottom:1px solid #E0DFEF;
 	border-right-style:none;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 10px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
+	width:250px;
 }
 .ss_actions_bar_submenu div {
 	background:none;
 }
 .ss_actions_bar_submenu a:hover {
-	background:none;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
 	text-decoration:underline;
 }
 
