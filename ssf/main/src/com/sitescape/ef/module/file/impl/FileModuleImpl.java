@@ -43,6 +43,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
 import com.sitescape.ef.module.file.ContentFilter;
+import com.sitescape.ef.module.file.DeleteVersionException;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
@@ -581,14 +582,6 @@ public class FileModuleImpl implements FileModule {
    		return null;
 	}
 	
-	/**
-	 * Rename the file.
-	 *  
-	 * Important: Unlike many other methods in this class, this method
-	 * assumes that the caller is responsible for transaction demarcation
-	 * with respect to updating the metadata in the database. 
-	 * This inconsistency is here merely to improve efficiency slightly.
-	 */
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
 	throws UncheckedIOException, RepositoryServiceException {
@@ -605,9 +598,29 @@ public class FileModuleImpl implements FileModule {
 		}
 	}
 	
-	public void deleteVersion(Binder binder, DefinableEntity entity, VersionAttachment va) {
-		// TODO Auto-generated method stub
-		// $$$
+	public void deleteVersion(Binder binder, DefinableEntity entity, 
+			VersionAttachment va) throws DeleteVersionException {
+		// Check if the version is the only one remaining for the file. 
+		FileAttachment fa = va.getParentAttachment();
+		if(fa.getFileVersionsUnsorted().size() <= 1)
+			throw new DeleteVersionException(va);
+			
+		// Delete the version from the repository. 
+		RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entity, 
+				va.getFileItem().getName(), va.getVersionName());			
+
+		// Update the metadata
+		
+		fa.removeFileVersion(va);
+		
+		// Get the highest previous version
+		VersionAttachment highestVa = (VersionAttachment) fa.getFileVersions().iterator().next();
+		
+		// Copy the last-modified date
+		fa.setModification(highestVa.getModification());
+		// Copy the file length
+		fa.setFileItem(highestVa.getFileItem());
+		// Since creation date is not really useful, we will leave it alone. 
 	}
 
 	private void triggerUpdateTransaction() {

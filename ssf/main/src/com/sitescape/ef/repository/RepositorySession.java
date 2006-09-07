@@ -422,4 +422,8 @@ public interface RepositorySession {
 	public void miniMove(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String newRelativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
+	
+	public void deleteVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName) 
+		throws RepositoryServiceException, UncheckedIOException;
 }

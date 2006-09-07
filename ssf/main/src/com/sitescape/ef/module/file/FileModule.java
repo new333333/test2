@@ -368,10 +368,30 @@ public interface FileModule {
     
 	public FolderEntry findFileFolderEntry(Binder fileFolder, String title);
 	
+	/**
+	 * Rename the file.
+	 *  
+	 * Important: Unlike many other methods in this class, this method
+	 * assumes that the caller is responsible for transaction demarcation
+	 * with respect to updating the metadata in the database. 
+	 * This inconsistency is here merely for improved efficiency.
+	 */
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
 		throws UncheckedIOException, RepositoryServiceException;
 
+	/**
+	 * Delete the specified version. 
+	 * If it is the only remaining version for the file, the request fails and 
+	 * the method throws <code>DeleteVersionException</code>.
+	 * Like <code>renameFile</code>, this method assumes that the caller is
+	 * responsible for transaction demarcation. 
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param va
+	 * @throws DeleteVersionException
+	 */
 	public void deleteVersion(Binder binder, DefinableEntity entity,
-			VersionAttachment va); //throws VersionDeletionException; 
+			VersionAttachment va) throws DeleteVersionException; 
 }	
