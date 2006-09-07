@@ -22,7 +22,7 @@
 
 <% // Toolbar %>
 <c:if test="${!empty ssForumToolbar}">
-<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar" item="true" />
+<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar" />
 </c:if>
 
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
