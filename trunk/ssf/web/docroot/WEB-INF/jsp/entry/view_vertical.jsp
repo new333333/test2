@@ -98,18 +98,15 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <input type="hidden" name="entry_height">
 </form>
 
-<% // Footer toolbar %>
-<c:if test="${!empty ssFooterToolbar}">
-<c:set var="ss_toolbar" value="${ssFooterToolbar}" scope="request" />
-<c:set var="ss_toolbar_style" value="ss_footer_toolbar" scope="request" />
-<br/>
-<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
-</c:if>
-
 			</div>
 		</div>
 	</div>
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
+<% // Footer toolbar %>
+<c:if test="${!empty ssFooterToolbar}">
+<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
+</c:if>
 
 </div>
 

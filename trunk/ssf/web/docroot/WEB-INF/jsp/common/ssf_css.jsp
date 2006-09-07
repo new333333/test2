@@ -1027,6 +1027,9 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	width:100%;
 	padding:0px 2px 0px 10px;
 }
+.ss_content_window {
+	padding:5px;
+}
 .ss_clear {
 	clear:both;
 	height:1px;
@@ -1059,7 +1062,30 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_decor-border4{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
 }
+.ss_decor-border5{
+	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
+}
+.ss_decor-border6{
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y right;
+}
 
+.ss_decor-round-corners-bottom3 {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border2.gif) repeat-x bottom;
+}
+.ss_decor-round-corners-bottom3 div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner3.gif) no-repeat left;
+}
+.ss_decor-round-corners-bottom3 div div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner4.gif) no-repeat right;
+	height:7px;
+	font-size:1px;
+}
+.ss_decor-border7 {
+	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border3.gif) repeat-y left;
+}
+.ss_decor-border8 {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border4.gif) repeat-y right;
+}
 
 .ss_decor-round-corners-top2{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-x top;
@@ -1086,12 +1112,6 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner4.gif) no-repeat right;
 	height:10px;
 	font-size:1px;
-}
-.ss_decor-border5{
-	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
-}
-.ss_decor-border6{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y right;
 }
 .ss_rounden-content{
 	padding:0px 35px 10px 10px;
@@ -1344,6 +1364,12 @@ div.ss_actions_bar_submenu {
 	text-align:center;
 	margin:5px 0px;
 	color:#8E8FA7;
+}
+.ss_bottomlinks li {
+	float:left;
+	padding:0px 5px 0px 5px;
+	border-right:1px solid #9687A7;
+	border-left:1px solid #FFF;
 }
 
 

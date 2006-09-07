@@ -5,46 +5,49 @@
 	String ss_dashboardAddNarrow = NLT.get("dashboard.addComponents.narrow");
 	String ss_dashboardAddMedium = NLT.get("dashboard.addComponents.medium");
 %>
-<div id="ss_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
-  <form method="post" action="<portlet:actionURL>
-	  <portlet:param name="action" value="modify_dashboard"/>
-	  <portlet:param name="binderId" value="${ssBinder.id}"/>
-	  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-      </portlet:actionURL>">
-	<div style="margin:10px;">
-      <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
-      <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
-      <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
-      <c:if test="${ssDashboard.sharedModificationAllowed}">
-        <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/><br>
-      </c:if>
-      <br/>
-      <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
-      <c:forEach var="component" items="${ssDashboard.components_wide}">
-         <input type="radio" name="name" value="${component}">
-           <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
-         <br>
-      </c:forEach>
-      <br>
-	  <input class="ss_form" type="submit" name="add_wideTop" 
-	    value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
-	  <input class="ss_form" type="submit" name="cancel" 
-	    value="<ssf:nlt tag="button.cancel"/>" 
-	    onClick="ss_hideDashboardMenu(this);return false;">
-	  <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
-	  <input type="hidden" name="_componentId" value="">
-	  <input type="hidden" name="_returnView" value="binder"/>
-	</div>
-  </form>
-</div>
+  <div id="ss_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+    <form method="post" action="<portlet:actionURL>
+	    <portlet:param name="action" value="modify_dashboard"/>
+	    <portlet:param name="binderId" value="${ssBinder.id}"/>
+	    <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+        </portlet:actionURL>">
+	  <div style="margin:10px;">
+        <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
+        <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
+        <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
+        <c:if test="${ssDashboard.sharedModificationAllowed}">
+          <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/><br>
+        </c:if>
+        <br/>
+        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
+        <c:forEach var="component" items="${ssDashboard.components_wide}">
+           <input type="radio" name="name" value="${component}">
+             <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
+           <br>
+        </c:forEach>
+        <br>
+	    <input class="ss_form" type="submit" name="add_wideTop" 
+	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+	    <input class="ss_form" type="submit" name="cancel" 
+	      value="<ssf:nlt tag="button.cancel"/>" 
+	      onClick="ss_hideDashboardMenu(this);return false;">
+	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	    <input type="hidden" name="_componentId" value="">
+	    <input type="hidden" name="_returnView" value="binder"/>
+	  </div>
+    </form>
+  </div>
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
 <c:set var="ss_toolbar_count" value="0"/>
 <c:set var="ss_dashboard_control_count" value="0" scope="request"/>
 <c:set var="ss_component_count" value="0" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
-<div>
-<table cellspacing="0" cellpadding="0" style="width:99%; margin-bottom:2px;">
+<div class="ss_decor-round-corners-top2"><div><div></div></div></div>
+<div class="ss_decor-border5">
+  <div class="ss_decor-border6">
+    <div class="ss_content_window">
+<table cellspacing="0" cellpadding="0" style="width:98%; margin-bottom:2px;">
 <tr>
   <td valign="middle" nowrap width="2%">
       <form "style="display:inline;">
@@ -227,6 +230,10 @@
 <input type="hidden" name="dashboard_layout"/>
 </form>
 </div>
+
+    </div>
+  </div>
+  <div class="ss_decor-round-corners-bottom2"><div><div></div></div></div>
 </div>
 <script type="text/javascript">
 ss_toolbar_count = <c:out value="${ss_toolbar_count}"/>;
