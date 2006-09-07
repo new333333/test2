@@ -268,6 +268,17 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 	}
 
+	public void deleteVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName) 
+		throws RepositoryServiceException, UncheckedIOException {
+		try {
+			deleteFileVersion(binder, entity, relativeFilePath, versionName);
+		}
+		catch(RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}	
+	}
+	
 	private int getFileInfo(Binder binder, DefinableEntity entity, 
 			String relativeFilePath) throws RepositoryException {
 		String fileNodePath = getFileNodePath(binder, entity, relativeFilePath);
@@ -503,6 +514,16 @@ public class JCRRepositorySession implements RepositorySession {
 				relativeFilePath, versionName);
 		
 		return contentNode.getProperty(JCRConstants.JCR_DATA).getLength();
+	}
+
+	private void deleteFileVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName) 
+		throws RepositoryException {
+		Node contentNode = getFileContentNode(binder, entity, relativeFilePath);
+
+		VersionHistory versionHistory = contentNode.getVersionHistory();
+		
+		versionHistory.removeVersion(versionName);
 	}
 
 	public class JCRDataSource implements DataSource {

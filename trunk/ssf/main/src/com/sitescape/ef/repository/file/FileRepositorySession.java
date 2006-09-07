@@ -22,7 +22,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -516,6 +515,32 @@ public class FileRepositorySession implements RepositorySession {
 			File newUnversionedFile = getUnversionedFile(binder, entity, newRelativeFilePath);
 			move(unversionedFile, newUnversionedFile);
 		}
+	}
+
+	public void deleteVersion(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, String versionName) 
+		throws RepositoryServiceException, UncheckedIOException {
+		int fileInfo = fileInfo(binder, entity, relativeFilePath);
+		
+		if(fileInfo == VERSIONED_FILE) {
+			File versionFile = getVersionFile(binder, entity, relativeFilePath, versionName);
+			
+			try {
+				FileHelper.delete(versionFile);
+			}
+			catch(IOException e) {
+				logger.error("Error deleting file [" + versionFile.getAbsolutePath() + "]");
+				throw new UncheckedIOException(e);
+			}			
+		}
+		else if(fileInfo == UNVERSIONED_FILE) {
+			throw new RepositoryServiceException("Cannot delete a version from the file " + 
+					relativeFilePath + " for entry " + entity.getTypedId() + ": It is not versioned"); 
+		}
+		else {
+			throw new RepositoryServiceException("Cannot delete a version from the file " + 
+					relativeFilePath + " for entry " + entity.getTypedId() + ": It does not exist"); 
+		}	
 	}
 
 	/**

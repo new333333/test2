@@ -89,6 +89,12 @@ public class FileAttachment extends Attachment {
     	return result;
     }
 
+    /**
+     * Returns a list of VersionAttachments. 
+     * Important: This method returns a reference to the original list,
+     * not a copy. So the caller must NEVER modify the returned list.
+     * @return
+     */
     public List getFileVersionsUnsorted() {
     	if(fileVersions == null)
     		fileVersions = new ArrayList();

@@ -267,5 +267,17 @@ public class RepositoryUtil {
 		}
 	}
 
+	public static void deleteVersion(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, String versionName)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			session.deleteVersion(binder, entry, relativeFilePath, versionName);
+		} finally {
+			session.close();
+		}
+	}
+
 
 }
