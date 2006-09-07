@@ -40,6 +40,8 @@ String title = ParamUtil.get(request, "box_title", "");
 <%
 int iWidth = (int)ParamUtil.get(request, "box_width", 600);
 String width = Integer.toString(iWidth);
+//If width is set to 0, then use "100% instead
+if (iWidth == 0) width = "100%";
 
 String wildWidth = "*";
 try {
@@ -49,7 +51,7 @@ catch (Exception e) {
 }
 
 String boxClass = ParamUtil.get(request, "box_class", "ss_box_top_rounded");
-
+String boxStyle = ParamUtil.get(request, "box_style", "");
 boolean boldTitle = ParamUtil.get(request, "box_bold_title", true);
 boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", false);
 
@@ -69,7 +71,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 }
 %>
 <div class="<%= boxClass %>" id="<%= divId %>" 
-  style="width: <%= width %>; background-color:${boxColor};">
+  style="width: <%= width %>; background-color:${boxColor}; <%= boxStyle %>">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
 	<div class="ss_box_small_icon_bar" 
 	  style="margin:0px; background-color:${boxColor};" 

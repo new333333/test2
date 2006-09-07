@@ -9,18 +9,16 @@ var ss_minEntryDivHeight = 100;
 var ss_scrollTopOffset = 4;
 var ss_scrollbarHeight = 20;
 var ss_positioningEntryDiv = 0;
-var ss_marginLeft = 40
-var ss_marginRight = 40
 var ss_entryHeightHighWaterMark = 0
 
 function ss_setEntryDivHeight() {
 	try {
 		if (window.ss_showentryframe && window.ss_showentryframe.document && 
 				window.ss_showentryframe.document.body) {
-		    var wObj3 = self.document.getElementById('ss_showentryframe')
+		    var wObj = self.document.getElementById('ss_showentryframe')
 			if (ss_minEntryDivHeight > ss_entryHeightHighWaterMark) {
 				ss_entryHeightHighWaterMark = ss_minEntryDivHeight;
-				ss_setObjectHeight(wObj3, ss_minEntryDivHeight);
+				ss_setObjectHeight(wObj, ss_minEntryDivHeight);
 			}
 			setTimeout("ss_positionEntryDiv();", 100);
 		}
@@ -33,14 +31,8 @@ function ss_positionEntryDiv() {
 	ss_positioningEntryDiv = 1
 	ss_showEntryDiv()
 
-    var wObj = self.document.getElementById('ss_showfolder')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
-    var wObj3 = self.document.getElementById('ss_showentryframe')
-        
-    var width = parseInt(parseInt(ss_getObjectWidth(wObj)) - ss_marginLeft - ss_marginRight);
-	ss_setObjectWidth(wObj1, width);
-	ss_setObjectWidth(wObj2, width);
+    var wObj2 = self.document.getElementById('ss_showentryframe')
 
     //Allow the entry section to grow to as large as needed to show the entry
     try {
@@ -53,7 +45,7 @@ function ss_positionEntryDiv() {
 			    ss_entryHeightHighWaterMark = entryHeight;
 				ss_setObjectHeight(wObj1, entryHeight);
 			}
-			ss_setObjectHeight(wObj3, entryHeight);
+			ss_setObjectHeight(wObj2, entryHeight);
 		}
 	} catch(e) {
 		ss_debug('ss_setEntryDivHeight failed: ' + e.message)

@@ -262,13 +262,13 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 		    obj.style.visibility = visibility;
 		    obj.style.display = displayStyle;
 		}
+		//Signal that the layout changed
+		if (!obj.style.position || obj.style.position != "absolute") {
+			ssf_onLayoutChange();
+			//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
+		}
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
-	}
-	//Signal that the layout changed
-	if (!obj.style.position || obj.style.position != "absolute") {
-		ssf_onLayoutChange();
-		//ss_debug("ss_showHideObj: " + objName + " = " + visibility)
 	}
 }
 
