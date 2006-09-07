@@ -61,8 +61,7 @@ String menuDivWidth = "300px";
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          </c:if>
-	          <span>
-	          <c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
+	          <c:out value="${toolbarMenuCategoryItem.key}" /></a>
 	        </li>
 	      </c:forEach>
        </c:forEach>
@@ -83,9 +82,7 @@ String menuDivWidth = "300px";
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
-	      <li><a 
-	        class="${ss_toolbar_style}_item" 
-	        href="${toolbarMenu.value.url}"
+	      <li><a href="${toolbarMenu.value.url}"
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
     	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
@@ -94,13 +91,11 @@ String menuDivWidth = "300px";
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	      ><span class="${ss_toolbar_style}_item"><c:out 
-	        value="${toolbarMenu.value.title}" /></span></a></li>
+	      ><c:out 
+	        value="${toolbarMenu.value.title}" /></a></li>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
-	      <li><a 
-	        class="${ss_toolbar_style}_item"
-	        href="<ssf:url>
+	      <li><a href="<ssf:url>
 	        <c:forEach var="p2" items="${toolbarMenu.value.urlParams}">
 			  <c:set var="key2" value="${p2.key}"/>
 		      <c:set var="value2" value="${p2.value}"/>
@@ -115,12 +110,11 @@ String menuDivWidth = "300px";
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
-	 	  ><span class="${ss_toolbar_style}_item"><c:out 
-	 	    value="${toolbarMenu.value.title}" /></span></a></li>
+	 	  ><c:out 
+	 	    value="${toolbarMenu.value.title}" /></a></li>
 	    </c:when>
 	    <c:otherwise>
-	      <li><a class="${ss_toolbar_style}_item" href=""><span class="${ss_toolbar_style}_item"
-	        ><c:out value="${toolbarMenu.value.title}" /></span></a></li>
+	      <li><a href=""><c:out value="${toolbarMenu.value.title}" /></a></li>
 	    </c:otherwise>
 	  </c:choose>
     </c:if>
