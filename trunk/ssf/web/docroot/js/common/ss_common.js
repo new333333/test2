@@ -236,6 +236,8 @@ function ss_moveDivToTopOfBody(divId) {
     var bodyObj = document.getElementsByTagName("body").item(0);
     if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
     	//move the object to the body (at the top)
+    	var startLeft = ss_getObjAbsX(obj)
+    	var startTop = ss_getObjAbsY(obj)
     	ss_originalSSParentNodes[divId] = obj.parentNode;
 		ss_originalSSChildNodeNumbers[divId] = 0;
 		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
@@ -244,10 +246,16 @@ function ss_moveDivToTopOfBody(divId) {
 		obj.parentNode.removeChild(obj);
 		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
 		obj.style.zIndex = ssPortletZ;
+		dojo.fx.html.slide(divId, 300, [startLeft, startTop], [0, 0], ssf_onLayoutChange);
     } else {
 		if (ss_originalSSParentNodes[divId] != null) {
 			bodyObj.removeChild(obj);
 			ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(ss_originalSSChildNodeNumbers[divId]))
+	    	var startLeft = parseInt(0 - parseInt(ss_getObjAbsX(obj)))
+	    	var startTop = parseInt(0 - parseInt(ss_getObjAbsY(obj)))
+	    	var endLeft = ss_getObjectLeft(obj)
+	    	var endTop = ss_getObjectTop(obj)
+			dojo.fx.html.slide(divId, 300, [startLeft, startTop], [endLeft, endTop], ssf_onLayoutChange);
 		}
 	}
 	//Signal that the layout changed
@@ -623,7 +631,7 @@ function ssf_onLayoutChange(obj) {
     return true;
 }
 
-function getObjAbsX(obj) {
+function ss_getObjAbsX(obj) {
     var x = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -633,7 +641,7 @@ function getObjAbsX(obj) {
     return x
 }
 
-function getObjAbsY(obj) {
+function ss_getObjAbsY(obj) {
     var y = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
