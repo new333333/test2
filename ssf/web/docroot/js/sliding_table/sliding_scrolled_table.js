@@ -1,10 +1,10 @@
 //Routines that support the sliding scrolled table
 
 function ss_getSlidingTableX(divId) {
-	return getObjAbsX(divId);
+	return ss_getObjAbsX(divId);
 }
 function ss_getSlidingTableY(divId) {
-	return getObjAbsY(divId);
+	return ss_getObjAbsY(divId);
 }
 function ss_position_sTableCol(divName, x, y, w) {
     var ss_sTableHeight = ss_getDivHeight(ss_slidingTableId_2)
