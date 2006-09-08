@@ -10,7 +10,9 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -541,6 +543,16 @@ public class FileRepositorySession implements RepositorySession {
 			throw new RepositoryServiceException("Cannot delete a version from the file " + 
 					relativeFilePath + " for entry " + entity.getTypedId() + ": It does not exist"); 
 		}	
+	}
+
+	// For internal use only
+	public List<String> getVersionNames(Binder binder, DefinableEntity entity,
+			String relativeFilePath) throws RepositoryServiceException {
+		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
+		List<String> list = new ArrayList<String>(versionFileNames.length);
+		for(int i = 0; i < versionFileNames.length; i++) 
+			list.add(versionFileNames[i]);
+		return list;
 	}
 
 	/**

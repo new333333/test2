@@ -3,6 +3,7 @@ package com.sitescape.ef.repository;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
@@ -279,5 +280,16 @@ public class RepositoryUtil {
 		}
 	}
 
+	public static List<String> getVersionNames(String repositoryServiceName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath)
+			throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+
+		try {
+			return session.getVersionNames(binder, entry, relativeFilePath);
+		} finally {
+			session.close();
+		}
+	}
 
 }

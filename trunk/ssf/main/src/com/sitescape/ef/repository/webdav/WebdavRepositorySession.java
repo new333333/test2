@@ -157,7 +157,8 @@ public class WebdavRepositorySession implements RepositorySession {
 		}
 	}
 
-	public List getVersionNames(Binder binder, DefinableEntity entry, String relativeFilePath) 
+	// For internal use only
+	public List<String> getVersionNames(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			return WebdavUtil.getVersionNames(wdr, getResourcePath(binder, entry, relativeFilePath));

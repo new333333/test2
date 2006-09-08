@@ -96,9 +96,9 @@ public class WebdavUtil {
 			return null;
 	}
 
-	public static List getHrefValues(WebdavResource wdr, String path, String propertyName)
+	public static List<String> getHrefValues(WebdavResource wdr, String path, String propertyName)
 		throws  HttpException, IOException {
-		List list = new ArrayList();
+		List<String> list = new ArrayList<String>();
 		String value = getSingleStringValue(wdr, path, propertyName);
 
 		if(value != null) {
@@ -117,12 +117,12 @@ public class WebdavUtil {
 		return list;
 	}
 	
-	public static List getVersionNames(WebdavResource wdr, String httpUrl)
+	public static List<String> getVersionNames(WebdavResource wdr, String httpUrl)
 		throws HttpException, URIException, IOException {
 		Vector properties = new Vector();
 		properties.add("version-name");
 		Enumeration e = wdr.reportMethod(new HttpURL(httpUrl),properties);
-		Map map = new HashMap();
+		Map<String,String> map = new HashMap<String,String>();
 		while(e.hasMoreElements()) {
 			ResponseEntity re = (ResponseEntity) e.nextElement();
 			String href = re.getHref();
@@ -134,7 +134,7 @@ public class WebdavUtil {
 				}
 			}
 		}
-		return new ArrayList(map.values());
+		return new ArrayList<String>(map.values());
 	}
 	
 	public static boolean exists(WebdavResource wdr, String resourcePath) 
