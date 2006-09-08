@@ -2,6 +2,7 @@ package com.sitescape.ef.repository;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
@@ -274,6 +275,8 @@ public interface RepositorySession {
 	 * Returns the names of the versions for the specified file resource. 
 	 * The specified file resource must exist. 
 	 * 
+	 * NOTE: Do not use this method. This method is for internal use only. 
+	 * 
 	 * @param session
 	 * @param binder
 	 * @param entity
@@ -281,8 +284,8 @@ public interface RepositorySession {
 	 * @return
 	 * @throws RepositoryServiceException
 	 */
-	//public List getVersionNames(Binder binder, DefinableEntity entity,
-	//		String relativeFilePath) throws RepositoryServiceException;
+	public List<String> getVersionNames(Binder binder, DefinableEntity entity,
+			String relativeFilePath) throws RepositoryServiceException;
 	
 	/**
 	 * Checks out the specified file resource. It is illegal to call this method

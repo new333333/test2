@@ -3,7 +3,9 @@ package com.sitescape.ef.repository.jcr;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
@@ -19,6 +21,7 @@ import javax.jcr.nodetype.ConstraintViolationException;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionException;
 import javax.jcr.version.VersionHistory;
+import javax.jcr.version.VersionIterator;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -279,6 +282,17 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 	
+	// For internal use only
+	public List<String> getVersionNames(Binder binder, DefinableEntity entity,
+			String relativeFilePath) throws RepositoryServiceException {
+		try {
+			return getFileVersionNames(binder, entity, relativeFilePath);
+		}
+		catch(RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}			
+	}
+
 	private int getFileInfo(Binder binder, DefinableEntity entity, 
 			String relativeFilePath) throws RepositoryException {
 		String fileNodePath = getFileNodePath(binder, entity, relativeFilePath);
@@ -524,6 +538,20 @@ public class JCRRepositorySession implements RepositorySession {
 		VersionHistory versionHistory = contentNode.getVersionHistory();
 		
 		versionHistory.removeVersion(versionName);
+	}
+
+	private List<String> getFileVersionNames(Binder binder, DefinableEntity entity,
+			String relativeFilePath) throws RepositoryException {
+		Node contentNode = getFileContentNode(binder, entity, relativeFilePath);
+
+		VersionHistory versionHistory = contentNode.getVersionHistory();
+
+		List<String> list = new ArrayList<String>();
+		for(VersionIterator it = versionHistory.getAllVersions(); it.hasNext();) {
+			Version v = it.nextVersion();
+			list.add(v.getName());
+		}
+		return list;
 	}
 
 	public class JCRDataSource implements DataSource {
