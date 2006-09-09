@@ -19,6 +19,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -209,12 +210,21 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         if(reservation != null && !reservation.getPrincipal().equals(user))
         	throw new ReservedByAnotherUserException(entry);
         
-    	List atts = new ArrayList();
+    	List<Attachment> atts = new ArrayList<Attachment>();
     	if (deleteAttachments != null) {
     		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    			String id = (String)iter.next();
-    			Attachment a = entry.getAttachment(id);
-    			if (a != null) atts.add(a);
+    			Object v = iter.next();
+    			if(v instanceof String) {
+    				String id = (String)v;
+    				Attachment a = entry.getAttachment(id);
+    				if (a != null) atts.add(a);
+    			}
+    			else if(v instanceof Attachment) {
+    				atts.add((Attachment) v);
+    			}
+    			else {
+    				throw new InternalException();
+    			}
     		}
     	}
     	Date stamp = entry.getModification().getDate();
