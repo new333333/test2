@@ -13,7 +13,10 @@ public class VersionAttachment extends FileAttachment {
     public VersionAttachment() {
     }
     public void setOwner(AnyOwner owner) {
-    	setOwner(owner.getEntity());
+    	if(owner != null)
+    		setOwner(owner.getEntity());
+    	else
+    		super.setOwner(owner);
     } 
  	public void setOwner(DefinableEntity entry) {
 		//don't set foreign key, so not read in to entry
