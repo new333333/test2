@@ -402,13 +402,16 @@ public class WebdavRepositorySession implements RepositorySession {
 			String versionResourcePath = getVersionResourcePath(wdr, binder, entity, 
 					relativeFilePath, versionName);			
 			
-			wdr.deleteMethod(versionResourcePath);
+			boolean result = wdr.deleteMethod(versionResourcePath);
+			
+			if(!result)
+				throw new RepositoryServiceException("Failed to delete [" + versionResourcePath + "]");
 		} catch (IOException e) {
 			logError(wdr);
 			throw new UncheckedIOException(e);
 		}
 	}
-
+	
 	/**
 	 * Converts the value of the Location response header to a valid resource
 	 * path. The DeltaV spec (section 4.4) shows an example of CHECKIN method

@@ -537,6 +537,13 @@ public class JCRRepositorySession implements RepositorySession {
 
 		VersionHistory versionHistory = contentNode.getVersionHistory();
 		
+		Version version = versionHistory.getVersion(versionName);
+		
+		Version lastVersion = contentNode.getBaseVersion();
+		
+		if(version.equals(lastVersion))
+			contentNode.restore(version.getPredecessors()[0],true);
+		
 		versionHistory.removeVersion(versionName);
 	}
 
