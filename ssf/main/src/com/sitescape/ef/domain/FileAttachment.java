@@ -153,7 +153,10 @@ public class FileAttachment extends Attachment {
 			   return v;
 	   }
 	   return null;
-   }   
+   }  
+   /*
+    * Looks like this equals method (and possibly hashCode too) is wrong,
+    * especially when used by VersionAttachment subclass.
    public boolean equals(Object obj) {
 		if (obj == null)
 			return false;
@@ -171,7 +174,7 @@ public class FileAttachment extends Attachment {
        	hash = 31*hash + getRepositoryServiceName().hashCode();
     	hash = 31*hash + fileItem.hashCode();
     	return hash;
-    }
+    }*/
     public boolean update(Object newVal) {
     	boolean changed = super.update(newVal);
     	FileAttachment f = (FileAttachment)newVal;
