@@ -35,7 +35,7 @@ public class FileRepositorySessionFactory implements RepositorySessionFactory {
 		return true;
 	}
 
-	public boolean supportVersionDeletion() {
-		return false;
+	public boolean isVersionDeletionAllowed() {
+		return true;
 	}
 }

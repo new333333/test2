@@ -2,6 +2,8 @@ package com.sitescape.ef.repository.webdav;
 
 import java.io.IOException;
 
+import javax.jcr.Session;
+
 import org.apache.commons.httpclient.HttpURL;
 
 import com.sitescape.ef.UncheckedIOException;
@@ -17,6 +19,7 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 	protected String docRootPath; // This does not include context path
 	protected String username;
 	protected String password;
+	protected boolean versionDeletionAllowed = false;
 
 	public void setHostUrl(String hostUrl) {
 		this.hostUrl = hostUrl;
@@ -75,7 +78,7 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 		return true;
 	}
 
-	public boolean supportVersionDeletion() {
+	public boolean isVersionDeletionAllowed() {
 		// It appears that the Slide server we use does not allows this.
 		// It doesn't appear to me to be a restriction by the DeltaV spec
 		// itself, but some Slide specific misbehavior (or mis-configuration).
@@ -84,7 +87,12 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 		// called Subversion does not support version deletion either,
 		// which sort of indicates that now allowing version deletion 
 		// is a general practice in WebDAV world. Just observation...
-		return false; // for now
+
+		return versionDeletionAllowed;
+	}
+	
+	public void setVersionDeletionAllowed(boolean versionDeletionAllowed) {
+		this.versionDeletionAllowed = versionDeletionAllowed;
 	}
 
 	protected String getHttpUrl() {

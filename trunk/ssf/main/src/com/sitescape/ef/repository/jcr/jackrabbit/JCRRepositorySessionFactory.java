@@ -36,6 +36,7 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 	protected String username;
 	protected char[] password;
 	protected boolean initializeOnStartup;
+	protected boolean versionDeletionAllowed = false;
 
 	private String repositoryHomeDir;
 	private boolean initialized; 
@@ -121,8 +122,12 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 		return true;
 	}
 
-	public boolean supportVersionDeletion() {
-		return false;
+	public boolean isVersionDeletionAllowed() {
+		return versionDeletionAllowed;
+	}
+	
+	public void setVersionDeletionAllowed(boolean versionDeletionAllowed) {
+		this.versionDeletionAllowed = versionDeletionAllowed;
 	}
 
 	private Session createSession(String workspaceName)

@@ -34,5 +34,5 @@ public interface RepositorySessionFactory {
 	 * 
 	 * @return
 	 */
-	public boolean supportVersionDeletion();
+	public boolean isVersionDeletionAllowed();
 }
