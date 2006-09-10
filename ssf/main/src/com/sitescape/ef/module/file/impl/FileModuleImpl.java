@@ -51,6 +51,7 @@ import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
+import com.sitescape.ef.repository.RepositorySessionFactory;
 import com.sitescape.ef.repository.RepositorySessionFactoryUtil;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.DirPath;
@@ -600,14 +601,29 @@ public class FileModuleImpl implements FileModule {
 	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			VersionAttachment va) throws DeleteVersionException {
+		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryServiceName(), binder, entity, 
+		//		va.getFileItem().getName());
+		
 		// Check if the version is the only one remaining for the file. 
 		FileAttachment fa = va.getParentAttachment();
 		if(fa.getFileVersionsUnsorted().size() <= 1)
 			throw new DeleteVersionException(va);
 			
-		// Delete the version from the repository. 
-		RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entity, 
-				va.getFileItem().getName(), va.getVersionName());			
+		// Delete the version from the repository if the repository allows
+		// deletion of a version.
+		RepositorySessionFactory rsf = 
+			RepositorySessionFactoryUtil.getRepositorySessionFactory
+			(fa.getRepositoryServiceName());
+		
+		if(rsf.isVersionDeletionAllowed()) {		
+			RepositoryUtil.deleteVersion(fa.getRepositoryServiceName(), binder, entity, 
+				va.getFileItem().getName(), va.getVersionName());
+		}
+		else {
+			logger.info("Version " + va.getVersionNumber() + " of file [" + va.getFileItem().getName() + 
+					"] is not physically deleted from repository " + fa.getRepositoryServiceName() + 
+					" because it does not allow deletion of a version");
+		}
 
 		// Update the metadata
 		
@@ -621,6 +637,9 @@ public class FileModuleImpl implements FileModule {
 		// Copy the file length
 		fa.setFileItem(highestVa.getFileItem());
 		// Since creation date is not really useful, we will leave it alone. 
+		
+		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryServiceName(), binder, entity, 
+		//		va.getFileItem().getName());
 	}
 
 	private void triggerUpdateTransaction() {

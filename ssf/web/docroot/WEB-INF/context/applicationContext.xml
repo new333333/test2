@@ -712,6 +712,7 @@
 		<property name="docRootPath"><value>${webdav.repository.document.root.path}</value></property>
 		<property name="username"><value>${webdav.repository.username}</value></property>
 		<property name="password"><value>${webdav.repository.password}</value></property>
+		<property name="versionDeletionAllowed"><value>false</value></property>
 	</bean>
 	
 	<bean id="jackrabbitRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
@@ -723,6 +724,7 @@
 		<property name="initializeOnStartup"><value>false</value></property>
 		<property name="username"><value>none</value></property>
 		<property name="password"><value>none</value></property>
+		<property name="versionDeletionAllowed"><value>true</value></property>
 	</bean>
 	
 	<!-- ================================ Presence Service =============================== -->
