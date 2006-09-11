@@ -1029,6 +1029,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_content_inner {
 	width:100%;
 	padding:0px 2px 0px 10px;
+	background:${ss_style_background_color};
 }
 .ss_content_window {
 	padding:5px;
@@ -1123,7 +1124,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	font-size:1px;
 }
 .ss_rounden-content{
-	padding:0px 35px 10px 10px;
+	padding:0px 35px 10px 14px;
 }
 
 /* global toolbar: */
