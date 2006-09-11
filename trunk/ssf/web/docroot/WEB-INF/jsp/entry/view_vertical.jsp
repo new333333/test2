@@ -104,9 +104,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
 <% // Footer toolbar %>
-<c:if test="${!empty ssFooterToolbar}">
-<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
 
 </div>
 

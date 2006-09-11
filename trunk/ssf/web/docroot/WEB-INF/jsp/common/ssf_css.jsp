@@ -1362,6 +1362,7 @@ li.ss_tabs_active .ss_tabs_tabend{
 	font-weight:bold;
 	border-right:1px solid #9687A7;
 	border-left:1px solid #FFF;
+	background:inherit;
 }
 .ss_actions_bar li.ss_actions_bar_last-child {
 	border-right:none;
@@ -1370,6 +1371,7 @@ li.ss_tabs_active .ss_tabs_tabend{
 	color:#5A3C68;
 	display:block;
 	padding:0px 15px;
+	background:inherit;
 }
 .ss_actions_bar li a:hover, .ss_actions_bar li a.ss_active {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x;
