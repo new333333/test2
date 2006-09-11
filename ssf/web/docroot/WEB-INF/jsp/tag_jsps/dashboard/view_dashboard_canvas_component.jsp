@@ -5,31 +5,39 @@
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].controlStyle == 'hide'}">
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
-<c:if test="${empty ssDashboard.dashboard.components[ssDashboardId].displayStyle ||
-              ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'shadow'}">
-<div class="ss_shadowbox" id="ss_component2_${ss_component_count}">
-  <div class="ss_shadowbox2 ss_dashboard_view" id="ss_component_${ss_component_count}">
-    <c:set var="dashboardToolbarColor" value="ss_dashboard_toolbar_color"/>
-    <div class="ss_dashboard_toolbar ${dashboardToolbarColor}"
-</c:if>
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'simple'}">
-<div id="ss_component_${ss_component_count}" style="margin:0px; padding:0px;">
-  <div class="ss_dashboard_display_simple ss_dashboard_view">
-    <c:set var="dashboardToolbarColor" value="ss_dashboard_display_simple_toolbar_color"/>
-    <div class="ss_dashboard_display_simple_toolbar ${dashboardToolbarColor}"
-</c:if>
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'none'}">
-<div id="ss_component_${ss_component_count}" style="margin:0px; padding:0px;">
-  <div class="ss_dashboard_display_none">
-    <c:set var="dashboardToolbarColor" value="ss_dashboard_display_none_toolbar_color"/>
-    <div class="ss_dashboard_display_none_toolbar ${dashboardToolbarColor}"
-</c:if>
-      >
+<!-- Start of component -->
+<div id="ss_component_${ss_component_count}"
+  <c:if test="${hideDashboardControls}">
+    class="ss_content_window_compact" 
+  </c:if>
+  <c:if test="${!hideDashboardControls}">
+    class="ss_content_window" 
+  </c:if>
+>
+<table cellspacing="0" cellpadding="0">
+<col width="8"/>
+<col width="100%"/>
+<col width="8"/>
+<tr>
+<td valign="top"><div
+  <c:if test="${hideDashboardControls}">
+	id="ss_dashboard_control_${ss_dashboard_control_count}"
+    style="visibility:hidden; display:none;"
+    <c:set var="ss_dashboard_control_count" scope="request" 
+       value="${ss_dashboard_control_count + 1}"/>
+  </c:if>
+><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"><div></td>
+<td valign="top" class="ss_dashboard_dragHandle">
+  <div class="ss_title_bar"
+  <c:if test="${hideDashboardControls}">
+	id="ss_dashboard_control_${ss_dashboard_control_count}"
+    style="visibility:hidden; display:none;"
+    <c:set var="ss_dashboard_control_count" scope="request" 
+       value="${ss_dashboard_control_count + 1}"/>
+  </c:if>
+  >
     <form 
-      <c:if test="${!empty ssDashboard.dashboard.components[ssDashboardId].title}">
-        class="${dashboardToolbarColor}"
-      </c:if>
-      method="post" style="display:inline;"
+      method="post" 
       action="<portlet:actionURL>
       <portlet:param name="action" value="modify_dashboard"/>
       <portlet:param name="binderId" value="${ssBinder.id}"/>
@@ -38,111 +46,121 @@
 	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}">
 	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}">
 	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}">
+	  <input type="hidden" name="_operation" value="">
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
-      <table cellspacing="0" cellpadding="0" style="width:98%;">
-	    <tr
-		  onMouseOver="ss_dashboardComponentToolbar.fadeIn('ss_component_toolbuttons_${ss_component_count}');"
-		  onMouseOut="ss_dashboardComponentToolbar.fadeOut('ss_component_toolbuttons_${ss_component_count}');"
-	    >
-	      <td nowrap valign="middle"><c:if 
-	        test="${hideDashboardControls}"><div 
-	          id="ss_dashboard_control_${ss_dashboard_control_count}"
-              style="visibility:hidden; display:none;"
-              <c:set var="ss_dashboard_control_count" scope="request" 
-                value="${ss_dashboard_control_count + 1}"/>
-              ></c:if><div style="margin:1px; padding:0px;"
-	        ><div style="padding:1px;
-			<c:if test="${!empty ssDashboard.dashboard.components[ssDashboardId].title}">
-			 <c:if test="${ss_dashboard_componentScope == 'local'}">
-		      background-color:red !important;
-			 </c:if>
-			 <c:if test="${ss_dashboard_componentScope == 'global'}">
-		      background-color:blue !important;
-			 </c:if>
-			 <c:if test="${ss_dashboard_componentScope == 'binder'}">
-		      background-color:yellow !important;
-			 </c:if>
-		    </c:if>
-		    margin:0px 2px 0px 0px;"><div 
-		      class="${dashboardToolbarColor}"><c:if test="${ss_dashboard_visible}"><input 
-		      type="image" 
-	      	  src="<html:imagesPath/>pics/sym_s_hide.gif"
-	          id="ss_showHideImg_${ss_component_count}"
-	          alt="<ssf:nlt tag="button.hide"/>" 
-	          style="margin:2px;"
-		      onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
-		      ></c:if><c:if test="${!ss_dashboard_visible}"><input type="image" 
-	          src="<html:imagesPath/>pics/sym_s_show.gif"
-	          id="ss_showHideImg_${ss_component_count}"
-	          alt="<ssf:nlt tag="button.show"/>" 
-	          style="margin:2px;" 
-	          onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
-	          ></c:if></div></div></div><c:if 
-	          test="${hideDashboardControls}"></div></c:if>
-	      </td>
-		  <td class="ss_dashboard_dragHandle" valign="middle" width="100%">
-		    <span class="ss_bold ss_dashboard_component_title">${ssDashboard.dashboard.components[ssDashboardId].title}</span>
-		  </td>
-		  <td align="right" valign="middle">
-		    <c:if test="${hideDashboardControls}">
-	          <div id="ss_dashboard_control_${ss_dashboard_control_count}"
-              style="visibility:hidden; display:none;">
-              <c:set var="ss_dashboard_control_count" scope="request" 
-                value="${ss_dashboard_control_count + 1}"/>
-		    </c:if>
-	        <div width="60" style="display:inline; margin:0px; visibility:hidden; width:60px;" 
-		      id="ss_component_toolbuttons_${ss_component_count}">
-			
-		      <table class="ss_dashboard_toolbar_color" cellspacing="0" cellpadding="0">
-		      <tr>
-		      <td nowrap>
-			      <input type="image" src="<html:imagesPath/>pics/sym_s_move_up.gif"
-			        name="_moveUp" alt="<ssf:nlt tag="button.moveUp"/>" 
-			        style="margin-right:2px;">
-		      </td>
-		      <td nowrap>
-			      <input type="image" src="<html:imagesPath/>pics/sym_s_move_down.gif"
-			        name="_moveDown" alt="<ssf:nlt tag="button.moveDown"/>" 
-			        style="margin-right:2px;">
-		      </td>
-		      <c:if test="${ssDashboard.sharedModificationAllowed}">
-		        <td nowrap>
-			      <input type="image" src="<html:imagesPath/>pics/sym_s_modify.gif"
-			        name="_modifyComponentData" alt="<ssf:nlt tag="button.modify"/>" 
-			        style="margin-right:2px;" 
-			        onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');">
-		        </td>
-		        <td nowrap>
-			      <input type="image" src="<html:imagesPath/>pics/sym_s_delete.gif"
-			        name="_deleteComponent" alt="<ssf:nlt tag="button.delete"/>" 
-			        style="margin-right:2px;"
-			        onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', 'ss_component_${ss_component_count}', 'ss_component2_${ss_component_count}'); return false">
-		        </td>
-		      </c:if>
-		      </tr>
-		      </table>
-		    </div>
-		    <c:if test="${hideDashboardControls}">
-		    </div>
-		    </c:if>
-		  </td>
-		</tr>
-      </table>
-	 </form>
-	</div>
-	<div id="ss_dashboard_component_${ss_component_count}" 
-	   align="left" style="margin:0px; 
-	   <c:if test="${!ss_dashboard_visible}">
-	     visibility:hidden; display:none;
-	   </c:if>
-	   padding:2px;">
-	<c:set var="ss_component_count" value="${ss_component_count + 1}" scope="request"/>
-	<c:if test="${ss_dashboard_visible}">
-	  <ssf:dashboard id="${ss_dashboard_id}"
-	     type="viewData" configuration="${ssDashboard}"/>
-	</c:if>
-	</div>
+			<ul class="ss_title_bar_icons">
+			  <c:if test="${ss_dashboard_visible}">
+				<li><a href="#"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
+				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
+			  </c:if>
+			  <c:if test="${!ss_dashboard_visible}">
+				<li><a href="#"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
+				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
+			  </c:if>
+				<li><a href="#"
+				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
+				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/up.gif" 
+				  alt="<ssf:nlt tag="button.moveUp"/>" /></a></li>
+				<li><a href="#"
+				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
+				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
+				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
+				<li><a href="#" 
+				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
+				  ><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
+				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
+				<li><a href="#"
+				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', 'ss_component_${ss_component_count}', 'ss_component2_${ss_component_count}'); return false;"
+				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif" 
+				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
+			</ul>
+	</form>
+	<strong>${ssDashboard.dashboard.components[ssDashboardId].title}&nbsp;</strong>
   </div>
+</td>
+<td valign="top"><div
+  <c:if test="${hideDashboardControls}">
+	id="ss_dashboard_control_${ss_dashboard_control_count}"
+    style="visibility:hidden; display:none;"
+    <c:set var="ss_dashboard_control_count" scope="request" 
+       value="${ss_dashboard_control_count + 1}"/>
+  </c:if>
+><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></div></td>
+</tr>
+<tr>
+<c:if test="${hideDashboardControls}">
+<script type="text/javascript">
+	ss_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
+</script>
+</c:if>
+<td 
+  <c:if test="${hideDashboardControls}">
+    id="ss_dashboard_border_${ss_dashboard_border_count}"
+    <c:set var="ss_dashboard_border_count" scope="request" 
+      value="${ss_dashboard_border_count + 1}"/>
+  </c:if>
+  <c:if test="${!hideDashboardControls}">
+    class="ss_decor-border7"
+  </c:if>
+></td>
+<td>
+	<div 
+      <c:if test="${hideDashboardControls}">
+	    id="ss_dashboard_border_${ss_dashboard_border_count}"
+	      <c:set var="ss_dashboard_border_count" scope="request" 
+	         value="${ss_dashboard_border_count + 1}"/>
+      </c:if>
+      <c:if test="${!hideDashboardControls}">
+        class="ss_content_window_content"
+      </c:if>
+    >
+		<div id="ss_dashboard_component_${ss_component_count}" 
+		    align="left" style="margin:0px; 
+		    <c:if test="${!ss_dashboard_visible}">
+		      visibility:hidden; display:none;
+		    </c:if>
+		    padding:2px;">
+			<c:set var="ss_component_count" value="${ss_component_count + 1}" scope="request"/>
+			<c:if test="${ss_dashboard_visible}">
+			  <ssf:dashboard id="${ss_dashboard_id}"
+			     type="viewData" configuration="${ssDashboard}"/>
+			</c:if>
+    	</div>
+	</div>
+</td>
+<c:if test="${hideDashboardControls}">
+<script type="text/javascript">
+	ss_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
+</script>
+</c:if>
+<td 
+  <c:if test="${hideDashboardControls}">
+    id="ss_dashboard_border_${ss_dashboard_border_count}"
+    <c:set var="ss_dashboard_border_count" scope="request" 
+       value="${ss_dashboard_border_count + 1}"/>
+  </c:if>
+  <c:if test="${!hideDashboardControls}">
+    class="ss_decor-border8"
+  </c:if>
+></td>
+</tr>
+<tr>
+<td colspan="3"><div class="ss_decor-round-corners-bottom3"
+  <c:if test="${hideDashboardControls}">
+	id="ss_dashboard_control_${ss_dashboard_control_count}"
+    style="visibility:hidden; display:none;"
+    <c:set var="ss_dashboard_control_count" scope="request" 
+       value="${ss_dashboard_control_count + 1}"/>
+  </c:if>
+><div><div></div></div></div></td>
+</tr>
+</table>
 </div>
 <div style="margin:3px; padding:0px;"><img 
   src="<html:imagesPath/>pics/1pix.gif"></div>
+<!-- End of component -->
+

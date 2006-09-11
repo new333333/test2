@@ -5,8 +5,10 @@ if (!ss_dbrn) {
 	var ss_dbrn = Math.round(Math.random()*999999)
 	var ss_toolbar_count = 0;
 	var ss_dashboard_control_count = 0;
-	var ss_componentSrcHide = "<html:imagesPath/>pics/sym_s_hide.gif"
-	var ss_componentSrcShow = "<html:imagesPath/>pics/sym_s_show.gif"
+	var ss_dashboard_border_count = 0;
+	var ss_dashboard_border_classNames = new Array();
+	var ss_componentSrcHide = "<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif"
+	var ss_componentSrcShow = "<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif"
 	var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
 	var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
 	var ss_toolbarAddContent = "<ssf:nlt tag="dashboard.addContent"/>"

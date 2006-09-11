@@ -2226,11 +2226,11 @@ function ss_addDashboardComponents() {
 function ss_showHideAllDashboardComponents(obj, op) {
 	var formObj = ss_getContainingForm(obj)
 	if (op == null) op = 'show_all_dashboard_components';
-	if (obj.src.match(/sym_s_show.gif/)) {
+	if (obj.src.match(/show.gif/)) {
 	    op = 'show_all_dashboard_components';
 	    obj.src = ss_componentSrcHide;
 	    obj.alt = ss_componentAltHide;
-	} else if (obj.src.match(/sym_s_hide.gif/)) {
+	} else if (obj.src.match(/hide.gif/)) {
 	    op = 'hide_all_dashboard_components';
 	    obj.src = ss_componentSrcShow;
 	    obj.alt = ss_componentAltShow;
@@ -2284,12 +2284,22 @@ function ss_toggle_dashboard_hidden_controls() {
 		var obj = document.getElementById("ss_dashboard_control_"+i)
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
-			obj.style.display = 'inline';
+			obj.style.display = 'block';
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideControls;
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarShowControls;
+		}
+	}
+	for (var i = 0; i < ss_dashboard_border_count; i++) {
+		var obj = document.getElementById("ss_dashboard_border_"+i)
+		if (obj.className && obj.className != "") {
+			ss_dashboard_border_classNames[i] = obj.className;
+			obj.className = "";
+		} else {
+			if (ss_dashboard_border_classNames[i]) 
+			    obj.className = ss_dashboard_border_classNames[i];
 		}
 	}
 	//Signal that the layout changed
@@ -2300,25 +2310,26 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 	var formObj = ss_getContainingForm(obj)
 	var url = "";
 	var callbackRoutine = ""
-	if (obj.src.match(/sym_s_show.gif/)) {
+	var imgObj = obj.getElementsByTagName('img').item(0);
+	if (imgObj.src.match(/show.gif/)) {
 		url = ss_showDashboardComponentUrl;
 	    callbackRoutine = ss_showComponentCallback;
-	    obj.src = ss_componentSrcHide;
-	    obj.alt = ss_componentAltHide;
-	} else if (obj.src.match(/sym_s_hide.gif/)) {
+	    imgObj.src = ss_componentSrcHide;
+	    imgObj.alt = ss_componentAltHide;
+	} else if (imgObj.src.match(/hide.gif/)) {
 		url = ss_hideDashboardComponentUrl;
 	    callbackRoutine = ss_hideComponentCallback;
-	    obj.src = ss_componentSrcShow;
-	    obj.alt = ss_componentAltShow;
+	    imgObj.src = ss_componentSrcShow;
+	    imgObj.alt = ss_componentAltShow;
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
 			targetDiv.innerHTML = "";
 			targetDiv.style.visibility = "hidden";
 			targetDiv.style.display = "none";
-			//Signal that the layout changed
+			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
-	} else if (obj.src.match(/sym_s_delete.gif/)) {
+	} else if (imgObj.src.match(/delete.gif/)) {
 		url = ss_deleteDashboardComponentUrl;
 	    callbackRoutine = ss_hideComponentCallback;
 		var targetDiv = document.getElementById(divId);
@@ -2365,11 +2376,12 @@ function ss_confirmDeleteComponent(obj, componentId, divId, divId2) {
 		confirmText = ss_dashboardConfirmDeleteUnknown;
 	}
 	var confirmText2 = ss_dashboardConfirmDelete;
-	if (!confirm(confirmText + "\n" + confirmText2)) return;
+	if (!confirm(confirmText + "\n" + confirmText2)) return false;
 	ss_showHideDashboardComponent(obj, componentId, divId)
 	if (divId2 && document.getElementById(divId2)) {
 		ss_hideDiv(divId2)
 	}
+	return true;
 }
 
 function ss_addDashboardComponent(obj, component) {
@@ -2381,6 +2393,12 @@ function ss_addDashboardComponent(obj, component) {
 function ss_modifyDashboardComponent(obj, componentScope) {
 	var formObj = ss_getContainingForm(obj)
 	formObj._scope.value = componentScope;
+}
+
+function ss_submitDashboardChange(obj, op) {
+	var formObj = ss_getContainingForm(obj)
+	formObj._operation.value = op;
+	formObj.submit();
 }
 
 function ss_hideDashboardMenu(obj) {
