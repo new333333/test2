@@ -91,7 +91,6 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_source, {
 	onSelected: function() {
 		//Make dragging start immediately
 		dojo.dnd.dragManager.threshold = 0
-		
 		for (var i=0; i<this.dragObjects.length; i++) {
 			dojo.dnd.dragManager.selectedSources.push(new dojo.dnd.ss_dashboard_source(this.dragObjects[i]));
 		}
@@ -177,16 +176,19 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_object, {
 
 		this.scrollOffset = dojo.html.getScrollOffset();
 		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
+ss_debug('this.dragStartPosition.y = '+this.dragStartPosition.y)
 
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
 			x: this.dragStartPosition.x - e.pageX};
+ss_debug('this.dragOffset = '+this.dragOffset.x + ', '+this.dragOffset.y)
+ss_debug('e.pageY = '+e.pageY)
 
 		//this.dragClone = this.createDragNode();
 		this.dragClone = document.createElement("div");
 		this.dragClone.setAttribute('align', 'left');
 		this.dragClone.className = 'ss_dashboard_dragHandle_clone';
 		ss_setOpacity(this.dragClone, .8)
-		var titleEles = ss_getElementsByClass('ss_dashboard_component_title', this.domNode, 'span');
+		var titleEles = this.domNode.getElementsByTagName('strong');
 		if (titleEles.length >= 1) 
 				this.dragClone.appendChild(titleEles[0].cloneNode(true));
 		

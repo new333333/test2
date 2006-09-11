@@ -2,7 +2,7 @@
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 //int sliderDivHeight = 18;
-int sliderDivHeight = 6;
+int sliderDivHeight = 7;
 String sliderDivOffset = "-20";
 
 //Get the folder type of this definition (folder, file, or event)

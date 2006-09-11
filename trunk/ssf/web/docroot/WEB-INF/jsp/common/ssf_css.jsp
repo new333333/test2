@@ -614,6 +614,7 @@ div.ss_sliding_table_column {
 
 ul.ss_dropdownmenu {
   list-style: outside;
+  text-align:left;
   margin:2px 2px 2px 13px;
   padding: 2px;
 }
@@ -673,8 +674,10 @@ div.ss_dashboardDropTarget_over {
 }
 div.ss_dashboardProtoDropTarget {
   position:relative;
+  visibility:hidden;
   height:4px;
   top:-4px;
+  background-color: ${ss_style_background_color}; 
 }
 
 .ss_dashboard_menu {
@@ -1030,6 +1033,12 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_content_window {
 	padding:5px;
 }
+.ss_content_window_compact {
+	padding:0px;
+}
+.ss_content_window_content {
+	padding:10px;
+}
 .ss_clear {
 	clear:both;
 	height:1px;
@@ -1057,13 +1066,13 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	height:19px;
 }
 .ss_decor-border3{
-	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
 }
 .ss_decor-border4{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
 }
 .ss_decor-border5{
-	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
 }
 .ss_decor-border6{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y right;
@@ -1081,7 +1090,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	font-size:1px;
 }
 .ss_decor-border7 {
-	background:#FFF url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border3.gif) repeat-y left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border3.gif) repeat-y left;
 }
 .ss_decor-border8 {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border4.gif) repeat-y right;
@@ -1180,8 +1189,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 /* tabs: */
 .ss_tabs{
-	margin-left:45px;
-	margin-top:10px;
+	margin-left:20px;
+	margin-top:14px;
 	position:relative;
 <c:if test="<%= !isIE %>">
 	top:-12px;
@@ -1210,7 +1219,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/shorttab.gif) no-repeat;*/
 }
 .ss_tabs li a{
-	font:bold 14px "Trebuchet MS", Arial, sans-serif;
+	font:bold 13px "Trebuchet MS", Arial, sans-serif;
 	color:#5A3C68;
 	display:block;
 	padding-left:12px;
@@ -1276,16 +1285,60 @@ li.ss_tabs_active .ss_tabs_tabend{
 /* breadcrumbs */
 .ss_breadcrumb {
 	color:#5A3C68;
-	border:1px solid #EBEBEB;
 	padding:5px;
-	margin-top:10px;
+	margin-top:0px;
 	margin-bottom:0px;
-	font:bold 12px "Trebuchet MS", Arial, sans-serif;
+	font: 10px "Trebuchet MS", Arial, sans-serif;
 	float:left;
 }
 .ss_breadcrumb a{
 	color:#5A3C68;
-	font:bold 12px "Trebuchet MS", Arial, sans-serif;
+	font: 10px "Trebuchet MS", Arial, sans-serif;
+}
+
+/* titlebar */
+.ss_title_bar {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border1.gif) repeat-x top;
+	color:#FFF;
+	cursor:move;
+	height:24px;
+	margin:0px;
+	padding:0px;
+}
+.ss_title_bar_inner1 {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif) no-repeat left;
+	height:24px;
+	width:8px;
+}
+.ss_title_bar_inner2 {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif) no-repeat right;
+	height:24px;
+	width:8px;
+}
+.ss_title_bar strong {
+	position:relative;
+	padding-left:15px;
+	top:7px;
+	margin:0px;
+	padding:0px;
+}
+/* titlebar icons: */
+.ss_title_bar_icons {
+	float:right;
+	margin:0px;
+	padding:6px 0px 3px 10px;
+	cursor:auto;
+}
+.ss_title_bar_icons li {
+	float:left;
+	margin-right:6px;
+}
+.ss_title_bar_icons li a {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/iconset/iconback.gif) no-repeat top;
+	display:block;
+}
+.ss_title_bar_icons li a:hover {
+	background-position:bottom;
 }
 
 /* actions: */
@@ -1360,16 +1413,16 @@ div.ss_actions_bar_submenu {
 }
 
 /* Footer */
-.ss_bottomlinks {
-	text-align:center;
+div.ss_bottomlinks {
+	display:inline;
 	margin:5px 0px;
+	padding:0px;
 	color:#8E8FA7;
 }
-.ss_bottomlinks li {
-	float:left;
-	padding:0px 5px 0px 5px;
-	border-right:1px solid #9687A7;
-	border-left:1px solid #FFF;
+
+.ss_bottomlinks *, span.ss_bottomlinks {
+	color:#8E8FA7 !important;
+	font-size:9px;
 }
 
 

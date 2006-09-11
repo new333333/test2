@@ -37,6 +37,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		Binder binder = getBinderModule().getBinder(binderId);
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+		String operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
 		String scope = "";
 		if (scope.equals("")) scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
@@ -61,24 +62,24 @@ public class ModifyDashboardController extends AbstractBinderController {
 			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Bottom, scope);
 			response.setRenderParameter("_componentId", componentId);
 			response.setRenderParameter("_dashboardList", DashboardHelper.Wide_Bottom);
-		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
+		} else if (operation.equals("_modifyComponentData")) {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			DashboardHelper.saveComponentData(request, binder, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
+		} else if (operation.equals("_deleteComponent")) {
 			DashboardHelper.deleteComponent(request, binder, componentId, scope);
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("_show") || formData.containsKey("_show.x")) {
+		} else if (operation.equals("_show")) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("_hide") || formData.containsKey("_hide.x")) {
+		} else if (operation.equals("_hide")) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
+		} else if (operation.equals("_moveUp")) {
 			DashboardHelper.moveComponent(request, binder, scope, "up");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (formData.containsKey("_moveDown") || formData.containsKey("_moveDown.x")) {
+		} else if (operation.equals("_moveDown")) {
 			DashboardHelper.moveComponent(request, binder, scope, "down");
 			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
@@ -93,6 +94,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
 
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
@@ -111,10 +113,8 @@ public class ModifyDashboardController extends AbstractBinderController {
 		}
 
 		String cId = "";
-		if (formData.containsKey("_modifyComponentData") || 
-				formData.containsKey("_modifyComponentData.x") ||
-				formData.containsKey("_deleteComponent") || 
-				formData.containsKey("_deleteComponent.x")) {
+		if (operation.equals("_modifyComponentData") || 
+				operation.equals("_deleteComponent")) {
 			cId = componentId;
 		}
 
@@ -147,15 +147,15 @@ public class ModifyDashboardController extends AbstractBinderController {
 			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("add_wideBottom")) {
 			view = "binder/modify_dashboard_component";
-		} else if (formData.containsKey("_modifyComponentData") || formData.containsKey("_modifyComponentData.x")) {
+		} else if (operation.equals("_modifyComponentData")) {
 			view = "binder/modify_dashboard_component";
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 			ssDashboard.put(WebKeys.DASHBOARD_RETURN_VIEW, "form");
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			view = "binder/modify_dashboard_component";
-		} else if (formData.containsKey("_deleteComponent") || formData.containsKey("_deleteComponent.x")) {
-		} else if (formData.containsKey("_moveUp") || formData.containsKey("_moveUp.x")) {
-		} else if (formData.containsKey("_moveDown") || formData.containsKey("_moveDown.x")) {
+		} else if (operation.equals("_deleteComponent")) {
+		} else if (operation.equals("_moveUp")) {
+		} else if (operation.equals("_moveDown")) {
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 		} else {
 		}
