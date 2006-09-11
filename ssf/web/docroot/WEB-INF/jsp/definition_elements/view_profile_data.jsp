@@ -13,6 +13,9 @@
 	} else if (itemType.equals("profileElements")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_element.jsp" %><%
 	
+	} else if (itemType.equals("timeZone")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" %><%
+
 	} else if (itemType.equals("text")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_text.jsp" %><%
 		

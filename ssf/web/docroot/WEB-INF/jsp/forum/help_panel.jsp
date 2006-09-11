@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page session="false" %>
-<%@ page contentType="text/xml" %>
+<%@ page contentType="text/xml; charset=UTF-8" %>
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 

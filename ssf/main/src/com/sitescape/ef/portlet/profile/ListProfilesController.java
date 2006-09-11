@@ -10,17 +10,21 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
@@ -58,6 +62,16 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put("ssReloadUrl", reloadUrl.toString());
 			return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			if (!entryId.equals("")) {
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_profile", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
+				request.setAttribute("ssLoadEntryId", entryId);			
+			}
 		}
 
 	   	User user = RequestContextHolder.getRequestContext().getUser();
@@ -97,34 +111,41 @@ public class ListProfilesController extends   SAbstractController {
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(response, binder).getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(request, response, binder).getToolbar());
 		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
 	}
 
-	protected Toolbar buildViewToolbar(RenderResponse response, ProfileBinder binder) {
+	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
 		PortletURL url;
 		String binderId = binder.getId().toString();
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu (Turned off because adding users must be done in the portal)
-		/*
-			List defaultEntryDefinitions = binder.getEntryDefinitions();
-			if (!defaultEntryDefinitions.isEmpty()) {
-				try {
-					getProfileModule().checkAddEntryAllowed(binder);
-					toolbar.addToolbarMenu("1_add", NLT.get("toolbar.addProfile"));
-					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-						Definition def = (Definition) defaultEntryDefinitions.get(i);
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY);
-						url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-						url.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-						toolbar.addToolbarMenuItem("1_add", "entries", def.getTitle(), url);
+/*		List defaultEntryDefinitions = binder.getEntryDefinitions();
+		if (!defaultEntryDefinitions.isEmpty()) {
+			try {
+				getProfileModule().checkAddEntryAllowed(binder);
+				int count = 1;
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				Map qualifiers = new HashMap();
+				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_profile", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (toolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
 					}
-				} catch (AccessControlException ac) {};
-			}
-		*/
-			
+					toolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+				}
+			} catch (AccessControlException ac) {};
+		}
+*/
+		
 		//The "Administration" menu
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
 		//Access control

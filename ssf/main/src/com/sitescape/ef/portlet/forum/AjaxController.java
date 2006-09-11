@@ -51,7 +51,6 @@ public class AjaxController  extends SAbstractController {
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
-			Map formData = request.getParameterMap();
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
 				ajaxSaveColumnPositions(request, response);
@@ -215,20 +214,18 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
-		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f = new Favorites(favorites);
-		favorites = f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
-		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
+		f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
 	}
 	
 	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) throws Exception {
 		//Add a category to the favorites list
 		String category = PortletRequestUtils.getStringParameter(request, "category", "");
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
-		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f = new Favorites(favorites);
-		favorites = f.addCategory(category, "");
-		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
+		f.addCategory(category, "");
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
@@ -236,10 +233,9 @@ public class AjaxController  extends SAbstractController {
 		String movedItemId = PortletRequestUtils.getStringParameter(request, "movedItemId", "");
 		String favoritesList = PortletRequestUtils.getStringParameter(request, "favorites", "");
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
-		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f = new Favorites(favorites);
-		favorites = f.saveOrder(movedItemId, favoritesList);
-		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, favorites);
+		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
+		f.saveOrder(movedItemId, favoritesList);
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
 	}
 	
 	private void ajaxSaveRating(ActionRequest request, ActionResponse response) throws Exception {
@@ -272,8 +268,15 @@ public class AjaxController  extends SAbstractController {
 							RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
-		Document favorites = (Document) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
-		Favorites f = new Favorites(favorites);
+		Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		Favorites f;
+		if (obj instanceof Document) {
+			f = new Favorites((Document)obj);
+			//fixup - have to store as string cause hibernate equals fails
+			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		} else {		
+			f = new Favorites((String)obj);
+		}
 		Document favTree = f.getFavoritesTree();
 		model.put(WebKeys.FAVORITES_TREE, favTree);
 		Document favTreeDelete = f.getFavoritesTreeDelete();

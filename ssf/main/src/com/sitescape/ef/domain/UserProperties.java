@@ -62,6 +62,15 @@ public class UserProperties {
     }    
     
     public void setProperty(String key, Object value) {
-    	userProperties.put(key, value);
+    	//only update if it changes to reduce writes
+    	if (userProperties.containsKey(key)) {
+    		if (value == null) userProperties.remove(key);
+    		else {
+    			Object currentVal = userProperties.get(key);
+    			if (!value.equals(currentVal)) userProperties.put(key, value);
+    		}	
+    	} else {
+    		if (value != null) userProperties.put(key, value);
+    	}
     }    
 }

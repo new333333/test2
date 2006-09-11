@@ -10,6 +10,7 @@
 	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
 	<bean id="folderAddFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddFolderController" />
 	<bean id="folderAjaxController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AjaxController" />
+	<bean id="profileAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.AddEntryController" />
 
 	<bean id="filterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.FilterController" />
 	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.AccessControlController" />
@@ -44,6 +45,7 @@
 
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
+						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
 						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
 						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>

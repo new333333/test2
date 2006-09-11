@@ -65,15 +65,23 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
-    	if (entry instanceof AclControlled)
+     }
+    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
+       	if (entry instanceof AclControlled)
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
     	else
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
-     }
+    }
 
-	 protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
-		 getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
-     }
+	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    }
+	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
+       	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
+ 	}
 
  	protected SFQuery indexEntries_getQuery(Binder binder) {
         //do actual db query 
@@ -82,14 +90,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    	}
  	protected void indexEntries_preIndex(Binder binder) {
  		super.indexEntries_preIndex(binder);
- 		getRssGenerator().deleteRssFile(binder); 		
+		getRssGenerator().deleteRssFile(binder); 		
  	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
-    	if (entry instanceof AclControlled)
+ 		if (entry instanceof AclControlled)
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-    	else
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
+ 		else
+ 			getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
 	}
  	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, org.dom4j.Document searchFilter) {
@@ -369,22 +377,23 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************
-   public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
-   	throws AccessControlException, WriteFilesException {
+    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
+   		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
-        Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
+ 
+    	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileData = (List) entryDataAll.get("fileData");
+        try {
+        	// Before doing anything else (especially writing anything to the 
+        	// database), make sure to run the filter on the uploaded files. 
+        	FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
         
-        // Before doing anything else (especially writing anything to the 
-        // database), make sure to run the filter on the uploaded files. 
-        FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
+        	final FolderEntry entry = addReply_create(def);
         
-        final FolderEntry entry = addReply_create(def);
-        
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
+        	// The following part requires update database transaction.
+        	getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		addReply_fillIn(parent, entry, inputData, entryData);
         
@@ -396,20 +405,24 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		return null;
         	}});
         
-        filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
+        	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
         
-        addReply_startWorkflow(entry);
+        	addReply_startWorkflow(entry);
          
-        addReply_indexAdd(parent, entry, inputData, entryData, fileData);
+        	addReply_indexAdd(parent, entry, inputData, entryData, fileData);
                 
-        cleanupFiles(fileData);
-        
-    	if(filesErrors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(filesErrors);
-    	}
-    	else {
-    		return entry;
+        	addReply_done(parent, entry, inputData);
+
+        	if(filesErrors.getProblems().size() > 0) {
+        		// 	At least one error occured during the operation. 
+        		throw new WriteFilesException(filesErrors);
+        	}
+        	else {
+        		return entry;
+        	}
+    	} finally {
+        	cleanupFiles(fileData);
+    		
     	}
     }
         
@@ -484,6 +497,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     }
     
+    protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData) {
+       	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry.getParentBinder())); // Just for testing
+    }
+
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, Map entryData, List fileData) {
     	indexEntry(entry.getParentFolder(), entry, fileData, null, true);

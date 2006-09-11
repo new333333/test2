@@ -75,7 +75,7 @@ public class ViewEntryController extends  SAbstractController {
 	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
 	        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
 	        //force reload of listing for state change
-	        response.setRenderParameter("ssReloadUrl", "");
+			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		} else if (formData.containsKey("subscribeBtn")) {
 	        getFolderModule().addSubscription(folderId, entryId);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
@@ -97,7 +97,7 @@ public class ViewEntryController extends  SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			model = new HashMap();
 			model.put("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
@@ -118,7 +118,6 @@ public class ViewEntryController extends  SAbstractController {
 			if ((obj == null) || (obj.equals(""))) 
 				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		}
-
 		return new ModelAndView(viewPath, model);
 	} 
 

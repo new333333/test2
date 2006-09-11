@@ -62,6 +62,8 @@ public class ModifyEntryController extends SAbstractController {
 			}
 			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
 			setupViewEntry(response, binderId, entryId);
+			//flag reload of folder listing
+			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupViewEntry(response, binderId, entryId);

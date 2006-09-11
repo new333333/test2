@@ -145,17 +145,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
     	
-		// Add doc type
 		if (entry instanceof User) {
 			User user = (User)entry;
-		    // Add doc type
 			ProfileIndexUtils.addName(indexDoc, user);
+			ProfileIndexUtils.addEmail(indexDoc, user);
+			ProfileIndexUtils.addZonName(indexDoc, user);
+			ProfileIndexUtils.addMemberOf(indexDoc, user);
 		} else {
-	        ProfileIndexUtils.addName(indexDoc, (Group)entry);
-			
+	        ProfileIndexUtils.addName(indexDoc, (Group)entry);	
 		}
-           
-        
+		
        return indexDoc;
     }
     /**

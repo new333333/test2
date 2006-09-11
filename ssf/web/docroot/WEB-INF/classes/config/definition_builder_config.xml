@@ -1427,6 +1427,7 @@
 		</properties>
 		<options>
 			<option name="profileName" initial="true" />
+			<option name="profileTimeZone" initial="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='profileEntryData']" />
@@ -1454,6 +1455,21 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderName" />
+	</item>
+	
+	<item name="profileTimeZone" caption="__preferred_timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="timeZoneName" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_timeZone_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_timezone_view.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">
@@ -1487,6 +1503,7 @@
 
 		<options>
 			<option name="profileTitle" caption="__profile_title" />
+			<option name="profileEntryTimeZone" caption="__preferred_timeZone" />
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
@@ -1508,6 +1525,15 @@
 		</jsps>
 	</item>
 	
+	<item name="profileEntryTimeZone" caption="__preferred_timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" />
+		</jsps>
+	</item>
 	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
 		    category="profileEntryViewData">
 		<properties>

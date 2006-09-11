@@ -112,7 +112,7 @@ public class ExportDefinitionController extends  SAbstractController {
 					//TODO get the caption from the definition meta data
 					String caption = curDefDoc.getRootElement().attributeValue("caption", "");
 					if (!caption.equals("")) {
-						title = caption + " (" + title + ")";
+						title = NLT.getDef(caption) + " (" + title + ")";
 					}
 					curDefEle.addAttribute("title", title);
 					curDefEle.addAttribute("id", curDef.getId());
