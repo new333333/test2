@@ -56,9 +56,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
 <% // Footer toolbar %>
-<c:if test="${!empty ssFooterToolbar}">
-<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_fineprint ss_bottomlinks"/>
-</c:if>
+<%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
 
 </div>
 </c:if>

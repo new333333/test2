@@ -59,11 +59,7 @@ function ss_showForumEntryInIframe(url) {
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
 <% // Footer toolbar %>
-<c:if test="${!empty ssFooterToolbar}">
-<div align="center">
-<ssf:toolbar toolbar="${ssFooterToolbar}" style="ss_bottomlinks" />
-</div>
-</c:if>
+<%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
 
 </div>
 
