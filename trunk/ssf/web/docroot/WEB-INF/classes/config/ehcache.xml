@@ -62,7 +62,11 @@
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-
+<cache name="com.sitescape.ef.domain.UserProperties" 
+	maxElementsInMemory="300" eternal="false"
+	timeToIdleSeconds="300" timeToLiveSeconds="600"
+	overflowToDisk="false"/>
+	
 <cache name="com.sitescape.ef.domain.Binder" 
 	maxElementsInMemory="500" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"

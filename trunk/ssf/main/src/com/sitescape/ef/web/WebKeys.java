@@ -62,6 +62,7 @@ public class WebKeys {
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
+    public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";

@@ -1,17 +1,12 @@
 package com.sitescape.ef.web.util;
 
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.NLT;
 /**
@@ -32,6 +27,16 @@ public class Favorites {
 		this.favorites = favoritesDoc;
 	}
 	
+	public Favorites(String xmlEncoding) {
+		if (xmlEncoding == null) return;
+		try {
+			favorites = DocumentHelper.parseText(xmlEncoding);
+		} catch (Exception ex) {};
+	}
+
+	public String toString() {
+		return favorites.asXML();
+	}
 	public Document addFavorite(String name, String type, String value, String action, String categoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();

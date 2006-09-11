@@ -70,7 +70,7 @@ public class PortletAdapterController extends SAbstractController {
 			
 			RenderResponseImpl renderRes = new RenderResponseImpl(renderReq,
 					res, portletName);
-			
+//			renderRes.setContentType("text/html; charset=UTF-8");
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
 			
 			portlet.render(renderReq, renderRes);
@@ -78,7 +78,16 @@ public class PortletAdapterController extends SAbstractController {
 		} catch (PortletException e) {
 			throw new ServletException(e);
 		}
-		
 		return null;
 	}
+	//public static class wrapper extends org.apache.catalina.connector.ResponseFacade {
+	//	HttpServletResponse res;
+	//	public wrapper(HttpServletResponse res) {
+	//		this.res = res;
+	//	}
+	//	public PrintWriter getWriter() throws java.io.IOException {
+	//		return res.getWriter();
+	//	}
+		
+	//}
 }

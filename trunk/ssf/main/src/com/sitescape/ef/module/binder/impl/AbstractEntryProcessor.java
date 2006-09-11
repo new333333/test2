@@ -108,7 +108,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
-        
+        	addEntry_done(binder, entry, inputData);
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
         		throw new WriteFilesException(filesErrors);
@@ -200,6 +200,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	indexEntry(binder, entry, fileUploadItems, null, true);
     }
  
+    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
+    }
  
     protected void addEntry_startWorkflow(Entry entry) {
     	if (!(entry instanceof WorkflowSupport)) return;
@@ -252,7 +254,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex);
 	    	
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex);
-	    
+	    	modifyEntry_done(binder, entry, inputData);
+	    		    
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
 	    		throw new WriteFilesException(filesErrors);
@@ -326,6 +329,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex) {
     	indexEntry(binder, entry, fileUploadItems, filesToIndex, false);
+    }
+
+    protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
     }
 
     //***********************************************************************************************************   

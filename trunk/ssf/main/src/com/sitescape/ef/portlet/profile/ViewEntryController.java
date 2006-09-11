@@ -42,11 +42,22 @@ public class ViewEntryController extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 		Map model = new HashMap();	
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		Map formData = request.getParameterMap();
+		String viewPath = BinderHelper.getViewListingJsp();
+		if (formData.containsKey("ssReloadUrl")) {
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+			model = new HashMap();
+			model.put("ssReloadUrl", reloadUrl.toString());			
+			return new ModelAndView(viewPath, model);
+		}
+		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 		Principal entry = getProfileModule().getEntry(binderId, entryId);
 		
 		model.put(WebKeys.ENTRY_ID, entryId);

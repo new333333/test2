@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
-<%@ page contentType="text/xml" %>
+<%@ page contentType="text/xml; charset=UTF-8" %>
 <c:if test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 <span><ssf:nlt tag="general.notLoggedIn"/></span>
 </c:if>

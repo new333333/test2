@@ -5,7 +5,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="ssf" uri="http://www.sitescape.com/tags-ssf" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
-<%@ page contentType="text/xml" %>
+<%@ page contentType="text/xml; charset=UTF-8" %>
 <jsp:useBean id="ss_tree_treeName" type="java.lang.String" scope="request" />
 <jsp:useBean id="ss_tree_binderId" type="java.lang.String" scope="request" />
 <jsp:useBean id="ss_tree_topId" type="java.lang.String" scope="request" />

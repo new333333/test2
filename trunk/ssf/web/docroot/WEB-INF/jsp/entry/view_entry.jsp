@@ -1,9 +1,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page contentType="text/html; charset=UTF-8" %>
 
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-<%@ page contentType="text/html" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 
