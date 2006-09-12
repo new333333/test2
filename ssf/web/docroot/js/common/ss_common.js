@@ -241,9 +241,12 @@ function ss_moveDivToTopOfBody(divId) {
     	ss_originalSSParentNodes[divId] = obj.parentNode;
 		ss_originalSSChildNodeNumbers[divId] = 0;
 		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
+			// ??? ss_originalSSChildNodeNumbers[divId] = i;
 			if (obj.parentNode.childNodes.item(i) == obj) break;
 		}
 		obj.parentNode.removeChild(obj);
+		obj.style.top = startTop;
+		obj.style.left = startLeft;
 		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
 		obj.style.zIndex = ssPortletZ;
 		dojo.fx.html.slide(divId, 300, [startLeft, startTop], [0, 0], ssf_onLayoutChange);
@@ -255,6 +258,8 @@ function ss_moveDivToTopOfBody(divId) {
 	    	var startTop = parseInt(0 - parseInt(ss_getObjAbsY(obj)))
 	    	var endLeft = ss_getObjectLeft(obj)
 	    	var endTop = ss_getObjectTop(obj)
+	    	obj.style.top = startTop;
+	    	obj.style.left = startLeft;
 			dojo.fx.html.slide(divId, 300, [startLeft, startTop], [endLeft, endTop], ssf_onLayoutChange);
 		}
 	}
