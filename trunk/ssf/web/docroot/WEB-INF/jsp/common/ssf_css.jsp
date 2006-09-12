@@ -1050,7 +1050,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border1.gif) repeat-x;
 }
 .ss_decor-round-corners-top1 div{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner1.gif) no-repeat left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner1s.gif) no-repeat left;
 }
 .ss_decor-round-corners-top1 div div{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner2.gif) no-repeat right;
@@ -1189,6 +1189,13 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 
 /* tabs: */
+div.ss_tabs {
+  position:relative;
+  top:10px;
+  left:-11px; 
+  z-index:2;
+  width:100%;
+}
 .ss_tabs{
 	margin-left:20px;
 	margin-top:14px;
@@ -1199,6 +1206,14 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 <c:if test="<%= isIE %>">
 	top:10px;
 </c:if>	
+}
+.ss_tabs_td {
+	height:35px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
+}
+.ss_tabs_td_active {
+	height:35px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
 }
 .ss_tabs li{
 	float:left;
