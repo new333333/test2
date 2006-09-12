@@ -8,7 +8,7 @@
   <table cellspacing="0" cellpadding="0" style="background:transparent;">
   <tr>
   <td valign="middle"><img src="<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif"></td>
-  <td valign="middle" class="ss_tabs_td_active">
+  <td valign="middle" class="ss_tabs_td_active" nowrap>
 	<a href="">
 <c:if test="${!empty ssBinder.iconName}">
 	   <img src="<html:imagesPath/>${ssBinder.iconName}">
@@ -24,7 +24,7 @@
   <table cellspacing="0" cellpadding="0" style="background:transparent;">
   <tr>
   <td valign="middle"><img src="<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif"></td>
-  <td valign="middle" class="ss_tabs_td">
+  <td valign="middle" class="ss_tabs_td" nowrap>
 	<a href="">
 <c:if test="${!empty ssBinder.iconName}">
 	   <img src="<html:imagesPath/>${ssBinder.iconName}">
