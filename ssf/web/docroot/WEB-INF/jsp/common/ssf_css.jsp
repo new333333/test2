@@ -1130,12 +1130,12 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 /* global toolbar: */
 .ss_global_toolbar{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
-	height:60px;
+	height:50px;
 <c:if test="<%= isIE %>">
 	margin-bottom:0px;
 </c:if>
 <c:if test="<%= !isIE %>">
-	margin-bottom:36px;
+	margin-bottom:6px;
 </c:if>
 }
 .ss_global_toolbar_links{
