@@ -3,6 +3,7 @@ package com.sitescape.ef.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 
@@ -90,6 +91,7 @@ public interface CoreDao {
 	public List loadPersonalEntityTags(EntityIdentifier entityId, EntityIdentifier ownerId);
 	public List loadPersonalTags(EntityIdentifier ownerId);
 	public List loadAllTagsByEntity(EntityIdentifier entityId);
+	public Map loadAllTagsByEntity(Collection entityIds);
 	public Tag loadTagById(String id);
 	public List loadSubscriptionByEntity(final EntityIdentifier entityId);
  }

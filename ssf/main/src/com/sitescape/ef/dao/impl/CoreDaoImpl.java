@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -585,6 +586,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 
 	//build collections manually as an optimization for indexing
 	//evict from session cache, so not longer available to everyone else
+	//The entries must be of the same type
 	public void bulkLoadCollections(Collection entries) {
 		if ((entries == null) || entries.isEmpty())  return;
        	final TreeSet sorted = new TreeSet(new LongIdComparator());
@@ -723,7 +725,45 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public Tag loadTagById(final String tagId) {
         return (Tag)getHibernateTemplate().get(Tag.class, tagId);	
 	}
-	
+	//The entries must be of the same type
+	public Map loadAllTagsByEntity(final Collection entityIds) {
+		if (entityIds.isEmpty()) return new HashMap();
+		
+		List<Tag> tags = (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                	List ids = new ArrayList();
+	                	EntityIdentifier id =null;
+	                	for (Iterator iter=entityIds.iterator(); iter.hasNext();) {
+		                	id = (EntityIdentifier)iter.next();
+		                	ids.add(id.getEntityId());
+	                	}
+	                	
+	                	return session.createCriteria(Tag.class)
+                 		.add(Expression.in("entityIdentifier.entityId", ids))
+       					.add(Expression.eq("entityIdentifier.type", id.getEntityType().getValue()))
+                 		.addOrder(Order.asc("entityIdentifier.entityId"))
+	                 	.list();
+	                }
+	            }
+	        );
+		Map result = new HashMap();
+		for (Iterator iter=entityIds.iterator(); iter.hasNext();) {
+			EntityIdentifier id = (EntityIdentifier)iter.next();
+			List tList = new ArrayList();
+			
+			while (!tags.isEmpty()) {
+				Tag tag = tags.get(0);
+				if (tag.getEntityIdentifier().equals(id)) { 
+					tList.add(tag);
+					tags.remove(0);
+				} else break;
+			}
+			result.put(id, tList);
+		}
+		return result;
+		
+	}
 	public List loadAllTagsByEntity(final EntityIdentifier entityId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {

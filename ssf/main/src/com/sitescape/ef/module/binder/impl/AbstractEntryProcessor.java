@@ -32,6 +32,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -501,17 +502,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			}
        			total += count;
        			//have 1000 entries, manually load their collections
-       			getCoreDao().bulkLoadCollections(batch);
+       			indexEntries_load(binder, batch);
        			logger.info("Indexing at " + total + "(" + binder.getId().toString() + ")");
-       			
+       			Map tags = indexEntries_loadTags(binder, batch);
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
        				// 	Create an index document from the entry object.
-       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry);
-//           			if (logger.isDebugEnabled())
-           				logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
-      				getCoreDao().evict(entry);
+       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, (List)tags.get(entry.getEntityIdentifier()));
       				docs.add(indexDoc);
+       		        //Create separate documents one for each attached file and index them.
+       				List atts = entry.getFileAttachments();
+       		        for (int j = 0; i < atts.size(); i++) {
+       		        	FileAttachment fa = (FileAttachment)atts.get(j);
+       		        	try {
+       		        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null);
+      		        		// Register the index document for indexing.
+       		        		docs.add(indexDoc);
+      		        	} catch (Exception ex) {
+      		        		//log error but continue
+      		        		logger.error("Error indexing file for entry " + entry + " attachment" + fa + " " + ex.getLocalizedMessage());
+       		        	}
+       		        }
+            		if (logger.isDebugEnabled())
+            			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
+      				getCoreDao().evict(entry);
       				indexEntries_postIndex(binder, entry);
        			}
 	            
@@ -556,6 +570,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
+   	protected void indexEntries_load(Binder binder, List entries)  {
+   		// bulkd load any collections that neeed to be indexed
+   		getCoreDao().bulkLoadCollections(entries);
+   	}
+	protected Map indexEntries_loadTags(Binder binder, List<Entry> entries) {
+		List<EntityIdentifier> ids = new ArrayList();
+		for (Entry e: entries) {
+			ids.add(e.getEntityIdentifier());
+		}
+		return getCoreDao().loadAllTagsByEntity(ids);
+	}
  
     //***********************************************************************************************************
    	public void reindexEntry(Entry entry) {
@@ -851,7 +876,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		
         // Create an index document from the entry object.
 		org.apache.lucene.document.Document indexDoc;
-		indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry);
+		indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
        // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
         
@@ -861,15 +886,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
-        	indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
-        	if(indexDoc != null) {
-        		// Register the index document for indexing.
+        	try {
+        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
+           		// Register the index document for indexing.
         		IndexSynchronizationManager.addDocument(indexDoc);
+	        } catch (Exception ex) {
+		       		//log error but continue
+		       		logger.error("Error indexing file for entry " + entry + " attachment" + fa + " " + ex.getLocalizedMessage());
         	}
-        }
+         }
 	}
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
@@ -880,11 +908,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add command definition
         EntityIndexUtils.addCommandDefinition(indexDoc, entry); 
         
-        // Add the events
+        // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry);
         
         // Add the tags for this entry
-        EntityIndexUtils.addTags(indexDoc, binder, entry);
+        if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entry.getEntityIdentifier());
+        EntityIndexUtils.addTags(indexDoc, entry, tags);
         
         // Add the workflows
         EntityIndexUtils.addWorkflow(indexDoc, entry);
@@ -893,12 +922,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
 	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui) {
-	org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
-	if (indexDoc != null)
-	    fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
-	return indexDoc;
-
-}
+   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
+   		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+   		return indexDoc;
+ 
+    }
 
     /**
      * Fill in the Lucene document object with information that is common between

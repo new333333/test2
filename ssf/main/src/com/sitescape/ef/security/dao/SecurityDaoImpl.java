@@ -106,6 +106,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
 	                               		)
 	                               	.setFetchMode("memberIds", FetchMode.JOIN)
+	                               	.setCacheable(true) //cache for use during indexing, each entry will make this call
 	                               	.list();
 	                    	//since we eagerly fetch, results are not unique
 	                    	return new ArrayList(new HashSet(results));

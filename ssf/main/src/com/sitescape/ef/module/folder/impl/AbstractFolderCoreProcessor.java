@@ -361,8 +361,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         }
         getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
      }     
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
-    	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
+    	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	               
         // Add Doc number
         IndexUtils.addDocNumber(indexDoc, (FolderEntry)entry);

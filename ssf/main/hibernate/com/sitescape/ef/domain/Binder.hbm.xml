@@ -37,7 +37,7 @@
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
     <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
-      <cache usage="read-write"/>
+      <cache usage="nonstrict-read-write"/>
       <key column="binder"/>
       <index type="integer" column="position"/>
       <many-to-many fetch="join" class="com.sitescape.ef.domain.Definition">

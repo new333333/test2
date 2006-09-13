@@ -302,5 +302,8 @@ public class FileAttachment extends Attachment {
     		return 1;
     	}
     }
+    public String toString() {
+    	return fileItem.toString();
+    }
 
 }

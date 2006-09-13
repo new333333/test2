@@ -80,6 +80,11 @@ public class EntityIdentifier {
 		return false;
 		
 	}
-		
+	public int hashCode() {
+		return 31*entityType.getValue() + entityId.hashCode();
+	}
+	public String toString() {
+		return entityType.toString() + ":" + entityId.toString();
+	}
 
 }
