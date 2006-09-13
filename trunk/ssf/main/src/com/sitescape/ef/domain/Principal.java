@@ -36,6 +36,7 @@ public abstract class Principal extends Entry  {
     protected String zoneName;
     protected Long preferredWorkspaceId;
     protected boolean reserved;
+    protected List iMemberOf;
     
     /**
      * @hibernate.property
@@ -135,6 +136,7 @@ public abstract class Principal extends Entry  {
     }
      
     public List getMemberOf() {
+    	if (iMemberOf != null) return iMemberOf;  //must be indexing
     	if (memberOf == null) memberOf = new ArrayList();
     	return memberOf;
     }
@@ -175,5 +177,15 @@ public abstract class Principal extends Entry  {
     public String toString() {
     	return zoneName + ":" + name;
     }
+    /*
+     * The following methods are used for performance optimization during indexing.
+     * The values of each collection are loaded and built by hand.  
+     * They are not persisted.  This allows us to load greater than the 
+     * hibernate "batch-size" number of collections at once.
+     */
+    public void setIndexMemberOf(List iMemberOf) {
+    	this.iMemberOf = iMemberOf;
+    }
+    
  }
 

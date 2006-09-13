@@ -11,6 +11,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
 import org.hibernate.Criteria;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -30,6 +31,8 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Group;
 
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.UserEntityPK;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -481,7 +484,50 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                 }
             );  
     }    
-    public int countUsers(FilterControls filter,  String zoneName) {
+	public void bulkLoadCollections(final Collection<Principal> entries) {
+		//try loading the isMemberOf collection - we will get the Membership and assume the groups are in the secondary cache.
+	    getHibernateTemplate().execute(
+            new HibernateCallback() {
+                public Object doInHibernate(Session session) throws HibernateException {
+       				List<Long> ids = new ArrayList();
+       		    	for (Principal p : entries) {
+       		    		ids.add(p.getId());
+       		    	}
+       		    	List<Membership> result = session.createCriteria(Membership.class)
+                 		.add(Expression.in("userId", ids))
+						.addOrder(Order.asc("userId"))
+						.list();
+       		    	//now build memberOf collection
+       		    	for (Long pId: ids) {
+		    			try {
+		    				//skip if it is a group
+		       				User u = (User)getCoreDao().load(Principal.class, pId);
+		       				List groups = new ArrayList();
+		       				while (!result.isEmpty()) {
+		       					Membership m = result.get(0);
+		       					if (m.getUserId().equals(pId)) {
+		       						try {
+		       							// skip if error
+		       							groups.add(getCoreDao().load(Group.class, m.getGroupId()));
+		       						} finally {
+		       							//clear up memory
+		       							getCoreDao().evict(m);
+		       							result.remove(0);
+		       						}
+		       					} else {break;}
+		       				}
+		       				u.setIndexMemberOf(groups);
+		    			} catch (Exception ex) {};
+      		    		
+       		    	}
+					return null;
+                 }
+            }
+        );
+	    getCoreDao().bulkLoadCollections(entries);
+		
+	}
+	public int countUsers(FilterControls filter,  String zoneName) {
     	filter.add("zoneName", zoneName);
     	return getCoreDao().countObjects(User.class, filter);
     }    

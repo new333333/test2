@@ -56,4 +56,7 @@ public class VersionAttachment extends FileAttachment {
     public void setParentAttachment(FileAttachment parentAttachment) {
         this.parentAttachment = parentAttachment;
     }
+    public String toString() {
+    	return parentAttachment.toString() + ":" + versionNumber;
+    }
 }

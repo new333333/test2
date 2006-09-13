@@ -16,7 +16,6 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
@@ -30,7 +29,6 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.TagUtil;
 
 /**
@@ -267,16 +265,13 @@ public class EntityIndexUtils {
         doc.add(racField);
     }
 
-    public static void addTags(Document doc, Binder binder, DefinableEntity entry) {
+    public static void addTags(Document doc, DefinableEntity entry, List allTags) {
 	    
     	List pubTags = new ArrayList<Tag>();
     	List privTags = new ArrayList<Tag>();
     	String indexableTags = "";
     	String aclTags = "";
-    	
-    	CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-    	List allTags = coreDao.loadAllTagsByEntity(entry.getEntityIdentifier());
-    	
+    	   	
     	for (Iterator iter=allTags.iterator(); iter.hasNext();) {
     		Tag thisTag = (Tag)iter.next();
     		if (thisTag.isPublic())

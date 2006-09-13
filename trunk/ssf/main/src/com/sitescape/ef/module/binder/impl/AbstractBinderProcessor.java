@@ -510,10 +510,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
-        	indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui);
-        	if(indexDoc != null) {       		
-        		// Register the index document for indexing.
-        		IndexSynchronizationManager.addDocument(indexDoc);
+        	try {
+        		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui);
+           		// Register the index document for indexing.
+           		IndexSynchronizationManager.addDocument(indexDoc);
+           	} catch (Exception ex) {
+        		logger.error("Error index file for binder " + binder + " attachment" + fa + " " + ex.getLocalizedMessage());
         	}
         }
 	}
@@ -532,17 +534,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder);
         
-        
+        // Add the tags for this entry
+        EntityIndexUtils.addTags(indexDoc, binder, getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier()));
+       
         return indexDoc;
     }   
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinderFile
 		(Binder binder, FileAttachment fa, FileUploadItem fui) {
-    	org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui);
-    	if (indexDoc != null)
-    	    fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
-    	return indexDoc;
-
-    }
+   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui);
+   	    fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
+       	return indexDoc;
+     }
 
     /**
      * 

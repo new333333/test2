@@ -1,7 +1,5 @@
 package com.sitescape.ef.rss.servlet;
 
-import java.io.OutputStream;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,18 +23,12 @@ public class ListController extends SAbstractController {
 		
 		
 		response.resetBuffer();
-		response.setContentType("text/xml");
+		response.setContentType("text/xml; charset=UTF-8");
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
-
-		OutputStream out = response.getOutputStream();
-		byte[] buffer = getRssGenerator().filterRss(binder,user).getBytes();
-		out.write(buffer, 0, buffer.length);
-
-		out.flush();
-
-		response.getOutputStream().flush();
-
+		//use writer to enfoce character set
+		response.getWriter().write(getRssGenerator().filterRss(binder,user));
+		response.flushBuffer();
 		return null;
 	}
 

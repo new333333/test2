@@ -87,6 +87,7 @@ public interface ProfileDao {
     public List loadEnabledUsers (Collection usersIds, String zoneName);
     public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException; 
     public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException; 
+	public void bulkLoadCollections(final Collection<Principal> entries);
 
     public int countUsers(FilterControls filter, String zoneName);
     public UserProperties loadUserProperties(Long userId);

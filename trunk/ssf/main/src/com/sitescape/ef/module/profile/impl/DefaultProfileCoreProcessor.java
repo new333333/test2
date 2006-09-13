@@ -16,6 +16,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Entry;
@@ -73,6 +74,26 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
    		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
    	}
+   	protected void indexEntries_load(Binder binder, List entries)  {
+   		// bulkd load any collections that neeed to be indexed
+   		getProfileDao().bulkLoadCollections((List<Principal>)entries);
+   	}
+	protected Map indexEntries_loadTags(Binder binder, List<Entry> entries) {
+		List<EntityIdentifier> uIds = new ArrayList();
+		List<EntityIdentifier> gIds = new ArrayList();
+		for (Entry e: entries) {
+			EntityIdentifier id = e.getEntityIdentifier();
+			if (id.getEntityType().equals(EntityIdentifier.EntityType.user))
+				uIds.add(id);
+			else if (id.getEntityType().equals(EntityIdentifier.EntityType.group))
+				gIds.add(id);
+		}
+		if (uIds.isEmpty()) return getCoreDao().loadAllTagsByEntity(gIds);
+		else if (gIds.isEmpty()) return  getCoreDao().loadAllTagsByEntity(uIds);
+		Map result = getCoreDao().loadAllTagsByEntity(uIds);
+		result.putAll(getCoreDao().loadAllTagsByEntity(gIds));
+		return result;
+	}
 
     //***********************************************************************************************************
     protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document searchFilter) {
@@ -142,8 +163,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	throw new InternalException("Cannot move profile binder");
     }
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry) {
-    	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry);
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
+    	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
 		if (entry instanceof User) {
 			User user = (User)entry;
