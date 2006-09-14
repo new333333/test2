@@ -10,22 +10,17 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>
-</div>
-	   </div>
-	</div>
+	  </td>
+	  <td class="ss_decor-border8" style="background-color:${boxBgColor};"></td>
+	  </tr>
 
 
 <%@ include file="/WEB-INF/jsp/box/box_bottom-ext.jsp" %>
-  <div class="ss_box_bottom_rounded" style="background-color:${boxColor};"></div>
+	  <tr>
+	  <td colspan="${ss_boxColCount + 1}" style=" background-color:${boxBgColor};"><div 
+	    class="ss_decor-round-corners-bottom3"><div><div></div></div></div></td>
+	  </tr>
+	</table>
 </div>
-<script type="text/javascript">
-function ss_roundBox() {
-	if (self.NiftyCheck && self.NiftyCheck != null && self.NiftyCheck()) {
-		Rounded("div.ss_box_top_rounded","top","${boxBgColor}","${boxColor}","smooth");
-		Rounded("div.ss_box_bottom_rounded","bottom","${boxBgColor}","${boxColor}","smooth");
-	}
-}
-ss_createOnLoadObj('ss_roundBox', ss_roundBox);
-</script>
 
 

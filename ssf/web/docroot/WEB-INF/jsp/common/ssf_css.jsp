@@ -1316,10 +1316,14 @@ li.ss_tabs_active .ss_tabs_tabend{
 .ss_title_bar {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border1.gif) repeat-x top;
 	color:#FFF;
-	cursor:move;
 	height:24px;
 	margin:0px;
 	padding:0px;
+}
+.ss_title_bar_history_bar {
+	padding-top:2px;
+	background:inherit;
+	color:#FFF;
 }
 .ss_title_bar_inner1 {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif) no-repeat left;
@@ -1372,6 +1376,10 @@ li.ss_tabs_active .ss_tabs_tabend{
 	margin:0px;
 	padding:0px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+}
+.ss_actions_bar_history_bar {
+	height:23px;
+	line-height:23px;
 }
 .ss_actions_bar li {
 	float:left;

@@ -40,8 +40,10 @@ var ss_history_bar_loaded = 1;
 </script>
 </c:if>
 <c:set var="ss_history_bar_imageId" value="${ss_history_bar_imageId + 1}" scope="request"/>
-
-<table class="ss_actions_bar_background" cellspacing="0" cellpadding="0" style="display:inline;">
+<c:if test="${empty ss_history_bar_table_class}">
+  <c:set var="ss_history_bar_table_class" value="ss_actions_bar_background" scope="request"/>
+</c:if>
+<table class="${ss_history_bar_table_class}" cellspacing="0" cellpadding="0">
   <tr>
 
 <%

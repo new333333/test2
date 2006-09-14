@@ -43,13 +43,6 @@ String width = Integer.toString(iWidth);
 //If width is set to 0, then use "100% instead
 if (iWidth == 0) width = "100%";
 
-String wildWidth = "*";
-try {
-	wildWidth = Integer.toString(iWidth - 2);
-}
-catch (Exception e) {
-}
-
 String boxClass = ParamUtil.get(request, "box_class", "ss_box_top_rounded");
 String boxStyle = ParamUtil.get(request, "box_style", "");
 boolean boldTitle = ParamUtil.get(request, "box_bold_title", true);
@@ -70,17 +63,35 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
+<c:set var="ss_boxColCount" value="2" scope="request"/>
 <div class="<%= boxClass %>" id="<%= divId %>" 
-  style="width: <%= width %>; background-color:${boxColor}; <%= boxStyle %>">
+  style="width: <%= width %>; <%= boxStyle %>">
 <%@ include file="/WEB-INF/jsp/box/box_top-ext.jsp" %>
-	<div class="ss_box_small_icon_bar" 
-	  style="margin:0px; background-color:${boxColor};" 
-	  id="<%= divId %>_icon_bar">
-	  <table cellspacing="0" cellpaddng="0" width="100%" 
-	    style="margin:0px; padding:0px; background-color:${boxColor};">
-	  <tr>
+	<table cellspacing="0" cellpadding="0" width="100%">
+	  <col width="8"/>
 	  <c:if test="<%= showResizeIcon %>">
-		<td align="left" width="10%"><div style="display:inline; width:20px; 
+	    <col width="20"/>
+		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
+	  </c:if>
+	  <c:if test="<%= showMoveIcon %>">
+	    <col width="35%"/>
+		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
+	  </c:if>
+	  <col/>
+	  <c:if test="<%= showMoveIcon %>">
+	    <col width="35%"/>
+		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
+	  </c:if>
+	  <c:if test="<%= showCloseIcon %>">
+	    <col width="10%"/>
+		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
+	  </c:if>
+	  <col width="8"/>
+	  <tr>
+	  <td><img 
+	    src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"></td>
+	  <c:if test="<%= showResizeIcon %>">
+		<td class="ss_title_bar" align="left"><div style="display:inline; width:20px; 
 		    background-position:center left;
             background-image:url(<html:imagesPath/><%= showResizeGif %>);
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
@@ -90,22 +101,22 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 
 	  <c:if test="<%= showMoveIcon %>">
-	    <td width="35%"><div onMouseDown="<%= showMoveRoutine %>"
+	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
 	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
-	  <td align="center"><div align="center"
+	  <td align="center"><div class="ss_title_bar" align="center"
 	    style="margin:0px; padding:0px;"><%= title %></div></td>
 	
 	  <c:if test="<%= showMoveIcon %>">
-	    <td width="35%"><div onMouseDown="<%= showMoveRoutine %>"
+	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
 	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
 	  <c:if test="<%= showCloseIcon %>">
-		<td align="right" width="10%"><span class="ss_box_small_icon"><a 
+		<td class="ss_title_bar" align="right"><span class="ss_box_small_icon"><a 
 			 href="javascript: <%= showCloseRoutine %>;"><img 
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
@@ -113,13 +124,12 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
+	  <td><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></td>
 	  </tr>
-	  </table>
-	</div><!-- end ss_box_small_icon_bar -->
+	  
+	  <tr>
+	  <td class="ss_decor-border7" colspan="${ss_boxColCount}" style="background-color:${boxBgColor};">
 
-  <div class="ssf_box">
-     <div class="ss_box_minimum_height" style="background-color:${boxColor};">
-	    <div style="margin-top: 0; margin-bottom: 0;">
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>
