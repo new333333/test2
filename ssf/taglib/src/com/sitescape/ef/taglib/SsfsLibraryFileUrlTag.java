@@ -25,7 +25,7 @@ public class SsfsLibraryFileUrlTag extends TagSupport {
 		if(fa == null)
 			throw new JspException("File attachment must be specified");
 		
-		String url = SsfsUtil.getLibraryFileUrl(binder, entity, fa);
+		String url = SsfsUtil.getInternalTitleFileUrl(binder, entity, fa);
 		
 		try {
 			pageContext.getOut().print(url);
