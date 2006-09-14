@@ -523,8 +523,8 @@
 	</tag>
 
 	<tag>
-		<name>ssfsAttachmentUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsAttachmentUrlTag</tag-class>
+		<name>ssfsInternalAttachmentUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsInternalAttachmentUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
@@ -547,8 +547,8 @@
 	</tag>	
 
 	<tag>
-		<name>ssfsFileUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsFileUrlTag</tag-class>
+		<name>ssfsInternalFileUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsInternalFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
@@ -577,8 +577,8 @@
 	</tag>	
 
 	<tag>
-		<name>ssfsLibraryFileUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsLibraryFileUrlTag</tag-class>
+		<name>ssfsInternalTitleFileUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsInternalTitleFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
@@ -597,6 +597,18 @@
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>com.sitescape.ef.domain.FileAttachment</type>
+		</attribute>		
+	</tag>	
+
+	<tag>
+		<name>ssfsLibraryFolderUrl</name>
+		<tag-class>com.sitescape.ef.taglib.SsfsLibraryFolderUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.Binder</type>
 		</attribute>		
 	</tag>	
 

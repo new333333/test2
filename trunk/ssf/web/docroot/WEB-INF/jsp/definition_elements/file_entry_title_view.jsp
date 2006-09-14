@@ -27,7 +27,7 @@
 
 <ssf:ifSupportsEditInPlace relativeFilePath="${fileHandle.fileItem.name}">
 <a style="text-decoration: none;"
-	href="<ssf:ssfsLibraryFileUrl 
+	href="<ssf:ssfsInternalTitleFileUrl 
 		binder="${ssDefinitionEntry.parentBinder}"
 		entity="${ssDefinitionEntry}"
 		fileAttachment="${fileHandle}"/>">

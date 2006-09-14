@@ -19,7 +19,7 @@
     
 <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
 <a style="text-decoration: none;"
-	href="<ssf:ssfsAttachmentUrl 
+	href="<ssf:ssfsInternalAttachmentUrl 
 		binder="${ssDefinitionEntry.parentBinder}"
 		entity="${ssDefinitionEntry}"
 		fileAttachment="${selection}"/>">
