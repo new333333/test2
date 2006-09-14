@@ -25,11 +25,11 @@
 			<else>
 				<if>
 					<not>
-						<uptodate srcfile="${deploy-support.jar.file}" targetfile="${app.server.deploy.dir}/ext.ear/${deploy-support.jar.file}" />
+						<uptodate srcfile="${deploy-support.jar.file}" targetfile="${app.server.deploy.dir}/liferay-portal.ear/${deploy-support.jar.file}" />
 					</not>
 					<then>
-						<delete dir="${app.server.deploy.dir}/ext.ear/${deploy-support.jar.file}" />
-						<unjar src="${deploy-support.jar.file}" dest="${app.server.deploy.dir}/ext.ear/${deploy-support.jar.file}" />
+						<delete dir="${app.server.deploy.dir}/liferay-portal.ear/${deploy-support.jar.file}" />
+						<unjar src="${deploy-support.jar.file}" dest="${app.server.deploy.dir}/liferay-portal.ear/${deploy-support.jar.file}" />
 					</then>
 				</if>
 			</else>
