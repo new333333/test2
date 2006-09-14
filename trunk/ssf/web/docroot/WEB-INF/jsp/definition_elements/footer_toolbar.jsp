@@ -21,6 +21,11 @@
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+    	      	style="behavior: url(#default#AnchorClick);"
+    	      	folder="${toolbarMenu.value.qualifiers.folder}"
+    	      	target="_blank"
+    	    </c:if>
 	      ><c:out 
 	        value="${toolbarMenu.value.title}" /></a></div>
 	    </c:when>
@@ -39,6 +44,11 @@
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+    	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+    	      	style="behavior: url(#default#AnchorClick);"
+    	      	folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"
+    	      	target="_blank"
     	    </c:if>
 	 	  ><c:out 
 	 	    value="${toolbarMenu.value.title}" /></a></div>

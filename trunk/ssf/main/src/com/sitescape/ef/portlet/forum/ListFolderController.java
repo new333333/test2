@@ -32,6 +32,7 @@ import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.ssfs.util.SsfsUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -456,6 +457,12 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
+		
+		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+		Map qualifiers = new HashMap();
+		qualifiers.put("folder", webdavUrl);
+		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
+
 		
 		//RSS link 
 		footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
