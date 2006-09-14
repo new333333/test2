@@ -218,8 +218,8 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		<delete file="temp/liferay/WEB-INF/lib/xercesImpl.java" />
 		
 		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version}.zip"
+		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version.tomcat}.zip"
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
@@ -236,8 +236,8 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		</echo>
 		<ant dir="liferay" target="full-deploy" inheritAll="false" />
 		<mkdir dir="${dist.dir}" />
-		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version}.zip" failonerror="false" />
-		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version}.zip"
+		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip"
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
