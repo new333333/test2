@@ -43,13 +43,16 @@
 				<equals arg1="${app.server.type}" arg2="jboss-tomcat" />
 				<then>
 					<path id="deploy.liferay.classpath">
-						<pathelement location="${app.server.deploy.dir}/ext.ear/portal-ejb.jar" />
+						<pathelement location="${app.server.deploy.dir}/liferay-portal.ear/portal-ejb.jar" />
 						<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-						<fileset dir="${app.server.deploy.dir}/ext.ear/lib" />
-						<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />
+						<fileset dir="${app.server.deploy.dir}/liferay-portal.ear/lib" />
+						<fileset dir="${app.server.server.dir}/lib"/>
+						<!--<pathelement location="${app.server.deploy.dir}/../lib/javax.servlet.jar" />-->
+						<pathelement location="${app.server.server.dir}/lib/ext/portal-kernel.jar" />
+						<pathelement location="${app.server.server.dir}/lib/ext/portlet.jar" />
 					</path>
-					<property name="deploy.liferay.webinf" value="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/WEB-INF" />
-					<property name="deploy.liferay.lib.dir" value="${app.server.deploy.dir}/ext.ear/lib" />
+					<property name="deploy.liferay.webinf" value="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/WEB-INF" />
+					<property name="deploy.liferay.lib.dir" value="${app.server.deploy.dir}/liferay-portal.ear/lib" />
 				</then>
 			</elseif>
 		</if>	
@@ -108,7 +111,7 @@
 
 				<arg value="${deploy.liferay.taglib.jar}" />
 				<arg value="${deploy.liferay.util.jar}" />
-				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
+				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 		
 		<delete dir="temp" />
@@ -164,7 +167,7 @@
 
 				<arg value="${deploy.liferay.taglib.jar}" />
 				<arg value="${deploy.liferay.util.jar}" />
-				<!--<arg value="${app.server.deploy.dir}/ext.ear/lib/util-jsf.jar" />-->
+				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 		
 		<delete dir="temp" />
@@ -175,7 +178,7 @@
 			<fileset dir="resources/jboss-tomcat" />
 		</copy>
 		
-		<!--<echo file="${app.server.deploy.dir}/ext.ear/portal-web-complete.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
+		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
 	
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="${project.dir}/jboss/resources" />
