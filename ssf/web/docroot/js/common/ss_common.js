@@ -2331,6 +2331,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 			targetDiv.innerHTML = "";
 			targetDiv.style.visibility = "hidden";
 			targetDiv.style.display = "none";
+			borderDiv = targetDiv.parentNode;
+			if (borderDiv.className == 'ss_content_window_content') borderDiv.className = '';
 			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
