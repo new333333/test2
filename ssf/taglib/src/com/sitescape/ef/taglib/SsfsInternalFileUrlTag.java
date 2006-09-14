@@ -10,7 +10,7 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.ssfs.util.SsfsUtil;
 
-public class SsfsFileUrlTag extends TagSupport {
+public class SsfsInternalFileUrlTag extends TagSupport {
 	private Binder binder;
 	private DefinableEntity entity;
 	private String elemName;
