@@ -11,9 +11,9 @@ public class SsfsUtil {
 
 	private static String[] editInPlaceFileExtensions;
 	
-	public static String getAttachmentUrl(Binder binder, 
+	public static String getInternalAttachmentUrl(Binder binder, 
 			DefinableEntity entity, FileAttachment fa) {
-		StringBuffer sb = getCommonPart(binder, entity);
+		StringBuffer sb = getInternalCommonPart(binder, entity);
 		
 		return sb.append("attach/").
 		append(fa.getRepositoryServiceName()).
@@ -21,9 +21,9 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	public static String getFileUrl(Binder binder, DefinableEntity entity,
+	public static String getInternalFileUrl(Binder binder, DefinableEntity entity,
 			String elemName, FileAttachment fa) {
-		StringBuffer sb = getCommonPart(binder, entity);
+		StringBuffer sb = getInternalCommonPart(binder, entity);
 		
 		return sb.append("file").
 		append("/").		
@@ -32,9 +32,9 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	public static String getLibraryFileUrl(Binder binder, 
+	public static String getInternalTitleFileUrl(Binder binder, 
 			DefinableEntity entity, FileAttachment fa) {
-		StringBuffer sb = getCommonPart(binder, entity);
+		StringBuffer sb = getInternalCommonPart(binder, entity);
 		
 		// Library type element is singleton (ie, at most one instance),
 		// and therefore we do not need to encode element name in url.
@@ -44,7 +44,15 @@ public class SsfsUtil {
 		append(fa.getFileItem().getName()).toString();
 	}
 	
-	private static StringBuffer getCommonPart(Binder binder, 
+	public static String getLibraryBinderUrl(Binder binder) {
+		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL();
+		
+		return sb.append("files/library/"). // follow Slide's convention
+		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
+		append(binder.getPathName()).toString();
+	}
+	
+	private static StringBuffer getInternalCommonPart(Binder binder, 
 			DefinableEntity entity) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL();
 		
@@ -56,7 +64,7 @@ public class SsfsUtil {
 		append(entity.getId()).
 		append("/");	
 	}
-
+	
 	public static boolean supportsEditInPlace(String relativeFilePath) {
 		String extension = null;
 		int index = relativeFilePath.lastIndexOf(".");
