@@ -88,7 +88,8 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
       <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
       </div>
     </ssf:param>
-  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; display:block;"
+  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
+    display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>

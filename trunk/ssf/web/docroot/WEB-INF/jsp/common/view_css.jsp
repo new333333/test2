@@ -50,6 +50,17 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 	ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 	//ss_loadJsFile(ss_rootPath, "js/common/ss_dragsort.js");
+	
+	<c:if test="${!empty ssFooterToolbar.RSS.url}">
+		//Add the rss feed info
+		var linkEle = document.createElement("link");
+		linkEle.setAttribute("rel", "alternate");
+		linkEle.setAttribute("type", "application/rss+xml");
+		linkEle.setAttribute("title", "RSS feed");
+		linkEle.setAttribute("src", "${ssFooterToolbar.RSS.url}");
+		document.getElementsByTagName("head")[0].appendChild(linkEle);
+	</c:if>
+	
 }
 var ss_js_files_loaded = 1;
 </script>
@@ -167,7 +178,7 @@ function ss_rounded() {
 		Rounded("div.ss_rounded_border_form", "all", "${ss_form_background_color}", "transparent", "border smooth");
 	}
 }
-ss_createOnLoadObj('ss_rounded', ss_rounded);
+//ss_createOnLoadObj('ss_rounded', ss_rounded);
 
 function ss_defineColorValues() {
 	ss_style_background_color = '${ss_style_background_color}';
