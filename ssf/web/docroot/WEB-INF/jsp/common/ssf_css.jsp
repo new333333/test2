@@ -22,6 +22,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%
 //Color theme: "debug"
 %>
+<c:set var="ss_style_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
+<c:set var="ss_style_font_size" value="12px" scope="request"/>
+<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
+<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
+<c:set var="ss_style_font_smallprint" value="0.9em" scope="request"/>
+<c:set var="ss_style_font_normalprint" value="1.0em" scope="request"/>
+<c:set var="ss_style_font_largeprint" value="1.1em" scope="request"/>
+<c:set var="ss_style_font_largerprint" value="1.2em" scope="request"/>
+<c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
+<c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
+
 <c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
@@ -102,6 +113,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 //Color theme: "black and white"
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
+	<c:set var="ss_style_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
+	<c:set var="ss_style_font_size" value="12px" scope="request"/>
+	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
+	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
+	<c:set var="ss_style_font_smallprint" value="0.9em" scope="request"/>
+	<c:set var="ss_style_font_normalprint" value="1.0em" scope="request"/>
+	<c:set var="ss_style_font_largeprint" value="1.1em" scope="request"/>
+	<c:set var="ss_style_font_largerprint" value="1.2em" scope="request"/>
+	<c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
+	<c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
+	
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
@@ -189,18 +211,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
   color: ${ss_portlet_style_text_color};
 </c:if>
 <c:if test="${ss_portlet_style_inherit_font_specification}">
-  font-family: arial, helvetica, sans-serif;
+  font-family: ${ss_style_font_family};
   font-weight: inherit;
-  font-size: 12px; 
+  font-size: ${ss_style_font_size}; 
 </c:if>
 }
 
 .ss_style, .ss_style table {
-  font-family: arial, helvetica, sans-serif;
+  font-family: ${ss_style_font_family};
+  font-weight: inherit;
+  font-size: ${ss_style_font_size}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
-  font-weight: inherit;
-  font-size: 12px; 
   }
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
@@ -208,6 +230,28 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
 }
+.ss_largestprint {
+  font-size: ${ss_style_font_largestprint} !important; 
+}  
+.ss_largerprint {
+  font-size: ${ss_style_font_largerprint} !important; 
+}
+.ss_largeprint {
+  font-size: ${ss_style_font_largeprint} !important; 
+}
+.ss_normalprint {
+  font-size: ${ss_style_font_normalprint} !important; 
+}
+.ss_smallprint {
+  font-size: ${ss_style_font_smallprint} !important; 
+}
+.ss_fineprint {
+  font-size: ${ss_style_font_fineprint} !important; 
+}
+.ss_finestprint {
+  font-size: ${ss_style_font_finestprint} !important; 
+}
+
 
 .ss_gray {
   color: ${ss_style_gray_color};   
@@ -575,7 +619,7 @@ div.ss_sliding_table_column {
   width: 100%; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_footer_text_color};
-  font-size:10px;
+  font-size:${ss_style_font_fineprint};
   font-weight:normal;
   text-align:center;
   margin-top: 0px;
@@ -753,7 +797,7 @@ div.ss_dashboardProtoDropTarget {
   }
   
 .ss_titlebold {
-  font-size: 16px;
+  font-size: ${ss_style_font_largestprint};
   font-weight: bold;
   color: ${ss_title_line_color};  
   }
@@ -960,7 +1004,6 @@ div.ss_disabledTabcontainer {
   text-align: center;
   color: #666666;
   font-weight: bold; 
-  font-size: 12px;
   border-bottom: #c1c1c1 1px solid;
   }  
 
@@ -984,34 +1027,29 @@ div.ss_activeTab {
   padding-right: 7px;
   padding-top: 4px;
   padding-bottom: 3px;
-  font-size: 12px;
   font-weight: bold;
   color: #3366cc;
   }
   
 div.ss_activeTab a:link, div.ss_activeTab a:visited {
-  font-size: 12px;
   font-weight: bold;
   color: #3366cc;
   text-decoration: none;
   }
 
 div.ss_activeTab a:focus, div.ss_activeTab a:hover, div.ss_activeTab a:active {
-  font-size: 12px;
   font-weight: bold;
   color: #ff0000;
   text-decoration: none;
   }
 
 div.ss_inactiveTab a:link, div.ss_inactiveTab a:visited {
-  font-size: 12px;
   font-weight: bold;
   color: #3366cc;
   text-decoration: none;
   }
 
 div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:active { 
-  font-size: 12px;
   font-weight: bold;
   color: #ff0000;
   text-decoration: none;
@@ -1235,7 +1273,8 @@ div.ss_tabs {
 	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/shorttab.gif) no-repeat;*/
 }
 .ss_tabs li a{
-	font:bold 13px "Trebuchet MS", Arial, sans-serif;
+	font-size:${ss_style_font_largeprint};
+	font-weight:bold;
 	color:#5A3C68;
 	display:block;
 	padding-left:12px;
@@ -1304,12 +1343,12 @@ li.ss_tabs_active .ss_tabs_tabend{
 	padding:5px;
 	margin-top:0px;
 	margin-bottom:0px;
-	font: 10px "Trebuchet MS", Arial, sans-serif;
+	font-size: ${ss_style_font_smallprint};
 	float:left;
 }
 .ss_breadcrumb a{
 	color:#5A3C68;
-	font: 10px "Trebuchet MS", Arial, sans-serif;
+	font-size: ${ss_style_font_smallprint};
 }
 
 /* titlebar */
@@ -1429,6 +1468,7 @@ div.ss_actions_bar_submenu {
 	border-right-style:none;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
 	width:250px;
+    line-height:20px;
 }
 .ss_actions_bar_submenu div {
 	background:none;
@@ -1448,7 +1488,7 @@ div.ss_bottomlinks {
 
 .ss_bottomlinks *, span.ss_bottomlinks {
 	color:#8E8FA7 !important;
-	font-size:9px;
+	font-size:${ss_style_font_fineprint};
 }
 
 
