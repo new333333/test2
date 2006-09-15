@@ -35,7 +35,7 @@
 	}
 %>
 </c:if>
-<a
+<a class="ss_bold"
 <c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'folderEntry'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
