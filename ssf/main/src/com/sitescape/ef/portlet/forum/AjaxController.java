@@ -261,7 +261,8 @@ public class AjaxController  extends SAbstractController {
 			ActionResponse response) throws Exception {
 		//Save the order of the dashboard components
 		String layout = PortletRequestUtils.getStringParameter(request, "dashboard_layout", "");
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		DashboardHelper.saveLocalComponentOrder(layout, binderId);
 	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 

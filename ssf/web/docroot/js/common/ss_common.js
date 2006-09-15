@@ -2828,9 +2828,9 @@ function ss_enableDashboardDropTargets() {
 	var tableElements = ss_getElementsByClass('ss_dashboardTable_.*', dashboardTable, 'td')
 	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_on";
 
-	var narrowFixedObj = document.getElementById('narrowFixed')
+	var narrowFixedObj = document.getElementById('narrow_fixed')
 	var narrowFixedHeight = parseInt(dojo.style.getContentBoxHeight(narrowFixedObj));
-	var narrowVariableObj = document.getElementById('narrowVariable')
+	var narrowVariableObj = document.getElementById('narrow_variable')
 	var narrowVariableHeight = parseInt(dojo.style.getContentBoxHeight(narrowVariableObj));
 	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget', null, 'div')
 	for (var i = 0; i < targets.length; i++) {
@@ -2848,7 +2848,7 @@ function ss_enableDashboardDropTargets() {
 		var sourceNode = targets[i];
 		var children = sourceNode.parentNode.getElementsByTagName('div');
 		//ss_debug('sourceNode parent id = '+sourceNode.parentNode.id)
-		if (sourceNode.parentNode.id == "wideTop") {
+		if (sourceNode.parentNode.id == "wide_top") {
 			//The top target gets enlarged upward
 			if (children[0] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
@@ -2860,14 +2860,14 @@ function ss_enableDashboardDropTargets() {
 				ss_dashboardClones[i].style.top = top + "px";
 			}
 		
-		} else if (sourceNode.parentNode.id == "wideBottom") {
+		} else if (sourceNode.parentNode.id == "wide_bottom") {
 			if (children[children.length - 1] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
 				var top = parseInt(dojo.style.getAbsolutePosition(targets[i], true).y);
 				ss_dashboardClones[i].style.top = top + "px";
 			}
 
-		} else if (sourceNode.parentNode.id == "narrowFixed") {
+		} else if (sourceNode.parentNode.id == "narrow_fixed") {
 			//See if this is the last target in this group
 			if (children[children.length - 1] == sourceNode && narrowFixedHeight < narrowVariableHeight) {
 				var height = parseInt(narrowVariableHeight - narrowFixedHeight);
@@ -2875,7 +2875,7 @@ function ss_enableDashboardDropTargets() {
 				ss_dashboardClones[i].style.height = height + "px";
 			}
 		
-		} else if (sourceNode.parentNode.id == "narrowVariable") {
+		} else if (sourceNode.parentNode.id == "narrow_variable") {
 			//See if this is the last target in this group
 			if (children[children.length - 1] == sourceNode && narrowVariableHeight < narrowFixedHeight) {
 				var height = parseInt(narrowFixedHeight - narrowVariableHeight);

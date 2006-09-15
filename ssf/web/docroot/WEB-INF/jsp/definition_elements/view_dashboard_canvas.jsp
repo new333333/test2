@@ -152,7 +152,7 @@
 <col width="100%">
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
-			<div id="wideTop">
+			<div id="wide_top">
 			  <div class="ss_dashboardProtoDropTarget"><img 
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_top}">
@@ -180,7 +180,7 @@
 
 <tr>
   <td valign="top" class="ss_dashboardTable_off">
-			<div id="narrowFixed">
+			<div id="narrow_fixed">
 			  <div class="ss_dashboardProtoDropTarget"><img 
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
@@ -206,7 +206,7 @@
   
   
   <td valign="top" class="ss_dashboardTable_off" style="padding-left:15px;">
-			<div id="narrowVariable">
+			<div id="narrow_variable">
 			  <div class="ss_dashboardProtoDropTarget"><img 
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_variable}">
@@ -230,7 +230,7 @@
 
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
-			<div id="wideBottom">
+			<div id="wide_bottom">
 			  <div class="ss_dashboardProtoDropTarget"><img 
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_bottom}">

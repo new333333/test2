@@ -714,6 +714,45 @@ public class DashboardHelper {
 		getInstance().saveDashboard(binder, scope, dashboard);
 	}
 
+	public static void saveLocalComponentOrder(String order, Long binderId) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userFolderProperties = getInstance().getProfileModule().getUserProperties(user.getId(), binderId);
+		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
+		
+		//Get the new order as pairs (componentId,dashboard)
+		String[] orderPairs = order.split(";");
+		for (int i = 0; i < orderPairs.length; i++) {
+			if (orderPairs[i].contains(",")) {
+				String id = orderPairs[i].split(",")[0];
+				if (id.startsWith("ss_dashboard_component_")) {
+					id = id.substring("ss_dashboard_component_".length());
+					String orderList = orderPairs[i].split(",")[1];
+					
+					//Find the component in its current place by going through each list
+			    	String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
+			    	List componentList;
+			    	for (int j1 = 0; j1 < listNames.length; j1++) {
+						componentList = (List) dashboard.get(listNames[j1]);
+						for (int j2 = 0; j2 < componentList.size(); j2++) {
+							Map component = (Map) componentList.get(j2);
+							if (component.containsKey(DashboardHelper.Id) && 
+									component.get(DashboardHelper.Id).equals(id)) {
+								//Found the component; remove it from this list
+								componentList.remove(j2);
+								//Add it to the new place
+								componentList = (List) dashboard.get(orderList);
+								if (componentList == null) componentList = new ArrayList();
+								componentList.add(component);
+							}
+						}
+					}
+				}
+			}
+		}
+		//Save the updated dashbord configuration 
+		getInstance().saveDashboard(binderId, DashboardHelper.Local, dashboard);
+	}
+
 	public Map getDashboard(Binder binder, String scope) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map dashboard = null;
@@ -746,17 +785,21 @@ public class DashboardHelper {
 	}
 	
 	public void saveDashboard(Binder binder, String scope, Map dashboard) {
+		Long binderId = binder.getId();
+		saveDashboard(binderId, scope, dashboard);
+	}
+	public void saveDashboard(Long binderId, String scope, Map dashboard) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		//Save the updated dashbord configuration 
 		if (scope.equals(DashboardHelper.Local)) {
-			getProfileModule().setUserProperty(user.getId(), binder.getId(), 
+			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DASHBOARD, dashboard);
 		} else if (scope.equals(DashboardHelper.Global)) {
 			getProfileModule().setUserProperty(user.getId(),  
 					ObjectKeys.USER_PROPERTY_DASHBOARD_GLOBAL, dashboard);
 		} else if (scope.equals(DashboardHelper.Binder)) {
-			getBinderModule().setProperty(binder.getId(), 
+			getBinderModule().setProperty(binderId, 
 					ObjectKeys.BINDER_PROPERTY_DASHBOARD, dashboard);
 		}
 	}
