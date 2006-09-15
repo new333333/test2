@@ -1228,113 +1228,27 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 /* tabs: */
 div.ss_tabs {
-  position:relative;
-  top:10px;
-  left:-11px; 
-  z-index:2;
-  width:100%;
-}
-.ss_tabs{
-	margin-left:20px;
-	margin-top:14px;
-	position:relative;
-<c:if test="<%= !isIE %>">
-	top:-12px;
-</c:if>
-<c:if test="<%= isIE %>">
-	top:10px;
-</c:if>	
+    position:relative;
+    top:10px;
+    left:9px; 
+    z-index:2;
+    width:100%;
 }
 .ss_tabs_td {
+	font-size:${ss_style_font_largeprint};
+	color:#5A3C68;
 	height:35px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
 }
 .ss_tabs_td_active {
-	height:35px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
-}
-.ss_tabs li{
-	float:left;
-	height:35px;
-	position:relative;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
-}
-.ss_tabs li.ss_decor-finish-tabs{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/ulback.gif) no-repeat right;
-	width:4px;
-}
-.ss_tabs li.ss_tabs_active{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
-}
-.ss_tabs li.ss_tabs_longtab{
-	/*background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/longtab.gif) no-repeat;*/
-}
-.tabs li.shorttab{
-	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/shorttab.gif) no-repeat;*/
-}
-.ss_tabs li a{
 	font-size:${ss_style_font_largeprint};
 	font-weight:bold;
 	color:#5A3C68;
-	display:block;
-	padding-left:12px;
-	margin-right:35px;
-	padding-top:12px;
-	padding-bottom:4px;
-}
-.ss_tabs li a:hover{
-	text-decoration:none;
-}
-.ss_tabs li.ss_tabs_icon1 a{
-	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/tabicon1.gif) no-repeat 13px 2px;*/
-}
-.ss_tabs li.ss_tabs_icon2 a{
-	/* background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/tabicon2.gif) no-repeat 13px 2px;*/
-}
-.ss_tabs li a.ss_tabs_tabclose{
-	position:absolute;
-	margin-right:8px;
-	padding-left:0px;
-	background:none;
-	right:0px;
-	z-index:2;
-}
-.ss_tabs li.ss_active a.ss_tabs_tabclose{
-	display:none;
-}
-#ss_tabs_undertabs{
-	position:relative;
-	margin-top:2px;
-<c:if test="<%= !isIE %>">
-	top:20px;
-</c:if>
-<c:if test="<%= isIE %>">
-	top:2px;
-</c:if>	
-}
-.ss_tabs_tabwrap1{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif) no-repeat left top;
-}
-li.ss_tabs_active .ss_tabs_tabwrap1{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left top;
-
-}
-.ss_tabs_tabend{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.gif) no-repeat right top;
-	position:absolute;
-	right:-1px;
-	width:15px;
 	height:35px;
-	z-index:1;
-
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
 }
-li.ss_tabs_active .ss_tabs_tabend{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.gif) no-repeat right top;
-
-}
-.ss_tabs_tabwrap2{
-}
-.ss_tabs_tabwrap3{
+.ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
+	text-decoration:underline;
 }
 
 /* breadcrumbs */
