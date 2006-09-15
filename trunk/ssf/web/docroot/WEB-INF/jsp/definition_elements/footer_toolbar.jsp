@@ -1,5 +1,7 @@
 <% // Footer toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
 <c:if test="${!empty ssFooterToolbar}">
 <div align="center">
 <c:set var="delimiter" value=""/>
@@ -22,7 +24,13 @@
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
     	      	style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
     	      	folder="${toolbarMenu.value.qualifiers.folder}"
     	      	target="_blank"
     	    </c:if>
@@ -46,7 +54,13 @@
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
     	      	style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
     	      	folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"
     	      	target="_blank"
     	    </c:if>
