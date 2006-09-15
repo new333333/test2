@@ -85,7 +85,7 @@ function ss_showMouseOverInfo(obj) {
 		    	ss_showHideObj("ss_info_popup", "hidden", "none");
 		    } else {
 		    	ss_showHideObj("ss_info_popup", "hidden", "none");
-				var s = "<table cellspacing='0' cellpadding='0' style='border: solid black 1px;'>"
+				var s = "<table cellspacing='0' cellpadding='2' style='border: solid black 1px;'>"
 				s += "<tr><td class='" + obj.className + "' nowrap>"
 				s += obj.innerHTML
 				s += "&nbsp;&nbsp;&nbsp;</td></tr></table>"
