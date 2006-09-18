@@ -575,7 +575,7 @@ public class FileModuleImpl implements FileModule {
 		
     	FilterControls filter = new FilterControls(cfAttrs, cfValues);
     	
-	   	List result = getCoreDao().loadObjects(FolderEntry.class, filter);
+	   	List result = getCoreDao().loadObjectsCacheable(FolderEntry.class, filter);
    		if (!result.isEmpty()) {
    			return (FolderEntry)result.get(0);
    		}

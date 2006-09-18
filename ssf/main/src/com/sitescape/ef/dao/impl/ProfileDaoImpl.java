@@ -332,6 +332,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             			List result = session.createQuery("from com.sitescape.ef.domain.Principal p where p.zoneName = :zone and p.id in (:pList)")
             			.setString("zone", zoneName)
             			.setParameterList("pList", ids)
+            			// Unlike some other query caches used for reference type objects,
+            			// this cache is not very useful in the sense that the result of
+            			// this query is very unlikely to be shared across users.
+            			// However, some WebDAV usage patterns make it useful because it
+            			// can repeatedly asks for the same set of information (for a 
+            			// request from the same user). We can use this as a short-lived
+            			// temporary cache. 
+            			.setCacheable(true)
             			.list();
             			//remove proxies
             			for (int i=0; i<result.size(); ++i) {
