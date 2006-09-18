@@ -175,11 +175,14 @@ function ss_saveSlidingTableCoords() {
 	ss_setupStatusMessageDiv()
     var s = ""
     var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2)
+    ss_debug('ss_sTableLeft: '+ss_sTableLeft)
+    ss_debug('ss_sTableMarginLeft: '+ss_sTableMarginLeft)
     for (var i = 0; i <= ss_columnCount; i++) {
-    	var colLeft = parseInt(parseInt(self.document.getElementById("col"+i).style.left) - ss_sTableLeft - ss_sTableMarginLeft)
+    	var colLeft = parseInt(parseInt(ss_getDivLeft("col"+i)) - ss_sTableLeft - ss_sTableMarginLeft)
 	    s += colLeft+" "
 	    ss_colWidthsUser[i] = colLeft
     }
+    ss_debug('Save col widths: ' + s)
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = ss_saveColumnPositionsUrl;
 	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object

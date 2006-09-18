@@ -265,6 +265,9 @@ function ss_moveDivToTopOfBody(divId) {
 	}
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	
+	//Also signal that a resize might have been done
+	ssf_onresize_event_handler();
 }
 
 

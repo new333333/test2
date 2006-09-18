@@ -67,42 +67,18 @@
 		<td valign="top" nowrap>
 		<c:set var="checked" value=""/>
 		<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
-		              ssDashboard.dashboard.components[id].displayStyle == 'shadow'}">
+		              ssDashboard.dashboard.components[id].displayStyle != 'none'}">
 		  <c:set var="checked" value="checked=\"checked\""/>
 		</c:if>
-		<input type="radio" name="displayStyle" value="shadow" ${checked}>
-		<span><ssf:nlt tag="dashboard.componentStyle.shadow"/></span>
-		<br>
-		<c:set var="checked" value=""/>
-		<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'simple'}">
-		  <c:set var="checked" value="checked=\"checked\""/>
-		</c:if>
-		<input type="radio" name="displayStyle" value="simple" ${checked}>
-		<span><ssf:nlt tag="dashboard.componentStyle.simple"/></span>
+		<input type="radio" name="displayStyle" value="border" ${checked}>
+		<span><ssf:nlt tag="dashboard.componentStyle.border"/></span>
 		<br>
 		<c:set var="checked" value=""/>
 		<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'none'}">
 		  <c:set var="checked" value="checked=\"checked\""/>
 		</c:if>
 		<input type="radio" name="displayStyle" value="none" ${checked}>
-		<span><ssf:nlt tag="dashboard.componentStyle.none"/></span>
-		</td>
-		<td><img style="margin:0px 30px 0px 0px;" src="<html:imagesPath/>pics/1pix.gif"></td>
-		<td valign="top" nowrap>
-		  <c:set var="checked" value=""/>
-		  <c:if test="${empty ssDashboard.dashboard.components[id].controlStyle || 
-		              ssDashboard.dashboard.components[id].controlStyle == 'hover'}">
-		    <c:set var="checked" value="checked=\"checked\""/>
-		  </c:if>
-		  <input type="radio" name="controlStyle" value="hover" ${checked}>
-		  <span><ssf:nlt tag="dashboard.componentControlStyle.hover"/></span>
-		  <br>
-		  <c:set var="checked" value=""/>
-		  <c:if test="${ssDashboard.dashboard.components[id].controlStyle == 'hide'}">
-		    <c:set var="checked" value="checked=\"checked\""/>
-		  </c:if>
-		  <input type="radio" name="controlStyle" value="hide" ${checked}>
-		  <span><ssf:nlt tag="dashboard.componentControlStyle.hide"/></span>
+		<span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span>
 		</td>
 		</tr>
 		</table>
