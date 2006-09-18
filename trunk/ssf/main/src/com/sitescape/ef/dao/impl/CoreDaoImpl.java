@@ -262,24 +262,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * Return a list containing an object array, where each object in a row representing the value of the requested attribute
 	 * This is used to return a subset of object attributes
 	 */
-	public List loadObjects(final ObjectControls objs, final FilterControls filter) {
-		return (List)getHibernateTemplate().execute(
-	        new HibernateCallback() {
-	            public Object doInHibernate(Session session) throws HibernateException {
-	            	StringBuffer query = objs.getSelectAndFrom("x");
-                 	filter.appendFilter("x", query);
-                  	Query q = session.createQuery(query.toString());
-            		List filterValues = filter.getFilterValues();
-           			for (int i=0; i<filterValues.size(); ++i) {
-           				q.setParameter(i, filterValues.get(i));
-            		}
- 	                return q.list();
-	            }
-	        }
-	     );
+	public List loadObjects(ObjectControls objs, FilterControls filter) {
+		return loadObjects(objs, filter, false);
 	}
 	public List loadObjects(Class className, FilterControls filter) {
 		return loadObjects(new ObjectControls(className), filter);
+	}
+	public List loadObjectsCacheable(Class className, FilterControls filter) {
+		return loadObjects(new ObjectControls(className), filter, true);
 	}
 	/**
 	 * Load a list of objects, OR'ing ids
@@ -838,6 +828,23 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            }
 	        );
 		
+	}
+	private List loadObjects(final ObjectControls objs, final FilterControls filter, final boolean cacheable) {
+		return (List)getHibernateTemplate().execute(
+	        new HibernateCallback() {
+	            public Object doInHibernate(Session session) throws HibernateException {
+	            	StringBuffer query = objs.getSelectAndFrom("x");
+                 	filter.appendFilter("x", query);
+                  	Query q = session.createQuery(query.toString());
+            		List filterValues = filter.getFilterValues();
+           			for (int i=0; i<filterValues.size(); ++i) {
+           				q.setParameter(i, filterValues.get(i));
+            		}
+           			q.setCacheable(cacheable);
+ 	                return q.list();
+	            }
+	        }
+	     );
 	}
 
 }
