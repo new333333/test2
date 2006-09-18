@@ -378,12 +378,13 @@ public class DashboardHelper {
 		for (int i = 0; i < globalAndBinderComponents.size(); i++) {
 			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Id);
 			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Scope);
+			Boolean visible = (Boolean) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Visible);
 			if (!seenList.contains(id) && checkIfComponentExists(id, ssDashboard) && 
 					!checkIfComponentOnLocalList(id, localDashboard)) {
 				Map newComponent = new HashMap();
 				newComponent.put(DashboardHelper.Id, id);
 				newComponent.put(DashboardHelper.Scope, scope);
-				newComponent.put(DashboardHelper.Visible, true);
+				newComponent.put(DashboardHelper.Visible, visible);
 				components.add(newComponent);
 			}
 			seenList.add(id);
@@ -531,7 +532,7 @@ public class DashboardHelper {
 			Map componentListItem = new HashMap();
 			componentListItem.put(DashboardHelper.Id, id);
 			componentListItem.put(DashboardHelper.Scope, scope);
-			componentListItem.put(DashboardHelper.Visible, true);
+			componentListItem.put(DashboardHelper.Visible, new Boolean(true));
 			componentList.add(0, componentListItem);
 			
 			//Increment the next component id
@@ -653,9 +654,9 @@ public class DashboardHelper {
 				if (id.equals(componentId)) {
 					//We have found the component to be shown or hidden
 					if (action.equals("show")) {
-						component.put(DashboardHelper.Visible, true);
+						component.put(DashboardHelper.Visible, new Boolean(true));
 					} else if (action.equals("hide")) {
-						component.put(DashboardHelper.Visible, false);
+						component.put(DashboardHelper.Visible, new Boolean(false));
 					}
 					//Make sure the list also gets saved (in case it was a generated list)
 					dashboard.put(dashboardListKey, dashboardList);
@@ -765,8 +766,8 @@ public class DashboardHelper {
 									component.get(DashboardHelper.Id).equals(id)) {
 								//Found the component; remove it from this list
 								componentListOld.remove(j2);
-								//Add it to the new place (but only once)
-								if (!foundIt) componentListNew.add(component);
+								//Add it to the new place (but only once unless it was just removed from the same list)
+								if (!foundIt || listNames[j1].equals(orderList)) componentListNew.add(component);
 								foundIt = true;
 							}
 						}
@@ -777,7 +778,7 @@ public class DashboardHelper {
 						Map componentListItem = new HashMap();
 						componentListItem.put(DashboardHelper.Id, id);
 						componentListItem.put(DashboardHelper.Scope, scope);
-						componentListItem.put(DashboardHelper.Visible, true);
+						componentListItem.put(DashboardHelper.Visible, new Boolean(true));
 						componentListNew.add(componentListItem);
 			    	}
 				}
