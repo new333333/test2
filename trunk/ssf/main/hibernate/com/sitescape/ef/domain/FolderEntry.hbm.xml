@@ -3,7 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class dynamic-update="true" lazy="true" table="SS_FolderEntries" name="com.sitescape.ef.domain.FolderEntry">
-    <!--<cache usage="read-write"/>-->
+    <cache usage="read-write"/>
     <id unsaved-value="null" name="id" type="long" node="@id">
       <generator class="native"/>
     </id>
