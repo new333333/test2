@@ -373,7 +373,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 
 	public Binder getBinderByPathName(String pathName) throws AccessControlException {
-	   	List binders = getCoreDao().loadObjects(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
+	   	List binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
 	    	
 	   	if(binders.size() > 0) {
 	   		Binder binder = (Binder) binders.get(0); // only one matching binder
