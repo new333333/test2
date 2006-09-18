@@ -38,12 +38,10 @@ public class DashboardHelper {
 	public final static String Title = "title";
 	public final static String IncludeBinderTitle = "includeBinderTitle";
 	public final static String DisplayStyle = "displayStyle";
-	public final static String ControlStyle = "controlStyle";
 	public final static String NextComponent = "nextComponent";
 	public final static String Components = "components";
 
-	public final static String DisplayStyleDefault = "shadow";
-	public final static String ControlStyleDefault = "hover";
+	public final static String DisplayStyleDefault = "border";
 
 	//Component Order lists
 	public final static String Wide_Top = "wide_top";
@@ -268,10 +266,10 @@ public class DashboardHelper {
 
 		//Build the lists of components
 		if (scope.equals(DashboardHelper.Local)) {
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, getInstance().buildDashboardList(Wide_Top, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, getInstance().buildDashboardList(Narrow_Fixed, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, getInstance().buildDashboardList(Narrow_Variable, ssDashboard));
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, getInstance().buildDashboardList(Wide_Bottom, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, getInstance().buildLocalDashboardList(Wide_Top, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, getInstance().buildLocalDashboardList(Narrow_Fixed, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, getInstance().buildLocalDashboardList(Narrow_Variable, ssDashboard));
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, getInstance().buildLocalDashboardList(Wide_Bottom, ssDashboard));
 		} else if (scope.equals(DashboardHelper.Global)) {
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard_g.get(Wide_Top)));
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard_g.get(Narrow_Fixed)));
@@ -351,7 +349,7 @@ public class DashboardHelper {
 		return ssDashboard;
 	}
 
-	private List buildDashboardList(String listName, Map ssDashboard) {
+	private List buildLocalDashboardList(String listName, Map ssDashboard) {
 		Map localDashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_LOCAL_MAP);
 		if (localDashboard != null) localDashboard = new HashMap(localDashboard);
 		Map globalDashboard = (Map) ssDashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
@@ -380,14 +378,15 @@ public class DashboardHelper {
 		for (int i = 0; i < globalAndBinderComponents.size(); i++) {
 			String id = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Id);
 			String scope = (String) ((Map)globalAndBinderComponents.get(i)).get(DashboardHelper.Scope);
-			if (!seenList.contains(id) && checkIfComponentExists(id, ssDashboard)) {
-				seenList.add(id);
+			if (!seenList.contains(id) && checkIfComponentExists(id, ssDashboard) && 
+					!checkIfComponentOnLocalList(id, localDashboard)) {
 				Map newComponent = new HashMap();
 				newComponent.put(DashboardHelper.Id, id);
 				newComponent.put(DashboardHelper.Scope, scope);
 				newComponent.put(DashboardHelper.Visible, true);
 				components.add(newComponent);
 			}
+			seenList.add(id);
 		}
 		
 		return components;
@@ -569,8 +568,6 @@ public class DashboardHelper {
 					DashboardHelper.Component_Title, "");
 			String displayStyle = PortletRequestUtils.getStringParameter(request, 
 					DashboardHelper.DisplayStyle, DashboardHelper.DisplayStyleDefault);
-			String controlStyle = PortletRequestUtils.getStringParameter(request, 
-					DashboardHelper.ControlStyle, DashboardHelper.ControlStyleDefault);
 			
 			//Get the component config data map
 			Map components = (Map)dashboard.get(DashboardHelper.Components);
@@ -599,7 +596,6 @@ public class DashboardHelper {
 					//Save the title and data map
 					componentMap.put(DashboardHelper.Component_Title, componentTitle);
 					componentMap.put(DashboardHelper.DisplayStyle, displayStyle);
-					componentMap.put(DashboardHelper.ControlStyle, controlStyle);
 					componentMap.put(DashboardHelper.Data, componentData);
 				}						
 			}
@@ -696,11 +692,35 @@ public class DashboardHelper {
 						if (i > 0) {
 							dashboardList.remove(i);
 							dashboardList.add(i-1, component);
+						} else {
+							//Move it into the next higher group
+							String newListKey = "";
+							if (dashboardListKey.equals(DashboardHelper.Narrow_Fixed)) newListKey = DashboardHelper.Wide_Top;
+							if (dashboardListKey.equals(DashboardHelper.Narrow_Variable)) newListKey = DashboardHelper.Narrow_Fixed;
+							if (dashboardListKey.equals(DashboardHelper.Wide_Bottom)) newListKey = DashboardHelper.Narrow_Variable;
+							if (!newListKey.equals("")) {
+								List newDashboardList = (List) ssDashboard.get(newListKey);
+								dashboardList.remove(i);
+								newDashboardList.add(component);
+								dashboard.put(newListKey, newDashboardList);
+							}
 						}
 					} else if (direction.equals("down")) {
 						if (i < dashboardList.size()-1) {
 							dashboardList.remove(i);
 							dashboardList.add(i+1, component);
+						} else {
+							//Move it into the next lower group
+							String newListKey = "";
+							if (dashboardListKey.equals(DashboardHelper.Wide_Top)) newListKey = DashboardHelper.Narrow_Fixed;
+							if (dashboardListKey.equals(DashboardHelper.Narrow_Fixed)) newListKey = DashboardHelper.Narrow_Variable;
+							if (dashboardListKey.equals(DashboardHelper.Narrow_Variable)) newListKey = DashboardHelper.Wide_Bottom;
+							if (!newListKey.equals("")) {
+								List newDashboardList = (List) ssDashboard.get(newListKey);
+								dashboardList.remove(i);
+								newDashboardList.add(0, component);
+								dashboard.put(newListKey, newDashboardList);
+							}
 						}
 					}
 					//Write the list back to the dashboard
@@ -714,10 +734,9 @@ public class DashboardHelper {
 		getInstance().saveDashboard(binder, scope, dashboard);
 	}
 
-	public static void saveLocalComponentOrder(String order, Long binderId) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userFolderProperties = getInstance().getProfileModule().getUserProperties(user.getId(), binderId);
-		Map dashboard = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD);
+	public static void saveComponentOrder(String order, Binder binder, String dashboardScope) {
+		Map dashboard = getInstance().getDashboard(binder, dashboardScope);
+		if (dashboard == null) dashboard = getInstance().getNewDashboardMap();
 		
 		//Get the new order as pairs (componentId,dashboard)
 		String[] orderPairs = order.split(";");
@@ -730,27 +749,42 @@ public class DashboardHelper {
 					
 					//Find the component in its current place by going through each list
 			    	String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
-			    	List componentList;
+			    	List componentListOld;
+					List componentListNew = (List) dashboard.get(orderList);
+					if (componentListNew == null) {
+						componentListNew = new ArrayList();
+						dashboard.put(orderList, componentListNew);
+					}
+					
+					boolean foundIt = false;
 			    	for (int j1 = 0; j1 < listNames.length; j1++) {
-						componentList = (List) dashboard.get(listNames[j1]);
-						for (int j2 = 0; j2 < componentList.size(); j2++) {
-							Map component = (Map) componentList.get(j2);
+						componentListOld = (List) dashboard.get(listNames[j1]);
+						for (int j2 = 0; j2 < componentListOld.size(); j2++) {
+							Map component = (Map) componentListOld.get(j2);
 							if (component.containsKey(DashboardHelper.Id) && 
 									component.get(DashboardHelper.Id).equals(id)) {
 								//Found the component; remove it from this list
-								componentList.remove(j2);
-								//Add it to the new place
-								componentList = (List) dashboard.get(orderList);
-								if (componentList == null) componentList = new ArrayList();
-								componentList.add(component);
+								componentListOld.remove(j2);
+								//Add it to the new place (but only once)
+								if (!foundIt) componentListNew.add(component);
+								foundIt = true;
 							}
 						}
 					}
+			    	if (!foundIt) {
+			    		//We didn't find the component on any list; just put it on the right list
+						String scope = id.substring(0, id.indexOf("_"));
+						Map componentListItem = new HashMap();
+						componentListItem.put(DashboardHelper.Id, id);
+						componentListItem.put(DashboardHelper.Scope, scope);
+						componentListItem.put(DashboardHelper.Visible, true);
+						componentListNew.add(componentListItem);
+			    	}
 				}
 			}
 		}
 		//Save the updated dashbord configuration 
-		getInstance().saveDashboard(binderId, DashboardHelper.Local, dashboard);
+		getInstance().saveDashboard(binder.getId(), dashboardScope, dashboard);
 	}
 
 	public Map getDashboard(Binder binder, String scope) {
@@ -841,6 +875,26 @@ public class DashboardHelper {
 			}
 		}
 		return false;
+	}
+	
+	private boolean checkIfComponentOnLocalList(String id, Map dashboard) {
+		//Find the component in its current place by going through each list
+    	String[] listNames = {Wide_Top, Narrow_Fixed, Narrow_Variable, Wide_Bottom};
+    	List componentList;
+    	for (int i1 = 0; i1 < listNames.length; i1++) {
+			componentList = (List) dashboard.get(listNames[i1]);
+			if (componentList != null) {
+				for (int i2 = 0; i2 < componentList.size(); i2++) {
+					Map component = (Map) componentList.get(i2);
+					if (component.containsKey(DashboardHelper.Id) && 
+							component.get(DashboardHelper.Id).equals(id)) {
+						//Found the component
+						return true;
+					}
+				}
+			}
+    	}
+    	return false;
 	}
 	
 }

@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:set var="hideDashboardControls" value="false"/>
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].controlStyle == 'hide'}">
+<c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'none'}">
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
 <!-- Start of component -->
@@ -114,7 +114,7 @@
 	      <c:set var="ss_dashboard_border_count" scope="request" 
 	         value="${ss_dashboard_border_count + 1}"/>
       </c:if>
-      <c:if test="${!hideDashboardControls}">
+      <c:if test="${!hideDashboardControls && ss_dashboard_visible}">
         class="ss_content_window_content"
       </c:if>
     >

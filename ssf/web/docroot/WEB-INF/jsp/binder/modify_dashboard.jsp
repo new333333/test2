@@ -21,7 +21,6 @@
 
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
 <div style="margin:6px;">
 <span class="ss_largerprint"><ssf:nlt tag="dashboard.configureDashboard"/></span>
 <br/>
@@ -54,33 +53,6 @@
 <br/>
 
 <div style="width:100%;">
-<span class="ss_bold"><ssf:nlt tag="dashboard.setTitle" /></span><br/>
-<table cellpadding="6" style="width:100%;">
-  <tr>
-    <td>
-	<form method="post" >
-	<input type="text" name="title" size="60" value="${ssDashboard.dashboard.title}"/><br/>
-	<c:set var="checked" value=""/>
-	<c:if test="${ssDashboard.dashboard.includeBinderTitle}">
-	  <c:set var="checked" value="checked=checked"/>
-	</c:if>
-	<input type="checkbox" name="includeBinderTitle" <c:out value="${checked}"/> />
-	<span><ssf:nlt tag="dashboard.includeBinderTitle"/></span>
-	<br/>
-	
-	<input type="submit" class="ss_submit" name="set_title" 
-	  value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
-	<input type="hidden" name="scope" value="${ssDashboard.scope}"/>
-	</form>
-    </td>
-  </tr>
-</table>
-
-<br/>
-<br/>
-<br/>
-
-<div style="width:100%;">
 <c:if test="${ssDashboard.scope == 'local'}">
   <span class="ss_bold"><ssf:nlt tag="dashboard.layout" /></span>
 </c:if>
@@ -91,82 +63,24 @@
   <span class="ss_bold"><ssf:nlt tag="dashboard.setDefaultLayout" /></span>
 </c:if>
 <br/>
-<table cellpadding="6" style="width:100%;">
-  <tr>
-    <td colspan="2">
-    
-      <c:forEach var="component" items="${ssDashboard.wide_top}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-    </td>
-  </tr>
 
-  <tr>
-    <td valign="top">
-      <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
-		<div style="margin:0px; padding:0px; 
-		    width:${ssDashboard.narrowFixedWidth + 5}px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-    </td>
+<c:set var="ss_dashboard_table_scope" value="${ssDashboard.scope}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_table.jsp" %>
 
-    <td valign="top" width="96%">
-      <c:forEach var="component" items="${ssDashboard.narrow_variable}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-    </td>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <c:forEach var="component" items="${ssDashboard.wide_bottom}">
-		<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-		<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
-		<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
-		<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
-		<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
-		<c:set var="ss_dashboard_returnView" value="form" scope="request"/>
-		<div style="margin:0px; padding:0px;">
-		  <ssf:dashboard id="${component.id}" type="viewComponent" configuration="${ssDashboard}"/>
-		</div>
-	  </c:forEach>
-    </td>
-  </tr>
-  <c:if test="${empty ssDashboard.wide_top && 
+<c:if test="${empty ssDashboard.wide_top && 
                 empty ssDashboard.narrow_fixed && 
                 empty ssDashboard.narrow_variable && 
                 empty ssDashboard.wide_bottom}">
+<table cellpadding="6" style="width:100%;">
   <tr>
-    <td>
+    <td nowrap>
       <span class="ss_italics ss_smallprint">
         <ssf:nlt tag="dashboard.noComponents"/>
       </span>
     </td>
   </tr>
-  </c:if>
 </table>
+</c:if>
 </div>
 
 <div class="ss_formBreak"/>
@@ -178,8 +92,6 @@
 </form>
 </div>
 
-</div>
-</div>
 </div>
 </div>
 </div>
