@@ -16,15 +16,102 @@ if(RequestContextHolder.getRequestContext() != null) {
 
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
 var undefined;
 var ss_urlBase = self.location.protocol + "//" + self.location.host;
 var ss_rootPath = "<html:rootPath/>";
 var ss_imagesPath = "<html:imagesPath/>";
 
+var ss_defaultStyleSheet = 'blackandwhite';
+var ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
+var niftyCornersCssUrl = ss_urlBase + ss_rootPath + "css/nifty_corners.css";
+//var htmlareaCssUrl = ss_urlBase + ss_rootPath + "js/htmleditor/htmlarea.css";
+var ss_forumColorsCssUrl = "<ssf:url
+    webPath="viewCss">
+    <ssf:param name="theme" value=""/>
+    </ssf:url>"
+var ss_forumColorDebugCssUrl = "<ssf:url
+    webPath="viewCss">
+    <ssf:param name="theme" value="debug"/>
+    </ssf:url>"
+var ss_forumColorBlackAndWhiteCssUrl = "<ssf:url
+    webPath="viewCss">
+    <ssf:param name="theme" value="blackandwhite"/>
+    </ssf:url>"
+
+//Help system url (used to request a help panel to be shown).
+var ss_helpSystemUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="show_help_panel" />
+	<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
+	</ssf:url>"
+
+//Not logged in message
+var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+
+</script>
+
+<script type="text/javascript">
+function ss_loadDojoFiles() {
+	dojo.require("dojo.fx.*");
+	dojo.require("dojo.math");
+	//dojo.require("dojo.lfx.*");
+	dojo.require("dojo.dnd.*");
+	dojo.require("dojo.event.*");
+	//dojo.require("dojo.widget.*");
+	//dojo.require("dojo.widget.TaskBar");
+	//dojo.require("dojo.widget.LayoutContainer");
+	//dojo.require("dojo.widget.FloatingPane");
+	//dojo.require("dojo.widget.ResizeHandle");
+}
+
+function ss_createStyleSheet(url, title, enabled) {
+	if (enabled == null || enabled == "") enabled = false;
+	var styles = "@import url('" + " " + url + " " + "');";
+	var newSS = document.createElement('link');
+	newSS.rel = 'stylesheet';
+	if (title != null && title != "") {
+		newSS.setAttribute("title", title);
+		newSS.disabled = true;
+		if (enabled == true) {
+			newSS.disabled = false;
+		}
+	}
+	newSS.href = 'data:text/css,' + escape(styles);
+	//newSS.href = url;
+	document.getElementsByTagName("head")[0].appendChild(newSS);
+}
+function ss_changeStyles(title) {
+	var i, a, main;
+	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
+		if (a.getAttribute("rel").indexOf("style") != -1 && 
+				a.getAttribute("title") != null && a.getAttribute("title") != "" ) {
+			a.disabled = true;
+			if (a.getAttribute("title") == title) {
+				a.disabled = false;
+			}
+		}
+	}
+}
+function ss_setDefaultStyleSheet() {
+	//Set the user's desired style
+	ss_changeStyles(ss_defaultStyleSheet);
+}
+
+</script>
+
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+<script type="text/javascript">
+var scriptsLoaded = "";
 function ss_loadJsFile(rootPath, jsFile) {
 	var spath = rootPath + jsFile;
+	var scripts = document.getElementsByTagName("script");
+	for (var i = 0; i < scripts.length; i++) {
+		if (scripts[i].src && scripts[i].src == spath) return;
+	}
 	try {
 		document.writeln("<scr"+"ipt type='text/javascript' src='"+spath+"'></scr"+"ipt>");
 	} catch (e) {
@@ -60,105 +147,29 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		linkEle.setAttribute("src", "${ssFooterToolbar.RSS.url}");
 		document.getElementsByTagName("head")[0].appendChild(linkEle);
 	</c:if>
-	
 }
 var ss_js_files_loaded = 1;
 </script>
 
 <script type="text/javascript">
-function ss_loadDojoFiles() {
-	dojo.require("dojo.fx.*");
-	dojo.require("dojo.math");
-	//dojo.require("dojo.lfx.*");
-	dojo.require("dojo.dnd.*");
-	dojo.require("dojo.event.*");
-	//dojo.require("dojo.widget.*");
-	//dojo.require("dojo.widget.TaskBar");
-	//dojo.require("dojo.widget.LayoutContainer");
-	//dojo.require("dojo.widget.FloatingPane");
-	//dojo.require("dojo.widget.ResizeHandle");
-}
-ss_createOnLoadObj('ss_loadDojoFiles', ss_loadDojoFiles);
-
-function ss_createStyleSheet(url, title, enabled) {
-	if (enabled == null || enabled == "") enabled = false;
-	var styles = "@import url('" + " " + url + " " + "');";
-	var newSS = document.createElement('link');
-	newSS.rel = 'stylesheet';
-	if (title != null && title != "") {
-		newSS.setAttribute("title", title);
-		newSS.disabled = true;
-		if (enabled == true) {
-			newSS.disabled = false;
-		}
-	}
-	newSS.href = 'data:text/css,' + escape(styles);
-	//newSS.href = url;
-	document.getElementsByTagName("head")[0].appendChild(newSS);
-}
-function ss_changeStyles(title) {
-	var i, a, main;
-	for (i=0; (a = document.getElementsByTagName("link")[i]); i++) {
-		if (a.getAttribute("rel").indexOf("style") != -1 && 
-				a.getAttribute("title") != null && a.getAttribute("title") != "" ) {
-			a.disabled = true;
-			if (a.getAttribute("title") == title) {
-				a.disabled = false;
-			}
-		}
+if (!ss_css_files_loaded || ss_css_files_loaded == undefined || ss_css_files_loaded == "undefined" ) {
+	if (document.createStyleSheet) {
+		document.createStyleSheet(ss_forumCssUrl);
+		document.createStyleSheet(ss_forumColorsCssUrl);
+		document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
+		document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+		//document.createStyleSheet(niftyCornersCssUrl);
+		//document.createStyleSheet(htmlareaCssUrl);
+	} else {
+		ss_createStyleSheet(ss_forumCssUrl);
+		ss_createStyleSheet(ss_forumColorsCssUrl);
+		ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
+		ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
+		//ss_createStyleSheet(niftyCornersCssUrl);
+		//ss_createStyleSheet(htmlareaCssUrl);
 	}
 }
-var ss_defaultStyleSheet = 'blackandwhite';
-ss_changeStyles(ss_defaultStyleSheet);
-function ss_setDefaultStyleSheet() {
-	//Set the user's desired style
-	ss_changeStyles(ss_defaultStyleSheet);
-}
-ss_createOnLoadObj('ss_setDefaultStyleSheet', ss_setDefaultStyleSheet);
-
-var ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
-var niftyCornersCssUrl = ss_urlBase + ss_rootPath + "css/nifty_corners.css";
-//var htmlareaCssUrl = ss_urlBase + ss_rootPath + "js/htmleditor/htmlarea.css";
-var ss_forumColorsCssUrl = "<ssf:url
-    webPath="viewCss">
-    <ssf:param name="theme" value=""/>
-    </ssf:url>"
-var ss_forumColorDebugCssUrl = "<ssf:url
-    webPath="viewCss">
-    <ssf:param name="theme" value="debug"/>
-    </ssf:url>"
-var ss_forumColorBlackAndWhiteCssUrl = "<ssf:url
-    webPath="viewCss">
-    <ssf:param name="theme" value="blackandwhite"/>
-    </ssf:url>"
-if (document.createStyleSheet) {
-	document.createStyleSheet(ss_forumCssUrl);
-	document.createStyleSheet(ss_forumColorsCssUrl);
-	document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
-	document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-	//document.createStyleSheet(niftyCornersCssUrl);
-	//document.createStyleSheet(htmlareaCssUrl);
-} else {
-	ss_createStyleSheet(ss_forumCssUrl);
-	ss_createStyleSheet(ss_forumColorsCssUrl);
-	ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
-	ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-	//ss_createStyleSheet(niftyCornersCssUrl);
-	//ss_createStyleSheet(htmlareaCssUrl);
-}
-
-//Help system url (used to request a help panel to be shown).
-var ss_helpSystemUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="show_help_panel" />
-	<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
-	</ssf:url>"
-
-//Not logged in message
-var ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+var ss_css_files_loaded = 1;
 
 </script>
 
@@ -184,6 +195,9 @@ function ss_defineColorValues() {
 	ss_style_background_color = '${ss_style_background_color}';
 	ss_dashboard_table_border_color = '${ss_dashboard_table_border_color}';
 }
+
+ss_createOnLoadObj('ss_loadDojoFiles', ss_loadDojoFiles);
+ss_createOnLoadObj('ss_setDefaultStyleSheet', ss_setDefaultStyleSheet);
 ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 </script>
 
