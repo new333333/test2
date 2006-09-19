@@ -72,6 +72,10 @@ public class EntityIndexUtils {
     public static final String FILE_ID_FIELD = "_fileID";
     public static final String RATING_FIELD="_rating";
     public static final String ENTITY_FIELD="_entityType"; 
+    public static final String GROUP_SEE_COMMUNITY="groupCommunity";
+    public static final String GROUP_SEE_ANY="groupAny";
+    
+    
     // Defines field values
     public static final String READ_ACL_ALL = "all";
         
