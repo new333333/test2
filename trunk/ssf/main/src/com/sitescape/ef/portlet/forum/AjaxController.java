@@ -18,6 +18,8 @@ import java.util.Map;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DashboardHelper;
@@ -379,7 +381,7 @@ public class AjaxController  extends SAbstractController {
     	if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
     	if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
     	if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
-
+    	    	     	
     	//Build the search query
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
@@ -389,7 +391,20 @@ public class AjaxController  extends SAbstractController {
 		filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
 		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 		filterTermValueEle.setText(searchText);
-		
+       	
+		// check to see if the user has the right to see all users, just users in their community,
+    	// or no users.
+    	if (!getProfileModule().checkUserSeeAll()) {
+			Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+			if (getProfileModule().checkUserSeeCommunity())
+	    	{
+	    		// Add the group visibility element to the filter terms document
+				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
+	    	} else {
+	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
+	    	}
+    	}
+       	
 		//Do a search to find the first few users who match the search text
     	User u = RequestContextHolder.getRequestContext().getUser();
     	Map users = new HashMap();
