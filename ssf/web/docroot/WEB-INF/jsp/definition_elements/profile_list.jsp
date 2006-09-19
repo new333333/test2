@@ -75,7 +75,7 @@
 %>
     <a href="<ssf:url     
     adapter="true" 
-    portletName="ss_profile" 
+    portletName="ss_forum" 
     folderId="${ssBinder.id}" 
     action="view_profile_entry" 
     entryId="<%= docId %>" actionUrl="false" />" 

@@ -21,9 +21,9 @@
 <div class="ss_style ss_form" style="margin:6px;">
 <div class="ss_rounded">
 <div style="margin:6px; width:100%;">
-<h3><ssf:nlt tag="presence.configure" text="Configure buddy list"/></h3>
+<h3><ssf:nlt tag="portlet.presence.configure" text="Configure buddy list"/></h3>
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="presence.configure.buddies" 
+  <legend class="ss_legend"><ssf:nlt tag="portlet.presence.buddies" 
     text="Buddies"/></legend>
  <form class="ss_style" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
@@ -31,6 +31,11 @@
 		  <portlet:param name="action" value="configure"/>
 		  </portlet:actionURL>">
 
+<table>
+<tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
+</td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
+</td></tr>
+</table>
 <table cellspacing="10px" cellpadding="10px" width="100%">
 
 <tr>

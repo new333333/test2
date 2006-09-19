@@ -20,7 +20,7 @@ public class ViewController extends SAbstractController {
 
 		// Just for testing
 		String data = "<html><body>How are you?</body></html>";
-		response.setContentType("text/html;; charset=UTF-8");
+		response.setContentType("text/html; charset=UTF-8");
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		response.getOutputStream().write(data.getBytes());

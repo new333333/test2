@@ -10,6 +10,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.ef.util.XmlFileUtil;
 
 public class ListController extends SAbstractController {
 
@@ -23,7 +24,7 @@ public class ListController extends SAbstractController {
 		
 		
 		response.resetBuffer();
-		response.setContentType("text/xml; charset=UTF-8");
+		response.setContentType("text/xml; charset=" + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		//use writer to enfoce character set

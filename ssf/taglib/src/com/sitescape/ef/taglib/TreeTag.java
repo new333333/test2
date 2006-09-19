@@ -50,6 +50,7 @@ public class TreeTag extends TagSupport {
     private List multiSelect;
     private String multiSelectPrefix;
     private String displayStyle;
+    private String singleSelectName, singleSelect;
     private boolean nowrap = false;
     private String commonImg;
     private String className = "";
@@ -205,6 +206,11 @@ public class TreeTag extends TagSupport {
 	    }
 	    finally {
 	    	this.nowrap = false;
+	    	allOpen=false;
+	    	rootOpen=false;
+	    	singleSelect=null;
+	    	multiSelect=null;
+	    	topId=null;
 	    }
 	    
 		return SKIP_BODY;
@@ -409,6 +415,19 @@ public class TreeTag extends TagSupport {
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
 							jspOut.print(this.multiSelectPrefix + s_id + "\" " + checked + "/>");
 						}
+					} else if (singleSelect != null) {
+						//can only select one item from tree, but probably other things going on
+						//ie) don't want link to submit form
+						if (s_id.equals("") || displayOnly) {
+							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
+						} else {
+							String checked = "";
+							if (this.singleSelect.equals(s_id)) checked = "checked=\"checked\"";
+							jspOut.print("<input type=\"radio\" class=\"ss_text\"");
+							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
+							jspOut.print(singleSelectName + "\" value=\""+s_id + "\" " + checked + "/>");
+						}
+						
 					}
 					for (int j = recursedNodes.size() - 1; j >= 0; j--) {
 						if ((String) recursedNodes.get(j) != "1") {
@@ -784,6 +803,12 @@ public class TreeTag extends TagSupport {
 	    this.multiSelectPrefix = multiSelectPrefix;
 	}
 	
+	public void setSingleSelect(String singleSelect) {
+	    this.singleSelect = singleSelect;
+	}
+	public void setSingleSelectName(String singleSelectName) {
+	    this.singleSelectName = singleSelectName;
+	}
 	public void setDisplayStyle(String displayStyle) {
 	    this.displayStyle = displayStyle;
 	}

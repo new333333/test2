@@ -510,6 +510,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				// 	Create an index document from the entry object.
        				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, (List)tags.get(entry.getEntityIdentifier()));
       				docs.add(indexDoc);
+            		if (logger.isDebugEnabled())
+            			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
        		        //Create separate documents one for each attached file and index them.
        				List atts = entry.getFileAttachments();
        		        for (int j = 0; i < atts.size(); i++) {
@@ -523,8 +525,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       		        		logger.error("Error indexing file for entry " + entry + " attachment" + fa + " " + ex.getLocalizedMessage());
        		        	}
        		        }
-            		if (logger.isDebugEnabled())
-            			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
       				getCoreDao().evict(entry);
       				indexEntries_postIndex(binder, entry);
        			}

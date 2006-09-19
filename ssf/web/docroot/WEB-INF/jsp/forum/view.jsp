@@ -32,7 +32,7 @@
 		<tr>
 			<td valign="top">
 				<c:if test="${empty ssFolderList}">
-				  <ssf:nlt tag="portlet.notConfigured" 
+				  <ssf:nlt tag="noPreferences" 
 				   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
 				  <a class="ss_linkButton ss_smallprint" 
 				    href="<portlet:renderURL 

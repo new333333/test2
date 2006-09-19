@@ -1,24 +1,24 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.Map;
-import java.util.HashMap;
-
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletURL;
+import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
-import com.sitescape.ef.util.NLT;
+
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.util.Validator;
 
 
 public class ViewController extends  SAbstractController {
@@ -32,7 +32,7 @@ public class ViewController extends  SAbstractController {
 		PortletURL url;
 		//Build the tree
 		int nextId = 0;
-		
+
 		Document adminTree = DocumentHelper.createDocument();
 		Element rootElement = adminTree.addElement("root");
 		rootElement.addAttribute("title", NLT.get("administration.title"));

@@ -65,7 +65,7 @@ public class ListProfilesController extends   SAbstractController {
 		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_profile", true);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
@@ -132,7 +132,7 @@ public class ListProfilesController extends   SAbstractController {
 				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_profile", true);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_PROFILE_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());

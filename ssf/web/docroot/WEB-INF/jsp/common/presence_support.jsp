@@ -42,10 +42,6 @@ var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outl
 </c:if>
 <script type="text/javascript">
 
-function ss_popupPresenceMenu${ssDashboardId}(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current) {
-	var ssDashboardId = '${ssDashboardId}';
-	var ssPresenceZonBridge = '${ss_presence_zonBridge}';
-	ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssDashboardId, ssPresenceZonBridge);
-}
+
 </script>
-<div id="ss_presencePopUp${ssDashboardId}" style="position:absolute; visibility:hidden;"></div>
+<div id="ss_presencePopUp${ssNamespace}" style="position:absolute; visibility:hidden;"></div>

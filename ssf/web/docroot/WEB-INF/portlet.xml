@@ -38,27 +38,11 @@
         <supported-locale>en</supported-locale>
         <resource-bundle>content.widgettest</resource-bundle>
     </portlet>
+
     <portlet>
-        <description xml:lang="en">SiteScape Workspace Tree Portlet</description>
-        <portlet-name>ss_workspacetree</portlet-name>
-        <display-name xml:lang="en">Workspace Tree</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/ssf.xml</value>
-		</init-param>
-        <expiration-cache>300</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.workspacetree</resource-bundle>
-    </portlet>
-    <portlet>
-        <description xml:lang="en">SiteScape Forum Portlet</description>
+        <description xml:lang="en">SiteScape Portlet</description>
         <portlet-name>ss_forum</portlet-name>
-        <display-name xml:lang="en">Forum</display-name>
+        <display-name xml:lang="en">Aspen</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
@@ -72,24 +56,6 @@
         </supports>
         <supported-locale>en</supported-locale>
         <resource-bundle>content.forum</resource-bundle>
-    </portlet>
-
-     <portlet>
-        <description xml:lang="en">SiteScape Profiles</description>
-        <portlet-name>ss_profile</portlet-name>
-        <display-name xml:lang="en">Profiles</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/ssf.xml</value>
-		</init-param>
-        <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.profile</resource-bundle>
     </portlet>
 
     <portlet>
@@ -108,25 +74,6 @@
         </supports>
         <supported-locale>en</supported-locale>
         <resource-bundle>content.administration</resource-bundle>
-    </portlet>
- 
-    <portlet>
-        <description xml:lang="en">SiteScape Presence</description>
-        <portlet-name>ss_presence</portlet-name>
-        <display-name xml:lang="en">Presence</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/ssf.xml</value>
-		</init-param>
-        <expiration-cache>300</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.presence</resource-bundle>
     </portlet>
  
      <user-attribute>

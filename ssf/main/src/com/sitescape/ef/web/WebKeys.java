@@ -55,10 +55,12 @@ public class WebKeys {
 	public static final String URL_OBJECT_ID="objectId";
 
 	//Preferences
-	public static final String FORUM_PREF_FORUM_ID_LIST = "forumIdList";
-	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.presence.user.list";
-	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.presence.group.list";
-	
+	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
+	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
+	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.portlet.presence.group.list";
+	public static final String PORTLET_PREF_TITLE = "com.sitescape.portlet.title";
+	public static final String PORTLET_PREF_TYPE = "com.sitescape.portlet.type";
+	public static final String WORKSPACE_PREF_ID = "com.sitescape.portlet.workspace.id";
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
@@ -154,6 +156,7 @@ public class WebKeys {
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
+    public static final String BINDER_ID_LIST = "ssBinderIdList";
 	public static final String BINDER_CONFIG="ssBinderConfig";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
@@ -237,7 +240,6 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_LEFT="folderEntryLeft";
     public static final String FOLDER_ENTRY_HEIGHT="folderEntryHeight";
     public static final String FOLDER_LIST = "ssFolderList";
-    public static final String FOLDER_ID_LIST = "ssFolderIdList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
@@ -339,6 +341,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
+    public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
@@ -346,7 +349,7 @@ public class WebKeys {
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
-    public static final String VIEW_EDIT="forum/edit";
+    public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
@@ -364,6 +367,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
+    public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";

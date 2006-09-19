@@ -10,6 +10,7 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -47,18 +48,21 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		model.put(WebKeys.OPERATION, action);
  		
-		//TODO: need to make the display type a config option
-		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
-		String pName = pConfig.getPortletName();
-		if ("ss_forum".equals(pName) || Validator.isNull(pName)) {
+		PortletPreferences prefs = request.getPreferences();
+		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
+		if (Validator.isNull(displayType)) {
+			//select type of porlet
+			return new ModelAndView(WebKeys.VIEW_ASPEN_TYPE);
+		}
+		String title = (String)prefs.getValue(WebKeys.PORTLET_PREF_TITLE, null);
+		if (!Validator.isNull(title)) response.setTitle(title);
+		if ("ss_forum".equals(displayType)) {
 			//Build the toolbar and add it to the model
 			buildForumToolbar(response.getNamespace(), model);
 		
 			//This is the portlet view; get the configured list of folders to show
-			String[] preferredBinderIds = request.getPreferences().getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+			String[] preferredBinderIds = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 
 			//Build the jsp bean (sorted by folder title)
 			List<Long> binderIds = new ArrayList<Long>();
@@ -68,7 +72,7 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
-		} else if ("ss_profile".equals(pName)) {
+		} else if ("ss_profile".equals(displayType)) {
 			//Get the profile binder
 			//If first time here, add a profile folder to the top workspace
 			ProfileBinder binder = getProfileModule().getProfileBinder();
@@ -83,9 +87,15 @@ public class ViewController  extends SAbstractController {
 			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
-		} else if ("ss_workspacetree".equals(pName)) {
+		} else if ("ss_workspace".equals(displayType)) {
 			PortletSession ses = WebHelper.getRequiredPortletSession(request);
-			Workspace binder = getWorkspaceModule().getWorkspace();
+			String id = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
+			Workspace binder;
+			try {
+				binder = getWorkspaceModule().getWorkspace(Long.valueOf(id));
+			} catch (Exception ex) {
+				binder = getWorkspaceModule().getWorkspace();				
+			}
 			Document wsTree;
 			//when at the top, don't expand
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
@@ -97,50 +107,24 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
 				
 		    return new ModelAndView("workspacetree/view", model);			
-		} else if ("ss_presence".equals(pName)) {
-	 		//if action in the url, assume this is an ajax update call
-	 		if (!Validator.isNull(action)) {
-				model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
-				model.put(WebKeys.DASHBOARD_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_ID, ""));
-				response.setContentType("text/xml");
-	 			if (!WebHelper.isUserLoggedIn(request)) {
-					Map statusMap = new HashMap();
-					model.put(WebKeys.AJAX_STATUS, statusMap);	
-	 				
-	 				//Signal that the user is not logged in. 
-	 				//  The code on the calling page will output the proper translated message.
-	 				statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
-	 				return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
-	 			} else {
-	 				//refresh call
-	 				Set p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("userList"));
-	 				model.put(WebKeys.USERS, getProfileModule().getUsers(p));
-	 				p = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groupList"));
-	 				model.put(WebKeys.GROUPS, getProfileModule().getGroups(p));
-	 				model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-	 				return new ModelAndView(WebKeys.VIEW_PRESENCE_AJAX, model);
-	 			}
-			} else {
-	 			Set ids = new HashSet();		
-	 			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
-	 			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
-	 			//This is the portlet view; get the configured list of principals to show
-	 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
-	 			//if we list groups, then we have issues when a user appears in multiple groups??
-	 			//how do we update the correct divs??
-	 			//so, explode the groups and just show members
-	 			//TODO: either deal with groups correctly or remove
-	  			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
-	  			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-	  			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-	  			if ((binderId != null) && (entryId != null)) {
-	  				model.put(WebKeys.URL_BINDER_ID, binderId);
-	  				model.put(WebKeys.URL_ENTRY_ID, entryId);
-	  			}
-	 			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);
-	 		}
-
-			
+		} else if ("ss_presence".equals(displayType)) {
+ 			Set ids = new HashSet();		
+ 			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			//This is the portlet view; get the configured list of principals to show
+ 			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+ 			//if we list groups, then we have issues when a user appears in multiple groups??
+ 			//how do we update the correct divs??
+ 			//so, explode the groups and just show members
+ 			//TODO: either deal with groups correctly or remove
+  			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+  			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+  			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+  			if ((binderId != null) && (entryId != null)) {
+  				model.put(WebKeys.URL_BINDER_ID, binderId);
+  				model.put(WebKeys.URL_ENTRY_ID, entryId);
+  			}
+ 			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);		
 		}
 		return null;
 	}
