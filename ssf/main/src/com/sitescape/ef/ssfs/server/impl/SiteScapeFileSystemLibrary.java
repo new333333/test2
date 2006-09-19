@@ -397,7 +397,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
 			if(!isFileFolder(getLeafBinder(sourceMap)))
-				throw new TypeMismatchException("Can not copy binder that is not file folder"); //$$$
+				throw new TypeMismatchException("Can not copy binder that is not file folder");
 		}
 		
 		Map targetMap = new HashMap();
@@ -429,7 +429,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// If the source is a file folder entry, the target's parent binder
 				// must be a file folder.
 				if(!isFileFolder(targetParentBinder))
-					throw new TypeMismatchException("Can not copy file entry into binder that is not file folder"); //$$$
+					throw new TypeMismatchException("Can not copy file entry into binder that is not file folder");
 				
 				copyFileFolderEntry(getFileFolderEntry(sourceMap), 
 						(Folder) targetParentBinder, getLastElemName(targetMap));
@@ -481,7 +481,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// Because we only allow "rename" (no change to parent) but not "move"
 			// (parent change), we do not allow this operation unless both the 
 			// source and the target share the same parent. 
-			throw new SiteScapeFileSystemException("Cannot move: It is not allowed", true); // $$$
+			throw new SiteScapeFileSystemException("Cannot move: It is not allowed", true);
 		}
 		
 		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
@@ -505,23 +505,23 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	 * (that is, it is assumed that toParentBinder does not contain a child 
 	 * of any type whose name is equal to the name of the newly created folder).
 	 * 
-	 * @param fromFolder source file folder
+	 * @param fromFileFolder source file folder
 	 * @param toParentBinder target binder in which to create a new file folder.
 	 * This binder can be of any type.
 	 * @param toFolderTitle the name of the newly created file folder
 	 * @throws NoAccessException
 	 */
-	private void copyFileFolder(Folder fromFolder, Binder toParentBinder, 
+	private void copyFileFolder(Folder fromFileFolder, Binder toParentBinder, 
 			String toFolderTitle, boolean recursive) throws NoAccessException {
 		Long toFolderId = createFileFolder(toParentBinder, toFolderTitle);
 		
 		Folder toFolder = getFolderModule().getFolder(toFolderId);
 		
 		// Copy sub-entries
-		Set<String> subEntryNames = getChildFileFolderEntryNames(fromFolder);
+		Set<String> subEntryNames = getChildFileFolderEntryNames(fromFileFolder);
 		FolderEntry subEntry;
 		for(String subEntryName : subEntryNames) {
-			subEntry = getFolderModule().getFileFolderEntryByTitle(fromFolder, subEntryName);
+			subEntry = getFolderModule().getFileFolderEntryByTitle(fromFileFolder, subEntryName);
 			if(subEntry != null) {
 				try {
 					copyFileFolderEntry(subEntry, toFolder, subEntryName);
@@ -530,7 +530,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 					// For whatever reason, we failed to copy the particular
 					// sub-entry. Log the error and continue processing with
 					// other sub-entries. 
-					logger.warn("Error while copying file folder entry [" + fromFolder.getPathName() + "/" + subEntryName + "]", e);
+					logger.warn("Error while copying file folder entry [" + fromFileFolder.getPathName() + "/" + subEntryName + "]", e);
 					continue;
 				}
 			}
@@ -541,7 +541,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// and the time the particular child entry object itself was requested.
 				// Another possibility is that the search index and the database are
 				// out of synch of each other.
-				logger.warn("Can not find file folder entry [" + fromFolder.getPathName() + "/" + subEntryName + "]");
+				logger.warn("Can not find file folder entry [" + fromFileFolder.getPathName() + "/" + subEntryName + "]");
 				continue;
 			}
 		}
@@ -550,7 +550,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			return;
 		
 		// Copy sub-folders
-		Set<Folder> subFolders = getChildFileFolders(fromFolder);
+		Set<Folder> subFolders = getChildFileFolders(fromFileFolder);
 		for(Folder subFolder : subFolders) {
 			try {
 				copyFileFolder(subFolder, toFolder, subFolder.getTitle(), recursive);
@@ -566,52 +566,52 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	/**
-	 * Copy a folder to another existing folder. It means that the children
-	 * of fromFolder are copied into toFolder. 
+	 * Copy a file folder to another existing file folder. It means that the 
+	 * children of fromFileFolder are copied into toFileFolder. 
 	 * 
-	 * @param fromFolder
-	 * @param toFolder
+	 * @param fromFileFolder
+	 * @param toFileFolder
 	 * @param recursive
 	 * @throws NoAccessException
 	 */
-	private void copyFileFolder(Folder fromFolder, Folder toFolder, 
+	private void copyFileFolder(Folder fromFileFolder, Folder toFileFolder, 
 			boolean recursive) throws NoAccessException {
-		Set<String> toSubFolderNames = getChildFileFolderNames(toFolder);
+		Set<String> toSubFolderNames = getChildFolderNames(toFileFolder);
 		
-		Set<String> toSubEntryNames = getChildFileFolderEntryNames(toFolder);
+		Set<String> toSubEntryNames = getChildFileFolderEntryNames(toFileFolder);
 		
 		// Copy sub-entries
-		Set<String> fromSubEntryNames = getChildFileFolderEntryNames(fromFolder);
+		Set<String> fromSubEntryNames = getChildFileFolderEntryNames(fromFileFolder);
 		FolderEntry fromSubEntry;
 		for(String fromSubEntryName : fromSubEntryNames) {
-			fromSubEntry = getFolderModule().getFileFolderEntryByTitle(fromFolder, fromSubEntryName);
+			fromSubEntry = getFolderModule().getFileFolderEntryByTitle(fromFileFolder, fromSubEntryName);
 			if(fromSubEntry != null) {
 				try {
 					if(toSubFolderNames.contains(fromSubEntryName)) {
 						// The toFolder contains a sub-folder whose name is equal
 						// to the name of this sub-entry of fromFolder. When both
 						// source and target exist, they must be of the same type.
-						logger.warn("Can not copy file folder entry [" + fromFolder.getPathName() + "/" + 
+						logger.warn("Can not copy file folder entry [" + fromFileFolder.getPathName() + "/" + 
 								fromSubEntryName + "] because the target exists and it is file folder type");
 						continue;
 					}
 					else if(toSubEntryNames.contains(fromSubEntryName)) {
 						// The toFolder contains a sub-entry whose name is equal
 						// to the name of this sub-entry of fromFolder.
-						FolderEntry toSubEntry = getFolderModule().getFileFolderEntryByTitle(toFolder, fromSubEntryName);
+						FolderEntry toSubEntry = getFolderModule().getFileFolderEntryByTitle(toFileFolder, fromSubEntryName);
 						copyFileFolderEntry(fromSubEntry, toSubEntry);
 					}
 					else {
 						// The toFolder contains neither a sub-folder nor a sub-entry that
 						// matches the name of this sub-entry of fromFolder. 
-						copyFileFolderEntry(fromSubEntry, toFolder, fromSubEntryName);
+						copyFileFolderEntry(fromSubEntry, toFileFolder, fromSubEntryName);
 					}
 				}
 				catch(Exception e) {
 					// For whatever reason, we failed to copy the particular
 					// sub-entry. Log the error and continue processing with
 					// other sub-entries. 
-					logger.warn("Error while copying file folder entry [" + fromFolder.getPathName() + "/" + fromSubEntryName + "]", e);
+					logger.warn("Error while copying file folder entry [" + fromFileFolder.getPathName() + "/" + fromSubEntryName + "]", e);
 					continue;
 				}
 			}
@@ -622,7 +622,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// and the time the particular child entry object itself was requested.
 				// Another possibility is that the search index and the database are
 				// out of synch of each other.
-				logger.warn("Can not find file folder entry [" + fromFolder.getPathName() + "/" + fromSubEntryName + "]");
+				logger.warn("Can not find file folder entry [" + fromFileFolder.getPathName() + "/" + fromSubEntryName + "]");
 				continue;
 			}
 		}
@@ -632,14 +632,14 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		
 		// Copy sub-folders
 		
-		Set<Folder> fromSubFolders = getChildFileFolders(fromFolder);
+		Set<Folder> fromSubFolders = getChildFileFolders(fromFileFolder);
 		for(Folder fromSubFolder : fromSubFolders) {
 			try {
 				if(toSubFolderNames.contains(fromSubFolder.getTitle())) {
 					// The toFolder contains a sub-folder whose name is equal
 					// to the name of this sub-folder of fromFolder.
 					Folder toSubFolder = (Folder) getBinderModule().getBinderByPathName
-					(toFolder.getPathName() + "/" + fromSubFolder.getTitle());
+					(toFileFolder.getPathName() + "/" + fromSubFolder.getTitle());
 					copyFileFolder(fromSubFolder, toSubFolder, recursive);
 				}
 				else if(toSubEntryNames.contains(fromSubFolder.getTitle())) {
@@ -653,7 +653,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				else {
 					// The toFolder contains neither a sub-folder nor a sub-entry
 					// that matches the name of this sub-folder of fromFolder. 
-					copyFileFolder(fromSubFolder, toFolder, fromSubFolder.getTitle(), recursive);
+					copyFileFolder(fromSubFolder, toFileFolder, fromSubFolder.getTitle(), recursive);
 				}
 			}
 			catch(Exception e) {
@@ -1057,7 +1057,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// folders and entries, but no workspaces. However, we do not
 			// include entries unless the folder is a file folder. A file
 			// folder can only contain file folder entries. 
-			titles = getChildFileFolderNames((Folder)binder);
+			titles = getChildFolderNames((Folder)binder);
 			
 			if(isFileFolder(binder)) {
 				Set<String> titles2 = getChildFileFolderEntryNames((Folder)binder);
@@ -1068,8 +1068,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		return titles.toArray(new String[titles.size()]);
 	}
 
-	private Set<String> getChildFileFolderNames(Folder fileFolder) {
-		return getFolderModule().getSubfoldersTitles(fileFolder);
+	private Set<String> getChildFolderNames(Folder folder) {
+		return getFolderModule().getSubfoldersTitles(folder);
 	}
 	
 	private Set<Folder> getChildFileFolders(Folder fileFolder) {

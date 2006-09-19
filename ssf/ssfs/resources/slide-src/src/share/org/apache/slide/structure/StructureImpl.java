@@ -211,6 +211,14 @@ public class StructureImpl implements Structure {
 		// object).
 		if (result == null) {
 
+			/* 9/19/06 JK - The following section of code attempts to check the
+			 * existence of each intermediary directory node at each level in the
+			 * path. In the context of SSFS implementation and with the limited use
+			 * cases we know about, this code doesn't appear to be necessary. 
+			 * But the primary reason for commenting out this section is because its
+			 * negative impact on the performance is more than trivial.
+			 *
+			
 			String resolvedUri = uri.toString();
 
 			// 1 - Tokemization of the Uri
@@ -278,6 +286,10 @@ public class StructureImpl implements Structure {
 			// 10 - We return the last object which has been found
 
 			result = courObject;
+			*/
+			
+			// 9/19/06 JK - Simply throw an exception.
+			throw new ObjectNotFoundException(uri);
 		}
 
 		return result;

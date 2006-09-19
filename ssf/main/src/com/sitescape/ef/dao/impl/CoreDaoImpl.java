@@ -265,6 +265,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public List loadObjects(ObjectControls objs, FilterControls filter) {
 		return loadObjects(objs, filter, false);
 	}
+	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter) {
+		return loadObjects(objs, filter, true);
+	}
 	public List loadObjects(Class className, FilterControls filter) {
 		return loadObjects(new ObjectControls(className), filter);
 	}
@@ -472,7 +475,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		order.addColumn("name");
 		FilterControls filter = new FilterControls(new String[]{"zoneName", "type"}, new Object[]{zoneName, Integer.valueOf(type)});
 		filter.setOrderBy(order);
-    	return loadObjects(new ObjectControls(Definition.class), filter);
+    	return loadObjectsCacheable(new ObjectControls(Definition.class), filter);
 	}
 	
 	public BinderConfig loadConfiguration(String defId, String zoneName) {
