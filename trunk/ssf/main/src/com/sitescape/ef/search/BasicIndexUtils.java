@@ -27,6 +27,7 @@ public class BasicIndexUtils {
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
+    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
     public static final String ACL_TAG_FIELD = "_aclTagField";
     
@@ -35,6 +36,7 @@ public class BasicIndexUtils {
     public static final String READ_ACL_ALL = "all";
     public static final String TAG = "TAG";
     public static final String TAG_ACL_PRE = "ACL";
+    public static final String GROUP_ANY = "any";
     
     
     // The following fields represent valid values for DOC_TYPE_FIELD.
