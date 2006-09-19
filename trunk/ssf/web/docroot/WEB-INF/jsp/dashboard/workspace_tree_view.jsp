@@ -18,7 +18,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.start[0] == 'this'}">
 <script type="text/javascript">
-function wsTreeComponent_showId(id, obj, action) {
+function wsTreeComponent${ssDashboardId}_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<ssf:url action="ssActionPlaceHolder" binderId="ssBinderIdPlaceHolder"/>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
@@ -42,7 +42,7 @@ function wsTreeComponent_showId(id, obj, action) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssDashboardId].workspaceTree && !empty ssDefinitionEntry.id}">
-<ssf:tree treeName="wsTreeComponent" treeDocument="${ssDashboard.beans[ssDashboardId].workspaceTree}" 
+<ssf:tree treeName="wsTreeComponent${ssDashboardId}" treeDocument="${ssDashboard.beans[ssDashboardId].workspaceTree}" 
   topId="${ssDashboard.beans[ssDashboardId].topId}" highlightNode="${ssDefinitionEntry.id}" 
   rootOpen="${rootOpen}" />
 </c:if>
