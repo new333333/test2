@@ -113,14 +113,18 @@
 	     when slide.war has changed, which should be very rare. In all other
 	     cases, simply use "war" which is significantly more efficient. -->
 	<target name="build-war-from-scratch">
+		<antcall target="unzip-slide-src"/>
 		<antcall target="build-custom-slide-war"/>
 		<antcall target="war"/>
 	</target>
 
+	<target name="unzip-slide-src" depends="delete-temp-slide">
+		<unzip src="download/${slide.src.zip.file.name}" dest="${temp.slide.dir}" />
+	</target>
+	
 	<!-- Build custom slide.war file from its source pool in conjunction with
 	     the modifications we made to some of the source code. -->
-	<target name="build-custom-slide-war" depends="delete-temp-slide">
-		<unzip src="download/${slide.src.zip.file.name}" dest="${temp.slide.dir}" />
+	<target name="build-custom-slide-war">
 		<copy todir="${temp.slide.dir}" overwrite="true">
 			<fileset dir="resources/slide-src" />
 		</copy>

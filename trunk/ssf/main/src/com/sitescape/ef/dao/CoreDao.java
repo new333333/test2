@@ -53,6 +53,7 @@ public interface CoreDao {
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
+	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
 	public List loadObjectsCacheable(Class className, FilterControls filter);
     public List loadObjects(Collection ids, Class className, String zoneName);
