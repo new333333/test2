@@ -279,7 +279,10 @@ public class FilterHelper {
     	    			
     	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
     	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
-    	    			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+    	    			if (value.contains("*"))
+    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
+    	    			else
+    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
     	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	    	    	child.setText(value);
     				}
