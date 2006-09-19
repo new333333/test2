@@ -16,9 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.dom4j.Document" %>
-<%
-String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
-%>
+<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
   <div class="ss_portlet_style ss_portlet">
 	<table border="0" width="100%">
 	<tr>
@@ -35,7 +33,7 @@ String adminTreeName = renderResponse.getNamespace() + "_adminDomTree";
 			<tr>
 				<td>
 					<div>
-						<ssf:tree treeName="<%= adminTreeName %>" treeDocument="${ssAdminDomTree}" rootOpen="false" />
+						<ssf:tree treeName="${adminTreeName}" treeDocument="${ssAdminDomTree}" rootOpen="true" />
 					</div>
 				</td>
 			</tr>

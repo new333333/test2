@@ -209,7 +209,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
             if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
             	continue;
             next = current.addElement(DomTreeBuilder.NODE_CHILD);
-           	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next);
+           	if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
+           		current.remove(next);
          }
     	ws.clear();
     	ws.addAll(top.getWorkspaces());

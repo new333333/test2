@@ -1,8 +1,7 @@
 package com.sitescape.ef.rss;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
@@ -23,6 +21,7 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.util.Constants;
+import com.sitescape.ef.util.XmlFileUtil;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 public class RssGenerator extends CommonDependencyInjection {
@@ -91,10 +90,8 @@ public class RssGenerator extends CommonDependencyInjection {
 	{
 		String rssFileName = getRssFileName(binder);
 		try {
-	    	FileWriter out = new FileWriter(rssFileName);
-	    	doc.write( out );
-	    	out.close();
-	    } catch (IOException ioe) {logger.error("Can't write RSS file for binder:" + binder.getName() + "error is: " + ioe.toString());}
+			XmlFileUtil.writeFile(doc, rssFileName);
+		} catch (Exception ioe) {logger.error("Can't write RSS file for binder:" + binder.getName() + "error is: " + ioe.toString());}
 		
 	}
 	
@@ -172,10 +169,11 @@ public class RssGenerator extends CommonDependencyInjection {
 
     public Document parseFile(String rssFileName) {
     	Document document = null;
-        SAXReader reader = new SAXReader();
         try {
-        	document = reader.read(rssFileName);
-        } catch (DocumentException de) {logger.error("RSS Error: Can't read RSS file" + rssFileName);}
+        	document = XmlFileUtil.readFile(rssFileName);
+        } catch (DocumentException de) {logger.error("RSS Error: Can't read RSS file" + rssFileName);
+        } catch (FileNotFoundException fn) {logger.error("RSS Error: File not found" + rssFileName);
+        } catch (Exception e) {}; //already reported}
         return document;
     }
     

@@ -15,13 +15,14 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:set var="userIdList" value=""/>
-<jsp:useBean id="userIdList" type="java.lang.String" />
 <%
 renderRequest.setAttribute("ssNamespace", renderResponse.getNamespace() + "_" +
 	renderRequest.getParameter("ssDashboardId"));
 %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<c:set var="userIdList" value=""/>
+<jsp:useBean id="userIdList" type="java.lang.String" />
+
 <script language="JavaScript">
 var ${ssNamespace}_presenceTimer = null;
 function ${ssNamespace}_presenceTimout() {
@@ -49,6 +50,7 @@ type="time" /></span>
 </tr>
 </table>
 </div>
+
 <c:if test="${!empty ssDashboard}">
 	<c:set var="ssUsers" value="${ssDashboard.beans[ssDashboardId].ssUsers}"/>
 	<c:set var="ssGroups" value="${ssDashboard.beans[ssDashboardId].ssGroups}"/>
@@ -65,7 +67,7 @@ type="time" /></span>
 					<jsp:useBean id="u1" type="com.sitescape.ef.domain.User" />
 					  <tr>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u1.id}"/>"
-					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssDashboardId}"/> </span></td>
+					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssNamespace}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><a href="<ssf:url action="view_profile_entry" binderId="${u1.parentBinder.id}"
 							entryId="${u1.id}" operation="buddy"/>"><c:out value="${u1.title}"/></a>
@@ -87,7 +89,7 @@ type="time" /></span>
 					  <tr>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u2.id}"/>"
 					  ><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"
-					    componentId="${ssDashboardId}"/> </span></td>
+					    componentId="${ssNamespace}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td><a href="<ssf:url action="view_profile_entry" binderId="${u2.parentBinder.id}" 
 					  		entryId="${u2.id}" operation="buddy"/>"><c:out value="${u2.title}"/></a>
@@ -117,7 +119,7 @@ function ${ssNamespace}_getPresence (timeout) {
 	clearTimeout(${ssNamespace}_presenceTimer);
 	var url = "<ssf:url 
     	adapter="true" 
-    	portletName="ss_presence" 
+    	portletName="ss_forum" 
     	action="view_presence" 
     	actionUrl="false" >
     	</ssf:url>"

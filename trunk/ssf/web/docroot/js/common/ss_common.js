@@ -2932,12 +2932,12 @@ function ss_postSavePenletLayoutRequest(obj) {
 }
 
 //Presence support
-function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssDashboardId, ssPresenceZonBridge) {
+function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
     var obj
     var m = ''
-    var imgid = "ppgpres"+ssDashboardId
+    var imgid = "ppgpres"+ssNamespace
     var ostatus = ss_ostatus_none;
-    obj = self.document.getElementById('ss_presencePopUp'+ssDashboardId)
+    obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     ss_moveObjectToBody(obj)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
@@ -2948,14 +2948,14 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
         if (status & 1) {
             if (status & 16) {
                 ostatus = ss_ostatus_away;
-                imgid = "ppgpresaway"+ssDashboardId
+                imgid = "ppgpresaway"+ssNamespace
             } else {
                 ostatus = ss_ostatus_online;
-                imgid = "ppgpreson"+ssDashboardId
+                imgid = "ppgpreson"+ssNamespace
             }
         } else {
             ostatus = ss_ostatus_offline;
-            imgid = "ppgpresoff"+ssDashboardId
+            imgid = "ppgpresoff"+ssNamespace
         }
     }
     m += '<td class="ss_bglightgray" valign=top><img src="" alt="" id=' +imgid +'></td>';
@@ -2968,7 +2968,7 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
     if (screenName != '') {
         if (current == '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg'+ssDashboardId+'"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimsg'+ssNamespace+'"></td>';
             if (status == 0) {
                 m += '<td class="ss_fineprint ss_gray">'+ss_ostatus_sendIm+'</td>';
             } else {
@@ -2977,26 +2977,26 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
             m += '</tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg'+ssDashboardId+'"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgimtg'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '">'+ss_ostatus_startIm+'</a></td></tr>';
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched'+ssDashboardId+'"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgsched'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');">'+ss_ostatus_schedIm+'</a></td></tr>';
         m += '<tr>';
         if (ssPresenceZonBridge == 'enabled') {
-        	m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone'+ssDashboardId+'"></td>';
+        	m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgphone'+ssNamespace+'"></td>';
         	m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');">'+ss_ostatus_call+'</a></td></tr>';
         }
 	}
 	if (userId != '' && current == '') {
         if (email != '') {
             m += '<tr>';
-            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail'+ssDashboardId+'"></td>';
+            m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgmail'+ssNamespace+'"></td>';
             bodyText = escape(window.location.href);
             m += '<td><a class="ss_graymenu" href="mailto:' + email + '?body=' + bodyText +'">'+ss_ostatus_sendMail+' (' + email + ')...</a></td></tr>';
         }
         m += '<tr>';
-        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard'+ssDashboardId+'"></td>';
+        m += '<td class="ss_bglightgray"><img alt="" src="" id="ppgvcard'+ssNamespace+'"></td>';
         m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';
     }
     m += '</table>'
@@ -3006,57 +3006,57 @@ function ss_popupPresenceMenu_common(x, userId, userTitle, status, screenName, s
 
     obj.innerHTML = m;
 
-    ss_activateMenuLayer('ss_presencePopUp'+ssDashboardId);
-    if (self.document.images["ppgpres"+ssDashboardId]) {
-        self.document.images["ppgpres"+ssDashboardId].src = ss_presencePopupGraphics["pres"].src;
+    ss_activateMenuLayer('ss_presencePopUp'+ssNamespace);
+    if (self.document.images["ppgpres"+ssNamespace]) {
+        self.document.images["ppgpres"+ssNamespace].src = ss_presencePopupGraphics["pres"].src;
     }
-    if (self.document.images["ppgpreson"+ssDashboardId]) {
-        self.document.images["ppgpreson"+ssDashboardId].src = ss_presencePopupGraphics["preson"].src;
+    if (self.document.images["ppgpreson"+ssNamespace]) {
+        self.document.images["ppgpreson"+ssNamespace].src = ss_presencePopupGraphics["preson"].src;
     }
-    if (self.document.images["ppgpresoff"+ssDashboardId]) {
-        self.document.images["ppgpresoff"+ssDashboardId].src = ss_presencePopupGraphics["presoff"].src;
+    if (self.document.images["ppgpresoff"+ssNamespace]) {
+        self.document.images["ppgpresoff"+ssNamespace].src = ss_presencePopupGraphics["presoff"].src;
     }
-    if (self.document.images["ppgpresaway"+ssDashboardId]) {
-        self.document.images["ppgpresaway"+ssDashboardId].src = ss_presencePopupGraphics["presaway"].src;
+    if (self.document.images["ppgpresaway"+ssNamespace]) {
+        self.document.images["ppgpresaway"+ssNamespace].src = ss_presencePopupGraphics["presaway"].src;
     }
-    if (self.document.images["ppgimsg"+ssDashboardId]) {
-        self.document.images["ppgimsg"+ssDashboardId].src = ss_presencePopupGraphics["imsg"].src;
+    if (self.document.images["ppgimsg"+ssNamespace]) {
+        self.document.images["ppgimsg"+ssNamespace].src = ss_presencePopupGraphics["imsg"].src;
     }
-    if (self.document.images["ppgimtg"+ssDashboardId]) {
-        self.document.images["ppgimtg"+ssDashboardId].src = ss_presencePopupGraphics["imtg"].src;
+    if (self.document.images["ppgimtg"+ssNamespace]) {
+        self.document.images["ppgimtg"+ssNamespace].src = ss_presencePopupGraphics["imtg"].src;
     }
-    if (self.document.images["ppgmail"+ssDashboardId]) {
-        self.document.images["ppgmail"+ssDashboardId].src = ss_presencePopupGraphics["mail"].src;
+    if (self.document.images["ppgmail"+ssNamespace]) {
+        self.document.images["ppgmail"+ssNamespace].src = ss_presencePopupGraphics["mail"].src;
     }
-    if (self.document.images["ppgvcard"+ssDashboardId]) {
-        self.document.images["ppgvcard"+ssDashboardId].src = ss_presencePopupGraphics["vcard"].src;
+    if (self.document.images["ppgvcard"+ssNamespace]) {
+        self.document.images["ppgvcard"+ssNamespace].src = ss_presencePopupGraphics["vcard"].src;
     }
-    if (self.document.images["ppgphone"+ssDashboardId]) {
-        self.document.images["ppgphone"+ssDashboardId].src = ss_presencePopupGraphics["phone"].src;
+    if (self.document.images["ppgphone"+ssNamespace]) {
+        self.document.images["ppgphone"+ssNamespace].src = ss_presencePopupGraphics["phone"].src;
     }
-    if (self.document.images["ppgsched"+ssDashboardId]) {
-        self.document.images["ppgsched"+ssDashboardId].src = ss_presencePopupGraphics["sched"].src;
+    if (self.document.images["ppgsched"+ssNamespace]) {
+        self.document.images["ppgsched"+ssNamespace].src = ss_presencePopupGraphics["sched"].src;
     }
     // move the div up if it scrolls off the bottom
     var mousePosX = parseInt(ss_getClickPositionX());
     var mousePosY = parseInt(ss_getClickPositionY());
     if (mousePosY != 0) {
-        var divHt = parseInt(ss_getDivHeight('ss_presencePopUp'+ssDashboardId));
+        var divHt = parseInt(ss_getDivHeight('ss_presencePopUp'+ssNamespace));
         var windowHt = parseInt(ss_getWindowHeight());
         var scrollHt = self.document.body.scrollTop;
         var diff = scrollHt + windowHt - mousePosY;
         if (divHt > 0) {
             if (diff <= divHt) {
-               ss_positionDiv('ss_presencePopUp'+ssDashboardId, mousePosX, mousePosY - divHt);
+               ss_positionDiv('ss_presencePopUp'+ssNamespace, mousePosX, mousePosY - divHt);
             }
         }
         //See if we need to make the portlet longer to hold the pop-up menu
-        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssDashboardId);
+        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssNamespace);
         if (sizerObj != null) {
-        	var menuTop = ss_getDivTop('ss_presencePopUp'+ssDashboardId);
-        	var menuHeight = ss_getDivHeight('ss_presencePopUp'+ssDashboardId);
-        	var sizerTop = ss_getDivTop('ss_presence_sizer_div'+ssDashboardId);
-        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div'+ssDashboardId);
+        	var menuTop = ss_getDivTop('ss_presencePopUp'+ssNamespace);
+        	var menuHeight = ss_getDivHeight('ss_presencePopUp'+ssNamespace);
+        	var sizerTop = ss_getDivTop('ss_presence_sizer_div'+ssNamespace);
+        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div'+ssNamespace);
         	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
         	if (deltaSizerHeight > 0) {
         		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));

@@ -8,7 +8,7 @@
 
 <c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
- onClick="ss_popupPresenceMenu${ss_presence_component_id}(this, '', '', '-1', '', '', '', '', '');return false;"
+ onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
@@ -43,7 +43,7 @@
 <c:set var="current" value="current"/>
 </c:if>
 <a href="javascript: ;"
- onClick="ss_popupPresenceMenu${ss_presence_component_id}(this, 
+ onClick="ss_popupPresenceMenu(this, 
     '${ss_presence_user.id}', 
     '<%= presenceUserTitle %>', 
     '${ss_presence_userStatus}', 
@@ -51,7 +51,7 @@
     '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
-    '${current}');return false;"
+    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>

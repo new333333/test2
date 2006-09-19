@@ -18,39 +18,33 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <table class="ss_style" width="100%"><tr><td>
-<c:if test="${!empty ssFolderList}">
-<table class="ss_style" cellspacing="0" cellpadding="0">
-<tr><th align="left"><ssf:nlt tag="portlet.forum.selectd.forums" text="Currently selected forums:"/></th></tr>
-<tr><td>&nbsp;</td></tr>
-<c:forEach var="folder" items="${ssFolderList}">
-<tr><td><c:out value="${folder.title}" /></td></tr>
-</c:forEach>
-</table>
-<br>
+<c:if test="${!empty ssBinder}">
+<b><ssf:nlt tag="portlet.workspace.selected.workspace"/></b><br/><br/>
+<c:out value="${ssBinder.title}" />
+<br/>
 </c:if>
-
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-<table>
-<tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
-</td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
-</td></tr>
-</table>
 
-<br>
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums" text="Select the forums to be shown:"/></span>
+<span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
+<input class="ss_text" name="title" size="20" value="${portletTitle}"/>
+<br/><br/>
+<span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>
 <br>
 <script type="text/javascript">
 function <portlet:namespace/>_wsTree_showId(forum, obj) {
-	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=false
-	} else {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+	var r = self.document.<portlet:namespace />fm.topWorkspace;
+    for (var b = 0; b < r.length; b++) {
+      if (r[b].value == forum) 	r[b].checked=true;
 	}
-	return false
+	return false;
 }
 </script>
+<c:set var="singleSelect" value=""/>
+<c:if test="${!empty ssBinder}">
+	<c:set var="singleSelect" value="${ssBinder.id}"/>
+</c:if>
 <ssf:tree treeName="${renderResponse.namespace}_wsTree" treeDocument="${ssWsDomTree}"  
-  rootOpen="true" multiSelect="${ssBinderIdList}" multiSelectPrefix="id_" />
+  rootOpen="true" singleSelect="${singleSelect}" singleSelectName="topWorkspace" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

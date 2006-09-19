@@ -266,8 +266,8 @@ public class EntityIndexUtils {
     }
 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
-	    
-    	List pubTags = new ArrayList<Tag>();
+	    return;
+  /*  	List pubTags = new ArrayList<Tag>();
     	List privTags = new ArrayList<Tag>();
     	String indexableTags = "";
     	String aclTags = "";
@@ -303,7 +303,7 @@ public class EntityIndexUtils {
     	
     	tagField = new Field(BasicIndexUtils.ACL_TAG_FIELD, aclTags, Field.Store.YES, Field.Index.TOKENIZED);
     	doc.add(tagField);
-    }
+*/    }
 	
     public static void addFileAttachmentName(Document doc,String filename) {
       	Field fileNameField = new Field(FILENAME_FIELD, filename, Field.Store.YES, Field.Index.UN_TOKENIZED);

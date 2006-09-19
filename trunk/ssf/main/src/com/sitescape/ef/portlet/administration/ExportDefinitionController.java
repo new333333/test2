@@ -1,13 +1,12 @@
 package com.sitescape.ef.portlet.administration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
-import java.io.FileWriter;
-import java.io.File;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -17,9 +16,6 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.io.OutputFormat;
-
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -28,6 +24,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.XmlFileUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -50,10 +47,9 @@ public class ExportDefinitionController extends  SAbstractController {
 						Definition def =null;
 						try {
 							def = getDefinitionModule().getDefinition(defId);
-				    		FileWriter fOut = new FileWriter(dirPath + File.separator +  def.getName() + ".xml");
-				    		XMLWriter xOut = new XMLWriter(fOut, OutputFormat.createPrettyPrint());
-				    		xOut.write(def.getDefinition());
-				    		xOut.close();
+							// explicity set encoding so their is not mistake.
+							//cannot guarentee default will be set to UTF-8
+							XmlFileUtil.writeFile(def.getDefinition(), dirPath + File.separator +  def.getName() + ".xml");
 						} catch (Exception ex) {
 							errors.add(ex.getLocalizedMessage());
 						}
