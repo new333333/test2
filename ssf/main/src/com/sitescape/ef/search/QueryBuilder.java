@@ -21,6 +21,7 @@ import org.apache.lucene.search.SortField;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 
 import java.net.URL;
 
@@ -44,6 +45,8 @@ public class QueryBuilder {
 	public static final String RANGE_START = "START";
 	public static final String RANGE_FINISH = "FINISH";
 	public static final String USERACL_ELEMENT = "USERACL";
+	public static final String GROUP_VISIBILITY_ELEMENT = "GROUPVIS";
+	public static final String GROUP_VISIBILITY_ATTRIBUTE = "visibility";
 	public static final String PERSONALTAGS_ELEMENT = "PERSONALTAGS";
 	public static final String FIELD_ELEMENT = "FIELD";
 	public static final String FIELD_TERMS_ELEMENT = "TERMS";
@@ -157,6 +160,20 @@ public class QueryBuilder {
 				qString += " " + BasicIndexUtils.READ_DEF_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL + " ";
 				for(Iterator i = principalIds.iterator(); i.hasNext();) {
 					qString += " OR " + BasicIndexUtils.READ_ACL_FIELD + ":" + i.next();
+				}
+				qString += ")";
+			}
+			else if (operator.equals(GROUP_VISIBILITY_ELEMENT)) {
+				//Always check for groupReadAny
+				User user = RequestContextHolder.getRequestContext().getUser();
+				qString += "(";
+				String viz = element.attributeValue(GROUP_VISIBILITY_ATTRIBUTE);
+				qString += " " + BasicIndexUtils.GROUP_VISIBILITY_FIELD + ":" + BasicIndexUtils.GROUP_ANY + " ";
+				if (viz.equals(EntityIndexUtils.GROUP_SEE_COMMUNITY)) {
+					List groups = user.getMemberOf();
+					for (int gcount = 0; gcount < groups.size(); gcount++) {
+						qString += " OR " + BasicIndexUtils.GROUP_VISIBILITY_FIELD + ":" + groups.get(gcount);
+					}
 				}
 				qString += ")";
 			}
