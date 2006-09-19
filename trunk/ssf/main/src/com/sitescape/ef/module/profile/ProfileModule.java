@@ -30,6 +30,10 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public void checkAddEntryAllowed(ProfileBinder binder) throws AccessControlException;
 
+   public boolean checkUserSeeCommunity();
+
+   public boolean checkUserSeeAll();
+
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 

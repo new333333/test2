@@ -190,7 +190,17 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     public void checkAddEntryAllowed(ProfileBinder binder) {
         getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);        
     }
-     
+
+    public boolean checkUserSeeCommunity() {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_COMMUNITY);        
+    }
+
+    public boolean checkUserSeeAll() {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
+    }
+
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {
     	modifyEntry(binderId, id, inputData, new HashMap(), null);
