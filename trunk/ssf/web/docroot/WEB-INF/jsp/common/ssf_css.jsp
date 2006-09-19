@@ -7,7 +7,7 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
-<c:if test="${!empty ss_skipCssStyles && ss_skipCssStyles == true}">
+<c:if test="${!empty ss_loadCssStylesInline && ss_loadCssStylesInline == true}">
 <%@ page contentType="text/css" %>
 </c:if>
 
