@@ -35,7 +35,7 @@ JTDS 0.9.1
 JUnit 3.8.1
 Liferay portal-ejb.jar 3.6.1 (modified portal.properties)
 Log4j 1.2.8
-Lucene 1.4.2
+Lucene 1.9.1
 md5crypt.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 Portlet 1.0
