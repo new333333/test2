@@ -1247,6 +1247,22 @@ div.ss_tabs {
 	height:35px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
 }
+.ss_tabs_td_left_active {
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left;
+    width:15px;
+}
+.ss_tabs_td_right_active {
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.gif) no-repeat right;
+    width:15px;
+}
+.ss_tabs_td_left {
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif) no-repeat left;
+    width:15px;
+}
+.ss_tabs_td_right {
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.gif) no-repeat right;
+    width:15px;
+}
 .ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
 	text-decoration:underline;
 }
