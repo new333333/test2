@@ -1,6 +1,13 @@
 <% //View dashboard canvas component %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<%
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null || displayStyle.equals("")) {
+	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+}
+%>
+<c:set var="ss_displayStyle" value="<%= displayStyle %>"/>
 <c:set var="hideDashboardControls" value="false"/>
 <c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'none'}">
   <c:set var="hideDashboardControls" value="true"/>
@@ -61,6 +68,7 @@
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
+			  <c:if test="${ss_displayStyle == 'accessible'}">
 				<li><a href="#"
 				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/up.gif" 
@@ -69,6 +77,7 @@
 				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
+			  </c:if>
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
