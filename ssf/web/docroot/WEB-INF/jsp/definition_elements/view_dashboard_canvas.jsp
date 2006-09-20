@@ -39,45 +39,35 @@
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
 <!-- Start of dashboard canvas -->
-<div class="ss_decor-round-corners-top2"><div><div></div></div></div>
-<div class="ss_decor-border5">
-  <div class="ss_decor-border6">
-    <div class="ss_content_window">
-		<table cellspacing="0" cellpadding="0" style="margin-bottom:2px;">
-		<col width="20">
-		<col width="100%">
-		<col width="0*">
-		<tr>
-		  <td valign="middle" nowrap>
+  <div class="ss_util_cartouche">
+  <div class="ss_utils">
 		      <form "style="display:inline;">
-		        <c:if test="${ss_show_all_dashboard_components}"><input 
-			      type="image" 
-		      	  src="<html:imagesPath/>pics/sym_s_hide.gif"
-		          id="ss_showHideImg_all"
-		          alt="<ssf:nlt tag="button.hide"/>" 
-		          style="margin:2px;"
-			      onClick="ss_showHideAllDashboardComponents(this);return false;"
-			      ></c:if><c:if test="${!ss_show_all_dashboard_components}"><input type="image" 
-		          src="<html:imagesPath/>pics/sym_s_show.gif"
-		          id="ss_showHideImg_all"
-		          alt="<ssf:nlt tag="button.show"/>" 
-		          style="margin:2px;" 
-		          onClick="ss_showHideAllDashboardComponents(this);return false;"
-		          ></c:if></form>
-		  </td>
-		  <td align="left" valign="top" nowrap width="2%">
-		    <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
-		      <c:if test="${ssDashboard.includeBinderTitle}">
-		        <c:out value="${ssBinder.title}"/>
-		      </c:if>
-		    </span>
-		  </td>
-		  <td align="right" valign="top" nowrap>
-			<div id="ss_addDashboardContent" style="display:inline;">
+		        <c:if test="${ss_show_all_dashboard_components}">
+		          <a href="#" class="ss_util ss_short"
+		              >
+		            <img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
+		              id="ss_showHideImg_all"
+		              alt="<ssf:nlt tag="button.hide"/>" 
+		              style="margin:4px 4px 5px 4px;"
+		              onClick="ss_showHideAllDashboardComponents(this);return false;"
+			        /></a>
+			      </c:if>
+			      <c:if test="${!ss_show_all_dashboard_components}">
+			        <a href="#" class="ss_util ss_short"
+		              >
+		              <img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
+		                id="ss_showHideImg_all"
+		                alt="<ssf:nlt tag="button.show"/>" 
+		                style="margin:4px 4px 5px 4px;"
+		                onClick="ss_showHideAllDashboardComponents(this);return false;"
+		              /></a>
+		          </c:if>
+		        </form>
+	  <span class="ss_utilwrap1"><span class="ss_utilwrap2">
 			<%
 				String ss_dashboardTitle = NLT.get("dashboard.configure");
 			%>
-			<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_fineprint ss_light" 
+			<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_util ss_long" 
 			  titleId="ss_addDashboardContent" menuClass="ss_dashboard_menu" menuWidth="300px">
 				<ul class="ss_dropdownmenu" 
 				  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
@@ -114,10 +104,21 @@
 		
 				</ul>
 			</ssf:menu>
-			</div>
-		  </td>
-		</tr>
-		</table>
+	  </span></span>
+ </div>
+ </div>
+ <div class="ss_clear"></div>
+ <div>
+ <div class="ss_decor-round-corners-top2 ss_innerContentBegins" ><div><div>
+ </div></div></div>
+<div class="ss_decor-border5">
+  <div class="ss_decor-border6">
+    <div class="ss_content_window">
+		    <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
+		      <c:if test="${ssDashboard.includeBinderTitle}">
+		        <c:out value="${ssBinder.title}"/>
+		      </c:if>
+		    </span>
 
 		<div id="ss_dashboard_toolbar_${ss_toolbar_count}"
 		   style="visibility:hidden; display:none;">
@@ -145,6 +146,7 @@
   </div>
 </div>
 <div class="ss_decor-round-corners-bottom2"><div><div></div></div></div>
+</div>
 <!-- End of dashboard canvas -->
 
 </c:if>

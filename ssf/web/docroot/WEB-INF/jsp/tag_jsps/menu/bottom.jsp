@@ -28,8 +28,8 @@ String offsetTop = ParamUtil.get(request, "offsetTop", "");
 String offsetLeft = ParamUtil.get(request, "offsetLeft", "");
 
 %>
-<div id="parent_<%= menuTagDivId %><portlet:namespace/>" style="display:inline;"
-   ><a 
+<span id="parent_<%= menuTagDivId %><portlet:namespace/>" style="display:inline;"
+   ><a class="<%= titleClass %>"
 id="<%= titleId %>" href="javascript: ;" 
 	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
-><span class="<%= titleClass %>"><%= title %></span></a></div>
+><%= title %></a></span>
