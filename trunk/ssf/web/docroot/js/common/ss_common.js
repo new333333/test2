@@ -3173,3 +3173,32 @@ function ss_hideSubmenu(obj) {
 		}
 	}
 }
+
+// Tabs
+
+function ss_addTab(type, title, id) {
+}
+
+function ss_deleteTab(tabNumber) {
+}
+
+function ss_showTab(obj) {
+	var tabTdObject = obj.parentNode;
+	var tabTrObject = tabTdObject.parentNode;
+	//If already viewing the selected tab, then go to the tab's url
+	if (tabTdObject.className == "ss_tabs_td_active") return true;
+	var tabbar = document.getElementById("ss_tabbar");
+	//Switch all tabs to "inactive"
+	var tabs = ss_getElementsByClass("ss_tabs_td.*", tabbar, "td")
+	for (var i = 0; i < tabs.length; i++) {
+		tabs[i].className = tabs[i].className.replace(/_active/, "")
+	}
+	//Switch the tab to be shown to "active"
+	var tabTds = ss_getElementsByClass("ss_tabs_td.*", tabTrObject, "td")
+	for (var i = 0; i < tabTds.length; i++) {
+		var cn = tabTds[i].className.replace(/_active/, "")
+		tabTds[i].className = cn + "_active"
+	}
+	tabTdObject.className = "ss_tabs_td_active";
+	return false;
+}
