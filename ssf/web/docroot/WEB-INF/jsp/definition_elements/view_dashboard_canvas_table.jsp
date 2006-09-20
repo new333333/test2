@@ -68,7 +68,7 @@
 			  src="<html:imagesPath/>pics/1pix.gif"></div></td>
   
   
-  <td valign="top" class="ss_dashboardTable_off" style="padding-left:15px;">
+  <td valign="top" class="ss_dashboardTable_off">
 			<div id="narrow_variable">
 			  <div class="ss_dashboardProtoDropTarget"><img 
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
