@@ -15,21 +15,15 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-renderRequest.setAttribute("ssNamespace", renderResponse.getNamespace() + "_" +
-	renderRequest.getParameter("ssDashboardId"));
-%>
+<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+<c:if test="${!empty ssDashboardId}">
+<c:set var="ssNamespace" value="${renderResponse.namespace}_${ssDasboardId}"/>
+</c:if>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:set var="userIdList" value=""/>
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
-<script language="JavaScript">
-var ${ssNamespace}_presenceTimer = null;
-function ${ssNamespace}_presenceTimout() {
-	${ssNamespace}_getPresence("timeout");
-	${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300000);
-}	
-</script>
+
 <div>
 
 <div class="ss_portlet_style">
@@ -130,9 +124,16 @@ function ${ssNamespace}_getPresence (timeout) {
 	ajaxRequest.setPostRequest(ss_postRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
+	${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300000);
 }
-
+var ${ssNamespace}_presenceTimer = null;
+function ${ssNamespace}_presenceTimout() {
+alert("in timeout1");
+	${ssNamespace}_getPresence("timeout");
+}	
+${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300000);
 </script>
+
 <form class="ss_portlet_style ss_form" id="${ssNamespace}_presenceForm" 
   style="display:none;">
 <input type="hidden" name="userList" value="<%= userIdList %>">
@@ -140,6 +141,4 @@ function ${ssNamespace}_getPresence (timeout) {
 <input type="hidden" name="ssDashboardId" value="${ssDashboardId}">
 </form>
 
-<script type="text/javascript">
-${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout", 300000);
-</script>
+
