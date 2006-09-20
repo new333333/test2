@@ -128,7 +128,6 @@ function ${ssNamespace}_getPresence (timeout) {
 }
 var ${ssNamespace}_presenceTimer = null;
 function ${ssNamespace}_presenceTimout() {
-alert("in timeout1");
 	${ssNamespace}_getPresence("timeout");
 }	
 ${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300000);
