@@ -463,6 +463,27 @@ public class StructureImpl implements Structure {
 		}
 	}
 
+	// 9/20/06 JK - Similar to create() method, except that this method skips
+	// all checkings for parent nodes (ie, elements of the uri). 
+	public void createSimple(SlideToken token, ObjectNode object, String strUri)
+			throws ServiceAccessException, ObjectAlreadyExistsException,
+			ObjectNotFoundException, LinkedObjectNotFoundException,
+			AccessDeniedException, ObjectLockedException, VetoException {
+
+		// Fire event
+		if (StructureEvent.CREATE.isEnabled())
+			EventDispatcher.getInstance().fireVetoableEvent(
+					StructureEvent.CREATE,
+					new StructureEvent(this, token, namespace, strUri));
+
+		ObjectNode newObject = object;
+		Uri courUri = namespace.getUri(token, strUri);
+		newObject.setUri(courUri.toString());
+		courUri.getStore().createObject(courUri, newObject);
+		store(token, newObject);
+	}
+
+
 	public void createLink(SlideToken token, LinkNode link, String linkUri,
 			ObjectNode linkedObject) throws ServiceAccessException,
 			ObjectAlreadyExistsException, ObjectNotFoundException,

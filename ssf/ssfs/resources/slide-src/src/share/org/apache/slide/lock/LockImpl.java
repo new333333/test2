@@ -615,7 +615,12 @@ public class LockImpl implements Lock {
         // We parse all of the scopes which encompass the subject we want
         // to lock.
         // First, we parse all the parents of the subject.
-        while (!isLocked && scopes.hasMoreElements()) {
+        
+        // 9/20/06 JK - Since SSFS supports the concept of lock only on the
+        // file folder entries (but not on binders), there is no point in 
+        // checking lock for the parents. This way, we will waste at most
+        // one lock check (if the uri represents a binder) but no more. 
+        if(!isLocked && scopes.hasMoreElements()) {
             String currentScope = (String) scopes.nextElement();
             Uri currentScopeUri = namespace.getUri(slideToken, currentScope);
             Enumeration locks = currentScopeUri.getStore()

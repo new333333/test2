@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.slide.common.NamespaceAccessToken;
 import org.apache.slide.common.ServiceAccessException;
 import org.apache.slide.common.SlideException;
+import org.apache.slide.content.ContentImpl;
 import org.apache.slide.content.NodeProperty;
 import org.apache.slide.content.NodeRevisionContent;
 import org.apache.slide.content.NodeRevisionDescriptor;
@@ -43,6 +44,7 @@ import org.apache.slide.event.EventDispatcher;
 import org.apache.slide.structure.LinkedObjectNotFoundException;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
+import org.apache.slide.structure.StructureImpl;
 import org.apache.slide.structure.SubjectNode;
 import org.apache.slide.util.Configuration;
 import org.apache.slide.webdav.WebdavException;
@@ -325,7 +327,8 @@ public class PutMethod
             } catch (ObjectNotFoundException e) {
                 SubjectNode subject = new SubjectNode();
                 // Creating an object
-                structure.create(slideToken, subject, resourcePath);
+                // 9/20/06 JK - Call the simpler (hence more efficient) version of the method.
+                ((StructureImpl) structure).createSimple(slideToken, subject, resourcePath);
                 
                 NodeRevisionDescriptor revisionDescriptor =
                     new NodeRevisionDescriptor(req.getContentLength());
@@ -404,7 +407,8 @@ public class PutMethod
                     }
                 }
                 
-                content.create(slideToken, resourcePath, revisionDescriptor,
+                // 9/20/06 JK - Call the simpler (hence more efficient) version of the method.
+                ((ContentImpl) content).createSimple(slideToken, resourcePath, revisionDescriptor,
                                revisionContent);
                 
                 // check if the resource should be put under version-control
