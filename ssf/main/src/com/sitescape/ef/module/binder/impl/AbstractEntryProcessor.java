@@ -57,6 +57,7 @@ import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.shared.EntryBuilder;
@@ -78,13 +79,25 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
+    	SimpleProfiler sp = new SimpleProfiler(false);
+    	
+    	sp.reset("addEntry_toEntryData").begin();
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
+        sp.end().print();
+        
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
+
         try {
+            sp.reset("addEntry_filterFiles").begin();
         	FilesErrors filesErrors = addEntry_filterFiles(binder, def, entryData, fileUploadItems);
+        	sp.end().print();
+        	
+        	sp.reset("addEntry_create").begin();
         	final Entry entry = addEntry_create(def, clazz);
+        	sp.end().print();
         
+        	sp.reset("addEntry_transactionExecute").begin();
         	// 	The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         		public Object doInTransaction(TransactionStatus status) {
@@ -97,19 +110,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			return null;
         		}
         	});
+        	sp.end().print();
         
-        
+        	sp.reset("addEntry_processFiles").begin();
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
+        	sp.end().print();
         
+        	sp.reset("addEntry_startWorkflow").begin();
         	//After the entry is successfully added, start up any associated workflows
         	addEntry_startWorkflow(entry);
+        	sp.end().print();
 
+        	sp.reset("addEntry_indexAdd").begin();
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
         	addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
+        	sp.end().print();
+        	
+        	sp.reset("addEntry_done").begin();
         	addEntry_done(binder, entry, inputData);
+        	sp.end().print();
+        	
          	if(filesErrors.getProblems().size() > 0) {
         		// At least one error occured during the operation. 
         		throw new WriteFilesException(filesErrors);
@@ -225,17 +248,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, final Collection deleteAttachments)  
     		throws WriteFilesException {
-	
+    	SimpleProfiler sp = new SimpleProfiler(false);
+    	
+    	sp.reset("modifyEntry_toEntryData").begin();
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
+	    sp.end().print();
+	    
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 	    
-	    try {
+	    try {	    	
+	    	sp.reset("modifyEntry_filterFiles").begin();
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+	    	sp.end().print();
 	    
 	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 	    	
+	    	sp.reset("modifyEntry_transactionExecute").begin();
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
@@ -244,18 +274,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData);
 	    			return null;
 	    		}});
+	    	sp.end().print();
+	    	
+	    	sp.reset("modifyEntry_processFiles").begin();
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
+	    	sp.end().print();
 
+	    	sp.reset("modifyEntry_startWorkflow").begin();
 	    	modifyEntry_startWorkflow(entry);
+	    	sp.end().print();
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
+	    	sp.reset("modifyEntry_indexRemoveFiles").begin();
 	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex);
+	    	sp.end().print();
 	    	
+	    	sp.reset("modifyEntry_indexAdd").begin();
 	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex);
+	    	sp.end().print();
+	    	
+	    	sp.reset("modifyEntry_done").begin();
 	    	modifyEntry_done(binder, entry, inputData);
+	    	sp.end().print();
 	    		    
 	    	if(filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -337,13 +380,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Entry entry) {
+    	SimpleProfiler sp = new SimpleProfiler(false);
+
+    	sp.reset("deleteEntry_preDelete").begin();
         Object ctx  = deleteEntry_preDelete(parentBinder, entry);
+        sp.end().print();
+        
+        sp.reset("deleteEntry_workflow").begin();
         ctx = deleteEntry_workflow(parentBinder, entry, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteEntry_processFiles").begin();
         ctx = deleteEntry_processFiles(parentBinder, entry, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteEntry_delete").begin();
         ctx = deleteEntry_delete(parentBinder, entry, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteEntry_postDelete").begin();
         ctx = deleteEntry_postDelete(parentBinder, entry, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteEntry_indexDel").begin();
         ctx = deleteEntry_indexDel(entry, ctx);
-   	
+        sp.end().print();
     }
      protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
       	return null;

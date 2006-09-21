@@ -47,6 +47,7 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SimpleProfiler;
 /**
  *
  * 
@@ -104,57 +105,79 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                 
+    	SimpleProfiler sp = new SimpleProfiler(false);
+    	
+    	sp.reset("addBinder_toEntryData").begin();
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems);
+        sp.end().print();
+        
         final Map entryData = (Map) entryDataAll.get("entryData");
         List fileUploadItems = (List) entryDataAll.get("fileData");
         
-        final Binder binder = addBinder_create(def, clazz);
-    	if (def != null) {
-    		if ((parent.getDefinitionType() == null) ||
-    				(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
-    			binder.setDefinitionsInherited(false);
-    		}
+    	try {
+	        sp.reset("addBinder_create").begin();
+	        final Binder binder = addBinder_create(def, clazz);
+	        sp.end().print();
+	        
+	    	if (def != null) {
+	    		if ((parent.getDefinitionType() == null) ||
+	    				(binder.getDefinitionType().intValue() != parent.getDefinitionType().intValue())) {
+	    			binder.setDefinitionsInherited(false);
+	    		}
+	    	}
+	        String title = (String)entryData.get("title");
+	        sp.reset("addBinder_validateTitle").begin();
+	        getCoreDao().validateTitle(parent, title);
+	        sp.end().print();
+	        binder.setPathName(parent.getPathName() + "/" + title);
+	        
+	        sp.reset("addBinder_transactionExecute").begin();
+	        // The following part requires update database transaction.
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	                //need to set entry/binder information before generating file attachments
+	                //Attachments/Events need binder info for AnyOwner
+	                addBinder_fillIn(parent, binder, inputData, entryData);
+	                
+	                addBinder_preSave(parent, binder, inputData, entryData);      
+	
+	                addBinder_save(parent, binder, inputData, entryData);      
+	                
+	                addBinder_postSave(parent, binder, inputData, entryData);
+	                
+	                return null;
+	        	}
+	        });
+	        sp.end().print();
+	           
+	        sp.reset("addBinder_filterFiles").begin();
+	        //Need to do filter here after binder is saved cause it makes use of
+	        // the id of binder
+	        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
+	        sp.end().print();
+	        
+	        sp.reset("addBinder_processFiles").begin();
+	        // We must save the entry before processing files because it makes use
+	        // of the persistent id of the entry. 
+	        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors);
+	        sp.end().print();
+	        
+	        sp.reset("addBinder_indexAdd").begin();
+	        // This must be done in a separate step after persisting the entry,
+	        // because we need the entry's persistent ID for indexing. 
+	        addBinder_indexAdd(parent, binder, inputData, fileUploadItems);
+	        sp.end().print();
+	        
+	    	if(filesErrors.getProblems().size() > 0) {
+	    		// At least one error occured during the operation. 
+	    		throw new WriteFilesException(filesErrors);
+	    	}
+	    	else {
+	    		return binder;
+	    	}
     	}
-        String title = (String)entryData.get("title");
-        getCoreDao().validateTitle(parent, title);
-        binder.setPathName(parent.getPathName() + "/" + title);
-        
-        // The following part requires update database transaction.
-        getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-                //need to set entry/binder information before generating file attachments
-                //Attachments/Events need binder info for AnyOwner
-                addBinder_fillIn(parent, binder, inputData, entryData);
-                
-                addBinder_preSave(parent, binder, inputData, entryData);      
-
-                addBinder_save(parent, binder, inputData, entryData);      
-                
-                addBinder_postSave(parent, binder, inputData, entryData);
-                
-                return null;
-        	}
-        });
-           
-        //Need to do filter here after binder is saved cause it makes use of
-        // the id of binder
-        FilesErrors filesErrors = addBinder_filterFiles(binder, fileUploadItems);
-        // We must save the entry before processing files because it makes use
-        // of the persistent id of the entry. 
-        filesErrors = addBinder_processFiles(binder, fileUploadItems, filesErrors);
-        
-       // This must be done in a separate step after persisting the entry,
-        // because we need the entry's persistent ID for indexing. 
-        addBinder_indexAdd(parent, binder, inputData, fileUploadItems);
-        
-        cleanupFiles(fileUploadItems);
-        
-    	if(filesErrors.getProblems().size() > 0) {
-    		// At least one error occured during the operation. 
-    		throw new WriteFilesException(filesErrors);
-    	}
-    	else {
-    		return binder;
+    	finally {
+	        cleanupFiles(fileUploadItems);
     	}
     }
 
@@ -234,21 +257,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		Map fileItems, final Collection deleteAttachments) 
     		throws AccessControlException, WriteFilesException {
 	
+    	SimpleProfiler sp = new SimpleProfiler(false);
+    	
+    	sp.reset("modifyBinder_toEntryData").begin();
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems);
+	    sp.end().print();
+	    
 	    final Map entryData = (Map) entryDataAll.get("entryData");
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 
-	    if (entryData.containsKey("title")) {
-	    	String newTitle = (String)entryData.get("title");
-	    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) getCoreDao().validateTitle(binder.getParentBinder(), newTitle);
-	    		
-	    }
 	    try {
+		    if (entryData.containsKey("title")) {
+		    	String newTitle = (String)entryData.get("title");
+		    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) { 
+		    		sp.reset("modifyBinder_validateTitle").begin();
+		    		getCoreDao().validateTitle(binder.getParentBinder(), newTitle);
+		    		sp.end().print();
+		    	}	
+		    }
+		    
+	    	sp.reset("modifyBinder_filterFiles").begin();
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
+		    sp.end().print();
 	
 	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 
+	    	sp.reset("modifyBinder_transactionExecute").begin();
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -277,14 +312,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		}
 	        		return null;
 	        	}});
+	        sp.end().print();
+	        
+	        sp.reset("modifyBinder_processFiles").begin();
 		    filesErrors = modifyBinder_processFiles(binder, fileUploadItems, filesErrors);
+		    sp.end().print();
 		    
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
+	    	sp.reset("modifyBinder_indexRemoveFiles").begin();
 	        modifyBinder_indexRemoveFiles(binder, filesToDeindex);
+	        sp.end().print();
+	        
+	        sp.reset("modifyBinder_indexAdd").begin();
 		    modifyBinder_indexAdd(binder, inputData, fileUploadItems, filesToReindex);
+		    sp.end().print();
 		    
 	    	if (filesErrors.getProblems().size() > 0) {
 	    		// At least one error occured during the operation. 
@@ -390,11 +434,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * There shouldn't be any sub-folders
      */
     public void deleteBinder(Binder binder) {
+    	SimpleProfiler sp = new SimpleProfiler(false);
+    	
+    	sp.reset("deleteBinder_preDelete").begin();
         Object ctx = deleteBinder_preDelete(binder);
+        sp.end().print();
+        
+        sp.reset("deleteBinder_processFiles").begin();
         ctx = deleteBinder_processFiles(binder, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteBinder_delete").begin();
         ctx = deleteBinder_delete(binder, ctx);
+        sp.end().print();
+        
+        sp.reset("deleteBinder_postDelete").begin();
         ctx = deleteBinder_postDelete(binder, ctx);
-        deleteBinder_indexDel(binder, ctx);   	
+        sp.end().print();
+        
+        sp.reset("deleteBinder_indexDel").begin();
+        deleteBinder_indexDel(binder, ctx);
+        sp.end().print();
     }
     
     protected Object deleteBinder_preDelete(Binder binder) { 
@@ -557,7 +617,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected org.apache.lucene.document.Document buildIndexDocumentFromFile
     	(Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui) {
     	// Prepare for pipeline execution.
-    	
     	String text = null;
     	
     	Conduit firstConduit = new RAMConduit();
@@ -621,7 +680,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
 
         EntityIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
-                
+             
         return indexDoc;
     }
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
