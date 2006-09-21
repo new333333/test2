@@ -1229,7 +1229,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 /* tabs: */
 div.ss_tabs {
     position:relative;
-    top:10px;
+    top:11px;
     left:9px; 
     z-index:2;
     width:100%;
@@ -1239,6 +1239,9 @@ div.ss_tabs {
 	color:#5A3C68;
 	height:35px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
+	white-space: nowrap;
+	margin:0px;
+	padding:0px;
 }
 .ss_tabs_td_active {
 	font-size:${ss_style_font_largeprint};
@@ -1250,19 +1253,27 @@ div.ss_tabs {
 .ss_tabs_td_left_active {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left;
     width:15px;
+    min-width:15px;
 }
 .ss_tabs_td_right_active {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.gif) no-repeat right;
     width:15px;
+    min-width:15px;
 }
 .ss_tabs_td_left {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif) no-repeat left;
     width:15px;
+    min-width:15px;
 }
 .ss_tabs_td_right {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.gif) no-repeat right;
     width:15px;
+    min-width:15px;
 }
+.ss_tabs_corner {
+    min-width:15px;
+}
+
 .ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
 	text-decoration:underline;
 }

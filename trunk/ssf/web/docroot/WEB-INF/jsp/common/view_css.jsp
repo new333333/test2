@@ -31,6 +31,7 @@ var undefined;
 var ss_urlBase;
 var ss_rootPath;
 var ss_imagesPath;
+var ss_1pix;
 var ss_defaultStyleSheet;
 var ss_forumCssUrl;
 var niftyCornersCssUrl;
@@ -48,6 +49,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	
 	ss_defaultStyleSheet = 'blackandwhite';
 	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
+	ss_1pix = ss_imagesPath + "pics/1pix.gif";
 	niftyCornersCssUrl = ss_urlBase + ss_rootPath + "css/nifty_corners.css";
 	//htmlareaCssUrl = ss_urlBase + ss_rootPath + "js/htmleditor/htmlarea.css";
 	ss_forumColorsCssUrl = "<ssf:url

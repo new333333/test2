@@ -85,7 +85,8 @@ function ss_turnOffDebugMode() {
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		    <div id="ss_navbarSearchButton">
 			  <input name="" type="text" class="form-text" /> <input class="go" name="" type="image" value="go" 
-			    src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/go.gif" />
+			    src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/go.gif" 
+			    onClick="ss_doSearch(this, '<ssf:nlt tag="navigation.search"/>');return false;"/>
 		    </div>
 		  </ssHelpSpot>
 		</form>

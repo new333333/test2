@@ -3176,10 +3176,84 @@ function ss_hideSubmenu(obj) {
 
 // Tabs
 
-function ss_addTab(type, title, id) {
+function ss_addTab(type, title, icon, url, onclick) {
+	var table = document.createElement("table")
+	table.style.backgroundColor = "transparent";
+	table.setAttribute("cellspacing", "0");
+	table.setAttribute("cellpadding", "0");
+	var tbody = document.createElement("tbody");
+	table.appendChild(tbody);
+	var tr = document.createElement("tr");
+	tbody.appendChild(tr);
+	
+	//create the left rounded edge
+	var tdLeft = document.createElement("td");
+	tr.appendChild(tdLeft);
+	tdLeft.className = "ss_tabs_td_left";
+	tdLeft.setAttribute("valign", "middle");
+	var img = document.createElement("img");
+	img.className = "ss_tabs_corner";
+	tdLeft.appendChild(img);
+	img.setAttribute("src", ss_1pix);
+	
+	//create the tab center
+	var td = document.createElement("td");
+	tr.appendChild(td);
+	td.className = "ss_tabs_td";
+	td.setAttribute("valign", "middle");
+	td.setAttribute("nowrap", "true");
+	if (icon != "") {
+		var img = document.createElement("img");
+		td.appendChild(img);
+		img.setAttribute("src", icon);
+	}
+	var a = document.createElement("a");
+	td.appendChild(a);
+	a.setAttribute("href", "javascript: if("+onclick+") self.location.href='"+url+"';");
+	var span = document.createElement("span");
+	a.appendChild(span);
+	span.appendChild(document.createTextNode(title));
+	
+	var a2 = document.createElement("a");
+	td.appendChild(a2);
+	a2.setAttribute("href", "javascript: ss_deleteTab(this);");
+	var img = document.createElement("img");
+	a2.appendChild(img);
+	img.setAttribute("src", ss_tabs_delete_icon);
+	
+	//create the right rounded edge
+	var tdRight = document.createElement("td");
+	tr.appendChild(tdRight);
+	tdRight.className = "ss_tabs_td_right";
+	tdRight.setAttribute("valign", "middle");
+	var img = document.createElement("img");
+	img.className = "ss_tabs_corner";
+	tdRight.appendChild(img);
+	img.setAttribute("src", ss_1pix);
+	
+	var tabbarTr = document.getElementById("ss_tabbar_tr");
+	var tabbarTrTd = document.createElement("td");
+	tabbarTrTd.appendChild(table);
+	tabbarTr.appendChild(tabbarTrTd);
+	
+	//Now, tell the server which tab got created
+	
+	return a;
 }
 
-function ss_deleteTab(tabNumber) {
+function ss_deleteTab(obj) {
+	//Check if this is pointing to a tab
+	var tabTdObject = obj.parentNode;
+	if (tabTdObject.className && tabTdObject.className.indexOf("ss_tabs_td") >= 0) {
+		//Get the outer td parent in the tab table
+		var tabParentTdObject = tabTdObject.parentNode.parentNode.parentNode.parentNode;
+		if (tabParentTdObject.tagName.toLowerCase() == "td") {
+			//Ok, delete this td from the tab table
+			tabParentTdObject.parentNode.removeChild(tabParentTdObject)
+			
+			//Now tell the server which tab got deleted
+		}
+	}
 }
 
 function ss_showTab(obj) {
@@ -3201,4 +3275,13 @@ function ss_showTab(obj) {
 	}
 	tabTdObject.className = "ss_tabs_td_active";
 	return false;
+}
+
+
+//Search functions from the navbar
+
+function ss_doSearch(obj, title) {
+	var formObj = ss_getContainingForm(obj);
+	tabObj = ss_addTab("search", title, "", "#", "ss_showTab(this)");
+	ss_showTab(tabObj);
 }
