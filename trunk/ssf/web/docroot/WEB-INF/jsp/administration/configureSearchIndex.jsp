@@ -22,7 +22,7 @@
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_folder_index"/>
+			  <portlet:param name="action" value="configure_index"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
 <br>

@@ -84,8 +84,7 @@ public class WebKeys {
 	public static final String ACTION_NOTIFY_CONFIGURE="configure_notify";
 	public static final String ACTION_POSTING_CONFIGURE="configure_posting";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
-	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_folder_index";
-	public static final String ACTION_PROFILE_INDEX_CONFIGURE="configure_profile_index";
+	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";

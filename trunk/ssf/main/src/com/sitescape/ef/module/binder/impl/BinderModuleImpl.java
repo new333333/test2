@@ -20,6 +20,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
@@ -111,6 +112,26 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	return false;
     }	
+    public void indexTree(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
+    	//get sub-binder and index them all
+		indexBinder(binder);
+    }
+    private void indexBinder(Binder binder) {
+    	List binders = binder.getBinders();
+		for (int i=0; i<binders.size(); ++i) {
+	    	Binder b = (Binder)binders.get(i);
+	    	indexBinder(b);
+		}
+	    loadBinderProcessor(binder).indexBinder(binder);
+    	
+    }
+    public void indexBinder(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
+ 	    loadBinderProcessor(binder).indexBinder(binder);
+    }
 
     public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {

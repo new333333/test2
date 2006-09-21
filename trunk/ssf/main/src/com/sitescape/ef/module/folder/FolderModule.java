@@ -93,8 +93,6 @@ public interface FolderModule {
 	public void setUserVisit(Long folderId);
 	public void setUserVisit(FolderEntry entry);
 	public void setUserVisit(Folder folder);
-	public void indexFolderTree(Long folderId);
-    public void indexEntries(Long folderId);
     public void setTag(Long binderId, Long entryId, String tag, boolean community);
     
     public void addSubscription(Long folderId, Long entryId); 

@@ -18,7 +18,7 @@ public class ManageProfileIndexController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
        	User u = RequestContextHolder.getRequestContext().getUser();
-		getProfileModule().indexEntries(u.getParentBinder().getId());
+		getBinderModule().indexBinder(u.getParentBinder().getId());
 			
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

@@ -451,6 +451,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 	    
     //***********************************************************************************************************
+    public void indexBinder(Binder binder) {
+   		indexEntries(binder);    	
+    }
+    //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
 
  		if (!(entry instanceof WorkflowSupport)) return;

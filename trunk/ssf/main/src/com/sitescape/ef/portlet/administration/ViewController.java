@@ -210,17 +210,7 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
-		//User index
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.configure_profile_index"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILE_INDEX_CONFIGURE);
-		url.setWindowState(WindowState.NORMAL);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-
+	
 		//Definition import
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.import.definitions"));

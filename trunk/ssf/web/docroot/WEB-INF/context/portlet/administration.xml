@@ -30,8 +30,7 @@
 						<entry key="configure_notify"><ref bean="adminConfigureNotifyController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
 						<entry key="configure_posting"><ref bean="adminConfigurePostingController"/></entry>
-						<entry key="configure_folder_index"><ref bean="adminConfigureSearchIndexController"/></entry>
-						<entry key="configure_profile_index"><ref bean="adminConfigureProfileIndexController"/></entry>
+						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
 						<entry key="export_definition"><ref bean="adminExportDefinitionController"/></entry>

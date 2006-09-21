@@ -295,27 +295,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     
     
-    public void indexFolderTree(Long folderId) {
-		Folder folder = loadFolder(folderId);
-		getAccessControlManager().checkOperation(folder,  WorkAreaOperation.BINDER_ADMINISTRATION);
-    	//get sub-folders and index them all
-		indexFolder(folder);
-    }
-    private void indexFolder(Folder folder) {
-    	List folders = folder.getFolders();
-		for (int i=0; i<folders.size(); ++i) {
-	    	Folder f = (Folder)folders.get(i);
-	    	indexFolder(f);
-		}
-	    loadProcessor(folder).indexEntries(folder);
-    }
-    
-    public void indexEntries(Long folderId) {
-		Folder folder = loadFolder(folderId);
-		getAccessControlManager().checkOperation(folder,  WorkAreaOperation.BINDER_ADMINISTRATION);
-        loadProcessor(folder).indexEntries(folder);
-    }
-
     public Map getCommonEntryElements() {
     	Map entryElements = new HashMap();
     	Map itemData;
