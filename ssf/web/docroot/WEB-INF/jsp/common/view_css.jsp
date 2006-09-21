@@ -1,20 +1,8 @@
 <c:if test="${empty ssf_support_files_loaded}">
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.ef.ObjectKeys" %>
-<%@ page import="com.sitescape.ef.web.WebKeys" %>
-<%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
-<%@ page import="com.sitescape.ef.domain.User" %>
-
 <%
-//Set up the user object
-if(RequestContextHolder.getRequestContext() != null) {
-	User user = RequestContextHolder.getRequestContext().getUser();
-	request.setAttribute("ssUser", user);
-}
-
-boolean isIE = BrowserSniffer.is_ie(request);
+boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";

@@ -5,5 +5,8 @@
 	<category name="category.sitescape">
 		<portlet id="ss_forum" />
 		<portlet id="ss_administration" />
+		<portlet id="ss_workspacetree" />
+		<portlet id="ss_profile" />
+		<portlet id="ss_presence" />
 	</category>
 </display>

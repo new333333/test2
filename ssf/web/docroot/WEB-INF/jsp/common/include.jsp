@@ -6,7 +6,15 @@
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 
 <portletadapter:defineObjects1/>
+<%
 
+//Set up the user object
+if (com.sitescape.ef.context.request.RequestContextHolder.getRequestContext() != null) {
+	com.sitescape.ef.domain.User user = com.sitescape.ef.context.request.RequestContextHolder.getRequestContext().getUser();
+	request.setAttribute("ssUser", user);
+}
+
+%>
 <ssf:ifadapter>
 <c:if test="${empty ssf_support_files_loaded}">
   <c:if test="${empty ssf_snippet}">

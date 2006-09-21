@@ -31,11 +31,15 @@
 		  <portlet:param name="action" value="configure"/>
 		  </portlet:actionURL>">
 
+<%
+/* Liferay handles this already
 <table>
 <tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
 </td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
 </td></tr>
 </table>
+*/
+%>
 <table cellspacing="10px" cellpadding="10px" width="100%">
 
 <tr>

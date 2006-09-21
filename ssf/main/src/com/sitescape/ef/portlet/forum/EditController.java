@@ -11,11 +11,10 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletMode;
-import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -46,40 +45,39 @@ public class EditController extends SAbstractController {
 		//see if type is being set
 		if (formData.containsKey("applyBtn") || 
 				formData.containsKey("okBtn")) {
-			String displayType = (String)PortletRequestUtils.getStringParameter(request, "displayType");
+			String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
 			if (Validator.isNull(displayType)) { 
-				displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
-				if ("ss_forum".equals(displayType)) {
-					List forumPrefIdList = new ArrayList();
+				PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+				String pName = pConfig.getPortletName();
+				if (pName.contains(ViewController.FORUM_PORTLET))
+					displayType=ViewController.FORUM_PORTLET;
+				else if (pName.contains(ViewController.WORKSPACE_PORTLET))
+					displayType=ViewController.WORKSPACE_PORTLET;
+				else if (pName.contains(ViewController.PRESENCE_PORTLET))
+					displayType=ViewController.PRESENCE_PORTLET;
+				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
+			}
+			if (ViewController.FORUM_PORTLET.equals(displayType)) {
+				List forumPrefIdList = new ArrayList();
 		
-					//	Get the forums to be displayed
-					Iterator itFormData = formData.entrySet().iterator();
-					while (itFormData.hasNext()) {
-						Map.Entry me = (Map.Entry) itFormData.next();
-						if (((String)me.getKey()).startsWith("id_")) {
-							String forumId = ((String)me.getKey()).substring(3);
-							forumPrefIdList.add(forumId);
-						}
-					}
-		
-					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
-				} else if ("ss_presence".equals(displayType)) {
-					prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
-					prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("groups"))); 			
-				} else if ("ss_workspace".equals(displayType)) {
-					String id = PortletRequestUtils.getStringParameter(request, "topWorkspace"); 
-					if (Validator.isNotNull(id)) {
-						prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
+				//	Get the forums to be displayed
+				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (((String)me.getKey()).startsWith("id_")) {
+						String forumId = ((String)me.getKey()).substring(3);
+						forumPrefIdList.add(forumId);
 					}
 				}
-			} else {
-				//first time through - just set type
-				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
-				//return to view
-				if ("ss_profile".equals(displayType)) {
-					response.setPortletMode(PortletMode.VIEW);
-					response.setWindowState(WindowState.NORMAL);
+				prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
+				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
+				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("groups"))); 			
+			} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
+				String id = PortletRequestUtils.getStringParameter(request, "topWorkspace"); 
+				if (Validator.isNotNull(id)) {
+					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
 				}
 			}
 		}
@@ -97,7 +95,7 @@ public class EditController extends SAbstractController {
 		else title="";
 		model.put("portletTitle", prefs.getValue(WebKeys.PORTLET_PREF_TITLE, ""));
 		String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
-		if ("ss_forum".equals(displayType)) {
+		if (ViewController.FORUM_PORTLET.equals(displayType)) {
 		
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new BuildWsFolder());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
@@ -117,7 +115,7 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
 			model.put(WebKeys.FORUM_ID_LIST, forumIdList);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
-		} else if ("ss_presence".equals(displayType)) {
+		} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
 			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
@@ -137,7 +135,7 @@ public class EditController extends SAbstractController {
 //			model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));
 			
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
-		} else if ("ss_workspace".equals(displayType)) {
+		} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new BuildWs());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
