@@ -196,12 +196,6 @@ public class MoveMethod extends AbstractMultistatusResponseMethod implements Del
 
         try {
             // check preconditions
-        	// 9/21/06 JK - Since SSFS does not support MOVE operation (except for
-        	// renaming which is a special case of MOVE) within Aspen data hierarchy
-        	// for both entries and binders, we do not have to check for precondition
-        	// violation (eg. seeing whether the target's parent is a descendent of
-        	// the source which results in cyclic reference, etc.). 
-        	/*
             ViolatedPrecondition violatedPrecondition = getPreconditionViolation(sourceUri, destinationUri);
             if (violatedPrecondition != null) {
                 PreconditionViolationException e =
@@ -209,7 +203,6 @@ public class MoveMethod extends AbstractMultistatusResponseMethod implements Del
                 sendPreconditionViolation(e);
                 throw e;
             }
-            */
 
             destinationExistsBefore = exists(destinationUri);
             if (!overwrite && destinationExistsBefore) {
