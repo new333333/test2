@@ -650,7 +650,238 @@ public class ContentImpl implements Content {
                            revisionContent, POST_STORE);
     }
     
-    
+	// 9/20/06 JK - Similar to create() method, except that this method
+    // skips the checking for parents. 
+    public void createSimple(SlideToken token, String strUri,
+                       NodeRevisionDescriptor revisionDescriptor,
+                       NodeRevisionContent revisionContent)
+        throws ObjectNotFoundException, AccessDeniedException,
+        RevisionAlreadyExistException, LinkedObjectNotFoundException,
+        ServiceAccessException, ObjectLockedException, VetoException {
+        
+        // Check parent exists and is not lock-null
+    	// 9/20/06 JK - commented out
+        // checkParentExists(strUri, token); 
+        
+        // Retrieve the associated object
+        ObjectNode associatedObject =
+            structureHelper.retrieve(token, strUri, false);
+        
+        // Next we do a security check and a locking check for modifyRevisions
+        securityHelper.checkCredentials
+            (token, associatedObject,
+             namespaceConfig.getCreateRevisionMetadataAction());
+        // 9/20/06 JK - Skip lock check. This is expensive operation that
+        // we don't really need/care. 
+        //lockHelper.checkLock
+        //    (token, associatedObject,
+        //     namespaceConfig.getCreateRevisionMetadataAction());
+        if (namespaceConfig.getCreateRevisionMetadataAction() !=
+            namespaceConfig.getCreateRevisionContentAction()) {
+            securityHelper.checkCredentials
+                (token, associatedObject,
+                 namespaceConfig.getCreateRevisionContentAction());
+            lockHelper.checkLock
+                (token, associatedObject,
+                 namespaceConfig.getCreateRevisionContentAction());
+        }
+        
+        setDefaultProperties(associatedObject, revisionDescriptor);
+        // set the creation date if not already set
+        if (revisionDescriptor.getCreationDate() == null) {
+            revisionDescriptor.setCreationDate(new Date());
+            
+            // Set the creation user
+            setCreationUser(token, revisionDescriptor);
+        }
+        // set the display name (in case of copy)
+        if (!Configuration.useBinding(namespace.getUri(token, strUri).getStore())) {
+            if (revisionDescriptor.getName() == null || revisionDescriptor.getName().length() == 0) {
+                revisionDescriptor.setName(UriPath.getLastSegment(strUri));
+            }
+        }
+        
+        Uri objectUri = namespace.getUri(token, strUri);
+        
+        NodeRevisionDescriptors revisionDescriptors = null;
+        try {
+            revisionDescriptors = objectUri.getStore()
+                .retrieveRevisionDescriptors(objectUri);
+        } catch (RevisionDescriptorNotFoundException e) {
+            // No revision descriptors. We have to create some.
+            revisionDescriptors = new NodeRevisionDescriptors();
+            revisionDescriptors.setUri(objectUri.toString());
+            objectUri.getStore()
+                .createRevisionDescriptors(objectUri, revisionDescriptors);
+        }
+        
+        // Retrieve the latest revision from the descriptor,
+        // unless there is no revisions. We generate a new revision number,
+        // basing on an existing revision, if any.
+        NodeRevisionNumber newRevisionNumber = null;
+        if (revisionDescriptors.isVersioned()) {
+            
+            if (revisionDescriptors.hasRevisions()) {
+                newRevisionNumber = new NodeRevisionNumber
+                    (revisionDescriptors.getLatestRevision());
+                revisionDescriptors
+                    .addSuccessor(revisionDescriptors.getLatestRevision(),
+                                  newRevisionNumber);
+                revisionDescriptors
+                    .setSuccessors(newRevisionNumber, new Vector());
+            } else {
+                newRevisionNumber = new NodeRevisionNumber();
+                revisionDescriptors
+                    .setSuccessors(newRevisionNumber, new Vector());
+            }
+            // We now set the newly created revision as the latest revison
+            revisionDescriptors.setLatestRevision(newRevisionNumber);
+            
+            // We update the descriptor
+            revisionDescriptor.setRevisionNumber(newRevisionNumber);
+
+            // Fire event
+            if ( ContentEvent.CREATE.isEnabled() ) EventDispatcher.getInstance().fireVetoableEvent(ContentEvent.CREATE, new ContentEvent(this, token, namespace, objectUri.toString(), revisionDescriptors, revisionDescriptor, revisionContent));
+
+            // Invoke interceptors
+            invokeInterceptors(token, revisionDescriptors, revisionDescriptor,
+                               revisionContent, PRE_STORE);
+            
+            if (revisionContent != null) {
+                // Storing the new revision contents
+                objectUri.getStore()
+                    .createRevisionContent(objectUri, revisionDescriptor,
+                                           revisionContent);
+            }
+            // Now creating the revision desriptor in the store
+            revisionDescriptor.setModificationDate(revisionDescriptor.getCreationDate());
+            revisionDescriptor.setModificationUser(
+                securityHelper.getPrincipal(token).getPath().lastSegment());
+            objectUri.getStore()
+                .createRevisionDescriptor(objectUri, revisionDescriptor);
+            
+        } else {
+            // We don't use versioning for this object.
+            // Two options :
+            // - The object already has one (and only one) revision,
+            //   so we update it
+            // - The object dooesn't have any revisions right now, so we create
+            //   the initial revision
+            newRevisionNumber = new NodeRevisionNumber();
+            revisionDescriptor.setRevisionNumber(newRevisionNumber);
+            
+            if (!revisionDescriptors.hasRevisions()) {
+
+                // Fire event
+                if ( ContentEvent.CREATE.isEnabled() ) EventDispatcher.getInstance().fireVetoableEvent(ContentEvent.CREATE, new ContentEvent(this, token, namespace, objectUri.toString(), revisionDescriptors, revisionDescriptor, revisionContent));
+
+                // Invoke interceptors
+                invokeInterceptors(token, revisionDescriptors,
+                                   revisionDescriptor,
+                                   revisionContent, PRE_STORE);
+                
+                if (revisionContent != null) {
+                    // Storing the new revision contents
+                    objectUri.getStore()
+                        .createRevisionContent(objectUri, revisionDescriptor,
+                                               revisionContent);
+                }
+                // Now creating the revision desriptor in the store
+                revisionDescriptor.setModificationDate(revisionDescriptor.getCreationDate());
+                revisionDescriptor.setModificationUser(
+                    securityHelper.getPrincipal(token).getPath().lastSegment());
+                objectUri.getStore()
+                    .createRevisionDescriptor(objectUri, revisionDescriptor);
+                
+            } else {
+                
+                try { {
+                        // merge the new received properties into the
+                        // revisionDescriptor
+                        
+                        // We update the descriptor's properties
+                        NodeRevisionDescriptor oldRevisionDescriptor =
+                            objectUri.getStore()
+                            .retrieveRevisionDescriptor
+                            (objectUri, newRevisionNumber);
+                        Enumeration newPropertiesList =
+                            revisionDescriptor.enumerateProperties();
+                        while (newPropertiesList.hasMoreElements()) {
+                            oldRevisionDescriptor
+                                .setProperty((NodeProperty) newPropertiesList
+                                                 .nextElement() );
+                        }
+                        
+                        // now use the merged revision descriptor
+                        revisionDescriptor = oldRevisionDescriptor;
+                    } // end of merge
+
+                    // Fire event
+                    if ( ContentEvent.CREATE.isEnabled() ) EventDispatcher.getInstance().fireVetoableEvent(ContentEvent.CREATE, new ContentEvent(this, token, namespace, objectUri.toString(), revisionDescriptors, revisionDescriptor, revisionContent));
+
+                    // Invoke interceptors
+                    invokeInterceptors(token, revisionDescriptors,
+                                       revisionDescriptor,
+                                       revisionContent, PRE_STORE);
+                    
+                    if (revisionContent != null) {
+                        // Storing the new revision contents
+                    	// 9/20/06 JK - Create new resource without first attempting to update existing one. 
+                        objectUri.getStore()
+                            .createRevisionContent(objectUri,
+                                                   revisionDescriptor,
+                                                   revisionContent);
+                    }
+                    
+                    revisionDescriptor.setModificationDate(revisionDescriptor.getCreationDate());
+                    revisionDescriptor.setModificationUser(
+                        securityHelper.getPrincipal(token).getPath().lastSegment());
+                    objectUri.getStore()
+                        .storeRevisionDescriptor
+                        (objectUri, revisionDescriptor);
+                    
+                } catch (RevisionDescriptorNotFoundException e) {
+                    // Should NEVER happen.
+                    // Basically, it would mean that there is no initial
+                    // revision, which is incorrect since the object
+                    // HAS revisions.
+
+                    // Fire event
+                    if ( ContentEvent.CREATE.isEnabled() ) EventDispatcher.getInstance().fireVetoableEvent(ContentEvent.CREATE, new ContentEvent(this, token, namespace, objectUri.toString(), revisionDescriptors, revisionDescriptor, revisionContent));
+
+                    // Invoke interceptors
+                    invokeInterceptors(token, revisionDescriptors,
+                                       revisionDescriptor,
+                                       revisionContent, PRE_STORE);
+                    
+                    revisionDescriptor.setModificationDate(revisionDescriptor.getCreationDate());
+                    revisionDescriptor.setModificationUser(
+                        securityHelper.getPrincipal(token).getPath().lastSegment());
+                    objectUri.getStore()
+                        .createRevisionDescriptor(objectUri,
+                                                  revisionDescriptor);
+                }
+            }
+            // Updating the descriptors object
+            revisionDescriptors
+                .setSuccessors(newRevisionNumber, new Vector());
+            revisionDescriptors.setLatestRevision(newRevisionNumber);
+        }
+        
+        // We now store the updated revision descriptors
+        try {
+            objectUri.getStore()
+                .storeRevisionDescriptors(objectUri, revisionDescriptors);
+        } catch (RevisionDescriptorNotFoundException e) {
+            // Problem ...
+            e.printStackTrace();
+        }
+        
+        // Invoke interceptors
+        invokeInterceptors(token, revisionDescriptors, revisionDescriptor,
+                           revisionContent, POST_STORE);
+    }
+        
     /**
      * Create new revision based on a previous revision.
      *

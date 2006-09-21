@@ -30,6 +30,7 @@ import java.util.List;
 import org.apache.slide.common.NamespaceAccessToken;
 import org.apache.slide.common.ServiceAccessException;
 import org.apache.slide.common.SlideException;
+import org.apache.slide.content.ContentImpl;
 import org.apache.slide.content.NodeProperty;
 import org.apache.slide.content.NodeRevisionDescriptor;
 import org.apache.slide.event.EventDispatcher;
@@ -37,6 +38,7 @@ import org.apache.slide.structure.LinkedObjectNotFoundException;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 import org.apache.slide.structure.SubjectNode;
+import org.apache.slide.structure.StructureImpl;
 import org.apache.slide.util.Configuration;
 import org.apache.slide.webdav.WebdavException;
 import org.apache.slide.webdav.WebdavServletConfig;
@@ -201,8 +203,10 @@ public class MkcolMethod
 
             if (!isLockNull) {
                 SubjectNode collection = new SubjectNode();
-                structure.create(slideToken, collection, colName);
-                content.create(slideToken, colName, revisionDescriptor, null);
+                // 9/21/06 JK - Call the simpler (hence more efficient) version of the method.
+                ((StructureImpl) structure).createSimple(slideToken, collection, colName);
+                // 9/21/06 JK - Call the simpler (hence more efficient) version of the method.
+                ((ContentImpl) content).createSimple(slideToken, colName, revisionDescriptor, null);
             }
             else {
                 content.store(slideToken, colName, revisionDescriptor, null);
