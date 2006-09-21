@@ -254,12 +254,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	AccessUtils.deleteCheck(entry);    	
     }
     
-    public void indexEntries(Long binderId) {
-        ProfileBinder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
-        loadProcessor(binder).indexEntries(binder);
-    }
-
     public Map getUsers(Long binderId) {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));

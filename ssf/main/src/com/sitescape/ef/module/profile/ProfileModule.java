@@ -68,7 +68,6 @@ public interface ProfileModule {
 	 */
 	public Collection getUsersFromPrincipals(Set principalIds);
     	   
-    public void indexEntries(Long binderId);
     public UserProperties setUserProperty(Long userId, Long folderId, String property, Object value);
     public UserProperties getUserProperties(Long userId, Long folderId);
     public UserProperties setUserProperty(Long userId, String property, Object value);

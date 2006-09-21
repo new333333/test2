@@ -194,7 +194,7 @@ public class WebUrlUtil {
 		String entryUrl="";
 		try {
 			AdaptedPortletURL url = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", false);
-			url.setParameter("action", "view_entry");
+			url.setParameter("action", WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, entry.getTopFolder().getId().toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 			entryUrl = url.toString();

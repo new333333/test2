@@ -494,7 +494,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     
     //***********************************************************************************************************
-
+    public void indexBinder(Binder binder) {
+   		indexBinder(binder, null, null, false);    	
+    }
+    //***********************************************************************************************************
  
     protected Principal getPrincipal(List users, String userId) {
     	Principal p;
