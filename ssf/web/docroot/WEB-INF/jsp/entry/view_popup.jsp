@@ -18,6 +18,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+<div class="ss_decor-round-corners-top1"><div><div></div></div></div>
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
