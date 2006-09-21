@@ -42,6 +42,11 @@ import com.sitescape.util.Validator;
  *
  */
 public class ViewController  extends SAbstractController {
+	public static final String FORUM_PORTLET="ss_forum";
+	public static final String PRESENCE_PORTLET="ss_presence";
+	public static final String WORKSPACE_PORTLET="ss_workspacetree";
+	public static final String PROFILE_PORTLET="ss_profile";
+	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
@@ -52,12 +57,25 @@ public class ViewController  extends SAbstractController {
 		PortletPreferences prefs = request.getPreferences();
 		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
-			//select type of porlet
-			return new ModelAndView(WebKeys.VIEW_ASPEN_TYPE);
+			PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+			String pName = pConfig.getPortletName();
+			if (pName.contains(FORUM_PORTLET))
+				displayType=FORUM_PORTLET;
+			else if (pName.contains(WORKSPACE_PORTLET))
+				displayType=WORKSPACE_PORTLET;
+			else if (pName.contains(PRESENCE_PORTLET))
+				displayType=PRESENCE_PORTLET;
+			else if (pName.contains(PROFILE_PORTLET))
+				displayType=PROFILE_PORTLET;
+			prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
+			prefs.store();
+			//TODO temporary until we figure out why adding a portlet freezes
+			model.put("ssf_support_files_loaded", "1");
 		}
-		String title = (String)prefs.getValue(WebKeys.PORTLET_PREF_TITLE, null);
-		if (!Validator.isNull(title)) response.setTitle(title);
-		if ("ss_forum".equals(displayType)) {
+//TODO: liferay has a configuration option that handles the title.  Don't know about other portals
+///		String title = (String)prefs.getValue(WebKeys.PORTLET_PREF_TITLE, null);
+//		if (!Validator.isNull(title)) response.setTitle(title);
+		if (FORUM_PORTLET.equals(displayType)) {
 			//Build the toolbar and add it to the model
 			buildForumToolbar(response.getNamespace(), model);
 		
@@ -87,7 +105,7 @@ public class ViewController  extends SAbstractController {
 			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
-		} else if ("ss_workspace".equals(displayType)) {
+		} else if (WORKSPACE_PORTLET.equals(displayType)) {
 			PortletSession ses = WebHelper.getRequiredPortletSession(request);
 			String id = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
 			Workspace binder;
@@ -107,7 +125,7 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
 				
 		    return new ModelAndView("workspacetree/view", model);			
-		} else if ("ss_presence".equals(displayType)) {
+		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
  			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
  			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));

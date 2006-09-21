@@ -2,15 +2,32 @@
 
 <liferay-portlet-app>
 	<portlet>
+		<portlet-name>ss_presence</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
+	<portlet>
 		<portlet-name>ss_forum</portlet-name>
 		<restore-current-view>false</restore-current-view>
 		<maximize-edit>true</maximize-edit>
 		<instanceable>true</instanceable>
 	</portlet>
 	<portlet>
+		<portlet-name>ss_profile</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+	</portlet>
+	<portlet>
 		<portlet-name>ss_administration</portlet-name>
 		<restore-current-view>false</restore-current-view>
 		<maximize-edit>true</maximize-edit>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workspacetree</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
 	</portlet>
 	
 </liferay-portlet-app>

@@ -14,12 +14,9 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_portlet">
+<%@ page import="com.sitescape.ef.util.NLT" %>
 
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_posting_job"/>
-		</portlet:actionURL>">
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 function <portlet:namespace/>setEnable() {
 	if (document.<portlet:namespace/>fm.disabled.checked) {
@@ -29,20 +26,6 @@ function <portlet:namespace/>setEnable() {
 	}
 }
 
-var <portlet:namespace/>_isAliasVisible=false;
-
-function <portlet:namespace/>_toggleAlias(name) {
-   if (<portlet:namespace/>_isAliasVisible) {
-     ss_showHideObj(name, 'hidden', 'none');
-     <portlet:namespace/>_isAliasVisible = false;
-     ss_replaceImage('<portlet:namespace/>_expandgif', '<html:imagesPath />pics/sym_s_expand.gif');
-   } else {
-     ss_showHideObj(name, 'visible', 'block');
-     <portlet:namespace/>_isAliasVisible = true;
-     ss_replaceImage('<portlet:namespace/>_expandgif', '<html:imagesPath />pics/sym_s_collapse.gif');
-   }
-     
-}
 var <portlet:namespace/>_alias_count=0;
 
 function <portlet:namespace/>_addAlias(alias, forums) {
@@ -83,11 +66,19 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 }
 
 </script>
+
+<div class="ss_style ss_portlet">
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+			<portlet:param name="action" value="configure_posting_job"/>
+		</portlet:actionURL>">
+<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
+<br/>
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="incoming.job_title"/></legend>
+
 <input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
 
-<span class="ss_titlebold"><ssf:nlt tag="incoming.job_title" /></span><br/>
 <br/>
-<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
 
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
@@ -100,16 +91,16 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-
-<div class="ss_divider"></div>
-<a href="javascript: ;" onClick="<portlet:namespace/>_toggleAlias('<portlet:namespace/>_alias_div')" >
-<img border="0" src="<html:imagesPath />pics/sym_s_expand.gif" name="<portlet:namespace/>_expandgif" /></a>
-<a href="javascript: ;" onClick="<portlet:namespace/>_toggleAlias('<portlet:namespace/>_alias_div')" >
-<b><ssf:nlt tag="incoming.aliases" /></b></a><br></a>
-
-<div id="<portlet:namespace/>_alias_div" name="<portlet:namespace/>_alias_div" style="visibility:hidden; display:none;">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
+</fieldset>
+<br/>
+<ssf:expandableArea title="<%= NLT.get("incoming.aliases") %>">
+<fieldset class="ss_fieldset">
+<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
+<tr><td>
+<div id="<portlet:namespace/>_alias_div" name="<portlet:namespace/>_alias_div">
 <a class="ss_linkbutton" href="javascript:" onClick="<portlet:namespace/>_addAlias('','');"><ssf:nlt tag="button.add_alias" /></a>
-
+</td></tr><tr><td>
 <table border="0" cellspacing="0" cellpadding="3" class="ss_style ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
 <tbody name="<portlet:namespace/>_alias_body" id="<portlet:namespace/>_alias_body">
 
@@ -120,6 +111,8 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </tr>
 </tBody>
 </table>
+</td></tr></table>
+
 <jsp:useBean id="ssEmailAliases" type="java.util.List" scope="request" />
 <%
 			java.util.HashMap postingMap = new java.util.HashMap();
@@ -159,12 +152,13 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 </c:forEach>
 
 <br/>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
+</fieldset>
+</ssf:expandableArea>
 
-<div class="ss_divider"></div>
 </div>
 <br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 
 </form>
 

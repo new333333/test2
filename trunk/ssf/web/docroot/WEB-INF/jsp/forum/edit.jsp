@@ -30,11 +30,15 @@
 </c:if>
 
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<%
+/* Liferay handles this already
 <table>
 <tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
 </td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
 </td></tr>
 </table>
+*/
+%>
 
 <br>
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums" text="Select the forums to be shown:"/></span>

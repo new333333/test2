@@ -28,7 +28,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			ScheduleInfo config = getAdminModule().getPostingSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));

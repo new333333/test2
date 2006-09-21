@@ -153,7 +153,7 @@ function <portlet:namespace/>_select(alias) {
  <tr align="left"><td class="ss_bold"><ssf:nlt tag="tree.choose_folder"/></td></tr>
  <tr>
   <td>
-	  <ssf:tree treeName="folderTree" treeDocument="${ssFolderDomTree}" 
+	  <ssf:tree treeName="t_${renderResponse.namespace}_folderTree" treeDocument="${ssFolderDomTree}" 
 	    rootOpen="false" 
 	    nodeOpen="<%= parentFolderId %>" highlightNode="${ssFolder.id}" /></td>
  </tr>
