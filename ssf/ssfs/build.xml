@@ -20,7 +20,7 @@
 		<delete includeemptydirs="true" dir="${temp.slide.dir}" failonerror="true"/>
 	</target>
 	
-	<target name="clean" depends="build-common.clean, delete-temp, delete-temp-slide">
+	<target name="clean" depends="build-common.clean, delete-temp">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>
@@ -141,5 +141,15 @@
 		<!--<copy file="${temp.slide.dir}/wck/dist/jakarta-slide-wck-1.0.jar" tofile="${project.dir}/lib/jakarta-slide-wck.jar" />-->
 		<!--<copy file="${temp.slide.dir}/wck/dist/slide-kernel-2.2pre1.jar" todir="${project.dir}/lib/slide-kernel.jar" />-->
 		<!--<copy file="${temp.slide.dir}/dist/slide/lib/slide-jaas-2.2pre1.jar" todir="${project.dir}/lib/slide-jaas.jar" />-->
+	</target>
+	
+	<target name="jong-slide-build-cycle" depends="build-custom-slide-war,deploy,jong-slide-debug-aid" />
+	
+	<target name="jong-slide-debug-aid">
+		<copy todir="C:/slide" overwrite="true">
+			<fileset dir="resources/slide-src" includes="**/*.java" />
+		</copy>
+		<copy file="${temp.dir}/WEB-INF/lib/slide-kernel-2.2pre1.jar" tofile="C:/ss/v8/ssf/lib/slide-kernel.jar" />
+		<copy file="${temp.dir}/WEB-INF/lib/slide-webdavservlet-2.2pre1.jar" todir="C:/ss/v8/ssf/lib" />
 	</target>
 </project>
