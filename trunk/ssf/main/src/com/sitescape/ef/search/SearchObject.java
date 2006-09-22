@@ -1,7 +1,5 @@
 package com.sitescape.ef.search;
 
-import java.io.Serializable;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.WhitespaceAnalyzer;
@@ -12,12 +10,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
-public class SearchObject implements Serializable {
+public class SearchObject {//implements Serializable {
 
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	private String queryString = null;
-	private Query query = null;
 	private static QueryParser qp = null;
 	
 	/**
@@ -29,7 +26,7 @@ public class SearchObject implements Serializable {
 		if (qp == null) {
 			logger.info("QueryParser instantiating new QP");
 			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new WhitespaceAnalyzer());
-			qp.setOperator(QueryParser.DEFAULT_OPERATOR_AND);
+			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		}
 		//}
 	}
@@ -74,11 +71,5 @@ public class SearchObject implements Serializable {
 		} catch (ParseException pe){ return new BooleanQuery();}
 	}
 
-	/**
-	 * @param query The query to set.
-	 */
-	public void setQuery(Query query) {
-		this.query = query;
-	}
 }
 
