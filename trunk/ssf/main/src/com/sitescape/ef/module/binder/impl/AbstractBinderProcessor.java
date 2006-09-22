@@ -644,15 +644,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    	// Invoke pipeline.
 		    	// TODO For now all pipeline executions are synchronous.
 		    	// Asynchronous execution support to be added later.
-	    		try {
-	    			getPipeline().invoke(firstConduit.getSource(), lastConduit.getSink());
-	    		}
-	    		catch(PipelineException e) {
-	    			// Error during pipeline execution. In this case do not propogate
-	    			// the exception up the stakc. Instead we return null. It allows
-	    			// application to proceed with the remaining files. 
-	    			return null;
-	    		}
+	    		getPipeline().invoke(firstConduit.getSource(), lastConduit.getSink());
 		    	
 		        // Get the resulting data of the pipeline execution as a string.
 		        text = lastConduit.getSource().getDataAsString();
@@ -674,7 +666,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
         
         // Add the filename
-        EntityIndexUtils.addFileAttachmentName(indexDoc,fui.getOriginalFilename());        
+        EntityIndexUtils.addFileAttachmentName(indexDoc, fa.getFileItem().getName());        
         
         if(text != null)
         	BasicIndexUtils.addAllText(indexDoc, text);
@@ -682,7 +674,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // TBD Add the filetype and Extension
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
 
-        EntityIndexUtils.addFileExtension(indexDoc,fui.getOriginalFilename());
+        EntityIndexUtils.addFileExtension(indexDoc, fa.getFileItem().getName());
              
         return indexDoc;
     }
