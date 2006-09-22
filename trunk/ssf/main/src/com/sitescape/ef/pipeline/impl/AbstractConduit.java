@@ -193,6 +193,9 @@ public abstract class AbstractConduit implements Conduit {
 				else if(file != null) {
 					return new BufferedInputStream(new FileInputStream(file));
 				}
+				else if(inputstream != null) {
+					return inputstream;
+				}
 				else {
 					return getBuiltinInputStream();
 				}
