@@ -587,7 +587,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        		        		docs.add(indexDoc);
       		        	} catch (Exception ex) {
       		        		//log error but continue
-      		        		logger.error("Error indexing file for entry " + entry + " attachment" + fa + " " + ex.getLocalizedMessage());
+      		        		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
        		        	}
        		        }
       				getCoreDao().evict(entry);
@@ -957,7 +957,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		IndexSynchronizationManager.addDocument(indexDoc);
 	        } catch (Exception ex) {
 		       		//log error but continue
-		       		logger.error("Error indexing file for entry " + entry + " attachment" + fa + " " + ex.getLocalizedMessage());
+		       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
         	}
          }
 	}
