@@ -34,6 +34,22 @@ function ss_turnOffDebugMode() {
 <div class="ss_global_toolbar">
   <ul class="ss_global_toolbar_links ss_font-x-small">
 
+<!-- Search form -->
+	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton">
+		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 
+		  action="<portlet:actionURL>
+			<portlet:param name="action" value="search"/>
+			</portlet:actionURL>">
+		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
+		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+			  <input name="searchText" type="text" class="form-text" /> 
+			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+			    onClick="document.ss_simpleSearchForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
+			    <input type="hidden" name="searchBtn" value="searchBtn"/>
+		  </ssHelpSpot>
+		</form>
+	</li>
+
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
       <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="45"
@@ -77,24 +93,6 @@ function ss_turnOffDebugMode() {
 	</li>
 
   </ul>
-
-<!-- Search form -->
-	<div class="ss_global_toolbar_search">
-		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 
-		  action="<portlet:actionURL>
-			<portlet:param name="action" value="search"/>
-			</portlet:actionURL>">
-		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
-		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-		    <div id="ss_navbarSearchButton">
-			  <input name="searchText" type="text" class="form-text" /> 
-			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-			    onClick="document.ss_simpleSearchForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
-			    <input type="hidden" name="searchBtn" value="searchBtn"/>
-		    </div>
-		  </ssHelpSpot>
-		</form>
-	</div>
 
 
 <c:if test="${empty ss_navbarBottomSeen}">
