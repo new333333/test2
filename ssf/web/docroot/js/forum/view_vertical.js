@@ -254,7 +254,7 @@ function ss_saveEntryHeight(entryHeight) {
 	ss_lastEntryHeight = entryHeight;
     self.document.forms['ss_saveEntryHeightForm'].entry_height.value = entryHeight;
 	var url = ss_saveEntryHeightUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_saveEntryHeightForm")
 	ajaxRequest.setPostRequest(ss_postEntryHeightRequest);
 	ajaxRequest.setUsePOST();

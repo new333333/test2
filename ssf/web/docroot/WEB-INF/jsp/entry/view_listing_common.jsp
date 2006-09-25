@@ -189,7 +189,7 @@ function ss_viewEntrySaveSize() {
 			self.opener.ss_viewEntryPopupWidth = ss_getWindowWidth()
 		}
 	 	var url = ss_saveViewEntryWidthUrl;
-		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("entry_height", ss_getWindowHeight())
 		ajaxRequest.addKeyValue("entry_width", ss_getWindowWidth())
 		//ajaxRequest.setEchoDebugInfo();

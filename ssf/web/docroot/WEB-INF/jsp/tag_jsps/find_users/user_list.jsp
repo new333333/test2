@@ -62,7 +62,7 @@ function ss_userListSearch(text, elementName, userGroupType) {
     	actionUrl="false" >
 		<ssf:param name="operation" value="user_list_search" />
     	</ssf:url>"
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
 	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	ajaxRequest.addKeyValue("searchText", searchText)
