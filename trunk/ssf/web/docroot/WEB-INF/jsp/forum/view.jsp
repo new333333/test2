@@ -84,7 +84,7 @@ function <portlet:namespace/>_getUnseenCounts() {
     	actionUrl="true" >
 		<ssf:param name="operation" value="unseen_counts" />
     	</ssf:url>"
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("<portlet:namespace/>_unseenCountForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preRequest);

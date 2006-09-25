@@ -2015,7 +2015,7 @@ var ss_helpSystem = {
 		}
 		var url = ss_helpSystemUrl;
 		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  id);
-		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("operation2", id)
 		ajaxRequest.addKeyValue("ss_help_panel_id", panelId)
 		ajaxRequest.setData("id", id)
@@ -2246,7 +2246,7 @@ function ss_showHideAllDashboardComponents(obj, op) {
 	
 	ss_setupStatusMessageDiv()
 	var url = ss_showHideAllDashboardComponentsUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("operation", op)
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
@@ -2630,7 +2630,7 @@ function ss_saveFavorites(id) {
 		}
 	}
 	var url = ss_saveFavoritesUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("movedItemId", ss_lastDropped)
 	ss_lastDropped = null;
 	ajaxRequest.addKeyValue("favorites", s)
@@ -2656,7 +2656,7 @@ function ss_addForumToFavorites() {
 	var binderId = '${ssBinder.id}';
 	var action = '${action}';
 	var url = ss_addFavoriteBinderUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
@@ -2670,7 +2670,7 @@ function ss_addFavoriteCategory() {
 	if (s == "") return;
 	formObj.new_favorites_category.value = "";
 	var url = ss_addFavoritesCategoryUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("category", s)
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
@@ -2696,7 +2696,7 @@ function ss_showFavoritesPane() {
 	ss_hideObj("ss_favorites_form_div");
 
 	var url = ss_getFavoritesTreeUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
 	ajaxRequest.setUsePOST();
@@ -2910,7 +2910,7 @@ function ss_savePenletLayout() {
 	ss_setupStatusMessageDiv()
 
 	var url = ss_saveDashboardLayoutUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_dashboard_layout_form");
 	ajaxRequest.setPostRequest(ss_postSavePenletLayoutRequest);
 	ajaxRequest.setUsePOST();
@@ -3187,7 +3187,7 @@ function ss_addTab(obj, type, binderId, entryId) {
 	if (entryId != "") url = ss_replaceSubStr(url, "ss_entryid_place_holder",  entryId);
 	url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
 	url = ss_replaceSubStr(url, "ss_tab_type_place_holder",  type);
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.id);
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_changeTabDone);
@@ -3209,7 +3209,7 @@ function ss_deleteTab(obj, tabId) {
 			//Now tell the server which tab got deleted
 			var url = ss_deleteTabUrl;
 			url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
-			var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 			ajaxRequest.setData("tabId", tabId)
 			//ajaxRequest.setEchoDebugInfo();
 			ajaxRequest.setPostRequest(ss_changeTabDone);
@@ -3260,7 +3260,7 @@ function ss_showTab(tabId, saveToServer) {
 		//Now tell the server which tab got deleted
 		var url = ss_setCurrentTabUrl;
 		url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
-		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setData("tabId", tabId)
 		//ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPostRequest(ss_changeTabDone);

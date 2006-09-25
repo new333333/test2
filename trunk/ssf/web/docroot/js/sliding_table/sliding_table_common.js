@@ -185,7 +185,7 @@ function ss_saveSlidingTableCoords() {
     ss_debug('Save col widths: ' + s)
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = ss_saveColumnPositionsUrl;
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_columnPositionForm")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preSlidingTableRequest);

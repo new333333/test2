@@ -178,7 +178,11 @@ public class Tabs {
 		tab.put(TYPE, QUERY);
 		tab.put(QUERY_DOC, query);
 		tab.put(PAGE, page);
-		tab.put(TITLE, NLT.get("tabs.search"));
+		if (options.containsKey(TITLE)) {
+			tab.put(TITLE, new String((String) options.get(TITLE)));
+		} else {
+			tab.put(TITLE, NLT.get("tabs.search"));
+		}
 		tab.put(ICON, "pics/sym_s_search.gif");
 		tab.remove(BINDER_ID);
 		tab.remove(ENTRY_ID);

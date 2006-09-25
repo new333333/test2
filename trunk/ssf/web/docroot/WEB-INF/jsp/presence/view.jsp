@@ -117,7 +117,7 @@ function ${ssNamespace}_getPresence (timeout) {
     	action="view_presence" 
     	actionUrl="false" >
     	</ssf:url>"
-	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("${ssNamespace}_presenceForm");
 	ajaxRequest.setData("timeout", timeout);
 	//ajaxRequest.setEchoDebugInfo();
