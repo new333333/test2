@@ -63,7 +63,7 @@ var ss_currentTab = "${ss_tabs.current_tab}";
 		  </c:if>
 		  <c:if test="${tab.type == 'query'}">
 		    href="<ssf:url 
-  				action="view_search_results">
+  				action="view_search_results_listing">
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>
