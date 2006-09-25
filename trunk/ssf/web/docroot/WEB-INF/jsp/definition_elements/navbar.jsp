@@ -87,10 +87,10 @@ function ss_turnOffDebugMode() {
 		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		    <div id="ss_navbarSearchButton">
-			  <input name="searchText" type="text" class="form-text" /> <input class="go" 
-			    name="searchBtn" type="image" value="go" 
-			    src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/go.gif" 
-			    onClick="document.ss_simpleSearchForm.submit();"/>
+			  <input name="searchText" type="text" class="form-text" /> 
+			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+			    onClick="document.ss_simpleSearchForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
+			    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		    </div>
 		  </ssHelpSpot>
 		</form>
