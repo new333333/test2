@@ -53,6 +53,7 @@ import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.util.LongIdComparator;
 /**
  * @author Jong Kim
  *
@@ -498,9 +499,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	    getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
-       				List<Long> ids = new ArrayList();
-       		    	for (Principal p : entries) {
-       		    		ids.add(p.getId());
+                	//ids will be sorted
+                	TreeSet<Principal> sorted = new TreeSet(new LongIdComparator());
+      		    	sorted.addAll(entries);
+      		    	List<Long> ids = new ArrayList();
+      		    	//ids will now be in order
+      		    	for (Principal p : sorted) {
+      		    		ids.add(p.getId());
        		    	}
        		    	List<Membership> result = session.createCriteria(Membership.class)
                  		.add(Expression.in("userId", ids))
@@ -510,7 +515,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        		    	for (Long pId: ids) {
 		    			try {
 		    				//skip if it is a group
-		       				User u = (User)getCoreDao().load(Principal.class, pId);
+		       				User u = (User)getCoreDao().load(User.class, pId);
 		       				List groups = new ArrayList();
 		       				while (!result.isEmpty()) {
 		       					Membership m = result.get(0);
@@ -526,7 +531,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		       					} else {break;}
 		       				}
 		       				u.setIndexMemberOf(groups);
-		    			} catch (Exception ex) {};
+		    			} catch (Exception ex) {
+		    				//remove membership if belongs to this it
+		    				while (!result.isEmpty() && pId.equals(result.get(0).getUserId())) {
+		    					result.remove(0);
+		    				}
+		    			};
       		    		
        		    	}
 					return null;

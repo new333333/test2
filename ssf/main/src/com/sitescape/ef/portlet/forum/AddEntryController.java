@@ -108,7 +108,6 @@ public class AddEntryController extends SAbstractController {
 	    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 	    	request.setAttribute(WebKeys.URL_ENTRY_ID,entryId.toString());
 	    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
-	    	model.put(WebKeys.DEFINITION_ENTRY, entry);
 	    	Folder folder = entry.getParentFolder();
 	    	model.put(WebKeys.FOLDER, folder); 
 				

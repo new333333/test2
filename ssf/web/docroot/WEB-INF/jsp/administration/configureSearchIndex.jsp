@@ -25,9 +25,11 @@
 			  <portlet:param name="action" value="configure_index"/>
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
 <br>
-<br>
-<span class="ss_bold"><ssf:nlt tag="forum.selectIndexForums" text="Select the forums to be re-indexed:"/></span>
+<span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
 <br>
 <br>
 <a class="ss_linkButton ss_smallprint" 
@@ -72,9 +74,11 @@ function ss_selectAll(formName, prefix, newState) {
 >Clear all</a>
 <br>
 <br>
+<div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
 </form>
 <br>
 </td></tr></table>
