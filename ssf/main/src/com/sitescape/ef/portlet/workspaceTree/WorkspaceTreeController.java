@@ -34,6 +34,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 
 /**
@@ -47,14 +48,16 @@ public class WorkspaceTreeController extends SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);						
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+
 		Map<String,Object> model = new HashMap<String,Object>();
 		try {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {}
 
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);						
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
 			PortletURL reloadUrl = response.createRenderURL();
@@ -70,7 +73,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Map formData = request.getParameterMap();
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
 
  		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
@@ -88,6 +90,17 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
+
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		if (tabId != null) {
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
+		} else {
+			tabs.setCurrentTab(tabs.setTab(binder));
+		}
+		model.put(WebKeys.TABS, tabs.getTabs());
+
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -100,6 +113,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
 				userProperties, model);
+		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;

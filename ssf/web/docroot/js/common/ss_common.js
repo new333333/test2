@@ -117,6 +117,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_dashboardSliderObj = null;
 	var ss_dashboardSliderTargetObj = null;
 	var ss_dashboardSliderObjEndCoords = null;
+	
+	var ss_currentTab = 0;
 		
 }
 var ss_common_loaded = 1;
@@ -1166,9 +1168,7 @@ function ss_NoHideDivOnNextClick(divName) {
 }
 
 function ss_showDiv(divName) {
-    //Hide any area that has elements that might bleed through
-    ss_hideSpannedAreas()
-     
+	if (document.getElementById(divName) == null) return;
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
@@ -1183,13 +1183,11 @@ function ss_showDiv(divName) {
 }
 
 function ss_hideDiv(divName) {
-    document.getElementById(divName).style.visibility = "hidden";
+	if (document.getElementById(divName))
+			document.getElementById(divName).style.visibility = "hidden";
     divToBeDelayHidden[ss_divBeingShown] = null
     ss_divBeingShown = null;
     
-    //Show any spanned areas that may have been turned off
-    ss_showSpannedAreas()
-
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
@@ -1431,16 +1429,10 @@ function m_hideSpannedArea() {
 }
 
 function ss_toggleSpannedAreas(spanName,newValue) {
-    if (isNSN6 || isMoz5) {
-        if (document.getElementById(spanName) != null) {
-            document.getElementById(spanName).style.visibility = newValue;
-        }    
-    } else {  
-        if (self.document.layers && document.layers[spanName] != null) {
-            self.document.layers[spanName].visibility = newValue;
-        } else if (self.document.all && document.all[spanName] != null) {
-            self.document.all[spanName].style.visibility = newValue;
-        }
+    if (self.document.layers && document.layers[spanName] != null) {
+        self.document.layers[spanName].visibility = newValue;
+    } else if (document.getElementById(spanName) != null) {
+        document.getElementById(spanName).style.visibility = newValue;
     }
 }
 
@@ -3176,72 +3168,35 @@ function ss_hideSubmenu(obj) {
 
 // Tabs
 
-function ss_addTab(type, title, icon, url, onclick) {
-	var table = document.createElement("table")
-	table.style.backgroundColor = "transparent";
-	table.setAttribute("cellspacing", "0");
-	table.setAttribute("cellpadding", "0");
-	var tbody = document.createElement("tbody");
-	table.appendChild(tbody);
-	var tr = document.createElement("tr");
-	tbody.appendChild(tr);
+function ss_addTab(obj, type, binderId, entryId) {
+	if (binderId == null) binderId = "";
+	if (entryId == null) entryId = "";
+	ss_setupStatusMessageDiv();
+	var tabId = ss_nextTabNumber;
+	ss_nextTabNumber++;
+	//Create the data div
+	var dataDivId = "ss_tabDataDiv" + tabId;
+	dataDivObj = document.createElement("div");
+	dataDivObj.id = dataDivId;
+	var dataDiv0 = document.getElementById("ss_tabDataDiv0");
+	dataDiv0.parentNode.insertBefore(dataDivObj, dataDiv0);
 	
-	//create the left rounded edge
-	var tdLeft = document.createElement("td");
-	tr.appendChild(tdLeft);
-	tdLeft.className = "ss_tabs_td_left";
-	tdLeft.setAttribute("valign", "middle");
-	var img = document.createElement("img");
-	img.className = "ss_tabs_corner";
-	tdLeft.appendChild(img);
-	img.setAttribute("src", ss_1pix);
-	
-	//create the tab center
-	var td = document.createElement("td");
-	tr.appendChild(td);
-	td.className = "ss_tabs_td";
-	td.setAttribute("valign", "middle");
-	td.setAttribute("nowrap", "true");
-	if (icon != "") {
-		var img = document.createElement("img");
-		td.appendChild(img);
-		img.setAttribute("src", icon);
-	}
-	var a = document.createElement("a");
-	td.appendChild(a);
-	a.setAttribute("href", "javascript: if("+onclick+") self.location.href='"+url+"';");
-	var span = document.createElement("span");
-	a.appendChild(span);
-	span.appendChild(document.createTextNode(title));
-	
-	var a2 = document.createElement("a");
-	td.appendChild(a2);
-	a2.setAttribute("href", "javascript: ss_deleteTab(this);");
-	var img = document.createElement("img");
-	a2.appendChild(img);
-	img.setAttribute("src", ss_tabs_delete_icon);
-	
-	//create the right rounded edge
-	var tdRight = document.createElement("td");
-	tr.appendChild(tdRight);
-	tdRight.className = "ss_tabs_td_right";
-	tdRight.setAttribute("valign", "middle");
-	var img = document.createElement("img");
-	img.className = "ss_tabs_corner";
-	tdRight.appendChild(img);
-	img.setAttribute("src", ss_1pix);
-	
-	var tabbarTr = document.getElementById("ss_tabbar_tr");
-	var tabbarTrTd = document.createElement("td");
-	tabbarTrTd.appendChild(table);
-	tabbarTr.appendChild(tabbarTrTd);
-	
-	//Now, tell the server which tab got created
-	
-	return a;
+	var formObj = ss_getContainingForm(obj);
+	var url = ss_addTabUrl;
+	if (binderId != "") url = ss_replaceSubStr(url, "ss_binderid_place_holder",  binderId);
+	if (entryId != "") url = ss_replaceSubStr(url, "ss_entryid_place_holder",  entryId);
+	url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
+	url = ss_replaceSubStr(url, "ss_tab_type_place_holder",  type);
+	var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addFormElements(formObj.id);
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_changeTabDone);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
 }
-
-function ss_deleteTab(obj) {
+	
+function ss_deleteTab(obj, tabId) {
+	ss_setupStatusMessageDiv();
 	//Check if this is pointing to a tab
 	var tabTdObject = obj.parentNode;
 	if (tabTdObject.className && tabTdObject.className.indexOf("ss_tabs_td") >= 0) {
@@ -3252,11 +3207,30 @@ function ss_deleteTab(obj) {
 			tabParentTdObject.parentNode.removeChild(tabParentTdObject)
 			
 			//Now tell the server which tab got deleted
+			var url = ss_deleteTabUrl;
+			url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
+			var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+			ajaxRequest.setData("tabId", tabId)
+			//ajaxRequest.setEchoDebugInfo();
+			ajaxRequest.setPostRequest(ss_changeTabDone);
+			ajaxRequest.setUsePOST();
+			ajaxRequest.sendRequest();  //Send the request
 		}
 	}
 }
+function ss_changeTabDone(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+	ss_showTab(ss_currentTab, false);
+}
 
-function ss_showTab(obj) {
+function ss_showTab(tabId, saveToServer) {
+	return true;
+	
+	var obj = document.getElementById("ss_tabbar_td" + tabId);
+	if (obj == null) return;
 	var tabTdObject = obj.parentNode;
 	var tabTrObject = tabTdObject.parentNode;
 	//If already viewing the selected tab, then go to the tab's url
@@ -3273,7 +3247,27 @@ function ss_showTab(obj) {
 		var cn = tabTds[i].className.replace(/_active/, "")
 		tabTds[i].className = cn + "_active"
 	}
-	tabTdObject.className = "ss_tabs_td_active";
+	
+	//Hide the old tab and show the new one
+	ss_debug("Hide tab "+ss_currentTab)
+	ss_hideDiv("ss_tabDataDiv"+ss_currentTab);
+	ss_debug("Show tab "+tabId)
+	ss_showDiv("ss_tabDataDiv"+tabId);
+	ss_currentTab = tabId;
+
+	if (saveToServer == true) {
+		ss_setupStatusMessageDiv();
+		//Now tell the server which tab got deleted
+		var url = ss_setCurrentTabUrl;
+		url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
+		var ajaxRequest = new AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.setData("tabId", tabId)
+		//ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setPostRequest(ss_changeTabDone);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	}
+	
 	return false;
 }
 
@@ -3281,7 +3275,5 @@ function ss_showTab(obj) {
 //Search functions from the navbar
 
 function ss_doSearch(obj, title) {
-	var formObj = ss_getContainingForm(obj);
-	tabObj = ss_addTab("search", title, "", "#", "ss_showTab(this)");
-	ss_showTab(tabObj);
+	ss_addTab(obj, "query");
 }

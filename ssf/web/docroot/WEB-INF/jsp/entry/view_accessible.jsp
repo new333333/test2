@@ -1,4 +1,5 @@
 <% //view a folder forum in accessible mode %>
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 
 <%
 //Get the folder type of this definition (folder, file, or event)
@@ -17,6 +18,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
+<div class="ss_clear"></div>
 
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 <div class="ss_decor-round-corners-top1"><div><div></div></div></div>
@@ -32,6 +34,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 </c:if>
 
 <div class="ss_content_inner">
+<c:if test="${!ss_showSearchResults}">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
@@ -39,6 +42,10 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />
+</c:if>
+<c:if test="${ss_showSearchResults}">
+<%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
+</c:if>
 </div>
 
 <script type="text/javascript">

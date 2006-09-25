@@ -18,6 +18,7 @@
 	<bean id="definitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
 	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyBinderController" />
 	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyDashboardController" />
+	<bean id="searchController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.SearchController" />
 
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
@@ -44,6 +45,7 @@
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
+						<entry key="search"><ref bean="searchController"/></entry>
 
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
@@ -55,6 +57,7 @@
 						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
 						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
 						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>
+						<entry key="view_search_results_listing"><ref bean="searchController"/></entry>
 						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
 						<entry key="view_presence"><ref bean="updatePresenceController"/></entry>
 						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
