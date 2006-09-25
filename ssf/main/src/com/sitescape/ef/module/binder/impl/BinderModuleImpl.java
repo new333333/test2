@@ -343,6 +343,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
     	ObjectBuilder.updateObject(s, updates);
     }	
+
+	public List executeSearchQuery(Document searchQuery) {
+		Binder binder = null;
+		return executeSearchQuery(binder, searchQuery);
+	}
 	public List executeSearchQuery(Binder binder, Document searchQuery) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
