@@ -1,4 +1,6 @@
-<Context path="" docBase="../liferay" debug="0" reloadable="true" crossContext="true">
+<!-- SiteScape: Turn on cross context -->
+<Context path="" crossContext="true">
+	<!-- SiteScape: Resource parameters changed -->
 	<Resource
 		name="jdbc/LiferayPool"
 		auth="Container"
