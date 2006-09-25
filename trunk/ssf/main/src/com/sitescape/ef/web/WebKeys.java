@@ -50,6 +50,7 @@ public class WebKeys {
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
 	public static final String URL_RANDOM = "random";
+	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
@@ -76,6 +77,7 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
+	public static final String ACTION_VIEW_SEARCH_RESULTS_LISTING = "view_search_results_listing";
 	public static final String ACTION_VIEW_WS_LISTING = "view_ws_listing";
 	public static final String ACTION_VIEW_FOLDER_ENTRY = "view_folder_entry";
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
@@ -102,10 +104,12 @@ public class WebKeys {
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
       
+    public static final String FORUM_OPERATION_ADD_TAB="add_tab";
     public static final String FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
     public static final String FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
     public static final String FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
+    public static final String FORUM_OPERATION_DELETE_TAB="delete_tab";
 	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
@@ -133,6 +137,7 @@ public class WebKeys {
 	public static final String FORUM_OPERATION_SAVE_ENTRY_HEIGHT = "save_entry_height";
 	public static final String FORUM_OPERATION_SAVE_FOLDER_COLUMNS = "save_folder_columns";
 	public static final String FORUM_OPERATION_SAVE_RATING = "save_rating";
+    public static final String FORUM_OPERATION_SET_CURRENT_TAB="set_current_tab";
 	public static final String FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String FORUM_OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
@@ -296,10 +301,15 @@ public class WebKeys {
     public static final String SEARCH_FORM_SEARCH_FILTERS="ss_searchSearchForms";
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
+    public static final String SEARCH_RESULTS="ss_searchResults";
+    public static final String SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
+    public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SUBSCRIPTION="ssSubscription";
+    public static final String TABS="ss_tabs";
+    public static final String TAB_ID="ss_tab_id";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
@@ -365,6 +375,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
+    public static final String VIEW_SEARCH_RESULTS="binder/view_search_results";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     //servlet paths
