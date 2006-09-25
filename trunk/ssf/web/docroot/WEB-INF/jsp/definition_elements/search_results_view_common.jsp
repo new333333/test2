@@ -112,10 +112,12 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 
  <c:if test="${!empty ssFolderColumns['folder']}">
   <ssf:slidingTableColumn>
-    <a href="<ssf:url 
+    <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'user'}">
+      <a href="<ssf:url 
   		folderId="${entry1._binderId}" 
   		action="view_folder_listing"/>" 
-    ><span <%= seenStyle %>>${entry1._binderId}</span>
+      ><span <%= seenStyle %>>${entry1._binderId}</span>
+    </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -134,13 +136,32 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-    <a href="<ssf:url     
-    adapter="<%= useAdaptor2 %>" 
-    portletName="ss_forum" 
-    folderId="${entry1._binderId}" 
-    action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
+    <a 
+      <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'user'}">
+        href="<ssf:url     
+          adapter="<%= useAdaptor2 %>" 
+          portletName="ss_forum" 
+          folderId="${entry1._binderId}" 
+          action="view_folder_entry" 
+          entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+        onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
+      </c:if>
+      <c:if test="${entry1._entityType == 'folder'}">
+        href="<ssf:url     
+          adapter="false" 
+          portletName="ss_forum" 
+          folderId="${entry1._docId}" 
+          action="view_folder_listing"
+          actionUrl="true" />" 
+      </c:if>
+      <c:if test="${entry1._entityType == 'workspace'}">
+        href="<ssf:url     
+          adapter="false" 
+          portletName="ss_forum" 
+          folderId="${entry1._docId}" 
+          action="view_ws_listing"
+          actionUrl="true" />" 
+      </c:if>
     onMouseOver="ss_showTitleOptions(this, '${entry1._docId}');"
     onMouseOut="ss_hideTitleOptions(this, '${entry1._docId}');"
     ><c:if test="${empty entry1.title}"
