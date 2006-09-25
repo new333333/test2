@@ -32,6 +32,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -104,6 +105,12 @@ public class ViewController  extends SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
+			
+			//Set up the tabs
+			Tabs tabs = new Tabs(request);
+			tabs.setTab(binder);
+			model.put(WebKeys.TABS, tabs);
+			
 			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
 			PortletSession ses = WebHelper.getRequiredPortletSession(request);
@@ -124,7 +131,8 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
 				
-		    return new ModelAndView("workspacetree/view", model);			
+		    return new ModelAndView("workspacetree/view", model);
+		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
  			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
