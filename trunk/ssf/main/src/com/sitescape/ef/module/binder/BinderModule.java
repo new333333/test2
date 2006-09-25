@@ -99,6 +99,7 @@ public interface BinderModule {
 
     public void moveBinder(Long fromId, Long toId);
     public void checkMoveBinderAllowed(Binder binder);
+    public List executeSearchQuery(Document searchQuery);
     public List executeSearchQuery(Binder binder, Document searchQuery);
 
     public void indexTree(Long binderId);
