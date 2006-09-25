@@ -1,5 +1,6 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 
@@ -47,12 +48,14 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
+<div class="ss_clear"></div>
 
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 <div class="ss_decor-round-corners-top1"><div><div></div></div></div>
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
+			  <div id="ss_tabDataDiv0">
 				
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -62,13 +65,19 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 </c:if>
 
 <div class="ss_content_inner">
+<c:if test="${!ss_showSearchResults}">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />
+</c:if>
+<c:if test="${ss_showSearchResults}">
+<%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
+</c:if>
 </div>
+			  </div>
 			</div>
 		</div>
 	</div>

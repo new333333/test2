@@ -80,13 +80,16 @@ function ss_turnOffDebugMode() {
 
 <!-- Search form -->
 	<div class="ss_global_toolbar_search">
-		<form action="#">
+		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 
+		  action="<portlet:actionURL>
+			<portlet:param name="action" value="search"/>
+			</portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		    <div id="ss_navbarSearchButton">
-			  <input name="" type="text" class="form-text" /> <input class="go" name="" type="image" value="go" 
+			  <input name="searchText" type="text" class="form-text" /> <input class="go" name="okBtn" type="image" value="go" 
 			    src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/go.gif" 
-			    onClick="ss_doSearch(this, '<ssf:nlt tag="navigation.search"/>');return false;"/>
+			    onClick="document.ss_simpleSearchForm.submit();"/>
 		    </div>
 		  </ssHelpSpot>
 		</form>

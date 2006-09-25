@@ -2,6 +2,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
@@ -32,12 +35,15 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
 				
-<div class="ss_content_inner">
-
 <% // Workspace toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
+<div class="ss_content_inner">
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar" />
+</div>
 </c:if>
+
+<div class="ss_content_inner">
+<c:if test="${!ss_showSearchResults}">
 
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
@@ -49,6 +55,10 @@ var ss_reloadUrl = "${ss_reloadUrl}";
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   entry="${ssBinder}" />
+</c:if>
+<c:if test="${ss_showSearchResults}">
+<%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
+</c:if>
 </div>
 
 			</div>

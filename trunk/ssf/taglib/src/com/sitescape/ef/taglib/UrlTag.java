@@ -84,10 +84,6 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			//Get the SiteScape url parameters
 			Map params = new HashMap();
 			
-			if (!Validator.isNull(action)) {
-				params.put("action", new String[] {this.action});
-			}
-			
 			if (!Validator.isNull(binderId)) {
 				params.put(WebKeys.URL_BINDER_ID, new String[] {binderId});
 			} 
@@ -99,6 +95,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			} 
 
 			if (!Validator.isNull(webPath)) {
+				if (!Validator.isNull(action)) {
+					params.put("action", new String[] {this.action});
+				}
+				
 				String webUrl = WebUrlUtil.getServletRootURL(req) + webPath + "?";
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
@@ -115,6 +115,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				pageContext.getOut().print(webUrl);
 			
 			} else if (this.adapter) {
+				if (!Validator.isNull(action)) {
+					params.put("action", new String[] {this.action});
+				}
+				
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, this.actionUrl);
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
@@ -141,6 +145,9 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				portletURL.setParameters(params);
 				if (_params != null) {
 					portletURL.setParameters(_params);
+				}
+				if (!Validator.isNull(action)) {
+					portletURL.setParameter("action", new String[] {this.action});
 				}
 
 				String portletURLToString = portletURL.toString();

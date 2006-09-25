@@ -28,6 +28,7 @@ var ss_forumColorsCssUrl;
 var ss_forumColorDebugCssUrl;
 var ss_forumColorBlackAndWhiteCssUrl;
 var ss_helpSystemUrl;
+var ss_addTabUrl;
 var ss_not_logged_in;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -63,6 +64,36 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<ssf:param name="operation2" value="ss_help_panel_id_place_holder" />
 		</ssf:url>";
 	
+	ss_addTabUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="add_tab" />
+		<ssf:param name="binderId" value="ss_binderid_place_holder" />
+		<ssf:param name="entryId" value="ss_entryid_place_holder" />
+		<ssf:param name="tabId" value="ss_tabid_place_holder" />
+		<ssf:param name="type" value="ss_tab_type_place_holder" />
+		</ssf:url>";
+
+	ss_deleteTabUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="delete_tab" />
+		<ssf:param name="tabId" value="ss_tabid_place_holder" />
+		</ssf:url>";
+
+	ss_setCurrentTabUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="set_current_tab" />
+		<ssf:param name="tabId" value="ss_tabid_place_holder" />
+		</ssf:url>";
+
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 }
@@ -162,7 +193,7 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 			linkEle.setAttribute("rel", "alternate");
 			linkEle.setAttribute("type", "application/rss+xml");
 			linkEle.setAttribute("title", "RSS feed");
-			linkEle.setAttribute("src", "${ssFooterToolbar.RSS.url}");
+			linkEle.setAttribute("href", "${ssFooterToolbar.RSS.url}");
 			document.getElementsByTagName("head")[0].appendChild(linkEle);
 		</c:if>
 	}
@@ -192,7 +223,6 @@ if (!ss_css_files_loaded || ss_css_files_loaded == undefined || ss_css_files_loa
 }
 var ss_css_files_loaded = 1;
 
-<c:set var="ss_color_theme" value="debug" scope="request"/>
 <c:set var="ss_loadCssStylesInline" value="true" scope="request"/>
 <c:set var="ss_skipCssStyles" value="true" scope="request"/>
 <jsp:include page="/WEB-INF/jsp/common/ssf_css.jsp" />

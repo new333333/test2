@@ -23,7 +23,10 @@ import com.sitescape.ef.web.WebKeys;
  * @author Peter Hurley
  *
  */
-public class FilterHelper {   	
+public class FilterHelper {  
+	//Search form field names
+	public final static String SearchText = "searchText";
+	
    	//Search filter document element names
    	public final static String FilterRootName = "searchFilter";
    	public final static String FilterName = "filterName";
@@ -53,6 +56,26 @@ public class FilterHelper {
    	public final static String FilterWorkflowDefIdCaptionField = "ss_workflow_def_id_caption";
    	public final static String FilterWorkflowStateNameField = "ss_stateNameData";
 	
+	//Routine to parse the results of submitting the search form
+   	static public Document getSearchQuery (PortletRequest request) throws Exception {
+		Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(FilterRootName);
+		Map formData = request.getParameterMap();
+
+		Element filterTerms = sfRoot.addElement(FilterTerms);
+
+		//Get the search text
+		String searchText = PortletRequestUtils.getStringParameter(request, SearchText, "");
+		if (!searchText.equals("")) {
+			Element filterTerm = filterTerms.addElement(FilterTerm);
+			filterTerm.addAttribute(FilterType, FilterTypeSearchText);
+			filterTerm.addText(searchText);
+		}
+
+		//searchFilter.asXML();
+		return searchFilter;
+	}
+   	
 	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();

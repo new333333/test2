@@ -18,7 +18,7 @@ boolean reloadCaller = false;
 if (!ssReloadUrl.equals("")) reloadCaller = true;
 
 boolean isViewEntry = false;
-if (!op.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op.equals(WebKeys.ACTION_VIEW_PROFILE_LISTING)) {
+if (op != null && !op.equals(WebKeys.ACTION_VIEW_FOLDER_LISTING) && !op.equals(WebKeys.ACTION_VIEW_PROFILE_LISTING)) {
 	isViewEntry = true;
 }
 	

@@ -57,17 +57,23 @@ var ss_saveColumnPositionsUrl = "<ssf:url
 <script type="text/javascript">
 <%
 	//Get the user's column positions (if set)
+	String folderColumnPositions = null;
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
+	Map userProperties = (Map)  request.getAttribute("ssUserProperties");
 	if (userFolderProperties != null) {
 		Map userFolderPropertiesMap = userFolderProperties.getProperties();
 		if (userFolderPropertiesMap != null && userFolderPropertiesMap.containsKey("folderColumnPositions")) {
-			String folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
-			String[] columnPositions = folderColumnPositions.split(" ");
-			for (int i = 0; i < columnPositions.length; i++) {
+			folderColumnPositions = (String) userFolderPropertiesMap.get("folderColumnPositions");
+		}
+	} else if (userProperties != null && userProperties.containsKey("folderColumnPositions")) {
+		folderColumnPositions = (String) userProperties.get("folderColumnPositions");
+	}
+	if (folderColumnPositions != null) {
+		String[] columnPositions = folderColumnPositions.split(" ");
+		for (int i = 0; i < columnPositions.length; i++) {
 %>
 ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 <%		
-			}
 		}
 	}
 %>
