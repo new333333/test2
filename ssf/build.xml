@@ -49,7 +49,6 @@
 
 	<target name="clean">
 		<delete dir="${temp.dir}" />
-		<delete dir="dist" />
 		<delete dir="${docs.api.dir}" />
 		
 		<ant dir="util" target="clean" />
@@ -215,7 +214,7 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		<mkdir dir="${temp.dir}/common/endorsed" />
 		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
 		<copy file="lib/xercesImpl.jar" todir="${temp.dir}/common/endorsed" />
-		<delete file="temp/liferay/WEB-INF/lib/xercesImpl.java" />
+		<delete file="temp/webapps/ROOT/WEB-INF/lib/xercesImpl.java" />
 		
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-${forum.version}-liferay-tomcat-${liferay.version.tomcat}.zip" failonerror="false" />
@@ -223,6 +222,11 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>
+	
+	<target name="jong-copy-liferay-tomcat-bundle-archives-to-aspen-lib-for-checkin" depends="init">
+		<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/portal-ejb.jar" todir="lib"/>
+		<!--<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/util-java.jar" todir="lib"/>-->
 	</target>
 	
 	<!-- Build Aspen kit bundled with Liferay-JBoss-Tomcat -->
@@ -253,6 +257,7 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		-->
 
 		<antcall target="clean" />
+		<delete dir="dist" />
 		<antcall target="build" />
 		<ant dir="tools/sql" target="generate-all-create-scripts" />
 		<!--  4/18/06 JK temporarily commented out (until the build is

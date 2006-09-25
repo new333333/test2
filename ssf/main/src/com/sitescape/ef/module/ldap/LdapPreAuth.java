@@ -4,8 +4,8 @@ package com.sitescape.ef.module.ldap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.liferay.portal.auth.AuthException;
-import com.liferay.portal.auth.Authenticator;
+import com.liferay.portal.security.auth.AuthException;
+import com.liferay.portal.security.auth.Authenticator;
 
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.ConfigurationException;

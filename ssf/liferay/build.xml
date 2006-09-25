@@ -33,10 +33,13 @@
 			<then>
 				<path id="deploy.liferay.classpath">
 					<pathelement location="${env.ANT_HOME}/lib/ant.jar" />
-					<fileset dir="${app.server.lib.dir}" />
+					<!--<fileset dir="../lib" includes="*.jar" />-->
+					<fileset dir="${app.server.dir}/common/endorsed" includes="*.jar" />
+					<fileset dir="${app.server.lib.dir}" includes="*.jar" />
+					<fileset dir="${app.server.dir}/common/lib/ext" includes="*.jar" />
 					<pathelement location="${app.server.dir}/common/lib/servlet-api.jar" />
 				</path>
-				<property name="deploy.liferay.webinf" value="${app.server.dir}/liferay/WEB-INF" />
+				<property name="deploy.liferay.webinf" value="${app.server.dir}/webapps/ROOT/WEB-INF" />
 				<property name="deploy.liferay.lib.dir" value="${app.server.lib.dir}" />
 			</then>
 			<elseif>
@@ -59,6 +62,7 @@
 		<property name="deploy.liferay.portlet.tld" value="${deploy.liferay.webinf}/tld/liferay-portlet.tld" />
 		<property name="deploy.liferay.taglib.jar" value="${deploy.liferay.webinf}/lib/util-taglib.jar" />
 		<property name="deploy.liferay.util.jar" value="${deploy.liferay.lib.dir}/util-java.jar" />
+		<property name="deploy.liferay.bridges.jar" value="${deploy.liferay.lib.dir}/util-bridges.jar" />
 	</target>
 	
 	<target name="full-deploy">
@@ -101,6 +105,7 @@
 				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
 				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
 				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
+				<jvmarg value="-Ddeployer.unpack.war=true" />
 
 				<!-- Optional Arguments -->
 
@@ -111,6 +116,7 @@
 
 				<arg value="${deploy.liferay.taglib.jar}" />
 				<arg value="${deploy.liferay.util.jar}" />
+				<arg value="${deploy.liferay.bridges.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 		
@@ -167,6 +173,7 @@
 
 				<arg value="${deploy.liferay.taglib.jar}" />
 				<arg value="${deploy.liferay.util.jar}" />
+				<arg value="${deploy.liferay.bridges.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 		
