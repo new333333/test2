@@ -12,7 +12,6 @@
 	<bean id="adminConfigurePostingJobController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingJobController" />
 	<bean id="adminConfigurePostingController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingController" />
 	<bean id="adminConfigureSearchIndexController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ManageSearchIndexController" />
-	<bean id="adminConfigureProfileIndexController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ManageProfileIndexController" />
 	<bean id="adminImportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ImportDefinitionController" />
 	<bean id="adminExportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ExportDefinitionController" />
 	<bean id="adminConfigureConfigurationController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureConfigurationController" />

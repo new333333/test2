@@ -100,6 +100,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <br/>
 <xsl:for-each select="folder">
 <xsl:for-each select="folderEntry">
+<div style="border-bottom: thin solid #cccccc;">
 		<xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
 		<a name="id{@name}"/>
 		<a href="{@href}">
@@ -128,9 +129,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			 <xsl:value-of select="@title"/>
   		</span>
 		</xsl:if>
-		<br/>
 		<xsl:for-each select="attribute">
-		<b><xsl:value-of select="@caption"/></b>&nbsp;
+		<xsl:value-of select="@caption"/>&nbsp;
 		<xsl:choose>
 		<xsl:when test="@type = 'selectbox'">
 			<xsl:for-each select="value">
@@ -175,6 +175,8 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		</xsl:otherwise>
 		</xsl:choose>
 		</xsl:for-each>
+</div>
+<br/>
 
 </xsl:for-each>
 </xsl:for-each>

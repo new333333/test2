@@ -22,6 +22,13 @@
 <c:choose>
 <c:when test="${!empty ssWsDomTree}">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
+    id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+		<portlet:param name="action" value="configure_posting"/>
+		</portlet:actionURL>">
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
 	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
 	<tr align="left"><td><ssf:nlt tag="tree.choose_forum"/></td></tr>
 	<tr>
@@ -33,6 +40,10 @@
 	</tr>
 	</table>
 	<br/>
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+</form>
 </c:when>
 <c:otherwise>
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />

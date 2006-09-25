@@ -26,7 +26,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Get the list of binders to be indexed
 			List binderIdList = new ArrayList();
 			
@@ -49,7 +49,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			
 			response.setRenderParameter("redirect", "true");
 			
-		} else if (formData.containsKey("cancelBtn")) {
+		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
