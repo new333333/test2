@@ -1,5 +1,6 @@
 <% // Search results listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>
 <%
 	String displayStyle2 = ssUser.getDisplayStyle();
 	if (displayStyle2 == null) displayStyle2 = "";
