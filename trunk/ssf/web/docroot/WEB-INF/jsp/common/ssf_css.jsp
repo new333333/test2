@@ -1207,23 +1207,18 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
 }
 .ss_global_toolbar_search {
-	float:right;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/searchback.gif);
-	width:198px;
-	height:48px;
 	position:relative;
+	top:8px;
+	background:transparent;
+}
+.ss_global_toolbar_search form {
+	background:transparent;
 }
 .ss_global_toolbar_search .form-text {
-	position:absolute;
-	top:16px;
-	left:17px;
-	width:127px;
+	background:#FFF;
 }
-.ss_global_toolbar_search .go {
-	position:absolute;
-	top:15px;
-	left:152px;
-
+.ss_global_toolbar_search a {
+	background:transparent;
 }
 
 /* tabs: */
