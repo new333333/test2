@@ -8,6 +8,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.Favorites;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
@@ -196,18 +198,35 @@ public class AjaxController  extends SAbstractController {
 		
 		} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
 			return ajaxShowHelpPanel(request, response);
-		} 
 		
+		} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_TAB)) {
+			return ajaxAddTab(request, response);
+			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_DELETE_TAB)) {
+			return ajaxDeleteTab(request, response);
+			
+		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CURRENT_TAB)) {
+			return ajaxSetCurrentTab(request, response);
+		} 
+				
 		return ajaxReturn(request, response);
 	} 
 	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long binderId = null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		} catch(PortletRequestBindingException ex) {}
+		
 		//Save the user's placement of columns in this folder
 		String columnPositions = PortletRequestUtils.getStringParameter(request, "column_positions", "");
 		if (Validator.isNotNull(columnPositions)) {
 			//Save the column positions
-		   	getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+		   	if (binderId == null) {
+		   		getProfileModule().setUserProperty(null, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+		   	} else {
+		   		getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
+		   	}
 		}
 	}
 	
@@ -721,8 +740,9 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/rating_return", model);
 	}
+	
 	private ModelAndView ajaxShowHelpPanel(RenderRequest request, 
-				RenderResponse response) throws Exception {
+			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String helpPanelId = PortletRequestUtils.getStringParameter(request, 
 				WebKeys.HELP_PANEL_ID, "ss_help_panel");
@@ -737,6 +757,60 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
 		return new ModelAndView("forum/help_panel", model);
+	}
+
+	private ModelAndView ajaxAddTab(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		String type = PortletRequestUtils.getRequiredStringParameter(request, "type");
+		Map formData = request.getParameterMap();
+		int tabId = 0;
+		if (type.equals(Tabs.BINDER)) {
+			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
+			Binder binder = getBinderModule().getBinder(binderId);
+			tabId = tabs.addTab(binder);
+		} else if (type.equals(Tabs.ENTRY)) {
+			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
+			Long entryId = PortletRequestUtils.getLongParameter(request, "binderId");				
+			Entry entry = getFolderModule().getEntry(binderId, entryId);
+			tabId = tabs.addTab(entry);
+		} else if (type.equals(Tabs.QUERY)) {
+			Document query = null;
+			try {
+				query = FilterHelper.getSearchFilter(request);
+			} catch(Exception ex) {}
+			tabId = tabs.addTab(query);
+		}
+		tabs.setCurrentTab(tabId);
+		response.setContentType("text/xml");
+		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.TAB_ID, tabId);
+		return new ModelAndView("binder/show_tabs", model);
+	}
+
+	private ModelAndView ajaxDeleteTab(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		Integer tabId = PortletRequestUtils.getIntParameter(request, "tabId");
+		if (tabId != null) tabs.deleteTab(tabId.intValue());
+		response.setContentType("text/xml");
+		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.TAB_ID, -1);
+		return new ModelAndView("binder/show_tabs", model);
+	}
+
+	private ModelAndView ajaxSetCurrentTab(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		Integer tabId = PortletRequestUtils.getIntParameter(request, "tabId");
+		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+		response.setContentType("text/xml");
+		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.TAB_ID, -1);
+		return new ModelAndView("binder/show_tabs", model);
 	}
 
 }
