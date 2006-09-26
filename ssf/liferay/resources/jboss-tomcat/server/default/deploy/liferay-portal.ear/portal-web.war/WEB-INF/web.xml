@@ -10,13 +10,33 @@
 		<param-name>root_path</param-name>
 		<param-value>/</param-value>
 	</context-param>
-	<context-param>
-		<param-name>contextClass</param-name>
-		<param-value>com.liferay.portal.spring.context.PortalWebApplicationContext</param-value>
-	</context-param>
 	<filter>
 		<filter-name>Compression Filter</filter-name>
 		<filter-class>com.liferay.filters.compression.CompressionFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>0</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Layout</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>1</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<filter-class>com.liferay.portal.servlet.filters.layoutcache.LayoutCacheFilter</filter-class>
+		<init-param>
+			<param-name>pattern</param-name>
+			<param-value>2</param-value>
+		</init-param>
 	</filter>
 	<filter>
 		<filter-name>Secure MainServlet Filter</filter-name>
@@ -27,28 +47,36 @@
 		</init-param>
 	</filter>
 	<filter>
-		<filter-name>Secure AxisServlet Filter</filter-name>
-		<filter-class>com.liferay.filters.secure.SecureFilter</filter-class>
-		<init-param>
-			<param-name>portal_property_prefix</param-name>
-			<param-value>axis.servlet.</param-value>
-		</init-param>
-	</filter>
-	<filter>
-		<filter-name>Secure RemotingServlet Filter</filter-name>
-		<filter-class>com.liferay.filters.secure.SecureFilter</filter-class>
-		<init-param>
-			<param-name>portal_property_prefix</param-name>
-			<param-value>spring.remoting.servlet.</param-value>
-		</init-param>
-	</filter>
-	<filter>
 		<filter-name>Strip Filter</filter-name>
 		<filter-class>com.liferay.filters.strip.StripFilter</filter-class>
 	</filter>
 	<filter-mapping>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<url-pattern>/group/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Friendly</filter-name>
+		<url-pattern>/web/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Layout</filter-name>
+		<url-pattern>/c/portal/layout</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<url-pattern>/c/portal/css_cached</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Layout Cache Filter - Resource</filter-name>
+		<url-pattern>/c/portal/javascript_cached</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
 		<filter-name>Compression Filter</filter-name>
-		<url-pattern>/c/*</url-pattern>
+		<url-pattern>/c/portal/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Compression Filter</filter-name>
+		<url-pattern>/group/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Compression Filter</filter-name>
@@ -76,19 +104,19 @@
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Secure MainServlet Filter</filter-name>
+		<url-pattern>/group/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>Secure MainServlet Filter</filter-name>
 		<url-pattern>/web/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
-		<filter-name>Secure AxisServlet Filter</filter-name>
-		<url-pattern>/services/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>Secure RemotingServlet Filter</filter-name>
-		<url-pattern>/remoting/*</url-pattern>
+		<filter-name>Strip Filter</filter-name>
+		<url-pattern>/c/portal/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Strip Filter</filter-name>
-		<url-pattern>/c/*</url-pattern>
+		<url-pattern>/group/*</url-pattern>
 	</filter-mapping>
 	<filter-mapping>
 		<filter-name>Strip Filter</filter-name>
@@ -112,9 +140,6 @@
 	</filter-mapping>
 	<listener>
 		<listener-class>com.liferay.portal.servlet.PortalSessionListener</listener-class>
-	</listener>
-	<listener>
-		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 	<servlet>
 		<servlet-name>InitServlet</servlet-name>
@@ -141,14 +166,21 @@
 		<load-on-startup>2</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>CaptchaServlet</servlet-name>
-		<display-name>CaptchaServlet</display-name>
-		<servlet-class>com.liferay.portal.servlet.CaptchaServlet</servlet-class>
+		<servlet-name>FriendlyURLPrivateServlet</servlet-name>
+		<servlet-class>com.liferay.portal.servlet.FriendlyURLServlet</servlet-class>
+		<init-param>
+			<param-name>private</param-name>
+			<param-value>true</param-value>
+		</init-param>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>FriendlyURLServlet</servlet-name>
+		<servlet-name>FriendlyURLPublicServlet</servlet-name>
 		<servlet-class>com.liferay.portal.servlet.FriendlyURLServlet</servlet-class>
+		<init-param>
+			<param-name>private</param-name>
+			<param-value>false</param-value>
+		</init-param>
 		<load-on-startup>4</load-on-startup>
 	</servlet>
 	<servlet>
@@ -164,14 +196,13 @@
 		<load-on-startup>6</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>ResourceProxyServlet</servlet-name>
-		<servlet-class>com.liferay.portal.wsrp.servlet.ResourceProxyServlet</servlet-class>
+		<servlet-name>FCKeditorServlet</servlet-name>
+		<servlet-class>com.liferay.portal.editor.fckeditor.ConnectorServlet</servlet-class>
 		<load-on-startup>7</load-on-startup>
 	</servlet>
 	<servlet>
-		<servlet-name>BlogsServlet</servlet-name>
-		<display-name>BlogsServlet</display-name>
-		<servlet-class>com.liferay.portlet.blogs.servlet.BlogsServlet</servlet-class>
+		<servlet-name>ResourceProxyServlet</servlet-name>
+		<servlet-class>com.liferay.portal.wsrp.servlet.ResourceProxyServlet</servlet-class>
 		<load-on-startup>8</load-on-startup>
 	</servlet>
 	<servlet>
@@ -198,34 +229,6 @@
 		<servlet-class>com.liferay.portlet.httpbridge.servlet.UserService</servlet-class>
 		<load-on-startup>11</load-on-startup>
 	</servlet>
-	<servlet>
-		<servlet-name>JCVSServlet</servlet-name>
-		<display-name>JCVSServlet</display-name>
-		<servlet-class>com.liferay.portlet.jcvs.servlet.JCVSServlet</servlet-class>
-		<init-param>
-			<param-name>JCVSletConfigDirectory</param-name>
-			<param-value>WEB-INF/jcvs/conf</param-value>
-		</init-param>
-		<init-param>
-			<param-name>JCVSletTempDirectory</param-name>
-			<param-value>WEB-INF/jcvs/temp</param-value>
-		</init-param>
-		<init-param>
-			<param-name>JCVSletWorkDirectory</param-name>
-			<param-value>WEB-INF/jcvs/work</param-value>
-		</init-param>
-		<load-on-startup>12</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>AxisServlet</servlet-name>
-		<servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
-		<load-on-startup>13</load-on-startup>
-	</servlet>
-	<servlet>
-		<servlet-name>RemotingServlet</servlet-name>
-		<servlet-class>com.liferay.portal.spring.servlet.RemotingServlet</servlet-class>
-		<load-on-startup>14</load-on-startup>
-	</servlet>
 	<!-- SiteScape: Added SiteScapeServlet servlet -->
 	<servlet>
 		<servlet-name>SiteScapeServlet</servlet-name>
@@ -234,18 +237,18 @@
 			<param-name>contextPath</param-name>
 			<param-value>/ssf</param-value>
 		</init-param>
-		<load-on-startup>15</load-on-startup>
+		<load-on-startup>12</load-on-startup>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>MainServlet</servlet-name>
 		<url-pattern>/c/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>CaptchaServlet</servlet-name>
-		<url-pattern>/captcha/*</url-pattern>
+		<servlet-name>FriendlyURLPrivateServlet</servlet-name>
+		<url-pattern>/group/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>FriendlyURLServlet</servlet-name>
+		<servlet-name>FriendlyURLPublicServlet</servlet-name>
 		<url-pattern>/web/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
@@ -253,12 +256,12 @@
 		<url-pattern>/image/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>ResourceProxyServlet</servlet-name>
-		<url-pattern>/wsrp/resource_proxy/*</url-pattern>
+		<servlet-name>FCKeditorServlet</servlet-name>
+		<url-pattern>/html/js/editor/fckeditor/editor/filemanager/browser/liferay/connectors/jsp/connector</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>BlogsServlet</servlet-name>
-		<url-pattern>/blogs/*</url-pattern>
+		<servlet-name>ResourceProxyServlet</servlet-name>
+		<url-pattern>/wsrp/resource_proxy/*</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>ChatServlet</servlet-name>
@@ -267,18 +270,6 @@
 	<servlet-mapping>
 		<servlet-name>HttpService</servlet-name>
 		<url-pattern>/httpbridge/http</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>JCVSServlet</servlet-name>
-		<url-pattern>/jcvs/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>AxisServlet</servlet-name>
-		<url-pattern>/services/*</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>RemotingServlet</servlet-name>
-		<url-pattern>/remoting/*</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<session-timeout>30</session-timeout>
@@ -316,8 +307,20 @@
 		<taglib-location>/WEB-INF/tld/liferay-portlet.tld</taglib-location>
 	</taglib>
 	<taglib>
+		<taglib-uri>http://liferay.com/tld/portlet</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-portlet-ext.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://liferay.com/tld/security</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-security.tld</taglib-location>
+	</taglib>
+	<taglib>
 		<taglib-uri>http://liferay.com/tld/theme</taglib-uri>
 		<taglib-location>/WEB-INF/tld/liferay-theme.tld</taglib-location>
+	</taglib>
+	<taglib>
+		<taglib-uri>http://liferay.com/tld/ui</taglib-uri>
+		<taglib-location>/WEB-INF/tld/liferay-ui.tld</taglib-location>
 	</taglib>
 	<taglib>
 		<taglib-uri>http://liferay.com/tld/util</taglib-uri>
@@ -395,6 +398,349 @@
 	<security-role>
 		<role-name>users</role-name>
 	</security-role>
+	<ejb-ref>
+		<ejb-ref-name>com_ext_portlet_reports_service_ejb_ReportsEntryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.ext.portlet.reports.service.ejb.ReportsEntryServiceHome</home>
+		<remote>com.ext.portlet.reports.service.ejb.ReportsEntryServiceEJB</remote>
+		<ejb-link>com_ext_portlet_reports_service_ejb_ReportsEntryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_AccountServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.AccountServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.AccountServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_AccountServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_AddressServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.AddressServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.AddressServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_AddressServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_CompanyServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.CompanyServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.CompanyServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_CompanyServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_ContactServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.ContactServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.ContactServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_ContactServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_CountryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.CountryServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.CountryServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_CountryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_EmailAddressServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.EmailAddressServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.EmailAddressServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_EmailAddressServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_GroupServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.GroupServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.GroupServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_GroupServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_LayoutServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.LayoutServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.LayoutServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_LayoutServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_LayoutSetServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.LayoutSetServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.LayoutSetServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_LayoutSetServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_ListTypeServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.ListTypeServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.ListTypeServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_ListTypeServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_OrganizationServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.OrganizationServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.OrganizationServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_OrganizationServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_OrgLaborServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.OrgLaborServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.OrgLaborServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_OrgLaborServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_PermissionServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.PermissionServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.PermissionServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_PermissionServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_PhoneServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.PhoneServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.PhoneServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_PhoneServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_PortalServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.PortalServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.PortalServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_PortalServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_PortletServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.PortletServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.PortletServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_PortletServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_RegionServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.RegionServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.RegionServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_RegionServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_ResourceServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.ResourceServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.ResourceServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_ResourceServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_RoleServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.RoleServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.RoleServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_RoleServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_UserServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.UserServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.UserServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_UserServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_UserGroupServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.UserGroupServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.UserGroupServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_UserGroupServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portal_service_ejb_WebsiteServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portal.service.ejb.WebsiteServiceHome</home>
+		<remote>com.liferay.portal.service.ejb.WebsiteServiceEJB</remote>
+		<ejb-link>com_liferay_portal_service_ejb_WebsiteServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_blogs_service_ejb_BlogsCategoryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.blogs.service.ejb.BlogsCategoryServiceHome</home>
+		<remote>com.liferay.portlet.blogs.service.ejb.BlogsCategoryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_blogs_service_ejb_BlogsCategoryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_blogs_service_ejb_BlogsEntryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.blogs.service.ejb.BlogsEntryServiceHome</home>
+		<remote>com.liferay.portlet.blogs.service.ejb.BlogsEntryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_blogs_service_ejb_BlogsEntryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_bookmarks_service_ejb_BookmarksEntryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.bookmarks.service.ejb.BookmarksEntryServiceHome</home>
+		<remote>com.liferay.portlet.bookmarks.service.ejb.BookmarksEntryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_bookmarks_service_ejb_BookmarksEntryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_bookmarks_service_ejb_BookmarksFolderServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.bookmarks.service.ejb.BookmarksFolderServiceHome</home>
+		<remote>com.liferay.portlet.bookmarks.service.ejb.BookmarksFolderServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_bookmarks_service_ejb_BookmarksFolderServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_calendar_service_ejb_CalEventServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.calendar.service.ejb.CalEventServiceHome</home>
+		<remote>com.liferay.portlet.calendar.service.ejb.CalEventServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_calendar_service_ejb_CalEventServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_documentlibrary_service_ejb_DLFileEntryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.documentlibrary.service.ejb.DLFileEntryServiceHome</home>
+		<remote>com.liferay.portlet.documentlibrary.service.ejb.DLFileEntryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFileEntryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_documentlibrary_service_ejb_DLFolderServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.documentlibrary.service.ejb.DLFolderServiceHome</home>
+		<remote>com.liferay.portlet.documentlibrary.service.ejb.DLFolderServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFolderServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_imagegallery_service_ejb_IGFolderServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.imagegallery.service.ejb.IGFolderServiceHome</home>
+		<remote>com.liferay.portlet.imagegallery.service.ejb.IGFolderServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_imagegallery_service_ejb_IGFolderServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_imagegallery_service_ejb_IGImageServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.imagegallery.service.ejb.IGImageServiceHome</home>
+		<remote>com.liferay.portlet.imagegallery.service.ejb.IGImageServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_imagegallery_service_ejb_IGImageServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_journal_service_ejb_JournalArticleServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.journal.service.ejb.JournalArticleServiceHome</home>
+		<remote>com.liferay.portlet.journal.service.ejb.JournalArticleServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_journal_service_ejb_JournalArticleServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_journal_service_ejb_JournalStructureServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.journal.service.ejb.JournalStructureServiceHome</home>
+		<remote>com.liferay.portlet.journal.service.ejb.JournalStructureServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_journal_service_ejb_JournalStructureServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_journal_service_ejb_JournalTemplateServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.journal.service.ejb.JournalTemplateServiceHome</home>
+		<remote>com.liferay.portlet.journal.service.ejb.JournalTemplateServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_journal_service_ejb_JournalTemplateServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_messageboards_service_ejb_MBCategoryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.messageboards.service.ejb.MBCategoryServiceHome</home>
+		<remote>com.liferay.portlet.messageboards.service.ejb.MBCategoryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBCategoryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_messageboards_service_ejb_MBMessageServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.messageboards.service.ejb.MBMessageServiceHome</home>
+		<remote>com.liferay.portlet.messageboards.service.ejb.MBMessageServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBMessageServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_polls_service_ejb_PollsQuestionServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.polls.service.ejb.PollsQuestionServiceHome</home>
+		<remote>com.liferay.portlet.polls.service.ejb.PollsQuestionServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_polls_service_ejb_PollsQuestionServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_polls_service_ejb_PollsVoteServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.polls.service.ejb.PollsVoteServiceHome</home>
+		<remote>com.liferay.portlet.polls.service.ejb.PollsVoteServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_polls_service_ejb_PollsVoteServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_shopping_service_ejb_ShoppingCategoryServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.shopping.service.ejb.ShoppingCategoryServiceHome</home>
+		<remote>com.liferay.portlet.shopping.service.ejb.ShoppingCategoryServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingCategoryServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_shopping_service_ejb_ShoppingCouponServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.shopping.service.ejb.ShoppingCouponServiceHome</home>
+		<remote>com.liferay.portlet.shopping.service.ejb.ShoppingCouponServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingCouponServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_shopping_service_ejb_ShoppingItemServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.shopping.service.ejb.ShoppingItemServiceHome</home>
+		<remote>com.liferay.portlet.shopping.service.ejb.ShoppingItemServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingItemServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_shopping_service_ejb_ShoppingOrderServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.shopping.service.ejb.ShoppingOrderServiceHome</home>
+		<remote>com.liferay.portlet.shopping.service.ejb.ShoppingOrderServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingOrderServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_wiki_service_ejb_WikiNodeServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.wiki.service.ejb.WikiNodeServiceHome</home>
+		<remote>com.liferay.portlet.wiki.service.ejb.WikiNodeServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_wiki_service_ejb_WikiNodeServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_portlet_wiki_service_ejb_WikiPageServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.portlet.wiki.service.ejb.WikiPageServiceHome</home>
+		<remote>com.liferay.portlet.wiki.service.ejb.WikiPageServiceEJB</remote>
+		<ejb-link>com_liferay_portlet_wiki_service_ejb_WikiPageServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_counter_service_ejb_CounterServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.counter.service.ejb.CounterServiceHome</home>
+		<remote>com.liferay.counter.service.ejb.CounterServiceEJB</remote>
+		<ejb-link>com_liferay_counter_service_ejb_CounterServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_documentlibrary_service_ejb_DLServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.documentlibrary.service.ejb.DLServiceHome</home>
+		<remote>com.liferay.documentlibrary.service.ejb.DLServiceEJB</remote>
+		<ejb-link>com_liferay_documentlibrary_service_ejb_DLServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_lock_service_ejb_LockServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.lock.service.ejb.LockServiceHome</home>
+		<remote>com.liferay.lock.service.ejb.LockServiceEJB</remote>
+		<ejb-link>com_liferay_lock_service_ejb_LockServiceEJB</ejb-link>
+	</ejb-ref>
+	<ejb-ref>
+		<ejb-ref-name>com_liferay_mail_service_ejb_MailServiceEJB</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<home>com.liferay.mail.service.ejb.MailServiceHome</home>
+		<remote>com.liferay.mail.service.ejb.MailServiceEJB</remote>
+		<ejb-link>com_liferay_mail_service_ejb_MailServiceEJB</ejb-link>
+	</ejb-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/AccountLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
@@ -410,13 +756,6 @@
 		<ejb-link>com_liferay_portal_service_ejb_AddressLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/ColorSchemeLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portal.service.ejb.ColorSchemeLocalServiceHome</local-home>
-		<local>com.liferay.portal.service.ejb.ColorSchemeLocalServiceEJB</local>
-		<ejb-link>com_liferay_portal_service_ejb_ColorSchemeLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/CompanyLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
 		<local-home>com.liferay.portal.service.ejb.CompanyLocalServiceHome</local-home>
@@ -429,6 +768,20 @@
 		<local-home>com.liferay.portal.service.ejb.ContactLocalServiceHome</local-home>
 		<local>com.liferay.portal.service.ejb.ContactLocalServiceEJB</local>
 		<ejb-link>com_liferay_portal_service_ejb_ContactLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/DataTrackerLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.DataTrackerLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.DataTrackerLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_DataTrackerLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/EmailAddressLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.EmailAddressLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.EmailAddressLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_EmailAddressLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/GroupLocalServiceHome</ejb-ref-name>
@@ -452,11 +805,25 @@
 		<ejb-link>com_liferay_portal_service_ejb_LayoutLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/NoteLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/LayoutSetLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portal.service.ejb.NoteLocalServiceHome</local-home>
-		<local>com.liferay.portal.service.ejb.NoteLocalServiceEJB</local>
-		<ejb-link>com_liferay_portal_service_ejb_NoteLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portal.service.ejb.LayoutSetLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.LayoutSetLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_LayoutSetLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/OrganizationLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.OrganizationLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.OrganizationLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_OrganizationLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/OrgLaborLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.OrgLaborLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.OrgLaborLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_OrgLaborLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/PasswordTrackerLocalServiceHome</ejb-ref-name>
@@ -464,6 +831,27 @@
 		<local-home>com.liferay.portal.service.ejb.PasswordTrackerLocalServiceHome</local-home>
 		<local>com.liferay.portal.service.ejb.PasswordTrackerLocalServiceEJB</local>
 		<ejb-link>com_liferay_portal_service_ejb_PasswordTrackerLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/PermissionLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.PermissionLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.PermissionLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_PermissionLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/PhoneLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.PhoneLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.PhoneLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_PhoneLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/PortletLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.PortletLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.PortletLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_PortletLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/PortletPreferencesLocalServiceHome</ejb-ref-name>
@@ -480,6 +868,13 @@
 		<ejb-link>com_liferay_portal_service_ejb_ReleaseLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ResourceLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.ResourceLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.ResourceLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_ResourceLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/RoleLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
 		<local-home>com.liferay.portal.service.ejb.RoleLocalServiceHome</local-home>
@@ -487,11 +882,25 @@
 		<ejb-link>com_liferay_portal_service_ejb_RoleLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/SubscriptionLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.SubscriptionLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.SubscriptionLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_SubscriptionLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/UserLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
 		<local-home>com.liferay.portal.service.ejb.UserLocalServiceHome</local-home>
 		<local>com.liferay.portal.service.ejb.UserLocalServiceEJB</local>
 		<ejb-link>com_liferay_portal_service_ejb_UserLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/UserGroupLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portal.service.ejb.UserGroupLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.UserGroupLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_UserGroupLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/UserIdMapperLocalServiceHome</ejb-ref-name>
@@ -515,39 +924,11 @@
 		<ejb-link>com_liferay_portal_service_ejb_UserTrackerPathLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/ABContactLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/WebsiteLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.addressbook.service.ejb.ABContactLocalServiceHome</local-home>
-		<local>com.liferay.portlet.addressbook.service.ejb.ABContactLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_addressbook_service_ejb_ABContactLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/ABListLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.addressbook.service.ejb.ABListLocalServiceHome</local-home>
-		<local>com.liferay.portlet.addressbook.service.ejb.ABListLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_addressbook_service_ejb_ABListLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/BJEntryLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.biblejournal.service.ejb.BJEntryLocalServiceHome</local-home>
-		<local>com.liferay.portlet.biblejournal.service.ejb.BJEntryLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_biblejournal_service_ejb_BJEntryLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/BJTopicLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.biblejournal.service.ejb.BJTopicLocalServiceHome</local-home>
-		<local>com.liferay.portlet.biblejournal.service.ejb.BJTopicLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_biblejournal_service_ejb_BJTopicLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/BJVerseLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.biblejournal.service.ejb.BJVerseLocalServiceHome</local-home>
-		<local>com.liferay.portlet.biblejournal.service.ejb.BJVerseLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_biblejournal_service_ejb_BJVerseLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portal.service.ejb.WebsiteLocalServiceHome</local-home>
+		<local>com.liferay.portal.service.ejb.WebsiteLocalServiceEJB</local>
+		<ejb-link>com_liferay_portal_service_ejb_WebsiteLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/BlogsCategoryLocalServiceHome</ejb-ref-name>
@@ -562,20 +943,6 @@
 		<local-home>com.liferay.portlet.blogs.service.ejb.BlogsEntryLocalServiceHome</local-home>
 		<local>com.liferay.portlet.blogs.service.ejb.BlogsEntryLocalServiceEJB</local>
 		<ejb-link>com_liferay_portlet_blogs_service_ejb_BlogsEntryLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/BlogsLinkLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.blogs.service.ejb.BlogsLinkLocalServiceHome</local-home>
-		<local>com.liferay.portlet.blogs.service.ejb.BlogsLinkLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_blogs_service_ejb_BlogsLinkLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/BlogsUserLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.blogs.service.ejb.BlogsUserLocalServiceHome</local-home>
-		<local>com.liferay.portlet.blogs.service.ejb.BlogsUserLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_blogs_service_ejb_BlogsUserLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/BookmarksEntryLocalServiceHome</ejb-ref-name>
@@ -599,18 +966,11 @@
 		<ejb-link>com_liferay_portlet_calendar_service_ejb_CalEventLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/CalTaskLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/DLFileEntryLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.calendar.service.ejb.CalTaskLocalServiceHome</local-home>
-		<local>com.liferay.portlet.calendar.service.ejb.CalTaskLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_calendar_service_ejb_CalTaskLocalServiceEJB</ejb-link>
-	</ejb-local-ref>
-	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/DLFileProfileLocalServiceHome</ejb-ref-name>
-		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.documentlibrary.service.ejb.DLFileProfileLocalServiceHome</local-home>
-		<local>com.liferay.portlet.documentlibrary.service.ejb.DLFileProfileLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFileProfileLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portlet.documentlibrary.service.ejb.DLFileEntryLocalServiceHome</local-home>
+		<local>com.liferay.portlet.documentlibrary.service.ejb.DLFileEntryLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFileEntryLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/DLFileRankLocalServiceHome</ejb-ref-name>
@@ -627,11 +987,11 @@
 		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFileVersionLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/DLRepositoryLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/DLFolderLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.documentlibrary.service.ejb.DLRepositoryLocalServiceHome</local-home>
-		<local>com.liferay.portlet.documentlibrary.service.ejb.DLRepositoryLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLRepositoryLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portlet.documentlibrary.service.ejb.DLFolderLocalServiceHome</local-home>
+		<local>com.liferay.portlet.documentlibrary.service.ejb.DLFolderLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_documentlibrary_service_ejb_DLFolderLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/IGFolderLocalServiceHome</ejb-ref-name>
@@ -639,6 +999,13 @@
 		<local-home>com.liferay.portlet.imagegallery.service.ejb.IGFolderLocalServiceHome</local-home>
 		<local>com.liferay.portlet.imagegallery.service.ejb.IGFolderLocalServiceEJB</local>
 		<ejb-link>com_liferay_portlet_imagegallery_service_ejb_IGFolderLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/IGImageLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.imagegallery.service.ejb.IGImageLocalServiceHome</local-home>
+		<local>com.liferay.portlet.imagegallery.service.ejb.IGImageLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_imagegallery_service_ejb_IGImageLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/JournalArticleLocalServiceHome</ejb-ref-name>
@@ -669,11 +1036,18 @@
 		<ejb-link>com_liferay_portlet_journal_service_ejb_JournalTemplateLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/MailReceiptLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/MBCategoryLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.mail.service.ejb.MailReceiptLocalServiceHome</local-home>
-		<local>com.liferay.portlet.mail.service.ejb.MailReceiptLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_mail_service_ejb_MailReceiptLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portlet.messageboards.service.ejb.MBCategoryLocalServiceHome</local-home>
+		<local>com.liferay.portlet.messageboards.service.ejb.MBCategoryLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBCategoryLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/MBMessageLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.messageboards.service.ejb.MBMessageLocalServiceHome</local-home>
+		<local>com.liferay.portlet.messageboards.service.ejb.MBMessageLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBMessageLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/MBMessageFlagLocalServiceHome</ejb-ref-name>
@@ -683,18 +1057,25 @@
 		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBMessageFlagLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/MBTopicLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/MBStatsUserLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.messageboards.service.ejb.MBTopicLocalServiceHome</local-home>
-		<local>com.liferay.portlet.messageboards.service.ejb.MBTopicLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBTopicLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portlet.messageboards.service.ejb.MBStatsUserLocalServiceHome</local-home>
+		<local>com.liferay.portlet.messageboards.service.ejb.MBStatsUserLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBStatsUserLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
-		<ejb-ref-name>ejb/liferay/NetworkAddressLocalServiceHome</ejb-ref-name>
+		<ejb-ref-name>ejb/liferay/MBThreadLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
-		<local-home>com.liferay.portlet.network.service.ejb.NetworkAddressLocalServiceHome</local-home>
-		<local>com.liferay.portlet.network.service.ejb.NetworkAddressLocalServiceEJB</local>
-		<ejb-link>com_liferay_portlet_network_service_ejb_NetworkAddressLocalServiceEJB</ejb-link>
+		<local-home>com.liferay.portlet.messageboards.service.ejb.MBThreadLocalServiceHome</local-home>
+		<local>com.liferay.portlet.messageboards.service.ejb.MBThreadLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_messageboards_service_ejb_MBThreadLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/PollsChoiceLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.polls.service.ejb.PollsChoiceLocalServiceHome</local-home>
+		<local>com.liferay.portlet.polls.service.ejb.PollsChoiceLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_polls_service_ejb_PollsChoiceLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/PollsQuestionLocalServiceHome</ejb-ref-name>
@@ -704,11 +1085,32 @@
 		<ejb-link>com_liferay_portlet_polls_service_ejb_PollsQuestionLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/PollsVoteLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.polls.service.ejb.PollsVoteLocalServiceHome</local-home>
+		<local>com.liferay.portlet.polls.service.ejb.PollsVoteLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_polls_service_ejb_PollsVoteLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/ShoppingCartLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
 		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingCartLocalServiceHome</local-home>
 		<local>com.liferay.portlet.shopping.service.ejb.ShoppingCartLocalServiceEJB</local>
 		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingCartLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ShoppingCategoryLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingCategoryLocalServiceHome</local-home>
+		<local>com.liferay.portlet.shopping.service.ejb.ShoppingCategoryLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingCategoryLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ShoppingCouponLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingCouponLocalServiceHome</local-home>
+		<local>com.liferay.portlet.shopping.service.ejb.ShoppingCouponLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingCouponLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/ShoppingItemLocalServiceHome</ejb-ref-name>
@@ -718,11 +1120,32 @@
 		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingItemLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ShoppingItemFieldLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingItemFieldLocalServiceHome</local-home>
+		<local>com.liferay.portlet.shopping.service.ejb.ShoppingItemFieldLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingItemFieldLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ShoppingItemPriceLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingItemPriceLocalServiceHome</local-home>
+		<local>com.liferay.portlet.shopping.service.ejb.ShoppingItemPriceLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingItemPriceLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/ShoppingOrderLocalServiceHome</ejb-ref-name>
 		<ejb-ref-type>Session</ejb-ref-type>
 		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingOrderLocalServiceHome</local-home>
 		<local>com.liferay.portlet.shopping.service.ejb.ShoppingOrderLocalServiceEJB</local>
 		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingOrderLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/ShoppingOrderItemLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.portlet.shopping.service.ejb.ShoppingOrderItemLocalServiceHome</local-home>
+		<local>com.liferay.portlet.shopping.service.ejb.ShoppingOrderItemLocalServiceEJB</local>
+		<ejb-link>com_liferay_portlet_shopping_service_ejb_ShoppingOrderItemLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 	<ejb-local-ref>
 		<ejb-ref-name>ejb/liferay/WikiNodeLocalServiceHome</ejb-ref-name>
@@ -737,5 +1160,12 @@
 		<local-home>com.liferay.portlet.wiki.service.ejb.WikiPageLocalServiceHome</local-home>
 		<local>com.liferay.portlet.wiki.service.ejb.WikiPageLocalServiceEJB</local>
 		<ejb-link>com_liferay_portlet_wiki_service_ejb_WikiPageLocalServiceEJB</ejb-link>
+	</ejb-local-ref>
+	<ejb-local-ref>
+		<ejb-ref-name>ejb/liferay/DLLocalServiceHome</ejb-ref-name>
+		<ejb-ref-type>Session</ejb-ref-type>
+		<local-home>com.liferay.documentlibrary.service.ejb.DLLocalServiceHome</local-home>
+		<local>com.liferay.documentlibrary.service.ejb.DLLocalServiceEJB</local>
+		<ejb-link>com_liferay_documentlibrary_service_ejb_DLLocalServiceEJB</ejb-link>
 	</ejb-local-ref>
 </web-app>
