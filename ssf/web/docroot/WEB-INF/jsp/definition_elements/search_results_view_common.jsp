@@ -51,7 +51,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 <%
 	}
 %>
-<div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;
+<div class="ss_folder_border" style="position:relative; top:2; 
+  margin:0px 2px 2px 2px; padding:2px;
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
@@ -161,6 +162,16 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
           folderId="${entry1._docId}" 
           action="view_ws_listing"
           actionUrl="true" />" 
+      </c:if>
+      <c:if test="${entry1._entityType == 'group'}">
+        href="<ssf:url     
+          adapter="false" 
+          portletName="ss_forum" 
+          folderId="${entry1._binderId}" 
+          entryId="${entry1._docId}" 
+          action="view_group"
+          actionUrl="true" />" 
+        onClick="alert('This is a group'); return false;"
       </c:if>
     onMouseOver="ss_showTitleOptions(this, '${entry1._docId}');"
     onMouseOut="ss_hideTitleOptions(this, '${entry1._docId}');"
