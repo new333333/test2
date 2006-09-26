@@ -55,7 +55,6 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
-			  <div id="ss_tabDataDiv0">
 				
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -77,7 +76,6 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 <%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
 </c:if>
 </div>
-			  </div>
 			</div>
 		</div>
 	</div>

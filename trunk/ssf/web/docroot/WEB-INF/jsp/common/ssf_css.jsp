@@ -1163,6 +1163,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_rounden-content{
 	padding:0px 35px 10px 14px;
+	background:transparent;
 }
 
 /* global toolbar: */

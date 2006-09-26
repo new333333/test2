@@ -91,6 +91,12 @@ public class SearchController extends AbstractBinderController {
 			//Parse the search filter
 			searchQuery = FilterHelper.getSearchQuery(request);
 			Map options = new HashMap();
+			//Get the search text to use it for the tab title 
+			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
+			if (!searchText.equals("")) {
+				String tabTitle = NLT.get("tabs.search") + ": " + searchText;
+				options.put(Tabs.TITLE, tabTitle);
+			}
 			//Store the search query in the current tab
 			tabs.setCurrentTab(tabs.addTab(searchQuery, options));
 		} else if (tabType != null && tabType.equals(Tabs.QUERY)) {
