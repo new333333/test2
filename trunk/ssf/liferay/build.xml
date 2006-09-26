@@ -166,8 +166,8 @@
 
 				<!-- Optional Arguments -->
 
+				<!-- As of Liferay 4.1.2, the following argument has no effect -->
 				<!--<jvmarg value="-Ddeployer.jboss.prefix=1" />-->
-				<!--<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />-->
 
 				<!-- Dependent Libraries -->
 
@@ -192,6 +192,19 @@
 		</copy>
 				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
+		
+		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
+		     comes with its own log4j archive. (You get the following error -
+		     log4j:ERROR A "org.jboss.logging.util.OnlyOnceErrorHandler" object is not assignable to a "org.apache.log4j.spi.ErrorHandler" variable.)
+		     So, we should remove the jar file from our lib area so that it uses
+		     the one that JBoss has. 
+		     2. Liferay puts portlet.jar in the server's shared area (server/default/deploy/lib/ext).
+		     If we have our own portlet.jar in our lib directory, the Liferay fails to 
+		     register our portlets at startup time (it fails with usual ugly classloader
+		     problem). So we remove that too. -->
+		<delete>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
+		</delete>		
 	</target>		
 	
 </project>
