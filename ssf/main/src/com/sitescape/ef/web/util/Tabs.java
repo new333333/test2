@@ -237,7 +237,10 @@ public class Tabs {
 	}
 	public String getTabType(int tabId) {
 		Map tab = getTab(tabId);
-		return (String) tab.get(TYPE);
+		if (tab == null) return "";
+		String tabType = (String) tab.get(TYPE);
+		if (tabType == null) return "";
+		return tabType;
 	}
 	
 	protected int findTabNumber(int tabId) {
