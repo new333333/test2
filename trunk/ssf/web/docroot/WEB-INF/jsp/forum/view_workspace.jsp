@@ -34,6 +34,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
+			  <div id="ss_tab_data_${ss_tabs.current_tab}">
 				
 <% // Workspace toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -61,6 +62,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 </c:if>
 </div>
 
+			  </div>
 			</div>
 		</div>
 	</div>

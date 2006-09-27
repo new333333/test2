@@ -44,6 +44,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
+			  <div id="ss_tab_data_${ss_tabs.current_tab}">
 
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -108,6 +109,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <input type="hidden" name="entry_height">
 </form>
 
+			  </div>
 			</div>
 		</div>
 	</div>

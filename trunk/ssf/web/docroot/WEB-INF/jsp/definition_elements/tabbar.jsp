@@ -43,6 +43,8 @@ var ss_currentTab = "${ss_tabs.current_tab}";
   				folderId="${tab.binderId}" 
   				entryId="${tab.entryId}" 
   				action="view_folder_entry">
+   				<ssf:param name="entryId" value="${tab.entryId}"/>
+  				<ssf:param name="binderId" value="${tab.binderId}"/>
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>
@@ -51,6 +53,8 @@ var ss_currentTab = "${ss_tabs.current_tab}";
   				folderId="${tab.binderId}" 
   				entryId="${tab.entryId}" 
   				action="view_profile_entry">
+   				<ssf:param name="entryId" value="${tab.entryId}"/>
+   				<ssf:param name="binderId" value="${tab.binderId}"/>
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>
@@ -58,6 +62,7 @@ var ss_currentTab = "${ss_tabs.current_tab}";
 		    href="<ssf:url 
   				folderId="${tab.binderId}" 
   				action="view_profile_listing">
+  				<ssf:param name="binderId" value="${tab.binderId}"/>
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>

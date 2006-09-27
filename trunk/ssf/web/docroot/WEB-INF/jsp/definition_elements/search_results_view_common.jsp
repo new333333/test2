@@ -116,8 +116,11 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
     <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'user'}">
       <a href="<ssf:url 
   		folderId="${entry1._binderId}" 
-  		action="view_folder_listing"/>" 
-      ><span <%= seenStyle %>>${entry1._binderId}</span>
+  		action="view_folder_listing" >
+    	<ssf:param name="binderId" value="${entry1._binderId}"/>
+    	<ssf:param name="newTab" value="1"/>
+    	</ssf:url>" 
+       ><span <%= seenStyle %>>${entry1._binderId}</span>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
@@ -129,7 +132,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
     portletName="ss_forum" 
     folderId="${entry1._binderId}" 
     action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+    entryId="<%= entry1.get("_docId").toString() %>" 
+    actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
   </ssf:slidingTableColumn>
@@ -138,7 +142,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
     <a 
-      <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'user'}">
+      <c:if test="${entry1._entityType == 'folderEntry' || 
+      		entry1._entityType == 'reply' || entry1._entityType == 'user'}">
         href="<ssf:url     
           adapter="<%= useAdaptor2 %>" 
           portletName="ss_forum" 
@@ -153,7 +158,10 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
           portletName="ss_forum" 
           folderId="${entry1._docId}" 
           action="view_folder_listing"
-          actionUrl="true" />" 
+          actionUrl="true" >
+    	  <ssf:param name="binderId" value="${entry1._docId}"/>
+    	  <ssf:param name="newTab" value="1"/>
+    	  </ssf:url>" 
       </c:if>
       <c:if test="${entry1._entityType == 'workspace'}">
         href="<ssf:url     
@@ -161,7 +169,10 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
           portletName="ss_forum" 
           folderId="${entry1._docId}" 
           action="view_ws_listing"
-          actionUrl="true" />" 
+          actionUrl="true" >
+    	  <ssf:param name="binderId" value="${entry1._docId}"/>
+    	  <ssf:param name="newTab" value="1"/>
+    	  </ssf:url>" 
       </c:if>
       <c:if test="${entry1._entityType == 'group'}">
         href="<ssf:url     

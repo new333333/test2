@@ -25,6 +25,9 @@ function ss_checkSlidingTableLayout() {
 		ss_showSlidingTableCols()
 		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
+	if (ss_checkIfParentDivHidden(ss_slidingTableId_2)) {
+		ss_hideSlidingTableCols()
+	}
 }
 
 function ss_showSlidingTableCols200() {
@@ -119,6 +122,12 @@ function ss_showSlidingTableCols() {
 	     		deltaLeft = deltaLeft + deltaW
 	    	}
 	    }
+    }
+}
+
+function ss_hideSlidingTableCols() {
+    for (var i = 1; i <= ss_columnCount; i++) {
+    	ss_showHideObj("col"+i, "hidden", "none")
     }
 }
 
