@@ -30,6 +30,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAncestorTag {
 	private List _rows;
 	private String _id;
+	private String _parentId;
 	private String _folderId;
 	private String _height;
 	private String _type;
@@ -53,6 +54,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		displayStyle = user.getDisplayStyle();
 		
 		if (_id == null || _id.equals("")) _id = "ss_sTable";
+		if (_parentId == null || _parentId.equals("")) _parentId = _id;
 		if (_height == null || _height.equals("0")) _height = this.defaultTableHeight;
 
 		// Output the table
@@ -64,6 +66,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
+				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
@@ -79,6 +82,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
+				req.setAttribute("ss_slidingTableParentId", _parentId);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -113,6 +117,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
+				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
 				rd.include(req, res);
@@ -126,6 +131,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
+				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
 				req.setAttribute("ss_slidingTableScrollHeight", _height);
@@ -142,6 +148,11 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 			if (_rows != null) {
 				_rows.clear();
 			}
+			_id = "";
+			_parentId = "";
+			_height = "";
+			_type = "";
+			_jsp = "";
 		}
 	}
 
@@ -161,6 +172,9 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	
 	public void setId(String id) {
 		_id = id;
+	}
+	public void setParentId(String parentId) {
+		_parentId = parentId;
 	}
 	public void setFolderId(String folderId) {
 		_folderId = folderId;

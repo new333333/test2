@@ -33,7 +33,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 		</portlet:actionURL>";
 </script>
 
-<div class="ss_folder">
+<div id="ss_folder_table_parent" class="ss_folder">
 <% // First include the folder tree %>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
@@ -83,7 +83,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 
 </div>
 </div>
-<ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
+<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
 <ssf:slidingTableRow headerRow="true">

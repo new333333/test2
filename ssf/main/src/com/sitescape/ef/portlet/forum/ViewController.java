@@ -106,11 +106,6 @@ public class ViewController  extends SAbstractController {
 			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 			
-			//Set up the tabs
-			Tabs tabs = new Tabs(request);
-			tabs.setTab(binder);
-			model.put(WebKeys.TABS, tabs);
-			
 			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
 			PortletSession ses = WebHelper.getRequiredPortletSession(request);

@@ -473,6 +473,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>parentId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>folderId</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
