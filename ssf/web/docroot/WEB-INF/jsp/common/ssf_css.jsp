@@ -217,7 +217,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </c:if>
 }
 
+<c:if test="<%= isIE %>">
 html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); } 
+</c:if>
 
 .ss_style, .ss_style table {
   font-family: ${ss_style_font_family};
