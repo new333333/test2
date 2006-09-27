@@ -16,17 +16,22 @@ var ss_sTableMarginBottom = 2
 
 var ss_sTableLastLeft = 0;
 var ss_sTableLastTop = 0;
+var ss_sTableLastParentWidth = 0;
 
 function ss_checkSlidingTableLayout() {
-	if (ss_getSlidingTableY(ss_slidingTableId_2) != ss_sTableLastTop || ss_getSlidingTableX(ss_slidingTableId_2) != ss_sTableLastLeft) {
+	if (ss_getSlidingTableY(ss_slidingTableId_2) != ss_sTableLastTop || 
+			ss_getSlidingTableX(ss_slidingTableId_2) != ss_sTableLastLeft || 
+			ss_getDivWidth(ss_slidingTableParentId) != ss_sTableLastParentWidth) {
 		//The layout changed, go reposition things
 		ss_sTableLastTop = ss_getSlidingTableY(ss_slidingTableId_2)
 		ss_sTableLastLeft = ss_getSlidingTableX(ss_slidingTableId_2)
+		ss_sTableLastParentWidth = ss_getDivWidth(ss_slidingTableParentId);
 		ss_showSlidingTableCols()
 		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
 	if (ss_checkIfParentDivHidden(ss_slidingTableId_2)) {
 		ss_hideSlidingTableCols()
+		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
 }
 

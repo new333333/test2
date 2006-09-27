@@ -40,6 +40,7 @@
 %>	
 <script type="text/javascript">
 var ss_slidingTableId = '${ss_slidingTableId}';
+var ss_slidingTableParentId = '${ss_slidingTableParentId}';
 var ss_slidingTableId_2 = ss_slidingTableId + "_2";
 var ss_colWidths = new Array();
 var ss_colWidthsUser = new Array();

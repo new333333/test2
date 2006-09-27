@@ -99,10 +99,10 @@ public class ManageSearchIndexController extends  SAbstractController {
 				}
 				element.addAttribute("type", "workspace");
 				element.addAttribute("title", ws.getTitle());
-				element.addAttribute("id", "");
+				element.addAttribute("id", ws.getId().toString());
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", imageClass);
-				element.addAttribute("displayOnly", "true");
+				//element.addAttribute("displayOnly", "true");
 				element.addAttribute("url", "");
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;

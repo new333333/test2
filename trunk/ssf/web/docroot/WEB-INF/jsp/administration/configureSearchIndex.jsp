@@ -26,6 +26,8 @@
 		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
 
 <div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 <br>
