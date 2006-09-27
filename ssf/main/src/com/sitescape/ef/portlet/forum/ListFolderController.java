@@ -177,10 +177,18 @@ public class ListFolderController extends  SAbstractController {
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		if (tabId != null) {
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (tabId != null) {
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {
-			tabs.setCurrentTab(tabs.setTab(binder));
+			//Don't overwrite a search tab
+			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+				tabs.setCurrentTab(tabs.addTab(binder));
+			} else {
+				tabs.setCurrentTab(tabs.setTab(binder));
+			}
 		}
 		model.put(WebKeys.TABS, tabs.getTabs());
 

@@ -235,6 +235,11 @@ public class Tabs {
 		tabs.put(CURRENT_TAB, newTabId);
 		return newTabId;
 	}
+	public String getTabType(int tabId) {
+		Map tab = getTab(tabId);
+		return (String) tab.get(TYPE);
+	}
+	
 	protected int findTabNumber(int tabId) {
 		List tabList = (List) tabs.get(TABLIST);
 		if (tabList.size() == 0) return -1;

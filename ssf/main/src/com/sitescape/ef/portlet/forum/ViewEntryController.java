@@ -34,6 +34,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 
 
@@ -92,6 +93,7 @@ public class ViewEntryController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String viewPath = BinderHelper.getViewListingJsp();
 		Map model;
+
 		if (formData.containsKey("ssReloadUrl")) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
@@ -105,10 +107,22 @@ public class ViewEntryController extends  SAbstractController {
 			model = getShowEntry(entryId, formData, request, response, folderId);
 			entryId = (String)model.get(WebKeys.ENTRY_ID);
 			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
+			
+			//Set up the tabs
+			Tabs tabs = new Tabs(request);
+			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+			String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+			if (newTab.equals("1")) {
+				tabs.setCurrentTab(tabs.addTab(fe));
+			} else if (tabId != null) {
+				tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
+			}
+			model.put(WebKeys.TABS, tabs.getTabs());
+
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count
 			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
-				FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
 				getFolderModule().setUserVisit(fe);
 			}
 			Object obj = model.get(WebKeys.CONFIG_ELEMENT);

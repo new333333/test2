@@ -25,6 +25,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
+			  <div id="ss_tab_data_${ss_tabs.current_tab}">
 
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -55,6 +56,7 @@ function ss_showForumEntryInIframe(url) {
 }
 </script>
 
+			  </div>
 			</div>
 		</div>
 	</div>

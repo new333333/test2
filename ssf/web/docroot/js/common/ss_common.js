@@ -186,6 +186,10 @@ function ss_openUrlInPortlet(url, popup) {
 	}
 }
 
+function ss_openUrlInNewTab(url) {
+	self.location.href = url + "&newTab=1";
+}
+
 function ss_reloadOpener(fallBackUrl) {
 	//Are we at the top window?
 	if (self.window != self.top) {
@@ -316,6 +320,21 @@ function ss_showHideObj(objName, visibility, displayStyle) {
 	} else {
 		//ss_debug('Div "'+objName+'" does not exist. (ss_showHideObj)')
 	}
+}
+
+function ss_checkIfParentDivHidden(divId) {
+    var obj = self.document.getElementById(divId)
+    if (obj != null) {
+    	while (obj.parentNode != null) {
+    		obj = obj.parentNode;
+    		if (obj.tagName && obj.tagName.toLowerCase() == "div") {
+    			if (obj.style && obj.style.visibility && obj.style.visibility == "hidden") {
+    				return true;
+    			}
+    		}
+    	}
+    }
+    return false;
 }
 
 //Routine to set the opacity of a div
@@ -3205,6 +3224,11 @@ function ss_deleteTab(obj, tabId) {
 		if (tabParentTdObject.tagName.toLowerCase() == "td") {
 			//Ok, delete this td from the tab table
 			tabParentTdObject.parentNode.removeChild(tabParentTdObject)
+			//Hide the tab contents
+			var tabDataObj = document.getElementById("ss_tab_data_" + tabId);
+			if (tabDataObj != null) tabDataObj.style.visibility = "hidden";
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 			
 			//Now tell the server which tab got deleted
 			var url = ss_deleteTabUrl;
