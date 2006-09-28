@@ -1,0 +1,12 @@
+<!-- SiteScape: This file is created by SiteScape and needed under JBoss-Tomcat only.
+     When running under Tomcat container, this file has no effect. -->
+<Context>
+	<Realm 
+		className="org.apache.catalina.realm.JAASRealm"
+		appName="slide"
+		userClassNames="org.apache.slide.jaas.spi.SlidePrincipal"
+		roleClassNames="org.apache.slide.jaas.spi.SlideRole"
+		debug="99"
+		useContextClassLoader="false"
+	/>
+</Context>
