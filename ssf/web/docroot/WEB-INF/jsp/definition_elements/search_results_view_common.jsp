@@ -116,11 +116,11 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
     <c:if test="${entry1._entityType == 'folderEntry'}">
       <a href="<ssf:url 
   		folderId="${entry1._binderId}" 
-  		action="view_folder_listing" >
+  		action="view_folder_listing">
     	<ssf:param name="binderId" value="${entry1._binderId}"/>
     	<ssf:param name="newTab" value="1"/>
     	</ssf:url>" 
-       ><span <%= seenStyle %>>${entry1._binderId}</span>
+       ><span <%= seenStyle %>>${ssBinderTitles[entry1._binderId]}</span></a>
     </c:if>
     <c:if test="${entry1._entityType == 'user'}">
       <a href="<ssf:url 

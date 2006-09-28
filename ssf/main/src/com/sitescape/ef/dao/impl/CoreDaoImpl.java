@@ -268,6 +268,37 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter) {
 		return loadObjects(objs, filter, true);
 	}
+	/**
+	 * Return a lsit containing an object array, where each object in a row representing the value of the requested attribute
+	 * This is used to return a subset of object.  In this case, we have a list of ids to
+	 * add to the query.  We have to use named params to do this.
+	 * @param objs
+	 * @param filter
+	 * @param ids
+	 * @return
+	 */
+	public List loadObjects(final String query, final Map values) {
+		return (List)getHibernateTemplate().execute(
+		        new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+	                  	Query q = session.createQuery(query);
+	            		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
+	            			Map.Entry me = (Map.Entry)iter.next();
+	            			Object val = me.getValue();
+	            			if (val instanceof Collection) {
+	            				q.setParameterList((String)me.getKey(), (Collection)val);
+	            			} else {
+	            				q.setParameter((String)me.getKey(), val);
+	            			}
+	            		}
+	            		return q.list();
+		            }
+		        }
+		     );
+	}
+	/**
+	 * Return a list ob objects
+	 */
 	public List loadObjects(Class className, FilterControls filter) {
 		return loadObjects(new ObjectControls(className), filter);
 	}

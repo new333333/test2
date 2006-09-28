@@ -38,13 +38,13 @@ public class ListProfilesController extends   SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
         User user = RequestContextHolder.getRequestContext().getUser();
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
+		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put("displayStyle", PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
+		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 				getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
-						PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+						PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
 		}
 		response.setRenderParameters(request.getParameterMap());
 		
@@ -55,14 +55,14 @@ public class ListProfilesController extends   SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		HashMap model = new HashMap();
 
-		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put("ssReloadUrl", reloadUrl.toString());
 			return new ModelAndView(BinderHelper.getViewListingJsp(), model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -102,6 +102,7 @@ public class ListProfilesController extends   SAbstractController {
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
 				userProperties, model);
 		DefinitionHelper.getDefinitions(binder, model);
@@ -172,28 +173,28 @@ public class ListProfilesController extends   SAbstractController {
 		//vertical
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);

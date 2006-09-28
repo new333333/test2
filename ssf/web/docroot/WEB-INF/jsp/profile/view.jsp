@@ -19,6 +19,13 @@
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
 
 <table width="100%">
-<tr><td><c:out value="${ssUser.title}"/></td></tr>
+<tr><td>
+ <a href="<portlet:renderURL windowState="maximized">
+				<portlet:param name="action" value="view_ws_listing"/>
+				<portlet:param name="binderId" value="${ssUser.parentBinder.id}"/>
+				<portlet:param name="entryId" value="${ssUser.id}"/>
+				</portlet:renderURL>">
+
+<c:out value="${ssUser.title}"/></a></td></tr>
 </table>
 </div>

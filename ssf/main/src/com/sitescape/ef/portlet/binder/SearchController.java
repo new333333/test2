@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -21,6 +23,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
@@ -42,13 +45,13 @@ public class SearchController extends AbstractBinderController {
 
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
+		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FOLDER_COLUMNS)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new HashMap();
 				String[] columnNames = new String[] {"folder", "number", "title", "state", "author", "date"};
@@ -81,8 +84,6 @@ public class SearchController extends AbstractBinderController {
 		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
 		model.put(WebKeys.TABS, tabs.getTabs());
 
-		List entries = new ArrayList();
-		List people = new ArrayList();
 		Document searchQuery = null;
 
 		Map tab = tabs.getTab(tabs.getCurrentTab());
@@ -105,12 +106,22 @@ public class SearchController extends AbstractBinderController {
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
 		}
 		
+		List<Map>entries;
+		List people = new ArrayList();
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
 			entries = getBinderModule().executeSearchQuery(searchQuery);
 			//entries = getBinderModule().executePeopleSearchQuery(searchQuery);
-		}
+
+		} else entries = new ArrayList();
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		//since the results span multiple folders, we need to get the folder titles
+		Set ids = new HashSet();
+		for (Map r : entries) {
+			ids.add(Long.valueOf((String)r.get("_binderId")));
+		}
+		model.put(WebKeys.BINDER_TITLES, ResolveIds.getBinderTitles(ids));
+							
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
@@ -139,25 +150,25 @@ public class SearchController extends AbstractBinderController {
 		//vertical
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SEARCH_RESULTS_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SEARCH_RESULTS_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SEARCH_RESULTS_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SEARCH_RESULTS_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 

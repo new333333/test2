@@ -84,7 +84,7 @@ public class ModifyEntryController extends SAbstractController {
 	private void setupViewFolder(ActionResponse response, Long folderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 		
 	}
 		

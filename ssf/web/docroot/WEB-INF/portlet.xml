@@ -130,6 +130,23 @@
         <resource-bundle>content.presence</resource-bundle>
     </portlet>
  
+    <user-attribute>
+        <description xml:lang="en">User First Name</description>
+        <name>user.name.given</name>
+    </user-attribute>
+    <user-attribute>
+        <description xml:lang="en">User Last Name</description>
+        <name>user.name.family</name>
+    </user-attribute>
+    <user-attribute>
+        <description xml:lang="en">User E-Mail</description>
+        <name>user.business-info.online.email</name>
+    </user-attribute>
+    <user-attribute>
+        <description xml:lang="en">User Department</description>
+        <name>user.department</name>
+    </user-attribute>
+
      <user-attribute>
         <description xml:lang="en">User Name</description>
         <name>user.name</name>

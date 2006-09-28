@@ -79,5 +79,7 @@ public interface ProfileModule {
     public void setVisit(EntityIdentifier entityId);
 	public Rating getRating(EntityIdentifier entityId);
     public void setRating(EntityIdentifier entityId, long value);
+    public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException;
 
 }

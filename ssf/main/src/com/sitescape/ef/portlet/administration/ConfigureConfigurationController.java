@@ -126,11 +126,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			}
 			defsMap = new HashMap();			
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defsMap);
-			defs = (Map)model.get(WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS);			
-			for (int i=0; i<defIds.size(); ++i) {
-				String id = (String)defIds.get(i);
-				if (defs.containsKey(id)) {
-					defsMap.put(id, defs.get(id));
+			defs = (Map)model.get(WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS);	
+			if (defs != null) {
+				for (int i=0; i<defIds.size(); ++i) {
+					String id = (String)defIds.get(i);
+					if (defs.containsKey(id)) {
+						defsMap.put(id, defs.get(id));
+					}
 				}
 			}
 			

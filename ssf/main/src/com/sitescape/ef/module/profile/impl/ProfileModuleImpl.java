@@ -33,7 +33,9 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Visits;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
@@ -42,6 +44,7 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.util.Validator;
 
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
@@ -49,6 +52,18 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
 	
+    protected DefinitionModule definitionModule;
+	protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+	/**
+	 * Setup by spring
+	 * @param definitionModule
+	 */
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+
 	private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
@@ -224,6 +239,32 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
     public void checkModifyEntryAllowed(Principal entry) {
 		AccessUtils.modifyCheck(entry);   		
+    }
+    public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException {
+        ProfileBinder binder = loadBinder(binderId);
+        ProfileCoreProcessor processor=loadProcessor(binder);
+        Principal entry = (Principal)processor.getEntry(binder, entryId);
+        if (entry.getWorkspaceId() != null) {
+        	//better not exist
+        	Long wsId = entry.getWorkspaceId();
+        	try {
+        		Workspace ws = (Workspace)getCoreDao().loadBinder(wsId, RequestContextHolder.getRequestContext().getZoneName());
+        		//if worked, don't create another one
+        		return ws.getId(); 
+        	} catch (Exception ex) {};
+        }
+        checkModifyEntryAllowed(entry);
+        Definition definition = null;
+        if (Validator.isNotNull(definitionId))
+        	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
+        else 
+        	definition = getDefinitionModule().createDefaultDefinition(Definition.WORKSPACE_VIEW);
+        Workspace ws = (Workspace)processor.addBinder(binder, definition, Workspace.class, inputData, fileItems);
+        entry.setWorkspaceId(ws.getId());
+ //       ws.setInheritAclFromParent(false);
+ //       ws.setFunctionMembershipInherited(false);
+        return ws.getId();
     }
 
     public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) throws AccessControlException {

@@ -36,8 +36,6 @@ public class User extends Principal {
     protected String webPubDir="";
     protected String organization="";
     protected String phone="";
-    protected Folder calendar;
-    protected Workspace preferredWorkspace;
     protected String zonName="";
     protected Locale locale;
 	protected TimeZone timeZone;
@@ -249,18 +247,6 @@ public class User extends Principal {
         this.webPubDir = webPubDir;
     }
  
-    /**
-     * @hibernate.many-to-one class="com.sitescape.ef.domain.Folder" node="Calendar" embed-xml="false"
-     * @hibernate.column name="calender"
-     * @return
-     */
-    public Folder getCalendar() {
-        return this.calendar;
-    }
-    public void setCalendar(Folder calendar) {
-        this.calendar = calendar;
-    }
-
     /**
      * @hibernate.property length="100"
      */

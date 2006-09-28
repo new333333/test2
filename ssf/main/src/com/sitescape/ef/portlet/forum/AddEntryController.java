@@ -60,7 +60,7 @@ public class AddEntryController extends SAbstractController {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());				
 				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				setupViewEntry(response, folderId, entryId);

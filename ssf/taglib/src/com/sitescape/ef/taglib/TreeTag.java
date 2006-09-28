@@ -81,7 +81,7 @@ public class TreeTag extends TagSupport {
 		    setCommonImg(contextPath + "/images");
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_WORKSPACE_TREE);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
 			if (this.topId != null && !this.topId.equals("")) {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
 			}
