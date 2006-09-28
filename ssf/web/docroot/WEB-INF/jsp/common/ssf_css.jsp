@@ -494,6 +494,10 @@ div.ss_sliding_table_column {
   background-color: ${ss_sliding_table_row1_background_color}; 
   line-height:20px;
 }
+.ss_highlightEntry {
+  background-color: ${ss_folder_line_highlight_color};
+  line-height:20px;
+}
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
 }
@@ -793,10 +797,6 @@ div.ss_dashboardProtoDropTarget {
 
   
 /* highlights */
-.ss_highlightEntry {
-  background-color: ${ss_folder_line_highlight_color};
-  }
-
 .ss_tree_highlight {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
