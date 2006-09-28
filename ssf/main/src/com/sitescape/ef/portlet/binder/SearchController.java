@@ -104,6 +104,9 @@ public class SearchController extends AbstractBinderController {
 		} else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
+		} else if (tabType != null && !tabType.equals(Tabs.QUERY)) {
+			//The tab changed, go to the right controller
+			return new ModelAndView("binder/tab_redirect", model);
 		}
 		
 		List<Map>entries;
