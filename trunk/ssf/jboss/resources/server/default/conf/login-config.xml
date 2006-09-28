@@ -23,7 +23,7 @@ The outline of the application-policy is:
   </authentication>
 </application-policy>
 
-$Revision: 1.12.2.2 $
+$Revision: 1.12.2.5 $
 -->
 
 <policy>
@@ -34,6 +34,8 @@ $Revision: 1.12.2.2 $
        <authentication>
           <login-module code = "org.jboss.security.ClientLoginModule"
              flag = "required">
+             <!-- Any existing security context will be restored on logout -->
+             <module-option name="restore-login-identity">true</module-option>
           </login-module>
        </authentication>
     </application-policy>
@@ -116,7 +118,8 @@ $Revision: 1.12.2.2 $
        </authentication>
     </application-policy>
 
-    <!-- A template configuration for the JBossWS web application (and transport layer!).
+    <!--
+      A template configuration for the JBossWS security domain.
       This defaults to the UsersRolesLoginModule the same as other and should be
       changed to a stronger authentication mechanism as required.
     -->
@@ -124,6 +127,8 @@ $Revision: 1.12.2.2 $
       <authentication>
         <login-module code="org.jboss.security.auth.spi.UsersRolesLoginModule"
           flag="required">
+          <module-option name="usersProperties">props/jbossws-users.properties</module-option>
+          <module-option name="rolesProperties">props/jbossws-roles.properties</module-option>
           <module-option name="unauthenticatedIdentity">anonymous</module-option>
         </login-module>
       </authentication>
@@ -133,7 +138,7 @@ $Revision: 1.12.2.2 $
     does not have a application-policy entry with a matching name
     -->
     <!--<application-policy name = "other">-->
-       <!-- A simple server login module, which can be used when the number 
+       <!-- A simple server login module, which can be used when the number
        of users is relatively small. It uses two properties files:
        users.properties, which holds users (key) and their password (value).
        roles.properties, which holds users (key) and a comma-separated list of
@@ -147,10 +152,10 @@ $Revision: 1.12.2.2 $
        <!--<authentication>
           <login-module code = "org.jboss.security.auth.spi.UsersRolesLoginModule"
              flag = "required" />
-       </authentication>-->
-    <!--</application-policy>-->
+       </authentication>
+    </application-policy>-->
 
-	<application-policy name = "slide">
+    <application-policy name = "slide">
        <authentication>
           <login-module code = "com.sitescape.ef.ssfs.jaas.SiteScapeLoginModule" flag = "required">
                 <module-option name="factoryClassName">com.sitescape.ef.ssfs.wck.AuthenticationManager</module-option>
@@ -158,6 +163,5 @@ $Revision: 1.12.2.2 $
           </login-module>
        </authentication>
     </application-policy>
-
 </policy>
 
