@@ -3235,7 +3235,7 @@ function ss_deleteTab(obj, tabId) {
 			url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
 			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 			ajaxRequest.setData("tabId", tabId)
-			//ajaxRequest.setEchoDebugInfo();
+			ajaxRequest.setEchoDebugInfo();
 			ajaxRequest.setPostRequest(ss_changeTabDone);
 			ajaxRequest.setUsePOST();
 			ajaxRequest.sendRequest();  //Send the request
@@ -3247,54 +3247,7 @@ function ss_changeTabDone(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
-	ss_showTab(ss_currentTab, false);
 }
-
-function ss_showTab(tabId, saveToServer) {
-	return true;
-	
-	var obj = document.getElementById("ss_tabbar_td" + tabId);
-	if (obj == null) return;
-	var tabTdObject = obj.parentNode;
-	var tabTrObject = tabTdObject.parentNode;
-	//If already viewing the selected tab, then go to the tab's url
-	if (tabTdObject.className == "ss_tabs_td_active") return true;
-	var tabbar = document.getElementById("ss_tabbar");
-	//Switch all tabs to "inactive"
-	var tabs = ss_getElementsByClass("ss_tabs_td.*", tabbar, "td")
-	for (var i = 0; i < tabs.length; i++) {
-		tabs[i].className = tabs[i].className.replace(/_active/, "")
-	}
-	//Switch the tab to be shown to "active"
-	var tabTds = ss_getElementsByClass("ss_tabs_td.*", tabTrObject, "td")
-	for (var i = 0; i < tabTds.length; i++) {
-		var cn = tabTds[i].className.replace(/_active/, "")
-		tabTds[i].className = cn + "_active"
-	}
-	
-	//Hide the old tab and show the new one
-	ss_debug("Hide tab "+ss_currentTab)
-	ss_hideDiv("ss_tabDataDiv"+ss_currentTab);
-	ss_debug("Show tab "+tabId)
-	ss_showDiv("ss_tabDataDiv"+tabId);
-	ss_currentTab = tabId;
-
-	if (saveToServer == true) {
-		ss_setupStatusMessageDiv();
-		//Now tell the server which tab got deleted
-		var url = ss_setCurrentTabUrl;
-		url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.setData("tabId", tabId)
-		//ajaxRequest.setEchoDebugInfo();
-		//ajaxRequest.setPostRequest(ss_changeTabDone);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
-	}
-	
-	return false;
-}
-
 
 //Search functions from the navbar
 

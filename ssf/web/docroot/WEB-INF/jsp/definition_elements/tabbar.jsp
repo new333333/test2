@@ -18,7 +18,7 @@ var ss_currentTab = "${ss_tabs.current_tab}";
 	  <table cellspacing="0" cellpadding="0" style="background:transparent;">
 	  <tbody>
 	  <tr>
-	  <td valign="middle" class="ss_tabs_td_left${active}"><img 
+	  <td valign="middle" class="ss_tabs_td_left${active}"><img width="15"
 	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
 	  <td valign="middle" class="ss_tabs_td${active}" nowrap="true">
 		<a id="ss_tabbar_td${tab.tabId}" 
@@ -72,7 +72,7 @@ var ss_currentTab = "${ss_tabs.current_tab}";
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>
-		  onClick="return ss_showTab('${tab.tabId}', true);">
+		>
 	<c:if test="${!empty tab.icon}">
 		   <img src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
@@ -83,7 +83,7 @@ var ss_currentTab = "${ss_tabs.current_tab}";
 		</a>
 	</c:if>
 	  </td>
-	  <td valign="middle" class="ss_tabs_td_right${active}"><img 
+	  <td valign="middle" class="ss_tabs_td_right${active}"><img width="15"
 	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
 	  </tr>
 	  </tbody>
