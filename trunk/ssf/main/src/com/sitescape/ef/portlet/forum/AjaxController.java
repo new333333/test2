@@ -56,24 +56,24 @@ public class AjaxController  extends SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-			if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+			if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				ajaxSaveColumnPositions(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER)) {
+			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER)) {
 				ajaxAddFavoriteBinder(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY)) {
+			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY)) {
 				ajaxAddFavoritesCategory(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
 				ajaxSaveRating(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_DASHBOARD_LAYOUT)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_DASHBOARD_LAYOUT)) {
 				ajaxSaveDashboardLayout(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) || 
-					op.equals(WebKeys.FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
+			} else if (op.equals(WebKeys.OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS) || 
+					op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
 				ajaxShowHideAllDashboardComponents(request, response);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+			} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
+					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				ajaxChangeDashboardComponent(request, response);
 			} 
 		}
@@ -93,119 +93,119 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 			
 			//Check for calls from "ss_fetch_url" (which don't output in xml format)
-			if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) ||
-					op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+			if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
+					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				return new ModelAndView("forum/fetch_url_return", model);
-			} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
+			} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
-			} else if(op.equals(WebKeys.FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
+			} else if(op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
 			response.setContentType("text/xml");			
-			if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
+			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 				return new ModelAndView("forum/unseen_counts", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				return new ModelAndView("forum/save_column_positions_return", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 				return new ModelAndView("forum/save_entry_width_return", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
+			} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
 				return new ModelAndView("forum/save_entry_height_return", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA) ||
-					op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+			} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
+					op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
+					op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) ||
+					op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 				return new ModelAndView("binder/get_entry_elements", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+			} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
+					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+					op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
 				return new ModelAndView("binder/get_condition_entry_element", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
-					op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
-				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
+			} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+					op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST) ||
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 				return new ModelAndView("definition_builder/get_condition_element", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
+			} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER) || 
-					op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) || 
-					op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
+			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
+					op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) || 
+					op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				return new ModelAndView("forum/favorites_return", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE)) {
+			} else if (op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE)) {
 				return new ModelAndView("forum/favorites_tree", model);
-			} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
+			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL)) {
 				return new ModelAndView("forum/ajax_return", model);
 			} 
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
 		//The user is logged in
-		if (op.equals(WebKeys.FORUM_OPERATION_UNSEEN_COUNTS)) {
+		if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 			return ajaxGetUnseenCounts(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITE_BINDER) || 
-				op.equals(WebKeys.FORUM_OPERATION_ADD_FAVORITES_CATEGORY) ||
-				op.equals(WebKeys.FORUM_OPERATION_GET_FAVORITES_TREE) ||
-				op.equals(WebKeys.FORUM_OPERATION_SAVE_FAVORITES)) {
+		} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
+				op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) ||
+				op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
+				op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 			return ajaxGetFavoritesTree(request, response);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_COLUMN_POSITIONS)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 			return new ModelAndView("forum/save_column_positions_return");
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
+		} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 			return ajaxConfigureFolderColumns(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_WIDTH)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 			return ajaxSaveEntryWidth(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_ENTRY_HEIGHT)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
 			return ajaxSaveEntryHeight(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_USER_LIST_SEARCH)) {
+		} else if (op.equals(WebKeys.OPERATION_USER_LIST_SEARCH)) {
 			return ajaxUserListSearch(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
+				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA) || 
+				op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			return ajaxGetFilterData(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) || 
+				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
 			return ajaxGetSearchFormData(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
+				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_WORKSPACE_TREE)) {
+		} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 			return ajaxGetWorkspaceTree(request, response);
 
-		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) || 
-				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT) || 
-				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
+				op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) || 
+				op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			return ajaxGetDashboardComponent(request, response);
 
-		} else if(op.equals(WebKeys.FORUM_OPERATION_SHOW_BLOG_REPLIES)) {
+		} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 			return ajaxGetBlogReplies(request, response);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_RATING)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
 			return ajaxGetEntryRating(request, response);
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SHOW_HELP_PANEL)) {
+		} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL)) {
 			return ajaxShowHelpPanel(request, response);
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_ADD_TAB)) {
+		} else if (op.equals(WebKeys.OPERATION_ADD_TAB)) {
 			return ajaxAddTab(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_DELETE_TAB)) {
+		} else if (op.equals(WebKeys.OPERATION_DELETE_TAB)) {
 			return ajaxDeleteTab(request, response);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CURRENT_TAB)) {
+		} else if (op.equals(WebKeys.OPERATION_SET_CURRENT_TAB)) {
 			return ajaxSetCurrentTab(request, response);
 		} 
 				
@@ -274,7 +274,7 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 
 		Boolean showAllComponents = new Boolean(true);
-		if (op.equals(WebKeys.FORUM_OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) showAllComponents = false;
+		if (op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) showAllComponents = false;
 		getProfileModule().setUserProperty(user.getId(), binderId, 
 				ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, showAllComponents);
 	}
@@ -458,9 +458,9 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUE_DATA)) {
+		if (op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
+				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUE_DATA)) {
 			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID+filterTermNumber);
 			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
@@ -473,7 +473,7 @@ public class AjaxController  extends SAbstractController {
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				}
 			}
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_WORKFLOW_DEF_ID+filterTermNumber);
 			if (Validator.isNotNull(defId)) {
 				model.put(WebKeys.FILTER_WORKFLOW_DEF_ID, defId);
@@ -489,20 +489,20 @@ public class AjaxController  extends SAbstractController {
 
 		
 		response.setContentType("text/xml");
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_FILTER_TYPE)) {
+		if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
 	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 			model.put(WebKeys.WORKFLOW_DEFINTION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
 			return new ModelAndView("binder/get_filter_type", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ENTRY_ELEMENTS)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS)) {
 			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("binder/get_entry_elements", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_ELEMENT_VALUES)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES)) {
 			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("binder/get_element_value", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_WORKFLOW_STATES)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
 			model.put(WebKeys.FILTER_TYPE, "workflow");
 			return new ModelAndView("binder/get_entry_elements", model);
 		} else {
@@ -523,9 +523,9 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX, filterTermNumberMax);
 		
 		//Get the definition id (if present)
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
-				op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
+		if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS) || 
+				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES) || 
+				op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUE_DATA)) {
 			String defId = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_FORM_ENTRY_DEF_ID+filterTermNumber);
 			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
@@ -547,15 +547,15 @@ public class AjaxController  extends SAbstractController {
 
 		
 		response.setContentType("text/xml");
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
+		if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
 			DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
 			DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
 	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
 			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
 			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
 		} else {
 			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request,
@@ -592,9 +592,9 @@ public class AjaxController  extends SAbstractController {
 		}
 		
 		response.setContentType("text/xml");
-		if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
+		if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_ELEMENTS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element", model);
-		} else if (op.equals(WebKeys.FORUM_OPERATION_GET_CONDITION_ENTRY_OPERATIONS)) {
+		} else if (op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS)) {
 			return new ModelAndView("definition_builder/get_condition_entry_element_operations", model);
 		} else {
 			return new ModelAndView("definition_builder/get_condition_entry_element_value", model);
@@ -658,11 +658,11 @@ public class AjaxController  extends SAbstractController {
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 
-		if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+		if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
-		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
-		} else if (!componentId.equals("") && op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			DashboardHelper.deleteComponent(request, binder, componentId, scope);
 		}
 	}
@@ -677,7 +677,7 @@ public class AjaxController  extends SAbstractController {
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 		if (scope.equals("")) scope = DashboardHelper.Local;
 
-		if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+		if (op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 			if (!componentId.equals("")) {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -685,8 +685,8 @@ public class AjaxController  extends SAbstractController {
 				DashboardHelper.getDashboardMap(binder, userFolderProperties, 
 						userProperties, model, scope, componentId);
 			}
-		} else if (op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_HIDE_COMPONENT) ||
-				op.equals(WebKeys.FORUM_OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) ||
+				op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 			return new ModelAndView("forum/fetch_url_return", model);
 		}
 		return new ModelAndView("definition_elements/view_dashboard_component", model);

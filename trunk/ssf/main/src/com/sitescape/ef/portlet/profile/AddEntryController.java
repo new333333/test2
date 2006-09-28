@@ -52,7 +52,7 @@ public class AddEntryController extends SAbstractController {
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());				
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 
 		}
 			

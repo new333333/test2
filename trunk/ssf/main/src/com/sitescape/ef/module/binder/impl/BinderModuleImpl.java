@@ -231,13 +231,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Map wf = new HashMap();
 		Definition def;
 		String companyId = binder.getZoneName();
-		for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry me = (Map.Entry)iter.next();
-			//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
-			try {
-				def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
-				wf.put(me.getKey(), def);
-			} catch (NoDefinitionByTheIdException nd) {}
+		if (workflowAssociations != null) {
+			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry me = (Map.Entry)iter.next();
+				//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
+				try {
+					def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
+					wf.put(me.getKey(), def);
+				} catch (NoDefinitionByTheIdException nd) {}
+			}
 		}
 		binder.setWorkflowAssociations(wf);
 		binder.setDefinitionsInherited(false);

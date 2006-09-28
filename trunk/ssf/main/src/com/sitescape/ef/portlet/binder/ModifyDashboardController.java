@@ -137,7 +137,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		String view = "binder/modify_dashboard";
 		
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DASHBOARD_TITLE)) {
+		if (op.equals(WebKeys.OPERATION_SET_DASHBOARD_TITLE)) {
 			view = "binder/modify_dashboard_title";
 		} else if (formData.containsKey("add_wideTop")) {
 			view = "binder/modify_dashboard_component";

@@ -51,7 +51,7 @@ public class ViewEntryController extends SAbstractController {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model = new HashMap();
 			model.put("ssReloadUrl", reloadUrl.toString());			
@@ -60,7 +60,6 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);
 		Principal entry = getProfileModule().getEntry(binderId, entryId);
 		
-		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentBinder());

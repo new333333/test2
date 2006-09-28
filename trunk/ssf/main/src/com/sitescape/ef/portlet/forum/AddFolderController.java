@@ -155,7 +155,7 @@ public class AddFolderController extends SAbstractController {
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());		
-		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 		if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder.name())) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		} else {

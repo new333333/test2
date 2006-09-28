@@ -4,7 +4,6 @@ array set ::j2ee_Principals_class_MAP {
    lockVersion  {lockVersion int32}
    type         {type "fixchar 16"}
    disabled     {disabled boolean}
-   lcName       {lcName "varchar 82"}
    name         {name "varchar 82"}
    title        {title "varchar 1024"}
    emailAddress {emailAddress "varchar 256"}
@@ -26,7 +25,6 @@ array set ::j2ee_Principals_class_MAP {
    zoneName    {zoneName "varchar 100"}
    timeZoneId   {timeZoneId "varchar 10"}
    loginDate	{loginDate timestamp}
-   preferredWorkspace {preferredWorkspace int32}
    reserved	{reserved boolean}
    parentBinder {parentBinder int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
@@ -419,7 +417,6 @@ proc doUsers {userList} {
 
 		foreach user $bunchList {      
             set attrs(disabled) [::profile::aval disabled $user]
-            set attrs(lcName) [::profile::aval lcName $user]
             set attrs(name) $user
             set attrs(title) [::profile::aval title $user]
             set attrs(languageId) [::profile::aval nativeLanguage $user] 
@@ -435,11 +432,11 @@ proc doUsers {userList} {
             	unset attrs(description_text)
             }
             set attrs(description_format) 2
-			set summit [user_property get -for $user defaultSummit]
-			if {![isnull $summit] && ![strequal $summit "__topsummit__"] && 
-				[info exists ::forumIds($summit)]} {
-				set attrs(preferredWorkspace) $::forumIds($summit)
-			} 
+#			set summit [user_property get -for $user defaultSummit]
+#			if {![isnull $summit] && ![strequal $summit "__topsummit__"] && 
+#				[info exists ::forumIds($summit)]} {
+#				set attrs(preferredWorkspace) $::forumIds($summit)
+#			} 
 #what about emailMedium/short??
             set attrs(homepage) [::profile::aval homepage $user]
             set attrs(organization) [::profile::aval org $user] 
@@ -552,7 +549,6 @@ proc doGroups {groupList} {
             #save id for latter mappings
             set ::groupIds($group) $attrs(id)
             set attrs(disabled) [::profile::aval -type group disabled $group]
-            set attrs(lcName) [::profile::aval -type group lcName $group]
             set attrs(name) $group
             set attrs(title) [::profile::aval -type group title $group]
             set attrs(creation_date) [::profile::aval -type group createdOn $group] 
@@ -588,7 +584,7 @@ proc cleanup {} {
     wimsql_rw "delete from SS_FolderEntries;"
     wimsql_rw "update SS_Forums set topFolder=null;"
 
-    wimsql_rw "update SS_Principals set preferredWorkspace=null;"
+#    wimsql_rw "update SS_Principals set preferredWorkspace=null;"
 	wimsql_rw "delete from SS_Notifications;"
 	wimsql_rw "delete from SS_WorkflowStates;"
    wimsql_rw "delete from SS_Forums;"

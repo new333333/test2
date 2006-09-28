@@ -34,7 +34,7 @@ public abstract class Principal extends Entry  {
     protected List memberOf;//initialized by hiberate access=field
     protected String signature="";    
     protected String zoneName;
-    protected Long preferredWorkspaceId;
+    protected Long workspaceId, calendarId;
     protected boolean reserved;
     protected List iMemberOf;
     
@@ -51,20 +51,30 @@ public abstract class Principal extends Entry  {
     }
     /**
      * @hibernate.property
-     * @hibernate.column name="preferredWorkspace"
      * Load ourselves - cause not always needed and don't want to proxy
      * @return
      */
-    public Long getPreferredWorkspaceId() {
-      	return preferredWorkspaceId;
+    public Long getWorkspaceId() {
+      	return workspaceId;
     }
-    public void setPreferredWorkspaceId(Long ws) {
-       	this.preferredWorkspaceId = ws;         	
+    public void setWorkspaceId(Long workspaceId) {
+       	this.workspaceId = workspaceId;         	
     }
  
+    /**
+     * @hibernate.property
+     * Load ourselves - cause not always needed and don't want to proxy
+     * @return
+     */
+    public Long getCalendarId() {
+      	return calendarId;
+    }
+    public void setCalendarId(Long calendarId) {
+       	this.calendarId = calendarId;         	
+    }
     
     /**
-     * @hibernate.property length="100" not-null="true"
+     * @hibernate.property length="64" not-null="true"
      */
     public String getZoneName() {
     	return this.zoneName;
@@ -94,21 +104,6 @@ public abstract class Principal extends Entry  {
     public void setDisabled(boolean disabled) {
        this.disabled = disabled;
     }
-    /**
-     * Along with the zone this is used to force case-insensitive 
-     * names to be unique in db
-     * 
-     * @hibernate.property length="82"
-     * @return Returns the lowercase version of loginName
-     */
-    protected String getLcName() {
-        return this.lcName;
-    }
-
-    protected void setLcName(String lcName) {
-        this.lcName = lcName;
-    }
-
     /**
      * @hibernate.property length="82"
      * @return Returns the loginName.

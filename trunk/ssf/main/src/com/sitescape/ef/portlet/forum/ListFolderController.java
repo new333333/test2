@@ -65,23 +65,23 @@ public class ListFolderController extends  SAbstractController {
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
-		if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE)) {
+		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION)) {
+		} else if (op.equals(WebKeys.OPERATION_SET_DISPLAY_DEFINITION)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
+		} else if (op.equals(WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
+		} else if (op.equals(WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			String urldate = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_NEWVIEWDATE, "");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
@@ -91,16 +91,16 @@ public class ListFolderController extends  SAbstractController {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE)) {
+		} else if (op.equals(WebKeys.OPERATION_CALENDAR_GOTO_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
 			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
 			
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SELECT_FILTER)) {
+		} else if (op.equals(WebKeys.OPERATION_SELECT_FILTER)) {
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.USER_PROPERTY_USER_FILTER, 
-					PortletRequestUtils.getStringParameter(request, WebKeys.FORUM_OPERATION_SELECT_FILTER,""));
+					PortletRequestUtils.getStringParameter(request, WebKeys.OPERATION_SELECT_FILTER,""));
 		
-		} else if (op.equals(WebKeys.FORUM_OPERATION_SAVE_FOLDER_COLUMNS)) {
+		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_COLUMNS)) {
 			if (formData.containsKey("okBtn")) {
 				Map columns = new HashMap();
 				String[] columnNames = new String[] {"number", "title", "state", "author", "date"};
@@ -147,14 +147,14 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(BinderHelper.getViewListingJsp());
-		} else if (op.equals(WebKeys.FORUM_OPERATION_VIEW_ENTRY)) {
+		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -240,7 +240,7 @@ public class ListFolderController extends  SAbstractController {
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_RELOAD_LISTING);
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 	}
 		
 	protected String getShowFolder(Map formData, RenderRequest req, 
@@ -414,7 +414,7 @@ public class ListFolderController extends  SAbstractController {
 			//Build a url to switch to this view
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_DEFINITION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
 			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
@@ -423,28 +423,28 @@ public class ListFolderController extends  SAbstractController {
 		//vertical
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
 		//accessible
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
 		//iframe
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
 		//popup
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
@@ -529,27 +529,27 @@ public class ListFolderController extends  SAbstractController {
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_CALENDAR_GOTO_DATE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CALENDAR_GOTO_DATE);
 		model.put("goto_form_url", url.toString());
 		
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
 		model.put("set_day_view", url.toString());
 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
 		model.put("set_week_view", url.toString());
 		
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_MODE);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
 		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
 		model.put("set_month_view", url.toString());
 		
@@ -767,7 +767,7 @@ public class ListFolderController extends  SAbstractController {
 						urldatestring2 = urldatesdf.format(gcal.getTime());
 						url = response.createActionURL();
 						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
 						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 						url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
 						emptyDayMap.put("dayURL", url.toString());
@@ -781,7 +781,7 @@ public class ListFolderController extends  SAbstractController {
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
 				weekMap.put("weekURL", url.toString());
@@ -792,7 +792,7 @@ public class ListFolderController extends  SAbstractController {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
 			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 			url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
 			daymap.put("dayURL", url.toString());
@@ -861,7 +861,7 @@ public class ListFolderController extends  SAbstractController {
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_SET_CALENDAR_DISPLAY_DATE);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
 				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
 				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
 				emptyDayMap.put("dayURL", url.toString());

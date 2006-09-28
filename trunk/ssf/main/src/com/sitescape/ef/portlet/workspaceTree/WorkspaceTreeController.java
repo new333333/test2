@@ -24,6 +24,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
@@ -49,16 +50,32 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);						
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-
 		Map<String,Object> model = new HashMap<String,Object>();
 		try {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {}
 
-		if (op.equals(WebKeys.FORUM_OPERATION_RELOAD_LISTING)) {
+		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
+		//see if it is a user workspace - can also get directly to user ws by a binderId
+		//so don't assume anything here.  This just allows us to handle users without a workspace.
+		Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		if (entryId != null) {
+			User entry = (User)getProfileModule().getEntry(binderId, entryId);
+			//add one
+			if (entry.getWorkspaceId() == null) {
+				Map data = new HashMap();
+				data.put("title", entry.getName());
+				MapInputData inputData = new MapInputData(data);
+				binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
+			} else {
+				binderId = entry.getWorkspaceId();
+			}
+		}
+
+
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -71,7 +88,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		Map formData = request.getParameterMap();
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
 
  		//Check special options in the URL

@@ -98,14 +98,13 @@ public class ViewEntryController extends  SAbstractController {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.FORUM_OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			model = new HashMap();
 			model.put("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
 		} else {
 			model = getShowEntry(entryId, formData, request, response, folderId);
-			entryId = (String)model.get(WebKeys.ENTRY_ID);
 			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 			FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
 			
@@ -235,8 +234,6 @@ public class ViewEntryController extends  SAbstractController {
 			folder = getFolderModule().getFolder(folderId);
 		}
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
-		model.put(WebKeys.ENTRY_ID, entryId);
-		model.put(WebKeys.BINDER_ID, folder.getId().toString());
 		model.put(WebKeys.SEEN_MAP, seen);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);

@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 
 <!--
 	Concepts
@@ -1526,7 +1525,7 @@
 	</item>
 	
 	<item name="profileEntryTimeZone" caption="__preferred_timeZone" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryViewData">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
 		</properties>
@@ -1542,6 +1541,7 @@
 					path="//item[@name='profileEntryForm']/.//item" 
 					optionCaption="__profile_data_items_from_the_profile_form">
 					<exclude name="title" />
+					<exclude name="timeZoneName" />
 				</option_entry_data>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>

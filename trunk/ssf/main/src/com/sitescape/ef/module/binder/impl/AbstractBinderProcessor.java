@@ -744,14 +744,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }*/
     
     protected void cleanupFiles(List fileUploadItems) {
-        for(int i = 0; i < fileUploadItems.size(); i++) {
-        	// Get a handle on the uploaded file. 
-        	FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-        	try {
-				fui.delete();
-			} catch (IOException e) {
-				logger.error(e.getMessage(), e);
-			}
+    	if (fileUploadItems != null) {
+    		for(int i = 0; i < fileUploadItems.size(); i++) {
+    			// 	Get a handle on the uploaded file. 
+    			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
+    			try {
+    				fui.delete();
+    			} catch (IOException e) {
+    				logger.error(e.getMessage(), e);
+    			}
+    		}
+    			
         }
     }
     protected void removeFileFromIndex(FileAttachment fa) {
