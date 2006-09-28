@@ -28,10 +28,12 @@ public class Tabs {
    	public final static String TABLIST = "tablist";
    	public final static String CURRENT_TAB = "current_tab";
    	public final static String NEXT_TAB_ID = "next_tab_id";
+   	public final static String NEXT_REF = "next_ref";
    	
    	//Tab map keys
    	public final static String TYPE = "type";
    	public final static String TAB_ID = "tabId";
+   	public final static String LAST_REF = "lastRef";
    	public final static String BINDER_ID = "binderId";
    	public final static String ENTRY_ID = "entryId";
    	public final static String QUERY_DOC = "query_doc";
@@ -55,6 +57,7 @@ public class Tabs {
 			tabs.put(TABLIST, new ArrayList());
 			tabs.put(CURRENT_TAB, new Integer(0));
 			tabs.put(NEXT_TAB_ID, new Integer(0));
+			tabs.put(NEXT_REF, new Integer(0));
 			ps.setAttribute(WebKeys.TABS, tabs, PortletSession.APPLICATION_SCOPE);
 		}
 	}
@@ -100,6 +103,7 @@ public class Tabs {
 	}
 	public int setTab(int tabId, Binder binder, Map options) {
 		List tabList = getTabList();
+		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);
 		if (tabNumber < 0) tabNumber = findTabNumber(addTab());
 		Map tab = (Map) tabList.get(tabNumber);
@@ -137,6 +141,7 @@ public class Tabs {
 	}
 	public int setTab(int tabId, Entry entry, Map options) {
 		List tabList = getTabList();
+		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);
 		if (tabNumber < 0) tabNumber = findTabNumber(addTab());
 		Map tab = (Map) tabList.get(tabNumber);
@@ -169,6 +174,7 @@ public class Tabs {
 	}
 	public int setTab(int tabId, Document query, Map options) {
 		List tabList = getTabList();
+		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);
 		if (tabNumber < 0) tabNumber = findTabNumber(addTab());
 		Map tab = (Map) tabList.get(tabNumber);
@@ -200,13 +206,14 @@ public class Tabs {
 	
 	public void deleteTab(int tabId) {
 		List tabList = getTabList();
+		int currentTab = getCurrentTab();
+		if (tabId != checkTabId(tabId)) return;
 		int tabNum = findTabNumber(tabId);
 		if (tabNum < 0 || tabNum >= tabList.size()) return;
-		//Make sure the current tab is adjusted to reflect the deletion
-		int currentTab = getCurrentTab();
-		if (currentTab >= tabNum) setCurrentTab(--currentTab);
 		//Remove the tab
 		tabList.remove(tabNum);
+		//Make sure the current tab is adjusted to reflect the deletion
+		if (currentTab == tabId) setCurrentTab(findLastRef());
 	}
 	
 	public Map getTabs() {
@@ -233,6 +240,10 @@ public class Tabs {
 	public int setCurrentTab(int tabId) {
 		int newTabId = checkTabId(tabId);
 		tabs.put(CURRENT_TAB, newTabId);
+		Integer nextRef = (Integer) tabs.get(NEXT_REF);
+		tabs.put(NEXT_REF, new Integer(nextRef.intValue() + 1));
+		Map tab = getTab(newTabId);
+		tab.put(LAST_REF, new Integer(nextRef));
 		return newTabId;
 	}
 	public String getTabType(int tabId) {
@@ -244,6 +255,7 @@ public class Tabs {
 	}
 	
 	protected int findTabNumber(int tabId) {
+		tabId = checkTabId(tabId);
 		List tabList = (List) tabs.get(TABLIST);
 		if (tabList.size() == 0) return -1;
 		int tabNumber = 0;
@@ -264,7 +276,7 @@ public class Tabs {
 	}
 	protected int checkTabId(int tabId) {
 		List tabList = (List) tabs.get(TABLIST);
-		int newTabId = 0;
+		int newTabId = findLastRef();
 		if (tabList.size() > 0) {
 			Map tab = (Map) tabList.get(0);
 			//Assume the first tab if the id is not found
@@ -279,5 +291,19 @@ public class Tabs {
 			}
 		}
 		return newTabId;
+	}
+	protected int findLastRef() {
+		List tabList = (List) tabs.get(TABLIST);
+		int tabId = 0;
+		int lastRef = -1;
+		for (int i = 0; i < tabList.size(); i++) {
+			Map tab = (Map)tabList.get(i);
+			if (tab.containsKey(TAB_ID) && tab.containsKey(LAST_REF) && 
+					((Integer)tab.get(LAST_REF)).intValue() > lastRef) {
+				lastRef = ((Integer)tab.get(LAST_REF)).intValue();
+				tabId = ((Integer)tab.get(TAB_ID)).intValue();
+			}
+		}
+		return tabId;
 	}
 }

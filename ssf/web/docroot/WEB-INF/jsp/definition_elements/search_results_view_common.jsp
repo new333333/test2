@@ -113,10 +113,19 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 
  <c:if test="${!empty ssFolderColumns['folder']}">
   <ssf:slidingTableColumn>
-    <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'user'}">
+    <c:if test="${entry1._entityType == 'folderEntry'}">
       <a href="<ssf:url 
   		folderId="${entry1._binderId}" 
   		action="view_folder_listing" >
+    	<ssf:param name="binderId" value="${entry1._binderId}"/>
+    	<ssf:param name="newTab" value="1"/>
+    	</ssf:url>" 
+       ><span <%= seenStyle %>>${entry1._binderId}</span>
+    </c:if>
+    <c:if test="${entry1._entityType == 'user'}">
+      <a href="<ssf:url 
+  		folderId="${entry1._binderId}" 
+  		action="view_profile_listing" >
     	<ssf:param name="binderId" value="${entry1._binderId}"/>
     	<ssf:param name="newTab" value="1"/>
     	</ssf:url>" 
@@ -143,12 +152,21 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
   <ssf:slidingTableColumn>
     <a 
       <c:if test="${entry1._entityType == 'folderEntry' || 
-      		entry1._entityType == 'reply' || entry1._entityType == 'user'}">
+      		entry1._entityType == 'reply'}">
         href="<ssf:url     
           adapter="<%= useAdaptor2 %>" 
           portletName="ss_forum" 
           folderId="${entry1._binderId}" 
           action="view_folder_entry" 
+          entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+        onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
+      </c:if>
+      <c:if test="${entry1._entityType == 'user'}">
+        href="<ssf:url     
+          adapter="<%= useAdaptor2 %>" 
+          portletName="ss_forum" 
+          folderId="${entry1._binderId}" 
+          action="view_profile_entry" 
           entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
         onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
       </c:if>

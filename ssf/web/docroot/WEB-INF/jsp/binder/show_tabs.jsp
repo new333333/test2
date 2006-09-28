@@ -7,4 +7,16 @@
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+
+	<taconite-replace contextNodeID="ss_tabs_variables" 
+	parseInBrowser="true"><div id="ss_tabs_variables" style="display:none;">
+<script type="text/javascript">
+var ss_currentTab = "${ss_tabs.current_tab}";
+var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
+</script>
+</div>
+	</taconite-replace>
+
+</c:if>
 </taconite-root>

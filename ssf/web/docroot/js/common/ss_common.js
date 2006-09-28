@@ -3195,6 +3195,7 @@ function ss_addTab(obj, type, binderId, entryId) {
 	ss_nextTabNumber++;
 	//Create the data div
 	var dataDivId = "ss_tabDataDiv" + tabId;
+	ss_debug(dataDivId)
 	dataDivObj = document.createElement("div");
 	dataDivObj.id = dataDivId;
 	var dataDiv0 = document.getElementById("ss_tabDataDiv0");

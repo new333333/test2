@@ -1,9 +1,14 @@
 <div id="ss_tabbar" class="ss_tabs">
 <!-- Start of tabs -->
 
+<div id="ss_tabs_variables" style="display:none;">
+<script type="text/javascript">
+var ss_currentTab = "${ss_tabs.current_tab}";
+var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
+</script>
+</div>
 <script type="text/javascript">
 var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif";
-var ss_currentTab = "${ss_tabs.current_tab}";
 </script>
 <table cellspacing="0" cellpadding="0" style="background:transparent;">
 <tbody>
@@ -96,9 +101,6 @@ var ss_currentTab = "${ss_tabs.current_tab}";
 </tr>
 </tbody>
 </table>
-<script type="text/javascript">
-var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
-</script>
 
 <!-- End of tabs -->
 </div>
