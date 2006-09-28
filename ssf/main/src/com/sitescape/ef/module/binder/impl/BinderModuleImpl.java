@@ -35,6 +35,8 @@ import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowModule;
@@ -56,6 +58,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	private static final String default_workspace="402883b90d0de1f3010d0df5582b0002";
 	private static final String default_file_folder="402883b90d0de1f3010d0df5582b0003";
     protected DefinitionModule definitionModule;
+    protected ProfileModule profileModule;
+    
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -66,7 +70,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
 	
 	private Binder loadBinder(Long binderId) {
 		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
@@ -364,6 +373,71 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	        	}
 	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
 
+	        	//Create the Lucene query
+		    	QueryBuilder qb = new QueryBuilder();
+		    	SearchObject so = qb.buildQuery(qTree);
+		    	
+		    	//Set the sort order
+		    	//SortField[] fields = getBinderEntries_getSortFields(binder); 
+		    	//so.setSortBy(fields);
+		    	
+		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+		    	
+		    	if(logger.isInfoEnabled()) {
+		    		logger.info("Query is: " + searchQuery.asXML());
+		    		logger.info("Query is: " + soQuery.toString());
+		    	}
+		    	
+		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+		        
+		        int maxResults = 10;
+		        try {
+			        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
+		        }
+		        finally {
+		            luceneSession.close();
+		        }
+        	}
+        }
+		EntryProcessor processor = 
+			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
+						EntryProcessor.PROCESSOR_KEY);
+        entries = (List) processor.getBinderEntries_entriesArray(hits);
+        
+    	return entries; 
+	}	
+	
+	public List executePeopleSearchQuery(Document searchQuery) {
+		Binder binder = null;
+		return executePeopleSearchQuery(binder, searchQuery);
+	}
+	public List executePeopleSearchQuery(Binder binder, Document searchQuery) {
+        List entries = new ArrayList();
+        Hits hits = new Hits(0);
+        
+        if (searchQuery != null) {
+        	Document qTree = FilterHelper.convertSearchFilterToPeopleSearchBoolean(searchQuery);
+        	Element rootElement = qTree.getRootElement();
+        	if (rootElement != null) {
+	        	//Find the first "and" element and add to it
+	        	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
+	        	if (boolElement == null) {
+	        		//If there isn't one, then create one.
+	        		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+	        	}
+	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+	        	
+	        	if (!getProfileModule().checkUserSeeAll()) {
+	    			Element field = boolElement.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+	    			if (getProfileModule().checkUserSeeCommunity())
+	    	    	{
+	    	    		// Add the group visibility element to the filter terms document
+	    				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
+	    	    	} else {
+	    	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
+	    	    	}
+	        	}
+	        	
 	        	//Create the Lucene query
 		    	QueryBuilder qb = new QueryBuilder();
 		    	SearchObject so = qb.buildQuery(qTree);

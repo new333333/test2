@@ -101,7 +101,9 @@ public interface BinderModule {
     public void checkMoveBinderAllowed(Binder binder);
     public List executeSearchQuery(Document searchQuery);
     public List executeSearchQuery(Binder binder, Document searchQuery);
-
+    public List executePeopleSearchQuery(Document searchQuery);
+    public List executePeopleSearchQuery(Binder binder, Document searchQuery);
+    
     public void indexTree(Long binderId);
     public void indexBinder(Long binderId);
 

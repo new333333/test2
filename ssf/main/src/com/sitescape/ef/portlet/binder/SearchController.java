@@ -82,6 +82,7 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.TABS, tabs.getTabs());
 
 		List entries = new ArrayList();
+		List people = new ArrayList();
 		Document searchQuery = null;
 
 		Map tab = tabs.getTab(tabs.getCurrentTab());
@@ -107,6 +108,7 @@ public class SearchController extends AbstractBinderController {
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
 			entries = getBinderModule().executeSearchQuery(searchQuery);
+			//entries = getBinderModule().executePeopleSearchQuery(searchQuery);
 		}
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
