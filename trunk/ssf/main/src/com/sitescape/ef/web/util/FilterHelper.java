@@ -265,6 +265,7 @@ public class FilterHelper {
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
     	Element qTreeBoolElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	Element andElement = qTreeBoolElement;
     	
     	Element sfRootElement = searchFilter.getRootElement();
 
@@ -342,6 +343,58 @@ public class FilterHelper {
     	//qTree.asXML();
     	return qTree;
 	}
+   	//Routine to convert a search filter into a Lucene query for People (People, Places, and Things) 
+   	static public Document convertSearchFilterToPeopleSearchBoolean(Document searchFilter) {
+   		//Build the search query
+   		Document qTree = DocumentHelper.createDocument();
+   		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+   		Element qTreeBoolElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+   		Element andElement = qTreeBoolElement;
+   		
+   		Element sfRootElement = searchFilter.getRootElement();
+   		
+   		//Add the filter terms to the boolean query
+   		List liFilterTerms = sfRootElement.selectNodes(FilterTerms + "/" + FilterTerm);
+   		for (int i = 0; i < liFilterTerms.size(); i++) {
+   			Element filterTerm = (Element) liFilterTerms.get(i);
+   			String filterType = filterTerm.attributeValue(FilterType, "");
+   			if (filterType.equals(FilterTypeSearchText)) {
+   				//Add the search text as a field
+   				Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+   				field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ALL_TEXT_FIELD);
+   				String value = filterTerm.getText();
+   				if (value.contains("*"))
+   					field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
+   				else
+   					field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+   				Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+   				child.setText(value);
+   			}
+   			
+   	   		Element gFilterTerm = (Element)sfRootElement.selectSingleNode(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+    		if (gFilterTerm != null) {
+    			Element viz = andElement.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+    			viz.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE, gFilterTerm.attributeValue(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE));
+    		}
+    		
+    		// Add entrytype=user|group boolean term
+    		Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
+    		
+    		Element field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(EntityIndexUtils.ENTRY_TYPE_USER);
+	    	
+	    	field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(EntityIndexUtils.ENTRY_TYPE_GROUP);
+   		}
+   		//qTree.asXML();
+   		return qTree;
+   	}
+   	
+   	
 	
 	static public String getFilterName(Document searchFilter) {
 		Element sfRoot = searchFilter.getRootElement();
