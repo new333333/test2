@@ -34,18 +34,23 @@ public class ResolveIds {
 		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
 	}
 	//This is used after a search to map the binder id to a title
-	public static Map getBinderTitles(Collection ids) {
-		HashMap titles = new HashMap();
-		if ((ids == null) || ids.isEmpty()) return titles;
+	public static Map getBinderTitlesAndIcons(Collection ids) {
+		Map results = new HashMap();
+		Map data = new HashMap();
+		Map icons = new HashMap();
+		if ((ids == null) || ids.isEmpty()) return data;
 		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		String query = new String("select x.id,x.title from x in class com.sitescape.ef.domain.Binder where x.id in (:idList)");
-		titles.put("idList", ids);
-		List<Object[]> result = coreDao.loadObjects(query, titles);
-		titles.clear();
+		String query = new String("select x.id,x.title,x.iconName from x in class com.sitescape.ef.domain.Binder where x.id in (:idList)");
+		data.put("idList", ids);
+		List<Object[]> result = coreDao.loadObjects(query, data);
+		data.clear();
 		for (Object[] objs: result) {
-			titles.put(objs[0].toString(), objs[1]);
+			data = new HashMap();
+			data.put("title", objs[1]);
+			data.put("iconName", objs[2]);
+			results.put(objs[0].toString(), data);
 		}
-		return titles;
+		return results;
 		
 		
 	}

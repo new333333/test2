@@ -21,6 +21,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ResolveIds;
@@ -121,9 +122,15 @@ public class SearchController extends AbstractBinderController {
 		//since the results span multiple folders, we need to get the folder titles
 		Set ids = new HashSet();
 		for (Map r : entries) {
-			ids.add(Long.valueOf((String)r.get("_binderId")));
+			String entityType = (String) r.get("_entityType");
+			if (entityType != null && r.containsKey("_docId") && 
+					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
+				ids.add(Long.valueOf((String)r.get("_docId")));
+			} else if (r.containsKey("_binderId")) {
+				ids.add(Long.valueOf((String)r.get("_binderId")));
+			}
 		}
-		model.put(WebKeys.BINDER_TITLES, ResolveIds.getBinderTitles(ids));
+		model.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
 							
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();

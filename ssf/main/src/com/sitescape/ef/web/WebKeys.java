@@ -167,7 +167,7 @@ public class WebKeys {
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
-	public static final String BINDER_TITLES="ssBinderTitles";
+	public static final String BINDER_DATA="ssBinderData";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONFIGURATIONS="ssConfigurations";

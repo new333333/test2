@@ -113,14 +113,24 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 
  <c:if test="${!empty ssFolderColumns['folder']}">
   <ssf:slidingTableColumn>
-    <c:if test="${entry1._entityType == 'folderEntry'}">
+    <c:if test="${entry1._entityType == 'folderEntry' || 
+      		entry1._entityType == 'reply'}">
       <a href="<ssf:url 
   		folderId="${entry1._binderId}" 
   		action="view_folder_listing">
     	<ssf:param name="binderId" value="${entry1._binderId}"/>
     	<ssf:param name="newTab" value="1"/>
     	</ssf:url>" 
-       ><span <%= seenStyle %>>${ssBinderTitles[entry1._binderId]}</span></a>
+       ><span <%= seenStyle %>
+      <c:if test="${empty ssBinderData[entry1._binderId].iconName}">
+        style="background:url(<html:imagesPath/>icons/folder.gif)  no-repeat left;
+        padding-left:20px;"
+      </c:if>
+      <c:if test="${!empty ssBinderData[entry1._binderId].iconName}">
+        style="background:url(<html:imagesPath/>${ssBinderData[entry1._binderId].iconName})  no-repeat left;
+        padding-left:20px;"
+      </c:if>
+       >${ssBinderData[entry1._binderId].title}</span></a>
     </c:if>
     <c:if test="${entry1._entityType == 'user'}">
       <a href="<ssf:url 

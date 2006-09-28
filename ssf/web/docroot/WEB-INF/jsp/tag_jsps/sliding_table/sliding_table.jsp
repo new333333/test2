@@ -105,7 +105,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 <%		
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 %>
-<tr><td nowrap width="100%">&nbsp;</td></tr>
+<tr><td class="ss_sliding_table_row0" nowrap width="100%">&nbsp;</td></tr>
 <%
 		}		
 %>

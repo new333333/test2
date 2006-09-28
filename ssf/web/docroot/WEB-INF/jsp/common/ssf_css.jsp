@@ -488,9 +488,11 @@ div.ss_sliding_table_column {
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
+  line-height:20px;
 }
 .ss_sliding_table_row1 {
   background-color: ${ss_sliding_table_row1_background_color}; 
+  line-height:20px;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
