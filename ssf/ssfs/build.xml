@@ -42,6 +42,14 @@
 	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
+		<jar 
+			jarfile="${jar.file}"
+			update="true"
+		>
+			<fileset dir="${basedir}/../util/classes">
+	        	<include name="com/sitescape/util/ServerDetector.class"/>
+			</fileset>
+		</jar>
 	</target>
 
 	<target name="unwar-original" depends="delete-temp">		
