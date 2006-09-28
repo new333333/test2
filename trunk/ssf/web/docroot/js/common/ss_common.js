@@ -3236,7 +3236,7 @@ function ss_deleteTab(obj, tabId) {
 			url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
 			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 			ajaxRequest.setData("tabId", tabId)
-			ajaxRequest.setEchoDebugInfo();
+			//ajaxRequest.setEchoDebugInfo();
 			ajaxRequest.setPostRequest(ss_changeTabDone);
 			ajaxRequest.setUsePOST();
 			ajaxRequest.sendRequest();  //Send the request
