@@ -510,6 +510,7 @@
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
+				<property name="profileModule"><ref local="profileModule"/></property>
 			</bean>
 		</property>
 		<!-- modifyBinder provide transaction semantics at a finer
