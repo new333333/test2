@@ -30,7 +30,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 		</portlet:actionURL>";
 </script>
 
-<div class="ss_folder">
+<div class="ss_folder" id="ss_folder_table_parent">
 
 <div style="margin:0px;">
 <%
@@ -74,7 +74,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 
 </div>
 </div>
-<ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle2 %>" 
+<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="<%= slidingTableStyle2 %>" 
  height="<%= ssFolderTableHeight2 %>" folderId="${ssFolder.id}">
 
 <ssf:slidingTableRow headerRow="true">

@@ -18,6 +18,10 @@ var ss_sTableLastLeft = 0;
 var ss_sTableLastTop = 0;
 var ss_sTableLastParentWidth = 0;
 
+function ss_checkSlidingTableLayout200() {
+	setTimeout("ss_checkSlidingTableLayout();", 200)
+}
+
 function ss_checkSlidingTableLayout() {
 	if (ss_getSlidingTableY(ss_slidingTableId_2) != ss_sTableLastTop || 
 			ss_getSlidingTableX(ss_slidingTableId_2) != ss_sTableLastLeft || 
@@ -25,7 +29,7 @@ function ss_checkSlidingTableLayout() {
 		//The layout changed, go reposition things
 		ss_sTableLastTop = ss_getSlidingTableY(ss_slidingTableId_2)
 		ss_sTableLastLeft = ss_getSlidingTableX(ss_slidingTableId_2)
-		ss_sTableLastParentWidth = ss_getDivWidth(ss_slidingTableParentId);
+		if (ss_slidingTableParentId != "") ss_sTableLastParentWidth = ss_getDivWidth(ss_slidingTableParentId);
 		ss_showSlidingTableCols()
 		if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	}
@@ -130,6 +134,10 @@ function ss_showSlidingTableCols() {
     }
 }
 
+function ss_hideSlidingTableCols200() {
+	setTimeout("ss_hideSlidingTableCols();", 200)
+}
+
 function ss_hideSlidingTableCols() {
     for (var i = 1; i <= ss_columnCount; i++) {
     	ss_showHideObj("col"+i, "hidden", "none")
@@ -220,5 +228,5 @@ function ss_postSlidingTableRequest(obj) {
 }
 
 ss_createOnLoadObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
-ss_createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols);
-ss_createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout);
+ss_createOnResizeObj('ss_showSlidingTableCols', ss_showSlidingTableCols200);
+ss_createOnLayoutChangeObj('ss_checkSlidingTableLayout', ss_checkSlidingTableLayout200);
