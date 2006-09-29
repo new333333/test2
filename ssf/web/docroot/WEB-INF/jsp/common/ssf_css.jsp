@@ -1232,7 +1232,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 /* tabs: */
 div.ss_tabs {
     position:relative;
-    top:10px;
+    top:11px;
     left:14px; 
     z-index:2;
     width:100%;
