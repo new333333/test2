@@ -3,7 +3,7 @@
 <Context>
 	<Realm 
 		className="org.apache.catalina.realm.JAASRealm"
-		appName="slide"
+		appName="ssfs"
 		userClassNames="org.apache.slide.jaas.spi.SlidePrincipal"
 		roleClassNames="org.apache.slide.jaas.spi.SlideRole"
 		debug="99"

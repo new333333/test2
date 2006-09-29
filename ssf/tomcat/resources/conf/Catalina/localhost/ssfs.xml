@@ -1,7 +1,7 @@
 <Context path="/ssfs" docBase="../webapps/ssfs" debug="0" reloadable="false" crossContext="true">
     <Realm
         className="org.apache.catalina.realm.JAASRealm"
-        appName="slide_login"
+        appName="ssfs_login"
         userClassNames="org.apache.slide.jaas.spi.SlidePrincipal"
         roleClassNames="org.apache.slide.jaas.spi.SlideRole"
         name="Slide DAV Server"
