@@ -488,15 +488,15 @@ div.ss_sliding_table_column {
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
-  line-height:20px;
+  line-height:14px;
 }
 .ss_sliding_table_row1 {
   background-color: ${ss_sliding_table_row1_background_color}; 
-  line-height:20px;
+  line-height:14px;
 }
 .ss_highlightEntry {
   background-color: ${ss_folder_line_highlight_color};
-  line-height:20px;
+  line-height:14px;
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
@@ -1072,7 +1072,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_content_inner {
 	width:100%;
-	padding:0px 2px 0px 10px;
+	margin:0px 0px 0px 4px;
+	padding:0px 2px 0px 6px;
 	background:${ss_style_background_color};
 }
 .ss_content_window {
@@ -1175,7 +1176,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 /* global toolbar: */
 .ss_global_toolbar{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
-	height:50px;
+	height:40px;
 <c:if test="<%= isIE %>">
 	margin-bottom:0px;
 </c:if>
@@ -1197,7 +1198,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_links li div {
 	display:block;
-	padding-top:32px;
+	padding-top:22px;
 	color:#484848;
 	text-align:center;
 }
@@ -1231,8 +1232,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 /* tabs: */
 div.ss_tabs {
     position:relative;
-    top:11px;
-    left:9px; 
+    top:10px;
+    left:14px; 
     z-index:2;
     width:100%;
 }
