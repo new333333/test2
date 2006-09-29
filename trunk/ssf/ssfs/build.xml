@@ -20,7 +20,7 @@
 		<delete includeemptydirs="true" dir="${temp.slide.dir}" failonerror="true"/>
 	</target>
 	
-	<target name="clean" depends="build-common.clean, delete-temp">
+	<target name="clean" depends="build-common.clean, delete-temp, delete-temp-slide">
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>

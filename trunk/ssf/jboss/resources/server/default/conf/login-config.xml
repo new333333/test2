@@ -155,7 +155,7 @@ $Revision: 1.12.2.5 $
        </authentication>
     </application-policy>-->
 
-    <application-policy name = "slide">
+    <application-policy name = "ssfs">
        <authentication>
           <login-module code = "com.sitescape.ef.ssfs.jaas.SiteScapeLoginModule" flag = "required">
                 <module-option name="factoryClassName">com.sitescape.ef.ssfs.wck.AuthenticationManager</module-option>
