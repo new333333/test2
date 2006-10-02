@@ -38,7 +38,7 @@ public class SimpleLock implements Lock {
 		return subject;
 	}
 
-	public String getOwner() {
+	public String getOwner() { 
 		return owner;
 	}
 
