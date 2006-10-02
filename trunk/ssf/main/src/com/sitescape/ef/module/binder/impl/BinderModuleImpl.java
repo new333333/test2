@@ -4,11 +4,14 @@ package com.sitescape.ef.module.binder.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.search.Query;
+import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -40,6 +43,7 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
@@ -466,12 +470,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		        }
         	}
         }
-		EntryProcessor processor = 
-			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
-						EntryProcessor.PROCESSOR_KEY);
-        entries = (List) processor.getBinderEntries_entriesArray(hits);
-        
-    	return entries; 
+		        
+        Set ids = new HashSet();
+        org.apache.lucene.document.Document doc;
+        Field field;
+        for (int i = 0; i < hits.length(); i++) {
+            doc = hits.doc(i);
+            field = doc.getField(EntityIndexUtils.ENTRY_TYPE_FIELD);
+            if (field.stringValue().equalsIgnoreCase(EntityIndexUtils.ENTRY_TYPE_USER)) {
+            	field = doc.getField(EntityIndexUtils.DOCID_FIELD);
+            	try {ids.add(new Long(field.stringValue()));
+        	    } catch (Exception ex) {}
+            }
+            if (field.stringValue().equalsIgnoreCase(EntityIndexUtils.ENTRY_TYPE_GROUP)) {
+            	field = doc.getField(EntityIndexUtils.DOCID_FIELD);
+            	try {ids.add(new Long(field.stringValue()));
+        	    } catch (Exception ex) {}
+            }
+        }
+        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
 	}
 
 	public Binder getBinderByPathName(String pathName) throws AccessControlException {
