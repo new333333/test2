@@ -112,7 +112,7 @@ function ss_showSlidingTableCols() {
     	
 	    //Position the column inside the inner boundaries of ss_ssTable
 	    ss_position_sTableCol("col"+i, parseInt(left + deltaLeft), top, w)
-    	ss_showHideObj("col"+i, "visible", "inline")
+    	ss_showHideObj("col"+i, "visible", "block")
 	    
 	    //Now, get the position of the next column (using the default width of the current column)
 	    //  This may get overridden (above) if the user has re-positioned the columns
