@@ -10,6 +10,9 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,7 @@ import java.util.HashSet;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
@@ -85,6 +89,7 @@ public class SearchController extends AbstractBinderController {
 		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
 		model.put(WebKeys.TABS, tabs.getTabs());
 
+		List entryPeople = new ArrayList();
 		Document searchQuery = null;
 
 		Map tab = tabs.getTab(tabs.getCurrentTab());
@@ -115,7 +120,8 @@ public class SearchController extends AbstractBinderController {
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
 			entries = getBinderModule().executeSearchQuery(searchQuery);
-			//entries = getBinderModule().executePeopleSearchQuery(searchQuery);
+			people = getBinderModule().executePeopleSearchQuery(searchQuery);
+			entryPeople = sortPeopleInEntriesSearchResults(entries, people);
 
 		} else entries = new ArrayList();
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
@@ -137,13 +143,79 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = null;
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE, entryPeople);
+		model.put(WebKeys.PEOPLE_RESULTS, people);   
+		
 		//Get a default folder definition to satisfy the folder view jsps
 		Definition def = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
 		model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
 		buildSearchResultsToolbars(request, response, model);
 		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+	}
+	
+	// This class is used by the following method as a way to sort
+	// the values in a hashmap
+	public class Person implements Comparable {
+		long id;
+		int count;
+		Principal user;
+
+		public Person (long id, Principal p, int count) {
+			this.id = id;
+			this.user = p;
+			this.count = count;
+		}
+		
+		public int getCount() {
+			return this.count;
+		}
+
+		public void incrCount() {
+			this.count += 1;
+		}
+		
+		public Principal getUser() {
+			return this.user;
+		}
+		
+		public int compareTo(Object o) {
+			Person p = (Person) o;
+			int result = this.getCount() < p.getCount() ? 1 : 0;
+			return result;
+			}
+	}
+	
+	// This method reads thru the results from an search, finds the principles, 
+	// and places them into an array that is ordered by the number of times
+	// they show up in the results list.
+	protected List sortPeopleInEntriesSearchResults(List entries, List people) {
+		List results = new ArrayList();
+		HashMap userMap = new HashMap();
+		ArrayList userList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique principles.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			Principal user = (Principal)entry.get(WebKeys.PRINCIPAL);
+			if (userMap.get(user.getId()) == null) {
+				userMap.put(user.getId(), new Person(user.getId(),user,1));
+			} else {
+				Person p = (Person)userMap.remove(user.getId());
+				p.incrCount();
+				userMap.put(user.getId(),p);
+			}
+		}
+		//sort the hits
+		Collection collection = userMap.values();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			userList.add(((Person)array[j]).getUser());
+		}
+		return userList;
 	}
 
 	protected void buildSearchResultsToolbars(RenderRequest request, 
