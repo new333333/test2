@@ -341,10 +341,23 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxConfigureFolderColumns(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		UserProperties userProperties = getProfileModule().getUserProperties(null, binderId);
-		Map columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+		Long binderId = null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		} catch(PortletRequestBindingException ex) {}
+		
+		UserProperties userProperties;
+		Map columns;
+		if (binderId == null) {
+			userProperties = getProfileModule().getUserProperties(null);
+			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS);
+		} else {
+			userProperties = getProfileModule().getUserProperties(null, binderId);
+			columns = (Map) userProperties.getProperty(ObjectKeys.USER_PROPERTY_FOLDER_COLUMNS);
+		}
 		model.put(WebKeys.FOLDER_COLUMNS, columns);
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		model.put(WebKeys.FOLDER_TYPE, op2);
 
 		return new ModelAndView("forum/configure_folder_columns_return", model);
 	}

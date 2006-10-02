@@ -1,7 +1,7 @@
 <% // Folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
-	Map ssFolderColumns = (Map) ssUserProperties.get("userSearchColumns");
+	Map ssFolderColumns = (Map) ssUserProperties.get("userSearchResultsFolderColumns");
 	if (ssFolderColumns == null) {
 		ssFolderColumns = new java.util.HashMap();
 		ssFolderColumns.put("folder", "folder");
