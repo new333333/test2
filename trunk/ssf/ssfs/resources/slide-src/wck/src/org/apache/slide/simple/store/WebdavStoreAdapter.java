@@ -904,8 +904,14 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
                 boolean exclusive = lock.isExclusive();
                 boolean inheritable = lock.isInheritable();
                 String subject = lock.getSubjectUri();
+                // 10/2/06 JK - We need to pass down the client-supplied owner info
+                // to the server along with other fields so that it can be retrieved
+                // later. Xythos Drive counts on this value for important functionality.
+                // Specifically, it seems to use this  value to locate and manage 
+                // cache entries. 
+                String owner = lock.getOwnerInfo();
                 try {
-                    lockStore.lockObject(uri.toString(), lockId, subject, expiration, exclusive, inheritable);
+                    lockStore.lockObject(uri.toString(), lockId, subject, expiration, exclusive, inheritable, owner);
                 } catch (AccessDeniedException e) {
                     throw new ServiceAccessException(service, e);
                 }
@@ -966,9 +972,14 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
                     Vector locks = new Vector(ids.length);
                     for (int i = 0; i < ids.length; i++) {
                         WebdavStoreLockExtension.Lock lockId = ids[i];
+                        // 10/2/06 JK - We need to preserve and pass owner info as well 
+                        // (which is supplied by WebDAV client in the first place).
+                        // Xythos Drive counts on this value for important functionality.
+                        // Specifically, it seems to use this  value to locate and manage 
+                        // cache entries. 
                         NodeLock lock = new NodeLock(lockId.getId(), uri.toString(), lockId.getSubject(),
                                 "/actions/write", lockId.getExpirationDate(), lockId
-                                .isInheritable(), lockId.isExclusive());
+                                .isInheritable(), lockId.isExclusive(), lockId.getOwner());
                         locks.add(lock);
                     }
                     return locks.elements();

@@ -89,12 +89,18 @@ public interface WebdavStoreLockExtension {
      *            if the object is a folder and this is set to <code>true</code>
      *            the children and all descendants of this folder are locked as
      *            well
+     * @param owner 10/2/06 JK - We need to pass down the client-supplied owner info
+     *              to the server along with other fields so that it can be retrieved
+     *              later. Xythos Drive counts on this value for important functionality.
+     *              Specifically, it seems to use this  value to locate and manage 
+     *              cache entries. 
+     *
      * @throws ServiceAccessException
      *             if any kind of internal error or any unexpected state occurs
      * @throws AccessDeniedException
      *             if the store denies locking of this object or property
      */
-    void lockObject(String uri, String lockId, String subject, Date expiration, boolean exclusive, boolean inheritable)
+    void lockObject(String uri, String lockId, String subject, Date expiration, boolean exclusive, boolean inheritable, String owner)
             throws ServiceAccessException, AccessDeniedException;
 
     /**
@@ -144,5 +150,12 @@ public interface WebdavStoreLockExtension {
         Date getExpirationDate();
 
         String getSubject();
+        
+        // 10/2/06 JK - We need to preserve and pass owner info as well 
+        // (which is supplied by WebDAV client in the first place).
+        // Xythos Drive counts on this value for important functionality.
+        // Specifically, it seems to use this  value to locate and manage 
+        // cache entries. 
+        String getOwner();
     }
 }

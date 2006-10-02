@@ -514,7 +514,12 @@ public class WebdavFileStore implements BasicWebdavStore, WebdavStoreLockExtensi
     }
 
     public void lockObject(String uri, String lockId, String subject, Date expiration, boolean exclusive,
-            boolean inheritable) throws ServiceAccessException, AccessDeniedException {
+            boolean inheritable, String owner) throws ServiceAccessException, AccessDeniedException {
+        // 10/2/06 JK - We needed to change the signature of lockObject method in
+    	// WebdavStoreLockExtension class so that we can preserve owner info field
+    	// supplied by WebDAV client. It is a necessary for proper operation of
+    	// Xythos Drive. This class ignores the extra field value though since
+    	// we don't care about this class (other than it has to compile).
         File file = getLockFile(uri);
         assureCreated(file, uri);
         Properties properties = readProperties(file);
@@ -714,5 +719,9 @@ public class WebdavFileStore implements BasicWebdavStore, WebdavStoreLockExtensi
             return subject;
         }
 
+        // 10/2/06 JK - This implementation simply ignores owner field.
+        public String getOwner() {
+        	return "";
+        }
     }
 }
