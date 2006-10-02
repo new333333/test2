@@ -208,7 +208,8 @@ public class DispatchServer extends GenericServlet {
 			String lockId = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_ID);
 			String lockSubject = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_SUBJECT);
 			Date lockExpirationDate = (Date) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE);
-			ssfs.lockResource(uri, lockId, lockSubject, lockExpirationDate);
+			String lockOwnerInfo = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_OWNER_INFO);
+			ssfs.lockResource(uri, lockId, lockSubject, lockExpirationDate, lockOwnerInfo);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_UNLOCK_RESOURCE)) {
 			String lockId = (String) req.getAttribute(CrossContextConstants.LOCK_PROPERTIES_ID);

@@ -157,13 +157,13 @@ public class SiteScapeFileSystemImpl implements SiteScapeFileSystem {
 	}
 	
 	public void lockResource(Map uri, String lockId, String lockSubject, 
-			Date lockExpirationDate) 
+			Date lockExpirationDate, String lockOwnerInfo)
 	throws NoAccessException, NoSuchObjectException, LockException,
 	TypeMismatchException {
 		if(isInternal(uri))
-			ssfsInt.lockResource(uri, lockId, lockSubject, lockExpirationDate);
+			ssfsInt.lockResource(uri, lockId, lockSubject, lockExpirationDate, lockOwnerInfo);
 		else
-			ssfsLib.lockResource(uri, lockId, lockSubject, lockExpirationDate);
+			ssfsLib.lockResource(uri, lockId, lockSubject, lockExpirationDate, lockOwnerInfo);
 	}
 	
 	public void unlockResource(Map uri, String lockId) throws NoAccessException, 

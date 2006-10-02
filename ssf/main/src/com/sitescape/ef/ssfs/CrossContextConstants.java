@@ -143,4 +143,5 @@ public abstract class CrossContextConstants {
 	public static final String LOCK_PROPERTIES_ID = "lockId"; 
 	public static final String LOCK_PROPERTIES_SUBJECT = "lockSubject";
 	public static final String LOCK_PROPERTIES_EXPIRATION_DATE = "lockExpirationDate";
+	public static final String LOCK_PROPERTIES_OWNER_INFO = "lockOwner";
 }

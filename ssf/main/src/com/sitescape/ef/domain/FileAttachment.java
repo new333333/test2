@@ -224,16 +224,18 @@ public class FileAttachment extends Attachment {
     	private String subject;
     	private Principal owner;
     	private Date expirationDate;
+    	private String ownerInfo;
 
     	public FileLock() {
     	}
 
     	public FileLock(String id, String subject, Principal owner, 
-    			Date expirationDate) {
+    			Date expirationDate, String ownerInfo) {
     		this.id = id;
     		this.subject = subject;
     		this.owner = owner;
     		this.expirationDate = expirationDate;
+    		this.ownerInfo = ownerInfo;
     	}
 
     	public String getId() {
@@ -268,6 +270,14 @@ public class FileAttachment extends Attachment {
     		this.expirationDate = expirationDate;
     	}
     	
+    	public String getOwnerInfo() {
+    		return ownerInfo;
+    	}
+    	
+    	public void setOwnerInfo(String ownerInfo) {
+    		this.ownerInfo = ownerInfo;
+    	}
+    	
     	public Object clone() {
     		try {
     			FileLock other = (FileLock) super.clone();
@@ -275,6 +285,7 @@ public class FileAttachment extends Attachment {
     			other.id = id;
     			other.owner = owner;
     			other.expirationDate = expirationDate;
+    			other.ownerInfo = ownerInfo;
 
     			return other;
     		} catch (CloneNotSupportedException e) {

@@ -484,7 +484,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 	}
 	
 	public void lockObject(String uri, String lockId, String subject, 
-			Date expiration, boolean exclusive, boolean inheritable) 
+			Date expiration, boolean exclusive, boolean inheritable, String owner) 
 	throws ServiceAccessException, AccessDeniedException {
 		if(!exclusive)
 			throw new AccessDeniedException(uri, "Shared lock is not supported", "lock");
@@ -509,7 +509,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FOLDER)
 				throw new AccessDeniedException(uri, "Locking of folder is not supported", "lock");
 			else
-				client.lockResource(uri, m, new SimpleLock(lockId, subject, expiration)); 
+				client.lockResource(uri, m, new SimpleLock(lockId, subject, expiration, owner)); 
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "lock");
