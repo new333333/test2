@@ -22,7 +22,7 @@ public class WfAcl {
 		this.ids = new HashSet();
 		for (int i=0; i<result.length; ++i) {
 			try {
-				this.ids.add(Long.getLong(result[i]));
+				this.ids.add(Long.valueOf(result[i]));
 			} catch (Exception e) {}
 
 		}

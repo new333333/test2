@@ -1,16 +1,12 @@
 package com.sitescape.ef.util;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -44,10 +40,10 @@ public class XmlFileUtil {
 		FileOutputStream fOut = null;
 		XMLWriter xOut=null;
 		try {
-			// explicity set encoding so their is not mistake.
+			//explicity set encoding so their is no mistake.
 			//cannot guarentee default will be set to UTF-8
 			fOut = new FileOutputStream(path);
-			OutputFormat fmt = OutputFormat.createCompactFormat();
+			OutputFormat fmt = OutputFormat.createPrettyPrint();
 			fmt.setEncoding(FILE_ENCODING);
     		xOut = new XMLWriter(fOut, fmt);
     		xOut.write(doc);

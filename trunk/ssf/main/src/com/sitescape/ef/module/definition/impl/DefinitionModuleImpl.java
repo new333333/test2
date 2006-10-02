@@ -59,6 +59,7 @@ import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -668,7 +669,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								value = "false";
 							}
 							newPropertyEle.addAttribute("value", value);
+						} else if (type.equals("userGroupSelect")) {
+							String [] v= StringUtil.split(value);
+							for (int vals=0; vals < v.length; ++vals) {
+								if (v[i].matches("[^0-9]")) {
+									//The value is not a valid integer
+									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
+								}
+							}
+							newPropertyEle.addAttribute("value", value);
 						}
+							
 					}
 				} else if (type.equals("workflowCondition")) {
 					//Workflow conditions typically have 4 bits of data to capture: 
@@ -700,7 +711,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 					}
-					
 				} else {
 					if (type.equals("boolean") || type.equals("checkbox")) {
 						String value = "false";
@@ -708,7 +718,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						newPropertiesEle.add(newPropertyEle);
 						newPropertyEle.addAttribute("value", value);
 					}
-				}
+				} 
 			}
 		}		
 	}
