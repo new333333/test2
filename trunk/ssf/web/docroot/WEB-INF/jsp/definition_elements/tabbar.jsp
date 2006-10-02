@@ -26,7 +26,7 @@ var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delet
 	  <td valign="middle" class="ss_tabs_td_left${active}"><img width="15"
 	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
 	  <td valign="middle" class="ss_tabs_td${active}" nowrap="true">
-		<a id="ss_tabbar_td${tab.tabId}" 
+		<a id="ss_tabbar_td${tab.tabId}" style="position:relative; left:-6px;" 
 		  <c:if test="${tab.type == 'binder'}">
 		    href="<ssf:url 
   				folderId="${tab.binderId}" 
@@ -79,12 +79,12 @@ var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delet
 		  </c:if>
 		>
 	<c:if test="${!empty tab.icon}">
-		   <img src="<html:imagesPath/>${tab.icon}"/>
+		   <img style="position:relative; left:-6px;" src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 		   <span>${tab.title}</span></a>
 	<c:if test="${tabNum > 0}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
-		  <img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
+		  <img style="position:relative; left:6px;" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
 		</a>
 	</c:if>
 	  </td>
