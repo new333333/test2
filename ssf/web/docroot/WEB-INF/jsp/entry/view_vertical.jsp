@@ -39,12 +39,13 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 <div class="ss_clear"></div>
 
+<div class="ss_tab_canvas">
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 <div class="ss_decor-round-corners-top1"><div><div></div></div></div>
 	<div class="ss_decor-border3">
 		<div class="ss_decor-border4">
 			<div class="ss_rounden-content">
-			  <div id="ss_tab_data_${ss_tabs.current_tab}">
+			  <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
@@ -81,7 +82,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 
 <div id="ss_showentrydiv" class="ss_style ss_portlet" 
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:relative; margin:0px 0px 20px 2px; left:-1px;
+  style="position:relative; padding:0px 0px 20px 2px; left:-1px;
     top:<%= sliderDivOffset %>px;">
   <ssf:box>
     <ssf:param name="box_id" value="<%= iframeBoxId %>" />
@@ -118,5 +119,6 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <% // Footer toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
 
+</div>
 </div>
 

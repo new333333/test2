@@ -1072,9 +1072,9 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_content_inner {
 	width:100%;
-	margin:0px 0px 0px 4px;
-	padding:0px 2px 0px 6px;
-	background:${ss_style_background_color};
+	padding:0px;
+	margin:0px 2px 0px 5px;
+    background-color: ${ss_style_background_color};
 }
 .ss_content_window {
 	padding:5px;
@@ -1092,7 +1092,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 /* round corners: */
 .ss_decor-round-corners-top1{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border1.gif) repeat-x;
+	margin:0px 12px 0px 12px;
+	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border1.gif) repeat-x;
 }
 .ss_decor-round-corners-top1 div{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/corner1s.gif) no-repeat left;
@@ -1102,6 +1103,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	height:19px;
 }
 .ss_decor-round-corners-bottom1{
+	margin:0px 12px 0px 12px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border2.gif) repeat-x;
 }
 .ss_decor-round-corners-bottom1 div{
@@ -1112,10 +1114,11 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	height:19px;
 }
 .ss_decor-border3{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
+	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border3.gif) repeat-y left;
 }
 .ss_decor-border4{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
+	margin:0px 0px 0px 10px;
+	background:transparent url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners/border4.gif) repeat-y right;
 }
 .ss_decor-border5{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-y left;
@@ -1168,25 +1171,26 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	height:10px;
 	font-size:1px;
 }
-.ss_rounden-content{
-	padding:0px 35px 10px 14px;
-	background:transparent;
+.ss_rounden-content {
+	margin:0px 27px 0px 14px;
+	padding:0px 8px 0px 0px;
+    background-color: ${ss_style_background_color};
 }
 
 /* global toolbar: */
 .ss_global_toolbar{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
-	height:40px;
+	height:34px;
 <c:if test="<%= isIE %>">
-	margin-bottom:0px;
-</c:if>
-<c:if test="<%= !isIE %>">
 	margin-bottom:6px;
 </c:if>
+<c:if test="<%= !isIE %>">
+	margin-bottom:4px;
+</c:if>
 }
-.ss_global_toolbar_links{
+.ss_global_toolbar_links {
 	float:right;
-	margin-top:4px;
+	margin-top:0px;
 	margin-right:50px;
 }
 * html .ss_global_toolbar_links {
@@ -1198,7 +1202,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_links li div {
 	display:block;
-	padding-top:22px;
+	padding-top:18px;
 	color:#484848;
 	text-align:center;
 }
@@ -1215,24 +1219,43 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
 }
 .ss_global_toolbar_search {
-	position:relative;
-	top:8px;
 	background:transparent;
 }
 .ss_global_toolbar_search form {
 	background:transparent;
 }
 .ss_global_toolbar_search .form-text {
+	width:150px;
 	background:#FFF;
+}
+div.ss_global_toolbar_search_text {
+    position:relative;
+    top:-3px;
+    width:150px;
+	color:#484848;
+	text-align:center;
+	padding:0px !important;
+	margin:0px !important;
 }
 .ss_global_toolbar_search a {
 	background:transparent;
 }
 
 /* tabs: */
+div.ss_tab_canvas {
+    position:relative;
+<c:if test="<%= isIE %>">
+    top:-11px;
+</c:if>
+<c:if test="<%= !isIE %>">
+    top:-10px;
+</c:if>
+    margin:0px;
+    padding:0px;
+    width:100%;
+}
 div.ss_tabs {
     position:relative;
-    top:10px;
     left:14px; 
     z-index:2;
     width:100%;
@@ -1240,18 +1263,20 @@ div.ss_tabs {
 .ss_tabs_td {
 	font-size:${ss_style_font_largeprint};
 	color:#5A3C68;
-	height:35px;
+	height:36px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
 	white-space: nowrap;
 	margin:0px;
-	padding:0px;
+	padding:8px 0px 0px 0px;
 }
 .ss_tabs_td_active {
 	font-size:${ss_style_font_largeprint};
 	font-weight:bold;
 	color:#5A3C68;
-	height:35px;
+	height:36px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
+	margin:0px;
+	padding:8px 0px 0px 0px;
 }
 .ss_tabs_td_left_active {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left;
