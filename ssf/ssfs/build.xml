@@ -162,7 +162,8 @@
 		<copy todir="C:/slide" overwrite="true">
 			<fileset dir="resources/slide-src" includes="**/*.java" />
 		</copy>
+		<copy file="${temp.dir}/WEB-INF/lib/jakarta-slide-wck-1.0.jar" tofile="C:/ss/v8/ssf/lib/jakarta-slide-wck.jar" />
 		<copy file="${temp.dir}/WEB-INF/lib/slide-kernel-2.2pre1.jar" tofile="C:/ss/v8/ssf/lib/slide-kernel.jar" />
-		<copy file="${temp.dir}/WEB-INF/lib/slide-webdavservlet-2.2pre1.jar" todir="C:/ss/v8/ssf/lib" />
+		<copy file="${temp.dir}/WEB-INF/lib/slide-webdavservlet-2.2pre1.jar" tofile="C:/ss/v8/ssf/lib/slide-webdavservlet-2.2pre1.jar" />
 	</target>
 </project>
