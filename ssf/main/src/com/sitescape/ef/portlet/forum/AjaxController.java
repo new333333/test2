@@ -369,12 +369,20 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
 				RenderResponse response) throws Exception {
+		Long binderId = null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		} catch(PortletRequestBindingException ex) {}
+		
 		Map model = new HashMap();
 		String entryHeight = PortletRequestUtils.getStringParameter(request, "entry_height");
 		if (Validator.isNotNull(entryHeight)) {
 			//Save the entry width
-			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		   	getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		   	if (binderId == null) {
+		   		getProfileModule().setUserProperty(null, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		   	} else {
+		   		getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_ENTRY_HEIGHT, entryHeight);
+		   	}
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_entry_height_return", model);
