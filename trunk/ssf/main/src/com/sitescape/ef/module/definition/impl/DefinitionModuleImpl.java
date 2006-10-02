@@ -19,16 +19,14 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.InvalidArgumentException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.CommaSeparatedValue;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
@@ -36,7 +34,6 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Workspace;
@@ -48,7 +45,6 @@ import com.sitescape.ef.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -57,7 +53,6 @@ import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
@@ -652,7 +647,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("textarea")) {
 							newPropertyEle.setText(value);
 						} else if (type.equals("integer")) {
-							if (value.matches("[^0-9]")) {
+							if (value.matches("[^0-9]+?")) {
 								//The value is not a valid integer
 								throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
 							}
@@ -672,7 +667,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						} else if (type.equals("userGroupSelect")) {
 							String [] v= StringUtil.split(value);
 							for (int vals=0; vals < v.length; ++vals) {
-								if (v[i].matches("[^0-9]")) {
+								if (v[vals].matches("[^0-9]+?")) {
 									//The value is not a valid integer
 									throw new DefinitionInvalidException("definition.error.notAnInteger", new Object[] {defId, configProperty.attributeValue("caption")});
 								}

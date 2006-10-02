@@ -1,6 +1,8 @@
 package com.sitescape.ef.domain;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+
+import com.sitescape.util.StringUtil;
 /**
  * Helper class to encapsalate state notifications
  * @author Janet McCann
@@ -12,7 +14,7 @@ public class WfNotify {
 	private String body="";
 	private boolean appendTitle;
 	private boolean appendBody;
-	private List principalIds;
+	private Set principalIds;
 	
 	public boolean isCreatorEnabled() {
 		return creator;
@@ -45,12 +47,22 @@ public class WfNotify {
 	public void setAppendBody(boolean appendBody) {
 		this.appendBody = appendBody;
 	}
-	public List getPrincipalIds() {
-		if (principalIds == null) principalIds = new ArrayList();
+	public Set getPrincipalIds() {
+		if (principalIds == null) principalIds = new HashSet();
 		return principalIds;
 	}
-	public void setPrincipalIds(List principalIds) {
+	public void setPrincipalIds(Set principalIds) {
 		this.principalIds = principalIds;
 	}
-	
+	public void setPrincipalIds(String stringIds) {
+		String [] result = StringUtil.split(stringIds);
+		this.principalIds = new HashSet();
+		for (int i=0; i<result.length; ++i) {
+			try {
+				this.principalIds.add(Long.valueOf(result[i]));
+			} catch (Exception e) {}
+
+		}
+	}
+
 }

@@ -352,6 +352,8 @@ public class WorkflowUtils {
     				n.setBody(value);
     			} else if ("appendBody".equals(name)) {
     				n.setAppendBody(GetterUtil.getBoolean(value, false));
+    			} else if ("userGroupNotification".equals(name)) {
+    				n.setPrincipalIds(value);
     			}
     		}
     		result.add(n);
