@@ -249,6 +249,7 @@ public class WebKeys {
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
+    public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
@@ -271,6 +272,7 @@ public class WebKeys {
     public static final String NOTIFICATION="ssNotification";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
+    public static final String PEOPLE_RESULTS="ssPeopleResults";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
