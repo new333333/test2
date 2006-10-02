@@ -280,6 +280,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 				props.put(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
 				props.put(CrossContextConstants.LOCK_PROPERTIES_SUBJECT, lock.getSubject());
 				props.put(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
+				props.put(CrossContextConstants.LOCK_PROPERTIES_OWNER_INFO, lock.getOwnerInfo());
 			}
 			
 			return props;
@@ -316,7 +317,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	}
 	
 	public void lockResource(Map uri, String lockId, String lockSubject, 
-			Date lockExpirationDate) 
+			Date lockExpirationDate, String lockOwnerInfo)
 	throws NoAccessException, NoSuchObjectException, LockException,
 	TypeMismatchException {
 		Map objMap = new HashMap();
@@ -336,7 +337,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		try {
 			getFileModule().lock(((Binder) objMap.get(BINDER)), entry, 
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
-				lockId, lockSubject, lockExpirationDate);
+				lockId, lockSubject, lockExpirationDate, lockOwnerInfo);
 		}
 		catch(ReservedByAnotherUserException e) {
 			throw new LockException(e.getLocalizedMessage());

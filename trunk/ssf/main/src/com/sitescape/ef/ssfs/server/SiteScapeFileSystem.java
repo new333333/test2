@@ -52,7 +52,7 @@ public interface SiteScapeFileSystem {
 	NoAccessException, NoSuchObjectException;
 	
 	public void lockResource(Map uri, String lockId, String lockSubject, 
-			Date lockExpirationDate) 
+			Date lockExpirationDate, String lockOwnerInfo)
 	throws NoAccessException, NoSuchObjectException, 
 	LockException, TypeMismatchException;
 	

@@ -239,6 +239,7 @@ public class CCClient {
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_ID, lock.getId());
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_SUBJECT, lock.getSubject());
 					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE, lock.getExpirationDate());
+					req.setAttribute(CrossContextConstants.LOCK_PROPERTIES_OWNER_INFO, lock.getOwner());
 				}
 			}
 		);
@@ -289,8 +290,9 @@ public class CCClient {
 		if(lockId != null) {
 			String lockSubject = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_SUBJECT);
 			Date lockExpirationDate = (Date) props.get(CrossContextConstants.LOCK_PROPERTIES_EXPIRATION_DATE);
+			String lockOwner = (String) props.get(CrossContextConstants.LOCK_PROPERTIES_OWNER_INFO);
 				
-			Lock lock = new SimpleLock(lockId, lockSubject, lockExpirationDate);
+			Lock lock = new SimpleLock(lockId, lockSubject, lockExpirationDate, lockOwner);
 				
 			return new Lock[] {lock};
 		}

@@ -476,7 +476,7 @@ public class FileModuleImpl implements FileModule {
 	}
 	
 	public void lock(Binder binder, DefinableEntity entity, FileAttachment fa, 
-			String lockId, String lockSubject, Date expirationDate) 
+			String lockId, String lockSubject, Date expirationDate, String lockOwnerInfo)
 		throws ReservedByAnotherUserException, 
 			LockedByAnotherUserException, LockIdMismatchException, 
 			UncheckedIOException, RepositoryServiceException {
@@ -505,7 +505,7 @@ public class FileModuleImpl implements FileModule {
     		if(lock == null) { // The file is not locked
     			// Lock the file
     			fa.setFileLock(new FileAttachment.FileLock(lockId, lockSubject, 
-    					user, expirationDate));
+    					user, expirationDate, lockOwnerInfo));
     		}
     		else { // The file is locked
     			if(lock.getOwner().equals(user)) {
@@ -526,7 +526,7 @@ public class FileModuleImpl implements FileModule {
     					commitPendingChanges(binder, entity, fa, lock.getOwner()); 
     					// Set the new lock.
     					fa.setFileLock(new FileLock(lockId, lockSubject, 
-    							user, expirationDate));
+    							user, expirationDate, lockOwnerInfo));
     				}
     				else { // The lock is still effective
         				throw new LockedByAnotherUserException(entity, fa, lock.getOwner());    					

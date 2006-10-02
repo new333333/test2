@@ -9,11 +9,13 @@ public class SimpleLock implements Lock {
 	private String id;
 	private String subject;
 	private Date expirationDate;
+	private String owner;
 	
-	public SimpleLock(String id, String subject, Date expirationDate) {
+	public SimpleLock(String id, String subject, Date expirationDate, String owner) {
 		this.id = id;
 		this.subject = subject;
 		this.expirationDate = expirationDate;
+		this.owner = owner;
 	}
 	
 	public String getId() {
@@ -34,6 +36,10 @@ public class SimpleLock implements Lock {
 
 	public String getSubject() {
 		return subject;
+	}
+
+	public String getOwner() {
+		return owner;
 	}
 
 }

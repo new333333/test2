@@ -281,6 +281,8 @@ public interface FileModule {
      * @param lockSubject String representing owner of this lock. This value is
      * treated as opaque string and has no meaning/utility on the server side. 
      * @param expirationDate Lock expiration date.
+     * @param lockOwnerInfo Provides information about the principal taking out 
+     * a lock. Not used on the server side.
      * @throws ReservedByAnotherUserException If the enclosing entity is already
      * under reservation by another user
      * @throws LockedByAnotherUserException If the file is locked by another user.
@@ -290,7 +292,7 @@ public interface FileModule {
      * @throws RepositoryServiceException Any other internal or unexpected error	
      */
     public void lock(Binder binder, DefinableEntity entity, FileAttachment fa,
-    		String lockId, String lockSubject, Date expirationDate)
+    		String lockId, String lockSubject, Date expirationDate, String lockOwnerInfo)
     	throws ReservedByAnotherUserException, LockedByAnotherUserException,
     	LockIdMismatchException, UncheckedIOException, RepositoryServiceException;
     

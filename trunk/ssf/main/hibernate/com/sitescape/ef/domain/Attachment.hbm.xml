@@ -59,6 +59,7 @@
           <column name="filelock_owner"/>
         </many-to-one>
         <property name="expirationDate" column="filelock_expirationDate" type="timestamp"/>
+      	<property name="ownerInfo" length="256" column="filelock_ownerInfo"/>
       </component>
       <subclass name="com.sitescape.ef.domain.VersionAttachment" discriminator-value="V" dynamic-update="true">
         <property name="versionNumber"/>
