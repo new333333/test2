@@ -25,7 +25,7 @@
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle2 %>";
 var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
-		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="action" value="view_search_results_listing"/>
 		<portlet:param name="operation" value="save_folder_columns"/>
 		</portlet:actionURL>";
 </script>
@@ -43,7 +43,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 	portletName="ss_forum" 
 	action="__ajax_request" 
 	actionUrl="true" >
-	<ssf:param name="operation" value="configure_search_results_columns" />
+	<ssf:param name="operation" value="configure_folder_columns" />
+	<ssf:param name="operation2" value="search" />
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
 	</ssf:url>" onClick="ss_configureColumns(this);return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
@@ -139,13 +140,14 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
     	<ssf:param name="binderId" value="${entry1._binderId}"/>
     	<ssf:param name="newTab" value="1"/>
     	</ssf:url>" 
-       ><span <%= seenStyle %>>${entry1._binderId}</span>
+       ><span <%= seenStyle %>>${ssBinderData[entry1._binderId].title}</span>
     </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn>
+  <c:if test="${!empty entry1._docNum}">
     <a href="<ssf:url     
     adapter="<%= useAdaptor2 %>" 
     portletName="ss_forum" 
@@ -155,6 +157,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
     actionUrl="true" />" 
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
+  </c:if>
   </ssf:slidingTableColumn>
  </c:if>
   

@@ -6,6 +6,8 @@
 </c:when>
 <c:otherwise>
 
+<c:set var="folderChecked" value=""/>
+<c:if test="${!empty folderColumns.folder}"><c:set var="folderChecked" value="checked"/></c:if>
 <c:set var="numberChecked" value=""/>
 <c:if test="${!empty folderColumns.number}"><c:set var="numberChecked" value="checked"/></c:if>
 <c:set var="titleChecked" value=""/>
@@ -23,6 +25,9 @@
 <br/>
 <br/>
 <div class="ss_indent_medium">
+  <c:if test="${ssFolderType == 'search'}">
+    <input type="checkbox" name="folder" ${folderChecked}> <ssf:nlt tag="folder.column.Folder"/><br/>
+  </c:if>
   <input type="checkbox" name="number" ${numberChecked}> <ssf:nlt tag="folder.column.Number"/><br/>
   <input type="checkbox" name="title" ${titleChecked}> <ssf:nlt tag="folder.column.Title"/><br/>
   <input type="checkbox" name="state" ${stateChecked}> <ssf:nlt tag="folder.column.State"/><br/>

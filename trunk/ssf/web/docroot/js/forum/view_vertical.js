@@ -119,8 +119,8 @@ function ss_startDragDiv(evt) {
     lightBox.style.top = 0;
     lightBox.style.left = 0;
     lightBox.style.width = parseInt(ss_getBodyWidth()) + 'px';
-    lightBox.style.height = parseInt(ss_getBodyHeight()) + 'px';
     lightBox.style.display = "block";
+    lightBox.style.height = parseInt(ss_getBodyHeight()) + 'px';
     lightBox.style.zIndex = ssDragEntryZ;
     lightBox.style.visibility = "visible";			
 
@@ -195,6 +195,7 @@ function ss_divDrag(evt) {
 	    var change = parseInt(ss_folderDivHeight - ss_folderDivHeightLast);
 	    if ((change > 0 && change > ss_folderDivHeightMinMove) || 
 	    		(change < 0 && parseInt(change + ss_folderDivHeightMinMove) < 0)) {
+	    	//ss_debug('ss_folderDivHeight = ' +ss_folderDivHeight)
 	    	ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 	    	ss_folderDivHeightLast = ss_folderDivHeight;
 	    }
