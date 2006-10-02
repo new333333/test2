@@ -12,16 +12,12 @@ function ss_position_sTableCol(divName, x, y, w) {
     if (divObj.style.position == "absolute") ss_moveDivToBody(divName);
     var ss_sTableHeight = ss_getDivHeight(ss_slidingTableId_2)
     var ss_sTableInnerHeight = parseInt(ss_sTableHeight- ss_sTableMarginTop - ss_sTableMarginBottom)
-
-    if (isNSN || isNSN6 || isMoz5) {
-        self.document.getElementById(divName).style.left= x + "px"
-        self.document.getElementById(divName).style.top= y + "px"
-        self.document.getElementById(divName).style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
-    } else {
-        self.document.all[divName].style.left=x
-        self.document.all[divName].style.top=y
-        self.document.all[divName].style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
-    }
+    self.document.getElementById(divName).style.left = x + "px"
+    self.document.getElementById(divName).style.top = y + "px"
+    self.document.getElementById(divName).style.clip = "rect(-9px " + parseInt(w) + "px " + ss_sTableInnerHeight + "px -9px)"
+    //The next lines workaround an IE failure to show backgrounds correctly
+    self.document.getElementById(divName).style.visibility = "hidden"
+    self.document.getElementById(divName).style.visibility = "visible"
 }
 
 function ss_slidingTableDrag(evt) {
@@ -118,11 +114,18 @@ function ss_showMouseOverInfo(obj) {
 }
 
 function ss_clearMouseOverInfo(obj) {
+	var oldObj = ss_slidingTableMosueOverObj;
 	if (!obj || obj == null) {
 		ss_slidingTableMosueOverObj = null;
 		ss_showHideObj("ss_info_popup", "hidden", "none")
 	} else if (obj != ss_slidingTableMosueOverObj) {
 		ss_slidingTableMosueOverObj = obj
  		ss_showHideObj("ss_info_popup", "hidden", "none")
+	}
+	//The next lines workaround an IE failure to show backgrounds correctly
+	fObj = document.getElementById("ss_folder_table_parent")
+	if (isIE && fObj != null) {
+	    fObj.style.visibility = "hidden"
+	    fObj.style.visibility = "visible"
 	}
 }
