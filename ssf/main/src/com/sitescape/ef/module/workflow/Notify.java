@@ -68,21 +68,21 @@ public class Notify extends AbstractActionHandler {
 				}
 				
 			}
-			details.put(SendEmail.TO, addrs);
-/*				List users = getCoreDao().loadEnabledUsers(toIds, entry.getParentBinder().getZoneName());
-			if (!users.isEmpty()) {
-				for (Iterator iter=users.iterator();iter.hasNext();) {
-					User user = (User)iter.next();
-					String email = user.getEmailAddress();
-					try	{
-						if (!Validator.isNull(email)) helper.addTo(email);
-					} catch (AddressException ae) {
-						logger.error("Skipping email notifications for " + user.getTitle() + " Bad email address");
+			List<User> users = getProfileDao().loadEnabledUsers(notify.getPrincipalIds(), entry.getParentBinder().getZoneName());
+			for (User u: users)  {
+				String email = u.getEmailAddress();
+				try	{
+					if (!Validator.isNull(email)) {
+						InternetAddress ia = new InternetAddress(email);
+						ia.validate();
+						addrs.add(ia);
 					}
+				} catch (AddressException ae) {
+					logger.error("Skipping email notifications for " + u.getTitle() + " Bad email address");
 				}
-				
 			} 
-*/
+
+			details.put(SendEmail.TO, addrs);
 			StringBuffer tMsg = new StringBuffer(notify.getBody());
 			if (notify.isAppendBody()) {
 				tMsg.append("\n");
