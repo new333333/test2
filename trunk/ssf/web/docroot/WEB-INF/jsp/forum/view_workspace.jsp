@@ -27,6 +27,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 <%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
 
 <% // Tabs %>
+<div class="ss_tab_canvas">
 <%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
 
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
@@ -71,6 +72,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 <% // Footer toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
 
+</div>
 </div>
 </c:if>
 

@@ -46,6 +46,9 @@ function ss_turnOffDebugMode() {
 			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
 			    onClick="document.ss_simpleSearchForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
 			    <input type="hidden" name="searchBtn" value="searchBtn"/>
+		      <div class="ss_global_toolbar_search_text">
+		        <span class="ss_fineprint"><ssf:nlt tag="navigation.search"/></span>
+		      </div>
 		  </ssHelpSpot>
 		</form>
 	</li>
@@ -55,7 +58,7 @@ function ss_turnOffDebugMode() {
       <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="45"
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites" text="Favorites"/></span>
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
 	    <div id="ss_navbar_favorites" style="visibility:hidden;margin:0px;padding:0px;"
 	    ><img src="<html:imagesPath/>pics/1pix.gif"></div>
