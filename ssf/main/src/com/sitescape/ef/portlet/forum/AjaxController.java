@@ -99,7 +99,8 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
-			} else if(op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
+			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
+					op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -155,7 +156,8 @@ public class AjaxController  extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 			return ajaxConfigureFolderColumns(request, response);
-			
+		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
+			return ajaxSubscribe(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 			return ajaxSaveEntryWidth(request, response);
 			
@@ -362,6 +364,11 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("forum/configure_folder_columns_return", model);
 	}
 	
+	private ModelAndView ajaxSubscribe(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		return new ModelAndView("forum/subscribe_return", model);
+	}
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();

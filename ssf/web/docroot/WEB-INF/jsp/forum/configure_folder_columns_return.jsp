@@ -20,7 +20,7 @@
 <c:if test="${!empty folderColumns.date}"><c:set var="dateChecked" value="checked"/></c:if>
 
 <div class="ss_style" align="left">
-<form method="post" onSubmit="ss_configureColumnsSetActionUrl(this);">
+<form method="post" onSubmit="ss_setActionUrl(this, ss_saveFolderColumnsUrl);">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="folder.selectColumns"/></span>
 <br/>
 <br/>
@@ -38,7 +38,7 @@
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
   &nbsp;&nbsp;&nbsp;
   <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_configureColumnsCancel();return false;">
+  onClick="ss_cancelPopupDiv('ss_folder_column_menu');return false;">
   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="submit" name="defaultBtn" value="<ssf:nlt tag="button.restoreDefaults"/>">
   

@@ -27,7 +27,7 @@ public interface AdminModule {
 	public void addFunction(Function function);
     public List getFunctions();
     public void modifyFunction(Long functionId, Map updates);
-    public void modifyNotification(Long binderId, Map updates, Set users); 
+    public void modifyNotification(Long binderId, Map updates); 
     public void setEnableNotification(Long binderId, boolean enable);
     public ScheduleInfo getNotificationConfig(Long binderId);
     public void setNotificationConfig(Long binderId, ScheduleInfo config);

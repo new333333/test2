@@ -31,6 +31,11 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="save_folder_columns"/>
 		</portlet:actionURL>";
+var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="operation" value="subscribe"/>
+		</portlet:actionURL>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
@@ -51,7 +56,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 	<ssf:param name="operation" value="configure_folder_columns" />
 	<ssf:param name="binderId" value="${ssBinder.id}" />
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
+	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </div>
 <%
@@ -192,7 +197,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 	<ssf:param name="operation" value="configure_folder_columns" />
 	<ssf:param name="binderId" value="${ssBinder.id}" />
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
+	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </div>
 <%

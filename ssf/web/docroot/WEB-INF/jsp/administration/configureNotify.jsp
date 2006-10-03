@@ -64,31 +64,6 @@
 </fieldset>
 
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="notify.distributionlist" /></legend>
-
-<table cellspacing="10px" cellpadding="10px">
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
-<td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}"/>
-</td>
-</tr>
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
- text="Groups"/></td>
-<td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
-</td>
-</tr>
-
-</table>
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-</fieldset>
-
-<fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.addresses" /></legend>
 <br />
 <span class="ss_bold"><ssf:nlt tag="notify.addresses.instructions"/>

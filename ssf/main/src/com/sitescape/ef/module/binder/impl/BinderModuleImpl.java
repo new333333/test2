@@ -325,15 +325,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	getCoreDao().delete(tag);
 	}
 
-    public void addSubscription(Long binderId) {
+    public void addSubscription(Long binderId, int style) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
+			s.setStyle(style);
 			getCoreDao().save(s);
-		}  	
+		} else s.setStyle(style); 	
     }
     public Subscription getSubscription(Long binderId) {
     	//getEntry check read access

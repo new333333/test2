@@ -9,6 +9,5 @@
       <key-property name="entityType"/>
     </composite-id>
     <property name="style"/>
-   <property name="disabled"/>
   </class>
 </hibernate-mapping>
