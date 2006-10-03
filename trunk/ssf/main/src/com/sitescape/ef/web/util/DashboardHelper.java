@@ -495,8 +495,11 @@ public class DashboardHelper {
 						elementData));
 		
 		//Do the search and store the search results in the bean
-		List entries = getBinderModule().executeSearchQuery(binder, searchQuery);
-        searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
+		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery);
+		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
+		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
+		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
     }
     
 	public static void setTitle(ActionRequest request, Binder binder, String scope) {

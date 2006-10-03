@@ -89,7 +89,6 @@ public class SearchController extends AbstractBinderController {
 		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
 		model.put(WebKeys.TABS, tabs.getTabs());
 
-		List entryPeople = new ArrayList();
 		Document searchQuery = null;
 
 		Map tab = tabs.getTab(tabs.getCurrentTab());
@@ -117,14 +116,26 @@ public class SearchController extends AbstractBinderController {
 		
 		List<Map>entries;
 		List people = new ArrayList();
+		List entryPeople = new ArrayList();
+		Map entryMap = new HashMap();
+		Map peopleMap = new HashMap();
+		
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
-			entries = getBinderModule().executeSearchQuery(searchQuery);
-			people = getBinderModule().executePeopleSearchQuery(searchQuery);
+			entryMap = getBinderModule().executeSearchQuery(searchQuery);
+			peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
+			entries = (List)entryMap.get(WebKeys.FOLDER_ENTRIES);
+			people = (List)peopleMap.get(WebKeys.PEOPLE_RESULTS);
 			entryPeople = sortPeopleInEntriesSearchResults(entries, people);
 
 		} else entries = new ArrayList();
+		
+		Integer entrySearchTotalCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_COUNT);
+		Integer peopleSearchTotalCount = (Integer)entryMap.get(WebKeys.PEOPLE_RESULTCOUNT);
+		
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		model.put(WebKeys.ENTRY_SEARCH_COUNT, entrySearchTotalCount);
+		
 		//since the results span multiple folders, we need to get the folder titles
 		Set ids = new HashSet();
 		for (Map r : entries) {
@@ -144,7 +155,8 @@ public class SearchController extends AbstractBinderController {
 		UserProperties userFolderProperties = null;
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, entryPeople);
-		model.put(WebKeys.PEOPLE_RESULTS, people);   
+		model.put(WebKeys.PEOPLE_RESULTS, people);
+		model.put(WebKeys.PEOPLE_RESULTCOUNT, peopleSearchTotalCount);
 		
 		//Get a default folder definition to satisfy the folder view jsps
 		Definition def = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);

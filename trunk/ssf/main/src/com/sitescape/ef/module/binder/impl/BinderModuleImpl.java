@@ -51,6 +51,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.TagUtil;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
 /**
  * @author Janet McCann
@@ -360,11 +361,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	ObjectBuilder.updateObject(s, updates);
     }	
 
-	public List executeSearchQuery(Document searchQuery) {
+	public Map executeSearchQuery(Document searchQuery) {
 		Binder binder = null;
 		return executeSearchQuery(binder, searchQuery);
 	}
-	public List executeSearchQuery(Binder binder, Document searchQuery) {
+	public Map executeSearchQuery(Binder binder, Document searchQuery) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
         
@@ -410,15 +411,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
 						EntryProcessor.PROCESSOR_KEY);
         entries = (List) processor.getBinderEntries_entriesArray(hits);
-        
-    	return entries; 
+        Map retMap = new HashMap();
+        retMap.put(WebKeys.FOLDER_ENTRIES,entries);
+        retMap.put(WebKeys.ENTRY_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+    	return retMap; 
 	}	
 	
-	public List executePeopleSearchQuery(Document searchQuery) {
+	public Map executePeopleSearchQuery(Document searchQuery) {
 		Binder binder = null;
 		return executePeopleSearchQuery(binder, searchQuery);
 	}
-	public List executePeopleSearchQuery(Binder binder, Document searchQuery) {
+	public Map executePeopleSearchQuery(Binder binder, Document searchQuery) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
         
@@ -489,7 +492,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         	    } catch (Exception ex) {}
             }
         }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        entries =  getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        Map retMap = new HashMap();
+        retMap.put(WebKeys.PEOPLE_RESULTS, entries);
+        retMap.put(WebKeys.PEOPLE_RESULTCOUNT, new Integer(hits.getTotalHits()));
+        return retMap;
 	}
 
 	public Binder getBinderByPathName(String pathName) throws AccessControlException {
