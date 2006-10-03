@@ -1389,6 +1389,12 @@ div.ss_tabs {
 	height:23px;
 	line-height:23px;
 }
+.ss_actions_bar_history_bar a {
+	padding:0px !important;
+}
+.ss_actions_bar_history_bar * {
+	color:#5A3C68;
+}
 .ss_actions_bar li {
 	float:left;
 	font-weight:bold;
