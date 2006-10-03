@@ -6,8 +6,12 @@
 <script type="text/javascript">
 if (!ss_history_bar_loaded || ss_history_bar_loaded == "undefined" ) {
 var ss_entryList = new Array();
+var ss_entryList2 = new Array();
+var ss_entryList3 = new Array();
 var ss_entryCount = 0;
 <c:forEach var="entry" items="${ssFolderEntries}" >
+ss_entryList2[ss_entryCount] = '<c:out value="${entry._binderId}"/>';
+ss_entryList3[ss_entryCount] = '<c:out value="${entry._entityType}"/>';
 ss_entryList[ss_entryCount++] = '<c:out value="${entry._docId}"/>';
 </c:forEach>
 
@@ -28,8 +32,9 @@ var right_end_alt = "<ssf:nlt tag="nav.lastEntry" text="Last entry"/>"
 var ss_baseHistoryUrl = '<ssf:url
           adapter="true"
           portletName="ss_forum" 
-          folderId="${ssFolder.id}"
-          action="view_folder_entry"
+          folderId="ssBinderIdPlaceHolder"
+          entryId="ssEntryIdPlaceHolder"
+          action="ssActionPlaceHolder"
           operation="view_entry"
           actionUrl="true"
           />';

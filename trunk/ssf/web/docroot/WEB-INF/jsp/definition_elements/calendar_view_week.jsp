@@ -3,9 +3,13 @@
 
 <script type="text/javascript">
 var ss_entryList = new Array();
+var ss_entryList2 = new Array();
+var ss_entryList3 = new Array();
 var ss_entryCount = 0;
-function setFilteredEntry(id) {
-		ss_entryList[ss_entryCount++] = id;
+function setFilteredEntry(id, binderId, entityType) {
+	ss_entryList2[ss_entryCount] = binderId;
+	ss_entryList3[ss_entryCount] = entityType;
+	ss_entryList[ss_entryCount++] = id;
 }
 </script>
 <c:set var="delimiter" value=" | "/>
@@ -61,7 +65,7 @@ function setFilteredEntry(id) {
     java.util.HashMap e = (java.util.HashMap) eviw.get("entry");
 %>
 <script type="text/javascript">
-	setFilteredEntry('${eviw.entry._docId}')
+	setFilteredEntry('${evid.entry._docId}', '${evid.entry._binderId}')
 </script>
 <div id="folderLine_${eviw.entry._docId}">	
 <%

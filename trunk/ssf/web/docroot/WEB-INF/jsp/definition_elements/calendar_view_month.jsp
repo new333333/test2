@@ -2,9 +2,13 @@
 
 
 <script type="text/javascript">
-ss_entryList = new Array();
-ss_entryCount = 0;
-function setFilteredEntry(id) {
+var ss_entryList = new Array();
+var ss_entryList2 = new Array();
+var ss_entryList3 = new Array();
+var ss_entryCount = 0;
+function setFilteredEntry(id, binderId, entityType) {
+	ss_entryList2[ss_entryCount] = binderId;
+	ss_entryList3[ss_entryCount] = entityType;
 	ss_entryList[ss_entryCount++] = id;
 }
 </script>
@@ -79,7 +83,7 @@ ${dayabbrev}</td>
     java.util.HashMap e = (java.util.HashMap) evim.get("entry");
 %>
 <script type="text/javascript">
-	setFilteredEntry('${evim.entry._docId}')
+	setFilteredEntry('${evid.entry._docId}', '${evid.entry._binderId}')
 </script>
 <div id="folderLine_${evim.entry._docId}">	
 ${evim.cal_starttimestring}: 
