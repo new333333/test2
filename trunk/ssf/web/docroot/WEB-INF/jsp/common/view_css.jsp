@@ -4,6 +4,7 @@
 <%
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
+<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
@@ -165,7 +166,7 @@ function ss_loadJsFile(rootPath, jsFile) {
 	}
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
+	//ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
 }
 </script>
