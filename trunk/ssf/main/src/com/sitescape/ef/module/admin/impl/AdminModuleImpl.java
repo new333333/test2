@@ -84,13 +84,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
      * @param definition - Use map to set NotifcationDef field
      * Distribution list is built 
      * by this method based on the Set of userIds passed in.
-     * @param users - Set of Long userIds; Used to build the distribution list
      * @throws NoPrincipalByTheIdException
      */
-    public void modifyNotification(Long id, Map updates, Set principals) 
+    public void modifyNotification(Long id, Map updates) 
     {
         Principal p;
-		Set notifyUsers = new HashSet();
 		
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
         Binder binder = coreDao.loadBinder(id, companyId); 
@@ -100,15 +98,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		binder.setNotificationDef(current);
     	}
     	ObjectBuilder.updateObject(current, updates);
-  		//	Pre-load for performance
-    	getProfileDao().loadPrincipals(principals,companyId);
-   		for (Iterator iter=principals.iterator(); iter.hasNext();) {
-   			//	make sure user exists and is in this zone
-   			p = getProfileDao().loadPrincipal((Long)iter.next(),companyId);
-   			notifyUsers.add(p);   			
-   		}
-
-   		current.setDistribution(notifyUsers);
     }
  
  

@@ -118,7 +118,8 @@ public class ListFolderController extends  SAbstractController {
 			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
-			getBinderModule().addSubscription(binderId);
+			int style = PortletRequestUtils.getIntParameter(request, "notifyType", Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
+			getBinderModule().addSubscription(binderId, style);
 		} else if (op.equals(WebKeys.OPERATION_UNSUBSCRIBE)) {
 			getBinderModule().deleteSubscription(binderId);
 		}
@@ -460,14 +461,20 @@ public class ListFolderController extends  SAbstractController {
 
 		//The "Footer" menu
 		if (folder.isTop()) {
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			Subscription sub = getBinderModule().getSubscription(folder.getId());
 			if (sub == null) {
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);
-				footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), url);
+				Map qualifiers = new HashMap();
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
+				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
+				footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
 			} else {
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNSUBSCRIBE);
 				footerToolbar.addToolbarMenu("unsubscribeToFolder", NLT.get("toolbar.menu.unsubscribeToFolder"), url);				
 			}

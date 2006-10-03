@@ -46,7 +46,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 	<ssf:param name="operation" value="configure_folder_columns" />
 	<ssf:param name="operation2" value="search" />
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_configureColumns(this);return false;">
+	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </div>
 <%
@@ -265,9 +265,10 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 	portletName="ss_forum" 
 	action="__ajax_request" 
 	actionUrl="true" >
-	<ssf:param name="operation" value="configure_search_results_columns" />
+	<ssf:param name="operation" value="configure_folder_columns" />
+	<ssf:param name="operation2" value="search" />
 	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_configureColumns(this, '${ssBinder.id}');return false;">
+	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
     <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
 </div>
 <%

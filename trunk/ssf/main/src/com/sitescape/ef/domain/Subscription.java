@@ -18,11 +18,11 @@ package com.sitescape.ef.domain;
  * administrator.
  */
 public class Subscription  {
-     public static final int DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
+    public static final int DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
     public static final int MESSAGE_STYLE_EMAIL_NOTIFICATION = 2;
+    public static final int MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION = 3;
    
     private int style=DIGEST_STYLE_EMAIL_NOTIFICATION;
-    private boolean disabled=false;
     private UserEntityPK id;
 	public Subscription() {
     	
@@ -52,18 +52,6 @@ public class Subscription  {
     }
     public void setStyle(int style) {
         this.style = style;
-    }
-    /**
-     * This allows users to explicity turn off notification, which would be needed
-     * if they are enabled by an admin.
-     * @hibernate.property
-     * @return
-     */
-    public boolean isDisabled() {
-        return this.disabled;
-    }
-    public void setDisabled(boolean disabled) {
-        this.disabled = disabled;
     }
     public boolean equals(Object obj) {
         if(this == obj)

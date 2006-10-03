@@ -12,7 +12,6 @@ import com.sitescape.util.StringUtil;
  */
 public class NotificationDef  {
    
-	protected List distribution;//initialized by hibernate access=field
     protected String emailAddress;//initialized by hibernate access=field
     protected boolean teamOn=false;
     protected String from,subject;
@@ -30,20 +29,6 @@ public class NotificationDef  {
     public void setTeamOn(boolean teamOn) {
         this.teamOn  = teamOn;
     }
-    
-
-    /**
-     * 
-     * @return
-     */
-    public List getDistribution() {
-    	if (distribution == null) distribution = new ArrayList();
-    	return distribution;
-    }	
-    public void setDistribution(Collection newDistribution) {
-    	distribution = CollectionUtil.mergeAsSet(getDistribution(), newDistribution);
-     }
-
 
     /**
      * Callers deal with emailAddress as a comma separated list

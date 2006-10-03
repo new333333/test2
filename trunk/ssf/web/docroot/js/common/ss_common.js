@@ -2763,23 +2763,18 @@ function ss_setFavoritesPaneSize() {
 	}
 }
 
+
 //Routine to configure the columns of a folder
-function ss_configureColumns(obj, binderId) {
+function ss_createPopupDiv(obj, divId) {
 	url = obj.href
 	url = ss_replaceSubStr(url, 'ss_randomNumberPlaceholder', ss_random++)
-	divId = 'ss_folder_column_menu';
 	var divObj = ss_createDivInBody(divId, 'ss_popupMenu');
 	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
 	divObj.style.visibility = "hidden";
 	
-	ss_fetch_url(url, ss_configureColumnsCallback, divId);
+	ss_fetch_url(url, ss_callbackPopupDiv, divId);
 }
-function ss_configureColumnsCallback(s, divId) {
-	var targetDiv = document.getElementById(divId);
-	if (targetDiv) {
-		var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-		lightBox.onclick = function(e) {ss_configureColumnsCancel();};
-		targetDiv.innerHTML = s;
+function ss_setupPopupDiv(targetDiv) {
 		targetDiv.style.display = "block";
 		var x = parseInt(ss_getWindowWidth() / 2);
 		var y = parseInt(ss_getWindowHeight() / 2);
@@ -2792,15 +2787,24 @@ function ss_configureColumnsCallback(s, divId) {
 		targetDiv.style.visibility = "visible";
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+function ss_callbackPopupDiv(s, divId) {
+	var targetDiv = document.getElementById(divId);
+	if (targetDiv) {
+		var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+		lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+		targetDiv.innerHTML = s;
+		ss_setupPopupDiv(targetDiv);
 	}
 }
-function ss_configureColumnsSetActionUrl(formObj) {
-	formObj.action = ss_saveFolderColumnsUrl;
+function ss_setActionUrl(formObj, url) {
+	formObj.action = url;
 }
-function ss_configureColumnsCancel() {
+function ss_cancelPopupDiv(divId) {
 	ss_hideLightbox();
-	ss_hideDiv('ss_folder_column_menu');
+	ss_hideDiv(divId);
 }
+
 
 function ss_dashboardInitialization() {
 	//Turn off ie's 3d table look

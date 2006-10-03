@@ -81,7 +81,7 @@ public interface BinderModule {
 	public void setTag(Long binderId, String newtag, boolean community) throws AccessControlException;
 	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
 
-	public void addSubscription(Long binderId);
+	public void addSubscription(Long binderId, int style);
 	public Subscription getSubscription(Long binderId);
 	public void deleteSubscription(Long binderId);
 	public void modifySubscription(Long binderId, Map updates);

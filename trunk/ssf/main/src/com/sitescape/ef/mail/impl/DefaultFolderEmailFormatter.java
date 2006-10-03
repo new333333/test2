@@ -154,14 +154,13 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 */
 	public List buildDigestDistributionList(Folder folder, Collection entries, Collection subscriptions) {
  		NotificationDef nDef = folder.getNotificationDef();
- 		List notifications = nDef.getDistribution(); 
 		String [] emailAddrs = nDef.getEmailAddress();
 		List result = new ArrayList();
 		//done if no-one is interested
-		if ((emailAddrs.length == 0) && notifications.isEmpty() && subscriptions.isEmpty()) return result;
+		if ((emailAddrs.length == 0)  && subscriptions.isEmpty()) return result;
 
 		//Users wanting digest style messages
-		List users = getDigestUsers(folder, subscriptions);
+		List users = getDigestUsers(subscriptions);
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (Iterator iter=users.iterator(); iter.hasNext();) {
@@ -222,11 +221,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * when actually building the message	
 	 */
 	public List buildMessageDistributionList(Folder folder, Collection entries, Collection subscriptions) {
- 		NotificationDef nDef = folder.getNotificationDef();
- 		List notifications = nDef.getDistribution(); 
 		//done if no-one is interested
 		List result = new ArrayList();
-		if (notifications.isEmpty() && subscriptions.isEmpty()) return result;
+		if (subscriptions.isEmpty()) return result;
 
 		//Users wanting digest style messages
 		List users = getMessageUsers(subscriptions);
@@ -300,41 +297,11 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return from;
 	}
 
-	private List getDigestUsers(Folder folder, Collection subscriptions) {
-		List notifications = folder.getNotificationDef().getDistribution();
-		Set userIds = new HashSet();
-		//Build id set to build user list
-		//get all users setup by admin
-		for (int i=0; i<notifications.size();++i) {
-			Principal p = (Principal)notifications.get(i);
-				userIds.add(p.getId());
-		}
-		//turn list of users and groups into list of only users
-		userIds = getProfileDao().explodeGroups(userIds);
-		
-		//now alter list to handle users that made request themselves
-		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
-			Subscription notify = (Subscription)iter.next();
-			if (notify.isDisabled()) {
-				userIds.remove(notify.getId().getPrincipalId());
-			} else if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
-				userIds.add(notify.getId().getPrincipalId());
-			} else {
-				userIds.remove(notify.getId().getPrincipalId());
-			}
-		}
-		
-		
- 		return getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
- 		
-	}
-	private List getDigestUsers(Collection subscriptions) {
+	private List getDigestUsers(Collection<Subscription> subscriptions) {
 		Set userIds = new HashSet();
 	
-		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
-			Subscription notify = (Subscription)iter.next();
-			if (!notify.isDisabled() && 
-					(notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION)) {
+		for (Subscription notify: subscriptions) {
+			if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
 				userIds.add(notify.getId().getPrincipalId());
 			} 
 		}
@@ -350,8 +317,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		//get all users setup by admin
 		for (Iterator iter=subscriptions.iterator(); iter.hasNext();) {
 			Subscription notify = (Subscription)iter.next();
-			if (!notify.isDisabled() && (notify.getStyle() == Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION)) {
-					userIds.add(notify.getId().getPrincipalId());
+			if (notify.getStyle() == Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION) {
+				userIds.add(notify.getId().getPrincipalId());
 			}
 		}
 		
