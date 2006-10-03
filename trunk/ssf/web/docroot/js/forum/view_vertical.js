@@ -180,7 +180,6 @@ function ss_divDrag(evt) {
 			marginOffset += parseInt(tableDivObj.style.borderTopWidth);
 		if (parseInt(tableDivObj.style.borderTopWidth)) 
 			marginOffset += parseInt(tableDivObj.style.borderBottomWidth);
-	    ss_debug('parseInt(dObjTop)='+parseInt(dObjTop))
 	    var oldFolderDivHeight = ss_folderDivHeight;
 	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - marginOffset + 
 	    		ss_scrollbarHeight - parseInt(ss_getDivTop(ss_folderTableId)));
