@@ -190,11 +190,11 @@ function ss_divDrag(evt) {
 			lightBox.style.backgroundColor = "#ffffff";
 			dojo.style.setOpacity(lightBox, .1);
 		    lightBox.onclick = "ss_entryClearDrag();";
+		    lightBox.style.display = "block";
 		    lightBox.style.top = 0;
 		    lightBox.style.left = 0;
 		    lightBox.style.width = ss_getBodyWidth();
 		    lightBox.style.height = ss_getBodyHeight();
-		    lightBox.style.display = "block";
 		    lightBox.style.zIndex = parseInt(ssDragEntryZ - 1);
 		    lightBox.style.visibility = "visible";			
         }

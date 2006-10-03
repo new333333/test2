@@ -116,10 +116,12 @@ function ss_startDragDiv(evt) {
 	lightBox.style.backgroundColor = "#ffffff";
 	dojo.style.setOpacity(lightBox, .1);
     lightBox.onclick = "ss_divStopDrag();";
+    lightBox.style.visibility = "hidden";			
+    lightBox.style.display = "block";
+    //ss_debug('start drag block')
     lightBox.style.top = 0;
     lightBox.style.left = 0;
     lightBox.style.width = parseInt(ss_getBodyWidth()) + 'px';
-    lightBox.style.display = "block";
     lightBox.style.height = parseInt(ss_getBodyHeight()) + 'px';
     lightBox.style.zIndex = ssDragEntryZ;
     lightBox.style.visibility = "visible";			
@@ -178,14 +180,18 @@ function ss_divDrag(evt) {
 			marginOffset += parseInt(tableDivObj.style.borderTopWidth);
 		if (parseInt(tableDivObj.style.borderTopWidth)) 
 			marginOffset += parseInt(tableDivObj.style.borderBottomWidth);
-	    //ss_debug('marginOffset='+marginOffset)
+	    ss_debug('parseInt(dObjTop)='+parseInt(dObjTop))
+	    var oldFolderDivHeight = ss_folderDivHeight;
 	    ss_folderDivHeight = parseInt(parseInt(dObjTop) - marginOffset + 
-	    		ss_scrollbarHeight -
-	    		parseInt(ss_getDivTop(ss_folderTableId)));
+	    		ss_scrollbarHeight - parseInt(ss_getDivTop(ss_folderTableId)));
 	    if (ss_folderDivHeight < 0) {
 	    	//The initialization of the event was bad. Just stop the drag.
 	    	//ss_debug('Bad ss_folderDivHeight = ' + ss_folderDivHeight)
 	        //ss_debug('  dObjTop = '+dObjTop+', ss_getDivTop(ss_folderTableId) = '+ss_getDivTop(ss_folderTableId) +', ss_divOffsetY='+ss_divOffsetY)
+	    	ss_folderDivHeight = oldFolderDivHeight;
+		    if (ss_folderDivHeight < ss_minFolderDivHeight) {
+		        ss_folderDivHeight = ss_minFolderDivHeight;
+		    }
 	    	setTimeout('ss_divStopDrag()', 100);
 	    	return false;
 	    }
@@ -217,6 +223,9 @@ function ss_divStopDrag(evt) {
     if (!evt && window.event) evt = window.event;
     if (ss_divDragObj) {
 		var tableDivObj = document.getElementById(ss_folderTableId)
+	    if (ss_folderDivHeight < ss_minFolderDivHeight) {
+	        ss_folderDivHeight = ss_minFolderDivHeight;
+	    }
 	    ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
         ss_slidingTableMouseOverInfoDisabled = false;;
 

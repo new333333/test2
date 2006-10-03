@@ -906,14 +906,14 @@ function ss_getObjectTopAbs(obj) {
 }
 
 function ss_setObjectWidth(obj, width) {
-	obj.style.width = parseInt(width) + 'px';
+	if (parseInt(width) > 0) obj.style.width = parseInt(width) + 'px';
 
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
-    obj.style.height = parseInt(height) + 'px';
+    if (parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
@@ -1651,14 +1651,13 @@ function ss_showLightbox(id, zIndex, opacity, className) {
         bodyObj.appendChild(lightBox);
 	}
     lightBox.style.visibility = "hidden";
-    lightBox.style.display = "none";
-    lightBox.style.top = 0;
-    lightBox.style.left = 0;
-    lightBox.style.width = ss_getBodyWidth();
-    lightBox.style.height = ss_getBodyHeight();
-    dojo.style.setOpacity(lightBox, 0);
     lightBox.className = className;
     lightBox.style.display = "block";
+    lightBox.style.top = 0;
+    lightBox.style.left = 0;
+    dojo.style.setOpacity(lightBox, 0);
+    lightBox.style.width = ss_getBodyWidth();
+    lightBox.style.height = ss_getBodyHeight();
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
     dojo.fx.html.fade(lightBox, 150, 0, opacity)
