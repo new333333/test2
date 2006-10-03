@@ -219,6 +219,7 @@ public class WebKeys {
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
     public static final String ENTRIES="ssEntries";
+    public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
@@ -274,6 +275,7 @@ public class WebKeys {
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
     public static final String PEOPLE_RESULTS="ssPeopleResults";
+    public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
