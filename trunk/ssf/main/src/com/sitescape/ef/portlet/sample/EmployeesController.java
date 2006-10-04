@@ -41,6 +41,8 @@ public class EmployeesController extends SAbstractController {
 		// that the Spring's PortalMVC expects.
 		Map models = new HashMap();
 		models.put("employees", getEmployeeModule().getAllEmployees());
+		//models.put("forumUrl", "http://localhost:8080/c/portal/layout?p_l_id=PRI.15.1&p_p_id=ss_forum_WAR_ssf_INSTANCE_d6E7&p_p_action=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-2&p_p_col_pos=2&p_p_col_count=9&_ss_forum_WAR_ssf_INSTANCE_d6E7_action=view_folder_listing&_ss_forum_WAR_ssf_INSTANCE_d6E7_binderId=74");
+		//models.put("forumUrl", "http://localhost:8080/c/portal/layout?p_l_id=PRI.15.2&p_p_id=ss_forum_WAR_ssf_INSTANCE_d6E7&p_p_action=0&p_p_state=maximized&p_p_mode=view&p_p_col_id=column-2&p_p_col_pos=2&p_p_col_count=9&_ss_forum_WAR_ssf_INSTANCE_d6E7_action=view_folder_listing&_ss_forum_WAR_ssf_INSTANCE_d6E7_binderId=74");
 		
 		return new ModelAndView("sample/employeesView", models);
 	}
