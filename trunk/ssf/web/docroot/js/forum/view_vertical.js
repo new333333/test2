@@ -1,7 +1,7 @@
 //Javascript routines for viewing vertical style folders
 
-var ss_folderDivHeight = 400;
-var ss_folderDivHeightLast = 400;
+var ss_folderDivHeight = 300;
+var ss_folderDivHeightLast = 300;
 var ss_folderDivHeightMinMove = 2;
 var ss_bottomHeight = 100;
 var ss_minFolderDivHeight = 100;
@@ -172,6 +172,7 @@ function ss_divDrag(evt) {
     		dObjTop += parseInt(self.document.body.scrollTop)
         }
 
+		//ss_debug('dragging '+ss_folderTableId)
 		//Set the new height of the folder table
 		var tableDivObj = document.getElementById(ss_folderTableId)
 		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + 
@@ -254,6 +255,12 @@ function ss_entryClearDrag() {
 	ss_slidingTableMouseOverInfoDisabled = false;
 	self.document.onmousemove = ss_divDragSavedMouseMove;
 	self.document.onmouseup = ss_divDragSavedMouseUp;
+}
+
+function ss_setFolderDivHeight(height) {
+	if (height != null && height != '') ss_folderDivHeight = height;
+	var tableDivObj = document.getElementById(ss_folderTableId)
+	ss_setObjectHeight(tableDivObj, ss_folderDivHeight);
 }
 
 var ss_lastEntryHeight = -1;
