@@ -305,6 +305,8 @@ function ss_getLastEntryId(imageId) {
 }
 
 function ss_showSearchResults(type) {
+	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
+	
 	var divId = 'ss_search_results_things_div'
 	var tabId = 'ss_search_results_things_tab';
 	var folderTableId = 'ss_folder_table';
