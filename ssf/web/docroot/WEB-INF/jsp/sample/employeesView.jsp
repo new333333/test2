@@ -91,6 +91,11 @@ return false;
 		<applet archive="sample/ssf-sample-applet.jar" code="com.sitescape.ef.applets.sample.HelloWorld" codebase="<html:rootPath/>/applets" height="30" width="130">
 		</applet>
 	</td>
-</tr>
+	</tr>
+	<!--<tr>
+		<td colspan="4">
+			<a href="${forumUrl}">Forum Portlet URL</a>
+		</td>
+	</tr>-->
 		
 </table>
