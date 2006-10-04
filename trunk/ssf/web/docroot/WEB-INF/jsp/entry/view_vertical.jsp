@@ -66,7 +66,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 </div>
 </c:if>
 <c:if test="${ss_showSearchResults}">
-<%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
 </c:if>
 <div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
