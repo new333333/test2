@@ -46,7 +46,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
   configJspStyle="${ssConfigJspStyle}" />
 </c:if>
 <c:if test="${ss_showSearchResults}">
-<%@ include file="/WEB-INF/jsp/definition_elements/search_results_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
 </c:if>
 </div>
 
