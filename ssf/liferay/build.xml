@@ -146,6 +146,8 @@
 		<copy file="${project.dir}/lib/xercesImpl.jar" todir="${app.server.dir}/common/endorsed" />
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.dir}/common/lib" />
+		
+		<copy file="resources/Language-ext.properties" todir="${app.server.dir}/webapps/ROOT/WEB-INF/classes/content" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">	
@@ -205,6 +207,8 @@
 		<delete>
 			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
 		</delete>		
+		
+		<copy file="resources/Language-ext.properties" todir="${app.server.deploy.dir}/liferay-portal.ear/ext-ejb.jar/content" />
 	</target>		
 	
 </project>
