@@ -1753,6 +1753,7 @@ var ss_helpSystem = {
 		for (var i = 0; i < nodes.length; i++) {
 			//ss_debug(nodes[i].getAttribute("helpId") + " = " + ss_helpSystemNextNodeId)
 			var helpSpotNodeId = nodes[i].getAttribute("helpId");
+			helpSpotNodeId = ss_helpSystemNextNodeId + "___" + helpSpotNodeId;
 			var helpSpotTitle = "";
 			if (nodes[i].getAttribute("title")) {
 				helpSpotTitle = nodes[i].getAttribute("title");
@@ -2032,7 +2033,8 @@ var ss_helpSystem = {
 					startVisibility = pObj.style.visibility;
 		}
 		var url = ss_helpSystemUrl;
-		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  id);
+		var orgHelpId = id.substr(id.indexOf("___") + 3);
+		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  orgHelpId);
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("operation2", id)
 		ajaxRequest.addKeyValue("ss_help_panel_id", panelId)
