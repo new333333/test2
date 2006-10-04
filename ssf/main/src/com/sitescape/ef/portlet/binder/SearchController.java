@@ -101,7 +101,7 @@ public class SearchController extends AbstractBinderController {
 			//Get the search text to use it for the tab title 
 			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
 			if (!searchText.equals("")) {
-				String tabTitle = NLT.get("tabs.search") + ": " + searchText;
+				String tabTitle = searchText;
 				options.put(Tabs.TITLE, tabTitle);
 			}
 			//Store the search query in the current tab
@@ -131,7 +131,7 @@ public class SearchController extends AbstractBinderController {
 		} else entries = new ArrayList();
 		
 		Integer entrySearchTotalCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_COUNT);
-		Integer peopleSearchTotalCount = (Integer)entryMap.get(WebKeys.PEOPLE_RESULTCOUNT);
+		Integer peopleSearchTotalCount = (Integer)peopleMap.get(WebKeys.PEOPLE_RESULTCOUNT);
 		
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		model.put(WebKeys.ENTRY_SEARCH_COUNT, entrySearchTotalCount);

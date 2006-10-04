@@ -10,6 +10,10 @@
    Add "ss_rounded" to any element that is to be rounded. */
 .ss_rounded {}
     
+.ss_normal {
+  font-weight: normal !important;
+  }
+  
 .ss_bold {
   font-weight: bold !important;
   }
