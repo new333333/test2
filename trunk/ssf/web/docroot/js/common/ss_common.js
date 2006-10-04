@@ -3230,9 +3230,7 @@ function ss_deleteTab(obj, tabId) {
 			tabParentTdObject.parentNode.removeChild(tabParentTdObject)
 			//Hide the tab contents
 			var tabDataObj = document.getElementById("ss_tab_data_" + tabId);
-			if (tabDataObj != null) tabDataObj.style.visibility = "hidden";
-			//Signal that the layout changed
-			if (ssf_onLayoutChange) ssf_onLayoutChange();
+			if (tabDataObj != null) tabDataObj.style.display = "none";
 			
 			//Now tell the server which tab got deleted
 			var url = ss_deleteTabUrl;
@@ -3251,6 +3249,8 @@ function ss_changeTabDone(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Search functions from the navbar
