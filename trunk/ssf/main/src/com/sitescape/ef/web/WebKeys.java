@@ -31,6 +31,7 @@ public class WebKeys {
     public static final String SESSION_LAST_ENTRY_VIEWED = "last_entry_viewed";
     public static final String EVENT = "event";
     public static final String PRINCIPAL = "_principal";
+    public static final String SEARCH_BINDER_ID = "_binderId";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";

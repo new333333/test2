@@ -187,7 +187,7 @@ public class Tabs {
 		if (options.containsKey(TITLE)) {
 			tab.put(TITLE, new String((String) options.get(TITLE)));
 		} else {
-			tab.put(TITLE, NLT.get("tabs.search"));
+			tab.put(TITLE, "");
 		}
 		tab.put(ICON, "pics/sym_s_search.gif");
 		tab.remove(BINDER_ID);
