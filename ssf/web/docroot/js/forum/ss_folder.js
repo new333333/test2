@@ -303,3 +303,45 @@ function ss_getLastEntryId(imageId) {
     }
 	return false;
 }
+
+function ss_showSearchResults(type) {
+	var divId = 'ss_search_results_things_div'
+	var tabId = 'ss_search_results_things_tab';
+	var folderTableId = 'ss_folder_table';
+	if (type == 'things') {
+		divId = 'ss_search_results_things_div'
+		tabId = 'ss_search_results_things_tab';
+		folderTableId = 'ss_folder_table';
+	} else if (type == 'people') {
+		divId = 'ss_search_results_people_div'
+		tabId = 'ss_search_results_people_tab';
+		folderTableId = 'ss_people_table';
+	} else if (type == 'places') {
+		divId = 'ss_search_results_places_div'
+		tabId = 'ss_search_results_places_tab';
+		folderTableId = 'ss_places_table';
+	}
+	if (ss_currentSearchResultsDiv != null) {
+		var obj = document.getElementById(ss_currentSearchResultsDiv);
+		obj.style.display = "none"
+	}
+	if (ss_currentSearchResultsTab != null) {
+		var obj = document.getElementById(ss_currentSearchResultsTab);
+		obj.className = "ss_search_results_selection_inactive"
+	}
+	var obj = document.getElementById(divId);
+	obj.style.display = "block"
+	ss_currentSearchResultsDiv = divId;
+	obj = document.getElementById(tabId);
+	obj.className = "ss_search_results_selection_active"
+	ss_currentSearchResultsTab = tabId;
+	
+	//Tell the table drag routines which table is in play
+	ss_folderTableId = folderTableId;
+	
+	//If there is a routine to set the div height, call it now
+	if (ss_setFolderDivHeight) ss_setFolderDivHeight();
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
