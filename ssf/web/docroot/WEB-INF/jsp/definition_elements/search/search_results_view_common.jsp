@@ -64,7 +64,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
 var ss_currentSearchResultsDiv = null;
 var ss_currentSearchResultsTab = null;
 function ss_showSearchResultsThings() {
-	ss_setFolderDivHeight('<%= ssFolderTableHeight2 %>');
+	if(self.ss_setFolderDivHeight) ss_setFolderDivHeight('<%= ssFolderTableHeight2 %>');
 	ss_showSearchResults('things');
 }
 ss_createOnLoadObj('ss_showSearchResultsThings', ss_showSearchResultsThings);

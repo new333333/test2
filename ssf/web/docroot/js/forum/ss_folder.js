@@ -342,7 +342,7 @@ function ss_showSearchResults(type) {
 	ss_folderTableId = folderTableId;
 	
 	//If there is a routine to set the div height, call it now
-	if (ss_setFolderDivHeight) ss_setFolderDivHeight();
+	if (self.ss_setFolderDivHeight) ss_setFolderDivHeight();
 
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();

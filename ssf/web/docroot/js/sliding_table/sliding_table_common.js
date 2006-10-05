@@ -51,7 +51,6 @@ function ss_showSlidingTableCols() {
 	
 	//Calculate the default column positions
     var ss_sTableWidth = ss_getDivWidth(ss_slidingTableId_2)
-    ss_debug('ss_sTableWidth = '+ss_sTableWidth)
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);
     var ss_sTableInnerWidth = parseInt(ss_sTableWidth - ss_sTableMarginLeft - ss_sTableMarginRight);
     var maxColLeft = ss_sTableInnerWidth - 8
