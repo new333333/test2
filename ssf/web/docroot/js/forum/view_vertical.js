@@ -149,15 +149,12 @@ function ss_startDragDiv(evt) {
 }
 
 function ss_divDrag(evt) {
+    //ss_debug('dragging')
     if (!evt) evt = window.event;
     if (ss_draggingDragDiv && ss_divDragObj) {
         if (ss_startingToDragDiv == 1) {
-            if (evt.layerX) {
-                if (isNSN || isNSN6 || isMoz5) {
-                    ss_divOffsetX = evt.layerX;
-                    ss_divOffsetY = evt.layerY;
-                }
-            }
+            ss_divOffsetX = 0;
+            ss_divOffsetY = 0;
             ss_startingToDragDiv = 0
         }
         var dObjLeft
@@ -172,7 +169,6 @@ function ss_divDrag(evt) {
     		dObjTop += parseInt(self.document.body.scrollTop)
         }
 
-		//ss_debug('dragging '+ss_folderTableId)
 		//Set the new height of the folder table
 		var tableDivObj = document.getElementById(ss_folderTableId)
 		var marginOffset = parseInt(parseInt(tableDivObj.style.marginTop) + 

@@ -51,6 +51,7 @@ function ss_showSlidingTableCols() {
 	
 	//Calculate the default column positions
     var ss_sTableWidth = ss_getDivWidth(ss_slidingTableId_2)
+    ss_debug('ss_sTableWidth = '+ss_sTableWidth)
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);
     var ss_sTableInnerWidth = parseInt(ss_sTableWidth - ss_sTableMarginLeft - ss_sTableMarginRight);
     var maxColLeft = ss_sTableInnerWidth - 8
@@ -89,7 +90,13 @@ function ss_showSlidingTableCols() {
     for (var i = 1; i <= ss_columnCount; i++) {
 	    //See if the user re-positioned the columns. If so, use those settings.
 	    if (ss_colWidthsUser[i]) {
-	    	deltaLeft = parseInt(ss_colWidthsUser[i])
+	    	deltaLeft = ss_colWidthsUser[i] + "";
+     		if (deltaLeft.indexOf("%") > 0) {
+    			//This is a percentage; 
+    			deltaLeft = deltaLeft.substr(0, deltaLeft.indexOf("%"));
+    			deltaLeft = parseInt((deltaLeft * ss_sTableInnerWidth) / 100);
+    		}
+    		deltaLeft = parseInt(deltaLeft);
 	    }
     	//But, always start the first column at the left edge
     	if (i == 1) deltaLeft = 0;
@@ -103,7 +110,7 @@ function ss_showSlidingTableCols() {
 	    	deltaLeft = maxColLeftAdjusted
 	    	if (ss_colWidthsUser[i]) {
 	    		//Save the adjusted value
-	    		ss_colWidthsUser[i] = deltaLeft
+	    		//ss_colWidthsUser[i] = deltaLeft
 	    	}
 	    }
 
@@ -196,14 +203,15 @@ function ss_clearMouseOverInfo(obj) {
 function ss_saveSlidingTableCoords() {
 	ss_setupStatusMessageDiv()
     var s = ""
-    var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2)
-    ss_debug('ss_sTableLeft: '+ss_sTableLeft)
-    ss_debug('ss_sTableMarginLeft: '+ss_sTableMarginLeft)
+    var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2);
+    var tableWidth = parseFloat(ss_getDivWidth(ss_slidingTableId_2));
     for (var i = 0; i <= ss_columnCount; i++) {
-    	var colLeft = parseInt(parseInt(ss_getDivLeft("col"+i)) - ss_sTableLeft - ss_sTableMarginLeft)
-	    s += colLeft+" "
-	    ss_colWidthsUser[i] = colLeft
+    	var colLeft = parseFloat(parseFloat(ss_getDivLeft("col"+i)) - ss_sTableLeft - ss_sTableMarginLeft)
+    	var percentage = parseFloat((colLeft * 100) / tableWidth);
+	    s += percentage+"% "
+	    ss_colWidthsUser[i] = percentage+"%"
     }
+
     ss_debug('Save col widths: ' + s)
     self.document.forms['ss_columnPositionForm'].column_positions.value = s;
 	var url = ss_saveColumnPositionsUrl;
