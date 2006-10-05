@@ -763,7 +763,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	    			FileAttachment fa = (FileAttachment) fAtts.get(i);
 	    			if(fa.getFileLock() != null) {
 	    				info.add(new FileLockInfo
-	    						(fa.getRepositoryServiceName(), 
+	    						(fa.getRepositoryName(), 
 	    								fa.getFileItem().getName(), 
 	    								fa.getFileLock().getOwner()));
 	    			}

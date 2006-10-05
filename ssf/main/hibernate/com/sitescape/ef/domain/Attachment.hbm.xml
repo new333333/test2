@@ -51,7 +51,7 @@
         <key column="parentAttachment"/>
         <one-to-many class="com.sitescape.ef.domain.VersionAttachment"/>
       </bag>
-      <property name="repositoryServiceName" access="field" length="128"/>
+      <property name="repositoryName" access="field" length="128"/>
       <component name="fileLock" class="com.sitescape.ef.domain.FileAttachment$FileLock">
       	<property name="id" length="128" column="filelock_id"/>
       	<property name="subject" length="192" column="filelock_subject"/>

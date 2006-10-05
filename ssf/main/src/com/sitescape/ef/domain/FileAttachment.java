@@ -22,7 +22,7 @@ import com.sitescape.ef.repository.RepositoryUtil;
 public class FileAttachment extends Attachment {
     private List fileVersions; //set by hibernate access="field"
     private Integer lastVersion;
-    private String repositoryServiceName;//initialized by hibernate access=field
+    private String repositoryName;//initialized by hibernate access=field
 
     private FileItem fileItem;
     
@@ -163,7 +163,7 @@ public class FileAttachment extends Attachment {
 		if (!(obj instanceof FileAttachment)) return false;
 		FileAttachment o = (FileAttachment) obj;
 		// Don't use id - may not be saved yet
-		if (getRepositoryServiceName().equals(o.getRepositoryServiceName())
+		if (getRepositoryName().equals(o.getRepositoryName())
 				&& fileItem.equals(o.getFileItem()))
 			return true;
 		else 
@@ -171,7 +171,7 @@ public class FileAttachment extends Attachment {
 	}
     public int hashCode() {
        	int hash = 7;
-       	hash = 31*hash + getRepositoryServiceName().hashCode();
+       	hash = 31*hash + getRepositoryName().hashCode();
     	hash = 31*hash + fileItem.hashCode();
     	return hash;
     }*/
@@ -185,14 +185,14 @@ public class FileAttachment extends Attachment {
     	return changed;
     }
     
-	public String getRepositoryServiceName() {
-		if(repositoryServiceName == null)
-			return RepositoryUtil.getDefaultRepositoryServiceName();
+	public String getRepositoryName() {
+		if(repositoryName == null)
+			return RepositoryUtil.getDefaultRepositoryName();
 		else
-			return repositoryServiceName;
+			return repositoryName;
 	}
-	public void setRepositoryServiceName(String repositoryServiceName) {
-		this.repositoryServiceName = repositoryServiceName;
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
 	}
 	
     /**

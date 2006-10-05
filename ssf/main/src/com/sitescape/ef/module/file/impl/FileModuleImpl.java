@@ -201,7 +201,7 @@ public class FileModuleImpl implements FileModule {
 			catch(Exception e) {
 				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
     			errors.addProblem(new FilesErrors.Problem
-    					(fAtt.getRepositoryServiceName(),  fAtt.getFileItem().getName(), 
+    					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
     							FilesErrors.Problem.OTHER_PROBLEM, e));
 			}
 		}
@@ -225,7 +225,7 @@ public class FileModuleImpl implements FileModule {
 		catch(Exception e) {
 			logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
 			errors.addProblem(new FilesErrors.Problem
-					(fAtt.getRepositoryServiceName(),  fAtt.getFileItem().getName(), 
+					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
 							FilesErrors.Problem.OTHER_PROBLEM, e));
 		}
 				
@@ -237,29 +237,29 @@ public class FileModuleImpl implements FileModule {
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		if(fa instanceof VersionAttachment) {
-			RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entry, 
+			RepositoryUtil.readVersion(fa.getRepositoryName(), binder, entry, 
 					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName(), out);			
 		}
 		else {
-			RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+			RepositoryUtil.read(fa.getRepositoryName(), binder, entry, 
 				fa.getFileItem().getName(), out);
 		}
 	}
 	
 	public InputStream readFile(Binder binder, DefinableEntity entry, FileAttachment fa) { 
 		if(fa instanceof VersionAttachment) {
-			return RepositoryUtil.readVersion(fa.getRepositoryServiceName(), binder, entry, 
+			return RepositoryUtil.readVersion(fa.getRepositoryName(), binder, entry, 
 					fa.getFileItem().getName(), ((VersionAttachment) fa).getVersionName());
 		}
 		else {
-			return RepositoryUtil.read(fa.getRepositoryServiceName(), binder, entry, 
+			return RepositoryUtil.read(fa.getRepositoryName(), binder, entry, 
 				fa.getFileItem().getName());
 		}
 	}
 	
 	public boolean scaledFileExists(Binder binder, 
 			DefinableEntity entry, FileAttachment fAtt) {
-		int fileInfo = RepositoryUtil.fileInfo(fAtt.getRepositoryServiceName(), 
+		int fileInfo = RepositoryUtil.fileInfo(fAtt.getRepositoryName(), 
 				binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
 		
 		if(fileInfo == RepositorySession.UNVERSIONED_FILE)
@@ -278,23 +278,23 @@ public class FileModuleImpl implements FileModule {
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out) {
-		RepositoryUtil.read(fa.getRepositoryServiceName(), binder, 
+		RepositoryUtil.read(fa.getRepositoryName(), binder, 
 				entry, makeScaledFileName(fa.getFileItem().getName()), out);
 	}
 	
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
-		RepositoryUtil.read(fa.getRepositoryServiceName(), binder, 
+		RepositoryUtil.read(fa.getRepositoryName(), binder, 
 				entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
 	}
 	
 	public void generateScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, int maxWidth, int maxHeight) {
-		String repositoryServiceName = fa.getRepositoryServiceName();
+		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 		
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 		
 		try {
 			// Read the input file from the repository into a byte array. 
@@ -313,11 +313,11 @@ public class FileModuleImpl implements FileModule {
 	public void generateThumbnailFile(Binder binder, 
 			DefinableEntity entry, FileAttachment fa, int maxWidth, 
 			int maxHeight, boolean thumbnailDirectlyAccessible) {
-		String repositoryServiceName = fa.getRepositoryServiceName();
+		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 
 		try {
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
 			try {
 				// Read the input file from the repository into a byte array. 
@@ -350,11 +350,11 @@ public class FileModuleImpl implements FileModule {
 			FileAttachment fa, int maxWidth, int maxHeight, 
 			int thumbnailMaxWidth, int thumbnailMaxHeight, 
 			boolean thumbnailDirectlyAccessible) {
-		String repositoryServiceName = fa.getRepositoryServiceName();
+		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 
 		try {
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
 			try {
 				// Read the input file from the repository into a byte array. 
@@ -411,7 +411,7 @@ public class FileModuleImpl implements FileModule {
     		catch(Exception e) {
     			logger.error("Error writing file " + fui.getOriginalFilename(), e);
     			errors.addProblem(new FilesErrors.Problem
-    					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
+    					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.OTHER_PROBLEM, e));
     			fileUploadItems.remove(i);
     		}
@@ -463,7 +463,7 @@ public class FileModuleImpl implements FileModule {
     			}
     			if(errors != null) {
     				errors.addProblem(new FilesErrors.Problem
-    					(fui.getRepositoryServiceName(),  fui.getOriginalFilename(), 
+    					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.PROBLEM_FILTERING, e));
     			}
     			else {
@@ -587,7 +587,7 @@ public class FileModuleImpl implements FileModule {
 			FileAttachment fa, String newName) 
 	throws UncheckedIOException, RepositoryServiceException {
 		// Rename the file in the repository
-		RepositoryUtil.miniMove(fa.getRepositoryServiceName(), binder, entity, 
+		RepositoryUtil.miniMove(fa.getRepositoryName(), binder, entity, 
 				fa.getFileItem().getName(), newName);
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
@@ -601,7 +601,7 @@ public class FileModuleImpl implements FileModule {
 	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			VersionAttachment va) throws DeleteVersionException {
-		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryServiceName(), binder, entity, 
+		//List<String> beforeVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
 		
 		// Check if the version is the only one remaining for the file. 
@@ -613,15 +613,15 @@ public class FileModuleImpl implements FileModule {
 		// deletion of a version.
 		RepositorySessionFactory rsf = 
 			RepositorySessionFactoryUtil.getRepositorySessionFactory
-			(fa.getRepositoryServiceName());
+			(fa.getRepositoryName());
 		
 		if(rsf.isVersionDeletionAllowed()) {		
-			RepositoryUtil.deleteVersion(fa.getRepositoryServiceName(), binder, entity, 
+			RepositoryUtil.deleteVersion(fa.getRepositoryName(), binder, entity, 
 				va.getFileItem().getName(), va.getVersionName());
 		}
 		else {
 			logger.info("Version " + va.getVersionNumber() + " of file [" + va.getFileItem().getName() + 
-					"] is not physically deleted from repository " + fa.getRepositoryServiceName() + 
+					"] is not physically deleted from repository " + fa.getRepositoryName() + 
 					" because it does not allow deletion of a version");
 		}
 
@@ -638,7 +638,7 @@ public class FileModuleImpl implements FileModule {
 		fa.setFileItem(highestVa.getFileItem());
 		// Since creation date is not really useful, we will leave it alone. 
 		
-		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryServiceName(), binder, entity, 
+		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
 	}
 
@@ -653,7 +653,7 @@ public class FileModuleImpl implements FileModule {
 	private void deleteFileInternal(Binder binder, DefinableEntity entry,
 			FileAttachment fAtt, FilesErrors errors, boolean deleteAttachment) {
 		String relativeFilePath = fAtt.getFileItem().getName();
-		String repositoryServiceName = fAtt.getRepositoryServiceName();
+		String repositoryName = fAtt.getRepositoryName();
 		
 		// Forcefully unlock the file (if locked). We discard pending
 		// changes for the file for obvious reason - The file is soon
@@ -670,12 +670,12 @@ public class FileModuleImpl implements FileModule {
 		catch(Exception e) {
 			logger.error("Error canceling lock on file " + relativeFilePath, e);
 			errors.addProblem(new FilesErrors.Problem
-					(repositoryServiceName, relativeFilePath, 
+					(repositoryName, relativeFilePath, 
 							FilesErrors.Problem.PROBLEM_CANCELING_LOCK, e));
 			return;
 		}
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
 		try {
 			try {
@@ -685,7 +685,7 @@ public class FileModuleImpl implements FileModule {
 			catch(Exception e) {
 				logger.error("Error deleting primary file " + relativeFilePath, e);
 				errors.addProblem(new FilesErrors.Problem
-						(repositoryServiceName, relativeFilePath, 
+						(repositoryName, relativeFilePath, 
 								FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
 				// If failed to delete primary file, it's not worth trying to
 				// delete generated files. Stop here and return.
@@ -708,7 +708,7 @@ public class FileModuleImpl implements FileModule {
 			catch(Exception e) {
 				logger.error("Error deleting scaled copy of " + relativeFilePath, e);
 				errors.addProblem(new FilesErrors.Problem
-						(repositoryServiceName, relativeFilePath, 
+						(repositoryName, relativeFilePath, 
 								FilesErrors.Problem.PROBLEM_DELETING_SCALED_FILE, e));
 				// Since we successfully deleted the primary file above (which
 				// indicates that at least the repository seems up and running),
@@ -735,7 +735,7 @@ public class FileModuleImpl implements FileModule {
 			catch(Exception e) {
 				logger.error("Error deleting thumbnail copy of " + relativeFilePath, e);
 				errors.addProblem(new FilesErrors.Problem
-						(repositoryServiceName, relativeFilePath, 
+						(repositoryName, relativeFilePath, 
 								FilesErrors.Problem.PROBLEM_DELETING_THUMBNAIL_FILE, e));
 				// We proceed and update metadata.
 			}
@@ -892,7 +892,7 @@ public class FileModuleImpl implements FileModule {
 		}
 		
 		String relativeFilePath = fui.getOriginalFilename();
-		String repositoryServiceName = fui.getRepositoryServiceName();
+		String repositoryName = fui.getRepositoryName();
 
 		// First, find out whether or not this is a new file for the entry.
 		// It is important to note that, as far as identity/existence test
@@ -900,11 +900,11 @@ public class FileModuleImpl implements FileModule {
 		// In other words, regardless of the data elements used for accessing
 		// the file, the files are treated identical globally within a single
 		// Entry instance as long as their file names are identical. 
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryServiceName, relativeFilePath);
+    	FileAttachment fAtt = entry.getFileAttachment(repositoryName, relativeFilePath);
 
     	boolean isNew = false;
     	
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryServiceName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
     	try {
 	    	// Determine if we need to generate secondary files from the primary file.
@@ -934,7 +934,7 @@ public class FileModuleImpl implements FileModule {
 	    			// We failed to write the primary file. In this case, we 
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryServiceName, relativeFilePath, 
+	    					(repositoryName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}		
@@ -953,14 +953,14 @@ public class FileModuleImpl implements FileModule {
 	        			// fail the entire operation. Simply log it and proceed.  
 	        			logger.warn("Error generating scaled copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, relativeFilePath, 
+		    					(repositoryName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
 	        		}
 	        		catch(Exception e) {
 		    			// Failed to store scaled file. Record the problem and proceed.
 	        			logger.warn("Error storing scaled copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, relativeFilePath, 
+		    					(repositoryName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
 	        		}
 	        	}    
@@ -975,13 +975,13 @@ public class FileModuleImpl implements FileModule {
 	        		catch(ThumbnailException e) {
 	        			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, relativeFilePath, 
+		    					(repositoryName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
 	        		}
 	        		catch(Exception e) {
 	        			logger.warn("Error storing thumbnail copy of " + relativeFilePath, e);
 		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryServiceName, relativeFilePath, 
+		    					(repositoryName, relativeFilePath, 
 		    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
 	        		}
 	        	}
@@ -1013,7 +1013,7 @@ public class FileModuleImpl implements FileModule {
 	    			// discard the rest of the operation (i.e., step2 thru 4).
 	    			logger.error("Error storing primary file " + relativeFilePath, e);
 	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryServiceName, relativeFilePath, 
+	    					(repositoryName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
 	    			return;
 	    		}
@@ -1051,7 +1051,7 @@ public class FileModuleImpl implements FileModule {
 		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
-    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryServiceName(), relativeFilePath);
+    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryName(), relativeFilePath);
     	
     	// Before checking the lock, we must make sure that the lock state is
     	// up-to-date.
@@ -1136,7 +1136,7 @@ public class FileModuleImpl implements FileModule {
 			vAtt.setFileItem(fItem);
 			vAtt.setVersionNumber(versionNumber);
 			vAtt.setVersionName(versionName);
-			vAtt.setRepositoryServiceName(fAtt.getRepositoryServiceName());
+			vAtt.setRepositoryName(fAtt.getRepositoryName());
 			fAtt.addFileVersion(vAtt);
 		}
 	}
@@ -1224,7 +1224,7 @@ public class FileModuleImpl implements FileModule {
 		else // set mod date equal to creation date
 			mod = fAtt.getCreation();
 		fAtt.setModification(mod);
-    	fAtt.setRepositoryServiceName(fui.getRepositoryServiceName());
+    	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
     	FileItem fItem = new FileItem();
@@ -1259,7 +1259,7 @@ public class FileModuleImpl implements FileModule {
 
 		vAtt.setVersionNumber(1);
 		vAtt.setVersionName(versionName);
-		vAtt.setRepositoryServiceName(fAtt.getRepositoryServiceName());
+		vAtt.setRepositoryName(fAtt.getRepositoryName());
 		fAtt.addFileVersion(vAtt);
 	}
 	
@@ -1463,7 +1463,7 @@ public class FileModuleImpl implements FileModule {
 				commitPendingChanges(binder, entity, fa, lock.getOwner());
 			} 
 			else { // Discard pending changes if any
-				RepositoryUtil.uncheckout(fa.getRepositoryServiceName(), 
+				RepositoryUtil.uncheckout(fa.getRepositoryName(), 
 						binder, entity, fa.getFileItem().getName()); 					
 			}
 
@@ -1509,7 +1509,7 @@ public class FileModuleImpl implements FileModule {
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryServiceName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit);
@@ -1547,7 +1547,7 @@ public class FileModuleImpl implements FileModule {
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
     		FileAttachment fa, Principal changeOwner)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryServiceName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,

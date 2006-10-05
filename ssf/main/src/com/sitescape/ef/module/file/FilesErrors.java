@@ -62,14 +62,14 @@ public class FilesErrors {
 			"fileupload.error.reserved.by.another.user"
 		};
 		
-		private String repositoryServiceName;
+		private String repositoryName;
 		private String fileName;
 		private int type; // one of the constants defined above
 		private Exception exception;
 		
-		public Problem(String repositoryServiceName, String fileName, 
+		public Problem(String repositoryName, String fileName, 
 				int type, Exception exception) {
-			this.repositoryServiceName = repositoryServiceName;
+			this.repositoryName = repositoryName;
 			this.fileName = fileName;
 			this.type = type;
 			this.exception = exception;
@@ -91,8 +91,8 @@ public class FilesErrors {
 			return typeCodes[type];
 		}
 		
-		public String getRepositoryServiceName() {
-			return repositoryServiceName;
+		public String getRepositoryName() {
+			return repositoryName;
 		}
 		
 		public String toString() {
@@ -101,7 +101,7 @@ public class FilesErrors {
 				.append(": ")
 				.append(getFileName())
 				.append(" (")
-				.append(getRepositoryServiceName())
+				.append(getRepositoryName())
 				.append(")")
 				.append(": ")
 				.append(getException().getLocalizedMessage());

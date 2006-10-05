@@ -507,7 +507,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			for (Iterator iter=atts.iterator(); iter.hasNext();) {
 				FileAttachment fAtt = (FileAttachment)iter.next();			
 				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-				DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryServiceName(), entry.getParentFolder(), 
+				DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryName(), entry.getParentFolder(), 
 							entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 
 				helper.addAttachment(fAtt.getFileItem().getName(), ds);

@@ -572,7 +572,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
-        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
+        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
         		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui);
            		// Register the index document for indexing.
@@ -735,7 +735,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	List fileAttachments = new ArrayList();
     	for(int i = 0; i < fileUploadItems.size(); i++) {
     		FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-    		FileAttachment fa = entity.getFileAttachment(fui.getRepositoryServiceName(), fui.getOriginalFilename());
+    		FileAttachment fa = entity.getFileAttachment(fui.getRepositoryName(), fui.getOriginalFilename());
     		if(fa == null) 
     			throw new InternalException("No FileAttachment corresponding to FileUploadItem");
     		fileAttachments.add(i, fa);
@@ -765,7 +765,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	protected FileUploadItem findFileUploadItem(List fileUploadItems, String repositoryName, String fileName) {
 		for(int i = 0; i < fileUploadItems.size(); i++) {
 			FileUploadItem fui = (FileUploadItem) fileUploadItems.get(i);
-			if(fui.getRepositoryServiceName().equals(repositoryName) &&
+			if(fui.getRepositoryName().equals(repositoryName) &&
 					fui.getOriginalFilename().equals(fileName))
 				return fui;
 		}

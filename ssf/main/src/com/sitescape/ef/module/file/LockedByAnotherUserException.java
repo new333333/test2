@@ -17,7 +17,7 @@ public class LockedByAnotherUserException extends UncheckedCodedException {
 			FileAttachment fa, Principal lockOwner) {
 		super(AlreadyLockedByAnotherUserException_ErrorCode, new Object[] { 
 				entity.getId(),
-				fa.getRepositoryServiceName(),
+				fa.getRepositoryName(),
 				fa.getFileItem().getName(),
 				lockOwner.getName() });
 		
