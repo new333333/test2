@@ -81,7 +81,7 @@
 			    <td valign="top">${ssWorkflowCaptions[workflow2.id]}</td>
 			    <td>&nbsp;&nbsp;&nbsp;</td>
 			    <c:if test="${!empty ssWorkflowTransitions[workflow2.id]}">
-			      <td valign="top" align="right"><b><ssf:nlt tag="workflow2.transitionTo" 
+			      <td valign="top" align="right"><b><ssf:nlt tag="workflow.transitionTo" 
 			        text="Transition to:"/></b></td>
 			      <td valign="top">
 				  <form class="ss_style ss_form" method="post" action="" style="display:inline;">

@@ -8,7 +8,7 @@
 <table width="100%">
  <th align="left"><ssf:nlt tag="search.UserNames"/>
    <br>
-   <span class="ss_normal ss_finestprint"><ssf:nlt tag="search.Found"/>: ${ssPeopleResultsCount}</span>
+   <span class="ss_normal ss_fineprint">(<ssf:nlt tag="search.Found"/>: ${ssPeopleResultCount})</span>
  </th>
  <th align="left"><ssf:nlt tag="search.Contributors"/></th>
  <tr>
