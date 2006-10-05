@@ -1157,9 +1157,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 							    	String fileName = myFile.getOriginalFilename();
 							    	if (fileName.equals("")) continue;
-							    	String repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-							    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
-							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryServiceName);
+							    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+							    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
 								    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
 					    			fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
 					    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
@@ -1178,9 +1178,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 							    	String fileName = myFile.getOriginalFilename();
 							    	if (fileName.equals("")) continue;
-							    	String repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-							    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
-							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryServiceName);
+							    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+							    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
 							    	fileData.add(fui);
 							    }
 							} else if (itemName.equals("attachFiles")) {
@@ -1194,14 +1194,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									    	if (fileName.equals("")) continue;
 									    	// Different repository can be specified for each file uploaded.
 									    	// If not specified, use the statically selected one.  
-									    	String repositoryServiceName = null;
+									    	String repositoryName = null;
 									    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
-									    		repositoryServiceName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-									    	if (repositoryServiceName == null) {
-										    	repositoryServiceName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-										    	if (Validator.isNull(repositoryServiceName)) repositoryServiceName = RepositoryUtil.getDefaultRepositoryServiceName();
+									    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
+									    	if (repositoryName == null) {
+										    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+										    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 									    	}
-									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryServiceName);
+									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
 									    	fileData.add(fui);
 										}
 									}

@@ -702,12 +702,12 @@
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="fileRepositoryService" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
+	<bean id="simpleFileRepository" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
 		<property name="repositoryRootDir"><value>${data.root.dir}/filerepository</value></property>
 	</bean>
 
-	<bean id="internalWebdavRepositoryService" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory"
+	<bean id="webdavRepository" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">
 		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
 		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>

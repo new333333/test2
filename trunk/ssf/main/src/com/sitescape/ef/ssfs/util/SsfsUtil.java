@@ -16,7 +16,7 @@ public class SsfsUtil {
 		StringBuffer sb = getInternalCommonPart(binder, entity);
 		
 		return sb.append("attach/").
-		append(fa.getRepositoryServiceName()).
+		append(fa.getRepositoryName()).
 		append("/").
 		append(fa.getFileItem().getName()).toString();
 	}

@@ -40,7 +40,7 @@ public class FileUploadItem {
 	
 	private MultipartFile mf;
 	
-	private String repositoryServiceName;
+	private String repositoryName;
 	
 	private File tempFile;
 	
@@ -48,11 +48,11 @@ public class FileUploadItem {
 
 	// path info?
 	
-	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryServiceName) {
+	public FileUploadItem(int type, String name, MultipartFile mf, String repositoryName) {
 		this.type = type;
 		this.name = name;
 		this.mf = mf;
-		this.repositoryServiceName = repositoryServiceName;
+		this.repositoryName = repositoryName;
 	}
 	
 	public boolean getGenerateThumbnail() {
@@ -137,8 +137,8 @@ public class FileUploadItem {
 		return mf;
 	}*/
 
-	public String getRepositoryServiceName() {
-		return repositoryServiceName;
+	public String getRepositoryName() {
+		return repositoryName;
 	}
 	
 	public byte[] getBytes() throws IOException {

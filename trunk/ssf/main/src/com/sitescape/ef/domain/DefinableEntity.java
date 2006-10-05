@@ -270,10 +270,10 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * Returns a list of <code>FileAttachment</code> whose repository name
      * matches the argument. 
      * 
-     * @param repositoryServiceName
+     * @param repositoryName
      * @return
      */
-    public List getFileAttachments(String repositoryServiceName) {
+    public List getFileAttachments(String repositoryName) {
     	Set atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
@@ -282,7 +282,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     		att = (Attachment)iter.next();
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
-    			if(fatt.getRepositoryServiceName().equals(repositoryServiceName))
+    			if(fatt.getRepositoryName().equals(repositoryName))
     				result.add(att);
     		}
     	}
@@ -297,7 +297,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * @param fileName
      * @return
      */
-    public FileAttachment getFileAttachment(String repositoryServiceName, String fileName) {
+    public FileAttachment getFileAttachment(String repositoryName, String fileName) {
     	Set atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
@@ -305,7 +305,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     		att = (Attachment)iter.next();
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
-    			if(fatt.getRepositoryServiceName().equals(repositoryServiceName) &&
+    			if(fatt.getRepositoryName().equals(repositoryName) &&
     					fatt.getFileItem().getName().equals(fileName))
     				return fatt;
     		}

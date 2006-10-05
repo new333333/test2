@@ -950,7 +950,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	FileAttachment fa = (FileAttachment) fileAttachments.get(i);
         	FileUploadItem fui = null;
         	if(fileUploadItems != null)
-        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryServiceName(), fa.getFileItem().getName());
+        		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
         		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
            		// Register the index document for indexing.
