@@ -21,6 +21,7 @@ import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
@@ -260,11 +261,12 @@ public class SearchController extends AbstractBinderController {
 			int result = this.getCount() < p.getCount() ? 1 : 0;
 			return result;
 			}
-	}	// This method reads thru the results from a search, finds the folder that 
+	}	
+	
+	// This method reads thru the results from a search, finds the folder that 
 	// each entry is in, and places them into an array that is ordered by the 
 	// number of times they show up in the results list.
 	protected List sortPlacesInEntriesSearchResults(List entries) {
-		List results = new ArrayList();
 		HashMap placeMap = new HashMap();
 		ArrayList placeList = new ArrayList();
 		// first go thru the original search results and 
@@ -289,7 +291,12 @@ public class SearchController extends AbstractBinderController {
 		Arrays.sort(array);
 		
 		for (int j = 0; j < array.length; j++) {
-			placeList.add(getBinderModule().getBinder(((Place)array[j]).getId()));
+			Binder binder = getBinderModule().getBinder(((Place)array[j]).getId());
+			int count = ((Place)array[j]).getCount();
+			Map place = new HashMap();
+			place.put(WebKeys.BINDER, binder);
+			place.put(WebKeys.SEARCH_RESULTS_COUNT, new Integer(count));
+			placeList.add(place);
 		}
 		return placeList;
 	}
