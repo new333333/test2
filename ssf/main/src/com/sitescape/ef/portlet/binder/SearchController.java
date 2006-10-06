@@ -117,6 +117,7 @@ public class SearchController extends AbstractBinderController {
 		List<Map>entries;
 		List people = new ArrayList();
 		List entryPeople = new ArrayList();
+		List entryPlaces = new ArrayList();
 		Map entryMap = new HashMap();
 		Map peopleMap = new HashMap();
 		
@@ -126,7 +127,8 @@ public class SearchController extends AbstractBinderController {
 			peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
 			entries = (List)entryMap.get(WebKeys.FOLDER_ENTRIES);
 			people = (List)peopleMap.get(WebKeys.PEOPLE_RESULTS);
-			entryPeople = sortPeopleInEntriesSearchResults(entries, people);
+			entryPeople = sortPeopleInEntriesSearchResults(entries);
+			entryPlaces = sortPlacesInEntriesSearchResults(entries);
 
 		} else entries = new ArrayList();
 		
@@ -155,6 +157,7 @@ public class SearchController extends AbstractBinderController {
 		UserProperties userFolderProperties = null;
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, entryPeople);
+		model.put(WebKeys.FOLDER_ENTRYPLACES, entryPlaces);
 		model.put(WebKeys.PEOPLE_RESULTS, people);
 		model.put(WebKeys.PEOPLE_RESULTCOUNT, peopleSearchTotalCount);
 		
@@ -198,15 +201,15 @@ public class SearchController extends AbstractBinderController {
 			}
 	}
 	
-	// This method reads thru the results from an search, finds the principles, 
+	// This method reads thru the results from a search, finds the principals, 
 	// and places them into an array that is ordered by the number of times
 	// they show up in the results list.
-	protected List sortPeopleInEntriesSearchResults(List entries, List people) {
+	protected List sortPeopleInEntriesSearchResults(List entries) {
 		List results = new ArrayList();
 		HashMap userMap = new HashMap();
 		ArrayList userList = new ArrayList();
 		// first go thru the original search results and 
-		// find all the unique principles.  Keep a count to see
+		// find all the unique principals.  Keep a count to see
 		// if any are more active than others.
 		for (int i = 0; i < entries.size(); i++) {
 			Map entry = (Map)entries.get(i);
@@ -228,6 +231,67 @@ public class SearchController extends AbstractBinderController {
 			userList.add(((Person)array[j]).getUser());
 		}
 		return userList;
+	}
+	// This class is used by the following method as a way to sort
+	// the values in a hashmap
+	public class Place implements Comparable {
+		long id;
+		int count;
+
+		public Place (long id, int count) {
+			this.id = id;
+			this.count = count;
+		}
+		
+		public int getCount() {
+			return this.count;
+		}
+
+		public void incrCount() {
+			this.count += 1;
+		}
+		
+		public long getId() {
+			return this.id;
+		}
+		
+		public int compareTo(Object o) {
+			Place p = (Place) o;
+			int result = this.getCount() < p.getCount() ? 1 : 0;
+			return result;
+			}
+	}	// This method reads thru the results from a search, finds the folder that 
+	// each entry is in, and places them into an array that is ordered by the 
+	// number of times they show up in the results list.
+	protected List sortPlacesInEntriesSearchResults(List entries) {
+		List results = new ArrayList();
+		HashMap placeMap = new HashMap();
+		ArrayList placeList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique places.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			String id = (String)entry.get("_binderId");
+			if (id == null) continue;
+			Long bId = new Long(id);
+			if (placeMap.get(bId) == null) {
+				placeMap.put(bId, new Place(bId,1));
+			} else {
+				Place p = (Place)placeMap.remove(bId);
+				p = new Place(p.getId(),p.getCount()+1);
+				placeMap.put(bId,p);
+			}
+		}
+		//sort the hits
+		Collection collection = placeMap.values();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			placeList.add(getBinderModule().getBinder(((Place)array[j]).getId()));
+		}
+		return placeList;
 	}
 
 	protected void buildSearchResultsToolbars(RenderRequest request, 
