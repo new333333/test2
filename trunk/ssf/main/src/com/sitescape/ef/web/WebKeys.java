@@ -252,6 +252,7 @@ public class WebKeys {
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
+    public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
