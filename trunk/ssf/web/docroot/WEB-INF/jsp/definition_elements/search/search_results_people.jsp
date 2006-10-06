@@ -12,14 +12,14 @@
  </th>
  <th align="left"><ssf:nlt tag="search.Contributors"/></th>
  <tr>
-   <td width="50%">
+   <td width="50%" valign="top">
      <table>
        <c:forEach var="user" items="${ssPeopleResults}">
          <tr><td>${user.title}</td></tr>
        </c:forEach>
      </table>
    </td>
-   <td width="50%">
+   <td width="50%" valign="top">
      <c:forEach var="user" items="${ssFolderEntryPeople}">
        <table>
          <tr><td>${user.title}</td></tr>

@@ -319,6 +319,7 @@ public class WebKeys {
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
     public static final String SEARCH_RESULTS="ss_searchResults";
     public static final String SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
+    public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
