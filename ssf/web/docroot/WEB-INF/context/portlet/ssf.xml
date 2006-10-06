@@ -25,6 +25,7 @@
 
 	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
 	<bean id="folderViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
+	<bean id="binderViewPermalinkController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewPermalinkController" />
 
 	<bean id="listProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ListProfilesController" />
 	<bean id="listFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ListFolderController" />
@@ -54,6 +55,7 @@
 						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
 						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
+						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
 						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
 						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
 						<entry key="view_profile_listing"><ref bean="listProfilesController"/></entry>

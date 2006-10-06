@@ -35,15 +35,20 @@ public class WebKeys {
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
+    public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
 	public static final String URL_CSS_THEME="theme";
     public static final String URL_DEBUG="enableDebug";
     public static final String URL_DOWNLOAD_FILE="download";
+    public static final String URL_ENTITY_TYPE="entityType";
+    public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
+    public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
@@ -82,6 +87,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_SEARCH_RESULTS_LISTING = "view_search_results_listing";
 	public static final String ACTION_VIEW_WS_LISTING = "view_ws_listing";
 	public static final String ACTION_VIEW_FOLDER_ENTRY = "view_folder_entry";
+	public static final String ACTION_VIEW_PERMALINK = "view_permalink";
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
@@ -278,6 +284,7 @@ public class WebKeys {
     public static final String OPERATION="ssOperation";
     public static final String PEOPLE_RESULTS="ssPeopleResults";
     public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
+    public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
