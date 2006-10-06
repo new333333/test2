@@ -132,7 +132,8 @@ public class ListFolderController extends  SAbstractController {
 			RenderResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		setBinderPermaLink(request, response);
 
  		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
@@ -236,6 +237,30 @@ public class ListFolderController extends  SAbstractController {
 		} catch (UnsupportedOperationException us) {}
 		
 		return new ModelAndView(view, model);
+	}
+
+	//Routine to save a generic portal url used to build a url to a binder or entry 
+	//  This routine is callable only from a portlet controller
+	public void setBinderPermaLink(RenderRequest request, RenderResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProperties = (UserProperties) getProfileModule().getUserProperties(user.getId());
+		PortletURL url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+		if (!url.toString().equals(getBinderPermaLink()))
+			getProfileModule().setUserProperty(user.getId(), 
+					ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
+	}
+	//Routine to get a portal url that points to a binder or entry 
+	//  This routine is callable from an adaptor controller
+	public String getBinderPermaLink() {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProperties = (UserProperties) getProfileModule().getUserProperties(user.getId());
+		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
+		if (url == null) url = "";
+		return url;
 	}
 
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
@@ -481,8 +506,9 @@ public class ListFolderController extends  SAbstractController {
 
 		}
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
 		
 		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);

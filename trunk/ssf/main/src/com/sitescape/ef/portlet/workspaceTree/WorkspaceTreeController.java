@@ -59,20 +59,22 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
-		Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		if (entryId != null) {
-			User entry = (User)getProfileModule().getEntry(binderId, entryId);
-			//add one
-			if (entry.getWorkspaceId() == null) {
-				Map data = new HashMap();
-				data.put("title", entry.getName());
-				MapInputData inputData = new MapInputData(data);
-				binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
-			} else {
-				binderId = entry.getWorkspaceId();
+		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		if (!entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+			if (entryId != null) {
+				User entry = (User)getProfileModule().getEntry(binderId, entryId);
+				//add one
+				if (entry.getWorkspaceId() == null) {
+					Map data = new HashMap();
+					data.put("title", entry.getName());
+					MapInputData inputData = new MapInputData(data);
+					binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
+				} else {
+					binderId = entry.getWorkspaceId();
+				}
 			}
 		}
-
 
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
@@ -281,8 +283,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 		footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), UrlUtil.getFeedURL(request, forumId));
 		
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
 		
 		footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));

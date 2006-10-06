@@ -1,8 +1,17 @@
 package com.sitescape.ef.web.util;
 
+import java.util.Map;
+
+import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.web.WebKeys;
 
 public class BinderHelper {
@@ -25,4 +34,5 @@ public class BinderHelper {
 		}
 		return viewListingJspName;
 	}
+
 }
