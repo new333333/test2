@@ -64,10 +64,10 @@ function ss_showSlidingTableCols() {
     		if (cw.indexOf("%") > 0) {
     			//This is a percentage; add it to the total percent
     			cw = cw.substr(0, cw.indexOf("%"));
-    			widthTotalPercentage += parseInt(cw)
+    			widthTotalPercentage += parseFloat(cw)
     		} else {
     			//This is a pixel count; add it to the total pixels
-    			widthTotalPixels += parseInt(cw)
+    			widthTotalPixels += parseFloat(cw)
     		}
     	} else {
     		//This width was not specified. 1/nth of the table width as a default
@@ -93,7 +93,7 @@ function ss_showSlidingTableCols() {
      		if (deltaLeft.indexOf("%") > 0) {
     			//This is a percentage; 
     			deltaLeft = deltaLeft.substr(0, deltaLeft.indexOf("%"));
-    			deltaLeft = parseInt((deltaLeft * ss_sTableInnerWidth) / 100);
+    			deltaLeft = parseFloat((deltaLeft * ss_sTableInnerWidth) / 100);
     		}
     		deltaLeft = parseInt(deltaLeft);
 	    }
@@ -128,10 +128,10 @@ function ss_showSlidingTableCols() {
 	    		if (cw.indexOf("%") > 0) {
 	    			cw = cw.substr(0, cw.indexOf("%"));
 	    			//Get the width by taking a percentage of the available pixels 
-	    			var dw = parseInt(percentageWidth * parseInt(cw) / widthTotalPercentage)
+	    			var dw = parseFloat(percentageWidth * parseFloat(cw) / widthTotalPercentage)
 	     			deltaLeft = deltaLeft + dw
 	    		} else {
-	    			deltaLeft = deltaLeft + parseInt(cw)
+	    			deltaLeft = deltaLeft + parseFloat(cw)
 	    		}
 	    	} else {
 	     		deltaLeft = deltaLeft + deltaW
@@ -203,9 +203,10 @@ function ss_saveSlidingTableCoords() {
 	ss_setupStatusMessageDiv()
     var s = ""
     var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2);
-    var tableWidth = parseFloat(ss_getDivWidth(ss_slidingTableId_2));
+    var tableWidth = parseFloat(ss_getDivWidth(ss_slidingTableId_2) - ss_sTableMarginLeft - ss_sTableMarginRight);
     for (var i = 0; i <= ss_columnCount; i++) {
     	var colLeft = parseFloat(parseFloat(ss_getDivLeft("col"+i)) - ss_sTableLeft - ss_sTableMarginLeft)
+    	if (colLeft < 0) colLeft = 0;
     	var percentage = parseFloat((colLeft * 100) / tableWidth);
 	    s += percentage+"% "
 	    ss_colWidthsUser[i] = percentage+"%"
