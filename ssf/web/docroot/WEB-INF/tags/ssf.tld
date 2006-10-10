@@ -700,6 +700,18 @@
 			<type>boolean</type>
 		</attribute>		
 		<attribute>
+			<name>showImages</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>dynamic</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
 			<name>nodeOpen</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -750,6 +762,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>showIdRoutine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
 

@@ -637,6 +637,7 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		if (binderId != null) {
 			model.put("ss_tree_treeName", PortletRequestUtils.getStringParameter(request, "treeName", ""));
+			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
 			model.put("ss_tree_binderId", binderId.toString());
 			model.put("ss_tree_topId", op2);
 			Binder binder = getBinderModule().getBinder(binderId);

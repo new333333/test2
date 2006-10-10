@@ -106,8 +106,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_lastDropped = null;
 	var ss_savedFavoriteClassNames = new Array();
 	var ss_lastHighlightedFavorite = null;
-	var ss_pauseFavoriteClick = 0;
-	var ss_pauseFavoriteClickTimer = null;
+	var ss_pauseTreeIdClick = 0;
+	var ss_pauseTreeIdClickTimer = null;
 	var ss_favoritesPaneTopOffset = 50;
 	var ss_favoritesPaneLeftOffset = 4;
 	var ss_favoritesMarginW = 4;
@@ -2568,21 +2568,6 @@ var ss_dashboardComponentToolbar = {
 	
 }
 
-//Routine to go to a favorite when it is clicked
-function favTree_showId(id, obj, action) {
-	if (ss_pauseFavoriteClick == 1) return false;
-	//Get the binderId from the elementId ("ss_favorites_xxx")
-	var binderData = id.substr(13).split("_");
-	binderId = binderData[2];
-	
-	//Build a url to go to
-	var url = ss_favoritesShowIdUrl;
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-
 function ss_enableFavoritesList(id) {
 	ss_favoritesListArray[ss_favoritesListCount] = id;
 	ss_favoritesListCount++;
@@ -2639,7 +2624,7 @@ function ss_saveFavorites(id) {
 	if (ss_lastDropped == null) return;
 	
 	//The list was sorted, so turn off the click
-	ss_noClickFavorite();
+	ss_noClickTreeId();
 	
 	var s = "";
 	for (var i = 0; i < ss_favoritesListCount; i++) {
@@ -2660,15 +2645,35 @@ function ss_saveFavorites(id) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
-function ss_noClickFavorite() {
-	ss_pauseFavoriteClick = 1;
-	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
-	ss_pauseFavoriteClickTimer = setTimeout("ss_clickFavorite();", 500)
+//Routine to go to a binder when it is clicked
+// id can be a number or a string ending in "_1234" where 1234 is the id
+function ss_treeShowId(id, obj, action) {
+	if (ss_pauseTreeIdClick == 1) return false;
+	
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = ss_treeShowIdUrl;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
 }
-function ss_clickFavorite() {
-	ss_pauseFavoriteClick = 0;
-	if (ss_pauseFavoriteClickTimer != null) clearTimeout(ss_pauseFavoriteClickTimer);
-	ss_pauseFavoriteClickTimer = null;
+
+function ss_noClickTreeId() {
+	ss_pauseTreeIdClick = 1;
+	if (ss_pauseTreeIdClickTimer != null) clearTimeout(ss_pauseTreeIdClickTimer);
+	ss_pauseTreeIdClickTimer = setTimeout("ss_clickTreeId();", 500)
+}
+function ss_clickTreeId() {
+	ss_pauseTreeIdClick = 0;
+	if (ss_pauseTreeIdClickTimer != null) clearTimeout(ss_pauseTreeIdClickTimer);
+	ss_pauseTreeIdClickTimer = null;
 }
 
 function ss_addForumToFavorites() {

@@ -5,6 +5,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
+    eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
     if (tObj == null) {
     	//alert("ss_treeToggle div obj = null: " + treeName + "div" + id)
     } else {
@@ -17,6 +18,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
+		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
 		ajaxRequest.setData("treeName", treeName)
 		ajaxRequest.setData("id", id)
 		ajaxRequest.setData("parentId", parentId)

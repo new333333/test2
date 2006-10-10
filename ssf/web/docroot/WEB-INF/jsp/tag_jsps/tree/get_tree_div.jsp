@@ -7,6 +7,7 @@
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ page contentType="text/xml; charset=UTF-8" %>
 <jsp:useBean id="ss_tree_treeName" type="java.lang.String" scope="request" />
+<jsp:useBean id="ss_tree_showIdRoutine" type="java.lang.String" scope="request" />
 <jsp:useBean id="ss_tree_binderId" type="java.lang.String" scope="request" />
 <jsp:useBean id="ss_tree_topId" type="java.lang.String" scope="request" />
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
@@ -21,7 +22,8 @@
 		  treeDocument="<%= ssWsDomTree %>"  
 		  startingId="<%= ss_tree_binderId %>"
 		  topId="<%= ss_tree_topId %>"
-		  rootOpen="true" />
+		  rootOpen="true" 
+		  showIdRoutine="<%= ss_tree_showIdRoutine %>" />
 	</taconite-insert-after>
 </c:if>	
 </taconite-root>
