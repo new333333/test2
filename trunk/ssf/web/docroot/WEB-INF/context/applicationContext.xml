@@ -611,13 +611,7 @@
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.ef.ssfs.server.impl.SiteScapeFileSystemImpl">
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="profileModule"><ref local="profileModule"/></property>
-				<property name="fileModule"><ref local="fileModule"/></property>
-				<property name="workspaceModule"><ref local="workspaceModule"/></property>
+			<bean class="com.sitescape.ef.ssfs.server.impl.SiteScapeFileSystemImpl" parent="controllerDependencyTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 			</bean>
 		</property>
@@ -638,12 +632,7 @@
 	
 	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.ef.remoting.ws.FacadeImpl">
-				<property name="folderModule"><ref local="folderModule"/></property>
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="binderModule"><ref local="binderModule"/></property>
-				<property name="profileModule"><ref local="profileModule"/></property>
-			</bean>
+			<bean class="com.sitescape.ef.remoting.ws.FacadeImpl" parent="controllerDependencyTemplate" />
 		</property>
 		<property name="proxyInterfaces">
 			<value>com.sitescape.ef.remoting.api.Facade</value>

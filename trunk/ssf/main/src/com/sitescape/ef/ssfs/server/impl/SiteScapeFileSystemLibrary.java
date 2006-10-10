@@ -27,19 +27,13 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.AccessUtils;
-import com.sitescape.ef.module.binder.BinderModule;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EmptyInputData;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
@@ -49,6 +43,7 @@ import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 
 public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 
@@ -61,55 +56,14 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String FILE_ATTACHMENT 	= "fa"; 
 
 	private static final String ITEM_NAME = "fileEntryTitle";
+		
+	private AllBusinessServicesInjected bs;
+	private FileTypeMap mimeTypes;
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private FolderModule folderModule;
-	private DefinitionModule definitionModule;
-	private BinderModule binderModule;
-	private ProfileModule profileModule;
-	private FileModule fileModule;
-	private WorkspaceModule wsModule;
-	
-	private FileTypeMap mimeTypes;
-
-	//private CoreDao coreDao;
-	
-	protected FolderModule getFolderModule() {
-		return folderModule;
-	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	protected BinderModule getBinderModule() {
-		return binderModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
-	protected ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-	protected FileModule getFileModule() {
-		return fileModule;
-	}
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	protected WorkspaceModule getWorkspaceModule() {
-		return wsModule;
-	}
-	public void setWorkspaceModule(WorkspaceModule wsModule) {
-		this.wsModule = wsModule;
+	SiteScapeFileSystemLibrary(AllBusinessServicesInjected bs) {
+		this.bs = bs;
 	}
 	protected FileTypeMap getMimeTypes() {
 		return this.mimeTypes;
@@ -117,13 +71,6 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	public void setMimeTypes(FileTypeMap mimeTypes) {
 		this.mimeTypes = mimeTypes;
 	}
-	/*
-	protected CoreDao getCoreDao() {
-		return this.coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
-	}*/
 
 	public void createResource(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
@@ -349,7 +296,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		
 		try {
-			getFileModule().lock(getParentBinder(objMap), entry, 
+			bs.getFileModule().lock(getParentBinder(objMap), entry, 
 				getFileAttachment(objMap), lockId, lockSubject, 
 				lockExpirationDate, lockOwnerInfo);
 		}
@@ -384,7 +331,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		}
 		
-		getFileModule().unlock(getParentBinder(objMap), entry, 
+		bs.getFileModule().unlock(getParentBinder(objMap), entry, 
 				getFileAttachment(objMap), lockId);
 	}
 
@@ -517,13 +464,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			String toFolderTitle, boolean recursive) throws NoAccessException {
 		Long toFolderId = createFileFolder(toParentBinder, toFolderTitle);
 		
-		Folder toFolder = getFolderModule().getFolder(toFolderId);
+		Folder toFolder = bs.getFolderModule().getFolder(toFolderId);
 		
 		// Copy sub-entries
 		Set<String> subEntryNames = getChildFileFolderEntryNames(fromFileFolder);
 		FolderEntry subEntry;
 		for(String subEntryName : subEntryNames) {
-			subEntry = getFolderModule().getFileFolderEntryByTitle(fromFileFolder, subEntryName);
+			subEntry = bs.getFolderModule().getFileFolderEntryByTitle(fromFileFolder, subEntryName);
 			if(subEntry != null) {
 				try {
 					copyFileFolderEntry(subEntry, toFolder, subEntryName);
@@ -586,7 +533,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Set<String> fromSubEntryNames = getChildFileFolderEntryNames(fromFileFolder);
 		FolderEntry fromSubEntry;
 		for(String fromSubEntryName : fromSubEntryNames) {
-			fromSubEntry = getFolderModule().getFileFolderEntryByTitle(fromFileFolder, fromSubEntryName);
+			fromSubEntry = bs.getFolderModule().getFileFolderEntryByTitle(fromFileFolder, fromSubEntryName);
 			if(fromSubEntry != null) {
 				try {
 					if(toSubFolderNames.contains(fromSubEntryName)) {
@@ -600,7 +547,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 					else if(toSubEntryNames.contains(fromSubEntryName)) {
 						// The toFolder contains a sub-entry whose name is equal
 						// to the name of this sub-entry of fromFolder.
-						FolderEntry toSubEntry = getFolderModule().getFileFolderEntryByTitle(toFileFolder, fromSubEntryName);
+						FolderEntry toSubEntry = bs.getFolderModule().getFileFolderEntryByTitle(toFileFolder, fromSubEntryName);
 						copyFileFolderEntry(fromSubEntry, toSubEntry);
 					}
 					else {
@@ -640,7 +587,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				if(toSubFolderNames.contains(fromSubFolder.getTitle())) {
 					// The toFolder contains a sub-folder whose name is equal
 					// to the name of this sub-folder of fromFolder.
-					Folder toSubFolder = (Folder) getBinderModule().getBinderByPathName
+					Folder toSubFolder = (Folder) bs.getBinderModule().getBinderByPathName
 					(toFileFolder.getPathName() + "/" + fromSubFolder.getTitle());
 					copyFileFolder(fromSubFolder, toSubFolder, recursive);
 				}
@@ -685,7 +632,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void copyFileFolderEntry(FolderEntry fromEntry, Folder toParentFolder,
 			String toEntryTitle) throws NoAccessException {
 		FileAttachment fromFA = getFileAttachment(fromEntry);
-		InputStream fromContent = getFileModule().readFile
+		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
 		createFileFolderEntry(toParentFolder, toEntryTitle, fromContent, 
@@ -705,7 +652,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void copyFileFolderEntry(FolderEntry fromEntry, FolderEntry toEntry)
 		throws NoAccessException {
 		FileAttachment fromFA = getFileAttachment(fromEntry);
-		InputStream fromContent = getFileModule().readFile
+		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
 		modifyFileFolderEntry(toEntry, fromContent, fromFA.getModification().getDate());
@@ -733,7 +680,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			
 			// Check if the library path refers to an existing binder.
 			// Note: This method performs access check.
-			Binder binder = getBinderModule().getBinderByPathName(libpath);
+			Binder binder = bs.getBinderModule().getBinderByPathName(libpath);
 
 			if(binder != null) { // matching binder exists
 				objMap.put(LEAF_BINDER, binder);
@@ -758,7 +705,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 							// Try locating file folder entry
 							// Note: This method performs access check.
 							FolderEntry fileFolderEntry = 
-								getFolderModule().getFileFolderEntryByTitle((Folder)parentBinder, lastElemName);
+								bs.getFolderModule().getFileFolderEntryByTitle((Folder)parentBinder, lastElemName);
 							if(fileFolderEntry != null) {
 								// The path refers to an existing file
 								objMap.put(LEAF_ENTRY, fileFolderEntry);
@@ -871,7 +818,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				else {
 					String parentBinderPath = (String) objMap.get(PARENT_BINDER_PATH);
 					if(parentBinderPath != null) {
-						parentBinder = getBinderModule().getBinderByPathName(parentBinderPath);
+						parentBinder = bs.getBinderModule().getBinderByPathName(parentBinderPath);
 					}
 				}
 				objMap.put(PARENT_BINDER, parentBinder); // parentBinder may be null
@@ -913,7 +860,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		
 		try {
-			getFolderModule().addEntry(folder.getId(), def.getId(), inputData, fileItems);
+			bs.getFolderModule().addEntry(folder.getId(), def.getId(), inputData, fileItems);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
@@ -950,7 +897,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 
 		try {
-			getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
+			bs.getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
 					inputData, fileItems, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
@@ -1019,10 +966,10 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		
 		try {
 			if(parentBinder instanceof Workspace)
-				return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
+				return bs.getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
 						new MapInputData(data), new HashMap());
 			else
-				return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+				return bs.getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
 						new MapInputData(data), new HashMap());
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
@@ -1038,7 +985,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// This means that the uri ends with zone name.
 			// Get the top-level workspace. 
 			try {
-				Workspace topWorkspace = getWorkspaceModule().getWorkspace();
+				Workspace topWorkspace = bs.getWorkspaceModule().getWorkspace();
 				return new String[] {topWorkspace.getTitle()};
 			}
 			catch(AccessControlException e) {
@@ -1052,7 +999,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(binder instanceof Workspace) {
 			// The binder is workspace. The children can consist only of other
 			// workspaces and/or folders, but no entries. 
-			titles = getWorkspaceModule().getChildrenTitles((Workspace) binder);
+			titles = bs.getWorkspaceModule().getChildrenTitles((Workspace) binder);
 		}
 		else {
 			// The binder is a folder. The children can consist of other
@@ -1071,11 +1018,11 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 
 	private Set<String> getChildFolderNames(Folder folder) {
-		return getFolderModule().getSubfoldersTitles(folder);
+		return bs.getFolderModule().getSubfoldersTitles(folder);
 	}
 	
 	private Set<Folder> getChildFileFolders(Folder fileFolder) {
-		return getFolderModule().getSubfolders(fileFolder);
+		return bs.getFolderModule().getSubfolders(fileFolder);
 	}
 	
 	private Set<String> getChildFileFolderEntryNames(Folder fileFolder) {
@@ -1084,7 +1031,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Set<String> titles = new HashSet<String>();
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-		Map folderEntries = getFolderModule().getEntries(fileFolder.getId(), options);
+		Map folderEntries = bs.getFolderModule().getEntries(fileFolder.getId(), options);
 		List entries = (ArrayList) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		for (int i = 0; i < entries.size(); i++) {
 			Map ent = (Map) entries.get(i);
@@ -1108,7 +1055,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	 */
 	private void removeFolder(Map uri, Map objMap) throws NoAccessException {
 		try {
-			getBinderModule().deleteBinder(getLeafBinder(objMap).getId());
+			bs.getBinderModule().deleteBinder(getLeafBinder(objMap).getId());
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
@@ -1117,7 +1064,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
 		try {
-			getFolderModule().deleteEntry(getParentBinder(objMap).getId(), 
+			bs.getFolderModule().deleteEntry(getParentBinder(objMap).getId(), 
 					getFileFolderEntry(objMap).getId());
 		}
 		catch (AccessControlException e) {
@@ -1133,7 +1080,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private Definition getZoneWideDefaultFileEntryDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FILE_ENTRY_VIEW);
+		List defs = bs.getDefinitionModule().getDefinitions(Definition.FILE_ENTRY_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
@@ -1154,7 +1101,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private Definition getZoneWideDefaultFileFolderDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FILE_FOLDER_VIEW);
+		List defs = bs.getDefinitionModule().getDefinitions(Definition.FILE_FOLDER_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
@@ -1177,12 +1124,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		// We assume that "read" access check was performed by the caller. 
 		// So we can safely request the file module for the content of
 		// the file. 
-		return getFileModule().readFile(getParentBinder(objMap), 
+		return bs.getFileModule().readFile(getParentBinder(objMap), 
 				getFileFolderEntry(objMap), fa);	
 	}
 	
 	private InputStream getResource(FolderEntry entry) {
-		return getFileModule().readFile(entry.getParentFolder(), entry, getFileAttachment(entry));
+		return bs.getFileModule().readFile(entry.getParentFolder(), entry, getFileAttachment(entry));
 	}
 	
 	private void renameFolder(Map sourceUri, Map sourceMap, Map targetUri, 
@@ -1191,7 +1138,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			Map data = new HashMap();
 			data.put("title", getLastElemName(targetMap));
 			
-			getBinderModule().modifyBinder(getLeafBinder(sourceMap).getId(), new MapInputData(data), null, null);
+			bs.getBinderModule().modifyBinder(getLeafBinder(sourceMap).getId(), new MapInputData(data), null, null);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
@@ -1212,7 +1159,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			
 			FolderEntry entry = getFileFolderEntry(sourceMap);
 			
-			getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
+			bs.getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
 					entry.getId(), new MapInputData(data), null, null);
 		}
 		catch(AccessControlException e) {
