@@ -972,6 +972,22 @@ div.ss_dashboardProtoDropTarget {
   margin:0px;
   padding:0px;
   }
+.ss_twSpacer {
+  width:19px;
+  height:20px;
+  background-image: url(<html:imagesPath/>trees/spacer.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
+.ss_twNone {
+  width:0px;
+  height:20px;
+  background-image: url(<html:imagesPath/>pics/1pix.gif);
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
 
 /* htmlarea overrides */
 .htmlarea { 

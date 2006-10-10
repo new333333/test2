@@ -39,8 +39,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
 <div style="margin:0px;">
 <%

@@ -28,6 +28,7 @@ import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -47,12 +48,14 @@ import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.Workspace;
 
 /**
  * @author Peter Hurley
@@ -322,9 +325,31 @@ public class ListFolderController extends  SAbstractController {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(folder, (List)folderEntries.get(ObjectKeys.FULL_ENTRIES), model, req, response);
 		}
+		
+		//Build the navigation beans
+		buildNavigationLinkBeans(folder, model);
+		
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp();
 	}  
+	
+	public void buildNavigationLinkBeans(Binder binder, Map model) {
+		Binder parentBinder = binder;
+		while (parentBinder != null) {
+	    	Document tree = null;
+	    	Map navigationLinkMap = new HashMap();
+	    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
+	    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
+	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+				tree = getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), new WsTreeBuilder((Workspace)parentBinder, true, getBinderModule()),1);
+			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+				tree = getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder());
+			}
+			navigationLinkMap.put(parentBinder.getId(), tree);
+			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
+			parentBinder = ((Binder)parentBinder).getParentBinder();
+		}
+	}
 	protected void buildFolderToolbars(RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model) {
 		//Build the toolbar arrays

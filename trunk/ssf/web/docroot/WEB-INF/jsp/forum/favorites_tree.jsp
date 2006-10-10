@@ -21,7 +21,7 @@
 
 <c:if test="${!empty ss_favoritesTree}">
 <ssf:tree treeName="favTree" treeDocument="${ss_favoritesTree}"
-  rootOpen="true" displayStyle="sortable" nowrap="true" />
+  rootOpen="true" displayStyle="sortable" nowrap="true" showIdRoutine="ss_treeShowId"/>
 </c:if>
 
 </td>
