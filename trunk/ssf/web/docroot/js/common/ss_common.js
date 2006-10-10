@@ -2769,6 +2769,19 @@ function ss_setFavoritesPaneSize() {
 	}
 }
 
+//Routine to show/hide portal
+function ss_toggleShowHidePortal(obj) {
+	ss_moveDivToTopOfBody('ss_portlet_content')
+	var divObj = document.getElementById('ss_portlet_content');
+	var spanObj = document.getElementById('ss_navbarHideShowPortalText');
+    if (divObj && divObj.parentNode.tagName.toLowerCase() == 'body') {
+    	obj.className = "ss_global_toolbar_show_portal";
+    	spanObj.innerHTML = ss_nlt_navigation_normal;
+    } else {
+    	obj.className = "ss_global_toolbar_hide_portal";
+    	spanObj.innerHTML = ss_nlt_navigation_maximize;
+    }
+}
 
 //Routine to configure the columns of a folder
 function ss_createPopupDiv(obj, divId) {

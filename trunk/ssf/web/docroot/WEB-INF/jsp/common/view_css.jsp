@@ -31,6 +31,8 @@ var ss_forumColorBlackAndWhiteCssUrl;
 var ss_helpSystemUrl;
 var ss_addTabUrl;
 var ss_not_logged_in;
+var ss_nlt_navigation_normal;
+var ss_nlt_navigation_maximize;
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -97,6 +99,10 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
+	
+	//Global toolbar text
+	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";
+	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
 }
 
 function ss_loadDojoFiles() {
