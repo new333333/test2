@@ -12,11 +12,12 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.util.BusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 
 public class BinderHelper {
 
-	static public String getViewListingJsp() {
+	static public String getViewListingJsp(BusinessServicesInjected bs) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("")) {

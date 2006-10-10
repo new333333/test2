@@ -15,8 +15,10 @@ import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.rss.RssGenerator;
+import com.sitescape.ef.util.BusinessServicesInjected;
 
-public abstract class SAbstractController extends AbstractController {
+public abstract class SAbstractController extends AbstractController
+implements BusinessServicesInjected {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	
@@ -36,14 +38,14 @@ public abstract class SAbstractController extends AbstractController {
 		this.employeeModule = employeeModule;
 	}
 	
-	protected EmployeeModule getEmployeeModule() {
+	public EmployeeModule getEmployeeModule() {
 		return employeeModule;
 	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
 	
-	protected BinderModule getBinderModule() {
+	public BinderModule getBinderModule() {
 		return binderModule;
 	}
 
@@ -51,7 +53,7 @@ public abstract class SAbstractController extends AbstractController {
 		this.workspaceModule = workspaceModule;
 	}
 	
-	protected WorkspaceModule getWorkspaceModule() {
+	public WorkspaceModule getWorkspaceModule() {
 		return workspaceModule;
 	}
 
@@ -59,7 +61,7 @@ public abstract class SAbstractController extends AbstractController {
 		this.folderModule = folderModule;
 	}
 	
-	protected FolderModule getFolderModule() {
+	public FolderModule getFolderModule() {
 		return folderModule;
 	}
 	
@@ -67,7 +69,7 @@ public abstract class SAbstractController extends AbstractController {
 		this.adminModule = adminModule;
 	}
 	
-	protected AdminModule getAdminModule() {
+	public AdminModule getAdminModule() {
 		return adminModule;
 	}
 
@@ -75,7 +77,7 @@ public abstract class SAbstractController extends AbstractController {
 		this.profileModule = profileModule;
 	}
 	
-	protected ProfileModule getProfileModule() {
+	public ProfileModule getProfileModule() {
 		return profileModule;
 	}
 	
@@ -83,11 +85,11 @@ public abstract class SAbstractController extends AbstractController {
 		this.definitionModule = definitionModule;
 	}
 	
-	protected DefinitionModule getDefinitionModule() {
+	public DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
 
-	protected WorkflowModule getWorkflowModule() {
+	public WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
 
@@ -98,14 +100,14 @@ public abstract class SAbstractController extends AbstractController {
 		this.ldapModule = ldapModule;
 	}
 	
-	protected LdapModule getLdapModule() {
+	public LdapModule getLdapModule() {
 		return ldapModule;
 	}	
 	
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
 	}
-	protected FileModule getFileModule() {
+	public FileModule getFileModule() {
 		return fileModule;
 	}
 
@@ -113,8 +115,7 @@ public abstract class SAbstractController extends AbstractController {
 		this.rssGenerator = rssGenerator;
 	}
 	
-	protected RssGenerator getRssGenerator() {
+	public RssGenerator getRssGenerator() {
 		return rssGenerator;
 	}
-	
 }

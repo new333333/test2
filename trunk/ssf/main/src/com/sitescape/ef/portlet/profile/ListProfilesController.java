@@ -61,7 +61,7 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put("ssReloadUrl", reloadUrl.toString());
-			return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+			return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
@@ -113,7 +113,7 @@ public class ListProfilesController extends   SAbstractController {
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(request, response, binder).getToolbar());
-		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}
 
 	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {

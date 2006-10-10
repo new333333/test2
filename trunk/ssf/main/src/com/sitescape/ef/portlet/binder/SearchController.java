@@ -167,7 +167,7 @@ public class SearchController extends AbstractBinderController {
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
 		model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
 		buildSearchResultsToolbars(request, response, model);
-		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}
 	
 	// This class is used by the following method as a way to sort
