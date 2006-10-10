@@ -21,7 +21,7 @@ import com.sitescape.ef.rss.RssGenerator;
  * @author jong
  *
  */
-public interface BusinessServicesInjected {
+public interface AllBusinessServicesInjected {
 	void setEmployeeModule(EmployeeModule employeeModule);;
 
 	EmployeeModule getEmployeeModule();;
