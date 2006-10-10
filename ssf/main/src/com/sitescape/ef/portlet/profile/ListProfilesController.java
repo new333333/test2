@@ -30,6 +30,7 @@ import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
@@ -113,6 +114,28 @@ public class ListProfilesController extends   SAbstractController {
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(request, response, binder).getToolbar());
+
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (tabId != null) {
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
+		} else {
+			//Don't overwrite a search tab
+			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+				tabs.setCurrentTab(tabs.addTab(binder));
+			} else {
+				tabs.setCurrentTab(tabs.setTab(binder));
+			}
+		}
+		model.put(WebKeys.TABS, tabs.getTabs());
+
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+		
 		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}
 

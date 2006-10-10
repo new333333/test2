@@ -55,7 +55,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		
- 		String url = getBinderPermaLink();
+ 		String url = BinderHelper.getBinderPermaLink(this);
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
@@ -75,17 +75,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		model.put(WebKeys.PERMALINK, url);
 			
 	    return new ModelAndView("binder/view_permalink", model);
-	}
-
-	//Routine to get a portal url that points to a binder or entry 
-	//  This routine is callable from an adaptor controller
-	// TODO This needs to be moved to BinderHelper (or some such)
-	public String getBinderPermaLink() {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userProperties = (UserProperties) getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
-		if (url == null) url = "";
-		return url;
 	}
 
 }

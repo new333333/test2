@@ -33,6 +33,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
@@ -129,7 +130,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.TABS, tabs.getTabs());
 
 		//Build the navigation beans
-		buildNavigationLinkBeans(binder, model);
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 		
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
@@ -183,21 +184,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
 		
 	}  
-	protected void buildNavigationLinkBeans(Binder binder, Map model) {
-		Binder parentBinder = binder;
-		while (parentBinder != null) {
-	    	Document tree = null;
-	    	Map navigationLinkMap = new HashMap();
-	    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
-	    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
-	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				tree = getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), new WsTreeBuilder((Workspace)parentBinder, true, getBinderModule()),1);
-			}
-			navigationLinkMap.put(parentBinder.getId(), tree);
-			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
-			parentBinder = ((Binder)parentBinder).getParentBinder();
-		}
-	}
 	protected void buildWorkspaceToolbar(RenderRequest request, 
 			RenderResponse response, Map model, Workspace workspace, 
 			String forumId) {
