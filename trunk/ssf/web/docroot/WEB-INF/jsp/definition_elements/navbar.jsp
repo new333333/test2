@@ -136,6 +136,12 @@ var ss_getFavoritesTreeUrl = "<ssf:url
 	<ssf:param name="operation" value="get_favorites_tree" />
 	</ssf:url>";
 
+var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized">
+			<portlet:param name="action" value="ssActionPlaceHolder"/>
+			<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+			</portlet:renderURL>";
+
+
 </script>
 
 <div id="ss_navbar_bottom"></div>

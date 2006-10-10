@@ -136,7 +136,7 @@ public class ListFolderController extends  SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		setBinderPermaLink(request, response);
+		BinderHelper.setBinderPermaLink(this, request, response);
 
  		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
@@ -242,30 +242,6 @@ public class ListFolderController extends  SAbstractController {
 		return new ModelAndView(view, model);
 	}
 
-	//Routine to save a generic portal url used to build a url to a binder or entry 
-	//  This routine is callable only from a portlet controller
-	public void setBinderPermaLink(RenderRequest request, RenderResponse response) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userProperties = (UserProperties) getProfileModule().getUserProperties(user.getId());
-		PortletURL url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
-		if (!url.toString().equals(getBinderPermaLink()))
-			getProfileModule().setUserProperty(user.getId(), 
-					ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
-	}
-	//Routine to get a portal url that points to a binder or entry 
-	//  This routine is callable from an adaptor controller
-	public String getBinderPermaLink() {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		UserProperties userProperties = (UserProperties) getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
-		if (url == null) url = "";
-		return url;
-	}
-
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -327,29 +303,12 @@ public class ListFolderController extends  SAbstractController {
 		}
 		
 		//Build the navigation beans
-		buildNavigationLinkBeans(folder, model);
+		BinderHelper.buildNavigationLinkBeans(this, folder, model);
 		
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp(this);
 	}  
 	
-	public void buildNavigationLinkBeans(Binder binder, Map model) {
-		Binder parentBinder = binder;
-		while (parentBinder != null) {
-	    	Document tree = null;
-	    	Map navigationLinkMap = new HashMap();
-	    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
-	    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
-	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				tree = getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), new WsTreeBuilder((Workspace)parentBinder, true, getBinderModule()),1);
-			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder());
-			}
-			navigationLinkMap.put(parentBinder.getId(), tree);
-			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
-			parentBinder = ((Binder)parentBinder).getParentBinder();
-		}
-	}
 	protected void buildFolderToolbars(RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model) {
 		//Build the toolbar arrays
