@@ -15,10 +15,10 @@ import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.rss.RssGenerator;
-import com.sitescape.ef.util.BusinessServicesInjected;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 
 public abstract class SAbstractController extends AbstractController
-implements BusinessServicesInjected {
+implements AllBusinessServicesInjected {
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	
