@@ -1223,13 +1223,19 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	text-align:center;
 }
 .ss_global_toolbar_favs div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/favs.gif) no-repeat top;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/favorites.gif) no-repeat top;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/workspace.gif) no-repeat top;
 }
 .ss_global_toolbar_clipboard div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
+}
+.ss_global_toolbar_show_portal div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/show_portal.gif) no-repeat top;
+}
+.ss_global_toolbar_hide_portal div {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/hide_portal.gif) no-repeat top;
 }
 .ss_global_toolbar_help div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;

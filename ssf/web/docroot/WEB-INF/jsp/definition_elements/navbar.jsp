@@ -85,6 +85,16 @@ function ss_turnOffDebugMode() {
 	  </ssHelpSpot>
 	</li>
 
+<!-- Show/hide portal -->
+	<li class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;">
+	  <ssHelpSpot helpId="personal_toolbar/maximize_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	      title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
+	    <div id="ss_navbarHideShowPortalButton">
+	      <span id="ss_navbarHideShowPortalText" class="ss_fineprint"><ssf:nlt tag="navigation.maximize"/></span>
+	    </div>
+	  </ssHelpSpot>
+	</li>
+
 <!-- Help button -->
 	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();">
 	  <ssHelpSpot helpId="personal_toolbar/help_button" valign="bottom" align="left" offsetX="10" offsetY="45"
