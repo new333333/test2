@@ -109,7 +109,7 @@ public abstract class CommonDependencyInjection {
 	protected Scheduler getScheduler() {
 		return scheduler;
 	}
-	protected PresenceService getPresenceSerivce() {
+	protected PresenceService getPresenceService() {
 		return presenceService;
 	}
 	public DocConverter getDocConverter() {
