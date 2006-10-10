@@ -12,8 +12,6 @@ import java.util.Set;
 
 import javax.activation.FileTypeMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -28,19 +26,13 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.module.binder.AccessUtils;
-import com.sitescape.ef.module.binder.BinderModule;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EmptyInputData;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.AlreadyExistsException;
 import com.sitescape.ef.ssfs.CrossContextConstants;
@@ -50,6 +42,7 @@ import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
@@ -59,68 +52,19 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	private static final String FILE_ATTACHMENT = "fa";
 	private static final String ELEMENT_NAME = "en";
 
-	protected final Log logger = LogFactory.getLog(getClass());
-
-	private FolderModule folderModule;
-	private DefinitionModule definitionModule;
-	private BinderModule binderModule;
-	private ProfileModule profileModule;
-	private FileModule fileModule;
-	private WorkspaceModule wsModule;
-	
+	private AllBusinessServicesInjected bs;
 	private FileTypeMap mimeTypes;
 	
-	//private CoreDao coreDao;
-
-	protected FolderModule getFolderModule() {
-		return folderModule;
+	SiteScapeFileSystemInternal(AllBusinessServicesInjected bs) {
+		this.bs = bs;
 	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	protected BinderModule getBinderModule() {
-		return binderModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
-	protected ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-	protected FileModule getFileModule() {
-		return fileModule;
-	}
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	protected WorkspaceModule getWorkspaceModule() {
-		return wsModule;
-	}
-	public void setWorkspaceModule(WorkspaceModule wsModule) {
-		this.wsModule = wsModule;
-	}
+	
 	protected FileTypeMap getMimeTypes() {
 		return this.mimeTypes;
 	}
 	public void setMimeTypes(FileTypeMap mimeTypes) {
 		this.mimeTypes = mimeTypes;
 	}
-	/*
-	protected CoreDao getCoreDao() {
-		return this.coreDao;
-	}
-	public void setCoreDao(CoreDao coreDao) {
-		this.coreDao = coreDao;
-	}*/
 
 	public void createResource(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
@@ -168,7 +112,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		// Because objectExists always performs "read" access check for the
 		// user, we can safely request the file module for the content of
 		// the file. 
-		return getFileModule().readFile((Binder) objMap.get(BINDER), 
+		return bs.getFileModule().readFile((Binder) objMap.get(BINDER), 
 				(Entry) objMap.get(ENTRY), fa);
 	}
 
@@ -335,7 +279,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		}
 		
 		try {
-			getFileModule().lock(((Binder) objMap.get(BINDER)), entry, 
+			bs.getFileModule().lock(((Binder) objMap.get(BINDER)), entry, 
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
 				lockId, lockSubject, lockExpirationDate, lockOwnerInfo);
 		}
@@ -366,7 +310,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			throw new NoAccessException(e.getLocalizedMessage());
 		}
 		
-		getFileModule().unlock(((Binder) objMap.get(BINDER)), entry, 
+		bs.getFileModule().unlock(((Binder) objMap.get(BINDER)), entry, 
 				((FileAttachment) objMap.get(FILE_ATTACHMENT)), 
 				lockId);
 	}
@@ -391,7 +335,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		faId.add(fa.getId());
 		
 		try {
-			getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), new EmptyInputData(), null, faId);
+			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), new EmptyInputData(), null, faId);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
@@ -404,7 +348,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		Binder binder = (Binder) objMap.get(BINDER);
 		if (binder == null) {
 			// Get a list binders (all folders)
-			List<String> folderIds = getFolderModule().getFolderIds(null);
+			List<String> folderIds = bs.getFolderModule().getFolderIds(null);
 			return folderIds.toArray(new String[folderIds.size()]);
 		}
 
@@ -415,7 +359,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			// Get a list of entries
 			Map options = new HashMap();
 			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-			Map folderEntries = getFolderModule().getEntries(
+			Map folderEntries = bs.getFolderModule().getEntries(
 					binder.getId(), options);
 			List entries = (ArrayList) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 			for (int i = 0; i < entries.size(); i++) {
@@ -630,7 +574,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		}
 
 		try {
-			getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null);
+			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
@@ -646,7 +590,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			if (binderId == null)
 				return true; // no more checking to do
 
-			Binder binder = getBinderModule().getBinder(binderId);
+			Binder binder = bs.getBinderModule().getBinder(binderId);
 			objMap.put(BINDER, binder);
 
 			// Check folder representing entry id
@@ -657,9 +601,9 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			Entry entry = null;
 
 			if (binder instanceof Folder)
-				entry = getFolderModule().getEntry(binderId, entryId);
+				entry = bs.getFolderModule().getEntry(binderId, entryId);
 			else
-				entry = getProfileModule().getEntry(binderId, entryId);
+				entry = bs.getProfileModule().getEntry(binderId, entryId);
 			objMap.put(ENTRY, entry);
 
 			// Check folder(s) representing definition item. 

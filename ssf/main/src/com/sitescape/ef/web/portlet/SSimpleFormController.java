@@ -13,8 +13,10 @@ import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.rss.RssGenerator;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 
-public abstract class SSimpleFormController extends SimpleFormController {
+public abstract class SSimpleFormController extends SimpleFormController
+implements AllBusinessServicesInjected {
 
 	private EmployeeModule employeeModule;
 	private WorkspaceModule workspaceModule;
@@ -32,14 +34,14 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.employeeModule = employeeModule;
 	}
 	
-	protected EmployeeModule getEmployeeModule() {
+	public EmployeeModule getEmployeeModule() {
 		return employeeModule;
 	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
 	
-	protected BinderModule getBinderModule() {
+	public BinderModule getBinderModule() {
 		return binderModule;
 	}
 
@@ -47,7 +49,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.workspaceModule = workspaceModule;
 	}
 	
-	protected WorkspaceModule getWorkspaceModule() {
+	public WorkspaceModule getWorkspaceModule() {
 		return workspaceModule;
 	}
 
@@ -55,7 +57,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.folderModule = folderModule;
 	}
 	
-	protected FolderModule getFolderModule() {
+	public FolderModule getFolderModule() {
 		return folderModule;
 	}
 	
@@ -63,7 +65,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.adminModule = adminModule;
 	}
 	
-	protected AdminModule getAdminModule() {
+	public AdminModule getAdminModule() {
 		return adminModule;
 	}
 
@@ -71,7 +73,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.profileModule = profileModule;
 	}
 	
-	protected ProfileModule getProfileModule() {
+	public ProfileModule getProfileModule() {
 		return profileModule;
 	}
 	
@@ -79,10 +81,10 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.definitionModule = definitionModule;
 	}
 	
-	protected DefinitionModule getDefinitionModule() {
+	public DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
-	protected WorkflowModule getWorkflowModule() {
+	public WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
 
@@ -93,7 +95,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.ldapModule = ldapModule;
 	}
 	
-	protected LdapModule getLdapModule() {
+	public LdapModule getLdapModule() {
 		return ldapModule;
 	}
 
@@ -101,7 +103,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.fileModule = fileModule;
 	}
 	
-	protected FileModule getFileModule() {
+	public FileModule getFileModule() {
 		return fileModule;
 	}
 
@@ -109,9 +111,7 @@ public abstract class SSimpleFormController extends SimpleFormController {
 		this.rssGenerator = rssGenerator;
 	}
 	
-	protected RssGenerator getRssGenerator() {
+	public RssGenerator getRssGenerator() {
 		return rssGenerator;
 	}
-	
-
 }

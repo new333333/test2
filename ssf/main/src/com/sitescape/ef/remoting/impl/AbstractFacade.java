@@ -20,15 +20,23 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.sample.EmployeeModule;
+import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.remoting.api.Binder;
 import com.sitescape.ef.remoting.api.Facade;
 import com.sitescape.ef.remoting.api.Folder;
+import com.sitescape.ef.rss.RssGenerator;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.util.WebUrlUtil;
 
 /**
@@ -37,40 +45,109 @@ import com.sitescape.ef.web.util.WebUrlUtil;
  * @author jong
  *
  */
-public abstract class AbstractFacade implements Facade {
+public abstract class AbstractFacade implements Facade, AllBusinessServicesInjected {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	private EmployeeModule employeeModule;
+	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
-	private DefinitionModule definitionModule;
-	private BinderModule binderModule;
+	private AdminModule adminModule;
 	private ProfileModule profileModule;
+	private DefinitionModule definitionModule;
+	private WorkflowModule workflowModule;
+	private BinderModule binderModule;
+	private LdapModule ldapModule;
+	private FileModule fileModule;
+	private RssGenerator rssGenerator;
+	
+	public RssGenerator getRssGenerator() {
+		return rssGenerator;
+	}
 
-	protected FolderModule getFolderModule() {
-		return folderModule;
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
 	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
+
+	public void setEmployeeModule(EmployeeModule employeeModule) {
+		this.employeeModule = employeeModule;
 	}
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	protected BinderModule getBinderModule() {
-		return binderModule;
+	
+	public EmployeeModule getEmployeeModule() {
+		return employeeModule;
 	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
-	protected ProfileModule getProfileModule() {
-		return profileModule;
+	
+	public BinderModule getBinderModule() {
+		return binderModule;
 	}
+
+	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
+		this.workspaceModule = workspaceModule;
+	}
+	
+	public WorkspaceModule getWorkspaceModule() {
+		return workspaceModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+	
+	public FolderModule getFolderModule() {
+		return folderModule;
+	}
+	
+	public void setAdminModule(AdminModule adminModule) {
+		this.adminModule = adminModule;
+	}
+	
+	public AdminModule getAdminModule() {
+		return adminModule;
+	}
+
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
 	}
 	
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+	
+	public DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+
+	public WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	
+	public LdapModule getLdapModule() {
+		return ldapModule;
+	}
+	
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	public FileModule getFileModule() {
+		return fileModule;
+	}
+
 	public String getDefinitionAsXML(String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().asXML();
 	}
