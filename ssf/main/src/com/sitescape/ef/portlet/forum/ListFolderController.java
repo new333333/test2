@@ -158,7 +158,7 @@ public class ListFolderController extends  SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-			return new ModelAndView(BinderHelper.getViewListingJsp());
+			return new ModelAndView(BinderHelper.getViewListingJsp(this));
 		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
@@ -330,7 +330,7 @@ public class ListFolderController extends  SAbstractController {
 		buildNavigationLinkBeans(folder, model);
 		
 		buildFolderToolbars(req, response, folder, forumId, model);
-		return BinderHelper.getViewListingJsp();
+		return BinderHelper.getViewListingJsp(this);
 	}  
 	
 	public void buildNavigationLinkBeans(Binder binder, Map model) {

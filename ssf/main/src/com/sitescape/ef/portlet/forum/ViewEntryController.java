@@ -91,7 +91,7 @@ public class ViewEntryController extends  SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 
 		Map formData = request.getParameterMap();
-		String viewPath = BinderHelper.getViewListingJsp();
+		String viewPath = BinderHelper.getViewListingJsp(this);
 		Map model;
 
 		if (formData.containsKey("ssReloadUrl")) {

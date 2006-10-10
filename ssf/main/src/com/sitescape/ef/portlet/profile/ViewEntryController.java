@@ -46,7 +46,7 @@ public class ViewEntryController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Map formData = request.getParameterMap();
-		String viewPath = BinderHelper.getViewListingJsp();
+		String viewPath = BinderHelper.getViewListingJsp(this);
 		if (formData.containsKey("ssReloadUrl")) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -104,7 +104,7 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 //		if (operation.equals("buddy")) 
 //			return new ModelAndView("presence/view_entry", model);
-		return new ModelAndView(BinderHelper.getViewListingJsp(), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}	
 	
 } 
