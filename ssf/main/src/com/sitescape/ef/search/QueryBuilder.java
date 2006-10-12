@@ -1,5 +1,6 @@
 package com.sitescape.ef.search;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
@@ -47,6 +48,9 @@ public class QueryBuilder {
 	public static final String USERACL_ELEMENT = "USERACL";
 	public static final String GROUP_VISIBILITY_ELEMENT = "GROUPVIS";
 	public static final String GROUP_VISIBILITY_ATTRIBUTE = "visibility";
+	public static final String RELATIVE_DATE_RANGE_ELEMENT = "DATERANGE";
+	public static final String PAST_RANGE_ATTRIBUTE = "past";
+	public static final String RANGE_DAYCOUNT_ATTRIBUTE = "dayCount";
 	public static final String PERSONALTAGS_ELEMENT = "PERSONALTAGS";
 	public static final String FIELD_ELEMENT = "FIELD";
 	public static final String FIELD_TERMS_ELEMENT = "TERMS";
@@ -55,7 +59,7 @@ public class QueryBuilder {
 	public static final String EXACT_PHRASE_TRUE = "TRUE";
 	public static final String TAG_ELEMENT = "TAG";
 	
-
+	private static final long DAYMILLIS = 1000 * 60 * 60 * 24;
     
 	public SearchObject buildQuery(Document domQuery) {
 		SearchObject so = new SearchObject();
@@ -180,6 +184,9 @@ public class QueryBuilder {
 			else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 				qString += "(" + processPERSONALTAGS(element) + ")";
 			}
+			else if (operator.equals(RELATIVE_DATE_RANGE_ELEMENT)) {
+				qString += "(" + processDATERANGE(element) + ")";
+			}
 			else if (operator.equals(FIELD_ELEMENT)) {
 				qString += processFIELD(element);
 			}
@@ -267,7 +274,42 @@ public class QueryBuilder {
 		}
 		return ptagString;
 	}
-	
+	private String processDATERANGE(Element element) {
+		
+		String retStr = "";
+		boolean past = true;
+		int count = 1;
+		
+		String pastText = element.attributeValue(PAST_RANGE_ATTRIBUTE);
+		String countText = element.attributeValue(RANGE_DAYCOUNT_ATTRIBUTE);
+		
+		if (pastText.equalsIgnoreCase("false")) 
+			past = false;
+		
+		count = new Integer(countText).intValue();
+
+		Date dateToday = new Date();
+		String today = EntityIndexUtils.formatDayString(dateToday);
+		long millis = dateToday.getTime();
+		long offset = count * DAYMILLIS;
+		
+		if (past)
+			offset*= -1;
+		
+		millis += offset;
+		
+		Date rangeDate = new Date(millis);
+		
+		String otherDate = EntityIndexUtils.formatDayString(rangeDate);
+		
+		if (past)
+			retStr += EntityIndexUtils.MODIFICATION_DAY_FIELD + ":[ " + otherDate + " TO " + today + " ]";
+		else
+			retStr += EntityIndexUtils.MODIFICATION_DAY_FIELD + ":[ " + today + " TO " + otherDate + " ]";
+		
+		return retStr;
+	}
+		
 	private String processRANGE(Element element) {
 
 		boolean inclusive = false;
