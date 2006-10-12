@@ -232,7 +232,7 @@ public class RepositoryUtil {
 	}
 
 	public static String getDefaultRepositoryName() {
-		return SPropsUtil.getString("default.repository",
+		return SPropsUtil.getString("repository.default",
 				"simpleFileRepository");
 	}
 	
