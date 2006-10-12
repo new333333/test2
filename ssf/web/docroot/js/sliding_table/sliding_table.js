@@ -71,6 +71,9 @@ ss_createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 function ss_showMouseOverInfo(obj) {
 	if (ss_slidingTableMouseOverInfoDisabled) return;
 	
+	//Hide the menu if any showing
+	ss_hideTitleOptions(obj)
+	
 	if (obj != ss_slidingTableMosueOverObj) {
 		ss_moveObjectToBody(document.getElementById('ss_info_popup'))
 		var ihtml = obj.innerHTML;

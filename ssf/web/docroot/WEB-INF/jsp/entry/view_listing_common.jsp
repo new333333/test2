@@ -99,6 +99,12 @@ function ss_loadEntry(obj,id) {
 		self.location.href = obj.href;
 		return false;
 	}
+	if (ss_showingTitleDropDown && ss_showingTitleDropDown == 1) {
+		//The user wants to see the drop down options, don't show the entry
+		ss_showingTitleDropDown = 0;
+		return false;
+	}
+	ss_showingTitleDropDown = 0;
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;

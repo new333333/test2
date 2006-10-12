@@ -94,7 +94,9 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
     <ssf:slidingTableColumn width="10%"><ssf:nlt tag="folder.column.Number"/></ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['title']}">
-    <ssf:slidingTableColumn width="30%"><ssf:nlt tag="folder.column.Title"/></ssf:slidingTableColumn>
+    <ssf:slidingTableColumn width="30%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/></div>
+    </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['state']}">
     <ssf:slidingTableColumn width="20%"><ssf:nlt tag="folder.column.State"/></ssf:slidingTableColumn>
@@ -135,16 +137,20 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-    <a href="<ssf:url     
+    <a 
+    class="ss_title_menu" 
+    href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     folderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
     onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
-    onMouseOver="ss_showTitleOptions(this, '${entry1._docId}');"
-    onMouseOut="ss_hideTitleOptions(this, '${entry1._docId}');"
-    ><c:if test="${empty entry1.title}"
+    onMouseOver="ss_showTitleDropDown(this);"
+    onMouseOut="ss_hideTitleDropDown(this);"
+    ><img class="ss_title_menu"
+    onClick="ss_showTitleOptions(this, '${entry1._docId}');"
+    src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
@@ -202,4 +208,13 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
 	}
 %>
 </div>
+<div id="ss_title_menu_div" style="position:absolute;border:1px solid black; visibility:hidden; 
+  text-align:left; background:#ffffff;">
+<ul>
+<li>Pop-up in new window</li>
+<li>Show in new tab</li>
+<li>Show entry profile</li>
+</ul>
+</div>
+
 
