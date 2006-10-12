@@ -118,6 +118,9 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_dashboardSliderTargetObj = null;
 	var ss_dashboardSliderObjEndCoords = null;
 	
+	var ss_showingTitleDropDown = 0;
+	var ss_showingTitleInfoObj = null;
+	
 	var ss_currentTab = 0;
 		
 }
@@ -1075,8 +1078,9 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 	var x = 0;
 	var y = 0;
     if (parentDivId != "") {
-    	x = ss_getDivLeft(parentDivId)
-    	y = ss_getDivTop(parentDivId)
+    	var pObj = document.getElementById(parentDivId);
+    	x = dojo.style.getAbsolutePosition(pObj, true).x
+    	y = dojo.style.getAbsolutePosition(pObj, true).y
 	    //Add the offset to the x and y positions so the div isn't occluding too much
 	    x = parseInt(parseInt(x) + parseInt(offsetLeft))
 	    y = parseInt(parseInt(y) + ss_getDivHeight(parentDivId) + parseInt(offsetTop))
@@ -3099,73 +3103,29 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     }
 }
 
+function ss_showTitleDropDown(obj, id) {
+	obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow.gif";
+}
 function ss_showTitleOptions(obj, id) {
-return
-	var marginOffset = 4;
-	var divObj = document.getElementById('ss_titleOptions'+id);
-	if (divObj == null) {
-		divObj = ss_createDivInBody('ss_titleOptions'+id, 'ss_popupTitleOptions');
-		var imgObj = document.createElement('img');
-		imgObj.src = ss_imagesPath + "pics/sym_s_show_title_options.gif";
-		divObj.appendChild(imgObj);
-		divObj.onmouseover = ss_showTitleOptionsExpanded
-		divObj.onmouseout = ss_hideTitleOptionsExpanded
-	}
-	divObj.style.display = "block";
-	divObj.style.visibility = "hidden";
-	var x = parseInt(dojo.style.getAbsolutePosition(obj, true).x + dojo.style.getContentBoxWidth(obj))
-	var y = dojo.style.getAbsolutePosition(obj, true).y
-	divObj.style.top = parseInt(y - marginOffset) + "px";
-	divObj.style.left = x + "px";
-	divObj.style.zIndex = ssMenuZ;
-	divObj.style.visibility = "visible";
+	ss_showingTitleDropDown = 1;
+	ss_showingTitleInfoObj = obj;
+	var menuObj = document.getElementById("ss_title_menu_div");
+	ss_moveObjectToBody(menuObj)
+	var x = parseInt(ss_getObjAbsX(obj) + 1)
+	var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 9);
+	menuObj.style.top = y + "px";
+	menuObj.style.left = x + "px";
+	menuObj.style.zIndex = ssMenuZ;
+	ss_ShowHideDivXY("ss_title_menu_div", x, y)
+	ss_HideDivOnSecondClick("ss_title_menu_div")	
 }
-var ss_titleOptionsDivTimers;
-function ss_hideTitleOptions(obj, id) {
-return
-	if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
-	if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
-	ss_titleOptionsDivTimers[id] = setTimeout("ss_hideDiv('ss_titleOptions"+id+"');", 800);
+function ss_hideTitleDropDown(obj, id) {
+	obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow_off.gif";
 }
-function ss_showTitleOptionsExpanded(evt) {
-return
-	if ((!evt)&&(window["event"])){
-		var evt = window.event;
-	}
-	if (!evt.target) { evt.target = evt.srcElement; }
-	
-	var prefix = 'ss_titleOptions';
-	var id = "";
-	if (evt.target != null && evt.target.id != null && evt.target.id != "") {
-		if (evt.target.id.indexOf(prefix) == 0) {
-			//We have one of our popup divs, go open it
-			id = evt.target.id.substr(prefix.length);
-			ss_debug('show '+id)
-			if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
-			if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
-			
-		}
-	}
-}
-function ss_hideTitleOptionsExpanded(evt) {
-return
-	if ((!evt)&&(window["event"])){
-		var evt = window.event;
-	}
-	if (!evt.target) { evt.target = evt.srcElement; }
-	
-	var prefix = 'ss_titleOptions';
-	var id = "";
-	if (evt.target != null && evt.target.id != null && evt.target.id != "") {
-		if (evt.target.id.indexOf(prefix) == 0) {
-			//We have one of our popup divs, hide it
-			id = evt.target.id.substr(prefix.length);
-			if (ss_titleOptionsDivTimers == null) ss_titleOptionsDivTimers = new Array();
-			if (ss_titleOptionsDivTimers[id] != null) clearTimeout(ss_titleOptionsDivTimers[id]);
-			ss_debug('hide '+id)
-			ss_hideTitleOptions(evt.target, id);
-		}
-	}
+function ss_hideTitleOptions(obj) {
+	if (ss_showingTitleInfoObj == obj) return;
+	ss_hideDiv("ss_title_menu_div")
+	ss_showingTitleInfoObj = null;
 }
 
 function ss_launchUrlInNewWindow(obj, fileName) {

@@ -1504,6 +1504,27 @@ div.ss_actions_bar_submenu {
 .ss_search_results_selection_inactive {
 }
 
+a.ss_title_menu {
+	margin-left:16px;
+}
+div.ss_title_menu {
+	display:inline;
+	margin:0px;
+}
+a.ss_title_menu img {
+	position:relative;
+	left:-20px;
+	padding-right:4px;
+	margin:0px;
+}
+
+a.ss_title_menu span {
+	position:relative;
+	margin:0px;
+	padding:0px;
+	left:-16px;
+}
+
 /* Footer */
 div.ss_bottomlinks {
 	display:inline;

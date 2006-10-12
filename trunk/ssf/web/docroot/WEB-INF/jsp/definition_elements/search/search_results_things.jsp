@@ -132,7 +132,7 @@
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-    <a 
+    <a class="ss_title_menu"
       <c:if test="${entry1._entityType == 'folderEntry' || 
       		entry1._entityType == 'reply'}">
         href="<ssf:url     
@@ -184,9 +184,11 @@
           actionUrl="true" />" 
         onClick="alert('This is a group'); return false;"
       </c:if>
-    onMouseOver="ss_showTitleOptions(this, '${entry1._docId}');"
-    onMouseOut="ss_hideTitleOptions(this, '${entry1._docId}');"
-    ><c:if test="${empty entry1.title}"
+    onMouseOver="ss_showTitleDropDown(this);"
+    onMouseOut="ss_hideTitleDropDown(this);"
+    ><img class="ss_title_menu"
+    onClick="ss_showTitleOptions(this, '${entry1._docId}');"
+    src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
@@ -243,4 +245,12 @@
 <%
 	}
 %>
+<div id="ss_title_menu_div" style="position:absolute;border:1px solid black; visibility:hidden; 
+  text-align:left; background:#ffffff;">
+<ul>
+<li>Pop-up in new window</li>
+<li>Show in new tab</li>
+<li>Show entry profile</li>
+</ul>
+</div>
 
