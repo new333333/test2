@@ -52,6 +52,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 			// Jabber server or any other initialization that you have to do
 			// at the system startup time. 
 			pl = new PresenceListener();
+			pl.setDaemon(true);
 			pl.start();
 		}
 	}
