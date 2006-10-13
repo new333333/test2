@@ -27,11 +27,14 @@ public interface ObjectKeys {
     
     public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
 
+    public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
+    public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";
+
     public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
     public static final String DASHBOARD_COMPONENT_SEARCH = "search";
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
-
+    
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";

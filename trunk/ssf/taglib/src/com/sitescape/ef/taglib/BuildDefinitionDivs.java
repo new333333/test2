@@ -830,6 +830,42 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<br/><br/>\n");
 						}
 					
+					} else if (type.equals("repositoryList")) {
+						int optionCount = 0;
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
+							sb.append("\n<br/>\n");
+						}
+						//See if multiple selections are allowed
+						String multipleText = "";
+						if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
+						sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + ">\n");
+
+						String[] repositoryList = SPropsUtil.getCombinedPropertyList(
+								ObjectKeys.CONFIG_PROPERTY_REPOSITORIES, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+						for (int i = 0; i < repositoryList.length; i++) {
+							String repository = repositoryList[i];
+							String checked = "";
+							for (int j = 0; j < propertyValues.size(); j++) {
+								if (((String)propertyValues.get(j)).equals(repository)) {
+									checked = " selected=\"selected\"";
+								}
+							}
+							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
+									propertyValueDefault.equals(repository))) {
+								checked = " selected=\"selected\"";
+							}
+							sb.append("<option value=\"").append(repository).append("\"").append(checked).append(">");
+							sb.append(NLT.get(ObjectKeys.CONFIG_PROPERTY_REPOSITORY + "." + repository));
+							sb.append("</option>\n");
+							optionCount++;
+						}
+						if (optionCount == 0) {
+							//No options were output, show something to avoid having an empty select box
+							sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
+						}
+						sb.append("</select><br/><br/>\n");
+					
 					} else if (type.equals("workflowCondition")) {
 						Element workflowConditionProperty = (Element)rootElement.selectSingleNode("properties/property[@name='condition']");
 						if (workflowConditionProperty != null) {
