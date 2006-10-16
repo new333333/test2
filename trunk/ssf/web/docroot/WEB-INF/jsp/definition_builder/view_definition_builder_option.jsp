@@ -55,7 +55,7 @@
 	</taconite-replace>
 
 	<taconite-replace contextNodeID="displaydiv" parseInBrowser="true">
-	  <div id="displaydiv" style="margin:4px;"> 
+	  <div id="displaydiv" style="margin:0px; padding:4px;"> 
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
 		  configDocument="${ssConfigDefinition}"

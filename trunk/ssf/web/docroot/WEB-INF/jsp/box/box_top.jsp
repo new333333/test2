@@ -63,6 +63,17 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
+<c:set var="colWidth" value="98"/>
+<c:if test="<%= showMoveIcon %>">
+    <c:set var="colWidth" value="${colWidth - 35}"/>
+</c:if>
+<c:if test="<%= showMoveIcon %>">
+    <c:set var="colWidth" value="${colWidth - 35}"/>
+</c:if>
+<c:if test="<%= showCloseIcon %>">
+    <c:set var="colWidth" value="${colWidth - 10}"/>
+</c:if>
+
 <c:set var="ss_boxColCount" value="2" scope="request"/>
 <div class="<%= boxClass %>" id="<%= divId %>" 
   style="width: <%= width %>; <%= boxStyle %>">
@@ -77,7 +88,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    <col width="35%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
 	  </c:if>
-	  <col/>
+	  <col width="${colWidth}%"/>
 	  <c:if test="<%= showMoveIcon %>">
 	    <col width="35%"/>
 		<c:set var="ss_boxColCount" value="${ss_boxColCount + 1}" scope="request"/>
@@ -133,3 +144,4 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>
+<div style="margin:0px 5px 0px 0px; padding:0px; position:relative; left:5px;">

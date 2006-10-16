@@ -67,7 +67,10 @@ var sourceDefinitionId = '<%= data.get("selectedItem") %>';
 function initializeStateMachine() {
 	//ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
+	showDisplayDiv()
 	ss_addToDiv("displaydiv", "info_select")
+	var divObj = document.getElementById('displayDiv')
+	if (divObj != null) divObj.className = "ss_definitionBuilder";
 	hideDisplayButtons()
 	showDisplayDiv()
 	ss_showHideObj('definitionbuilder_tree_loading', 'hidden', 'none')
@@ -554,6 +557,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			  <ssf:param name="box_show_close_routine" value="hideDisplayDiv()" />
 			  <ssf:param name="box_color" value="${ss_form_gray_color}" />
 			  <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+    		  <ssf:param name="box_title" useBody="true">&nbsp;</ssf:param>
 			<div class="ss_form" id="displaydiv" 
 			  style="margin:0px; padding:4px;">&nbsp;</div>  
 			<div class="ss_form" id="displaydivButtons" 

@@ -7,6 +7,7 @@ boolean brWrapContent = ParamUtil.get(request, "box_br_wrap_content", true);
 <c:set var="boxColor" value="<%= ParamUtil.get(request, "box_color", ss_box_color) %>" />
 <c:set var="boxBgColor" value="<%= ParamUtil.get(request, "box_canvas_color", ss_box_canvas_color) %>" />
 
+</div>
 <c:if test="<%= brWrapContent %>">
   <br>
 </c:if>

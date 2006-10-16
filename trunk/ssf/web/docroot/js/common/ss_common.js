@@ -379,15 +379,8 @@ function ss_hideDivFadeOut(id, ms) {
 
 //Routine to add the innerHMTL of one div to another div
 function ss_addToDiv(target, source) {
-    var objTarget
-    var objSource
-    if (isNSN || isNSN6 || isMoz5) {
-        objTarget = self.document.getElementById(target)
-        objSource = self.document.getElementById(source)
-    } else {
-        objTarget = self.document.all[target]
-        objSource = self.document.all[source]
-    }
+    var objTarget = self.document.getElementById(target)
+    var objSource = self.document.getElementById(source)
     var targetHtml = ss_getDivHtml(target)
     var sourceHtml = ss_getDivHtml(source)
     ss_setDivHtml(target, targetHtml + sourceHtml)
@@ -398,12 +391,7 @@ function ss_addToDiv(target, source) {
 
 //Routine to add html to a div
 function ss_addHtmlToDiv(target, text) {
-    var objTarget
-    if (isNSN || isNSN6 || isMoz5) {
-        objTarget = self.document.getElementById(target)
-    } else {
-        objTarget = self.document.all[target]
-    }
+    var objTarget = self.document.getElementById(target)
     var targetHtml = ss_getDivHtml(target)
     ss_setDivHtml(target, targetHtml + text)
 
@@ -413,12 +401,7 @@ function ss_addHtmlToDiv(target, text) {
 
 //Routines to get and set the html of an area
 function ss_getDivHtml(divId) {
-    var obj
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(divId)
-    } else {
-        obj = self.document.all[divId]
-    }
+    var obj = self.document.getElementById(divId)
     var value = "";
     if (obj) {
     	value = obj.innerHTML;
@@ -427,12 +410,7 @@ function ss_getDivHtml(divId) {
 }
 
 function ss_setDivHtml(divId, value) {
-    var obj
-    if (isNSN || isNSN6 || isMoz5) {
-        obj = self.document.getElementById(divId)
-    } else {
-        obj = self.document.all[divId]
-    }
+    var obj = self.document.getElementById(divId)
     if (obj) {
     	obj.innerHTML = value
     }
