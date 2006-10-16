@@ -49,7 +49,7 @@ public class BuildDefinitionDivs extends TagSupport {
     
 	public int doStartTag() throws JspException {
 	    if(this.title == null)
-	        throw new JspException("The title must be specified");
+	        throw new JspException("ssf:buildDefinitionDivs: The title must be specified.");
 	    
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
@@ -300,15 +300,15 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("modify_definition", "1");
 			
 			//String definitionType = 
-			sb.append("<span class=\"ss_titlebold\">Modify the properties of this definition</span><br/><br/>\n");
-			sb.append("<span>Name</span><br/>\n");
+			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.modifyProperties")+"</span><br/><br/>\n");
+			sb.append("<span>"+NLT.get("definition.name")+"</span><br/>\n");
 			sb.append("<input type=\"text\" class=\"ss_text\" size=\"40\" value=\"");
 			sb.append(sourceRoot.attributeValue("name", ""));
 			sb.append("\" disabled=\"true\"/>\n");
 			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
 			sb.append(Html.formatTo(sourceRoot.attributeValue("name", "")));
 			sb.append("\" />\n<br/><br/>\n");
-			sb.append("<span>Caption</span><br/>\n");
+			sb.append("<span>"+NLT.get("definition.caption")+"</span><br/>\n");
 			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
 			sb.append(Html.formatTo(sourceRoot.attributeValue("caption", "")));
 			sb.append("\"/><br/><br/>\n");
@@ -324,14 +324,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("delete_definition", "1");
 			sb.append("\n<div id=\"delete_definition\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Select the definition to be deleted</span>\n");
+			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.selectDefinitionToBeDeleted")+"</span>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
 			//sb.append("</script>\n");
 			sb.append("\n<div id=\"delete_definition_confirm\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Delete: </span><span id=\"deleteDefinitionSelection\"></span>\n");
+			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.delete")+" </span><span id=\"deleteDefinitionSelection\"></span>\n");
 			sb.append("<br/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
@@ -1062,9 +1062,9 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("delete_item", "1");
 			sb.append("\n<div id=\"delete_item\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span>This will delete the selected item and all of its children (if any).</span>\n");
+			sb.append("<span>"+NLT.get("definition.deleteSelectedItem")+"</span>\n");
 			sb.append("<br/>\n");
-			sb.append("<span>Do you really want to delete the selected item?</span>\n");
+			sb.append("<span>"+NLT.get("definition.deleteSelectedItemConfirm")+"</span>\n");
 			sb.append("<br/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
@@ -1077,21 +1077,21 @@ public class BuildDefinitionDivs extends TagSupport {
 			this.divNames.put("move_item", "1");
 			sb.append("\n<div id=\"move_item\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Select the new location of the item to be moved</span><br/>\n");
+			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.selectNewLocation")+"</span><br/>\n");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item')\n");
 			//sb.append("</script>\n");
 			sb.append("\n<div id=\"move_item_confirm\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">Move: </span><div id=\"moveItemSelection\" style=\"display:inline;\"></div>\n");
+			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.move")+" </span><div id=\"moveItemSelection\" style=\"display:inline;\"></div>\n");
 			sb.append("<br/>\n");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"above\"/>");
-			sb.append("<span>Move to above the selected item</span><br/>");
+			sb.append("<span>"+NLT.get("definition.moveToAbove")+"</span><br/>");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"below\"/>");
-			sb.append("<span>Move to below the selected item</span><br/>");
+			sb.append("<span>"+NLT.get("definition.moveToBelow")+"</span><br/>");
 			sb.append("<input type=\"radio\" class=\"ss_text\" name=\"moveTo\" value=\"into\"/>");
-			sb.append("<span>Move into the selected item</span><br/>");
+			sb.append("<span>"+NLT.get("definition.moveInto")+"</span><br/>");
 			sb.append("</div>\n");
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
