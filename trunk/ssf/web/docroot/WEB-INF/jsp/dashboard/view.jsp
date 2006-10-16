@@ -1,19 +1,14 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+  <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
   
   <!-- Start of dashboard "Add penlet" form -->
   <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL>
-	    <portlet:param name="action" value="modify_dashboard"/>
-	    <portlet:param name="binderId" value="${ssBinder.id}"/>
+	    <portlet:param name="action" value="modify_dashboard_portlet"/>
+	    <portlet:param name="dashboardId" value="${ssDashboardId}"/>
         </portlet:actionURL>">
 	  <div style="margin:10px;">
-        <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
-        <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
-        <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/><br>
-        <c:if test="${ssDashboard.sharedModificationAllowed}">
-          <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/><br>
-        </c:if>
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_wide}">
@@ -29,7 +24,7 @@
 	      onClick="ss_hideDashboardMenu(this);return false;">
 	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
 	    <input type="hidden" name="_componentId" value="">
-	    <input type="hidden" name="_returnView" value="binder"/>
+	    <input type="hidden" name="_returnView" value="dashboard"/>
 	  </div>
     </form>
   </div>
@@ -49,7 +44,7 @@
 		              alt="<ssf:nlt tag="button.hide"/>" 
 		              style="margin:4px 4px 5px 4px;"
 		              onClick="ss_showHideAllDashboardComponents(this,'<portlet:namespace/>_dashboardComponentCanvas',
-		                				'binderId=${ssBinder.id}');return false;"
+		                				'dashboardId=${ssDashboardId}');return false;"
 			        /></a>
 			      </c:if>
 			      <c:if test="${!ss_show_all_dashboard_components}">
@@ -60,7 +55,7 @@
 		                alt="<ssf:nlt tag="button.show"/>" 
 		                style="margin:4px 4px 5px 4px;"
 		               onClick="ss_showHideAllDashboardComponents(this,'<portlet:namespace/>_dashboardComponentCanvas',
-		                				'binderId=${ssBinder.id}');return false;"
+		                				'dashboardId=${ssDashboardId}');return false;"
 			       /></a>
 		          </c:if>
 		        </form>
@@ -75,24 +70,6 @@
 				  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls('<portlet:namespace/>');return false;"><span
 				    id="<portlet:namespace/>_dashboard_menu_controls"><ssf:nlt 
 				    tag="dashboard.showHiddenControls"/></span></a></li>
-				  <li><a href="<portlet:renderURL>
-				  <portlet:param name="action" value="modify_dashboard"/>
-				  <portlet:param name="binderId" value="${ssBinder.id}"/>
-				  <portlet:param name="_scope" value="local"/>
-				  <portlet:param name="operation" value="set_dashboard_title"/>
-				  </portlet:renderURL>"><ssf:nlt tag="dashboard.setTitle"/></a></li>
-				  <li><a href="<portlet:actionURL>
-				  <portlet:param name="action" value="modify_dashboard"/>
-				  <portlet:param name="binderId" value="${ssBinder.id}"/>
-				  <portlet:param name="_scope" value="global"/>
-				  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.global"/></a></li>
-				  <c:if test="${ssDashboard.sharedModificationAllowed}">
-				    <li><a href="<portlet:actionURL>
-				    <portlet:param name="action" value="modify_dashboard"/>
-				    <portlet:param name="binderId" value="${ssBinder.id}"/>
-				    <portlet:param name="_scope" value="binder"/>
-				    </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
-				  </c:if>
 		
 				  <li><a href="#" onClick="ss_changeStyles('debug');return false;"><span
 				    id="<portlet:namespace/>_dashboard_menu_controls">Change color to 'debug' [test code]</span></a></li>
@@ -113,9 +90,6 @@
   <div class="ss_decor-border6">
     <div class="ss_content_window">
 		    <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
-		      <c:if test="${ssDashboard.includeBinderTitle}">
-		        <c:out value="${ssBinder.title}"/>
-		      </c:if>
 		    </span>
 
 		<div id="<portlet:namespace/>_dashboard_toolbar_${ss_toolbar_count}"

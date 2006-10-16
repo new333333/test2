@@ -43,7 +43,8 @@ public class WebKeys {
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
 	public static final String URL_CSS_THEME="theme";
-    public static final String URL_DEBUG="enableDebug";
+	public static final String URL_DASHBOARD_ID="dashboardId";
+	public static final String URL_DEBUG="enableDebug";
     public static final String URL_DOWNLOAD_FILE="download";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
@@ -62,13 +63,14 @@ public class WebKeys {
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
 
-	//Preferences
+	//Porlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
 	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.portlet.presence.group.list";
 	public static final String PORTLET_PREF_TITLE = "com.sitescape.portlet.title";
 	public static final String PORTLET_PREF_TYPE = "com.sitescape.portlet.type";
 	public static final String WORKSPACE_PREF_ID = "com.sitescape.portlet.workspace.id";
+	public static final String PORTLET_PREF_DASHBOARD="com.sitescape.portlet.dashboard.id";
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
@@ -372,6 +374,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
+    public static final String VIEW_DASHBOARD="dashboard/view";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";

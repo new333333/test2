@@ -2,9 +2,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
@@ -16,6 +13,9 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
+<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
 var ss_reloadUrl = "${ss_reloadUrl}";

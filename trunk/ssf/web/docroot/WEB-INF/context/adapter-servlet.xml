@@ -57,6 +57,7 @@
 				<value>ss_administration</value>
 				<value>ss_profile</value>
 				<value>ss_presence</value>
+				<value>ss_dashboard</value>
 			</list>
 		</property>
 	</bean>

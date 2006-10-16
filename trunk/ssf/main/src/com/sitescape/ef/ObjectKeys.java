@@ -46,7 +46,6 @@ public interface ObjectKeys {
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";
-    public static final String USER_PROPERTY_DASHBOARD = "dashboard";
     public static final String USER_PROPERTY_DASHBOARD_GLOBAL = "dashboard_global";
     public static final String USER_PROPERTY_DASHBOARD_SHOW_ALL = "dashboard_show_all";
     public static final String USER_PROPERTY_DEBUG = "debugMode";

@@ -25,6 +25,7 @@ import org.hibernate.criterion.Order;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -34,10 +35,13 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
+import com.sitescape.ef.domain.Dashboard;
+import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
@@ -45,12 +49,13 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoConfigurationByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoEmailAliasByTheIdException;
+import com.sitescape.ef.domain.NoObjectByTheIdException;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.UserDashboard;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
@@ -143,7 +148,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				Statement s = connect.createStatement();
 		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
 		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
-		   				s.executeUpdate("delete from SS_Notifications where binderId=" + binder.getId());
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
 		   			}
@@ -582,9 +586,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public EmailAlias loadEmailAlias(String aliasId, String zoneName) {
  		EmailAlias alias = (EmailAlias)load(EmailAlias.class, aliasId);
-        if (alias == null) {throw new NoEmailAliasByTheIdException(aliasId);}
+        if (alias == null) {throw new NoObjectByTheIdException(ErrorCodes.NoEmailAliasByTheIdException, aliasId);}
         //make sure from correct zone
-        if (!alias.getZoneName().equals(zoneName)) {throw new NoEmailAliasByTheIdException(aliasId);}
+        if (!alias.getZoneName().equals(zoneName)) {throw new NoObjectByTheIdException(ErrorCodes.NoEmailAliasByTheIdException, aliasId);}
   		return alias;
 		
 	}
@@ -747,7 +751,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	
 	public Tag loadTagById(final String tagId) {
-        return (Tag)getHibernateTemplate().get(Tag.class, tagId);	
+        Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
+        if (t != null) return t;
+        throw new NoObjectByTheIdException(ErrorCodes.NoTagByTheIdException, tagId);
 	}
 	//The entries must be of the same type
 	public Map loadAllTagsByEntity(final Collection entityIds) {
@@ -880,5 +886,42 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        }
 	     );
 	}
+	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {
+		List result = (List)getHibernateTemplate().execute(
+				new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+	            		return session.createCriteria(UserDashboard.class)
+	            		.add(Expression.eq("binderId", binderId))
+	            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+	            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+	            		.setCacheable(true)
+	            		.list();
+		            }
+		        }
+		 );
+		if (result.isEmpty()) return null;
+		return (UserDashboard)result.get(0);
+	}
+	public EntityDashboard loadEntityDashboard(final EntityIdentifier ownerId) {
+		List result = (List)getHibernateTemplate().execute(
+				new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+		            		return session.createCriteria(EntityDashboard.class)
+		            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+		            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+		            		.setCacheable(true)
+		            		.list();
+		            		
+		            }
+		        }
+		 );
+		if (result.isEmpty()) return null;
+		return (EntityDashboard)result.get(0);
+	}
 
+	public Dashboard loadDashboard(String id) {
+		Dashboard d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
+        if (d != null) return d;
+        throw new NoObjectByTheIdException(ErrorCodes.NoDashboardByTheIdException, id);
+	}
 }

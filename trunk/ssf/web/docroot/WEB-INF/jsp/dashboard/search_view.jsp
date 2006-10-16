@@ -23,7 +23,7 @@
   <th align="left">Author</th>
   <th align="left">Date</th>
 </tr>
-<c:forEach var="fileEntry" items="${ssDashboard.beans[ssDashboardId].ssSearchFormData.searchResults}" >
+<c:forEach var="fileEntry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.searchResults}" >
 <tr>
   <td valign="top" width="35%">
   	<c:choose>

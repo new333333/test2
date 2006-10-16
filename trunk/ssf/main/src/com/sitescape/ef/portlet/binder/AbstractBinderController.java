@@ -9,6 +9,9 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
 public abstract class AbstractBinderController extends SAbstractController {
+	protected void setupViewBinder(ActionResponse response, Binder binder) {
+		setupViewBinder(response, binder.getId(), binder.getEntityIdentifier().getEntityType().name());
+	}
 	protected void setupViewBinder(ActionResponse response, Long binderId, String binderType) {
 		if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		

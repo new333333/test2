@@ -202,6 +202,7 @@ function ss_reloadOpener(fallBackUrl) {
 			parent.location.href = fallBackUrl;
 		}
 	} else if (self.opener) {
+
 		if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
 			self.opener.location.replace(self.opener.ss_reloadUrl);
 			setTimeout('self.window.close();', 200)
@@ -2218,38 +2219,33 @@ var ss_helpSystem = {
 
 //Dashboard routines
 
-function ss_addDashboardComponents() {
-	var panel = document.getElementById('ss_dashboardAddContentPanel');
+function ss_addDashboardComponents(divId) {
+	var panel = document.getElementById(divId);
 	ss_moveObjectToBody(panel);
 	panel.style.zIndex = parseInt(ssLightboxZ + 1);
-	ss_activateMenuLayer('ss_dashboardAddContentPanel', null, null, null, "popup")
+	ss_activateMenuLayer(divId, null, null, null, "popup")
 }
 
-function ss_showHideAllDashboardComponents(obj, op) {
+function ss_showHideAllDashboardComponents(obj, divId, idStr) {
 	var formObj = ss_getContainingForm(obj)
-	if (op == null) op = 'show_all_dashboard_components';
-	if (obj.src.match(/show.gif/)) {
-	    op = 'show_all_dashboard_components';
-	    obj.src = ss_componentSrcHide;
-	    obj.alt = ss_componentAltHide;
-	} else if (obj.src.match(/hide.gif/)) {
-	    op = 'hide_all_dashboard_components';
+	var url = "";
+	var canvas = document.getElementById(divId);
+	if (obj.src.match(/hide.gif/)) {
+		url = ss_dashboardAjaxUrl + "\&operation=hide_all_dashboard_components\&" + idStr;
 	    obj.src = ss_componentSrcShow;
 	    obj.alt = ss_componentAltShow;
-	}
-	var canvas = document.getElementById("ss_dashboardComponentCanvas");
-	if (op == 'hide_all_dashboard_components') {
 		canvas.style.visibility = 'hidden';
 		canvas.style.display = 'none';
-	} else if (op == 'show_all_dashboard_components') {
+	} else { 
+		url = ss_dashboardAjaxUrl + "\&operation=show_all_dashboard_components\&" + idStr;
+	    obj.src = ss_componentSrcHide;
+	    obj.alt = ss_componentAltHide;
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
 	}
 	
 	ss_setupStatusMessageDiv()
-	var url = ss_showHideAllDashboardComponentsUrl;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("operation", op)
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -2258,17 +2254,19 @@ function ss_showHideAllDashboardComponents(obj, op) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_toggle_dashboard_toolbars() {
-	var toolbarOption = document.getElementById("ss_dashboard_menu_content");
-	for (var i = 0; i < ss_toolbar_count; i++) {
-		var obj = document.getElementById("ss_dashboard_toolbar_"+i)
+function ss_toggle_dashboard_toolbars(prefix) {
+	var toolbarOption = document.getElementById(prefix + "_dashboard_menu_content");
+	var count = 0;
+	eval("count = " + prefix + "_toolbar_count;");
+	for (var i = 0; i < count; i++) {
+		var obj = document.getElementById(prefix + "_dashboard_toolbar_"+i)
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'inline';
 			obj.style.zIndex = parseInt(ssLightboxZ + 1);
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarHideContent;
 			//var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
-			//lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars();};
+			//lightBox.onclick = function(e) {ss_toggle_dashboard_toolbars(prefix);};
 		} else {
 			obj.style.visibility = 'hidden';
 			obj.style.display = 'none';
@@ -2280,10 +2278,12 @@ function ss_toggle_dashboard_toolbars() {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
-function ss_toggle_dashboard_hidden_controls() {
-	var toolbarOption = document.getElementById("ss_dashboard_menu_controls");
-	for (var i = 0; i < ss_dashboard_control_count; i++) {
-		var obj = document.getElementById("ss_dashboard_control_"+i)
+function ss_toggle_dashboard_hidden_controls(prefix) {
+	var toolbarOption = document.getElementById(prefix + "_dashboard_menu_controls");
+	var count = 0;
+	eval("count = " + prefix + "_dashboard_control_count;");
+	for (var i = 0; i < count; i++) {
+		var obj = document.getElementById(prefix + "_dashboard_control_"+i);
 		if (obj.style.visibility == 'hidden') {
 			obj.style.visibility = 'visible';
 			obj.style.display = 'block';
@@ -2294,32 +2294,39 @@ function ss_toggle_dashboard_hidden_controls() {
 			if (toolbarOption) toolbarOption.innerHTML = ss_toolbarShowControls;
 		}
 	}
-	for (var i = 0; i < ss_dashboard_border_count; i++) {
-		var obj = document.getElementById("ss_dashboard_border_"+i)
+	eval("count = " + prefix + "_dashboard_border_count");
+	for (var i = 0; i < count; i++) {
+		var obj = document.getElementById(prefix + "_dashboard_border_"+i);
 		if (obj.className && obj.className != "") {
-			ss_dashboard_border_classNames[i] = obj.className;
+			eval (prefix + "_dashboard_border_classNames[i] = obj.className;");
 			obj.className = "";
 		} else {
-			if (ss_dashboard_border_classNames[i]) 
-			    obj.className = ss_dashboard_border_classNames[i];
+			eval ("if (" + prefix + "_dashboard_border_classNames[i]) obj.className = " + prefix + "_dashboard_border_classNames[i];");
 		}
 	}
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
-function ss_showHideDashboardComponent(obj, componentId, divId) {
+function ss_showHideDashboardComponent(obj, componentId, divId, idStr) {
 	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj)
-	var url = "";
+	var url = ss_dashboardAjaxUrl;
+	if (componentId != "") {url += "\&operation2=" + componentId;}
+	if (formObj._dashboardList && formObj._dashboardList.value != "") {
+		url += "\&_dashboardList=" + formObj._dashboardList.value;
+	}
+	if (formObj._scope && formObj._scope.value != "") {
+		url += "\&_scope=" + formObj._scope.value;
+	}
 	var callbackRoutine = ""
 	var imgObj = obj.getElementsByTagName('img').item(0);
 	if (imgObj.src.match(/show.gif/)) {
-		url = ss_showDashboardComponentUrl;
+		url += "\&operation=show_component";
 	    callbackRoutine = ss_showComponentCallback;
 	    imgObj.src = ss_componentSrcHide;
 	    imgObj.alt = ss_componentAltHide;
 	} else if (imgObj.src.match(/hide.gif/)) {
-		url = ss_hideDashboardComponentUrl;
+		url += "\&operation=hide_component";
 	    callbackRoutine = ss_hideComponentCallback;
 	    imgObj.src = ss_componentSrcShow;
 	    imgObj.alt = ss_componentAltShow;
@@ -2334,7 +2341,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	} else if (imgObj.src.match(/delete.gif/)) {
-		url = ss_deleteDashboardComponentUrl;
+		url += "\&operation=delete_component";
 	    callbackRoutine = ss_hideComponentCallback;
 		var targetDiv = document.getElementById(divId);
 		if (targetDiv) {
@@ -2345,14 +2352,8 @@ function ss_showHideDashboardComponent(obj, componentId, divId) {
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
-	if (componentId != "") {url += "\&operation2=" + componentId;}
-	if (formObj._dashboardList && formObj._dashboardList.value != "") {
-		url += "\&_dashboardList=" + formObj._dashboardList.value;
-	}
-	if (formObj._scope && formObj._scope.value != "") {
-		url += "\&_scope=" + formObj._scope.value;
-	}
-	url += "\&rn=" + ss_dbrn++
+	url += "\&" + idStr;
+	url += "\&rn=" + ss_dbrn++;
 	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, divId);
 }
 function ss_showComponentCallback(s, divId) {
@@ -2367,7 +2368,7 @@ function ss_showComponentCallback(s, divId) {
 }
 function ss_hideComponentCallback(s, divId) {
 }
-function ss_confirmDeleteComponent(obj, componentId, divId, divId2) {
+function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr) {
 	var formObj = ss_getContainingForm(obj)
 	var confirmText = "";
 	if (formObj._scope.value == "local") {
@@ -2381,7 +2382,7 @@ function ss_confirmDeleteComponent(obj, componentId, divId, divId2) {
 	}
 	var confirmText2 = ss_dashboardConfirmDelete;
 	if (!confirm(confirmText + "\n" + confirmText2)) return false;
-	ss_showHideDashboardComponent(obj, componentId, divId)
+	ss_showHideDashboardComponent(obj, componentId, divId, idStr)
 	if (divId2 && document.getElementById(divId2)) {
 		ss_hideDiv(divId2)
 	}
@@ -2807,9 +2808,9 @@ function ss_cancelPopupDiv(divId) {
 }
 
 
-function ss_dashboardInitialization() {
+function ss_dashboardInitialization(divId) {
 	//Turn off ie's 3d table look
-	var dashboardTable = document.getElementById('ss_dashboardTable');
+	var dashboardTable = document.getElementById(divId);
 	dashboardTable.setAttribute('borderColorDark', ss_style_background_color);
 	dashboardTable.setAttribute('borderColorLight', ss_style_background_color);
 

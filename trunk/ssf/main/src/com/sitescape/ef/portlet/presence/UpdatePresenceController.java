@@ -33,7 +33,7 @@ public class UpdatePresenceController  extends SAbstractController {
  		Map<String,Object> model = new HashMap<String,Object>();
 		//if action in the url, assume this is an ajax update call
 		model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
-		model.put(WebKeys.DASHBOARD_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_ID, ""));
+		model.put(WebKeys.DASHBOARD_COMPONENT_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DASHBOARD_COMPONENT_ID, ""));
 		response.setContentType("text/xml");
 		if (!WebHelper.isUserLoggedIn(request)) {
 			Map statusMap = new HashMap();

@@ -23,13 +23,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
@@ -47,6 +51,7 @@ public class ViewController  extends SAbstractController {
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String PROFILE_PORTLET="ss_profile";
+	public static final String DASHBOARD_PORTLET="ss_dashboard";
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -54,12 +59,14 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
- 		
+ 		DashboardPortlet d=null;
 		PortletPreferences prefs = request.getPreferences();
 		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 			String pName = pConfig.getPortletName();
+			//For liferay we use instances and the name will be changed slightly
+			//That is why we check for the name with contains
 			if (pName.contains(FORUM_PORTLET))
 				displayType=FORUM_PORTLET;
 			else if (pName.contains(WORKSPACE_PORTLET))
@@ -68,6 +75,11 @@ public class ViewController  extends SAbstractController {
 				displayType=PRESENCE_PORTLET;
 			else if (pName.contains(PROFILE_PORTLET))
 				displayType=PROFILE_PORTLET;
+			else if (pName.contains(DASHBOARD_PORTLET)) {
+				displayType=DASHBOARD_PORTLET;
+				d = getDashboardModule().createDashboardPortlet(pName, DashboardHelper.getNewDashboardMap());
+				prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
+			}
 			prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 			prefs.store();
 			//TODO temporary until we figure out why adding a portlet freezes
@@ -91,7 +103,7 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
-		} else if ("ss_profile".equals(displayType)) {
+		} else if (PROFILE_PORTLET.equals(displayType)) {
 			//Get the profile binder
 			//If first time here, add a profile folder to the top workspace
 			ProfileBinder binder = getProfileModule().getProfileBinder();
@@ -146,6 +158,21 @@ public class ViewController  extends SAbstractController {
   				model.put(WebKeys.URL_ENTRY_ID, entryId);
   			}
  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);		
+		} else if (DASHBOARD_PORTLET.equals(displayType)) {
+			Toolbar toolbar = new Toolbar();
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+			toolbar.addToolbarMenu("1_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
+  	        User user = RequestContextHolder.getRequestContext().getUser();
+			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+			if (d == null) {
+				d = (DashboardPortlet)getDashboardModule().getDashboard(prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null));
+			}
+			model.put(WebKeys.DASHBOARD_ID, d.getId());
+			DashboardHelper.getDashboardMap(d, userProperties, model);
+ 			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
 		}
 		return null;
 	}

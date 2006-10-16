@@ -29,7 +29,6 @@
 <form method="post" action="<portlet:actionURL>
   <portlet:param name="action" value="modify_dashboard"/>
   <portlet:param name="binderId" value="${ssBinder.id}"/>
-  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
   </portlet:actionURL>">
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
@@ -81,7 +80,6 @@
 	  <form method="post" action="<portlet:actionURL>
 		  <portlet:param name="action" value="modify_dashboard"/>
 		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
 	      </portlet:actionURL>">
 		<input type="text" name="title" size="80"/><br/>
 		<input type="checkbox" name="includeBinderTitle"/>

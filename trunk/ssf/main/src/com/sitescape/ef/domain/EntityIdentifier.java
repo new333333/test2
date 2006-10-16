@@ -15,7 +15,8 @@ public class EntityIdentifier {
 		workspace (3), 
 		user (4), 
 		group (5), 
-		folderEntry (6);
+		folderEntry (6),
+		dashboard (7);
 		int dbValue;
 		EntityType(int dbValue) {
 			this.dbValue = dbValue;
@@ -30,6 +31,7 @@ public class EntityIdentifier {
 			case 4: return EntityType.user;
 			case 5: return EntityType.group;
 			case 6: return EntityType.folderEntry;
+			case 7: return EntityType.dashboard;
 			default: return EntityType.none;
 			}
 		}

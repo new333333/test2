@@ -16,7 +16,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<iframe src="${ssDashboard.dashboard.components[ssDashboardId].data.url[0]}"
+<iframe src="${ssDashboard.dashboard.components[ssComponentId].data.url[0]}"
   style="width: 99%;
-  height: ${ssDashboard.dashboard.components[ssDashboardId].data.height[0]};
+  height: ${ssDashboard.dashboard.components[ssComponentId].data.height[0]};
   margin:0px; padding:0px;" frameBorder="no" >xxx</iframe>

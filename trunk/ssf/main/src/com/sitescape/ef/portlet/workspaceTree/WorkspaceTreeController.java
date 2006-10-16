@@ -142,8 +142,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
-				userProperties, model);
+		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
@@ -279,7 +278,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//	The "Add penlets" menu
 		Map qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_addDashboardComponents();return false;");
+		qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 		toolbar.addToolbarMenu("4_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 
 		//The "Footer" menu

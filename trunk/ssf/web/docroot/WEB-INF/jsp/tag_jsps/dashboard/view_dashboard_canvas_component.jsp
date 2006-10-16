@@ -9,11 +9,11 @@ if (displayStyle == null || displayStyle.equals("")) {
 %>
 <c:set var="ss_displayStyle" value="<%= displayStyle %>"/>
 <c:set var="hideDashboardControls" value="false"/>
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].displayStyle == 'none'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].displayStyle == 'none'}">
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
 <!-- Start of component -->
-<div id="ss_component_${ss_component_count}"
+<div id="<portlet:namespace/>_component_${ss_component_count}"
   <c:if test="${hideDashboardControls}">
     class="ss_content_window_compact" 
   </c:if>
@@ -28,7 +28,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <td valign="top"><div
   <c:if test="${hideDashboardControls}">
-	id="ss_dashboard_control_${ss_dashboard_control_count}"
+	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -37,19 +37,29 @@ if (displayStyle == null || displayStyle.equals("")) {
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
-	id="ss_dashboard_control_${ss_dashboard_control_count}"
+	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
   >
+
     <form 
       method="post" 
-      action="<portlet:actionURL>
+ <c:if test="${!empty ssBinder}">
+  	action="<portlet:actionURL>
       <portlet:param name="action" value="modify_dashboard"/>
       <portlet:param name="binderId" value="${ssBinder.id}"/>
-      <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
       </portlet:actionURL>">
+     <c:set var="myId" value="binderId=${ssBinder.id}"/> 
+</c:if>
+<c:if test="${empty ssBinder}">
+  	action="<portlet:actionURL>
+      <portlet:param name="action" value="modify_dashboard_portlet"/>
+      <portlet:param name="dashboardId" value="${ssDashboardId}"/>
+     </portlet:actionURL>">
+     <c:set var="myId" value="dashboardId=${ssDashboardId}"/> 
+</c:if>
 	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}">
 	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}">
 	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}">
@@ -58,13 +68,13 @@ if (displayStyle == null || displayStyle.equals("")) {
 			<ul class="ss_title_bar_icons">
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
 				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', 'ss_dashboard_component_${ss_component_count}');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
@@ -83,17 +93,17 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  ><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
-				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', 'ss_component_${ss_component_count}', 'ss_component2_${ss_component_count}'); return false;"
+				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}'); return false;"
 				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			</ul>
 	</form>
-	<strong>${ssDashboard.dashboard.components[ssDashboardId].title}&nbsp;</strong>
+	<strong>${ssDashboard.dashboard.components[ssComponentId].title}&nbsp;</strong>
   </div>
 </td>
 <td valign="top"><div
   <c:if test="${hideDashboardControls}">
-	id="ss_dashboard_control_${ss_dashboard_control_count}"
+	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -103,12 +113,12 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <c:if test="${hideDashboardControls}">
 <script type="text/javascript">
-	ss_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
+	<portlet:namespace/>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border7';
 </script>
 </c:if>
 <td 
   <c:if test="${hideDashboardControls}">
-    id="ss_dashboard_border_${ss_dashboard_border_count}"
+    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
     <c:set var="ss_dashboard_border_count" scope="request" 
       value="${ss_dashboard_border_count + 1}"/>
   </c:if>
@@ -119,7 +129,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <td>
 	<div 
       <c:if test="${hideDashboardControls}">
-	    id="ss_dashboard_border_${ss_dashboard_border_count}"
+	    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
 	      <c:set var="ss_dashboard_border_count" scope="request" 
 	         value="${ss_dashboard_border_count + 1}"/>
       </c:if>
@@ -127,7 +137,7 @@ if (displayStyle == null || displayStyle.equals("")) {
         class="ss_content_window_content"
       </c:if>
     >
-		<div id="ss_dashboard_component_${ss_component_count}" 
+		<div id="<portlet:namespace/>_dashboard_component_${ss_component_count}" 
 		    align="left" style="margin:0px; 
 		    <c:if test="${!ss_dashboard_visible}">
 		      visibility:hidden; display:none;
@@ -143,12 +153,12 @@ if (displayStyle == null || displayStyle.equals("")) {
 </td>
 <c:if test="${hideDashboardControls}">
 <script type="text/javascript">
-	ss_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
+	<portlet:namespace/>_dashboard_border_classNames[${ss_dashboard_border_count}] = 'ss_decor-border8';
 </script>
 </c:if>
 <td 
   <c:if test="${hideDashboardControls}">
-    id="ss_dashboard_border_${ss_dashboard_border_count}"
+    id="<portlet:namespace/>_dashboard_border_${ss_dashboard_border_count}"
     <c:set var="ss_dashboard_border_count" scope="request" 
        value="${ss_dashboard_border_count + 1}"/>
   </c:if>
@@ -160,7 +170,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 <tr>
 <td colspan="3"><div class="ss_decor-round-corners-bottom3"
   <c:if test="${hideDashboardControls}">
-	id="ss_dashboard_control_${ss_dashboard_control_count}"
+	id="<portlet:namespace/>_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>

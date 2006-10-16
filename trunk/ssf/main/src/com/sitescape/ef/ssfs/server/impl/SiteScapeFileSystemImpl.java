@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -48,7 +49,8 @@ AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;	
-	
+	private DashboardModule dashboardModule;
+
 	public SiteScapeFileSystemImpl() {
 		ssfsInt = new SiteScapeFileSystemInternal(this);
 		ssfsLib = new SiteScapeFileSystemLibrary(this);
@@ -139,6 +141,14 @@ AllBusinessServicesInjected {
 	
 	public FileModule getFileModule() {
 		return fileModule;
+	}
+	
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
 	}
 	
 	public void setMimeTypes(FileTypeMap mimeTypes) {

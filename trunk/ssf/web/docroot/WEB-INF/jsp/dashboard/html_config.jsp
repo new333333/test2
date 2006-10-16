@@ -25,7 +25,7 @@
   items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
   minHeight="150px"
 ><c:out
-value="${ssDashboard.dashboard.components[ssDashboardId].data.html[0]}"/></textarea>
+value="${ssDashboard.dashboard.components[ssComponentId].data.html[0]}"/></textarea>
 </div>
 <br/>
 <script type="text/javascript">

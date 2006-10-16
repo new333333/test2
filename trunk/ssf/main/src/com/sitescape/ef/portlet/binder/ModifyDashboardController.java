@@ -34,7 +34,6 @@ public class ModifyDashboardController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);		
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		String binderType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		Binder binder = getBinderModule().getBinder(binderId);
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 		String operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
@@ -45,7 +44,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 
 		if (formData.containsKey("set_title")) {
 			DashboardHelper.setTitle(request, binder, scope);
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (formData.containsKey("add_wideTop")) {
 			componentId = DashboardHelper.addComponent(request, binder, DashboardHelper.Wide_Top, scope);
 			response.setRenderParameter("_componentId", componentId);
@@ -66,25 +65,25 @@ public class ModifyDashboardController extends AbstractBinderController {
 		} else if (formData.containsKey("_modifyConfigData") || formData.containsKey("_modifyConfigData.x")) {
 		} else if (formData.containsKey("_saveConfigData") || formData.containsKey("_saveConfigData.x")) {
 			DashboardHelper.saveComponentData(request, binder, scope);
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
-		} else if (operation.equals("_deleteComponent")) {
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
+		} else if (formData.containsKey("_deleteComponent")) {
 			DashboardHelper.deleteComponent(request, binder, componentId, scope);
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (operation.equals("_show")) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (operation.equals("_hide")) {
 			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (operation.equals("_moveUp")) {
 			DashboardHelper.moveComponent(request, binder, scope, "up");
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (operation.equals("_moveDown")) {
 			DashboardHelper.moveComponent(request, binder, scope, "down");
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			if (returnView.equals("binder")) setupViewBinder(response, binderId, binderType);
+			if (returnView.equals("binder")) setupViewBinder(response, binder);
 		}
 	}
 
@@ -119,15 +118,10 @@ public class ModifyDashboardController extends AbstractBinderController {
 		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userFolderProperties, 
-				userProperties, model, scope, cId);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, 
+				getProfileModule().getUserProperties(user.getId()).getProperties(), model, scope, cId);
 
-		if (DashboardHelper.checkDashboardLists(ssDashboard)) {
-			//The dashboard was fixed up. Go save it
-			DashboardHelper.saveDashboards(binder, ssDashboard);
-		}
+		DashboardHelper.checkDashboardLists(binder, ssDashboard);
 		
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, scope);

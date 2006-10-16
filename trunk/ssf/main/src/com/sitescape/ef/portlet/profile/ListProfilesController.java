@@ -104,8 +104,7 @@ public class ListProfilesController extends   SAbstractController {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		DashboardHelper.getDashboardMap(binder, userFolderProperties, 
-				userProperties, model);
+		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		DefinitionHelper.getDefinitions(binder, model);
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 

@@ -16,8 +16,8 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:if test="${!empty ssDashboardId}">
-<c:set var="ssNamespace" value="${renderResponse.namespace}_${ssDasboardId}"/>
+<c:if test="${!empty ssComponentId}">
+<c:set var="ssNamespace" value="${renderResponse.namespace}_${ssComponentId}"/>
 </c:if>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:set var="userIdList" value=""/>
@@ -46,8 +46,8 @@ type="time" /></span>
 </div>
 
 <c:if test="${!empty ssDashboard}">
-	<c:set var="ssUsers" value="${ssDashboard.beans[ssDashboardId].ssUsers}"/>
-	<c:set var="ssGroups" value="${ssDashboard.beans[ssDashboardId].ssGroups}"/>
+	<c:set var="ssUsers" value="${ssDashboard.beans[ssComponentId].ssUsers}"/>
+	<c:set var="ssGroups" value="${ssDashboard.beans[ssComponentId].ssGroups}"/>
 </c:if>
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -144,7 +144,7 @@ ${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300
   style="display:none;">
 <input type="hidden" name="userList" value="<%= userIdList %>">
 <input type="hidden" name="ssNamespace" value="${ssNamespace}">
-<input type="hidden" name="ssDashboardId" value="${ssDashboardId}">
+<input type="hidden" name="ssComponentId" value="${ssComponentId}">
 </form>
 
 

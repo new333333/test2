@@ -25,6 +25,7 @@
   entry="${ssDefinitionEntry}" />
   
 <br>
+<c:if test="${ssDefinitionEntry.docLevel == 1}">
 <form class="ss_style ss_form" method="post" action="" style="display:inline;">
 	<c:choose>
 	<c:when test="${empty ssSubscription}">
@@ -39,4 +40,5 @@
 	
 	
   </form>
+</c:if>
 </div>

@@ -11,6 +11,9 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.Dashboard;
+import com.sitescape.ef.domain.DashboardPortlet;
+import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EmailAlias;
@@ -18,6 +21,7 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.UserDashboard;
 import com.sitescape.ef.domain.Workspace;
 
 /**
@@ -97,4 +101,8 @@ public interface CoreDao {
 	public Map loadAllTagsByEntity(Collection entityIds);
 	public Tag loadTagById(String id);
 	public List loadSubscriptionByEntity(final EntityIdentifier entityId);
+	
+	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
+	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
+	public Dashboard loadDashboard(String id);
  }

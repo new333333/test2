@@ -16,9 +16,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.start[0] == 'this'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'this'}">
 <script type="text/javascript">
-function wsTreeComponent${ssDashboardId}_showId(id, obj, action) {
+function wsTreeComponent${ssComponentId}_showId(id, obj, action) {
 	//Build a url to go to
 	var url = "<ssf:url action="ssActionPlaceHolder" binderId="ssBinderIdPlaceHolder"/>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
@@ -30,23 +30,23 @@ function wsTreeComponent${ssDashboardId}_showId(id, obj, action) {
 </script>
 
 <c:set var="rootOpen" value="true"/>
-<c:if test="${!empty ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0]}">
+<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]}">
   <c:set var="rootOpen" 
-    value="${ssDashboard.dashboard.components[ssDashboardId].data.rootOpen[0]}"/>
+    value="${ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]}"/>
 </c:if>
 
-<c:if test="${empty ssDashboard.beans[ssDashboardId].workspaceTree || empty ssDefinitionEntry.id}">
+<c:if test="${empty ssDashboard.beans[ssComponentId].workspaceTree}">
   <span class="ss_bold"><ssf:nlt checkIfTag="true"
-    tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[ssDashboardId].name]}"/></span><br/>
+    tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[ssComponentId].name]}"/></span><br/>
   <span class="ss_italic"><ssf:nlt tag="dashboard.displayNotAvailable"/></span>
 </c:if>
 
-<c:if test="${!empty ssDashboard.beans[ssDashboardId].workspaceTree && !empty ssDefinitionEntry.id}">
-<ssf:tree treeName="wsTreeComponent${ssDashboardId}" treeDocument="${ssDashboard.beans[ssDashboardId].workspaceTree}" 
-  topId="${ssDashboard.beans[ssDashboardId].topId}" highlightNode="${ssDefinitionEntry.id}" 
+<c:if test="${!empty ssDashboard.beans[ssComponentId].workspaceTree}">
+<ssf:tree treeName="wsTreeComponent${ssComponentId}" treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}" 
+  topId="${ssDashboard.beans[ssComponentId].topId}" highlightNode="${ssDashboard.beans[ssComponentId].topId}" 
   rootOpen="${rootOpen}" />
 </c:if>
 </c:if>
 
-<c:if test="${ssDashboard.dashboard.components[ssDashboardId].data.start[0] == 'select'}">
+<c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'select'}">
 </c:if>
