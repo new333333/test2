@@ -1,6 +1,7 @@
 package com.sitescape.ef.taglib;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SPropsUtil;
@@ -49,11 +50,11 @@ public class DashboardTag extends BodyTagSupport {
 				dashboard = (Map)this._configuration.get(WebKeys.DASHBOARD_GLOBAL_MAP);
 			} else if (scope.equals(DashboardHelper.Binder)) {
 				dashboard = (Map)this._configuration.get(WebKeys.DASHBOARD_BINDER_MAP);
-			}
+			} else dashboard = new HashMap(savedDashboard);
 			this._configuration.put(WebKeys.DASHBOARD_MAP, dashboard);
 			if (dashboard != null) {
 				// Get the jsp to run
-				Map components = (Map) dashboard.get(DashboardHelper.Components);
+				Map components = (Map) dashboard.get(Dashboard.Components);
 				if (components != null) {
 					if (components.containsKey(this._id)) {
 						Map component = (Map) components.get(this._id);
@@ -79,7 +80,7 @@ public class DashboardTag extends BodyTagSupport {
 							ServletRequest req = new DynamicServletRequest(
 								(HttpServletRequest)pageContext.getRequest());
 							
-							req.setAttribute(WebKeys.DASHBOARD_ID, this._id);
+							req.setAttribute(WebKeys.DASHBOARD_COMPONENT_ID, this._id);
 							
 							StringServletResponse res = new StringServletResponse(httpRes);
 				

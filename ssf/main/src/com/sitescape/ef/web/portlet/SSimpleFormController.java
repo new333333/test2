@@ -4,6 +4,7 @@ import org.springframework.web.portlet.mvc.SimpleFormController;
 
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -29,6 +30,7 @@ implements AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private DashboardModule dashboardModule;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -113,5 +115,13 @@ implements AllBusinessServicesInjected {
 	
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
+	}
+	
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
 	}
 }

@@ -182,7 +182,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._modificationDate}" type="both" 
-	 timeStyle="short" dateStyle="short" /></span>
+	 timeStyle="full" dateStyle="short" /></span>
   </ssf:slidingTableColumn>
  </c:if>
 </ssf:slidingTableRow>

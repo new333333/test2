@@ -6,7 +6,7 @@ import com.sitescape.ef.exception.UncheckedCodedException;
  * @author Jong Kim
  *
  */
-public abstract class NoObjectByTheIdException extends UncheckedCodedException {
+public class NoObjectByTheIdException extends UncheckedCodedException {
     public NoObjectByTheIdException(String errorCode, String objId) {
         super(errorCode, new Object[] {objId});
     }

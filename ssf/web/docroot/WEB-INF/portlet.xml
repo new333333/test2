@@ -94,6 +94,25 @@
     </portlet>
 
     <portlet>
+        <description xml:lang="en">SiteScape Dashboard Portlet</description>
+        <portlet-name>ss_dashboard</portlet-name>
+        <display-name xml:lang="en">Dashboard</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.dashboard</resource-bundle>
+    </portlet>
+
+     <portlet>
         <description xml:lang="en">SiteScape Administration</description>
         <portlet-name>ss_administration</portlet-name>
         <display-name xml:lang="en">Administration</display-name>

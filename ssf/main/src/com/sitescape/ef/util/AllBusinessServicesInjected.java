@@ -2,6 +2,7 @@ package com.sitescape.ef.util;
 
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef. module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -65,4 +66,8 @@ public interface AllBusinessServicesInjected {
 	void setRssGenerator(RssGenerator rssGenerator);
 
 	RssGenerator getRssGenerator();
+
+	void setDashboardModule(DashboardModule dashboardModule);
+
+	DashboardModule getDashboardModule();
 }

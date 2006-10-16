@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.file.FileModule;
@@ -60,7 +61,8 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
-	
+	private DashboardModule dashboardModule;
+
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
 	}
@@ -146,6 +148,14 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	
 	public FileModule getFileModule() {
 		return fileModule;
+	}
+	
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
 	}
 
 	public String getDefinitionAsXML(String definitionId) {

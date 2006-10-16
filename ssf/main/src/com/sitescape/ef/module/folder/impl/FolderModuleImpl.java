@@ -548,10 +548,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		FolderEntry entry = getEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+		//digest doesn't make sense here - only individual messages are sent 
 		if (s == null) {
 			s = new Subscription(user.getId(), entry.getEntityIdentifier());
+			s.setStyle(Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 			getCoreDao().save(s);
-		}  	
+		} else 	s.setStyle(Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+  	
     }
     public Subscription getSubscription(Long folderId, Long entryId) {
     	//getEntry check read access

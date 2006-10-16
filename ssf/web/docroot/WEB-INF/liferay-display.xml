@@ -8,5 +8,6 @@
 		<portlet id="ss_workspacetree" />
 		<portlet id="ss_profile" />
 		<portlet id="ss_presence" />
+		<portlet id="ss_dashboard" />
 	</category>
 </display>

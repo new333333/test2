@@ -8,6 +8,7 @@ import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.admin.AdminModule;
@@ -33,6 +34,7 @@ implements AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private DashboardModule dashboardModule;
 	
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
@@ -123,4 +125,14 @@ implements AllBusinessServicesInjected {
 	public FileModule getFileModule() {
 		return fileModule;
 	}
+	
+	public void setDashboardModule(DashboardModule dashboardModule) {
+		this.dashboardModule = dashboardModule;
+	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
+	}
+
+
 }

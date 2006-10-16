@@ -23,6 +23,6 @@ Search config
 <br/>
 
 <ssf:searchForm form="${ss_dashboard_config_form_name}" element="data.query" 
-  data="${ssDashboard.beans[ssDashboardId].ssSearchFormData}" />
+  data="${ssDashboard.beans[ssComponentId].ssSearchFormData}" />
 
 <br/>
