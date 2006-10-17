@@ -184,10 +184,10 @@
           actionUrl="true" />" 
         onClick="alert('This is a group'); return false;"
       </c:if>
-    onMouseOver="ss_showTitleDropDown(this);"
-    onMouseOut="ss_hideTitleDropDown(this);"
+    onMouseOver="ss_linkMenu.showButton(this);"
+    onMouseOut="ss_linkMenu.hideButton(this);"
     ><img class="ss_title_menu"
-    onClick="ss_showTitleOptions(this, '${entry1._docId}');"
+    onClick="ss_linkMenu.showMenu(this, '${entry1._binderId}', '${entry1._docId}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
@@ -245,12 +245,17 @@
 <%
 	}
 %>
-<div id="ss_title_menu_div" style="position:absolute;border:1px solid black; visibility:hidden; 
-  text-align:left; background:#ffffff;">
-<ul>
+<div id="ss_tmd" class="ss_link_menu">
+<ul class="ss_dropdownmenu">
 <li>Pop-up in new window</li>
 <li>Show in new tab</li>
 <li>Show entry profile</li>
 </ul>
 </div>
+<script type="text/javascript">
+function ss_initLinkMenu() {
+	ss_linkMenu.menuDiv = "ss_tmd";
+}
+ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
+</script>
 
