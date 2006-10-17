@@ -1950,6 +1950,7 @@ var ss_helpSystem = {
 	},
 	
 	showHelpSpotInfo : function(id) {
+		ss_debug('showHelpSpotInfo id = '+id)
 		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
 			if (id == ss_helpSystemTOC[i]) {
@@ -1960,12 +1961,18 @@ var ss_helpSystem = {
 		//Find the help spot node
 		var helpSpot = null;
 		for (var i = 0; i < ss_helpSystemNodes.length; i++) {
-			if (ss_helpSystemNodes[i] != null && ss_helpSystemNodes[i].getAttribute("helpId") == id) {
-				helpSpot = ss_helpSystemNodes[i];
-				break;
+			if (ss_helpSystemNodes[i] != null) {
+				var helpId = ss_helpSystemNodes[i].getAttribute("helpId");
+				var org_helpId = helpId;
+				var i1 = helpId.indexOf("___");
+				if (i1 >= 0) helpId = helpId.substr(helpId.indexOf("___") + 3);
+				if (org_helpId == id || helpId == id) {
+					helpSpot = ss_helpSystemNodes[i];
+					break;
+				}
 			}
 		}
-		//ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
+		ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).y);
 		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
@@ -1977,6 +1984,7 @@ var ss_helpSystem = {
 	},
 	
 	showHelpPanel : function(id, panelId, x, y) {
+		ss_debug('id='+id+', panelId='+panelId)
 		if (ss_helpSystemRequestInProgress == 1) {
 			ss_helpSystemQueuedId = id;
 			ss_helpSystemQueuedPanelId = panelId;
@@ -2016,7 +2024,10 @@ var ss_helpSystem = {
 					startVisibility = pObj.style.visibility;
 		}
 		var url = ss_helpSystemUrl;
-		var orgHelpId = id.substr(id.indexOf("___") + 3);
+		var orgHelpId = id;
+		//See if this is the actual name of the help panel
+		var i1 = id.indexOf("___");
+		if (i1 >= 0) orgHelpId = id.substr(id.indexOf("___") + 3);
 		url = ss_replaceSubStr(url, "ss_help_panel_id_place_holder",  orgHelpId);
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("operation2", id)
@@ -2028,7 +2039,7 @@ var ss_helpSystem = {
 		ajaxRequest.setData("startTop", startTop)
 		ajaxRequest.setData("startLeft", startLeft)
 		ajaxRequest.setData("startVisibility", startVisibility)
-		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setPostRequest(ss_helpSystem.postShowPanel);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
