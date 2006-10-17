@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <div class="ss_style" align="left">
 
 <span class="ss_titlebold"><ssf:nlt tag="help.favoritesicon.content.title"/></span> (1/4)
@@ -8,14 +9,12 @@
 <p><ssf:nlt tag="help.favoritesicon.content.intro.introduceList"/></p>
 
 <ul style="list-style-type:disc;">
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"
-style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.subtopicone"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_categories', 'ss_help_panel', '', '');"
-style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.subtopictwo"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.add.current.page"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');"
-style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.subtopicthree"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_categories', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.categories"/></a></li>
+
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
 </ul>
 
 </div>
@@ -24,13 +23,13 @@ style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.subtopicth
 <script type="text/javascript">
 ss_helpSystem.highlight('ss_navbarFavoritesButton');
 </script>
+
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<span class="ss_gray">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></span>
+<a href="javascript: ss_helpSystem.showPreviousHelpSpot();" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"
-style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

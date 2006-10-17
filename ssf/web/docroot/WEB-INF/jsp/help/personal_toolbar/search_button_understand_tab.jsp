@@ -4,23 +4,22 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.searchButton"/></span> (3/3)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.searchicon.subtopic.understandTab"/></span>
 
-<p><ssf:nlt tag="help.understandTab.searchicon.content.intro"/></p>
-
-<p><ssf:nlt tag="help.searchicon.understandTab.content.resultsTypes.intro"/></p>
+<p><ssf:nlt tag="help.searchicon.understandTab.content.intro"/></p>
 
 <ul style="list-style-type:disc;">
+
+<li><ssf:nlt tag="help.searchicon.understandTab.content.listItem.people"/></li>
 
 <li><ssf:nlt tag="help.searchicon.understandTab.content.listItem.places"/></li>
 
 <li><ssf:nlt tag="help.searchicon.understandTab.content.listItem.things"/></li>
 
-<li><ssf:nlt tag="help.searchicon.understandTab.content.listItem.things"/></li>
-
 </ul>
+
+<p><ssf:nlt tag="help.searchicon.understandTab.content.switchResultType"/></p>
 
 </div>
 
-<p><ssf:nlt tag="help.searchicon.understandTab.content.switchResultType"/></p>
 <br/>
 
 <script type="text/javascript">
@@ -29,7 +28,7 @@ ss_helpSystem.highlight('ss_navbarSearchButton');
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/>
+<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button_strings', 'ss_help_panel', '', '');" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">

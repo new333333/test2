@@ -40,7 +40,7 @@ function ss_turnOffDebugMode() {
 		  action="<portlet:actionURL>
 			<portlet:param name="action" value="search"/>
 			</portlet:actionURL>">
-		  <ssHelpSpot helpId="personal_toolbar/search_button" valign="bottom" align="center" offsetX="10"  offsetY="45"
+		  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			  <input name="searchText" type="text" class="form-text" /> 
 			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
@@ -55,7 +55,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
-      <ssHelpSpot helpId="personal_toolbar/favorites_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" s
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
@@ -67,7 +67,7 @@ function ss_turnOffDebugMode() {
 
 <!-- My workspace -->
 	<li class="ss_global_toolbar_myworkspace" onClick="ss_moveDivToTopOfBody('ss_portlet_content');return false;">
-	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
@@ -77,7 +77,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Clipboard -->
 	<li class="ss_global_toolbar_clipboard" onClick="alert('Show the clipboard (tbd)');">
-	  <ssHelpSpot helpId="personal_toolbar/clipboard_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	  <ssHelpSpot helpId="personal_toolbar/clipboard_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
 	    <div id="ss_navbarClipboardButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.clipboard" text="Clipboard"/></span>
@@ -87,7 +87,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Show/hide portal -->
 	<li class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;">
-	  <ssHelpSpot helpId="personal_toolbar/maximize_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	  <ssHelpSpot helpId="personal_toolbar/maximize_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
 	    <div id="ss_navbarHideShowPortalButton">
 	      <span id="ss_navbarHideShowPortalText" class="ss_fineprint"><ssf:nlt tag="navigation.maximize"/></span>
@@ -97,7 +97,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Help button -->
 	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();">
-	  <ssHelpSpot helpId="personal_toolbar/help_button" valign="bottom" align="left" offsetX="10" offsetY="45"
+	  <ssHelpSpot helpId="personal_toolbar/help_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
 	    <div id="ss_navbarHelpButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
