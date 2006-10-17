@@ -1953,7 +1953,7 @@ var ss_helpSystem = {
 	showHelpSpotInfo : function(id, xAlignment, yAlignment) {
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		ss_debug('showHelpSpotInfo id = '+id)
+		//ss_debug('showHelpSpotInfo id = '+id)
 		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
 			if (id == ss_helpSystemTOC[i]) {
@@ -1975,7 +1975,7 @@ var ss_helpSystem = {
 				}
 			}
 		}
-		ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
+		//ss_debug("showHelpSpotInfo helpSpot: " + helpSpot)
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).y);
 		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
@@ -1990,7 +1990,7 @@ var ss_helpSystem = {
 	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment) {
 		if (xAlignment == null) xAlignment = "";
 		if (yAlignment == null) yAlignment = "";
-		ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
+		//ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
 		if (ss_helpSystemRequestInProgress == 1) {
 			ss_helpSystemQueuedId = id;
 			ss_helpSystemQueuedPanelId = panelId;
@@ -2047,7 +2047,7 @@ var ss_helpSystem = {
 		ajaxRequest.setData("startTop", startTop)
 		ajaxRequest.setData("startLeft", startLeft)
 		ajaxRequest.setData("startVisibility", startVisibility)
-		ajaxRequest.setEchoDebugInfo();
+		//ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setPostRequest(ss_helpSystem.postShowPanel);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
