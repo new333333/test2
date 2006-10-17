@@ -54,5 +54,5 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
->-</a>
+><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
