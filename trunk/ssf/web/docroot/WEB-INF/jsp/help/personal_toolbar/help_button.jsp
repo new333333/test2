@@ -10,11 +10,11 @@
 <p><ssf:nlt tag="help.helpicon.content.controlpanel.intro"/></p>
 
 <ul style="list-style-type:disc;">
-<li><ssf:nlt tag="help.helpicon.content.intro.subtopicone"/></li>
+<li><ssf:nlt tag="help.helpicon.subtopic.stepThrough"/></li>
 
-<li><ssf:nlt tag="help.helpicon.content.intro.subtopictwo"/></li>
+<li><ssf:nlt tag="help.helpicon.subtopic.toc"/></li>
 
-<li><ssf:nlt tag="help.helpicon.content.intro.subtopicthree"/></li>
+<li><ssf:nlt tag="help.helpicon.subtopic.end"/></li>
 </ul>
 
 </div>
@@ -26,11 +26,10 @@ ss_helpSystem.highlight('ss_navbarHelpButton');
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpSpotInfo('personal_toolbar/clipboard_button');"
-style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showPreviousHelpSpot();" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;
+<a href="javascript: ss_helpSystem.showNextHelpSpot();" style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>
