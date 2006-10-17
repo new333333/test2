@@ -1583,7 +1583,6 @@ div.ss_bottomlinks {
 }
 .ss_innerContentBegins{
 	margin-top:9px;
-	position:relative;
 }
 
 
