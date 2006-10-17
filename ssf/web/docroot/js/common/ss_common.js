@@ -1721,7 +1721,12 @@ var ss_helpSystem = {
 			if (nodes[i].getAttribute("title")) {
 				helpSpotTitle = nodes[i].getAttribute("title");
 			}
-			if (helpSpotTitle != "") this.addTOC(helpSpotNodeId, helpSpotTitle);
+			// Get alignment values for ToC link
+			var xAlignment = nodes[i].getAttribute("xAlignment");
+	        if (!xAlignment) xAlignment = "";
+	        var yAlignment = nodes[i].getAttribute("yAlignment");
+	        if (!yAlignment) yAlignment = "";
+		    if (helpSpotTitle != "") this.addTOC(helpSpotNodeId, helpSpotTitle, xAlignment, yAlignment);
 			var helpSpotNode = document.createElement("div");
 	        helpSpotNode.className = "ss_helpSpot";
 	        helpSpotNode.style.zIndex = ssHelpSpotZ;
@@ -1763,7 +1768,7 @@ var ss_helpSystem = {
 			helpSpotTr.appendChild(helpSpotTd1);
 			helpSpotTr.appendChild(helpSpotTd2);
 			var aObj = document.createElement("a");
-			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "');");
+			aObj.setAttribute("href", "javascript: ss_helpSystem.showHelpSpotInfo('" + helpSpotNodeId + "', '" + xAlignment + "', '" + yAlignment + "');");
 			// Associate link either to the text ('show' text) or the icon ('hide' text)
 			if (helpSpotTitleFlag != 'hide') {
 			    helpSpotTd1.appendChild(helpSpotGif);
@@ -1851,7 +1856,7 @@ var ss_helpSystem = {
 		return y;
 	},
 	
-	addTOC : function(id, title) {
+	addTOC : function(id, title, xAlignment, yAlignment) {
 		//ss_debug("addToc " + id + ", " + title)
 		var tocDiv = document.getElementById('ss_help_toc');
 		if (!tocDiv) return;
@@ -1865,7 +1870,7 @@ var ss_helpSystem = {
 		}
 		var liObj = document.createElement("li");
 		var aObj = document.createElement("a");
-		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "');");
+		aObj.setAttribute("href", "javascript: ss_helpSystem.hideTOC();ss_helpSystem.showHelpSpotInfo('" + id + "', '" + xAlignment + "', '" + yAlignment + "');");
 		aObj.appendChild(document.createTextNode(title));
 		liObj.appendChild(aObj);
 		ulObj.appendChild(liObj);

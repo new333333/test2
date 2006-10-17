@@ -55,7 +55,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
-      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" s
+      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
