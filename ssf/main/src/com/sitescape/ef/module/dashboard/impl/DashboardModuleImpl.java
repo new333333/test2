@@ -15,6 +15,8 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.util.Validator;
 /**
  * This module gives us the transaction semantics to deal with the dashboard.  The dashboard
@@ -64,8 +66,13 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     	Dashboard d = getCoreDao().loadDashboard(id);
     	for (Iterator iter=inputData.entrySet().iterator(); iter.hasNext();) {
     		Map.Entry me = (Map.Entry)iter.next();
-    		d.setProperty((String)me.getKey(), me.getValue());
-    	}
+			try {
+				InvokeUtil.invokeSetter(d, (String)me.getKey(), me.getValue());
+			} catch (ObjectPropertyNotFoundException pe) {
+				//treat as a property
+		   		d.setProperty((String)me.getKey(), me.getValue());
+			}
+   	}
     }
     public void setProperty(String id, String key, Object value) {
     	Dashboard d = getCoreDao().loadDashboard(id);
