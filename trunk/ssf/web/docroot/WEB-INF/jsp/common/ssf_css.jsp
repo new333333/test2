@@ -666,6 +666,16 @@ div.ss_sliding_table_column {
   color: ${ss_style_link_hover_color};
 }
 
+.ss_link_menu {
+  position:absolute;
+  visibility:hidden; 
+  text-align:left; 
+  background-color: ${ss_style_background_color}; 
+  color: ${ss_style_text_color};
+  border: 1px ${ss_style_border_color} solid;
+  padding: 0px;
+}
+
 ul.ss_dropdownmenu {
   list-style: outside;
   text-align:left;

@@ -81,7 +81,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_spannedAreasList = new Array();
 	var ss_active_menulayer = '';
 	var ss_lastActive_menulayer = '';
-	var ss_active_menulayer_form = 0;
 	var ss_activateMenuOffsetTop = 6;
 	var ss_layerFlag = 0;
 	var ss_forum_maxBodyWindowHeight = 0;
@@ -118,9 +117,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_dashboardSliderObj = null;
 	var ss_dashboardSliderTargetObj = null;
 	var ss_dashboardSliderObjEndCoords = null;
-	
-	var ss_showingTitleDropDown = 0;
-	var ss_showingTitleInfoObj = null;
 	
 	var ss_currentTab = 0;
 		
@@ -1103,23 +1099,6 @@ function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openSty
 function ss_setLayerFlag() {
     ss_layerFlag = 1;
 }
-
-// Clears (hides) the active menulayer (if any)
-function ss_clearActive_menulayer() {
-    if (ss_active_menulayer_form) {return}
-    ss_active_menulayer_form = 0;
-
-    ss_lastActive_menulayer = ss_active_menulayer;
-    if (ss_active_menulayer != '') {
-        menulayerId = ss_active_menulayer;
-        hideMenu(menulayerId);
-        ss_active_menulayer = '';
-    }     
-    if (self.clearActiveMenu) {self.clearActiveMenu()}
-}
-
-//Enable the event handler
-ss_createEventObj('ss_clearActive_menulayer', 'MOUSEUP')
 
 ss_createOnLoadObj('ss_layerFlag', ss_setLayerFlag);
 
@@ -2974,29 +2953,53 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     }
 }
 
-function ss_showTitleDropDown(obj, id) {
-	obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow.gif";
-}
-function ss_showTitleOptions(obj, id) {
-	ss_showingTitleDropDown = 1;
-	ss_showingTitleInfoObj = obj;
-	var menuObj = document.getElementById("ss_title_menu_div");
-	ss_moveObjectToBody(menuObj)
-	var x = parseInt(ss_getObjAbsX(obj) + 1)
-	var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 9);
-	menuObj.style.top = y + "px";
-	menuObj.style.left = x + "px";
-	menuObj.style.zIndex = ssMenuZ;
-	ss_ShowHideDivXY("ss_title_menu_div", x, y)
-	ss_HideDivOnSecondClick("ss_title_menu_div")	
-}
-function ss_hideTitleDropDown(obj, id) {
-	obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow_off.gif";
-}
-function ss_hideTitleOptions(obj) {
-	if (ss_showingTitleInfoObj == obj) return;
-	ss_hideDiv("ss_title_menu_div")
-	ss_showingTitleInfoObj = null;
+//Routines that support the link dropdown menu concept
+var ss_linkMenu = new function() {
+	this.menuDiv;	        //Div id of the menu div
+	this.binderId;          //Binder id of the current folder
+	this.entityType;        //Entity type default of the current folder
+	this.showingMenu;       //0 = not showing a menu; 1 = showing a menu
+	this.linkObj;           //The link object that is active
+	this.lastShownButton;       
+	
+	this.showButton = function(obj) {
+		if (this.lastShownButton && this.lastShownButton != obj) this.hideMenu(obj);
+		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow.gif";
+		this.lastShownButton = obj;
+	}
+	
+	this.showMenu = function(obj, id, binderId, entityType) {
+		if (binderId == null) this.binderId = binderId;
+		if (entityType == null) this.entityType = entityType;
+		if (this.showingMenu) {
+			ss_hideDiv(this.menuDiv)
+			this.showingMenu = 0;
+		}
+		this.showingMenu = 1;
+		this.linkObj = obj;
+		if (this.menuDiv != "") {
+			var menuObj = document.getElementById(this.menuDiv);
+			ss_moveObjectToBody(menuObj)
+			var x = parseInt(ss_getObjAbsX(obj) + 1)
+			var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 9);
+			menuObj.style.top = y + "px";
+			menuObj.style.left = x + "px";
+			menuObj.style.zIndex = ssMenuZ;
+			ss_ShowHideDivXY(this.menuDiv, x, y)
+			ss_HideDivOnSecondClick(this.menuDiv)
+		}
+	}
+	
+	this.hideButton = function(obj) {
+		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow_off.gif";
+	}
+	
+	this.hideMenu = function(obj) {
+		if (this.linkObj == obj) return;
+		ss_hideDiv(this.menuDiv)
+		this.showingMenu = 0;
+		this.linkObj = null;
+	}
 }
 
 function ss_launchUrlInNewWindow(obj, fileName) {
