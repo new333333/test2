@@ -100,6 +100,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemQueuedX = "";
 	var ss_helpSystemQueuedY = "";
 	var ss_helpSystemRequestInProgress = 0;
+	var ss_helpSystemPanelMarginOffset = 4;
 	
 	var ss_favoritesListArray = new Array();
 	var ss_favoritesListCount = 0;
@@ -1949,7 +1950,9 @@ var ss_helpSystem = {
 		}
 	},
 	
-	showHelpSpotInfo : function(id) {
+	showHelpSpotInfo : function(id, xAlignment, yAlignment) {
+		if (xAlignment == null) xAlignment = "";
+		if (yAlignment == null) yAlignment = "";
 		ss_debug('showHelpSpotInfo id = '+id)
 		this.hideTOC();
 		for (var i = 0; i < ss_helpSystemTOC.length; i++) {
@@ -1978,13 +1981,16 @@ var ss_helpSystem = {
 		    var left = parseInt(dojo.style.getAbsolutePosition(helpSpot, true).x);
 		    var width = parseInt(dojo.style.getContentBoxWidth(helpSpot));
 		    var height = parseInt(dojo.style.getContentBoxHeight(helpSpot));
-//			this.showHelpPanel(id, "ss_help_panel", parseInt(left + width/2), parseInt(top + height + 5))
-			this.showHelpPanel(id, "ss_help_panel", parseInt(left + 3), parseInt(top + height - 8))
+		    var x = parseInt(left + 3);
+		    var y = parseInt(top + height - 8);
+			this.showHelpPanel(id, "ss_help_panel", x, y, xAlignment, yAlignment)
 		}
 	},
 	
-	showHelpPanel : function(id, panelId, x, y) {
-		ss_debug('id='+id+', panelId='+panelId)
+	showHelpPanel : function(id, panelId, x, y, xAlignment, yAlignment) {
+		if (xAlignment == null) xAlignment = "";
+		if (yAlignment == null) yAlignment = "";
+		ss_debug('id='+id+', panelId='+panelId+', x = '+x+', y = '+y+', xAlign = '+xAlignment)
 		if (ss_helpSystemRequestInProgress == 1) {
 			ss_helpSystemQueuedId = id;
 			ss_helpSystemQueuedPanelId = panelId;
@@ -2036,6 +2042,8 @@ var ss_helpSystem = {
 		ajaxRequest.setData("panelId", panelId)
 		ajaxRequest.setData("x", x)
 		ajaxRequest.setData("y", y)
+		ajaxRequest.setData("xAlignment", xAlignment)
+		ajaxRequest.setData("yAlignment", yAlignment)
 		ajaxRequest.setData("startTop", startTop)
 		ajaxRequest.setData("startLeft", startLeft)
 		ajaxRequest.setData("startVisibility", startVisibility)
@@ -2058,6 +2066,8 @@ var ss_helpSystem = {
 		var height = parseInt(dojo.style.getMarginBoxHeight(pObj));
 		var x = obj.getData("x");
 		var y = obj.getData("y");
+		var xAlignment = obj.getData("xAlignment");
+		var yAlignment = obj.getData("yAlignment");
 		var startTop = obj.getData("startTop");
 		var startLeft = obj.getData("startLeft");
 		var startVisibility = obj.getData("startVisibility");
@@ -2102,6 +2112,16 @@ var ss_helpSystem = {
 					top = parseInt(ss_getWindowHeight() - ss_help_position_bottomOffset - height)
 					if (top < ss_help_position_topOffset) top = ss_help_position_topOffset;
 			}
+		}
+		switch(xAlignment) {
+			case "left" : 
+				left = parseInt(left - width - ss_helpSystemPanelMarginOffset);
+				break
+		}
+		switch(yAlignment) {
+			case "bottom" : 
+				top = parseInt(top - height - ss_helpSystemPanelMarginOffset);
+				break
 		}
 		var windowWidth = parseInt(ss_getWindowWidth());
 		if (parseInt(left + width) > windowWidth - ss_help_position_rightOffset) {
