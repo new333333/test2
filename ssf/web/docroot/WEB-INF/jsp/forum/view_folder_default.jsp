@@ -11,7 +11,11 @@
 <div class="ss_style ss_portlet">
 
 <% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+<% // Tabs %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+<div class="ss_clear"></div>
 
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>

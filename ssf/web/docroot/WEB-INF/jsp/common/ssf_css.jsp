@@ -673,7 +673,7 @@ div.ss_sliding_table_column {
   background-color: ${ss_style_background_color}; 
   color: ${ss_style_text_color};
   border: 1px ${ss_style_border_color} solid;
-  padding: 0px;
+  padding: 0px 4px 0px 10px;
 }
 
 ul.ss_dropdownmenu {
@@ -1291,6 +1291,7 @@ div.ss_tabs {
     left:14px; 
     z-index:2;
     width:100%;
+    margin-right:40px;
 }
 .ss_tabs_td {
 	font-size:${ss_style_font_largeprint};
@@ -1341,13 +1342,12 @@ div.ss_tabs {
 /* breadcrumbs */
 .ss_breadcrumb {
 	color:#5A3C68;
-	padding:5px;
-	margin-top:0px;
-	margin-bottom:0px;
+	margin:0px 5px;
+	padding:0px 5px;
 	font-size: ${ss_style_font_smallprint};
 	float:left;
 }
-.ss_breadcrumb a{
+a.ss_breadcrumb {
 	color:#5A3C68;
 	font-size: ${ss_style_font_smallprint};
 }

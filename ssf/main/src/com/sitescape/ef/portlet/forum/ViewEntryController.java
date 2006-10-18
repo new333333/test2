@@ -116,9 +116,19 @@ public class ViewEntryController extends  SAbstractController {
 				tabs.setCurrentTab(tabs.addTab(fe));
 			} else if (tabId != null) {
 				tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
+			} else {
+				//Don't overwrite a search tab
+				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+					tabs.setCurrentTab(tabs.addTab(fe));
+				} else {
+					tabs.setCurrentTab(tabs.setTab(fe));
+				}
 			}
 			model.put(WebKeys.TABS, tabs.getTabs());
 
+			//Build the navigation beans
+			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
+			
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count
 			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 

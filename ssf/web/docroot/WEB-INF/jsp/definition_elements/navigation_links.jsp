@@ -71,7 +71,8 @@
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="entry.noTitle" />--
 </c:if>
-<c:out value="${ssDefinitionEntry.title}" /></a>
+<c:out value="${ssDefinitionEntry.title}" /><img 
+  style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 <c:if test="${!empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <div style="display:inline">

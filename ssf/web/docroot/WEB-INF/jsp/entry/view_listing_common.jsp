@@ -94,13 +94,25 @@ function ss_addEntry(obj) {
 }
 
 var ss_currentEntryId = "";
-function ss_loadEntry(obj,id) {
+function ss_loadBinder(obj,id, entityType) {
+	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the binder
+		ss_linkMenu.showingMenu = 0;
+		return false;
+	} else {
+		return true;
+	}
+}
+
+function ss_loadEntry(obj, id, binderId, entityType) {
 	if (ss_displayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
 	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the entry
+		if (binderId != null && binderId != "") ss_linkMenu.binderId = binderId;
+		if (entityType != null && entityType != "") ss_linkMenu.entityType = entityType;
 		ss_linkMenu.showingMenu = 0;
 		return false;
 	}
@@ -157,11 +169,45 @@ if (self.parent && self.parent.ss_highlightLineById) {
 }
 </script>
 
+<ssf:ifnotadapter>
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+<% // Tabs %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+<div class="ss_clear"></div>
+
+<div class="ss_tab_canvas">
+<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+<div class="ss_decor-round-corners-top1"><div><div></div></div></div>
+	<div class="ss_decor-border3">
+		<div class="ss_decor-border4">
+			<div class="ss_rounden-content">
+			    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+
+<% // Navigation links %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+</ssf:ifnotadapter>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   processThisItem="true" 
   entry="${ssEntry}" />
+
+<ssf:ifnotadapter>
+			    </div>
+			</div>
+		</div>
+	</div>
+	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
+<% // Footer toolbar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+
+</div>
+</div>
+</ssf:ifnotadapter>
 
 <%
 	//See if this is the Popup view

@@ -13,7 +13,8 @@
 	}
 	boolean useAdaptor = true;
 	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	        (ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) ||
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP))) {
 		useAdaptor = false;
 	}
 	String ssFolderTableHeight = "";
@@ -36,6 +37,12 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
 		<portlet:param name="operation" value="subscribe"/>
 		</portlet:actionURL>";
+var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
+		<portlet:param name="action" value="view_folder_entry"/>
+		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+		<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
+		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
+		</portlet:renderURL>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
@@ -149,7 +156,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
     ><img class="ss_title_menu"
-    onClick="ss_linkMenu.showMenu(this, '${ssBinder.id}', '${entry1._docId}');"
+    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
@@ -210,14 +217,17 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
 </div>
 <div id="ss_emd" class="ss_link_menu">
 <ul class="ss_dropdownmenu">
-<li>Pop-up in new window</li>
-<li>Show in new tab</li>
-<li>Show entry profile</li>
+<li><a href="#" onClick="ss_linkMenu.currentTab(); return false;"><ssf:nlt tag="linkMenu.currentTab"/></a></li>
+<li><a href="#" onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li>
+<li><a href="#" onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li>
 </ul>
 </div>
 <script type="text/javascript">
 function ss_initLinkMenu() {
 	ss_linkMenu.menuDiv = "ss_emd";
+	ss_linkMenu.binderId = "${ssBinder.id}";
+	ss_linkMenu.entityType = "folderEntry";
+	ss_linkMenu.entryUrl = ss_placeholderEntryUrl;
 }
 ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
 </script>

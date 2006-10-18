@@ -2965,6 +2965,11 @@ var ss_linkMenu = new function() {
 	this.entityType;        //Entity type default of the current folder
 	this.showingMenu;       //0 = not showing a menu; 1 = showing a menu
 	this.linkObj;           //The link object that is active
+	this.binderUrl;
+	this.entryUrl;
+	this.currentId;
+	this.currentBinderId;
+	this.currentEntityType;
 	this.lastShownButton;       
 	
 	this.showButton = function(obj) {
@@ -2974,13 +2979,21 @@ var ss_linkMenu = new function() {
 	}
 	
 	this.showMenu = function(obj, id, binderId, entityType) {
-		if (binderId == null) this.binderId = binderId;
-		if (entityType == null) this.entityType = entityType;
+		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', entity = '+entityType)
+		if (binderId != null) this.binderId = binderId;
+		if (entityType != null) this.entityType = entityType;
 		if (this.showingMenu) {
 			ss_hideDiv(this.menuDiv)
 			this.showingMenu = 0;
 		}
 		this.showingMenu = 1;
+		this.currentId = id;
+		this.currentBinderId = this.binderId;
+		this.currentEntityType = this.entityType;
+		if (this.entityType == 'folder' || this.entityType == 'workspace') {
+			this.currentBinderId = id;
+		}
+		
 		this.linkObj = obj;
 		if (this.menuDiv != "") {
 			var menuObj = document.getElementById(this.menuDiv);
@@ -3004,6 +3017,46 @@ var ss_linkMenu = new function() {
 		ss_hideDiv(this.menuDiv)
 		this.showingMenu = 0;
 		this.linkObj = null;
+		this.currentId = "";
+		this.currentBinderId = "";
+		this.currentEntityType = "";
+	}
+	
+	this.currentTab = function() {
+		ss_debug('current tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		var url = this.buildBaseUrl();
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
+		self.location.href = url;
+	}
+	
+	this.newTab = function() {
+		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		var url = this.buildBaseUrl();
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
+		self.location.href = url;
+	}
+	
+	this.newWindow = function() {
+		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		var url = this.buildBaseUrl();
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
+		self.window.open(url, '_blank');
+		return false;
+	}
+	
+	this.buildBaseUrl = function() {
+		var url;
+		if (this.currentEntityType == 'folderEntry') {
+			url = this.entryUrl;
+		} else if (this.currentEntityType == 'folder') {
+			url = this.binderUrl;
+		} else if (this.currentEntityType == 'workspace') {
+			url = this.binderUrl
+		}
+		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(this.currentEntityType));
+		return url;
 	}
 }
 
