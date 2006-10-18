@@ -12,7 +12,8 @@
 	}
 	boolean useAdaptor2 = true;
 	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	        (ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) ||
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP))) {
 		useAdaptor2 = false;
 	}
 	String ssFolderTableHeight2 = "";

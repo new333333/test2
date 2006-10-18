@@ -24,10 +24,10 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer">
 
 <% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 <% // Tabs %>
-<%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 <div class="ss_clear"></div>
 
 <div class="ss_tab_canvas">
@@ -71,7 +71,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
 <% // Footer toolbar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
 </div>
 </div>

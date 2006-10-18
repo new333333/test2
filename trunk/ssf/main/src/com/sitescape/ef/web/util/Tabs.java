@@ -152,7 +152,7 @@ public class Tabs {
     			equals(EntityIdentifier.EntityType.user)) {
     		tab.put(TYPE, USER);
     	}
-		tab.put(TYPE, ENTRY);
+		//tab.put(TYPE, ENTRY);
 		tab.put(BINDER_ID, entry.getParentBinder().getId());
 		tab.put(ENTRY_ID, entry.getId());
 		tab.put(TITLE, entry.getTitle());

@@ -1,3 +1,5 @@
+<% // Tabs %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div id="ss_tabbar" class="ss_tabs">
 <!-- Start of tabs -->
 

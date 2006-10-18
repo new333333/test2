@@ -1,6 +1,20 @@
 <% // Search results listing of "things" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<script type="text/javascript">
+var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
+		<portlet:param name="action" value="ssActionPlaceHolder"/>
+		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+		<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
+		<portlet:param name="operation" value="view_entry"/>
+		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
+		</portlet:renderURL>";
+var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized">
+		<portlet:param name="action" value="ssActionPlaceHolder"/>
+		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
+		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
+		</portlet:renderURL>";
+</script>
 <div style="margin:0px;">
 <%
 	if (ssUser.getDisplayStyle() != null && 
@@ -162,6 +176,7 @@
     	  <ssf:param name="binderId" value="${entry1._docId}"/>
     	  <ssf:param name="newTab" value="1"/>
     	  </ssf:url>" 
+        onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
       </c:if>
       <c:if test="${entry1._entityType == 'workspace'}">
         href="<ssf:url     
@@ -173,6 +188,7 @@
     	  <ssf:param name="binderId" value="${entry1._docId}"/>
     	  <ssf:param name="newTab" value="1"/>
     	  </ssf:url>" 
+        onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
       </c:if>
       <c:if test="${entry1._entityType == 'group'}">
         href="<ssf:url     
@@ -182,12 +198,12 @@
           entryId="${entry1._docId}" 
           action="view_group"
           actionUrl="true" />" 
-        onClick="alert('This is a group'); return false;"
+        onClick="alert('This is a group'); //ss_loadGroup(this, '${entry1._docId}');return false;" 
       </c:if>
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
     ><img class="ss_title_menu"
-    onClick="ss_linkMenu.showMenu(this, '${entry1._binderId}', '${entry1._docId}', '${entry1._entityType}');"
+    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
@@ -247,14 +263,15 @@
 %>
 <div id="ss_tmd" class="ss_link_menu">
 <ul class="ss_dropdownmenu">
-<li>Pop-up in new window</li>
-<li>Show in new tab</li>
-<li>Show entry profile</li>
+<li><a href="#" onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li>
+<li><a href="#" onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li>
 </ul>
 </div>
 <script type="text/javascript">
 function ss_initLinkMenu() {
 	ss_linkMenu.menuDiv = "ss_tmd";
+	ss_linkMenu.binderUrl = ss_placeholderBinderUrl;
+	ss_linkMenu.entryUrl = ss_placeholderEntryUrl;
 }
 ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
 </script>

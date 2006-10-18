@@ -44,10 +44,10 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 <script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
 <% // Navigation bar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 <% // Tabs %>
-<%@ include file="/WEB-INF/jsp/definition_elements/tabbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 <div class="ss_clear"></div>
 
 <div class="ss_tab_canvas">
@@ -85,7 +85,7 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
 <% // Footer toolbar %>
-<%@ include file="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
 </div>
 </div>
