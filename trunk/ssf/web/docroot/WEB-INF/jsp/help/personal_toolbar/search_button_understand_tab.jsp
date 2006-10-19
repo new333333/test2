@@ -32,7 +32,7 @@ ss_helpSystem.highlight('ss_navbarSearchButton');
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showNextHelpSpot();" style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> 
+<a href="javascript: ss_helpSystem.showNextHelpSpot('', 'left');" style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> 
 &gt;&gt;&gt;</a>
 </div>
 </div>

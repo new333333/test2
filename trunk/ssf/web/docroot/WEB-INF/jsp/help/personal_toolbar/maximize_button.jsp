@@ -5,6 +5,10 @@
 
 <p><ssf:nlt tag="help.maximizeicon.content.intro"/></p>
 
+<p><ssf:nlt tag="help.maximizeicon.content.normalIcon"/></p>
+
+<p style="text-align:center;"><a href="javascript: ss_toggleShowHidePortal(this);" style="color:#0000ff;"><ssf:nlt tag="help.maximizeicon.content.toggleMaximize"/></a></p>
+
 </div>
 <script type="text/javascript">
 ss_helpSystem.highlight('ss_navbarHideShowPortalButton');

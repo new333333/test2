@@ -7,9 +7,10 @@ var ss_helpWelcomeText = "<ssf:nlt tag="help.welcome"/>";
 var ss_helpTocText = "<ssf:nlt tag="help.toc"/>";
 var ss_helpPreviousText = "<ssf:nlt tag="general.Previous"/>";
 var ss_helpNextText = "<ssf:nlt tag="general.Next"/>";
-var ss_helpCloseButtonText = "<ssf:nlt tag="button.close"/>";
+var ss_helpCloseButtonText = "<ssf:nlt tag="help.button.exit.help"/>";
 var ss_helpInstructions ="<ssf:nlt tag="help.instructions"/>";
-
+var ss_helpInstructions ="<ssf:nlt tag="help.instructions"/>";
+var ss_helpManualsButtonText ="<ssf:nlt tag="help.button.viewBooks"/>"
 ss_helpSystem.outputHelpWelcomeHtml();
 
 var ss_helpSpotGifSrc = "<html:imagesPath/>skins/${ss_user_skin}/toolbar/help_choices.gif";

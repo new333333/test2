@@ -3,7 +3,7 @@
 
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span> (1/1)
 
-<p><ssf:nlt tag="help.myworkspaceicon.content.intro"/></p>
+<p><ssf:nlt tag="help.globalStrings.notimplemented"/></p>
 
 </div>
 <br/>
@@ -14,7 +14,7 @@ ss_helpSystem.highlight('ss_navbarMyWorkspaceButton');
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showPreviousHelpSpot();" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showPreviousHelpSpot('', 'left');" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
