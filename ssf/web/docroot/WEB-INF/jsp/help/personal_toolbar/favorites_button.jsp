@@ -6,7 +6,9 @@
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"/></p>
 
-<p><ssf:nlt tag="help.favoritesicon.content.intro.introduceList"/></p>
+<p><a href="javascript: ss_showFavoritesPane();" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
+
+<p><ssf:nlt tag="help.favoritesicon.content.intro.listIntro"/></p>
 
 <ul style="list-style-type:disc;">
 
@@ -16,6 +18,8 @@
 
 <li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
 </ul>
+
+<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
 
 </div>
 <br/>

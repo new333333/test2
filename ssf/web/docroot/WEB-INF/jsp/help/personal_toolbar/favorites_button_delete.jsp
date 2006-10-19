@@ -13,6 +13,8 @@
 
 </ol>
 
+<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
+
 </div>
 <br/>
 
