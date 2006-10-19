@@ -2960,17 +2960,21 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
 
 //Routines that support the link dropdown menu concept
 var ss_linkMenu = new function() {
-	this.menuDiv;	        //Div id of the menu div
-	this.binderId;          //Binder id of the current folder
-	this.entityType;        //Entity type default of the current folder
-	this.showingMenu;       //0 = not showing a menu; 1 = showing a menu
-	this.linkObj;           //The link object that is active
+	this.menuDiv;	           //Div id of the menu div
+	this.binderId;             //Binder id of the current folder
+	this.definitionType;       //Definition type default of the current entry
+	this.binderDefinitionType; //DeifinitionTypeType of current folder (9 = file folder)
+	this.showingMenu;          //0 = not showing a menu; 1 = showing a menu
+	this.linkObj;              //The link object that is active
 	this.binderUrl;
 	this.entryUrl;
+	this.fileUrl;
 	this.currentId;
 	this.currentBinderId;
-	this.currentEntityType;
+	this.currentDefinitionType;
 	this.lastShownButton;       
+	this.menuLinkShowEntry;
+	this.menuLinkShowFile;
 	
 	this.showButton = function(obj) {
 		if (this.lastShownButton && this.lastShownButton != obj) this.hideMenu(obj);
@@ -2978,10 +2982,10 @@ var ss_linkMenu = new function() {
 		this.lastShownButton = obj;
 	}
 	
-	this.showMenu = function(obj, id, binderId, entityType) {
-		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', entity = '+entityType)
+	this.showMenu = function(obj, id, binderId, definitionType) {
+		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', definition = '+definitionType)
 		if (binderId != null) this.binderId = binderId;
-		if (entityType != null) this.entityType = entityType;
+		if (definitionType != null) this.definitionType = definitionType;
 		if (this.showingMenu) {
 			ss_hideDiv(this.menuDiv)
 			this.showingMenu = 0;
@@ -2989,8 +2993,8 @@ var ss_linkMenu = new function() {
 		this.showingMenu = 1;
 		this.currentId = id;
 		this.currentBinderId = this.binderId;
-		this.currentEntityType = this.entityType;
-		if (this.entityType == 'folder' || this.entityType == 'workspace') {
+		this.currentDefinitionType = this.definitionType;
+		if (this.definitionType == '5' || this.definitionType == '8' || this.definitionType == '9') {
 			this.currentBinderId = id;
 		}
 		
@@ -2999,10 +3003,27 @@ var ss_linkMenu = new function() {
 			var menuObj = document.getElementById(this.menuDiv);
 			ss_moveObjectToBody(menuObj)
 			var x = parseInt(ss_getObjAbsX(obj) + 1)
-			var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 9);
+			var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 8);
 			menuObj.style.top = y + "px";
 			menuObj.style.left = x + "px";
 			menuObj.style.zIndex = ssMenuZ;
+			if (this.menuLinkShowEntry != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowEntry);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'none';
+					if (this.currentDefinitionType == '1' || this.currentDefinitionType == '6' || 
+							this.currentDefinitionType == '10') 
+						menuLinkObj.style.display = 'block';
+				}
+			}
+			if (this.menuLinkShowFile != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowFile);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'none';
+					if (this.binderDefinitionType == '9') 
+						menuLinkObj.style.display = 'block';
+				}
+			}
 			ss_ShowHideDivXY(this.menuDiv, x, y)
 			ss_HideDivOnSecondClick(this.menuDiv)
 		}
@@ -3019,45 +3040,87 @@ var ss_linkMenu = new function() {
 		this.linkObj = null;
 		this.currentId = "";
 		this.currentBinderId = "";
-		this.currentEntityType = "";
+		this.currentDefinitionType = "";
 	}
 	
 	this.currentTab = function() {
-		ss_debug('current tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		ss_debug('current tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
 		self.location.href = url;
 	}
 	
 	this.newTab = function() {
-		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
 		self.location.href = url;
 	}
 	
 	this.newWindow = function() {
-		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', entity = '+this.currentEntityType)
+		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
 		self.window.open(url, '_blank');
 		return false;
 	}
 	
+	this.showEntry = function() {
+		ss_loadEntry(this.lastShownButton, this.currentId)
+		return false;
+	}
+	
+	this.showFile = function() {
+		var url = this.fileUrl;
+		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
+		self.window.open(url, '_blank');
+		return false;
+	}
+	
 	this.buildBaseUrl = function() {
 		var url;
-		if (this.currentEntityType == 'folderEntry') {
+		if (this.currentDefinitionType == '1' || this.currentDefinitionType == '6' || 
+				this.currentDefinitionType == '10') {
 			url = this.entryUrl;
-		} else if (this.currentEntityType == 'folder') {
+		} else if (this.currentDefinitionType == '5' || this.currentDefinitionType == '9') {
 			url = this.binderUrl;
-		} else if (this.currentEntityType == 'workspace') {
+		} else if (this.currentDefinitionType == '8') {
 			url = this.binderUrl
 		}
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
-		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(this.currentEntityType));
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
 		return url;
 	}
+}
+
+function ss_getActionFromEntity(entityType) {
+	if (entityType == 'folderEntry') return 'view_folder_entry';
+	if (entityType == 'user') return 'view_profile_entry';
+	if (entityType == 'group') return 'view_profile_entry';
+	if (entityType == 'folder') return 'view_folder_listing';
+	if (entityType == 'workspace') return 'view_ws_listing';
+	if (entityType == 'profiles') return 'view_profile_listing';
+	return 'view_folder_entry'
+}
+
+//FOLDER_ENTRY=1;
+//FOLDER_VIEW=5;
+//PROFILE_VIEW=6;
+//PROFILE_ENTRY_VIEW=7;
+//WORKSPACE_VIEW=8;
+//FILE_FOLDER_VIEW=9;
+//FILE_ENTRY_VIEW=10;
+function ss_getActionFromDefinitionType(definitionType) {
+	if (definitionType == '1') return 'view_folder_entry';
+	if (definitionType == '10') return 'view_folder_entry';
+	if (definitionType == '7') return 'view_profile_entry';
+	if (definitionType == '5') return 'view_folder_listing';
+	if (definitionType == '9') return 'view_folder_listing';
+	if (definitionType == '8') return 'view_ws_listing';
+	if (definitionType == '6') return 'view_profile_listing';
+	return 'view_folder_entry'
 }
 
 function ss_launchUrlInNewWindow(obj, fileName) {

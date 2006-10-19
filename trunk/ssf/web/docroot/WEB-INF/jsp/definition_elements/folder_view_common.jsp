@@ -43,6 +43,11 @@ var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
 		<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
 		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
 		</portlet:renderURL>";
+var ss_placeholderFileUrl = "<ssf:url 
+    	webPath="viewFile"
+    	folderId="ssBinderIdPlaceHolder"
+    	entryId="ssEntryIdPlaceHolder" >
+    	</ssf:url>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
@@ -156,7 +161,7 @@ var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
     ><img class="ss_title_menu"
-    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}');"
+    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._definitionType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
@@ -216,18 +221,29 @@ var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
 %>
 </div>
 <div id="ss_emd" class="ss_link_menu">
-<ul class="ss_dropdownmenu">
-<li><a href="#" onClick="ss_linkMenu.currentTab(); return false;"><ssf:nlt tag="linkMenu.currentTab"/></a></li>
-<li><a href="#" onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li>
-<li><a href="#" onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li>
-</ul>
+<ul id="ss_folderMenuShowFileLink" class="ss_title_menu"><li><a href="#" 
+  onClick="ss_linkMenu.showFile(); return false;"><ssf:nlt 
+  tag="linkMenu.showFile"/></a></li></ul>
+<ul id="ss_folderMenuShowEntryLink" class="ss_title_menu"><li><a href="#" 
+  onClick="ss_linkMenu.showEntry(); return false;"><ssf:nlt 
+  tag="linkMenu.showEntry"/></a></li></ul>
+<ul class="ss_title_menu"><li><a href="#" 
+  onClick="ss_linkMenu.currentTab(); return false;"><ssf:nlt tag="linkMenu.currentTab"/></a></li></ul>
+<ul class="ss_title_menu"><li><a href="#" 
+  onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li></ul>
+<ul class="ss_title_menu"><li><a href="#" 
+  onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li></ul>
 </div>
 <script type="text/javascript">
 function ss_initLinkMenu() {
 	ss_linkMenu.menuDiv = "ss_emd";
 	ss_linkMenu.binderId = "${ssBinder.id}";
 	ss_linkMenu.entityType = "folderEntry";
+	ss_linkMenu.binderDefinitionType = "${ssBinder.definitionType}";
 	ss_linkMenu.entryUrl = ss_placeholderEntryUrl;
+	ss_linkMenu.fileUrl = ss_placeholderFileUrl;
+	ss_linkMenu.menuLinkShowEntry = 'ss_folderMenuShowEntryLink';
+	ss_linkMenu.menuLinkShowFile = 'ss_folderMenuShowFileLink';
 }
 ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
 </script>

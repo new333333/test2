@@ -154,16 +154,6 @@ function ss_restoreImages (imageId, currentEntry) {
 	return false;
 }
 
-function ss_getActionFromEntity(entityType) {
-	if (entityType == 'folderEntry') return 'view_folder_entry';
-	if (entityType == 'user') return 'view_profile_entry';
-	if (entityType == 'group') return 'view_profile_entry';
-	if (entityType == 'folder') return 'view_folder_listing';
-	if (entityType == 'workspace') return 'view_ws_listing';
-	if (entityType == 'profiles') return 'view_profile_listing';
-	return 'view_folder_entry'
-}
-
 function ss_getNextEntryId(imageId) {
 	var nextEntry = "";
 	var nextBinderId = "";

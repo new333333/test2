@@ -72,6 +72,7 @@ public class EntityIndexUtils {
     public static final String FILE_ID_FIELD = "_fileID";
     public static final String RATING_FIELD="_rating";
     public static final String ENTITY_FIELD="_entityType"; 
+    public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
     public static final String GROUP_SEE_COMMUNITY="groupCommunity";
     public static final String GROUP_SEE_ANY="groupAny";
     
@@ -105,6 +106,12 @@ public class EntityIndexUtils {
     }
     public static void addEntityType(Document doc, DefinableEntity entry) {
       	Field eField = new Field(ENTITY_FIELD, entry.getEntityIdentifier().getEntityType().name(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	doc.add(eField);
+    }
+    public static void addDefinitionType(Document doc, DefinableEntity entry) {
+    	Integer definitionType = entry.getDefinitionType();
+    	if (definitionType == null) definitionType = 0;
+      	Field eField = new Field(DEFINITION_TYPE_FIELD, definitionType.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(eField);
     }
     public static void addEntryType(Document doc, DefinableEntity entry) {

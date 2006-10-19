@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import javax.activation.FileTypeMap;
 
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
@@ -43,10 +44,17 @@ public class ViewFileController extends SAbstractController {
 			parent = binder;
 		}
 		//Set up the beans needed by the jsps
-		String fileId = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE_ID); 
+		FileAttachment fa = null;
+		FileAttachment topAtt = null;
+		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
+		if (fileId.equals("")) {
+			//This must be a request for the title file; go set that up.
+			CustomAttribute ca = entity.getCustomAttribute("_fileEntryTitle");
+			if (ca == null) ca = entity.getCustomAttribute("title");
+			if (ca != null && ca.getValue() instanceof FileAttachment) fileId = ((FileAttachment)ca.getValue()).getId();
+		}
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
-		FileAttachment fa=null;
-		FileAttachment topAtt = (FileAttachment)entity.getAttachment(fileId);
+		if (!fileId.equals("")) topAtt = (FileAttachment)entity.getAttachment(fileId);
 		if (topAtt != null) {
 			//see if we want a version
 			String versionId = RequestUtils.getStringParameter(request, WebKeys.URL_VERSION_ID, ""); 
