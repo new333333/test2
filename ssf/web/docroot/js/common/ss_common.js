@@ -2161,11 +2161,13 @@ var ss_helpSystem = {
 			//ss_debug("highlightObj = " + ss_helpSystemHighlights[i])
 			var id = ss_helpSystemHighlights[i];
 			var hObj = document.getElementById(id);
-			hObj.style.border = ss_helpSystemHighlightsBorder[id];
-			ss_helpSystemHighlights[i] = null;
-			if (ss_helpSystemHighlightsBorderTimer[id]) {
-				clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
-				ss_helpSystemHighlightsBorderTimer[id] = null;
+		    if (hObj != null) {
+			    hObj.style.border = ss_helpSystemHighlightsBorder[id];
+			    ss_helpSystemHighlights[i] = null;
+			    if (ss_helpSystemHighlightsBorderTimer[id]) {
+				    clearTimeout(ss_helpSystemHighlightsBorderTimer[id])
+				    ss_helpSystemHighlightsBorderTimer[id] = null;
+			    }
 			}
 		}
 		ss_helpSystemHighlights = new Array();
@@ -2184,13 +2186,15 @@ var ss_helpSystem = {
 		}
 		var obj = document.getElementById(id);
 		//ss_debug("  border color: " + obj.style.borderTopColor)
-		if (obj.style.borderTopColor == "red") {
-			obj.style.border = "white 2px solid";
-		} else {
-			obj.style.border = "red 2px solid";
-		}
-		if (count-- >= 0) {
-			ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', "+count+")", 200);
+		if (obj != null) {
+		    if (obj.style.borderTopColor == "red") {
+			    obj.style.border = "white 2px solid";
+		    } else {
+			    obj.style.border = "red 2px solid";
+		    }
+		    if (count-- >= 0) {
+			    ss_helpSystemHighlightsBorderTimer[id] = setTimeout("ss_helpSystem.blinkHighlight('"+id+"', "+count+")", 200);
+		    }
 		}
 	},
 	
