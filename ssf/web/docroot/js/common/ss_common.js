@@ -1914,23 +1914,27 @@ var ss_helpSystem = {
     	tocDiv.style.display = "none";
 	},
 	
-	showNextHelpSpot : function(id) {
+	showNextHelpSpot : function(id, xAlignment, yAlignment) {
+		if (xAlignment == null) xAlignment = "";
+		if (yAlignment == null) yAlignment = "";
 		ss_helpSystemTOCindex++;
 		if (ss_helpSystemTOCindex < 0) ss_helpSystemTOCindex = 0;
 		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
 		if (ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
 			this.hideTOC();
-			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex]);
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex], xAlignment, yAlignment);
 		}
 	},
 	
-	showPreviousHelpSpot : function(id) {
+	showPreviousHelpSpot : function(id, xAlignment, yAlignment) {
+		if (xAlignment == null) xAlignment = "";
+		if (yAlignment == null) yAlignment = "";
 		ss_helpSystemTOCindex--;
 		if (ss_helpSystemTOCindex < 0) ss_helpSystemTOCindex = ss_helpSystemTOC.length-1;
 		if (ss_helpSystemTOCindex >= ss_helpSystemTOC.length) ss_helpSystemTOCindex = 0;
 		if (ss_helpSystemTOCindex >= 0 && ss_helpSystemTOCindex < ss_helpSystemTOC.length) {
 			this.hideTOC();
-			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex]);
+			this.showHelpSpotInfo(ss_helpSystemTOC[ss_helpSystemTOCindex], xAlignment, yAlignment);
 		}
 	},
 	
