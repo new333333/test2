@@ -725,6 +725,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add EntityType
         EntityIndexUtils.addEntityType(indexDoc, entity);
         
+        // Add DefinitionType
+        EntityIndexUtils.addDefinitionType(indexDoc, entity);
+        
        // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);
         

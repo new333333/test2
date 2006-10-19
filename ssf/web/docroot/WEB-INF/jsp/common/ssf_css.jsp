@@ -525,6 +525,30 @@ div.ss_sliding_table_column {
 .ss_sliding_table_info_popup a:hover {
   color: ${ss_sliding_table_link_hover_color} !important;
 }
+table.ss_mouseOverInfo {
+  position:relative;
+  left:1px;
+  top:1px;
+}
+.ss_mouseOverInfo span {
+  position:relative;
+  left:-1px;
+  top:0px;
+  border:1px solid black;
+  padding-right:10px;
+}
+.ss_mouseOverInfo td a.ss_title_menu span {
+  position:relative;
+  left:-17px;
+  top:0px;
+  border:1px solid black;
+  padding-right:10px;
+}
+.ss_mouseOverInfo td a.ss_title_menu img {
+  position:relative;
+  left:-20px;
+  top:0px;
+}
 
 
 /* Folder */
@@ -1534,6 +1558,20 @@ a.ss_title_menu span {
 	padding:0px;
 	left:-16px;
 }
+
+ul.ss_title_menu {
+  list-style: outside;
+  text-align:left;
+  margin:0px 2px 4px 13px;
+  padding: 0px;
+}
+
+ul.ss_title_menu li {
+  list-style-type: square;
+  margin-left: 0px;
+  margin-bottom: 0px;
+  padding-left: 2px;
+} 
 
 /* Footer */
 div.ss_bottomlinks {
