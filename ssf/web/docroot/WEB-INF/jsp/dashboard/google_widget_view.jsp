@@ -36,16 +36,17 @@
 		googleScript0 = googleScript0.replaceAll("</script", "</scr'+'ipt");
 	}
 %>
-<iframe name="<portlet:namespace/>_ss_googleWidget${ssComponentId}" style="width: 99%;
+<iframe id="<portlet:namespace/>_ss_googleWidget${ssComponentId}" 
+  name="<portlet:namespace/>_ss_googleWidget${ssComponentId}" style="width: 99%;
   height: ${ssDashboard.dashboard.components[ssComponentId].data.height[0]};
   margin:0px; padding:0px;" frameBorder="no" >xxx</iframe>
 
 <script type="text/javascript">
-function ss_initGoogleWidget<portlet:namespace/>() {
+function ss_initGoogleWidget<portlet:namespace/>${ssComponentId}() {
 	var ifObj = document.getElementById('<portlet:namespace/>_ss_googleWidget${ssComponentId}');
 	if (ifObj == null) return;
 	window.<portlet:namespace/>_ss_googleWidget${ssComponentId}.document.writeln('<%= googleScript0 %>');
 }
-ss_createOnLoadObj('ss_initGoogleWidget<portlet:namespace/>', ss_initGoogleWidget<portlet:namespace/>);
+ss_createOnLoadObj('ss_initGoogleWidget<portlet:namespace/>${ssComponentId}', ss_initGoogleWidget<portlet:namespace/>${ssComponentId});
 </script>
 
