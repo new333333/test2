@@ -351,9 +351,8 @@ public class DashboardHelper {
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 
 		//See if the components are shown or hidden
-		UserProperties folderProps = getInstance().getProfileModule().getUserProperties(null, binder.getId());
-		Boolean showAllComponents = (Boolean) folderProps.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL);
-		if (showAllComponents == null) showAllComponents = Boolean.TRUE;
+		Boolean showAllComponents = Boolean.FALSE;
+		if (checkIfShowingAllComponents(binder)) showAllComponents = Boolean.TRUE;
 		model.put(WebKeys.DASHBOARD_SHOW_ALL, showAllComponents);
 
 		return ssDashboard;
@@ -1003,6 +1002,22 @@ public class DashboardHelper {
 			}
     	}
     	return false;
+	}
+	
+	public static boolean checkIfShowingAllComponents() {
+		//See if the components are shown or hidden
+		UserProperties folderProps = getInstance().getProfileModule().getUserProperties(null);
+		Boolean showAllComponents = (Boolean) folderProps.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL);
+		if (showAllComponents == null) showAllComponents = Boolean.TRUE;
+		return showAllComponents;
+	}
+	
+	public static boolean checkIfShowingAllComponents(Binder binder) {
+		//See if the components are shown or hidden
+		UserProperties folderProps = getInstance().getProfileModule().getUserProperties(null, binder.getId());
+		Boolean showAllComponents = (Boolean) folderProps.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL);
+		if (showAllComponents == null) showAllComponents = Boolean.TRUE;
+		return showAllComponents;
 	}
 	
 }

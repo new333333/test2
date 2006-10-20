@@ -37,76 +37,42 @@
   
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
+  <div id="<portlet:namespace/>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
+	<ul class="ss_dropdownmenu" 
+	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
+	  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls('<portlet:namespace/>');return false;"><span
+	    id="<portlet:namespace/>_dashboard_menu_controls"><ssf:nlt 
+	    tag="dashboard.showHiddenControls"/></span></a></li>
+	  <li><a href="<portlet:renderURL>
+	  <portlet:param name="action" value="modify_dashboard"/>
+	  <portlet:param name="binderId" value="${ssBinder.id}"/>
+	  <portlet:param name="_scope" value="local"/>
+	  <portlet:param name="operation" value="set_dashboard_title"/>
+	  </portlet:renderURL>"><ssf:nlt tag="dashboard.setTitle"/></a></li>
+	  <li><a href="<portlet:actionURL>
+	  <portlet:param name="action" value="modify_dashboard"/>
+	  <portlet:param name="binderId" value="${ssBinder.id}"/>
+	  <portlet:param name="_scope" value="global"/>
+	  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.global"/></a></li>
+	  <c:if test="${ssDashboard.sharedModificationAllowed}">
+	    <li><a href="<portlet:actionURL>
+	    <portlet:param name="action" value="modify_dashboard"/>
+	    <portlet:param name="binderId" value="${ssBinder.id}"/>
+	    <portlet:param name="_scope" value="binder"/>
+	    </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
+	  </c:if>
+	</ul>
+  </div>
+
 <!-- Start of dashboard canvas -->
-  <div class="ss_util_cartouche">
-  <div class="ss_utils">
-		      <form "style="display:inline;">
-		        <c:if test="${ss_show_all_dashboard_components}">
-		          <a href="#" class="ss_util ss_short"
-		              >
-		            <img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
-		              id="ss_showHideImg_all"
-		              alt="<ssf:nlt tag="button.hide"/>" 
-		              style="margin:4px 4px 5px 4px;"
-		              onClick="ss_showHideAllDashboardComponents(this,'<portlet:namespace/>_dashboardComponentCanvas',
-		                				'binderId=${ssBinder.id}');return false;"
-			        /></a>
-			      </c:if>
-			      <c:if test="${!ss_show_all_dashboard_components}">
-			        <a href="#" class="ss_util ss_short"
-		              >
-		              <img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
-		                id="ss_showHideImg_all"
-		                alt="<ssf:nlt tag="button.show"/>" 
-		                style="margin:4px 4px 5px 4px;"
-		               onClick="ss_showHideAllDashboardComponents(this,'<portlet:namespace/>_dashboardComponentCanvas',
-		                				'binderId=${ssBinder.id}');return false;"
-			       /></a>
-		          </c:if>
-		        </form>
-	  <span class="ss_utilwrap1"><span class="ss_utilwrap2">
-			<%
-				String ss_dashboardTitle = NLT.get("dashboard.configure");
-			%>
-			<ssf:menu title="<%= ss_dashboardTitle %>" titleClass="ss_util ss_long" 
-			  titleId="ss_addDashboardContent" menuClass="ss_dashboard_menu" menuWidth="300px">
-				<ul class="ss_dropdownmenu" 
-				  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-				  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls('<portlet:namespace/>');return false;"><span
-				    id="<portlet:namespace/>_dashboard_menu_controls"><ssf:nlt 
-				    tag="dashboard.showHiddenControls"/></span></a></li>
-				  <li><a href="<portlet:renderURL>
-				  <portlet:param name="action" value="modify_dashboard"/>
-				  <portlet:param name="binderId" value="${ssBinder.id}"/>
-				  <portlet:param name="_scope" value="local"/>
-				  <portlet:param name="operation" value="set_dashboard_title"/>
-				  </portlet:renderURL>"><ssf:nlt tag="dashboard.setTitle"/></a></li>
-				  <li><a href="<portlet:actionURL>
-				  <portlet:param name="action" value="modify_dashboard"/>
-				  <portlet:param name="binderId" value="${ssBinder.id}"/>
-				  <portlet:param name="_scope" value="global"/>
-				  </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.global"/></a></li>
-				  <c:if test="${ssDashboard.sharedModificationAllowed}">
-				    <li><a href="<portlet:actionURL>
-				    <portlet:param name="action" value="modify_dashboard"/>
-				    <portlet:param name="binderId" value="${ssBinder.id}"/>
-				    <portlet:param name="_scope" value="binder"/>
-				    </portlet:actionURL>"><ssf:nlt tag="dashboard.configure.binder"/></a></li>
-				  </c:if>
-		
-				  <li><a href="#" onClick="ss_changeStyles('debug');return false;"><span
-				    id="<portlet:namespace/>_dashboard_menu_controls">Change color to 'debug' [test code]</span></a></li>
-		
-				  <li><a href="#" onClick="ss_changeStyles('blackandwhite');return false;"><span
-				    id="<portlet:namespace/>_dashboard_menu_controls">Change color to 'blackandwhite' [test code]</span></a></li>
-		
-				</ul>
-			</ssf:menu>
-	  </span></span>
- </div>
- </div>
- <div class="ss_clear"></div>
- <div>
+ <div id="<portlet:namespace/>_dashboardComponentCanvas"
+	<c:if test="${ss_show_all_dashboard_components}">
+	  style="visibility:visible; display:block;"
+	</c:if>
+	<c:if test="${!ss_show_all_dashboard_components}">
+	  style="visibility:hidden; display:none;"
+	</c:if>
+ >
  <div class="ss_decor-round-corners-top2 ss_innerContentBegins" ><div><div>
  </div></div></div>
 <div class="ss_decor-border5">
@@ -125,14 +91,7 @@
 
 
 		<!-- Start of dashboard components -->
-		<div id="<portlet:namespace/>_dashboardComponentCanvas"
-		<c:if test="${ss_show_all_dashboard_components}">
-		  style="visibility:visible; display:block;"
-		</c:if>
-		<c:if test="${!ss_show_all_dashboard_components}">
-		  style="visibility:hidden; display:none;"
-		</c:if>
-		>
+		<div>
 
 <c:set var="ss_dashboard_table_scope" value="local" scope="request"/>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_table.jsp" %>

@@ -458,13 +458,28 @@ public class ListFolderController extends  SAbstractController {
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 
-		//	The "Add penlets" menu
+		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
 		if (DefinitionHelper.checkIfBinderShowingDashboard(folder)) {
 			//This folder is showing the dashboard
+			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			folderToolbar.addToolbarMenu("3_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
+			
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+					response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
+					folder.getId().toString()+"');return false;");
+			if (DashboardHelper.checkIfShowingAllComponents(folder)) {
+				folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+			} else {
+				folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+			}
 		}
 
 		//The "Footer" menu

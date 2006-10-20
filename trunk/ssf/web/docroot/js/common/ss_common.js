@@ -2255,16 +2255,14 @@ function ss_showHideAllDashboardComponents(obj, divId, idStr) {
 	var formObj = ss_getContainingForm(obj)
 	var url = "";
 	var canvas = document.getElementById(divId);
-	if (obj.src.match(/hide.gif/)) {
+	if (obj.innerHTML == ss_componentTextHide) {
 		url = ss_dashboardAjaxUrl + "\&operation=hide_all_dashboard_components\&" + idStr;
-	    obj.src = ss_componentSrcShow;
-	    obj.alt = ss_componentAltShow;
+	    obj.innerHTML = ss_componentTextShow;
 		canvas.style.visibility = 'hidden';
 		canvas.style.display = 'none';
 	} else { 
 		url = ss_dashboardAjaxUrl + "\&operation=show_all_dashboard_components\&" + idStr;
-	    obj.src = ss_componentSrcHide;
-	    obj.alt = ss_componentAltHide;
+	    obj.innerHTML = ss_componentTextHide;
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
 	}
