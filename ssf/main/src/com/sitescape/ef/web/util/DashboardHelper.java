@@ -316,44 +316,20 @@ public class DashboardHelper {
 		}
 		
 		//Get the lists of dashboard components that are supported
-		String[] components_wide = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.wide", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowFixed = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowFixed", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowVariable = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowVariable", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+		String[] components_list = SPropsUtil.getCombinedPropertyList(
+				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 		
 		List cw = new ArrayList();
-		List cnf = new ArrayList();
-		List cnv = new ArrayList();
 		Map componentTitles = new HashMap();
-		for (int i = 0; i < components_wide.length; i++) {
-			if (!components_wide[i].trim().equals("")) {
-				String component = components_wide[i].trim();
+		for (int i = 0; i < components_list.length; i++) {
+			if (!components_list[i].trim().equals("")) {
+				String component = components_list[i].trim();
 				cw.add(component);
 				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
 				componentTitles.put(component, componentTitle);
 			}
 		}
-		for (int i = 0; i < components_narrowFixed.length; i++) {
-			if (!components_narrowFixed[i].trim().equals("")) {
-				String component = components_narrowFixed[i].trim();
-				cnf.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		for (int i = 0; i < components_narrowVariable.length; i++) {
-			if (!components_narrowVariable[i].trim().equals("")) {
-				String component = components_narrowVariable[i].trim();
-				cnv.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_FIXED, cnf);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_VARIABLE, cnv);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_WIDE, cw);
+		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_LIST, cw);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans
@@ -411,44 +387,20 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard.getProperty(DashboardHelper.Wide_Bottom)));
 		
 		//Get the lists of dashboard components that are supported
-		String[] components_wide = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.wide", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowFixed = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowFixed", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		String[] components_narrowVariable = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.narrowVariable", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+		String[] components_list = SPropsUtil.getCombinedPropertyList(
+				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 		
 		List cw = new ArrayList();
-		List cnf = new ArrayList();
-		List cnv = new ArrayList();
 		Map componentTitles = new HashMap();
-		for (int i = 0; i < components_wide.length; i++) {
-			if (!components_wide[i].trim().equals("")) {
-				String component = components_wide[i].trim();
+		for (int i = 0; i < components_list.length; i++) {
+			if (!components_list[i].trim().equals("")) {
+				String component = components_list[i].trim();
 				cw.add(component);
 				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
 				componentTitles.put(component, componentTitle);
 			}
 		}
-		for (int i = 0; i < components_narrowFixed.length; i++) {
-			if (!components_narrowFixed[i].trim().equals("")) {
-				String component = components_narrowFixed[i].trim();
-				cnf.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		for (int i = 0; i < components_narrowVariable.length; i++) {
-			if (!components_narrowVariable[i].trim().equals("")) {
-				String component = components_narrowVariable[i].trim();
-				cnv.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_FIXED, cnf);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_NARROW_VARIABLE, cnv);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_WIDE, cw);
+		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_LIST, cw);
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans

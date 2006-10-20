@@ -11,7 +11,7 @@
 	  <div style="margin:10px;">
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
-        <c:forEach var="component" items="${ssDashboard.components_wide}">
+        <c:forEach var="component" items="${ssDashboard.components_list}">
            <input type="radio" name="name" value="${component}">
              <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
            <br>
