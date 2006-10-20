@@ -27,12 +27,14 @@
 	String googleScript0 = "";
 	Map dashboard = (Map)ssDashboard.get("dashboard");
 	if (dashboard != null) components = (Map)dashboard.get("components");
-	if (component != null) component = (Map)components.get(ssComponentId.toString());
-	if (data != null) data = (Map)component.get("data");
-	if (googleScript != null) googleScript = (String[])data.get("google_widget");
-	String googleScript0 = googleScript[0].replaceAll("'", "\\'");
-	googleScript0 = googleScript0.replaceAll("<script", "<scr'+'ipt");
-	googleScript0 = googleScript0.replaceAll("</script", "</scr'+'ipt");
+	if (components != null) component = (Map)components.get(ssComponentId.toString());
+	if (component != null) data = (Map)component.get("data");
+	if (data != null && data.containsKey("google_widget")) {
+		googleScript = (String[])data.get("google_widget");
+		googleScript0 = googleScript[0].replaceAll("'", "\\'");
+		googleScript0 = googleScript0.replaceAll("<script", "<scr'+'ipt");
+		googleScript0 = googleScript0.replaceAll("</script", "</scr'+'ipt");
+	}
 %>
 <iframe name="<portlet:namespace/>_ss_googleWidget${ssComponentId}" style="width: 99%;
   height: ${ssDashboard.dashboard.components[ssComponentId].data.height[0]};
