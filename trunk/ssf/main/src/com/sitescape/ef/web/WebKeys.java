@@ -197,9 +197,7 @@ public class WebKeys {
     public static final String DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE="narrow_variable";
     public static final String DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM="wide_bottom";
     public static final String DASHBOARD_COMPONENT_TITLES="component_titles";
-    public static final String DASHBOARD_COMPONENTS_NARROW_FIXED="components_narrow_fixed";
-    public static final String DASHBOARD_COMPONENTS_NARROW_VARIABLE="components_narrow_variable";
-    public static final String DASHBOARD_COMPONENTS_WIDE="components_wide";
+    public static final String DASHBOARD_COMPONENTS_LIST="components_list";
     public static final String DASHBOARD_LIST="dashboardList";
     public static final String DASHBOARD_MAP="dashboard";
     public static final String DASHBOARD_RETURN_VIEW="returnView";
