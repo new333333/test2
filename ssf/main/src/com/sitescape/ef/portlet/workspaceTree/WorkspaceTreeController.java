@@ -276,10 +276,27 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
 		} catch (AccessControlException ac) {};
 		
-		//	The "Add penlets" menu
-		Map qualifiers = new HashMap();
-		qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-		toolbar.addToolbarMenu("4_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+		//	The "Manage dashboard" menu
+		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
+			toolbar.addToolbarMenu("4_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+			toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
+			toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
+
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+					response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
+					workspace.getId().toString()+"');return false;");
+			if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
+				toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+			} else {
+				toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+			}
+		}
 
 		//The "Footer" menu
 		//RSS link 

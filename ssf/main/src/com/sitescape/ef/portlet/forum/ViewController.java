@@ -159,17 +159,32 @@ public class ViewController  extends SAbstractController {
   			}
  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);		
 		} else if (DASHBOARD_PORTLET.equals(displayType)) {
+			if (d == null) {
+				d = (DashboardPortlet)getDashboardModule().getDashboard(prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null));
+			}
 			Toolbar toolbar = new Toolbar();
+			toolbar.addToolbarMenu("1_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			toolbar.addToolbarMenu("1_addPenlets", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
+			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
+
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+					response.getNamespace() + "_dashboardComponentCanvas', 'dashboardId="+d.getId()+"');return false;");
+			if (DashboardHelper.checkIfShowingAllComponents()) {
+				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+			} else {
+				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+			}
+			
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
   	        User user = RequestContextHolder.getRequestContext().getUser();
 			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 			model.put(WebKeys.USER_PROPERTIES, userProperties);
-			if (d == null) {
-				d = (DashboardPortlet)getDashboardModule().getDashboard(prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null));
-			}
 			model.put(WebKeys.DASHBOARD_ID, d.getId());
 			DashboardHelper.getDashboardMap(d, userProperties, model);
  			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
