@@ -1503,7 +1503,7 @@ div.ss_actions_bar_submenu {
 	border-bottom:1px solid #E0DFEF;
 	border-right-style:none;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
-	width:250px;
+	width:350px;
     line-height:20px;
 }
 .ss_actions_bar_submenu div {

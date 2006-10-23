@@ -463,29 +463,59 @@ public class ListFolderController extends  SAbstractController {
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
 		if (DefinitionHelper.checkIfBinderShowingDashboard(folder)) {
+			boolean dashboardContentExists = false;
+			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
+				Map dashboard = (Map)ssDashboard.get("dashboard");
+				if (dashboard != null) {
+					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
+				}
+			}
+			
 			//This folder is showing the dashboard
 			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			folderToolbar.addToolbarMenuItem("3_manageDashboard", "1dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 
-			qualifiers = new HashMap();
-			qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-			qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-			folderToolbar.addToolbarMenuItem("3_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
-			folderToolbar.addToolbarMenuItem("3_manageDashboard", "3dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
-			
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-					response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
-					folder.getId().toString()+"');return false;");
-			if (DashboardHelper.checkIfShowingAllComponents(folder)) {
-				folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-			} else {
-				folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+			if (dashboardContentExists) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "local");
+				folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "global");
+				folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+	
+				//Check the access rights of the user
+				try {
+					getBinderModule().checkModifyBinderAllowed(folder);
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+					url.setParameter("_scope", "binder");
+					folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+				} catch(AccessControlException e) {};
+	
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
+						folder.getId().toString()+"');return false;");
+				if (DashboardHelper.checkIfShowingAllComponents(folder)) {
+					folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					folderToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
 			}
 		}
 

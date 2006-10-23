@@ -1,5 +1,6 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
   <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
   
   <!-- Start of dashboard "Add penlet" form -->

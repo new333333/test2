@@ -2269,7 +2269,7 @@ function ss_showHideAllDashboardComponents(obj, divId, idStr) {
 	    obj.innerHTML = ss_componentTextShow;
 		canvas.style.visibility = 'hidden';
 		canvas.style.display = 'none';
-	} else { 
+	} else if (canvas && canvas.style) { 
 		url = ss_dashboardAjaxUrl + "\&operation=show_all_dashboard_components\&" + idStr;
 	    obj.innerHTML = ss_componentTextHide;
 		canvas.style.visibility = 'visible';

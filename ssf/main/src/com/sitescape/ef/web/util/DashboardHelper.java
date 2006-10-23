@@ -1020,4 +1020,16 @@ public class DashboardHelper {
 		return showAllComponents;
 	}
 	
+	public static boolean checkIfContentExists(Map dashboard) {
+		boolean dashboardContentExists = false;
+		if (dashboard != null) {
+			List wt = (List)dashboard.get("wide_top");
+			List nf = (List)dashboard.get("narrow_fixed");
+			List nv = (List)dashboard.get("narrow_variable");
+			List wb = (List)dashboard.get("wide_bottom");
+			if (wt.size() > 0 || nf.size() > 0 || nv.size() > 0 || wb.size() > 0) dashboardContentExists = true;
+		}
+		return dashboardContentExists;
+	}
+	
 }

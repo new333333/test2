@@ -7,7 +7,6 @@
 <c:set var="ss_dashboard_control_count" value="0" scope="request"/>
 <c:set var="ss_dashboard_border_count" value="0" scope="request"/>
 <c:set var="ss_component_count" value="0" scope="request"/>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 
 <table id="ss_dashboardTable" class="ss_dashboardTable_off" cellspacing="0" cellpadding="0" 
   frame="border" rules="all">

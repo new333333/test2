@@ -1,6 +1,8 @@
 package com.sitescape.ef.portlet.workspaceTree;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -280,28 +282,57 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//	The "Manage dashboard" menu
 		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
+			boolean dashboardContentExists = false;
+			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
+				Map dashboard = (Map)ssDashboard.get("dashboard");
+				if (dashboard != null) {
+					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
+				}
+			}
 			toolbar.addToolbarMenu("4_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 			toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 			
-			qualifiers = new HashMap();
-			qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-			qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-			toolbar.addToolbarMenuItem("4_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
-			toolbar.addToolbarMenuItem("4_manageDashboard", "3dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
-
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-					response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
-					workspace.getId().toString()+"');return false;");
-			if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
-				toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-			} else {
-				toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+			if (dashboardContentExists) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "local");
+				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "global");
+				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+	
+				//Check the access rights of the user
+				try {
+					getBinderModule().checkModifyBinderAllowed(workspace);
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+					url.setParameter("_scope", "binder");
+					toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+				} catch(AccessControlException e) {};
+			
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+						response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
+						workspace.getId().toString()+"');return false;");
+				if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
+					toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
 			}
 		}
 
