@@ -384,12 +384,14 @@ public class ListFolderController extends  SAbstractController {
 		//Delete binder
 		try {
 			getBinderModule().checkDeleteBinderAllowed(folder);
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
-			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url);		
+			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
 		} catch (AccessControlException ac) {};
 
 		//Modify binder

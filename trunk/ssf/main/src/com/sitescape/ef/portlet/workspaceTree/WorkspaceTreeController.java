@@ -244,12 +244,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//Delete
 		try {
 			getBinderModule().checkDeleteBinderAllowed(workspace);
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
-			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url);
+			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url, qualifiers);
 		} catch (AccessControlException ac) {};
 
 		//Modify

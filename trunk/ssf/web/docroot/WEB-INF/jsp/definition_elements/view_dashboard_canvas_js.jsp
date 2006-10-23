@@ -5,6 +5,10 @@ if (!ss_dbrn) {
 	var ss_dbrn = Math.round(Math.random()*999999)
 	var ss_componentTextHide = "<ssf:nlt tag="toolbar.hideDashboard"/>"
 	var ss_componentTextShow = "<ssf:nlt tag="toolbar.showDashboard"/>"
+	var ss_componentSrcHide = "<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif"
+	var ss_componentSrcShow = "<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif"
+	var ss_componentAltHide = "<ssf:nlt tag="button.hide"/>"
+	var ss_componentAltShow = "<ssf:nlt tag="button.show"/>"
 	var ss_toolbarAddContent = "<ssf:nlt tag="dashboard.addContent"/>"
 	var ss_toolbarHideContent = "<ssf:nlt tag="dashboard.addContentOff"/>"
 	var ss_toolbarShowControls = "<ssf:nlt tag="dashboard.showHiddenControls"/>"

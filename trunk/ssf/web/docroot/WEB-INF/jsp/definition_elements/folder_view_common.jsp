@@ -13,8 +13,7 @@
 	}
 	boolean useAdaptor = true;
 	if (ssUser.getDisplayStyle() != null && 
-	        (ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) ||
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP))) {
+	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 		useAdaptor = false;
 	}
 	String ssFolderTableHeight = "";
@@ -48,6 +47,7 @@ var ss_placeholderFileUrl = "<ssf:url
     	folderId="ssBinderIdPlaceHolder"
     	entryId="ssEntryIdPlaceHolder" >
     	</ssf:url>";
+var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">

@@ -337,3 +337,11 @@ function ss_showSearchResults(type) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+
+function ss_confirmDeleteFolder() {
+	if (confirm(ss_confirmDeleteFolderText)) {
+		return true
+	} else {
+		return false
+	}
+}

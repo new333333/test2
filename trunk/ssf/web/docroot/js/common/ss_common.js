@@ -167,22 +167,28 @@ function ss_navigation_goto(url) {
 //If the caller is in a frame (or iframe), then the routine opens the url in the parent and returns false.
 function ss_openUrlInPortlet(url, popup) {
 	//Is this a request to pop up?
-	ss_debug(url)
+	ss_debug('popup = '+popup+', url = '+url)
 	if (popup) {
 		self.window.open(url, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
 		return false;
 	}
 	//Are we at the top window?
 	if (self.window != self.top) {
+		ss_debug('Not at top window')
 		parent.location.href = url;
 		return false
-	} else if (self.opener) {
-		self.opener.location.href = url
-		setTimeout('self.window.close();', 200)
-		return false
+	} else if (self.opener && self.opener != self.window) {
+		try {
+			self.opener.location.href = url
+			setTimeout('self.window.close();', 200)
+			return false;
+		} catch (e) {
+			ss_debug('opener is not addressable anymore, it must have been deleted.')
+			return true;
+		}
 	} else {
 		ss_debug('return true')
-		return true
+		return true;
 	}
 }
 
@@ -199,13 +205,16 @@ function ss_reloadOpener(fallBackUrl) {
 			parent.location.href = fallBackUrl;
 		}
 	} else if (self.opener) {
-
-		if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
-			self.opener.location.replace(self.opener.ss_reloadUrl);
-			setTimeout('self.window.close();', 200)
-		} else {
-			self.opener.location.href = fallBackUrl;
-			setTimeout('self.window.close();', 200)
+		try {
+			if (self.opener.ss_reloadUrl && self.opener.ss_reloadUrl != "") {
+				self.opener.location.replace(self.opener.ss_reloadUrl);
+				setTimeout('self.window.close();', 200)
+			} else {
+				self.opener.location.href = fallBackUrl;
+				setTimeout('self.window.close();', 200)
+			}
+		} catch (e) {
+			self.location.href = fallBackUrl;
 		}
 	} else {
 		self.location.href = fallBackUrl;
