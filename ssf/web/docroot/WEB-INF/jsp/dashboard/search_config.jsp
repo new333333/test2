@@ -18,7 +18,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <br/>
 <br/>
-Search config
+Search configuration
 <br/>
 <br/>
 
