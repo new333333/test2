@@ -128,6 +128,7 @@ var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
 var ss_highlightedLine = null;
 var ss_savedHighlightedLineBgColor = null;
 
+
 </script>
 </c:if>
 

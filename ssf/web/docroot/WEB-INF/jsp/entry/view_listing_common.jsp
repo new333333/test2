@@ -251,7 +251,13 @@ function ss_viewEntrySaveSize() {
 		ajaxRequest.sendRequest();  //Send the request
 	}
 }
+function ss_viewEntryUnload() {
+}
+function ss_positionEntryOnLoad() {
+}
+ss_createOnLoadObj('ss_positionEntryOnLoad', ss_positionEntryOnLoad);
 ss_createOnResizeObj('ss_viewEntryResize', ss_viewEntryResize);
+ss_createEventObj('ss_viewEntryUnload', 'unload');
 </script>
 <%
 	}

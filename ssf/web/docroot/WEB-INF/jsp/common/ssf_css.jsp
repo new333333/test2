@@ -1444,6 +1444,7 @@ a.ss_breadcrumb {
 .ss_actions_bar_history_bar {
 	height:23px;
 	line-height:23px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
 }
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
@@ -1458,23 +1459,27 @@ a.ss_breadcrumb {
 	border-left:1px solid #FFF;
 	background:inherit;
 }
+.ss_actions_bar li * {
+	font-weight:bold;
+}
 .ss_actions_bar li.ss_actions_bar_last-child {
 	border-right:none;
 }
-.ss_actions_bar li a {
-	color:#5A3C68;
+.ss_actions_bar li a, .ss_actions_bar li a:visited {
+	color:#5A3C68 !important;
 	display:block;
 	padding:0px 15px;
 	background:inherit;
 }
-.ss_actions_bar li a:hover, .ss_actions_bar li a.ss_active {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x;
+.ss_actions_bar li a:hover {
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x !important;
 	text-decoration:none;
 }
 .ss_actions_bar.ss_actions_bar_lower {
 	margin:0px 3px;
 }
 div.ss_actions_bar_submenu {
+	background:#EFEEF3;
 	margin:0px;
 	padding:0px;
 	text-align:left;
@@ -1504,9 +1509,13 @@ div.ss_actions_bar_submenu {
 .ss_actions_bar_submenu div {
 	background:none;
 }
-.ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
+.ss_actions_bar_submenu li:hover .ss_actions_bar_submenu a:hover {
 	text-decoration:underline;
 	background-color:#FBFAFF;
+	color:#5A3C68;
+}
+.ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
+	color:#5A3C68;
 }
 
 /* Search results selection */

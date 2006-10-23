@@ -57,3 +57,11 @@ function ss_clearRating(rating, id) {
     infoDiv.style.visibility = "hidden"
     ss_currentRatingInfoId = "";
 }
+
+function ss_confirmDeleteEntry() {
+	if (confirm(ss_confirmDeleteEntryText)) {
+		return true
+	} else {
+		return false
+	}
+}

@@ -9,9 +9,11 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -27,6 +29,7 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
@@ -117,11 +120,15 @@ public class ViewEntryController extends  SAbstractController {
 			} else if (tabId != null) {
 				tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
 			} else {
-				//Don't overwrite a search tab
-				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-					tabs.setCurrentTab(tabs.addTab(fe));
-				} else {
-					tabs.setCurrentTab(tabs.setTab(fe));
+				//Change the tab only if not using the adaptor url
+				if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
+					// Indicates that the request is being served by the adapter framework.
+					//Don't overwrite a search tab
+					if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+						tabs.setCurrentTab(tabs.addTab(fe));
+					} else {
+						tabs.setCurrentTab(tabs.setTab(fe));
+					}
 				}
 			}
 			model.put(WebKeys.TABS, tabs.getTabs());
@@ -215,13 +222,15 @@ public class ViewEntryController extends  SAbstractController {
 		try {
 			getFolderModule().checkDeleteEntryAllowed(entry);
 			//The "Delete" menu
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "return ss_confirmDeleteEntry();");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url);
+			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
 		} catch (AccessControlException ac) {};
 	    
 		return toolbar;

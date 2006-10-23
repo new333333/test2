@@ -12,6 +12,7 @@ var ss_saveRatingUrl = "<ssf:url
 	<ssf:param name="operation" value="save_rating" />
 	</ssf:url>";
 var ss_binderId = "${ssBinder.id}";
+var ss_confirmDeleteEntryText = "<ssf:nlt tag="entry.confirmDeleteEntry"/>";
 
 ss_ratings_info[1] = "<ssf:nlt tag="popularity.rating.1star" />"
 ss_ratings_info[2] = "<ssf:nlt tag="popularity.rating.2stars" />"

@@ -9,7 +9,8 @@
 		displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 	}
 	if (!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) && 
-		!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+		!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) &&
+		!displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <%
