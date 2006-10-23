@@ -1127,13 +1127,13 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
     background-color: ${ss_style_background_color};
 }
 .ss_content_window {
-	padding:5px;
+	padding:2px 5px;;
 }
 .ss_content_window_compact {
 	padding:0px;
 }
 .ss_content_window_content {
-	padding:10px;
+	padding:4px 10px;
 }
 .ss_clear {
 	clear:both;

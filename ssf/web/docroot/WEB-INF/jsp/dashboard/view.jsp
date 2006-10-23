@@ -32,15 +32,6 @@
   
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
-  <div id="<portlet:namespace/>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
-	<ul class="ss_dropdownmenu" 
-	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-	  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls('<portlet:namespace/>');return false;"><span
-	    id="<portlet:namespace/>_dashboard_menu_controls"><ssf:nlt 
-	    tag="dashboard.showHiddenControls"/></span></a></li>
-	</ul>
-  </div>
-
 <!-- Start of dashboard canvas -->
  <div id="<portlet:namespace/>_dashboardComponentCanvas"
 	<c:if test="${ss_show_all_dashboard_components}">

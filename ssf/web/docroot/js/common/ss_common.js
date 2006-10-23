@@ -2264,7 +2264,7 @@ function ss_showHideAllDashboardComponents(obj, divId, idStr) {
 	var formObj = ss_getContainingForm(obj)
 	var url = "";
 	var canvas = document.getElementById(divId);
-	if (obj.innerHTML == ss_componentTextHide) {
+	if (canvas && canvas.style && canvas.style.visibility == 'visible') {
 		url = ss_dashboardAjaxUrl + "\&operation=hide_all_dashboard_components\&" + idStr;
 	    obj.innerHTML = ss_componentTextShow;
 		canvas.style.visibility = 'hidden';

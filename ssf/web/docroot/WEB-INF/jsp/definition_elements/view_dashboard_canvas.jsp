@@ -40,9 +40,6 @@
   <div id="<portlet:namespace/>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
 	<ul class="ss_dropdownmenu" 
 	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-	  <li><a href="#" onClick="ss_toggle_dashboard_hidden_controls('<portlet:namespace/>');return false;"><span
-	    id="<portlet:namespace/>_dashboard_menu_controls"><ssf:nlt 
-	    tag="dashboard.showHiddenControls"/></span></a></li>
 	  <li><a href="<portlet:renderURL>
 	  <portlet:param name="action" value="modify_dashboard"/>
 	  <portlet:param name="binderId" value="${ssBinder.id}"/>

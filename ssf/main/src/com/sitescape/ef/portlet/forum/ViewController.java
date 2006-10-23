@@ -169,13 +169,18 @@ public class ViewController  extends SAbstractController {
 			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 			
 			qualifiers = new HashMap();
+			qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+			qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+			toolbar.addToolbarMenuItem("1_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+
+			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
-			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
+			toolbar.addToolbarMenuItem("1_manageDashboard", "3dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
 
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
 					response.getNamespace() + "_dashboardComponentCanvas', 'dashboardId="+d.getId()+"');return false;");
-			if (DashboardHelper.checkIfShowingAllComponents()) {
+			if (DashboardHelper.checkIfShowingAllComponents(d)) {
 				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
 			} else {
 				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
