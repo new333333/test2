@@ -61,7 +61,11 @@ String menuDivWidth = "300px";
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          	onClick="${toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          </c:if>
-	          <c:out value="${toolbarMenuCategoryItem.key}" /></a>
+	          <span
+	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}">
+	            id="${toolbarMenuCategoryItem.value.qualifiers.textId}"
+	          </c:if>
+	          ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
 	      </c:forEach>
        </c:forEach>
@@ -91,8 +95,12 @@ String menuDivWidth = "300px";
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
+	      ><span
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
+	        id="${toolbarMenu.value.qualifiers.textId}"
+	      </c:if>
 	      ><c:out 
-	        value="${toolbarMenu.value.title}" /></a></li>
+	        value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <li><a href="<ssf:url>
@@ -110,11 +118,19 @@ String menuDivWidth = "300px";
     	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
     	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
     	    </c:if>
+	 	  ><span
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
+	        id="${toolbarMenu.value.qualifiers.textId}"
+	      </c:if>
 	 	  ><c:out 
-	 	    value="${toolbarMenu.value.title}" /></a></li>
+	 	    value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:when>
 	    <c:otherwise>
-	      <li><a href=""><c:out value="${toolbarMenu.value.title}" /></a></li>
+	      <li><a href=""><span
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
+	        id="${toolbarMenu.value.qualifiers.textId}"
+	      </c:if>
+	      ><c:out value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:otherwise>
 	  </c:choose>
     </c:if>

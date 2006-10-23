@@ -467,11 +467,16 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-			
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "1dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+
+			qualifiers = new HashMap();
+			qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+			qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardConfigurationMenu');return false;");
-			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
+			folderToolbar.addToolbarMenuItem("3_manageDashboard", "3dashboard", NLT.get("dashboard.configure"), "#", qualifiers);
 			
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 

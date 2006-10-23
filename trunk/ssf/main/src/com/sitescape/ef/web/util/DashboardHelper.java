@@ -17,6 +17,7 @@ import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Dashboard;
+import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.NoObjectByTheIdException;
@@ -1004,10 +1005,9 @@ public class DashboardHelper {
     	return false;
 	}
 	
-	public static boolean checkIfShowingAllComponents() {
+	public static boolean checkIfShowingAllComponents(Dashboard dashboard) {
 		//See if the components are shown or hidden
-		UserProperties folderProps = getInstance().getProfileModule().getUserProperties(null);
-		Boolean showAllComponents = (Boolean) folderProps.getProperty(ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL);
+		Boolean showAllComponents = Boolean.valueOf(dashboard.isShowComponents());
 		if (showAllComponents == null) showAllComponents = Boolean.TRUE;
 		return showAllComponents;
 	}
