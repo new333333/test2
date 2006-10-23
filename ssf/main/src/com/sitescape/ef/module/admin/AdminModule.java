@@ -23,7 +23,7 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
  * Window - Preferences - Java - Code Style - Code Templates
  */
 public interface AdminModule {
-
+	public void addZone(String zoneName);
 	public void addFunction(Function function);
     public List getFunctions();
     public void modifyFunction(Long functionId, Map updates);

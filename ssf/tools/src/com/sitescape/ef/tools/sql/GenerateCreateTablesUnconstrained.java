@@ -10,23 +10,32 @@ import java.io.IOException;
 public class GenerateCreateTablesUnconstrained {
 
 	public static void main(String[] args) {
-		if(args.length != 1) {
-			System.out.println("usage: java GenerateCreateTablesUnconstrained <constrained script name>");
+		if (args.length == 0 || args.length > 2) {
+			System.out.println("usage: java GenerateCreateTablesUnconstrained <constrained script name [append]>");
 			return;
 		}
-		else {
+		else if (args.length == 1) {
 			System.out.println("java GenerateCreateTablesUnconstrained " + args[0]);
+		} else {
+			System.out.println("java GenerateCreateTablesUnconstrained " + args[0] + " " + args[1]);
 		}
 		
 		try {
-			doMain(args[0]);
+			if (args.length == 1) {
+				doMain(args[0],false);
+			} else {
+				if (args[1].equalsIgnoreCase("append"))
+					doMain(args[0], true);
+				else
+					doMain(args[0], false);
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private static void doMain(String inputFileName) throws IOException {
+	private static void doMain(String inputFileName, boolean append) throws IOException {
 		String databaseTypeStr = getDatabaseTypeStr(inputFileName);
 		
 		File inputFile = new File(inputFileName);
@@ -38,23 +47,26 @@ public class GenerateCreateTablesUnconstrained {
 		File dropConstraintsFile = new File(inputFile.getParentFile(), "drop-constraints-" + databaseTypeStr + ".sql");
 		File dropTablesFile = new File(inputFile.getParentFile(), "drop-tables-" + databaseTypeStr + ".sql");
 		
-		BufferedWriter createUnconstrainedTables = new BufferedWriter(new FileWriter(createUnconstrainedTablesFile));
-		BufferedWriter addConstraints = new BufferedWriter(new FileWriter(addConstraintsFile));
-		BufferedWriter dropConstraints = new BufferedWriter(new FileWriter(dropConstraintsFile));
-		BufferedWriter dropTables = new BufferedWriter(new FileWriter(dropTablesFile));
+		BufferedWriter createUnconstrainedTables = new BufferedWriter(new FileWriter(createUnconstrainedTablesFile, append));
+		BufferedWriter addConstraints = new BufferedWriter(new FileWriter(addConstraintsFile, append));
+		BufferedWriter dropConstraints = new BufferedWriter(new FileWriter(dropConstraintsFile, append));
+		BufferedWriter dropTables = new BufferedWriter(new FileWriter(dropTablesFile, append));
 		
 		boolean createTablesStarted = false;
 		
 		String line = null;
 		while((line = in.readLine()) != null) {
-			if(line.contains("create table")) {
+			line = line.trim();
+			if (line.trim().length() == 0) continue;
+			if (line.startsWith("#")) continue;
+			if (line.contains("create table") || line.contains("CREATE TABLE")) {
 				// Processing "create table" statement
 				if(!createTablesStarted)
 					createTablesStarted = true;
 				createUnconstrainedTables.write(line);
 				createUnconstrainedTables.newLine();
 				while(!line.endsWith(";")) {
-					line = in.readLine();
+					line = in.readLine().trim();
 					createUnconstrainedTables.write(line);
 					createUnconstrainedTables.newLine();					
 				}
@@ -62,12 +74,14 @@ public class GenerateCreateTablesUnconstrained {
 			else {
 				if(!createTablesStarted) {
 					// Processing statement that comes before all "create table" statements.
-					if(line.contains("drop constraint") || line.contains("drop foreign")) {
+					if(line.contains("drop constraint") || line.contains("drop foreign") ||
+							line.contains("DROP CONSTRAINT") || line.contains("DROP FOREIGN"))
+					{
 						// Processing statement about dropping constraints
 						dropConstraints.write(line);
 						dropConstraints.newLine();
 						while(!line.endsWith(";")) {
-							line = in.readLine();
+							line = in.readLine().trim();
 							dropConstraints.write(line);
 							dropConstraints.newLine();					
 						}
@@ -77,7 +91,7 @@ public class GenerateCreateTablesUnconstrained {
 						dropTables.write(line);
 						dropTables.newLine();
 						while(!line.endsWith(";")) {
-							line = in.readLine();
+							line = in.readLine().trim();
 							dropTables.write(line);
 							dropTables.newLine();					
 						}
@@ -88,7 +102,7 @@ public class GenerateCreateTablesUnconstrained {
 					addConstraints.write(line);
 					addConstraints.newLine();
 					while(!line.endsWith(";")) {
-						line = in.readLine();
+						line = in.readLine().trim();
 						addConstraints.write(line);
 						addConstraints.newLine();					
 					}					
@@ -118,6 +132,8 @@ public class GenerateCreateTablesUnconstrained {
 			return "postgresql";
 		else if(inputFileName.contains("-sqlserver"))
 			return "sqlserver";
+		else if(inputFileName.contains("-frontbase"))
+			return "frontbase";
 		else
 			throw new IllegalArgumentException("Unknown database type");
 	}

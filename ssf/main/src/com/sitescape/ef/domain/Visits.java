@@ -40,16 +40,16 @@ public class Visits {
 	 * @hibernate.property 
 	 * @return
      */
-    public Long getReads() {
+    public Long getReadCount() {
     	return reads;
     } 
-    public void setReads(Long reads) {
+    public void setReadCount(Long reads) {
     	this.reads = reads;
     }
-    public void setReads(long reads) {
+    public void setReadCount(long reads) {
     	this.reads = Long.valueOf(reads);
     }
-    public void incrReads() {
+    public void incrReadCount() {
     	if (reads == null) reads = Long.valueOf(1);
     	else reads = Long.valueOf(reads.longValue() + 1);
     }

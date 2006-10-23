@@ -70,10 +70,12 @@ public class DynamicDialect extends Dialect {
 			String dbName = metaData.getDatabaseProductName();
 			int dbMajorVersion = metaData.getDatabaseMajorVersion();
 			//this needs to be tested??
-			if (!dbName.equalsIgnoreCase("frontbase"))
-				_dialect = DialectFactory.determineDialect(dbName, dbMajorVersion);
-			else
+			if (dbName.equals("MySQL")) 
+				_dialect = new MySQL5InnoDBDialect();
+			else if (dbName.equalsIgnoreCase("frontbase"))
 				_dialect = new FrontBase4Dialect();
+			else
+				_dialect = DialectFactory.determineDialect(dbName, dbMajorVersion);
 		}
 		catch (Exception e) {
 			_log.error(e);

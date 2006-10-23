@@ -189,12 +189,11 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>
   </ssf:slidingTableColumn>
  </c:if>
-  
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${entry1._modificationDate}" type="both" 
-	 timeStyle="full" dateStyle="short" /></span>
+	 timeStyle="medium" dateStyle="medium" /></span>
   </ssf:slidingTableColumn>
  </c:if>
 </ssf:slidingTableRow>

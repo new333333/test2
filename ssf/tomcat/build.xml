@@ -6,8 +6,19 @@
 	<import file="../deploy-support.xml" />
 	
 	<target name="deploy">
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources" />
 		</copy>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@driverClassName" value="${jdbc.driver}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@url" value="${jdbc.url}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@username" value="${jdbc.username}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@password" value="${jdbc.password}"/>
 	</target>
 </project>

@@ -22,8 +22,8 @@
 	</target>-->
 	
 	<target name="init-database-type">
-		<property file="${basedir}/database.${user.name}.properties" />
-		<property file="${basedir}/database.properties" />
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
 	</target>
 	
   	<target name="generate-create-tables-script" depends="init-database-type"
@@ -39,14 +39,27 @@
 
   		<mkdir dir="${create.dir}"/>
   		
-	    <schemaexport delimiter=";" output="${create.dir}/create-tables-${database.type}.sql"
+	    <schemaexport delimiter=";" output="${create.dir}/create-tables-core-${database.type}.sql"
 	    	properties="${basedir}/hibernate-${database.type}.properties" 
 	          	quiet="false" text="true">
 	    	<fileset dir="${main.hibernate.dir}" >
 	    		<include name="com/sitescape/ef/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaexport>
-  		
+	    <schemaexport delimiter=";" output="${create.dir}/create-tables-jbpm-${database.type}.sql"
+	    	properties="${basedir}/hibernate-${database.type}.properties" 
+	          	quiet="false" text="true">
+			<fileset dir="${project.dir}/lib" includes="jbpm.jar" >
+	    		<include name="org/jbpm/**/*hbm.xml"/>
+	        </fileset>
+			<fileset dir="${project.dir}/lib" includes="jbpm-identity.jar" >
+	    		<include name="org/jbpm/**/*hbm.xml"/>
+	        </fileset>
+	     </schemaexport>
+		<copy file="../quartz_tables_${database.type}.sql" 
+			tofile="${create.dir}/create-tables-quartz-${database.type}.sql"
+			overwrite="true" />
+
   		<!-- Make sure to compile the Java code we're about to run. -->
   		<ant dir=".." target="compile" inheritAll="false" />
   		
@@ -56,8 +69,30 @@
   			fork="true"
   			dir="${basedir}"
   			failonerror="true">
-  			<arg value="${create.dir}/create-tables-${database.type}.sql" />
+  			<arg value="${create.dir}/create-tables-core-${database.type}.sql" />
   		</java>
+ 		<java
+  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/create-tables-jbpm-${database.type}.sql" />
+ 			<arg value="append"/>
+  		</java>
+ 		<java
+  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classpathref="project.classpath"
+  			fork="true"
+  			dir="${basedir}"
+  			failonerror="true">
+  			<arg value="${create.dir}/create-tables-quartz-${database.type}.sql" />
+ 			<arg value="append"/>
+  		</java>
+	  	<concat destfile="${create.dir}/create-tables-${database.type}.sql">
+	  	    <fileset dir="${create.dir}"
+	  	         includes="create-tables-*-${database.type}.sql" />
+	  	</concat>
     </target>
 
 	<!-- Generate SQL scripts used for creating SS tables and constraints

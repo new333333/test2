@@ -6,7 +6,6 @@
 	
 	<property name="jar.file" value="ssf-main.jar" />
 	<property name="hibernate.dir" value="${basedir}/hibernate" />
-
 	<target name="clean" depends="ss-hib-clean,build-common.clean" />
 
 	<target name="compile" depends="compile-common,build-common.compile" />
@@ -101,19 +100,40 @@
 	    	/>
 	    </xdoclet2>	
 -->
-	</target>	
+	</target>
+	
+	<target name="init-database-type-script">
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<copy file="${project.dir}/tools/sql/hibernate-${database.type}.properties" 
+			todir="${hibernate.dir}" 
+			overwrite="true"/>
+	</target>
+		
+	<target name="init-database-type" depends="init-database-type-script">
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.driver_class ${jdbc.driver}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.url ${jdbc.url}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.username ${jdbc.username}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.password ${jdbc.password}"/>
+	</target>
 
-	  <target name="ss-create-tables" description="Creates database tables for sitescape domain">
-			<property name="schemaexport.text.value" value="false" />
-	  		<antcall target="ss-create-tables-internal" />
+	<target name="ss-create-tables" depends="init-database-type"
+			description="Creates database creation script for all sitescape domain">
+		<property name="schemaexport.text.value" value="no" />
+		<antcall target="ss-create-tables-internal" />
 	  </target>
-	
-	  <target name="ss-create-tables-script-only" description="Creates datbase creation script for sitescape domain">
-		<property name="schemaexport.text.value" value="true" />
-  		<antcall target="ss-create-tables-internal" />
+
+	 <target name="ss-create-tables-script-only" depends="init-database-type-script" description="Creates database creation script for all sitescape domain">
+		<property name="schemaexport.text.value" value="yes" />
+		<antcall target="ss-create-tables-internal" />
 	  </target>
-	
-	  <target name="ss-create-tables-internal" depends="ss-hib-gen">
+
+	  <target name="ss-create-tables-internal" depends="ss-hib-gen" description="Creates database creation script for all sitescape domain">
 			<path id="initpath">
 	  			<pathelement location="${classes.dir}"/>
 				<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -124,7 +144,7 @@
 	 		</taskdef> 
 
 		    <schemaexport delimiter=";" drop="false" output="${hibernate.dir}/ss-create-tables.sql"
-		    	properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
+		    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
 		          	quiet="false" text="${schemaexport.text.value}">
 		    	<fileset dir="${classes.dir}" >
 		    		<include name="com/sitescape/ef/**/*hbm.xml"/>
@@ -133,31 +153,10 @@
 		     </schemaexport>
 	    </target>
 	
-	  <target name="ss-create-tables-jbpm-internal">
-			<path id="initpath">
-	  			<pathelement location="${classes.dir}"/>
-				<fileset dir="${project.dir}/util" includes="*.jar"/>
-				<fileset dir="${project.dir}/lib" includes="*.jar" />
-			</path>
-	        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
-		             classpathref="initpath" name="schemaexport">
-	 		</taskdef> 
-
-		    <schemaexport delimiter=";" drop="false" output="${hibernate.dir}/ss-create-jbpm-tables.sql"
-		    	properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
-		          	quiet="false" text="${schemaexport.text.value}">
-				<fileset dir="${project.dir}/lib" includes="jbpm.jar" >
-		    		<include name="org/jbpm/**/*hbm.xml"/>
-		        </fileset>
-				<fileset dir="${project.dir}/lib" includes="jbpm-identity.jar" >
-		    		<include name="org/jbpm/**/*hbm.xml"/>
-		        </fileset>
-		     </schemaexport>
-	    </target>
 
 	<target name="ss-update-tables" 
 		description="Update database tables for sitescape domain"
-		depends="ss-hib-gen">
+		depends="ss-hib-gen, init-database-type">
 		<path id="initpath">
   			<pathelement location="${classes.dir}"/>
 			<fileset dir="${project.dir}/util" includes="*.jar"/>
@@ -168,7 +167,7 @@
  		</taskdef> 
 
 	    <schemaupdate 
-				properties="${hibernate.dir}/ss-create-tables-hibernate.properties" 
+	    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
 	          	quiet="no" text="no">
 	    	<fileset dir="${classes.dir}" >
 	    		<include name="com/sitescape/ef/**/*hbm.xml"/>

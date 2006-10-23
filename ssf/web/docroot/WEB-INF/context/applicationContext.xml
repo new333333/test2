@@ -111,10 +111,14 @@
 		<props>
 			<prop key="org.quartz.threadPool.makeThreadsDaemons">true</prop>
 			<prop key="org.quartz.jobStore.tablePrefix">SSQRTZ_</prop>
+
 			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
-			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
+<!--			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop>
+			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS  WHERE LOCK_NAME = ? FOR UPDATE</prop>
+-->
+		<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WITH (UPDLOCK ROWLOCK) WHERE LOCK_NAME = ?</prop>
-<!-- 		<prop key="org.quartz.jobStore.driverDelegateClass">com.sitescape.util.dao.quartz.FrontbaseDelegate</prop>
+<!-- 	 		<prop key="org.quartz.jobStore.driverDelegateClass">com.sitescape.util.dao.quartz.FrontbaseDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ?</prop>
 -->
 		</props>
@@ -345,6 +349,8 @@
 			<property name="target">
 				<bean class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
 					<property name="profileDao"><ref local="profileDao"/></property>						
+					<property name="coreDao"><ref local="coreDao"/></property>						
+					<property name="adminModule"><ref local="adminModule"/></property>						
 				</bean>
 			</property>				
 	</bean>	
@@ -423,6 +429,7 @@
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
 				<property name="mailManager"><ref local="mailManager"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
 	</bean>

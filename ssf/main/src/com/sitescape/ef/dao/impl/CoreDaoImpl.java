@@ -22,6 +22,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
@@ -597,7 +598,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * Perform a write of a new object now using a new Session so we can commit it fast
 	 * @param obj
 	 */
-	public void saveNewSession(Object obj) {
+	public Object saveNewSession(Object obj) {
        	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
@@ -606,6 +607,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	} finally {
     		s.close();
     	}
+    	//attach to current session. This will fail if read only
+    	// by that should mean no-one will update it so that is okay
+    	try {
+    		update(obj);
+    	} catch (InvalidDataAccessApiUsageException da) {};
+    	
+    	return obj;
 		
 	}
 	public List loadPostings(String zoneName) {

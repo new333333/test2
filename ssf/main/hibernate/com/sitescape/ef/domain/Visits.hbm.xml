@@ -8,6 +8,6 @@
       <key-property name="entityId"/>
       <key-property name="entityType"/>
     </composite-id>
-   <property name="reads"/>
+   <property name="readCount"/>
   </class>
 </hibernate-mapping>

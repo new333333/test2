@@ -300,7 +300,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	tag.setName(newTag);
-	   	coreDao.update(tag);
 	}
 	/**
 	 * Add a new tag, owned by this binder
