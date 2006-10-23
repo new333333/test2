@@ -282,9 +282,8 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    		HistoryMap history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);
    		if (history == null) {
    			history = new HistoryMap(id);
-   			getCoreDao().saveNewSession(history);
    			//quick write
-   			history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);   			
+   			history = (HistoryMap)getCoreDao().saveNewSession(history);
    		}
    		return history;
 	}	

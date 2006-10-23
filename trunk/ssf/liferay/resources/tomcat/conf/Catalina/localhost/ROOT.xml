@@ -5,10 +5,10 @@
 		name="jdbc/LiferayPool"
 		auth="Container"
 		type="javax.sql.DataSource"
-		driverClassName="net.sourceforge.jtds.jdbc.Driver"
-		url="jdbc:jtds:sqlserver://localhost/lportal"
-		username="sa"
-		password="sa"
+		driverClassName="@@@driverClassName"
+		url="@@@url"
+		username="@@@username"
+		password="@@@password"
 		maxActive="20"
 	/>
 	<Resource

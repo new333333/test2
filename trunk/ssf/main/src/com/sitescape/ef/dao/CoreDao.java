@@ -12,11 +12,10 @@ import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Dashboard;
-import com.sitescape.ef.domain.DashboardPortlet;
-import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.Tag;
@@ -41,8 +40,7 @@ public interface CoreDao {
 	public void replicate(Object obj);
 	public void save(Object obj);
 	public void save(Collection objs);
-	public void saveNewSession(Object obj);
-	public void update(Object obj); 
+	public Object saveNewSession(Object obj);
 	public Object merge(Object obj); 
 	public void evict(Object obj); 
 	/**

@@ -557,9 +557,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);         
  		if (uProps == null) {
  			uProps = new UserProperties(id);
-  			getCoreDao().saveNewSession(uProps);
-  			uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
-        }
+ 			uProps=(UserProperties)getCoreDao().saveNewSession(uProps);
+         }
  		return uProps;
     }
  
@@ -568,9 +567,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
         if (uProps == null) {
         	uProps = new UserProperties(id);
-        	getCoreDao().saveNewSession(uProps);
         	//quick write
-         	uProps=(UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+        	uProps=(UserProperties)getCoreDao().saveNewSession(uProps);
     	}
         return uProps;
     }
@@ -698,9 +696,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    		SeenMap seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);
    		if (seen == null) {
    			seen = new SeenMap(userId);
-   			getCoreDao().saveNewSession(seen);
    			//quick write
-   			seen =(SeenMap)getHibernateTemplate().get(SeenMap.class, userId);   			
+   			seen = (SeenMap)getCoreDao().saveNewSession(seen);
    		}
    		return seen;
 	}

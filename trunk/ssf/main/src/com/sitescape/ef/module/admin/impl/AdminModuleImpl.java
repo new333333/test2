@@ -6,32 +6,37 @@
  */
 package com.sitescape.ef.module.admin.impl;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
-import java.text.ParseException;
 
+import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
-import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.mail.MailManager;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.admin.AdminModule;
+import com.sitescape.ef.module.binder.BinderProcessor;
+import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-
+import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
@@ -39,11 +44,11 @@ import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipExistsException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.search.IndexSynchronizationManager;
+
 /**
  * @author Janet McCann
  *
@@ -52,10 +57,23 @@ import com.sitescape.ef.util.SZoneConfig;
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 
+    protected DefinitionModule definitionModule;
 	protected MailManager mailManager;
-    public void setMailManager(MailManager mailManager) {
+
+	public void setMailManager(MailManager mailManager) {
     	this.mailManager = mailManager;
     }
+    
+	protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+	/**
+	 * Setup by spring
+	 * @param definitionModule
+	 */
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
 	/**
      * Do actual work to either enable or disable email notification.
      * @param id
@@ -327,35 +345,78 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	workArea.setFunctionMembershipInherited(inherit);
     } 
 
-	public void createZone(String name) {
-		Workspace top = new Workspace();
-		top.setName(name);
-		ProfileBinder profiles = new ProfileBinder();
-		profiles.setName("_profiles");
-		profiles.setZoneName(name);
-		top.addBinder(profiles);
-		User user = new User();
-		user.setName(SZoneConfig.getString(name, "adminUser", "admin"));
-		//generate id for top
-		getCoreDao().save(top);
+	public void addZone(String name) {
 		
-		Function function = new Function();
-		function.setZoneName(name);
-		function.setName("Site Administration");
-		Set ops = new HashSet();
-		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
-			ops.add(((WorkAreaOperation)iter.next()).getName());
-		}	
-		//generate functionId
-		functionManager.addFunction(function);
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(top.getWorkAreaId());
-		ms.setWorkAreaType(top.getWorkAreaType());
-		ms.setZoneName(name);
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(user.getId());
-		ms.setMemberIds(members);		
+		String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
+		RequestContext oldCtx = RequestContextHolder.getRequestContext();
+		RequestContextUtil.setThreadContext(name, adminName);
+		try {
+			Workspace top = new Workspace();
+			top.setName(name);
+			top.setZoneName(name);
+			top.setTitle(name);
+			getDefinitionModule().setDefaultBinderDefinition(top);
+					
+			ProfileBinder profiles = new ProfileBinder();
+			profiles.setName("_profiles");
+			profiles.setTitle(NLT.get("administration.initial.profile.title"));
+			profiles.setZoneName(name);
+			getDefinitionModule().setDefaultBinderDefinition(profiles);
+			top.addBinder(profiles);
+			
+			//generate id for top and profiles
+			getCoreDao().save(top);
+		
+			//build user
+			User user = new User();
+			user.setName(adminName);
+			user.setZoneName(name);
+			user.setParentBinder(profiles);
+			getDefinitionModule().setDefaultEntryDefinition(user);
+			getCoreDao().save(user);
+			
+			//indexing needs the user
+			RequestContextHolder.getRequestContext().setUser(user);
+
+			//fill in timestampes
+			HistoryStamp stamp = new HistoryStamp(user);
+			top.setCreation(stamp);
+			top.setModification(stamp);
+			profiles.setCreation(stamp);
+			profiles.setModification(stamp);
+			user.setCreation(stamp);
+			user.setModification(stamp);
+			
+			Function function = new Function();
+			function.setZoneName(name);
+			function.setName(NLT.get("administartion.initial.function.admin"));
+			for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
+				function.addOperation(((WorkAreaOperation)iter.next()));
+			}	
+			//generate functionId
+			getFunctionManager().addFunction(function);
+		
+			WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+			ms.setWorkAreaId(top.getWorkAreaId());
+			ms.setWorkAreaType(top.getWorkAreaType());
+			ms.setZoneName(name);
+			ms.setFunctionId(function.getId());
+			Set members = new HashSet();
+			members.add(user.getId());
+			ms.setMemberIds(members);
+			getCoreDao().save(ms);
+			
+			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(top);
+		
+			processor = (BinderProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(top);
+			//do now, with request context is set
+			IndexSynchronizationManager.applyChanges();
+		} finally  {
+			//leave new context for indexing
+			RequestContextHolder.setRequestContext(oldCtx);
+		}
 
 	}
 

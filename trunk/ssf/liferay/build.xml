@@ -89,7 +89,20 @@
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 	</target>
-		
+	<target name="deploy-jdbc-properties">
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<replace file="${deploy.root.file}"
+			token="@@@driverClassName" value="${jdbc.driver.liferay}"/>
+		<replace file="${deploy.root.file}" 
+			token="@@@url" value="${jdbc.url.liferay}"/>
+		<replace file="${deploy.root.file}"
+			token="@@@username" value="${jdbc.username.liferay}"/>
+		<replace file="${deploy.root.file}"
+			token="@@@password" value="${jdbc.password.liferay}"/>		
+	</target>
+
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp" />		
 		
@@ -127,7 +140,11 @@
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources/tomcat" />
 		</copy>
-		
+		<!-- this fixes up one of the files copied abover -->
+		<antcall target="deploy-jdbc-properties">
+			<param name="deploy.root.file" value="${app.server.dir}/conf/Catalina/localhost/ROOT.xml"/>
+		</antcall>
+
 		<ant dir="${project.dir}/tomcat" target="deploy" />
 
 		<copy file="resources/tomcat.portal.properties" tofile="temp/portal.properties" overwrite="true" />

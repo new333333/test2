@@ -596,7 +596,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		FolderEntry entry = getEntry(binderId, entryId);
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	tag.setName(newtag);
-	   	coreDao.update(tag);
 	}
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		FolderEntry entry = getEntry(binderId, entryId);
@@ -657,7 +656,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        	//update entry average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
     	// see if title exists for this folder
-     	long result = getCoreDao().sumColumn(Visits.class, "reads", new FilterControls(ratingAttrs, cfValues));
+     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues));
      	entry.setPopularity(Long.valueOf(result));		
 	}
 	
@@ -672,7 +671,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        	//update entry average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
     	// see if title exists for this folder
-     	long result = getCoreDao().sumColumn(Visits.class, "reads", new FilterControls(ratingAttrs, cfValues));
+     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues));
      	folder.setPopularity(Long.valueOf(result));
 	}   
 

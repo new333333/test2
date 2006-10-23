@@ -341,7 +341,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        		visit = new Visits(user.getId(), entityId);
        		getCoreDao().save(visit);
        	}
-        visit.incrReads();   	
+        visit.incrReadCount();   	
     }
 	public Rating getRating(EntityIdentifier entityId) {
 	    User user = RequestContextHolder.getRequestContext().getUser();
