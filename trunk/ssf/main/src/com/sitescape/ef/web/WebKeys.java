@@ -82,6 +82,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURE_FORUM = "configure_forum";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
+	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
