@@ -4,6 +4,7 @@
 	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
 	String width = (String) request.getAttribute("property_width");
+	String fileEntryTitleFormName = (String) request.getAttribute("formName");
 	String inline = (String) request.getAttribute("property_inline");
 	if (width == null || width.equals("")) {
 		width = "";
@@ -24,5 +25,11 @@
 %>
 <div class="ss_entryContent">
 <span class="ss_labelAbove">${property_caption}</span>
-<input type="file" class="ss_text" name="<%= elementName %>" <%= width %> >
+<input onKeyPress="ss_fileEntryTitleKeyPress_<%= elementName %>(this)" type="file" 
+  class="ss_text" name="<%= elementName %>" <%= width %> >
 </div>
+<script type="text/javascript">
+function ss_fileEntryTitleKeyPress_<%= elementName %>(obj) {
+	alert('<ssf:nlt tag="entry.fileFieldInput"/>')
+}
+</script>
