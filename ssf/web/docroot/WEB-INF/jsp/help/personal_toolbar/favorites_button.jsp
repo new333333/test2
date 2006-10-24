@@ -6,22 +6,22 @@
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"/></p>
 
-<p><a href="javascript: ss_showFavoritesPane();" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
+<p><a href="javascript: ss_showFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
 
-<p><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button', 'ss_help_panel', '', '', 'left');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.moveHelpPanel"/></a></p>
+<p><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button', 'ss_help_panel', '', '', 'left');"><ssf:nlt tag="help.favoritesicon.content.intro.moveHelpPanel"/></a></p>
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.listIntro"/></p>
 
 <ul style="list-style-type:disc;">
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.add.current.page"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.add.current.page"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_categories', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.categories"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_categories', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.categories"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_delete', 'ss_help_panel', '', '');"><ssf:nlt tag="help.favoritesicon.subtopic.deleting"/></a></li>
 </ul>
 
-<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();" style="color:#0000ff;"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
+<p style="text-align:center;"><a href="javascript: ss_hideFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.closeFavoritesPanel"/></a></p>
 
 </div>
 <br/>
