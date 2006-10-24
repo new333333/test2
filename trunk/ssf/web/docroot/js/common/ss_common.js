@@ -2222,7 +2222,8 @@ var ss_helpSystem = {
 			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
-			s += "  <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\">"+ss_helpInstructions+"</span><br /></td>";
+			s += "    <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\"><a href=\"#\" \n";
+			s += "      onClick=\"ss_helpSystem.showHelpPanel('help_on_help','ss_help_on_help','top','middle','left'); return false;\">"+ss_helpInstructions+"</a></span></td>\n";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
 			s += "  <td align=\"center\" colspan=\"3\"><a href=\"#\" \n";
@@ -2233,7 +2234,7 @@ var ss_helpSystem = {
 			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
 			s += "      onClick=\"ss_helpSystem.hide(); return false;\">"+ss_helpCloseButtonText+"</a>\n";
 			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
-			s += "      onClick=\"ss_helpSystem.showHelpPanel('print_manuals','ss_help_print_manuals','center','middle'); return false;\">"+ss_helpManualsButtonText+"</a>\n";
+			s += "      onClick=\"ss_helpSystem.showHelpPanel('print_manuals','ss_help_print_manuals','top','middle','left'); return false;\">"+ss_helpManualsButtonText+"</a>\n";
 			s += "  </td>\n";
 			s += "  </tr>\n";
 			s += "  </table>\n";
