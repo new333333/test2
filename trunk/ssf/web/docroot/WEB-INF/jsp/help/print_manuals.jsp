@@ -8,6 +8,11 @@
 <ul style="list-style-type:disc;">
 <li><ssf:nlt tag="help.viewBooks.content.listItem.installGuide"/></li>
 
+<li><ssf:nlt tag="help.viewBooks.content.listItem.quickStart"/></li>
+
+<li><ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"/></li>
+
+<li><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></li>
 </ul>
 
 <div align="center">

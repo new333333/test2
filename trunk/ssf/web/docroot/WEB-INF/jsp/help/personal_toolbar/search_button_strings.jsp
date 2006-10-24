@@ -28,10 +28,10 @@ ss_helpSystem.highlight('ss_navbarSearchButton');
 
 <div align="center">
 <div class="ss_style" style="display:inline;margin-right:10px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button', 'ss_help_panel', '', '');" style="color:#0000ff;">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button_understand_tab', 'ss_help_panel', '', '');" style="color:#0000ff;"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/search_button_understand_tab', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>

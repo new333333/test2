@@ -1749,9 +1749,6 @@ var ss_helpSystem = {
 			var helpSpotTd2 = document.createElement("td");
 			var helpSpotGif = document.createElement("img");
 			helpSpotGif.src = ss_helpSpotGifSrc;
-			// Hack to get proper display of help icon, next 2 lines  (GF)
-			helpSpotGif.setAttribute("height", "15");
-			helpSpotGif.setAttribute("width", "15");
             // Title can be 'show' or 'hide' (default)			
 			if (nodes[i].getAttribute("titleFlag")) {
 			    helpSpotTitleFlag = nodes[i].getAttribute("titleFlag");
