@@ -15,7 +15,9 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TimeZone;
+import java.util.TreeSet;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.util.Validator;
@@ -44,6 +46,9 @@ public class User extends Principal {
     protected String displayStyle;
     protected String password;
     protected Long digestSeed;
+    
+    private Set principalIds; // set of Long; this field is computed 
+    private SortedSet groupNames; // sorted set of group names; this field is computed
     
 	public User() {
     }
@@ -351,7 +356,14 @@ public class User extends Principal {
      * the depth of graph is large. But for now...
      * 
      * Note: This does not cache the result of the computation, since it can
-     * change any time.    
+     * change any time (TRUE IN THEORY BUT NOT IN PRACTICE: see below)   
+     * 
+     * Note: Our system architecture is such that new persistence session is
+     * created and the user object is re-loaded from the database for each
+     * and every request (ie, interaction between the user and the system).
+     * In other words, we do not cache user object across multiple requests
+     * within a user session. Consequently it is safe to cache the result
+     * of this computation within the user object.
      * 
      * Note: This method may load associated groups lazily, which means that
      * this method is expected to be executed in a valid transactional context.
@@ -360,9 +372,14 @@ public class User extends Principal {
      * @return
      */
     public Set computePrincipalIds() {
-        Set ids = new HashSet();
-        addPrincipalIds(this, ids);
-        return ids;
+    	// Each thread serving a user request has its own copy of user object.
+    	// Therefore we do not have to use synchronization around principalIds.
+    	if(principalIds == null) {
+    		Set ids = new HashSet();
+    		addPrincipalIds(this, ids);
+    		principalIds = ids;
+    	}
+        return principalIds;
     }
     
     private void addPrincipalIds(Principal principal, Set ids) {
@@ -376,5 +393,30 @@ public class User extends Principal {
                 addPrincipalIds((Principal) i.next(), ids);
             }
         }
+    }
+    
+    /**
+     * Returns a sorted set of group names that the user is a member of
+     * either directly or indirectly. 
+     * 
+     * @return
+     */
+    public SortedSet computeGroupNames() {
+    	if(groupNames == null) {
+    		SortedSet names = new TreeSet();
+    		addGroupNames(this, names);
+    		groupNames = names;
+    	}
+    	return groupNames;
+    }
+    
+    private void addGroupNames(Principal principal, SortedSet names) {
+    	List memberOf = principal.getMemberOf();
+    	for(Iterator i = memberOf.iterator(); i.hasNext();) {
+    		Group group = (Group) i.next();
+    		if(names.add(group.getName())) {
+    			addGroupNames(group, names);
+    		}
+    	}
     }
 }

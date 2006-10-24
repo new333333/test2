@@ -26,7 +26,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
  *
  */
 public class ModifyEntryController extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+	public void handleActionRequestInternalAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
 		Map formData = request.getParameterMap();

@@ -1,5 +1,11 @@
 package com.sitescape.ef.web.portlet;
 
+import java.util.Map;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
@@ -17,6 +23,7 @@ import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.ef.util.XSSCheck;
 
 public abstract class SAbstractController extends AbstractController 
 implements AllBusinessServicesInjected {
@@ -134,5 +141,30 @@ implements AllBusinessServicesInjected {
 		return dashboardModule;
 	}
 
-
+	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)
+	throws Exception {
+		Map formData = request.getParameterMap();
+		Map newFormData = XSSCheck.check(formData);
+		ActionRequest newReq;
+		if(newFormData != formData) {
+			newReq = new ParamsWrappedActionRequest(request, newFormData);
+		}
+		else {
+			newReq = request;
+		}
+		handleActionRequestInternalAfterValidation(newReq, response);
+	}
+	
+	/**
+	 * <p>Subclasses are meant to override this method if the controller 
+	 * is expected to handle action requests.</p>
+	 * <p>Default implementation throws a PortletException.</p>
+	 * <p>The contract is the same as for handleActionRequestInternal.</p>
+	 * @see #handleActionRequestInternal
+	 * @see #handleRenderRequestInternalAfterValidation
+	 */
+	protected void handleActionRequestInternalAfterValidation(ActionRequest request, ActionResponse response)
+		throws Exception {
+	    throw new PortletException("This controller does not handle action requests");
+	}
 }
