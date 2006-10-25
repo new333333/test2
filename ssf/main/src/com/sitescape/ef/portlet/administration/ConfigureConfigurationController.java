@@ -24,7 +24,7 @@ import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("addBtn")) {
 			//Get the list of workAreaOperations to be added to this new role/function

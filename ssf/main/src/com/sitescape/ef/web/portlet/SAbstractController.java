@@ -152,7 +152,7 @@ implements AllBusinessServicesInjected {
 		else {
 			newReq = request;
 		}
-		handleActionRequestInternalAfterValidation(newReq, response);
+		handleActionRequestAfterValidation(newReq, response);
 	}
 	
 	/**
@@ -161,9 +161,8 @@ implements AllBusinessServicesInjected {
 	 * <p>Default implementation throws a PortletException.</p>
 	 * <p>The contract is the same as for handleActionRequestInternal.</p>
 	 * @see #handleActionRequestInternal
-	 * @see #handleRenderRequestInternalAfterValidation
 	 */
-	protected void handleActionRequestInternalAfterValidation(ActionRequest request, ActionResponse response)
+	protected void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 		throws Exception {
 	    throw new PortletException("This controller does not handle action requests");
 	}

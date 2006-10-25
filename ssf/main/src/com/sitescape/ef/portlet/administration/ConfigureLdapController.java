@@ -20,7 +20,7 @@ import com.sitescape.util.Validator;
 
 public class ConfigureLdapController extends  SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			LdapConfig config = getLdapModule().getLdapConfig();

@@ -20,7 +20,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 
 public class UploadFileController extends SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, 
+	public void handleActionRequestAfterValidation(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		// Note: This sample implements oversimplified and naive flow control
 		// that handles form processing involving file upload. Production

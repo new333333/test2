@@ -28,7 +28,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
  *
  */
 public class AddEntryController extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				

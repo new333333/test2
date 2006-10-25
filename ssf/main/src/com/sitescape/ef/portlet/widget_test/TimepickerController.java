@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class TimepickerController extends SAbstractController {
-  public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+  public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
 		Map formData = request.getParameterMap();

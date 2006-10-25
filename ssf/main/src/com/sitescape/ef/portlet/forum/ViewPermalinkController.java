@@ -48,7 +48,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class ViewPermalinkController  extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

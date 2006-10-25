@@ -53,7 +53,7 @@ public class ViewController  extends SAbstractController {
 	public static final String PROFILE_PORTLET="ss_profile";
 	public static final String DASHBOARD_PORTLET="ss_dashboard";
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

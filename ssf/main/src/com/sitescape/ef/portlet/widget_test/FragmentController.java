@@ -13,7 +13,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class FragmentController extends SAbstractController {
 
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response)
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 	throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		//There is no action. Just go to the render phase

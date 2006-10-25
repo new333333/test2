@@ -30,7 +30,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
 public class ExportDefinitionController extends  SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();

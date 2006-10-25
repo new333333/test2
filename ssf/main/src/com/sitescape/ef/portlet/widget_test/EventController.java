@@ -27,7 +27,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.util.cal.Duration;
 
 public class EventController extends SAbstractController {
-  public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+  public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
        throws Exception {
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);

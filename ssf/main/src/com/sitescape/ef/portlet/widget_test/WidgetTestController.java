@@ -11,7 +11,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class WidgetTestController extends SAbstractController {
 
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response)
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 	throws Exception {
 		//There is no action. Just go to the render phase
 		response.setRenderParameters(request.getParameterMap());

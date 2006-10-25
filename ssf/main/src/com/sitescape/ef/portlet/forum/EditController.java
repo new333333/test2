@@ -34,7 +34,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class EditController extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response)
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 	throws Exception {
 
         //Make the prefs available to the jsp
