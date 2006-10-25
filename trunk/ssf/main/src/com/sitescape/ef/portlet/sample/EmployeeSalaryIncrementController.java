@@ -7,7 +7,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class EmployeeSalaryIncrementController extends SAbstractController {
 
-	public void handleActionRequestInternal(ActionRequest request, 
+	public void handleActionRequestAfterValidation(ActionRequest request, 
 			ActionResponse response) throws Exception {
 				
 		/*

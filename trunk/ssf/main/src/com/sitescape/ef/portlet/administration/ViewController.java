@@ -23,7 +23,7 @@ import com.sitescape.util.Validator;
 
 public class ViewController extends  SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 

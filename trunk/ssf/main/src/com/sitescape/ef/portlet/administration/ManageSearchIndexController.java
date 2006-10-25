@@ -24,7 +24,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
 public class ManageSearchIndexController extends  SAbstractController {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Get the list of binders to be indexed

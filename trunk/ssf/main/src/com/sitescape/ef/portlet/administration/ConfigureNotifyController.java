@@ -36,7 +36,7 @@ import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 public class ConfigureNotifyController extends  SAbstractController  {
 	
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));

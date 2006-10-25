@@ -35,7 +35,7 @@ import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
 public class ListProfilesController extends   SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
         User user = RequestContextHolder.getRequestContext().getUser();

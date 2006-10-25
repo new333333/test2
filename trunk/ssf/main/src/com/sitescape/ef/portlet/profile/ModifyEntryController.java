@@ -30,7 +30,7 @@ import com.sitescape.ef.domain.Principal;
  *
  */
 public class ModifyEntryController extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 
 		Map formData = request.getParameterMap();

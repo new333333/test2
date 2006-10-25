@@ -44,7 +44,7 @@ import com.sitescape.ef.web.util.Toolbar;
  *
  */
 public class SearchController extends AbstractBinderController {
-	public void handleActionRequestInternal(ActionRequest request, 
+	public void handleActionRequestAfterValidation(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		User user = RequestContextHolder.getRequestContext().getUser();

@@ -33,7 +33,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class AccessControlController extends AbstractBinderController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
 

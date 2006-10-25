@@ -25,7 +25,7 @@ import com.sitescape.ef.web.util.WebHelper;
  * Handle Ajax request to update presence display
  */
 public class UpdatePresenceController  extends SAbstractController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 

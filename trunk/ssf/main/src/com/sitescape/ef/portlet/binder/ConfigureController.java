@@ -27,7 +27,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class ConfigureController extends AbstractBinderController {
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) 
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				

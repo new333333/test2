@@ -7,7 +7,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 
 public class EmployeeDeleteController extends SAbstractController {
 
-	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 	    // Get the id and delete it
 	    Integer id = new Integer(request.getParameter("employee"));
 	    getEmployeeModule().deleteEmployee(id);
