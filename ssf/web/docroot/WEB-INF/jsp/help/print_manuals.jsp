@@ -13,6 +13,8 @@
 <li><ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"/></li>
 
 <li><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></li>
+
+<li><ssf:nlt tag="help.viewBooks.content.listItem.workflowTutorial"/></li>
 </ul>
 
 <div align="center">

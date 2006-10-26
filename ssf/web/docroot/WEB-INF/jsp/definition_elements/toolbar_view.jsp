@@ -21,9 +21,30 @@ String menuDivWidth = "300px";
 <c:forEach var="toolbarMenu" items="${ss_toolbar}">
     <c:if test="${empty toolbarMenu.value.url && empty toolbarMenu.value.urlParams}">
      <li id="parent_<%= menuTagDivId %><portlet:namespace/>">
-     <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
+
+     <% // BEGIN Helpspots for folder menus %>
+     <c:choose>
+	     <c:when test="${toolbarMenu.value.title == 'Manage this folder'}">
+         <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="5" offsetX="-10"
+		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>">
+         </c:when>
+	     <c:when test="${toolbarMenu.value.title == 'Manage dashboard'}">
+         <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="5" offsetX="-10"
+		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>">
+         </c:when>
+         <c:otherwise>
+	     </c:otherwise>
+	 </c:choose>
+ 
+      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
 	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');"
 	 >${toolbarMenu.value.title}</a>
+
+      <% // END Helpspots for folder menus %>
+      <c:if test="${toolbarMenu.value.title == 'Manage this folder' || toolbarMenu.value.title == 'Manage dashboard'}">
+      </ssHelpSpot>
+      </c:if>
+
       <div id="<%= menuTagDivId %><portlet:namespace/>" 
         class="${ss_toolbar_style}_submenu" style="width:<%= menuDivWidth %>;">
       <ul class="${ss_toolbar_style}_submenu">
