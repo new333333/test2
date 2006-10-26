@@ -21,6 +21,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.XSSCheck;
@@ -147,7 +148,10 @@ implements AllBusinessServicesInjected {
 		Map newFormData = XSSCheck.check(formData);
 		ActionRequest newReq;
 		if(newFormData != formData) {
-			newReq = new ParamsWrappedActionRequest(request, newFormData);
+			if(request instanceof MultipartFileSupport)
+				newReq = new ParamsWrappedActionRequestWithMultipartFileSupport(request, newFormData);
+			else
+				newReq = new ParamsWrappedActionRequest(request, newFormData);
 		}
 		else {
 			newReq = request;
