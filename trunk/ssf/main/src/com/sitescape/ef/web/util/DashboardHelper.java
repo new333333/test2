@@ -860,8 +860,10 @@ public class DashboardHelper {
 		for (int i = 0; i < orderPairs.length; i++) {
 			if (orderPairs[i].contains(",")) {
 				String id = orderPairs[i].split(",")[0];
-				if (id.startsWith("ss_dashboard_component_")) {
-					id = id.substring("ss_dashboard_component_".length());
+				int idOffset = id.lastIndexOf("_dashboard_component_");
+				if (idOffset >= 0) {
+
+					id = id.substring(idOffset + "_dashboard_component_".length());
 					String orderList = orderPairs[i].split(",")[1];
 					//Find the component in its current place by going through each list
 			    	List componentListOld;
