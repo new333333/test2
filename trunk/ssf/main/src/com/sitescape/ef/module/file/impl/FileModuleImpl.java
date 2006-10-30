@@ -1043,7 +1043,7 @@ public class FileModuleImpl implements FileModule {
     }
     
     private String directlyAccessibleThumbnailFilePath(DefinableEntity entry, String primaryFileName) {
-    	return DirPath.getThumbnailDirPath() + File.separator + entry.getId() + "_" + primaryFileName;
+    	return DirPath.getThumbnailDirPath() + File.separator + entry.getTypedId() + "_" + primaryFileName;
     }
 
     private void writeExistingFile(RepositorySession session,
