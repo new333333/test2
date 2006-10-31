@@ -11,15 +11,15 @@
 
 <li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/add_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.addFolder"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.editWorkflows"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/edit_workflows', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.editWorkflows"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.editForms"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/edit_forms', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.editForms"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.moveThisFolder"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.moveThisFolder"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.configureThisFolder"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.configureThisFolder"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.accessControl"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.accessControl"/></a></li>
 
 </ul>
 
