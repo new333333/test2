@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_style ss_bold ss_largestprint"><ssf:nlt tag="help.viewBooks.title"/></span> 
+<span class="ss_titlebold"><ssf:nlt tag="help.viewBooks.title"/></span> 
 
 <p><ssf:nlt tag="help.viewBooks.content.intro"/></p>
 

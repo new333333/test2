@@ -4,10 +4,23 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (2/7)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.addFolder"/></span>
 
-<p><ssf:nlt tag="help.addFolder.content.intro"/></p>
+<p><ssf:nlt tag="help.addFolder.content.listIntro"/></p>
 
-<p><ssf:nlt tag="help.addFolder.content.intro"/></p>
+<ul style="list-style-type:disc;">
 
+<li><ssf:nlt tag="help.addFolder.listItem.config"/></li>
+
+<li><ssf:nlt tag="help.addFolder.listItem.provideInfo"/></li>
+
+</ul>
+
+<p><ssf:nlt tag="help.addFolder.content.moreInfo"/></p>
+
+<ul style="list-style-type:disc;">
+
+<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.configurationOverview.title"/></a></li>
+
+</ul>
 
 </div>
 

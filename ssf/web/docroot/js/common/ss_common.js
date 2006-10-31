@@ -2219,7 +2219,7 @@ var ss_helpSystem = {
 			s += "    >"+ss_helpNextText+" &gt;&gt;&gt;</a></td>\n";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
-			s += "    <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\"><a href=\"#\" \n";
+			s += "    <td align=\"center\" colspan=\"3\"><span style=\"font-size:10px;\"  class=\"ss_titlebold\"><a href=\"#\" \n";
 			s += "      onClick=\"ss_helpSystem.showHelpPanel('help_on_help','ss_help_on_help','top','middle','left'); return false;\">"+ss_helpInstructions+"</a></span></td>\n";
 			s += "  </tr>\n";
 			s += "  <tr>\n";
