@@ -495,6 +495,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		Definition def = createDefaultDefinition(definitionType);
 		binder.setEntryDef(def);
+		binder.setDefinitionType(definitionType);
 		return def;
 	}
 	public Definition setDefaultEntryDefinition(Entry entry) {
@@ -513,6 +514,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		Definition def = createDefaultDefinition(definitionType);
 		entry.setEntryDef(def);
+		entry.setDefinitionType(definitionType);
 		return def;
 	}
 

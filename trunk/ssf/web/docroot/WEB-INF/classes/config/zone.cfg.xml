@@ -10,7 +10,7 @@
 			<objectClass>inetOrgPerson</objectClass>
 			<objectClass>organizationalPerson</objectClass>
 			<objectClass>residentialPerson</objectClass>
-			<userAttribute from="uid" to="loginName"/>
+			<userAttribute from="uid" to="name"/>
 		</userMapping>
 		<groupMapping>
 			<objectClass>group</objectClass>
@@ -31,12 +31,8 @@
 		<ldapConfiguration>	
 			<property name="java.naming.security.principal"/>
 			<property name="java.naming.security.credentials"/>
-			<property name="java.naming.provider.url">ldap://localhost:389</property>
-			<property name="userDomain">dc=sitescape,dc=com</property>
-			<property name="groupDomain">dc=sitescape,dc=com</property>
+			<property name="java.naming.provider.url">ldap://localhost:389/dc=sitescape,dc=com</property>
 			<userMapping>
-				<mapping from="cn" to="title"/>
-				<mapping from="commonName" to="title"/>
 				<mapping from="mail" to="emailAddress"/>
 				<mapping from="gn" to="firstName"/>
 				<mapping from="givenName" to="firstName"/>
@@ -47,8 +43,8 @@
 			</userMapping>	
 	
 			<groupMapping>
-				<mapping from="cn" to="title"/>
-				<mapping from="commonName" to="title"/>
+				<mapping from="cn" to="name"/>
+				<mapping from="commonName" to="name"/>
 				<mapping from="description" to="description"/>
 			</groupMapping>	
 		</ldapConfiguration>	

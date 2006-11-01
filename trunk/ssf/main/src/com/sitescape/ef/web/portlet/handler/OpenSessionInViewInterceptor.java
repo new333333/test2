@@ -6,16 +6,6 @@ import javax.portlet.PortletResponse;
 import org.springframework.dao.DataAccessException;
 
 /**
- * We are going to share the hibernate session that is opened at the start of the request wit
- * the JBPM workflow engine.  The spring-jbpm module, tries to close the jbpm session at 
- * the end of a transaction.  This in turn tries to close the hibernate session.  We don't 
- * want the session closed until the request ends.
- * 
- * This interceptor will close the jbpm session if it is registered with
- * TransactionSynchronization.  We don't pre-open a jbpm session since it is not
- * always needed, but once it is opened it remains so until the request is terminated.
- * before we clos
- * @author Janet McCann
  *
  */
 public class OpenSessionInViewInterceptor extends 

@@ -18,10 +18,8 @@ array set ::j2ee_Principals_class_MAP {
    modification_principal     {modification_principal int32}
    description_text          {description_text clob}
    description_format       {description_format int32}
-   homepage     {homepage "varchar 256"}
    organization {organization "varchar 256"}
    phone        {phone "varchar 128"}
-   webPubDir    {webPubDir "varchar 256"}
    zoneName    {zoneName "varchar 100"}
    timeZoneId   {timeZoneId "varchar 10"}
    loginDate	{loginDate timestamp}
@@ -438,11 +436,11 @@ proc doUsers {userList} {
 #				set attrs(preferredWorkspace) $::forumIds($summit)
 #			} 
 #what about emailMedium/short??
-            set attrs(homepage) [::profile::aval homepage $user]
+ #           set attrs(homepage) [::profile::aval homepage $user]
             set attrs(organization) [::profile::aval org $user] 
             set attrs(phone) [::profile::aval phone $user]       
 ##is this needed
-            set attrs(webPubDir) [::profile::aval webPubDir $user]    
+ #           set attrs(webPubDir) [::profile::aval webPubDir $user]    
             set attrs(creation_date) [::profile::aval createdOn $user]
             set attrs(creation_principal) [mapName [::profile::aval createdBy $user]]
             set attrs(modification_principal) [mapName [::profile::aval modifiedBy $user]]

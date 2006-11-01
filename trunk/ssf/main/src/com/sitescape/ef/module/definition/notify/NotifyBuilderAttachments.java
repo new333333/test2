@@ -10,6 +10,7 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.util.Validator;
 
 /**
 * Handle unnamed attachments in mail notification.  This implememtation will
@@ -24,7 +25,7 @@ public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
     		for (int i=0; i<atts.size(); ++i) {
 		    	Element value = element.addElement("file");		    		
 		    	FileAttachment att = (FileAttachment)atts.get(i);
-		    	if (att != null && (att.getName() != null) && att.getFileItem() != null) {
+		    	if (att != null && Validator.isNull(att.getName()) && att.getFileItem() != null) {
 		    		value.setText(att.getFileItem().getName());
 		    		if (entity instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entity;

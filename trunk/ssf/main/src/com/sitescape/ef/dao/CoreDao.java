@@ -60,6 +60,17 @@ public interface CoreDao {
 	public List loadObjectsCacheable(Class className, FilterControls filter);
     public List loadObjects(Collection ids, Class className, String zoneName);
 	public List loadObjects(String query, Map namedValues);
+	/**
+	 * Performance optimization.
+	 * Load a list of objects and eagerly fetch listed collections
+	 * 
+	 * @param ids
+	 * @param className
+	 * @param zoneName
+	 * @param collections
+	 * @return
+	 */
+	public List loadObjects(Collection ids, Class className, String zoneName, List collections);
     public void validateTitle(Binder binder, String title) throws TitleException;
    	public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);

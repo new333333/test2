@@ -76,12 +76,10 @@
       <property name="firstName" access="field" length="64"/>
       <property name="lastName" access="field" length="64"/>
       <property name="middleName" access="field" length="64"/>
-      <property name="homepage" length="256"/>
       <property name="organization" length="256"/>
       <property name="phone" length="128"/>
-      <property name="webPubDir" length="256"/>
       <property name="zonName" length="100"/>
-      <property name="password" length="64"/>
+      <property name="password" access="field" length="64"/>
     </subclass>
   </class>
   <query name="find-User-Company"><![CDATA[from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName]]></query>

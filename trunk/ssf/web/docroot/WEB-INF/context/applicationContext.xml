@@ -113,12 +113,13 @@
 			<prop key="org.quartz.jobStore.tablePrefix">SSQRTZ_</prop>
 
 			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
-<!--			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop>
+			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS  WHERE LOCK_NAME = ? FOR UPDATE</prop>
--->
-		<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
+
+<!--		<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WITH (UPDLOCK ROWLOCK) WHERE LOCK_NAME = ?</prop>
-<!-- 	 		<prop key="org.quartz.jobStore.driverDelegateClass">com.sitescape.util.dao.quartz.FrontbaseDelegate</prop>
+-->
+<!-- 		<prop key="org.quartz.jobStore.driverDelegateClass">com.sitescape.util.dao.quartz.FrontbaseDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ?</prop>
 -->
 		</props>
@@ -351,10 +352,11 @@
 					<property name="profileDao"><ref local="profileDao"/></property>						
 					<property name="coreDao"><ref local="coreDao"/></property>						
 					<property name="adminModule"><ref local="adminModule"/></property>						
+					<property name="definitionModule"><ref local="definitionModule"/></property>						
+					<property name="processorManager"><ref local="modelProcessorManager"/></property>
 				</bean>
 			</property>				
 	</bean>	
-	
 	<!-- ============================ Document Pipeline =========================== -->
 	
 	<bean id="docPipeline" class="com.sitescape.ef.pipeline.impl.SynchronousPipeline">
@@ -584,6 +586,7 @@
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
 		<!-- synchronize methods handled by processor through transactionTemplate-->

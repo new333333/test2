@@ -1,21 +1,20 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.portlet.PortletMode;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.ldap.LdapConfig;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
 public class ConfigureLdapController extends  SAbstractController {
@@ -26,8 +25,6 @@ public class ConfigureLdapController extends  SAbstractController {
 			LdapConfig config = getLdapModule().getLdapConfig();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-			config.setSessionSync(PortletRequestUtils.getBooleanParameter(request, "sessionSync", false));
-			config.setSessionRegister(PortletRequestUtils.getBooleanParameter(request, "sessionRegister", false));
 			config.setUserDisable(PortletRequestUtils.getBooleanParameter(request, "userDisable", false));
 			config.setGroupDisable(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false));
 			config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
@@ -35,6 +32,20 @@ public class ConfigureLdapController extends  SAbstractController {
 			config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
 			config.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", false));
 			config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
+			config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
+			config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
+			config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredential", ""));
+			config.setUserIdMapping(PortletRequestUtils.getStringParameter(request, "userIdMapping", ""));
+			String[] mappings = StringUtil.split(PortletRequestUtils.getStringParameter(request, "userMappings", ""), "\n");
+			Map maps = new HashMap();
+			for (int i=0; i<mappings.length; ++i) {
+				String m = mappings[i];
+				if (Validator.isNull(m)) continue;
+				String[] vals = StringUtil.split(m, "=");
+				if (vals.length != 2) continue;
+				maps.put(vals[1].trim(), vals[0].trim());
+			}
+			config.setUserMappings(maps);
 			getLdapModule().setLdapConfig(config);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {

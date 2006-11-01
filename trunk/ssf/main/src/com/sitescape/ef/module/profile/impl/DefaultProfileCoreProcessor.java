@@ -67,6 +67,30 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	if (inputData.exists("displayStyle") && !entryData.containsKey("displayStyle")) {
     		entryData.put("displayStyle", inputData.getSingleValue("displayStyle"));
     	}
+    	if (inputData.exists("firstName") && !entryData.containsKey("firstName")) {
+    		entryData.put("firstName", inputData.getSingleValue("firstName"));
+    	}
+    	if (inputData.exists("lastName") && !entryData.containsKey("lastName")) {
+    		entryData.put("lastName", inputData.getSingleValue("lastName"));
+    	}
+    	if (inputData.exists("middleName") && !entryData.containsKey("middleName")) {
+    		entryData.put("middleName", inputData.getSingleValue("middleName"));
+    	}
+    	if (inputData.exists("languageId") && !entryData.containsKey("languageId")) {
+    		entryData.put("languageId", inputData.getSingleValue("languageId"));
+    	}
+    	if (inputData.exists("country") && !entryData.containsKey("country")) {
+    		entryData.put("country", inputData.getSingleValue("country"));
+    	}
+       	if (inputData.exists("emailAddress") && !entryData.containsKey("emailAddress")) {
+    		entryData.put("emailAddress", inputData.getSingleValue("emailAddress"));
+    	}
+       	if (inputData.exists("timeZoneName") && !entryData.containsKey("timeZoneName")) {
+    		entryData.put("timeZoneName", inputData.getSingleValue("timeZoneName"));
+    	}
+       	if (inputData.exists("name") && !entryData.containsKey("name")) {
+    		entryData.put("name", inputData.getSingleValue("name"));
+    	}
     }
     //***********************************************************************************************************
     
@@ -227,7 +251,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 * is an InputDataAccessor of updates
 	 */
 	public void syncEntries(final Map entries) {
-	        
+	    
         // The following part requires update database transaction.
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {

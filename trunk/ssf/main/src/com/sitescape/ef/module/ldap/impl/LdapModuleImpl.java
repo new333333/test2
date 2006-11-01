@@ -1,61 +1,59 @@
 
 package com.sitescape.ef.module.ldap.impl;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
-import javax.naming.directory.Attributes;
+import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
 import javax.naming.directory.SearchControls;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
-import javax.naming.NamingException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.jobs.LdapSynchronization;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.ldap.LdapConfig;
-import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.module.profile.ProfileCoreProcessor;
-import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Membership;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.search.BasicIndexUtils;
-
 import org.dom4j.Element;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.Membership;
+import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.jobs.LdapSynchronization;
+import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.ldap.LdapConfig;
+import com.sitescape.ef.module.ldap.LdapModule;
+import com.sitescape.ef.module.profile.ProfileCoreProcessor;
+import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.IndexSynchronizationManager;
+import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -85,12 +83,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected HashMap zones = new HashMap();
 	protected TransactionTemplate transactionTemplate;
 	protected ProfileModule profileModule;
+	protected DefinitionModule definitionModule;
 	public LdapModuleImpl () {
-		defaultProps.put("java.naming.factory.initial", "com.sun.jndi.ldap.LdapCtxFactory");
-		defaultProps.put("java.naming.security.authentication", "simple");
-		defaultProps.put("java.naming.provider.url", "ldap://localhost:389");
-		defaultProps.put(LdapModule.OBJECT_CLASS, "objectClass");
-    	defaultProps.put(LdapModule.SYNC_JOB, "com.sitescape.ef.jobs.DefaultLdapSynchronization");
+		defaultProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
+		defaultProps.put(Context.SECURITY_AUTHENTICATION, "simple");
+		defaultProps.put(Context.PROVIDER_URL, "ldap://localhost:389");
+		defaultProps.put("objectClass", "objectClass");
+    	defaultProps.put("ldap.job", "com.sitescape.ef.jobs.DefaultLdapSynchronization");
 	}
 	
     protected TransactionTemplate getTransactionTemplate() {
@@ -106,6 +105,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		this.profileModule = profileModule;
 	}
 	
+	public DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+
 	public String getLdapProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "ldapConfiguration/property[@name='" + name + "']");
 		if (Validator.isNull(val)) {
@@ -129,7 +135,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
            	getSyncObject().setScheduleInfo(config);
 	}
     protected LdapSynchronization getSyncObject() {
-    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), LdapModule.SYNC_JOB);
+    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), "ldap.job");
     	try {
             Class processorClass = ReflectHelper.classForName(jobClass);
             LdapSynchronization job = (LdapSynchronization)processorClass.newInstance();
@@ -156,15 +162,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected Map getZoneMap(String zoneName) {
 		if (zones.containsKey(zoneName)) return (Map)zones.get(zoneName);
 		Map zone = new HashMap();
-		zone.put("java.naming.factory.initial", getLdapProperty(zoneName, "java.naming.factory.initial"));
-		zone.put("java.naming.security.authentication", getLdapProperty(zoneName, "java.naming.security.authentication"));
-		zone.put("java.naming.provider.url", getLdapProperty(zoneName, "java.naming.provider.url"));
-		zone.put("java.naming.security.principal", getLdapProperty(zoneName, "java.naming.security.principal"));
-		zone.put("java.naming.security.credentials", getLdapProperty(zoneName, "java.naming.security.credentials"));
+		zone.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zoneName, Context.INITIAL_CONTEXT_FACTORY));
+		zone.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zoneName, Context.SECURITY_AUTHENTICATION));
+		zone.put(Context.PROVIDER_URL, getLdapProperty(zoneName, Context.PROVIDER_URL));
+		zone.put(Context.SECURITY_PRINCIPAL, getLdapProperty(zoneName, Context.SECURITY_PRINCIPAL));
+		zone.put(Context.SECURITY_CREDENTIALS, getLdapProperty(zoneName, Context.SECURITY_CREDENTIALS));
 		zone.put("java.naming.ldap.factory.socket", getLdapProperty(zoneName, "java.naming.ldap.factory.socket"));
-		zone.put(LdapModule.USER_DOMAIN, getLdapProperty(zoneName, LdapModule.USER_DOMAIN));
-		zone.put(LdapModule.GROUP_DOMAIN, getLdapProperty(zoneName, LdapModule.GROUP_DOMAIN));
-		zone.put(LdapModule.OBJECT_CLASS, getLdapProperty(zoneName, LdapModule.OBJECT_CLASS));
+		zone.put("objectClass", getLdapProperty(zoneName, "objectClass"));
 		
 		//get lists from zone config so each set can be overridden
 		List objectClasses = new ArrayList();
@@ -184,7 +188,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		
 		zone.put("userAttributes", attributes);
-		zone.put("userAttributeNames", (String[])(attributes.keySet().toArray(sample)));
 
 		next = SZoneConfig.getElement("ldapConfiguration/userMapping/userAttribute");
 		if (next != null) {
@@ -192,7 +195,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			zone.put("ssIdAttribute", next.attributeValue("to"));
 		} else {
 			zone.put("userIdAttribute", "uid");
-			zone.put("ssIdAttribute", "loginName");
+			zone.put("ssIdAttribute", "name");
 		}
 
 		classes = SZoneConfig.getElements("ldapConfiguration/groupMapping/objectClass");
@@ -244,7 +247,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		// Make sure the fetched user dn and password combination can bind
 		// against the LDAP server
 		try {
-			ctx = getContext(zoneName, dn, password, (String)getZoneMap(zoneName).get(LdapModule.USER_DOMAIN));
+			ctx = getContext(info, dn, password);
 			ctx.close();
 		} catch (Exception e) {
 			return false;
@@ -286,16 +289,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    		Object[] gRow,uRow;
    		Iterator iter;
    		try {
-   			String userDomain = getLdapProperty(zoneName, USER_DOMAIN);
-   			String groupDomain = getLdapProperty(zoneName, GROUP_DOMAIN);
-			ctx = getContext(zoneName, userDomain);
-			Map dnUsers  = syncUsers(zoneName, ctx, info, userDomain);
-			if (!userDomain.equals(groupDomain)) {
-				ctx.close();
-				ctx = null;
-				ctx = getContext(zoneName, groupDomain);
-			}
-			Map [] gResults = syncGroups(zoneName, ctx, info, groupDomain);
+   			
+			ctx = getContext(info);
+			Map dnUsers  = syncUsers(zoneName, ctx, info); 
+			Map [] gResults = syncGroups(zoneName, ctx, info);
 			if (info.isMembershipSync()) {
 				Map dnGroups = (Map)gResults[0];
 				Map ldapGroups = (Map)gResults[1];
@@ -354,7 +351,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 
-	protected Map syncUsers(String zoneName, LdapContext ctx, LdapConfig info, String userDomain) 
+	protected Map syncUsers(String zoneName, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -380,10 +377,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 		Map zoneMap = getZoneMap(zoneName);
-		Map userAttributes = (Map)zoneMap.get("userAttributes");
+		Map userAttributes = info.getUserMappings();
+		if (userAttributes == null) userAttributes = (Map)zoneMap.get("userAttributes");
 		Set la = new HashSet(userAttributes.keySet());
-		String userIdAttribute = (String)zoneMap.get("userIdAttribute");
-		String [] userAttributeNames = (String [])zoneMap.get("userAttributeNames");
+		String userIdAttribute = info.getUserIdMapping();
+		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get("userIdAttribute");
+		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
+
 		la.add(userIdAttribute);
 		SearchControls sch = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(sample), false, false);
@@ -400,7 +400,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			if (ssName == null) continue;
 			String dn;
 			if (bd.isRelative()) {
-				dn = (bd.getName().trim() + "," + userDomain);
+				dn = (bd.getName().trim() + "," + ctx.getNameInNamespace());
 			} else {
 				dn = bd.getName().trim();
 			}
@@ -466,7 +466,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		return dnUsers;
 	}
 
-	protected Map[] syncGroups(String zoneName, LdapContext ctx, LdapConfig info, String groupDomain) 
+	protected Map[] syncGroups(String zoneName, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -515,7 +515,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
 			String dn;
 			if (bd.isRelative()) {
-				dn = bd.getName().trim() + "," + groupDomain;
+				dn = bd.getName().trim() + "," + ctx.getNameInNamespace();
 			} else {
 				dn = bd.getName().trim();
 			}
@@ -598,11 +598,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 	}
-
-	protected LdapContext getContext(String zoneName, String domain) throws NamingException { 
-		String user = getLdapProperty(zoneName, Context.SECURITY_PRINCIPAL);
-		String pwd = getLdapProperty(zoneName,	Context.SECURITY_CREDENTIALS);
-		return getContext(zoneName, user, pwd, domain);
+	protected LdapContext getContext(LdapConfig config) throws NamingException { 
+		return getContext(config, config.getUserPrincipal(), config.getUserCredential());
+		
 	}
 	/**
 	 * Initialize context to an ldap server using 
@@ -614,23 +612,30 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @return LdapContext
 	 * @throws NamingException
 	 */
-	protected LdapContext getContext(String zoneName, String user, String pwd, String domain) throws NamingException { 
+	protected LdapContext getContext(LdapConfig config, String user, String pwd) throws NamingException { 
 		// Load user from ldap
 		try {
 			Hashtable env = new Hashtable();
 
-			env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zoneName, Context.INITIAL_CONTEXT_FACTORY));
+			env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(config.getZoneName(), Context.INITIAL_CONTEXT_FACTORY));
+			if (Validator.isNull(user) || Validator.isNull(pwd)) {
+				user = getLdapProperty(config.getZoneName(), "java.naming.security.principal");
+				pwd = getLdapProperty(config.getZoneName(), "java.naming.security.credentials");
+			}
 			if (!Validator.isNull(user) && !Validator.isNull(pwd)) {
 				env.put(Context.SECURITY_PRINCIPAL, user);
 				env.put(Context.SECURITY_CREDENTIALS, pwd);		
+				env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(config.getZoneName(), Context.SECURITY_AUTHENTICATION));
 			} 
-			env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zoneName, Context.SECURITY_AUTHENTICATION));
-			env.put(Context.PROVIDER_URL, getLdapProperty(zoneName, Context.PROVIDER_URL) + "/" + domain);
-			String socketFactory = getLdapProperty(zoneName, "java.naming.ldap.factory.socket"); 
+			String url = config.getUserUrl();
+			if (Validator.isNull(url)) {
+				url = getLdapProperty(config.getZoneName(), Context.PROVIDER_URL);
+			}
+			env.put(Context.PROVIDER_URL, url);
+			String socketFactory = getLdapProperty(config.getZoneName(), "java.naming.ldap.factory.socket"); 
 			if (!Validator.isNull(socketFactory))
 				env.put("java.naming.ldap.factory.socket", socketFactory);
 		
-
 			return new InitialLdapContext(env, null);
 		} catch (NamingException ex) {
 			logger.debug("context error:" + ex);
@@ -650,24 +655,25 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NoUserByTheNameException
 	 */
 	protected String getUpdates(LdapConfig info, String loginName, Map mods) throws NamingException, NoUserByTheNameException {
-		String userDomain = (String)getZoneMap(info.getZoneName()).get(LdapModule.USER_DOMAIN);
-		LdapContext ctx = getContext(info.getZoneName(), userDomain);
+		LdapContext ctx = getContext(info);
 		String dn=null;
-		Map userAttributes = (Map)getZoneMap(info.getZoneName()).get("userAttributes");
-		String [] userAttributeNames = (String [])getZoneMap(info.getZoneName()).get("userAttributeNames");
+		Map zoneMap = getZoneMap(info.getZoneName());
+		Map userAttributes = info.getUserMappings();
+		if (userAttributes == null) userAttributes = (Map)zoneMap.get("userAttributes");
+		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
 
 		try {
 			SearchControls sch = new SearchControls(
-					SearchControls.SUBTREE_SCOPE, 1, 0, (String[])(userAttributes.keySet().toArray(sample)), false, false);
+					SearchControls.SUBTREE_SCOPE, 1, 0, userAttributeNames, false, false);
 
-			NamingEnumeration ctxSearch = ctx.search("", getFilterString(info.getZoneName(), loginName), sch);
+			NamingEnumeration ctxSearch = ctx.search("", getFilterString(info, loginName), sch);
 			if (!ctxSearch.hasMore()) {
 				throw new NoUserByTheNameException(loginName);
 			}
 			Binding bd = (Binding)ctxSearch.next();
 			getUpdates(userAttributeNames, userAttributes,  ctx.getAttributes(bd.getName()), mods);
 			if (bd.isRelative()) {
-				dn = bd.getName() + "," + userDomain;
+				dn = bd.getName() + "," + ctx.getNameInNamespace();
 			} else {
 				dn = bd.getName();
 			}
@@ -698,15 +704,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}		
 	}
-	protected String getFilterString(String zoneName, String userId) {
+	protected String getFilterString(LdapConfig info, String userId) {
+		Map zoneMap = getZoneMap(info.getZoneName());
+		String userIdAttribute = info.getUserIdMapping();
+		if (Validator.isNull(userIdAttribute)) {
+			userIdAttribute = (String)zoneMap.get("userIdAttribute");
+		}
 		StringBuffer filter = new StringBuffer();
-		filter.append("(" + (String)getZoneMap(zoneName).get("userIdAttribute") + "=" + userId + ")");		
+		filter.append("(" + userIdAttribute + "=" + userId + ")");		
 
-		return "(&" + getFilterString(zoneName, (List)getZoneMap(zoneName).get("userObjectClasses")) + filter.toString() + ")";		
+		return "(&" + getFilterString(info.getZoneName(), (List)zoneMap.get("userObjectClasses")) + filter.toString() + ")";		
 	}
 	protected String getFilterString(String zoneName, List values) {
 		StringBuffer filter = new StringBuffer();
-		String objectClassAttribute = (String)getZoneMap(zoneName).get(LdapModule.OBJECT_CLASS);
+		String objectClassAttribute = (String)getZoneMap(zoneName).get("objectClass");
 		if (values.size() > 1) {
 			filter.append("(|");
 			for (int i=0; i<values.size(); ++i) {
@@ -756,7 +767,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 */
 	protected void updateUsers(String zoneName, final Map users) {
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
-	   	List foundEntries = getProfileDao().loadUsers(users.keySet(), zoneName);
+		List collections = new ArrayList();
+		collections.add("customAttributes");
+	   	List foundEntries = getCoreDao().loadObjects(users.keySet(), User.class, zoneName, collections);
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		User u = (User)foundEntries.get(i);
@@ -775,7 +788,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      */    
 	protected void updateGroups(String zoneName, final Map groups) {
 		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
-		List foundEntries = getProfileDao().loadGroups(groups.keySet(), RequestContextHolder.getRequestContext().getZoneName());
+		List collections = new ArrayList();
+		collections.add("customAttributes");
+	   	List foundEntries = getCoreDao().loadObjects(groups.keySet(), Group.class, zoneName, collections);
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		Group g = (Group)foundEntries.get(i);
@@ -808,7 +823,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         		return null;
         	}});
 		SessionFactory sF = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
-		sF.evictCollection("com.sitescape.ef.domain.Principal.HMemberOf");
+		sF.evictCollection("com.sitescape.ef.domain.Principal.memberOf");
 		
     }
     /**
@@ -823,8 +838,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			newUsers.add(new MapInputData((Map)i.next()));
 		}
+		//get default definition to use
 		Definition userDef = pf.getDefaultEntryDef();		
-		
+		if (userDef == null) {
+			User temp = new User();
+			getDefinitionModule().setDefaultEntryDefinition(temp);
+			userDef = temp.getEntryDef();
+		}
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);
@@ -844,7 +864,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
 			newGroups.add(new MapInputData((Map)i.next()));
 		}
-		Definition groupDef = pf.getDefaultEntryDef();
+		//get default definition to use
+		Group temp = new Group();
+		getDefinitionModule().setDefaultEntryDefinition(temp);
+		Definition groupDef = temp.getEntryDef();
+
 	   	IndexSynchronizationManager.begin();
 	    ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
             	pf, ProfileCoreProcessor.PROCESSOR_KEY);

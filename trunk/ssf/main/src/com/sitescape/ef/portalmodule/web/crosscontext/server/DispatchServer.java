@@ -36,13 +36,14 @@ public class DispatchServer extends GenericServlet {
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
 			String password = req.getParameter(CrossContextConstants.PASSWORD);
+			Map updates = (Map)req.getAttribute(CrossContextConstants.USER_INFO);
 
 			// Authenticate the user against SSF user database.
 			try {
 				boolean passwordAutoSynch = 
 					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
 				
-				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch);
+				getAuthenticationManager().authenticate(zoneName, userName, password, passwordAutoSynch, updates);
 			}
 			catch(UserDoesNotExistException e) {
 				logger.warn(e.getMessage(), e);
