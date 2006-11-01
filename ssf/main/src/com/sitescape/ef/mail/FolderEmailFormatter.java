@@ -21,10 +21,8 @@ public interface FolderEmailFormatter {
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";
     public List getEntries(Folder folder, Date start, Date until);
-	public List buildDigestDistributionList(Folder folder, Collection entries, Collection subscriptions);
-	public List buildMessageDistributionList(Folder folder, Collection entries, Collection subscriptions);
-	public Map buildDigestDistributionList(FolderEntry entry, Collection subscriptions);
-	public Map buildMessageDistributionList(FolderEntry entry, Collection subscriptions);
+	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style);
+	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style);
 	public Map buildNotificationMessage(Folder folder, Collection entries, Notify notify);
 	public Map buildNotificationMessage(Folder folder, FolderEntry entry, Notify notify);
 	public String getSubject(Folder folder, Notify notify);

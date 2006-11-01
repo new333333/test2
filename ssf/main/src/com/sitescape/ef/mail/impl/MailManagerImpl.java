@@ -39,6 +39,7 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.jobs.FailedEmail;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.jobs.SendEmail;
@@ -249,27 +250,38 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		if (parent == null) parent = entry;
 		List subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
 		if (subscriptions.isEmpty()) return;
-		Map digestResults = processor.buildDigestDistributionList(entry, subscriptions);
-		// Users wanting individual, message style email
-		Map messageResults = processor.buildMessageDistributionList(entry, subscriptions);
+		Map digestResults = processor.buildDistributionList(entry, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
+		// Users wanting individual, message style email with attachments
+		Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+		// Users wanting individual, message style email without attachments
+		Map messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
 
 
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setEntry(entry);
+		mHelper.setType(Notify.SUMMARY);
+		mHelper.setSendAttachments(false);
+		doSubscription (folder, mailSender, mHelper, digestResults);
 
-		for (int i=0; i<digestResults.size(); ++i) {
-			
+		mHelper.setType(Notify.FULL);
+		mHelper.setSendAttachments(false);
+		doSubscription (folder, mailSender, mHelper, messageNoAttsResults);
+	
+		mHelper.setType(Notify.FULL);
+		mHelper.setSendAttachments(true);
+		doSubscription (folder, mailSender, mHelper, messageResults);
+	}
+	
+	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeHelper mHelper, Map results) {
+		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
 			try {
-				mHelper.setType(Notify.SUMMARY);
-				for (Iterator iter=digestResults.entrySet().iterator(); iter.hasNext();) {
-					Map.Entry e = (Map.Entry)iter.next();
-					mHelper.setLocale((Locale)e.getKey());
-					mHelper.setToAddrs((Set)e.getValue());
-					mailSender.send(mHelper);
-				}
+				Map.Entry e = (Map.Entry)iter.next();
+				mHelper.setLocale((Locale)e.getKey());
+				mHelper.setToAddrs((Set)e.getValue());
+				mailSender.send(mHelper);
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
@@ -278,26 +290,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	       		logger.error(ex.getMessage());
 	    	} 
 		}
-		
-		for (int i=0; i<messageResults.size(); ++i) {
-			
-			//Use spring callback to wrap exceptions into something more useful than javas 
-			try {
-				mHelper.setType(Notify.FULL);
-				for (Iterator iter=messageResults.entrySet().iterator(); iter.hasNext();) {
-					Map.Entry e = (Map.Entry)iter.next();
-					mHelper.setLocale((Locale)e.getKey());
-					mHelper.setToAddrs((Set)e.getValue());
-					mailSender.send(mHelper);
-				}
-			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + sx.getMessage());
-		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
- 	    	} catch (Exception ex) {
-	       		logger.error(ex.getMessage());
-	    	} 
-		}
+
 	}
 	/**
 	 * Send email notifications for recent changes
@@ -314,9 +307,11 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		}
  		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
 
-		List digestResults = processor.buildDigestDistributionList(folder, entries, subscriptions);
-		// Users wanting individual, message style email
-		List messageResults = processor.buildMessageDistributionList(folder, entries, subscriptions);
+		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
+		// Users wanting individual, message style email with attachments
+		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+		// Users wanting individual, message style email without attachments
+		List messageNoAttsResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
 		
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
@@ -324,46 +319,26 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 
 		for (int i=0; i<digestResults.size(); ++i) {
 			Object row[] = (Object [])digestResults.get(i);
-			
-			//Use spring callback to wrap exceptions into something more useful than javas 
-			try {
-				mHelper.setEntries((Collection)row[0]);
-				mHelper.setType(Notify.SUMMARY);
-				for (Iterator iter=((Map)row[1]).entrySet().iterator(); iter.hasNext();) {
-					Map.Entry e = (Map.Entry)iter.next();
-					mHelper.setLocale((Locale)e.getKey());
-					mHelper.setToAddrs((Set)e.getValue());
-					mailSender.send(mHelper);
-				}
-			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + sx.getMessage());
-		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
- 	    	} catch (Exception ex) {
-	       		logger.error(ex.getMessage());
-	    	} 
+			mHelper.setEntries((Collection)row[0]);
+			mHelper.setType(Notify.SUMMARY);
+			mHelper.setSendAttachments(false);
+			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 		}
 		
+		for (int i=0; i<messageNoAttsResults.size(); ++i) {
+			Object row[] = (Object [])messageNoAttsResults.get(i);
+			mHelper.setEntries((Collection)row[0]);
+			mHelper.setType(Notify.FULL);
+			mHelper.setSendAttachments(false);
+			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+		}
+
 		for (int i=0; i<messageResults.size(); ++i) {
 			Object row[] = (Object [])messageResults.get(i);
-			
-			//Use spring callback to wrap exceptions into something more useful than javas 
-			try {
-				mHelper.setEntries((Collection)row[0]);
-				mHelper.setType(Notify.FULL);
-				for (Iterator iter=((Map)row[1]).entrySet().iterator(); iter.hasNext();) {
-					Map.Entry e = (Map.Entry)iter.next();
-					mHelper.setLocale((Locale)e.getKey());
-					mHelper.setToAddrs((Set)e.getValue());
-					mailSender.send(mHelper);
-				}
-			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + sx.getMessage());
-		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
- 	    	} catch (Exception ex) {
-	       		logger.error(ex.getMessage());
-	    	} 
+			mHelper.setEntries((Collection)row[0]);
+			mHelper.setType(Notify.FULL);
+			mHelper.setSendAttachments(true);
+			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 		}
 		return until;
 	}
@@ -444,6 +419,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		Date startDate;
 		String defaultFrom;
 		Locale locale;
+		boolean sendAttachments=false;
 		
 		private MimeHelper(FolderEmailFormatter processor, Folder folder, Date startDate) {
 			this.processor = processor;
@@ -456,6 +432,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		protected void setEntry(Object entry) {
 			this.entry = entry;
 			
+		}
+		protected void setSendAttachments(boolean sendAttachments) {
+			this.sendAttachments = sendAttachments;
 		}
 		protected void setEntries(Collection entries) {
 			this.entries = entries;
@@ -503,14 +482,16 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			else
 				result = processor.buildNotificationMessage(folder, entries, notify);
 			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
-			Set atts = notify.getAttachments();
-			for (Iterator iter=atts.iterator(); iter.hasNext();) {
-				FileAttachment fAtt = (FileAttachment)iter.next();			
-				FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-				DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryName(), entry.getParentFolder(), 
+			if (sendAttachments) {
+				Set atts = notify.getAttachments();
+				for (Iterator iter=atts.iterator(); iter.hasNext();) {
+					FileAttachment fAtt = (FileAttachment)iter.next();			
+					FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
+					DataSource ds = RepositoryUtil.getDataSource(fAtt.getRepositoryName(), entry.getParentFolder(), 
 							entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 
-				helper.addAttachment(fAtt.getFileItem().getName(), ds);
+					helper.addAttachment(fAtt.getFileItem().getName(), ds);
+				}
 			}
 			notify.clearAttachments();
 			//save message incase cannot connect and need to resend;

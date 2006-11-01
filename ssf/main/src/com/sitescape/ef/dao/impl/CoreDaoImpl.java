@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TreeSet;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
@@ -37,7 +39,6 @@ import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
 import com.sitescape.ef.domain.Dashboard;
-import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
@@ -334,7 +335,33 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return result;
         
     }	
-	public int countObjects(final Class clazz, final FilterControls filter) {
+   public List loadObjects(final Collection ids, final Class className, final String zoneName, final List collections) {
+       if ((ids == null) || ids.isEmpty()) return new ArrayList();
+       List result = (List)getHibernateTemplate().execute(
+           new HibernateCallback() {
+                   public Object doInHibernate(Session session) throws HibernateException {
+                        Criteria crit = session.createCriteria(className)
+                       	.add(Expression.in(Constants.ID, ids));
+
+                       if (!Validator.isNull(zoneName))
+                       	crit.add(Expression.eq("zoneName", zoneName));
+                       for (int i=0; i<collections.size(); ++i) {
+                    	   crit.setFetchMode((String)collections.get(i), FetchMode.JOIN);
+                       }
+                       List result = crit.list();
+                       //eagar select results in duplicates
+                       Set res = new HashSet(result);
+                       result.clear();
+                       result.addAll(res);
+                       return result;
+                       
+                   }
+           }
+       );
+       return result;
+       
+   }	
+   public int countObjects(final Class clazz, final FilterControls filter) {
 		Integer result = (Integer)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {

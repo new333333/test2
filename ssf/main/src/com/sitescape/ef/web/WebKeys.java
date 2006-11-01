@@ -63,7 +63,7 @@ public class WebKeys {
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
 
-	//Porlet Preferences
+	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
 	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.portlet.presence.group.list";
@@ -71,6 +71,9 @@ public class WebKeys {
 	public static final String PORTLET_PREF_TYPE = "com.sitescape.portlet.type";
 	public static final String WORKSPACE_PREF_ID = "com.sitescape.portlet.workspace.id";
 	public static final String PORTLET_PREF_DASHBOARD="com.sitescape.portlet.dashboard.id";
+	
+	//session attributes
+	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";

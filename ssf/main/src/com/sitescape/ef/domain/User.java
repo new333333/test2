@@ -34,8 +34,6 @@ public class User extends Principal {
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
     protected String emailAddress="";
-    protected String homepage="";
-    protected String webPubDir="";
     protected String organization="";
     protected String phone="";
     protected String zonName="";
@@ -44,12 +42,12 @@ public class User extends Principal {
 	protected String timeZoneName;
     protected Date loginDate;
     protected String displayStyle;
-    protected String password;
+    protected String password; //set by hibernate access="field"
     protected Long digestSeed;
     
     private Set principalIds; // set of Long; this field is computed 
     private SortedSet groupNames; // sorted set of group names; this field is computed
-    
+    private static Long PASSWORD_DIGEST=new Long(32958);
 	public User() {
     }
 	public EntityIdentifier getEntityIdentifier() {
@@ -205,16 +203,6 @@ public class User extends Principal {
         title = setupTitle();
     }
     
-    /**
-     * @hibernate.property length="256"
-     * @return
-     */
-    public String getHomepage() {
-        return this.homepage;
-    }
-    public void setHomepage(String homepage) {
-        this.homepage = homepage;
-    }
 
     /**
      * @hibernate.property length="256"
@@ -241,16 +229,6 @@ public class User extends Principal {
         this.phone = phone;
     }
  
-    /**
-     * @hibernate.property length="256"
-     * @return
-     */
-    public String getWebPubDir() {
-        return this.webPubDir;
-    }
-    public void setWebPubDir(String webPubDir) {
-        this.webPubDir = webPubDir;
-    }
  
     /**
      * @hibernate.property length="100"
@@ -274,7 +252,7 @@ public class User extends Principal {
 		return password;
 	}
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = encodePassword(password, PASSWORD_DIGEST);
 	}
 	
     /**
@@ -308,10 +286,13 @@ public class User extends Principal {
 		if(digestSeed == null)
 			digestSeed = 0L;
 		
+		return encodePassword(getPassword(), digestSeed);
+	}
+	private String encodePassword(String password, Long digestSeed) {
 		try {
 			MessageDigest algorithm = MessageDigest.getInstance("MD5");
 			algorithm.reset();
-			algorithm.update(getPassword().getBytes("UTF-8"));
+			algorithm.update(password.getBytes("UTF-8"));
 			algorithm.update(digestSeed.toString().getBytes("UTF-8"));
 			byte[] messageDigest = algorithm.digest();
 			
@@ -330,7 +311,6 @@ public class User extends Principal {
 			throw new InternalException(e);			
 		}
 	}
-	
     public Locale getLocale() {
         if (locale != null) return locale;
         if(languageId == null) {

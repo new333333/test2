@@ -354,7 +354,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			Workspace top = new Workspace();
 			top.setName(name);
 			top.setZoneName(name);
-			top.setTitle(name);
+			top.setTitle(name + " " + NLT.get("administration.initial.workspace.title"));
+			top.setPathName("/"+top.getTitle());
 			getDefinitionModule().setDefaultBinderDefinition(top);
 					
 			ProfileBinder profiles = new ProfileBinder();
@@ -410,8 +411,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			processor.indexBinder(top);
 		
 			processor = (BinderProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(top);
-			//do now, with request context is set
+			processor.indexBinder(profiles);
+			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 		} finally  {
 			//leave new context for indexing

@@ -10,7 +10,7 @@ import org.dom4j.io.XMLWriter;
 
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclSet;
-
+import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Definitions" dynamic-update="true"
  * @hibernate.cache usage="nonstrict-read-write"
@@ -81,6 +81,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
      * @hibernate.property length="128"
      */
     public String getTitle() {
+    	if (Validator.isNull(title)) return name;
         return title;
     }
     public void setTitle(String title) {

@@ -18,7 +18,7 @@ public abstract class CrossContextConstants {
 	public static final String USER_NAME = "com.sitescape.crosscontext.portal.username";
 	public static final String PASSWORD = "com.sitescape.crosscontext.portal.password";
 	public static final String ZONE_NAME = "com.sitescape.crosscontext.portal.zonename";
-	
+	public static final String USER_INFO="com.sitescape.crosscontext.portal.userinfo";
 	// Operation names
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_CREATE_SESSION = "createSession";

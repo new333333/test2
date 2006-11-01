@@ -147,7 +147,8 @@ public class ViewController extends SAbstractController {
 		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.CONFIG_DEFINITION, getDefinitionModule().getDefinitionConfig());
+		Document definitionConfig = getDefinitionModule().getDefinitionConfig();
+		model.put(WebKeys.CONFIG_DEFINITION, definitionConfig);
 			
 		if (!selectedItem.equals("")) {
 			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(selectedItem));
@@ -155,11 +156,9 @@ public class ViewController extends SAbstractController {
 
 		Map data = new HashMap();
 			
-		Document definitionConfig = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			
 		//Open the item that was selected
 		String nodeOpen = PortletRequestUtils.getStringParameter(request, "selectedId", "");
-		
 		data.put("nodeOpen", nodeOpen);
 			
 		Map idData = new HashMap();
@@ -202,8 +201,13 @@ public class ViewController extends SAbstractController {
 
 			
 		} else {
+			List currentDefinitions;
+			if (Validator.isNull(definitionType)) 
+				currentDefinitions = getDefinitionModule().getDefinitions();
+			else
+				currentDefinitions = getDefinitionModule().getDefinitions(Integer.valueOf(definitionType).intValue());
+			
 			//No definition is selected. Show the initial tree
-			List currentDefinitions = getDefinitionModule().getDefinitions();
 			
 			//Build the definition tree
 			definitionTree = DocumentHelper.createDocument();
@@ -231,16 +235,11 @@ public class ViewController extends SAbstractController {
 						if (curDef.getType() == Integer.valueOf(defEle.attributeValue("definitionType", "0")).intValue()) {
 							Element curDefEle = treeEle.addElement("child");
 							curDefEle.addAttribute("type", defEle.attributeValue("name"));
-							String title = NLT.getDef(curDef.getName());
-							//TODO get the caption from the definition meta data
-							String caption = curDef.getDefinition().getRootElement().attributeValue("caption", "");
-							if (!caption.equals("")) {
-								title = caption + " (" + title + ")";
-							}
-							curDefEle.addAttribute("title", title);
+							String title = NLT.getDef(curDef.getTitle());
+							curDefEle.addAttribute("title", title + " (" + curDef.getName() + ")");
 							curDefEle.addAttribute("id", curDef.getId());
-							idDataNames.put(curDef.getId(), NLT.getDef(curDef.getName()));
-							idDataCaptions.put(curDef.getId(), curDefDocRoot.attributeValue("caption", "").replaceAll("'", "\'"));
+							idDataNames.put(curDef.getId(), curDef.getName());
+							idDataCaptions.put(curDef.getId(), title);
 						}
 					}
 				}
