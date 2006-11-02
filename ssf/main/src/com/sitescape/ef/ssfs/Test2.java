@@ -1,6 +1,6 @@
 package com.sitescape.ef.ssfs;
 
-public class Test {
+public class Test2 {
 int i = 10;
 boolean b = true;
 }
