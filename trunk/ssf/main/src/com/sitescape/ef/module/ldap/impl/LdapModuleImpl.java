@@ -84,12 +84,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	protected TransactionTemplate transactionTemplate;
 	protected ProfileModule profileModule;
 	protected DefinitionModule definitionModule;
+	protected static String USER_FILTER="com.sitescape.ldap.user.search";
+	protected static String GROUP_FILTER="com.sitescape.ldap.group.search";
+	protected static String USER_ATTRIBUTES="userAttributes";
+	protected static String GROUP_ATTRIBUTES="groupAttributes";
+	protected static String MEMBER_ATTRIBUTES="memberAttributes";
+	protected static String USER_ID_ATTRIBUTE="userIdAttribute";	
+	protected static String SYNC_JOB="com.sitescape.ldap.job"; //properties in xml file need a unique name
 	public LdapModuleImpl () {
 		defaultProps.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		defaultProps.put(Context.SECURITY_AUTHENTICATION, "simple");
 		defaultProps.put(Context.PROVIDER_URL, "ldap://localhost:389");
-		defaultProps.put("objectClass", "objectClass");
-    	defaultProps.put("ldap.job", "com.sitescape.ef.jobs.DefaultLdapSynchronization");
+		defaultProps.put(USER_FILTER, "(|(objectClass=person)(objectClass=inetOrgPerson)(objectClass=organizationalPerson)(objectClass=residentialPerson))");
+    	defaultProps.put(GROUP_FILTER, "(|(objectClass=group)(objectClass=groupOfUniqueNames)(objectClass=groupOfNames))");
+		defaultProps.put(SYNC_JOB, "com.sitescape.ef.jobs.DefaultLdapSynchronization");
 	}
 	
     protected TransactionTemplate getTransactionTemplate() {
@@ -135,7 +143,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
            	getSyncObject().setScheduleInfo(config);
 	}
     protected LdapSynchronization getSyncObject() {
-    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), "ldap.job");
+    	String jobClass = getLdapProperty(RequestContextHolder.getRequestContext().getZoneName(), SYNC_JOB);
     	try {
             Class processorClass = ReflectHelper.classForName(jobClass);
             LdapSynchronization job = (LdapSynchronization)processorClass.newInstance();
@@ -168,17 +176,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zone.put(Context.SECURITY_PRINCIPAL, getLdapProperty(zoneName, Context.SECURITY_PRINCIPAL));
 		zone.put(Context.SECURITY_CREDENTIALS, getLdapProperty(zoneName, Context.SECURITY_CREDENTIALS));
 		zone.put("java.naming.ldap.factory.socket", getLdapProperty(zoneName, "java.naming.ldap.factory.socket"));
-		zone.put("objectClass", getLdapProperty(zoneName, "objectClass"));
-		
+		zone.put(SYNC_JOB,  getLdapProperty(zoneName, SYNC_JOB));
+		zone.put(USER_FILTER, getLdapProperty(zoneName, USER_FILTER));
+		zone.put(GROUP_FILTER, getLdapProperty(zoneName, GROUP_FILTER));
 		//get lists from zone config so each set can be overridden
-		List objectClasses = new ArrayList();
 		Element next;
-		List classes = SZoneConfig.getElements("ldapConfiguration/userMapping/objectClass");		
-		for (int i=0; i<classes.size(); ++i) {
-			next = (Element)classes.get(i);
-			objectClasses.add(next.getTextTrim());
-		}
-		zone.put("userObjectClasses", objectClasses);
 		
 		Map attributes = new HashMap();
 		List mappings = SZoneConfig.getElements("ldapConfiguration/userMapping/mapping");
@@ -187,31 +189,23 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			attributes.put(next.attributeValue("from"), next.attributeValue("to"));
 		}
 		
-		zone.put("userAttributes", attributes);
+		zone.put(USER_ATTRIBUTES, attributes);
 
 		next = SZoneConfig.getElement("ldapConfiguration/userMapping/userAttribute");
 		if (next != null) {
-			zone.put("userIdAttribute", next.attributeValue("from"));
-			zone.put("ssIdAttribute", next.attributeValue("to"));
+			zone.put(USER_ID_ATTRIBUTE, next.getTextTrim());
 		} else {
-			zone.put("userIdAttribute", "uid");
-			zone.put("ssIdAttribute", "name");
+			zone.put(USER_ID_ATTRIBUTE, "uid");
 		}
 
-		classes = SZoneConfig.getElements("ldapConfiguration/groupMapping/objectClass");
-		objectClasses = new ArrayList();
+		//get attributes that contain membership
+		List memberAttributes = new ArrayList();
+		List classes = SZoneConfig.getElements("ldapConfiguration/groupMapping/memberAttribute");
 		for (int i=0; i<classes.size(); ++i) {
 			next = (Element)classes.get(i);
-			objectClasses.add(next.getTextTrim());
+			memberAttributes.add(next.getTextTrim());
 		}
-		zone.put("groupObjectClasses", objectClasses);
-		objectClasses = new ArrayList();
-		classes = SZoneConfig.getElements("ldapConfiguration/groupMapping/memberAttribute");
-		for (int i=0; i<classes.size(); ++i) {
-			next = (Element)classes.get(i);
-			objectClasses.add(next.getTextTrim());
-		}
-		zone.put("memberAttributes", objectClasses);
+		zone.put(MEMBER_ATTRIBUTES, memberAttributes);
 
 		attributes = new HashMap();
 		mappings = SZoneConfig.getElements("ldapConfiguration/groupMapping/mapping");
@@ -219,8 +213,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			next = (Element)mappings.get(i);
 			attributes.put(next.attributeValue("from"), next.attributeValue("to"));
 		}
-		zone.put("groupAttributes", attributes);
-		zone.put("groupAttributeNames", (String[])(attributes.keySet().toArray(sample)));
+		zone.put(GROUP_ATTRIBUTES, attributes);
 		
 		zones.put(zoneName, zone);
 		return zone;
@@ -308,7 +301,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Long groupId = (Long)gRow[1];
 					List membership = new ArrayList();
 					Attributes lAttrs = (Attributes)entry.getValue();
-					List memberAttributes = (List)getZoneMap(zoneName).get("memberAttributes");
+					List memberAttributes = (List)getZoneMap(zoneName).get(MEMBER_ATTRIBUTES);
 					for (int i=0; i<memberAttributes.size(); i++) {
 						Attribute att = lAttrs.get((String)memberAttributes.get(i));
 						if (att == null) continue;
@@ -378,17 +371,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		Map zoneMap = getZoneMap(zoneName);
 		Map userAttributes = info.getUserMappings();
-		if (userAttributes == null) userAttributes = (Map)zoneMap.get("userAttributes");
+		if (userAttributes == null) userAttributes = (Map)zoneMap.get(USER_ATTRIBUTES);
 		Set la = new HashSet(userAttributes.keySet());
 		String userIdAttribute = info.getUserIdMapping();
-		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get("userIdAttribute");
+		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get(USER_ID_ATTRIBUTE);
 		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
 
 		la.add(userIdAttribute);
 		SearchControls sch = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(sample), false, false);
 
-		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)zoneMap.get("userObjectClasses")), sch);
+		NamingEnumeration ctxSearch = ctx.search("", (String)zoneMap.get(USER_FILTER), sch);
 		while (ctxSearch.hasMore()) {
 			Binding bd = (Binding)ctxSearch.next();
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
@@ -501,15 +494,15 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}	
 		Map zoneMap = getZoneMap(zoneName);
-		Map groupAttributes = (Map)zoneMap.get("groupAttributes");
+		Map groupAttributes = (Map)zoneMap.get(GROUP_ATTRIBUTES);
 		Set la = new HashSet(groupAttributes.keySet());
-		String [] groupAttributeNames = (String [])zoneMap.get("groupAttributeNames");
-		la.addAll((List)zoneMap.get("memberAttributes"));
+		la.addAll((List)zoneMap.get(MEMBER_ATTRIBUTES));
 		SearchControls sch = new SearchControls(
 				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(sample), false, false);
 	
+		String [] groupAttributeNames = (String[])(groupAttributes.keySet().toArray(sample));
 
-		NamingEnumeration ctxSearch = ctx.search("", getFilterString(zoneName, (List)zoneMap.get("groupObjectClasses")), sch);
+		NamingEnumeration ctxSearch = ctx.search("", (String)zoneMap.get(GROUP_FILTER), sch);
 		while (ctxSearch.hasMore()) {
 			Binding bd = (Binding)ctxSearch.next();
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
@@ -659,14 +652,17 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String dn=null;
 		Map zoneMap = getZoneMap(info.getZoneName());
 		Map userAttributes = info.getUserMappings();
-		if (userAttributes == null) userAttributes = (Map)zoneMap.get("userAttributes");
+		if (userAttributes == null) userAttributes = (Map)zoneMap.get(USER_ATTRIBUTES);
 		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
+		String userIdAttribute = info.getUserIdMapping();
+		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get(USER_ID_ATTRIBUTE);
 
 		try {
 			SearchControls sch = new SearchControls(
 					SearchControls.SUBTREE_SCOPE, 1, 0, userAttributeNames, false, false);
 
-			NamingEnumeration ctxSearch = ctx.search("", getFilterString(info, loginName), sch);
+			NamingEnumeration ctxSearch = ctx.search("", "(&(" + userIdAttribute + "=" + loginName + ")" +
+					(String)zoneMap.get(USER_FILTER) + ")", sch);
 			if (!ctxSearch.hasMore()) {
 				throw new NoUserByTheNameException(loginName);
 			}
@@ -704,31 +700,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}		
 	}
-	protected String getFilterString(LdapConfig info, String userId) {
-		Map zoneMap = getZoneMap(info.getZoneName());
-		String userIdAttribute = info.getUserIdMapping();
-		if (Validator.isNull(userIdAttribute)) {
-			userIdAttribute = (String)zoneMap.get("userIdAttribute");
-		}
-		StringBuffer filter = new StringBuffer();
-		filter.append("(" + userIdAttribute + "=" + userId + ")");		
 
-		return "(&" + getFilterString(info.getZoneName(), (List)zoneMap.get("userObjectClasses")) + filter.toString() + ")";		
-	}
-	protected String getFilterString(String zoneName, List values) {
-		StringBuffer filter = new StringBuffer();
-		String objectClassAttribute = (String)getZoneMap(zoneName).get("objectClass");
-		if (values.size() > 1) {
-			filter.append("(|");
-			for (int i=0; i<values.size(); ++i) {
-				filter.append("(" + objectClassAttribute + "=" + values.get(i) + ")");
-			}
-			filter.append(")");
-		}  else {
-			filter.append("(" + objectClassAttribute + "=" + values.get(0) + ")");			
-		}
-		return filter.toString();		
-	}
+
 	protected String nameToId(String name) {
 		return name;
 	}
