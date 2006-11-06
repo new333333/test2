@@ -104,6 +104,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
+	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
@@ -369,6 +370,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
+    public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";

@@ -34,6 +34,7 @@ import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.InternalException;
+import com.sitescape.util.Validator;
 /**
  *
  * @author Jong Kim
@@ -63,7 +64,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void doFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
     	if (inputData.exists("foreignName") && !entryData.containsKey("foreignName")) {
     		entryData.put("foreignName", inputData.getSingleValue("foreignName"));
-    	}
+    	} 
     	if (inputData.exists("displayStyle") && !entryData.containsKey("displayStyle")) {
     		entryData.put("displayStyle", inputData.getSingleValue("displayStyle"));
     	}
@@ -91,6 +92,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        	if (inputData.exists("name") && !entryData.containsKey("name")) {
     		entryData.put("name", inputData.getSingleValue("name"));
     	}
+       	String name = (String)entryData.get("name");
+       	String foreignName = (String)entryData.get("foreignName");
+       	if (Validator.isNotNull(name)) {
+       		//setting the name - see if new entry and force foreign name to be same
+       		if (Validator.isNull(((Principal)entry).getName())) {
+       			if (Validator.isNull(foreignName)) entryData.put("foreignName", name);
+       		}
+       	}
+       	
     }
     //***********************************************************************************************************
     

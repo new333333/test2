@@ -122,26 +122,15 @@ public class GenerateLdapList {
 			next = (Element)mappings.get(i);
 			userAttributes.put(next.attributeValue("from"), next.attributeValue("to"));
 		}
-			
-		String userId=null;
-		next = (Element)cfgRoot.selectSingleNode("/zoneConfiguration/ldapConfiguration/userMapping/userAttribute");
-		if (next != null) userId = next.getTextTrim();
-	    if ((userId == null) || userId.equals("")) 
-	    	userId = "uid";
 		
-		Set la = new HashSet(userAttributes.keySet());
 		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(new String[0]));
 
-		la.add(userId);
 		SearchControls sch = new SearchControls(
-				SearchControls.SUBTREE_SCOPE, 0, 0, (String [])la.toArray(new String[0]), false, false);
+				SearchControls.SUBTREE_SCOPE, 0, 0, userAttributeNames, false, false);
 		NamingEnumeration ctxSearch = ctx.search("", userFilter, sch);
 		while (ctxSearch.hasMore()) {
 			Binding bd = (Binding)ctxSearch.next();
 			Attributes lAttrs = ctx.getAttributes(bd.getName());
-			Attribute id=null;
-			id = lAttrs.get(userId);
-			if (id == null) continue;
 			String dn;
 			if (bd.isRelative()) {
 				dn = (bd.getName().trim() + "," + ctx.getNameInNamespace());
@@ -149,9 +138,8 @@ public class GenerateLdapList {
 				dn = bd.getName().trim();
 			}
 			Element user = userRoot.addElement("user");
-			user.addAttribute("name", (String)id.get());
 			getUpdates(user, userAttributeNames, userAttributes, lAttrs);
-			Element prop=user.addElement("property");
+			Element prop=user.addElement("attribute");
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
 		}
@@ -198,12 +186,12 @@ public class GenerateLdapList {
 				dn = bd.getName().trim();
 			}
 			Element group = groupRoot.addElement("group");
-			group.addAttribute("name", dn);
 			getUpdates(group, groupAttributeNames, groupAttributes, lAttrs);
-			Element prop=group.addElement("property");
+			Element prop=group.addElement("attribute");
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
-			Element members=group.addElement("members");
+			Element members=group.addElement("attribute-set");
+			members.addAttribute("name", "members");
 			for (int i=0; i<memberAttributes.size(); i++) {
 				Attribute att = lAttrs.get((String)memberAttributes.get(i));
 				if (att == null) continue;
@@ -216,7 +204,7 @@ public class GenerateLdapList {
 					//build new membership
 					for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
 						String mDn = ((String)valEnum.nextElement()).trim();
-						prop = members.addElement("member");
+						prop = members.addElement("attribute");
 						prop.addText(mDn);
 					}
 				}
@@ -236,15 +224,15 @@ public class GenerateLdapList {
 			} else if (att.size() == 0) {
 				continue;
 			} else if (att.size() == 1) {
-				prop = node.addElement("property");
+				prop = node.addElement("attribute");
 				prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
 				prop.addText(val.toString());
 			} else {
-				Set vals = new HashSet();
+				prop = node.addElement("attribute-set");
+				prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
 				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
-					prop = node.addElement("property");
-					prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
-					prop.addText(valEnum.nextElement().toString());
+					Element prop1 = prop.addElement("attribute");
+					prop1.addText(valEnum.nextElement().toString());
 			
 				}
 			}

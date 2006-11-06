@@ -210,6 +210,16 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
+		//Definition profiles
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", NLT.get("administration.import.profiles"));
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_PROFILES_IMPORT);
+		url.setWindowState(WindowState.MAXIMIZED);
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
 	
 		//Definition import
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
@@ -218,6 +228,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
+		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
@@ -227,6 +238,7 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_EXPORT);
+		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 

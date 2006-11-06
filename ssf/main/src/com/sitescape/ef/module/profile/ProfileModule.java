@@ -29,7 +29,7 @@ public interface ProfileModule {
    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public void checkAddEntryAllowed(ProfileBinder binder) throws AccessControlException;
-
+   public void addEntries(Long binderId, Document doc);
    public boolean checkUserSeeCommunity();
 
    public boolean checkUserSeeAll();

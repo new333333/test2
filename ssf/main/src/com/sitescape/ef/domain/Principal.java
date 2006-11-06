@@ -29,7 +29,6 @@ import com.sitescape.ef.NotSupportedException;
 public abstract class Principal extends Entry  {
 	protected boolean disabled=false;
     protected String name;
-    protected String lcName;
     protected String foreignName="";
     protected List memberOf;//initialized by hiberate access=field
     protected String signature="";    
