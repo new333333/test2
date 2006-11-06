@@ -468,9 +468,10 @@
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- addUser, addGroup, modifyEntry provide transaction semantics at a finer
+		<!-- addUser, addGroup, addEntries, modifyEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>

@@ -1,6 +1,4 @@
 
-connect to sitescape user sitescape password SITESCAPE;
-
 create table SSQRTZ_CALENDARS (
 CALENDAR_NAME varchar(80) not null,
 CALENDAR blob not null,

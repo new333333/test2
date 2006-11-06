@@ -16,7 +16,7 @@
 		<property name="com.sitescape.ldap.user.search">(|(objectClass=person)(objectClass=inetOrgPerson)(objectClass=organizationalPerson)(objectClass=residentialPerson))</property>>
 		<property name="com.sitescape.ldap.group.search">(|(objectClass=group)(objectClass=groupOfUniqueNames)(objectClass=groupOfNames))</property>
 		<userMapping>
-			<userAttribute>uid</userAttribute>
+			<mapping from="uid" to="name"/>
 			<mapping from="mail" to="emailAddress"/>
 			<mapping from="gn" to="firstName"/>
 			<mapping from="givenName" to="firstName"/>

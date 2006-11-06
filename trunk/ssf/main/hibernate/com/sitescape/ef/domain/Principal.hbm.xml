@@ -28,8 +28,16 @@
     <property name="zoneName" length="64" not-null="true"/>
     <property name="signature" length="256"/>
     <property name="disabled"/>
-    <property name="name" length="82"/>
-    <property name="foreignName" length="256"/>
+    <property name="name" length="82" not-null="true"/>
+    <property name="foreignName" length="128" not-null="true"/>
+<properties name="nameKey" unique="true" update="false" insert="false">
+<property name="zoneName" update="false" insert="false"/>
+<property name="name" update="false" insert="false"/>
+</properties>
+<properties name="foreignKey" unique="true" update="false" insert="false">
+<property name="zoneName" update="false" insert="false"/>
+<property name="foreignName" update="false" insert="false"/>
+</properties>
     <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>
