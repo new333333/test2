@@ -206,9 +206,14 @@
 		
 		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
 	
+		<!-- The following resource directory no longer exists. I moved them
+		     under Liferay directory because we cannot guarantee that those
+		     files will be exactly identical between the Liferay-JBoss and
+		     the JBoss-JBoss.
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="${project.dir}/jboss/resources" />
 		</copy>
+		-->
 				
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
 		
