@@ -114,11 +114,11 @@
 
 			<prop key="org.quartz.plugin.triggHistory.class">org.quartz.plugins.history.LoggingJobHistoryPlugin</prop>
 			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.StdJDBCDelegate</prop>
-			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS  WHERE LOCK_NAME = ? FOR UPDATE</prop>
-
-<!--		<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
-			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WITH (UPDLOCK ROWLOCK) WHERE LOCK_NAME = ?</prop>
+<!--			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS  WHERE LOCK_NAME = ? FOR UPDATE</prop>
 -->
+			<prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.MSSQLDelegate</prop>
+			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WITH (UPDLOCK ROWLOCK) WHERE LOCK_NAME = ?</prop>
+
 <!-- 		<prop key="org.quartz.jobStore.driverDelegateClass">com.sitescape.util.dao.quartz.FrontbaseDelegate</prop>
 			<prop key="org.quartz.jobStore.selectWithLockSQL">SELECT * FROM {0}LOCKS WHERE LOCK_NAME = ?</prop>
 -->
