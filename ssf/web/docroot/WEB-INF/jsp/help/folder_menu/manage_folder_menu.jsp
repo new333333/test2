@@ -25,7 +25,7 @@
 
 <p><ssf:nlt tag="help.folderMenu.content.adminGetStartBookIntro"/></p>
 
-<div align="center">
+<div style="margin-left:20px;">
 <ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/>
 </div>
 

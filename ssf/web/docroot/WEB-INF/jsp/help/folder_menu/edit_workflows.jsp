@@ -8,21 +8,17 @@
 
 <p><ssf:nlt tag="help.editWorkflows.content.workflowParts"/></p>
 
-<p><ssf:nlt tag="help.editWorkflows.content.moreInfo"/></p>
-
-<ul style="list-style-type:disc;">
-
-<li><ssf:nlt tag="help.viewBooks.content.listItem.workflowTutorial"/></li>
-
-</ul>
-
 <p><ssf:nlt tag="help.editWorkflows.content.moreInfo.onlineConcepts"/></p>
 
-<ul style="list-style-type:disc;">
+<div style="margin-left:20px;">
+<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_concepts', 'ss_workflow_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.workflowConcepts.title"/></a>
+</div>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/workflow_concepts', 'ss_workflow_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.workflowConcepts.title"/></a></li>
+<p><ssf:nlt tag="help.editWorkflows.content.moreInfo.manual"/></p>
 
-</ul>
+<div style="margin-left:20px;">
+<a target="ss_new" href="<html:rootPath/>docs/aspen_workflow.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.workflowTutorial"/></a> <ssf:nlt tag="help.globalStrings.newWindow"/>
+</div>
 
 </div>
 
