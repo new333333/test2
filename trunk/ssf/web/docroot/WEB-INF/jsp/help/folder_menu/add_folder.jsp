@@ -6,21 +6,19 @@
 
 <p><ssf:nlt tag="help.addFolder.content.listIntro"/></p>
 
-<ul style="list-style-type:disc;">
+<ol>
 
 <li><ssf:nlt tag="help.addFolder.listItem.config"/></li>
 
 <li><ssf:nlt tag="help.addFolder.listItem.provideInfo"/></li>
 
-</ul>
+</ol>
 
 <p><ssf:nlt tag="help.addFolder.content.moreInfo"/></p>
 
-<ul style="list-style-type:disc;">
-
-<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.configurationOverview.title"/></a></li>
-
-</ul>
+<div style="margin-left:20px;">
+<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.configurationOverview.title"/></a>
+</div>
 
 </div>
 
