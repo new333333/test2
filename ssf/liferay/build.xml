@@ -1,6 +1,9 @@
 <?xml version="1.0"?>
 
 <project name="liferay" basedir="." default="compile">
+	<!-- This setting will override the value in the properties file -->
+	<property name="portal.type" value="liferay"/>
+	
 	<import file="../build-common.xml" />
 	
 	<import file="../deploy-support.xml" />
