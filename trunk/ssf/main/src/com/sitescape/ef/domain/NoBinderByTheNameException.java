@@ -1,5 +1,7 @@
 package com.sitescape.ef.domain;
 
+import com.sitescape.ef.NoObjectByTheNameException;
+
 /**
  * @author Jong Kim
  *

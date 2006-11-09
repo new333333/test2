@@ -1,5 +1,10 @@
 package com.sitescape.ef.portlet.forum;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -11,25 +16,7 @@ import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.Favorites;
-import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Tabs;
-import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Dashboard;
@@ -41,11 +28,21 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.portlet.forum.ListFolderController.TreeBuilder;
-
+import com.sitescape.ef.web.util.DashboardHelper;
+import com.sitescape.ef.web.util.DefinitionHelper;
+import com.sitescape.ef.web.util.Favorites;
+import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Tabs;
+import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.util.Validator;
 
 /**
@@ -653,9 +650,9 @@ public class AjaxController  extends SAbstractController {
 			if (binder instanceof Workspace) {
 				if ((topId != null) && (binder.getParentBinder() != null)) {
 					//top must be a workspace
-					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()));
+					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new TreeBuilder(binder, true, getBinderModule()));
 				} else {
-					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()),1);
+					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, getBinderModule()),1);
 				}
 			} else {
 				Folder topFolder = ((Folder)binder).getTopFolder();
@@ -663,16 +660,16 @@ public class AjaxController  extends SAbstractController {
 				
 				//must be a folder
 				if (topId == null) {
-					tree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder());
+					tree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule()));
 				} else {
 					Binder top = getBinderModule().getBinder(topId);
 					if (top instanceof Folder)
 						//just load the whole thing
-						tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder());
+						tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder(top, false, getBinderModule()));
 					else {
-						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new WsTreeBuilder((Workspace)top, false, getBinderModule()));
+						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new TreeBuilder(top, false, getBinderModule()));
 						Element topBinderElement = (Element)tree.selectSingleNode("//" + DomTreeBuilder.NODE_CHILD + "[@id='" + topFolder.getId() + "']");
-						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder());
+						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule()));
 						topBinderElement.setContent(folderTree.getRootElement().content());
 					}
 						

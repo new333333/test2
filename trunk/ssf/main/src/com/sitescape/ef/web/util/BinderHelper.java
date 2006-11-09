@@ -8,18 +8,18 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.portlet.forum.ListFolderController.TreeBuilder;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.module.binder.BinderModule;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 
@@ -70,20 +70,70 @@ public class BinderHelper {
 
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
 		Binder parentBinder = binder;
-		while (parentBinder != null) {
+    	Map navigationLinkMap;
+    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
+    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
+    	else {
+    		navigationLinkMap = new HashMap();
+    		model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
+    	}
+    	while (parentBinder != null) {
 	    	Document tree = null;
-	    	Map navigationLinkMap = new HashMap();
-	    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
-	    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
 	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new WsTreeBuilder((Workspace)parentBinder, true, bs.getBinderModule()),1);
+						new TreeBuilder(null, true, bs.getBinderModule()),0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder());
-			}
+				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder(null, true, bs.getBinderModule()), 0);
+			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {break;}
 			navigationLinkMap.put(parentBinder.getId(), tree);
-			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 			parentBinder = ((Binder)parentBinder).getParentBinder();
 		}
 	}
+	public static class TreeBuilder implements DomTreeBuilder {
+		Binder bottom;
+		boolean check;
+		BinderModule binderModule;
+		public TreeBuilder(Binder bottom, boolean checkChildren, BinderModule binderModule) {
+			this.bottom = bottom;
+			this.check = checkChildren;
+			this.binderModule = binderModule;
+		}
+		public Element setupDomElement(String type, Object source, Element element) {
+			Binder binder = (Binder) source;
+			element.addAttribute("title", binder.getTitle());
+			element.addAttribute("id", binder.getId().toString());
+
+			//only need this information if this is the bottom of the tree
+			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
+				if (binderModule.hasBinders(binder)) {
+					element.addAttribute("hasChildren", "true");
+				} else {	
+					element.addAttribute("hasChildren", "false");
+				}
+			}
+			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
+				Workspace ws = (Workspace)source;
+				String icon = ws.getIconName();
+				String imageClass = "ss_twIcon";
+				if (icon == null || icon.equals("")) {
+					icon = "/icons/workspace.gif";
+					imageClass = "ss_twImg";
+				}
+				element.addAttribute("type", "workspace");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", imageClass);
+				element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
+			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
+				Folder f = (Folder)source;
+				String icon = f.getIconName();
+				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
+				element.addAttribute("type", "folder");
+				element.addAttribute("image", icon);
+				element.addAttribute("imageClass", "ss_twIcon");
+				element.addAttribute("action", WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			} else return null;
+			return element;
+		}
+	}	
+
 }

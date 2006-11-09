@@ -228,6 +228,7 @@ public class WebKeys {
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String DOM_TREE="ssDomTree";
     public static final String ERROR_LIST="ssErrorList";
+    public static final String EXCEPTION="ssException";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
     public static final String ENTRIES="ssEntries";
@@ -333,6 +334,7 @@ public class WebKeys {
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
+    public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";

@@ -29,7 +29,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		if (formData.containsKey("addBtn")) {
 			//Get the list of workAreaOperations to be added to this new role/function
 			int type = PortletRequestUtils.getIntParameter(request, "cfgType");
-			String configId = getBinderModule().addConfiguration(type, PortletRequestUtils.getRequiredStringParameter(request, "cfgTitle"));
+			String configId = getAdminModule().addConfiguration(type, PortletRequestUtils.getRequiredStringParameter(request, "cfgTitle"));
 			response.setRenderParameter(WebKeys.URL_OBJECT_ID, configId);
 		} else if (formData.containsKey("okBtn")) {
 			//Get the function id from the form
@@ -72,13 +72,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			Map updates = new HashMap();
 			updates.put("definitionIds", definitions);
 			updates.put("workflowIds", workflowAssociations);
-			getBinderModule().modifyConfiguration(configId, updates);
+			getAdminModule().modifyConfiguration(configId, updates);
 			response.setRenderParameter(WebKeys.URL_OBJECT_ID, configId);
 		
 		} else if (formData.containsKey("deleteBtn")) {
 			//Get the function id from the form
 			String configId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_OBJECT_ID);
-			getBinderModule().deleteConfiguration(configId);
+			getAdminModule().deleteConfiguration(configId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
@@ -93,7 +93,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		Map model = new HashMap();
 		String configId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OBJECT_ID);				
 		if (configId != null) {
-			BinderConfig config = getBinderModule().getConfiguration(configId);
+			BinderConfig config = getAdminModule().getConfiguration(configId);
 		
 			model.put(WebKeys.BINDER_CONFIG, config);
 		
@@ -139,7 +139,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			//DefinitionHelper.getDefinitions(config, model);
 			DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		} else {
-			model.put(WebKeys.BINDER_CONFIGS, getBinderModule().getConfigurations());
+			model.put(WebKeys.BINDER_CONFIGS, getAdminModule().getConfigurations());
 		}
 		return new ModelAndView("administration/configureConfiguration", model);
 		

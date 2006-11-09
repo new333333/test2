@@ -35,16 +35,23 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().update(functionMembership);
     }
 
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId) {
+        return getSecurityDao().getWorkAreaFunctionMembership
+    	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionId);
+    }
+
     public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea) {
         return getSecurityDao().findWorkAreaFunctionMemberships
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
 
-    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId) {
-        return getSecurityDao().getWorkAreaFunctionMembership
-    	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionId);
+    public List findWorkAreaFunctionMemberships(String zoneName, Long functionId) {
+        return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId);
     }
-    
+
+    public List findWorkAreaFunctionMemberships(String zoneName, Set membersToLookup, Long functionId) {
+        return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId, membersToLookup);
+    }
     /*
     public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
             Set membersToLookup, List functions) {

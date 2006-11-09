@@ -6,8 +6,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sitescape.ef.domain.PersistentLongIdObject;
-
+import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
  * @hibernate.mapping auto-import="false"
@@ -25,7 +24,7 @@ public class Function {
     private String name;
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only
-    
+    private String iId;
     private long lockVersion; // Used for optimistic locking support
     
 	/**
@@ -73,6 +72,22 @@ public class Function {
     }
     private void setLockVersion(long lockVersion) {
         this.lockVersion = lockVersion;
+    }
+    
+    /**
+     * Internal id used to identify reserved functions.  This id plus
+     * the zoneName are used to locate reserved functions.  If we just used the primary key id
+     * the zones would need the same default and that may not be desirable.
+     * @hibernate.property length="32"
+     */
+    public String getInternalId() {
+    	return this.iId;
+    }
+    public void setInternalId(String iId) {
+    	this.iId = iId;
+    }
+    public boolean isReserved() {
+    	return Validator.isNotNull(iId);
     }
     
     public Set getOperations() {

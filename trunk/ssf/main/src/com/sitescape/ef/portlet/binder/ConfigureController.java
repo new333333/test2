@@ -70,11 +70,11 @@ public class ConfigureController extends AbstractBinderController {
 					}
 				}
 			}
-			getBinderModule().setConfiguration(binderId, definitions, workflowAssociations);
+			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
-			getBinderModule().setConfiguration(binderId, inherit);
+			getBinderModule().setDefinitions(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupViewBinder(response, binderId, binderType);

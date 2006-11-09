@@ -10,21 +10,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.lucene.search.Query;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.Query;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.InvalidArgumentException;
+import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
@@ -42,13 +39,13 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.WebKeys;
@@ -58,10 +55,6 @@ import com.sitescape.ef.web.util.FilterHelper;
  *
  */
 public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
-	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "definitionType"};
-	private static final String default_folder="402883b90d0de1f3010d0df5582b0001";
-	private static final String default_workspace="402883b90d0de1f3010d0df5582b0002";
-	private static final String default_file_folder="402883b90d0de1f3010d0df5582b0003";
     protected DefinitionModule definitionModule;
     protected ProfileModule profileModule;
     
@@ -206,7 +199,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      	loadBinderProcessor(source).moveBinder(source,destination);
            	
     }
-	public Binder setConfiguration(Long binderId, boolean inheritFromParent) {
+	public Binder setDefinitions(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS); 
 		boolean oldInherit = binder.isDefinitionsInherited();
@@ -229,9 +222,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return binder;
 		
 	}
-    public Binder setConfiguration(Long binderId, List definitionIds, Map workflowAssociations) 
+    public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
-		Binder binder = setConfiguration(binderId, definitionIds);
+		Binder binder = setDefinitions(binderId, definitionIds);
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);    	
 		Map wf = new HashMap();
 		Definition def;
@@ -250,7 +243,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setDefinitionsInherited(false);
 		return binder;
 	}
-	public Binder setConfiguration(Long binderId, List definitionIds) throws AccessControlException {
+	public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		String companyId = binder.getZoneName();
 		List definitions = new ArrayList(); 
@@ -512,97 +505,31 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   		return null;
 	   	}
 	 }
-	public BinderConfig createDefaultConfiguration(int type) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		String title=null;
-		String internalId=null;
-		switch (type) {
-			case Definition.FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(BinderConfig.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_folder, zoneName, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (BinderConfig)result.get(0);
-				title = "__configuration_default_folder";
-				internalId = default_folder;
-				break;
-			}
 
-			case Definition.WORKSPACE_VIEW: {
-				List result = getCoreDao().loadObjects(BinderConfig.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_workspace, zoneName, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (BinderConfig)result.get(0);
-				title = "__configuration_default_workspace";
-				internalId = default_workspace;
-				break;
-			}
-			case Definition.FILE_FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(BinderConfig.class, 
-					new FilterControls(defaultDefAttrs, new Object[]{default_file_folder, zoneName, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (BinderConfig)result.get(0);
-				title = "__configuration_default_file_folder";
-				internalId = default_file_folder;
-				break;
-			}
-		default: {
-			throw new InvalidArgumentException("Invalid type:" + type);
-			}
-		}
-		String id = addConfiguration(type, title);
-		BinderConfig cfg = getCoreDao().loadConfiguration(id, zoneName);
-		cfg.setInternalId(internalId);
-		return cfg;
+	public List getTeamMembers(Long binderId) {
+//TODO: what access is needed here 
+		Binder binder = loadBinder(binderId);
+		try {
+			//team membership is implemented by a reserved role
+			Function function = getFunctionManager().getReservedFunction(binder.getZoneName(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
+			WorkAreaFunctionMembership wfm;
+		    if (!binder.isFunctionMembershipInherited()) {
+		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(binder.getZoneName(), binder, function.getId());
+		    } else {
+		    	WorkArea source = binder.getParentWorkArea();
+		    	while (source.isFunctionMembershipInherited()) {
+			    	source = source.getParentWorkArea();
+			    }
+		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(binder.getZoneName(), source, function.getId());
+		    }
+		    if (wfm == null) return new ArrayList();
+		    Set ids = wfm.getMemberIds();
+		    //do we want to explode groups??
+		    return getProfileDao().loadPrincipals(ids, binder.getZoneName());
 
-	}
-	 public String addConfiguration(int type, String title) {
-		List defs = new ArrayList();
-		defs.add(getDefinitionModule().createDefaultDefinition(type).getId());
-		BinderConfig config = new BinderConfig();
-		switch (type) {
-			case Definition.WORKSPACE_VIEW: {
-				break;
-			}
-			case Definition.FOLDER_VIEW: {
-				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY).getId());
-				break;
-			}
-			case Definition.FILE_FOLDER_VIEW: {
-				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FILE_ENTRY_VIEW).getId());
-				break;
-			}
-			default: {
-				throw new InvalidArgumentException("Invalid type:" + type);
-			}
+		} catch (NoObjectByTheIdException no) {
+			return new ArrayList();
 		}
-		
-		config.setTitle(title);
-		config.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
-		config.setDefinitionIds(defs);
-		config.setDefinitionType(type);
-		getCoreDao().save(config);
-		return config.getId();
-		
 	}
-	public void deleteConfiguration(String id) {
-		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
-		getCoreDao().delete(config);
-	}
-	public void modifyConfiguration(String id, Map updates) {
-		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
-		ObjectBuilder.updateObject(config, updates);
-	}
-	public BinderConfig getConfiguration(String id) {
-		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
-		//TODO: access check
-		return config;
-		
-	}
-	public List getConfigurations() {
-		List result = getCoreDao().loadConfigurations(RequestContextHolder.getRequestContext().getZoneName());
-		//TODO: access check
-		return result;
-	}
-	public List getConfigurations(int type) {
-		List result = getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneName(), type);
-		//TODO: access check
-		return result;
-	}
+
 }

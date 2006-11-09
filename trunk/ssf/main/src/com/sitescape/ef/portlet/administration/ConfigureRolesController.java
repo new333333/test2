@@ -16,6 +16,7 @@ import javax.portlet.PortletMode;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.WebKeys;
@@ -57,7 +58,14 @@ public class ConfigureRolesController extends  SAbstractController {
 			}
 			updates.put("operations", operations);
 			getAdminModule().modifyFunction(functionId, updates);
-		
+		} else if (formData.containsKey("deleteBtn")) {
+			//Get the function id from the form
+			Long functionId = PortletRequestUtils.getLongParameter(request, "roleId");
+			try {
+				getAdminModule().deleteFunction(functionId);
+			} catch (NotSupportedException ns) {
+				response.setRenderParameter(WebKeys.EXCEPTION, ns.getLocalizedMessage());
+			}
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
@@ -70,7 +78,7 @@ public class ConfigureRolesController extends  SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 		Map model = new HashMap();
-		
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		//Add the list of existing functions for this zone
 		model.put(WebKeys.FUNCTIONS, getAdminModule().getFunctions());
 		

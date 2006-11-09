@@ -17,12 +17,14 @@ import org.dom4j.Node;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.XmlFileUtil;
 import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.ef.util.NLT;
 
 public class RssGenerator extends CommonDependencyInjection {
 
@@ -82,7 +84,12 @@ public class RssGenerator extends CommonDependencyInjection {
 	
 	public String getRssFileName(Binder binder) 
 	{
-		String rssFileName = rssRootDir + binder.getId() + ".xml";
+		Long id = binder.getId();
+		if (binder instanceof Folder) {
+			Folder f = (Folder)binder;
+			if (!f.isTop()) id = f.getTopFolder().getId();
+		}
+		String rssFileName = rssRootDir + id + ".xml";
 		return rssFileName;
 	}
 	
@@ -180,8 +187,9 @@ public class RssGenerator extends CommonDependencyInjection {
     public Element createElementFromEntry(Entry entry, Set ids) 
     {
     	Element entryElement = DocumentHelper.createElement("item");
+    	//Title needs to change for some readers to display it
     	entryElement.addElement("title")
-    		.addText(entry.getTitle());
+    		.addText(entry.getTitle());// + NLT.get("rss.modified.date", new Object[]{entry.getModification().getDate()}));
     	entryElement.addElement("link")
     		.addText(WebUrlUtil.getEntryViewURL((FolderEntry)entry));//ROY
     	String description = entry.getDescription() == null ? "" : entry.getDescription().getText();

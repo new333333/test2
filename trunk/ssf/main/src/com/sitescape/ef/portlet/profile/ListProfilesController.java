@@ -99,6 +99,7 @@ public class ListProfilesController extends   SAbstractController {
 		ProfileBinder binder = (ProfileBinder)users.get(ObjectKeys.BINDER);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRIES, users.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -113,7 +114,6 @@ public class ListProfilesController extends   SAbstractController {
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
 		model.put(WebKeys.FOLDER_TOOLBAR, buildViewToolbar(request, response, binder).getToolbar());
-
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);

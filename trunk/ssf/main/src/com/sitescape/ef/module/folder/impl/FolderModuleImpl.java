@@ -329,6 +329,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
+    	return getDomFolderTree(folderId, domTreeHelper, -1);
+    }
+    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels) {
         Folder top = loadFolder(folderId);
         getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
         
@@ -338,16 +341,19 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	org.dom4j.Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
     	      	
-  	    buildFolderDomTree(rootElement, top, c, domTreeHelper);
+  	    buildFolderDomTree(rootElement, top, c, domTreeHelper, levels);
   	    return wsTree;
   	}
     
-    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper) {
+    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
        	Element next; 
        	Folder f;
     	   	
        	//callback to setup tree
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, top, current);
+ 		if (levels == 0) return;
+    	--levels;
+    	
      	TreeSet folders = new TreeSet(c);
     	folders.addAll(top.getFolders());
        	for (Iterator iter=folders.iterator(); iter.hasNext();) {
@@ -356,7 +362,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        		if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
        			continue;
        		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-       		buildFolderDomTree(next, f, c, domTreeHelper);
+       		buildFolderDomTree(next, f, c, domTreeHelper, levels);
        	}
     }
  

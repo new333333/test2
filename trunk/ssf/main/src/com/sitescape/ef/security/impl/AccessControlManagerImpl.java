@@ -55,7 +55,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         else {
 	        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 	        //Get list of functions that allow the operation
-	        List functions = getFunctionManager().findFunctions(zoneName, workAreaOperation);
+	        List functions = getFunctionManager().getFunctions(zoneName, workAreaOperation);
 	        //get all function memberships for this workarea
 	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneName, workArea);
 	        //build list of users by merging  
