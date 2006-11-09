@@ -2229,9 +2229,9 @@ var ss_helpSystem = {
 			s += "  <tr>\n";
 			s += "  <td align=\"center\" colspan=\"3\">\n";
 			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
-			s += "      onClick=\"ss_helpSystem.hide(); return false;\">"+ss_helpCloseButtonText+"</a>\n";
-			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
 			s += "      onClick=\"ss_helpSystem.showHelpPanel('print_manuals','ss_help_print_manuals','top','middle','left'); return false;\">"+ss_helpManualsButtonText+"</a>\n";
+			s += "    <a class=\"ss_linkButton ss_smallprint\" href=\"#\" \n";
+			s += "      onClick=\"ss_helpSystem.hide(); return false;\">"+ss_helpCloseButtonText+"</a>\n";
 			s += "  </td>\n";
 			s += "  </tr>\n";
 			s += "  </table>\n";
