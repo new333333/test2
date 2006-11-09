@@ -15,7 +15,7 @@
 
 <li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/edit_forms', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.editForms"/></a></li>
 
-<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.moveThisFolder"/></a></li>
+<li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/modify_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.moveThisFolder"/></a></li>
 
 <li><a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/favorites_button_add', 'ss_help_panel', '', '');"><ssf:nlt tag="help.folderMenu.subtopic.configureThisFolder"/></a></li>
 
@@ -26,7 +26,7 @@
 <p><ssf:nlt tag="help.folderMenu.content.adminGetStartBookIntro"/></p>
 
 <div style="margin-left:20px;">
-<ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/>
+<a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></a>
 </div>
 
 </div>

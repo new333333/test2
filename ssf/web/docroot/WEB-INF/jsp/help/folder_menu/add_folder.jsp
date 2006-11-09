@@ -14,7 +14,7 @@
 
 </ol>
 
-<p><ssf:nlt tag="help.addFolder.content.moreInfo"/></p>
+<p><ssf:nlt tag="help.globalStrings.configurations.moreInfo"/></p>
 
 <div style="margin-left:20px;">
 <a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.configurationOverview.title"/></a>
