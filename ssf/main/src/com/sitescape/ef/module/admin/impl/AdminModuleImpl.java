@@ -13,18 +13,23 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.InvalidArgumentException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
@@ -33,10 +38,12 @@ import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.admin.AdminModule;
+import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.ObjectBuilder;
+import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
@@ -47,25 +54,25 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.search.IndexSynchronizationManager;
 
 /**
  * @author Janet McCann
  *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
+	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "definitionType"};
 
     protected DefinitionModule definitionModule;
 	protected MailManager mailManager;
-
+	/**
+	 * Setup by spring
+	 * @param mailManager
+	 */
 	public void setMailManager(MailManager mailManager) {
     	this.mailManager = mailManager;
     }
-    
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
+	protected MailManager getMailManager() {
+		return mailManager;
 	}
 	/**
 	 * Setup by spring
@@ -74,25 +81,33 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
+   	protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
 	/**
      * Do actual work to either enable or disable email notification.
      * @param id
      * @param value
      */
     public void setEnableNotification(Long id, boolean value) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        Binder binder = coreDao.loadBinder(id, companyId); 
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
+        checkBinderAdmin(binder); 
+        //data is stored with job
    		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
    		process.enable(value, binder);
     }
     public ScheduleInfo getNotificationConfig(Long id) {
         Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
- 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+        checkBinderAdmin(binder); 
+        //data is stored with job
+		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
   		return process.getScheduleInfo(binder);
     }
     
     public void setNotificationConfig(Long id, ScheduleInfo config) {
         Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
+        checkBinderAdmin(binder); 
+       //data is stored with job
  		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
   		process.setScheduleInfo(config, binder);
     }
@@ -106,27 +121,25 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
      */
     public void modifyNotification(Long id, Map updates) 
     {
-        Principal p;
-		
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        Binder binder = coreDao.loadBinder(id, companyId); 
-     	NotificationDef current = binder.getNotificationDef();
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
+        checkBinderAdmin(binder); 
+    	NotificationDef current = binder.getNotificationDef();
     	if (current == null) {
     		current = new NotificationDef();
     		binder.setNotificationDef(current);
     	}
     	ObjectBuilder.updateObject(current, updates);
     }
- 
- 
     public List getEmailAliases() {
     	return coreDao.loadEmailAliases(RequestContextHolder.getRequestContext().getZoneName());
     }
     public void modifyEmailAlias(String aliasId, Map updates) {
+    	checkSiteAdmin();
     	EmailAlias alias = coreDao.loadEmailAlias(aliasId, RequestContextHolder.getRequestContext().getZoneName());
     	ObjectBuilder.updateObject(alias, updates);
     }
     public void addEmailAlias(Map updates) {
+    	checkSiteAdmin();
     	String zoneName = RequestContextHolder.getRequestContext().getZoneName(); 
     	EmailAlias alias = new EmailAlias();
     	alias.setZoneName(zoneName);
@@ -134,6 +147,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	coreDao.save(alias);   	
     }
     public void deleteEmailAlias(String aliasId) {
+    	checkSiteAdmin();
     	EmailAlias alias = coreDao.loadEmailAlias(aliasId, RequestContextHolder.getRequestContext().getZoneName());
     	List postings = alias.getPostings();
     	for (int i=0; i<postings.size(); ++i) {
@@ -148,19 +162,19 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
      * @param id
      */
     public void setEnablePostings(boolean enable) {
+    	checkSiteAdmin();
        	getPostingObject().enable(enable, RequestContextHolder.getRequestContext().getZoneName());
     }
     public ScheduleInfo getPostingSchedule() {
+    	checkSiteAdmin();
        	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName());
     }
     public void setPostingSchedule(ScheduleInfo config) throws ParseException {
+    	checkSiteAdmin();
     	getPostingObject().setScheduleInfo(config);
     }	     
-    public List getPostingDefs() {
-    	return getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneName());
-    }
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.POSTING_JOB);
+    	String emailPostingClass = getMailManager().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();
@@ -182,39 +196,125 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public void modifyPosting(Long binderId, String postingId, Map updates) {
     	//posting defs are defined by admin
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-//TODO: acl check
+        checkBinderAdmin(binder); 
     	//Locate the posting
    		PostingDef post = binder.getPosting(postingId); 
     	if (post != null) ObjectBuilder.updateObject(post, updates);
     }
     public void addPosting(Long binderId, Map updates) {
-       	//posting defs are defined by admin
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-//TODO: acl check
+        checkBinderAdmin(binder); 
    		PostingDef post = new PostingDef();
    		post.setZoneName(binder.getZoneName());
 		ObjectBuilder.updateObject(post, updates);
 		binder.addPosting(post);
     }    	
     public void deletePosting(Long binderId, String postingId) {
-       	//posting defs are defined by admin
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-//TODO: acl check
+        checkBinderAdmin(binder); 
    		PostingDef post = binder.getPosting(postingId); 
     	if (post != null) binder.removePosting(post);
     }
-    public void setPostings(Long binderId, List updates) {
-    }
  
-    public void addFunction(Function function) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		function.setZoneName(user.getZoneName());
+	public BinderConfig createDefaultConfiguration(int type) {
+		checkSiteAdmin();
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String title=null;
+		String internalId=null;
+		switch (type) {
+			case Definition.FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_folder";
+				internalId = ObjectKeys.DEFAULT_FOLDER_CONFIG;
+				break;
+			}
 
-        //Check that this user is allowed to do this operation
-		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
-        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
+			case Definition.WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_CONFIG, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_workspace";
+				internalId = ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
+				break;
+			}
+			case Definition.FILE_FOLDER_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+					new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_CONFIG, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_file_folder";
+				internalId = ObjectKeys.DEFAULT_FILE_FOLDER_CONFIG;
+				break;
+			}
+		default: {
+			throw new InvalidArgumentException("Invalid type:" + type);
+			}
+		}
+		String id = addConfiguration(type, title);
+		BinderConfig cfg = getCoreDao().loadConfiguration(id, zoneName);
+		cfg.setInternalId(internalId);
+		return cfg;
+
+	}
+	 public String addConfiguration(int type, String title) {
+		checkSiteAdmin();
+		List defs = new ArrayList();
+		defs.add(getDefinitionModule().createDefaultDefinition(type).getId());
+		BinderConfig config = new BinderConfig();
+		switch (type) {
+			case Definition.WORKSPACE_VIEW: {
+				break;
+			}
+			case Definition.FOLDER_VIEW: {
+				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY).getId());
+				break;
+			}
+			case Definition.FILE_FOLDER_VIEW: {
+				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FILE_ENTRY_VIEW).getId());
+				break;
+			}
+			default: {
+				throw new InvalidArgumentException("Invalid type:" + type);
+			}
+		}
 		
-		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
+		config.setTitle(title);
+		config.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
+		config.setDefinitionIds(defs);
+		config.setDefinitionType(type);
+		getCoreDao().save(config);
+		return config.getId();
+		
+	}
+	 public void deleteConfiguration(String id) {
+		checkSiteAdmin();
+		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+		getCoreDao().delete(config);
+	}
+	public void modifyConfiguration(String id, Map updates) {
+		checkSiteAdmin();
+		BinderConfig config = getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+		ObjectBuilder.updateObject(config, updates);
+	}
+	public BinderConfig getConfiguration(String id) {
+		checkSiteAdmin();
+		return getCoreDao().loadConfiguration(id, RequestContextHolder.getRequestContext().getZoneName());
+	}
+	public List getConfigurations() {
+		checkSiteAdmin();
+		return getCoreDao().loadConfigurations(RequestContextHolder.getRequestContext().getZoneName());
+	}
+	public List getConfigurations(int type) {
+		checkSiteAdmin();
+		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneName(), type);
+	}
+	public void addFunction(Function function) {
+		checkSiteAdmin();
+		String zoneName  = RequestContextHolder.getRequestContext().getZoneName();
+		function.setZoneName(zoneName);
+		
+		List zoneFunctions = functionManager.getFunctions(zoneName);
 		if (zoneFunctions.contains(function)) {
 			//Role already exists
 			throw new FunctionExistsException(function.getName());
@@ -223,32 +323,18 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	 
     }
     public void modifyFunction(Long id, Map updates) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-
-        //Check that this user is allowed to do this operation
-		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
-        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
-		
-		List zoneFunctions = functionManager.findFunctions(user.getZoneName());
-		for (int i=0; i<zoneFunctions.size(); ++i) {
-			Function function = (Function)zoneFunctions.get(i);
-			if (id.equals(function.getId())) {
-			   	ObjectBuilder.updateObject(function, updates);
-			    
-				functionManager.updateFunction(function);			
-				break;
-			}
-		}
+		checkSiteAdmin();		
+		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneName(), id);
+		functionManager.updateFunction(function);			
     }
-    public List getFunctions() {
-		User user = RequestContextHolder.getRequestContext().getUser();	
-
-        //Check that this user is allowed to do this operation
-		Workspace workspace = getCoreDao().findTopWorkspace(user.getZoneName());
-        accessControlManager.checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);        
-
-        List zoneFunctions = functionManager.findFunctions(user.getZoneName());
-		return zoneFunctions;
+    public void deleteFunction(Long id) {
+		checkSiteAdmin();			
+		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneName(), id);
+		functionManager.deleteFunction(f);
+    }
+   public List getFunctions() {
+		checkSiteAdmin();			
+        return  functionManager.getFunctions(RequestContextHolder.getRequestContext().getZoneName());
     }
     
 	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
@@ -261,7 +347,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		membership.setMemberIds(memberIds);
 
         //Check that this user is allowed to do this operation; 
-		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		
 		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
@@ -274,15 +359,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
 		
         //Check that this user is allowed to do this operation; 
-		//Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);   
-        
         getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
 	}
 	
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-        //Check that this user is allowed to do this operation; 
-		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
         WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(workArea, functionId);
@@ -292,49 +373,43 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-       	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		
-        //Check that this user is allowed to do this operation; 
-		// Is it SITE_ADMINISTRATION right operation for this checking?
         accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
         return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
-       		(companyId, workArea, functionId);
+       		(RequestContextHolder.getRequestContext().getZoneName(), workArea, functionId);
     }
     
 	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
-	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-	    WorkArea source = workArea;
-	    while (source.isFunctionMembershipInherited()) {
-	    	source = source.getParentWorkArea();
-	    }
-	  	
-        //Check that this user is allowed to do this operation; 
-		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
+		accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+        		RequestContextHolder.getRequestContext().getZoneName(), workArea);
 	}
 
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
-	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
+		accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 	    WorkArea source = workArea;
 	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
 	    while (source.isFunctionMembershipInherited()) {
 	    	source = source.getParentWorkArea();
 	    }
-	  	
-        //Check that this user is allowed to do this operation; 
-		// Is it SITE_ADMINISTRATION right operation for this checking?
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-
-        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, source);
+ 
+        return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneName(), source);
 	}
 
 	public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) 
     throws AccessControlException {
     	getAccessControlManager().checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL); 
-    	if (workArea.isFunctionMembershipInherited() && !inherit) {
+    	if (inherit) {
+    		//remove them
+    	   	String companyId = RequestContextHolder.getRequestContext().getZoneName();
+    	   	List current = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(companyId, workArea);
+    	   	for (int i=0; i<current.size(); ++i) {
+    	        WorkAreaFunctionMembership wfm = (WorkAreaFunctionMembership)current.get(i);
+   		        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+    	   	}
+    		
+    	} else if (workArea.isFunctionMembershipInherited() && !inherit) {
     		//copy parent values as beginning values
     		List current = getWorkAreaFunctionMembershipsInherited(workArea);
     		for (int i=0; i<current.size(); ++i) {
@@ -344,6 +419,40 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	}
     	workArea.setFunctionMembershipInherited(inherit);
     } 
+	//return binders this user is a team_member of
+	public List getTeamMemberships(Long id) {
+		//team membership is implemented by a reserved role
+        User current = RequestContextHolder.getRequestContext().getUser();
+        
+        User user;
+        if ((id == null) || current.getId().equals(id)) user = current;
+        else user = getProfileDao().loadUser(id, current.getZoneName());
+        Function function = getFunctionManager().getReservedFunction(user.getZoneName(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
+		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), user.computePrincipalIds(), function.getId());
+	    Set ids = new HashSet();
+	    for (WorkAreaFunctionMembership w: wfm) {
+	    	ids.add(w.getWorkAreaId());
+	    }
+	    List wa = getCoreDao().loadObjects(ids, Binder.class, user.getZoneName());
+	    
+	    //can certainly see own memberships
+	    Set result = new TreeSet(new BinderComparator(current.getLocale()));
+	    if (user == current) result.addAll(wa);
+	    else {
+	    	for (int i=0; i<wa.size(); ++i) {
+	    		Binder b = (Binder) wa.get(i);
+	    		try {
+	    			//TODO: is this what we want??
+	    			getAccessControlManager().checkOperation(user, b, WorkAreaOperation.READ_ENTRIES);
+	    			result.add(b);
+	    		} catch (Exception ex) {};
+	    	}
+	    }
+	    wa.clear();
+	    wa.addAll(result);
+	    return wa;
+	    
+    }
 
 	public void addZone(String name) {
 		
@@ -388,25 +497,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			user.setCreation(stamp);
 			user.setModification(stamp);
 			
-			Function function = new Function();
-			function.setZoneName(name);
-			function.setName(NLT.get("administartion.initial.function.admin"));
-			for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
-				function.addOperation(((WorkAreaOperation)iter.next()));
-			}	
-			//generate functionId
-			getFunctionManager().addFunction(function);
-		
-			WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-			ms.setWorkAreaId(top.getWorkAreaId());
-			ms.setWorkAreaType(top.getWorkAreaType());
-			ms.setZoneName(name);
-			ms.setFunctionId(function.getId());
-			Set members = new HashSet();
-			members.add(user.getId());
-			ms.setMemberIds(members);
-			getCoreDao().save(ms);
-			
+			addAdminRole(name, top, user);
+			addTeamRole(name, top, user);
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(top);
 		
@@ -420,5 +512,59 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 
 	}
+	private void addAdminRole(String zoneName, WorkArea workArea, User user) {
+		Function function = new Function();
+		function.setZoneName(zoneName);
+		function.setName(NLT.get("administration.initial.function.admin"));
+		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
+			function.addOperation(((WorkAreaOperation)iter.next()));
+		}	
+		function.setInternalId(ObjectKeys.ADMINISTRATOR_ROLE_ID);
+		//generate functionId
+		getFunctionManager().addFunction(function);
+	
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(workArea.getWorkAreaId());
+		ms.setWorkAreaType(workArea.getWorkAreaType());
+		ms.setZoneName(zoneName);
+		ms.setFunctionId(function.getId());
+		Set members = new HashSet();
+		members.add(user.getId());
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);
+		
+	}
+	private void addTeamRole(String zoneName, WorkArea workArea, User user) {
+		Function function = new Function();
+		function.setZoneName(zoneName);
+		function.setName(NLT.get("administration.initial.function.team_member"));
+		function.setInternalId(ObjectKeys.TEAM_MEMBER_ROLE_ID);
 
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
+		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
+		function.addOperation(WorkAreaOperation.ADD_REPLIES);
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(workArea.getWorkAreaId());
+		ms.setWorkAreaType(workArea.getWorkAreaType());
+		ms.setZoneName(zoneName);
+		ms.setFunctionId(function.getId());
+		Set members = new HashSet();
+		members.add(user.getId());
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);		
+	}
+	private void checkSiteAdmin() {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		Binder top = getCoreDao().findTopWorkspace(zoneName);
+        getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);        		
+	}
+	private void checkBinderAdmin(Binder binder) {
+		getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	       		
+	}
 }

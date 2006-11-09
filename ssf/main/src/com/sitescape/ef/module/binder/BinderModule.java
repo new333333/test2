@@ -59,14 +59,14 @@ public interface BinderModule {
      */
     public Binder getBinderByPathName(String pathName) throws AccessControlException;
     
-	public Binder setConfiguration(Long binderId, boolean inheritFromParent)  throws AccessControlException;
+	public Binder setDefinitions(Long binderId, boolean inheritFromParent)  throws AccessControlException;
     /**
      * Modify the list of definitions assocated with a binder
      * @param binderId
      * @param definitionIds
      * @throws AccessControlException
      */
-    public Binder setConfiguration(Long binderId, List definitionIds) throws AccessControlException;
+    public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException;
     /**
      * Modify the list of definitions and workflows assocated with a binder
      * @param binderId
@@ -74,7 +74,7 @@ public interface BinderModule {
      * @param workflowAssociations
      * @throws AccessControlException
      */
-    public Binder setConfiguration(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
+    public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) throws AccessControlException;
     public List getCommunityTags(Long binderId) throws AccessControlException;
     public List getPersonalTags(Long binderId) throws AccessControlException;
 	public void modifyTag(Long binderId, String tagId, String newTag) throws AccessControlException; 
@@ -108,11 +108,5 @@ public interface BinderModule {
     public void indexBinder(Long binderId);
 
     
-	public BinderConfig createDefaultConfiguration(int type);
-	public String addConfiguration(int type, String title);
-	public void modifyConfiguration(String id, Map updates);
-	public void deleteConfiguration(String id);
-	public BinderConfig getConfiguration(String id); 
-	public List getConfigurations();
-	public List getConfigurations(int type);
+	public List getTeamMembers(Long binderId);
 }

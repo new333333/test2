@@ -23,6 +23,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -67,14 +68,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "type"};
 
 	private WorkflowModule workflowModule;
-	private static final String default_folder="402883b90cc53079010cc539bf260001";
-	private static final String default_folder_entry="402883b90cc53079010cc539bf260002";
-	private static final String default_file_folder="402883b90cc53079010cc539bf260003";
-	private static final String default_file_entry="402883b90cc53079010cc539bf260004";
-	private static final String default_workspace="402883b90cc53079010cc539bf260005";
-	private static final String default_profiles="402883b90cc53079010cc539bf260006";
-	private static final String default_user="402883b90cc53079010cc539bf260007";
-	private static final String default_group="402883b90cc53079010cc539bf260008";
 	
 	public void setWorkflowModule(WorkflowModule workflowModule) {
 		this.workflowModule = workflowModule;
@@ -366,37 +359,37 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_folder, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder";
 				definitionName="Folder";
-				internalId = default_folder;
+				internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
 				break;
 			}
 			case Definition.FOLDER_ENTRY: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_folder_entry, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder_entry";
-				internalId = default_folder_entry;
+				internalId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
 				definitionName="Folder entry";
 				break;
 			}
 			case Definition.FILE_FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_file_folder, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_file_folder";				
-				internalId = default_file_folder;
+				internalId = ObjectKeys.DEFAULT_FILE_FOLDER_DEF;
 				definitionName="File folder";
 				break;
 				
 			}
 			case Definition.FILE_ENTRY_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_file_entry, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_ENTRY_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
-				internalId = default_file_entry;
+				internalId = ObjectKeys.DEFAULT_FILE_ENTRY_DEF;
 				definitionTitle = "__definition_default_file_entry";
 				definitionName="File entry";
 				break;
@@ -404,30 +397,39 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_workspace, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_workspace";
-				internalId = default_workspace;
+				internalId = ObjectKeys.DEFAULT_WORKSPACE_DEF;
 				definitionName="Workspace";
 				break;				
 			}
 			
 			case Definition.PROFILE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_profiles, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
-				internalId = default_profiles;
+				internalId = ObjectKeys.DEFAULT_PROFILES_DEF;
 				definitionTitle = "__definition_default_profiles";
 				definitionName="Profiles";
 				break;				
 			}
 			case Definition.PROFILE_ENTRY_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{default_user, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, zoneName, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
-				internalId = default_user;
+				internalId = ObjectKeys.DEFAULT_USER_DEF;
 				definitionTitle = "__definition_default_user";
 				definitionName="User";
+				break;				
+			}
+			case Definition.PROFILE_GROUP_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = ObjectKeys.DEFAULT_GROUP_DEF;
+				definitionTitle = "__definition_default_group";
+				definitionName="Group";
 				break;				
 			}
 		}

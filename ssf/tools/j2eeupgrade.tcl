@@ -860,7 +860,11 @@ proc setupAccess {} {
         wimsql_rw commit
     }
     set fId [new_function_uuid]
-	wimsql_rw "insert into SS_Functions (id, lockVersion, zoneName, name) values ($fId,1, '[sql_quote_value $::zoneName]', 'Site Administration');"
+	wimsql_rw "insert into SS_Functions (id, lockVersion, zoneName, name, internalId) values ($fId,1, '[sql_quote_value $::zoneName]', 'Team Members',
+						'402883b90cc53079010cc539bf26000a');"
+    set fId [new_function_uuid]
+	wimsql_rw "insert into SS_Functions (id, lockVersion, zoneName, name, internalId) values ($fId,1, '[sql_quote_value $::zoneName]', 'Site Administration',
+						'402883b90cc53079010cc539bf260009');"
 	foreach op [list addReplies binderAdministration changeAccessControl createEntries createBinders creatorDeleteEntries creatorModifyEntries creatorReadEntries \
 	 				deleteEntries generateReports manageEntryDefinitions manageWorkflowDefinitions modifyEntries readEntries siteAdministration] {
 	 	wimsql_rw "insert into SS_FunctionOperations (functionId,operationName) values ($fId, '$op');"				

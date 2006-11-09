@@ -15,7 +15,8 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-
+import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.User;
 /**
  * @author Janet McCann
  *
@@ -24,24 +25,37 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
  */
 public interface AdminModule {
 	public void addZone(String zoneName);
+
 	public void addFunction(Function function);
-    public List getFunctions();
     public void modifyFunction(Long functionId, Map updates);
+    public void deleteFunction(Long functionId);
+    public List getFunctions();
+
     public void modifyNotification(Long binderId, Map updates); 
     public void setEnableNotification(Long binderId, boolean enable);
     public ScheduleInfo getNotificationConfig(Long binderId);
     public void setNotificationConfig(Long binderId, ScheduleInfo config);
+ 
     public void setEnablePostings(boolean enable);
     public ScheduleInfo getPostingSchedule();
     public void setPostingSchedule(ScheduleInfo config) throws ParseException;
-    public List getPostingDefs();
+
     public void modifyPosting(Long binderId, String postingId, Map updates);
     public void addPosting(Long binderId, Map updates);
     public void deletePosting(Long binderId, String postingId);
+
     public List getEmailAliases();
     public void modifyEmailAlias(String aliasId, Map updates);
     public void addEmailAlias(Map updates);
     public void deleteEmailAlias(String aliasId);
+
+    public BinderConfig createDefaultConfiguration(int type);
+	public String addConfiguration(int type, String title);
+	public void modifyConfiguration(String id, Map updates);
+	public void deleteConfiguration(String id);
+	public BinderConfig getConfiguration(String id); 
+	public List getConfigurations();
+	public List getConfigurations(int type);
 
 	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds);
     public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
@@ -50,4 +64,6 @@ public interface AdminModule {
     public List getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
+    public List getTeamMemberships(Long id);
+
 }

@@ -1,26 +1,24 @@
 package com.sitescape.ef.security.dao;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
 
+import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
-import org.hibernate.FetchMode;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.sitescape.ef.ErrorCodes;
+import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-
 /**
  *
  * @author Jong Kim
@@ -33,7 +31,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     private static final String FUNCTION_ID = "functionId";
     private static final String WORK_AREA_OPERATION_NAME = "operationName";
     private static final String PRINCIPAL_IDS = "principalIds";
-    
+    private static final String RESERVED_ID = "internalId";
     public void save(Object obj) {
         getHibernateTemplate().save(obj);
     }
@@ -45,11 +43,30 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
     }
-    public Function loadFunction(Long id) {
-        return (Function)getHibernateTemplate().get(Function.class, id);
+    public Function loadFunction(String zoneName, Long id)  throws NoObjectByTheIdException {
+        Function f = (Function)getHibernateTemplate().get(Function.class, id);
+        if (zoneName.equals(f.getZoneName())) return f;
+        throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
     }
-    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long id) {
-        return (WorkAreaFunctionMembership)getHibernateTemplate().get(WorkAreaFunctionMembership.class, id);
+    public Function loadReservedFunction(final String zoneName, final String id)  throws NoObjectByTheIdException {
+        return (Function)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(Function.class)
+                        	.add(Expression.eq(ZONE_ID, zoneName))
+                        	.add(Expression.eq(RESERVED_ID, id))
+                        	.setCacheable(true)
+                        	.list();
+                        if (results.isEmpty()) throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
+                        return results.get(0); 
+                    }
+                }
+            );
+    }
+    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(String zoneName, Long id)  throws NoObjectByTheIdException {
+        WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)getHibernateTemplate().get(WorkAreaFunctionMembership.class, id);
+        if (zoneName.equals(m.getZoneName())) return m;
+        throw new NoObjectByTheIdException(ErrorCodes.NoWorkAreaFunctionMembershipByTheIdException, id);
            	
     }
     public List findFunctions(final String zoneName) {
@@ -88,11 +105,40 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                     		return null;
                     	else
                     		return (WorkAreaFunctionMembership) results.get(0);
-                    	}
-                	}
+                   	}
+                }
+            );	
+	}
+
+	public List findWorkAreaFunctionMemberships(final String zoneName, final Long functionId) {
+        return (List) getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	return session.createCriteria(WorkAreaFunctionMembership.class)
+                                .add(Expression.conjunction() 
+                               			.add(Expression.eq(ZONE_ID, zoneName))
+                               			.add(Expression.eq(FUNCTION_ID, functionId))
+                               		)
+                               	.list();
+                    }
+                }
+                	
             );		
 	}
-	
+	public List findWorkAreaFunctionMemberships(final String zoneName, final Long functionId, final Set membersToLookup) {
+	       return (List)getHibernateTemplate().execute(
+	                new HibernateCallback() {
+	                    public Object doInHibernate(Session session) throws HibernateException {
+	                    	return session.getNamedQuery("get-WorkAreaByFunctionMembership")
+	                    		.setString(ZONE_ID, zoneName)
+	                    		.setLong(FUNCTION_ID, functionId)
+	                    		.setParameterList(PRINCIPAL_IDS, membersToLookup)
+ 	                            .list();
+		                    }
+	                }
+	            );
+		
+	}
 	public List findWorkAreaFunctionMemberships(final String zoneName, 
             final Long workAreaId, final String workAreaType) {
 		

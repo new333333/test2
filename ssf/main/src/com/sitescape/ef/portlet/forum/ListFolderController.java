@@ -1,34 +1,41 @@
 package com.sitescape.ef.portlet.forum;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletSession;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-import java.util.TreeMap;
-
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.folder.index.IndexUtils;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -39,23 +46,13 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
+import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 
 /**
  * @author Peter Hurley
@@ -281,9 +278,9 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new TreeBuilder()));
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new TreeBuilder(null, false, getBinderModule())));
 		} else {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder()));			
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule())));			
 		}
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
@@ -521,6 +518,8 @@ public class ListFolderController extends  SAbstractController {
 
 		//The "Footer" menu
 		if (folder.isTop()) {
+			//RSS link 
+			footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
 			Subscription sub = getBinderModule().getSubscription(folder.getId());
 			if (sub == null) {
 				Map qualifiers = new HashMap();
@@ -552,8 +551,6 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 
 		
-		//RSS link 
-		footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
 		
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
@@ -960,25 +957,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 	}
 	
-	public static class TreeBuilder implements DomTreeBuilder {
-		
-		public Element setupDomElement(String type, Object source, Element element) {
-	
-			if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-				Folder f = (Folder)source;
-				String icon = f.getIconName();
-				if (icon == null || icon.equals("")) icon = "/icons/folder.gif";
-				
-				element.addAttribute("type", "folder");
-				element.addAttribute("title", f.getTitle());
-				element.addAttribute("id", f.getId().toString());
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", "ss_twIcon");
-				element.addAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			} else return null;
-			return element;
-		}
-	}
+
 
 }
 

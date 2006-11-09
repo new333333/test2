@@ -29,7 +29,7 @@
 <h3><ssf:nlt tag="binder.configure.access_control" text="Configure access control"/></h3>
 <c:if test="${!empty ssBinder.parentWorkArea}">
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.inheritance" 
+  <legend class="ss_legend"><ssf:nlt tag="binder.configure.access_control.inheritance.legend" 
     text="Role membership inheritance"/></legend>
 <br>
 <c:set var="yes_checked" value=""/>
@@ -56,9 +56,9 @@
  text="Inherit role membership from the parent folder or workspace:"/>
 <br>
 &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
-<ssf:nlt tag="yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<ssf:nlt tag="answer.yes" text="yes"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="radio" name="inherit" value="no" ${no_checked}>
-<ssf:nlt tag="no" text="no"/>&nbsp;&nbsp;&nbsp;
+<ssf:nlt tag="answer.no" text="no"/>&nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="inheritanceBtn"
  value="<ssf:nlt tag="button.apply" text="Apply"/>">
 </form>

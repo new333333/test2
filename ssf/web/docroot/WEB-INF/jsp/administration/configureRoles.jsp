@@ -22,8 +22,11 @@
 
 <div class="ss_style ss_portlet">
 <h3><ssf:nlt tag="administration.configure_roles.configure" text="Configure SiteScape Forum Roles"/></h3>
+<c:if test="${!empty ssException}">
+<p><c:out value="${ssException}"/></p>
+</c:if>
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
-<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 		
@@ -47,7 +50,7 @@
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
 <ssf:expandableArea title="<%= function.getName() %>">
-<form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_roles"/>
 		</portlet:actionURL>">
 
@@ -62,8 +65,12 @@
 		<c:out value="${operation.value}"/><br>
 	</c:forEach>		
 	<input type="hidden" name="roleId" value="${function.id}">
-	<input type="submit" class="ss_submit" name="modifyBtn"
-	 value="<ssf:nlt tag="button.modify" text="Modify"/>">
+<div class="ss_buttonBarLeft">
+	<input type="submit" class="ss_submit" name="modifyBtn" value="<ssf:nlt tag="button.modify" text="Modify"/>">
+<c:if test="${!function.reserved}">
+	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
+</c:if>
+</div>
 </form>
 <br/>
 </ssf:expandableArea>

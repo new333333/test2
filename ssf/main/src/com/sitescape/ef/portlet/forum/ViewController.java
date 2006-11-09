@@ -17,17 +17,13 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -35,6 +31,7 @@ import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.util.Validator;
 
 
@@ -130,9 +127,9 @@ public class ViewController  extends SAbstractController {
 			Document wsTree;
 			//when at the top, don't expand
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTopOnly(), 0);
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(null, true, getBinderModule()), 0);
 			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()), 1);									
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder((Workspace)binder, true, getBinderModule()), 1);									
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
@@ -205,27 +202,6 @@ public class ViewController  extends SAbstractController {
 
 		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
 	}
-	protected class WsTopOnly implements DomTreeBuilder {
-		public Element setupDomElement(String type, Object source, Element element) {
-			Binder binder = (Binder) source;
-			String icon = binder.getIconName();
-			String imageClass = "ss_twIcon";
-			if (icon == null || icon.equals("")) {
-				icon = "/icons/workspace.gif";
-				imageClass = "ss_twImg";
-			}
-			element.addAttribute("title", binder.getTitle());
-			element.addAttribute("id", binder.getId().toString());
-			element.addAttribute("image", icon);
-			element.addAttribute("imageClass", imageClass);
-			element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
-			if (getBinderModule().hasBinders(binder)) {
-				element.addAttribute("hasChildren", "true");
-			} else {	
-				element.addAttribute("hasChildren", "false");
-			}
-			return element;
-		}
-	}
+
 
 }

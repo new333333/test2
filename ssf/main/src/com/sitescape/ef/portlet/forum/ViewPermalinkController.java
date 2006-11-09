@@ -1,46 +1,20 @@
 package com.sitescape.ef.portlet.forum;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletPreferences;
-import javax.portlet.PortletSession;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Tabs;
-import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.util.Validator;
 
 
 /**

@@ -1,6 +1,8 @@
 
 package com.sitescape.ef.domain;
 
+import com.sitescape.ef.NoObjectByTheIdException;
+
 /**
  * @author Janet McCann
  *

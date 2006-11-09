@@ -10,7 +10,24 @@ public interface ObjectKeys {
     /**
      * Note: Maintain the symbols in alphabetical order. 
      */
-    
+	
+	/**
+	 * reserved ids for reserved objects
+	 */
+	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
+	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
+	public static final String DEFAULT_FILE_FOLDER_DEF="402883b90cc53079010cc539bf260003";
+	public static final String DEFAULT_FILE_ENTRY_DEF="402883b90cc53079010cc539bf260004";
+	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
+	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
+	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
+	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
+	public static final String ADMINISTRATOR_ROLE_ID="402883b90cc53079010cc539bf260009";
+	public static final String TEAM_MEMBER_ROLE_ID="402883b90cc53079010cc539bf26000a";
+	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
+	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
+	public static final String DEFAULT_FILE_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0003";
+
     public static final String BINDER="binder";
     public static final String CUSTOM_PROPERTY_PREFIX="custom.";
     public static final String SEARCH_ENTRIES="search_entries";

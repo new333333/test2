@@ -54,8 +54,8 @@ public class AddFolderController extends SAbstractController {
 				newId = getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
 			}
 			try {
-				BinderConfig cfg = getBinderModule().getConfiguration(cfgType);
-				getBinderModule().setConfiguration(newId, cfg.getDefinitionIds(), cfg.getWorkflowIds());
+				BinderConfig cfg = getAdminModule().getConfiguration(cfgType);
+				getBinderModule().setDefinitions(newId, cfg.getDefinitionIds(), cfg.getWorkflowIds());
 			} catch (Exception ex) {}
 			
 			setupViewBinder(response, newId);
@@ -86,20 +86,20 @@ public class AddFolderController extends SAbstractController {
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 				if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
 					getFolderModule().checkAddFolderAllowed((Folder)binder);
-					List result = getBinderModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
+					List result = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
 					if (result.isEmpty()) {
-						result.add(getBinderModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
+						result.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
 					}
 					model.put(WebKeys.CONFIGURATIONS, result);
 				} else {
 					getFolderModule().checkAddFolderAllowed((Folder)binder);
-					List result = getBinderModule().getConfigurations(Definition.FOLDER_VIEW);
+					List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
 					if (result.isEmpty()) {
-						result.add(getBinderModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
+						result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
 					}
-					List result2 = getBinderModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
+					List result2 = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
 					if (result2.isEmpty()) {
-						result2.add(getBinderModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
+						result2.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
 					}
 					result.addAll(result2);	
 					model.put(WebKeys.CONFIGURATIONS, result);
@@ -110,26 +110,26 @@ public class AddFolderController extends SAbstractController {
 				} else {
 					getWorkspaceModule().checkAddFolderAllowed((Workspace)binder);
 				}
-				List result = getBinderModule().getConfigurations(Definition.FOLDER_VIEW);
+				List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
 				if (result.isEmpty()) {
-					result.add(getBinderModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
+					result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
 				}
-				List result2 = getBinderModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
+				List result2 = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
 				if (result2.isEmpty()) {
-					result2.add(getBinderModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
+					result2.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
 				}
 				result.addAll(result2);	
 				model.put(WebKeys.CONFIGURATIONS, result);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 				getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
-				List result = getBinderModule().getConfigurations(Definition.WORKSPACE_VIEW);
+				List result = getAdminModule().getConfigurations(Definition.WORKSPACE_VIEW);
 				if (result.isEmpty()) {
-					result.add(getBinderModule().createDefaultConfiguration(Definition.WORKSPACE_VIEW));	
+					result.add(getAdminModule().createDefaultConfiguration(Definition.WORKSPACE_VIEW));	
 				}
 				model.put(WebKeys.CONFIGURATIONS, result);
 			}
 		} else {
-			BinderConfig cfg = getBinderModule().getConfiguration(defId);
+			BinderConfig cfg = getAdminModule().getConfiguration(defId);
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 			model.put(WebKeys.CONFIGURATION, cfg);
 			List defs = cfg.getDefinitionIds();

@@ -1,4 +1,4 @@
-package com.sitescape.ef.domain;
+package com.sitescape.ef;
 
 import com.sitescape.ef.exception.UncheckedCodedException;
 

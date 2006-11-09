@@ -80,6 +80,7 @@ public interface FolderModule {
      * @return
      */
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
+    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
  	public Map getEntries(Long folderId) throws AccessControlException;
 	public Map getEntries(Long folderId, Map options) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;

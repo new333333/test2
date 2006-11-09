@@ -32,7 +32,8 @@ public interface WorkAreaFunctionMembershipManager {
      * @return
      */
     public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea);
-    
+    public List findWorkAreaFunctionMemberships(String zoneName, Long functionId);
+    public List findWorkAreaFunctionMemberships(String zoneName, Set membersToLookup, Long functionId);
     /**
      * 
      * @param zoneName

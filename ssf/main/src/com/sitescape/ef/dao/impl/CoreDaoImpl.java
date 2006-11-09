@@ -29,6 +29,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.ef.ErrorCodes;
+import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -51,7 +52,6 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoConfigurationByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoObjectByTheIdException;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Subscription;

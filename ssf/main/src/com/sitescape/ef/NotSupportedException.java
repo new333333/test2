@@ -8,10 +8,10 @@ public class NotSupportedException extends UncheckedCodedException {
         super(NotSupportedException_ErrorCode);
     }
     public NotSupportedException(String message) {
-        super(NotSupportedException_ErrorCode,  new Object[0], message);
+        super(NotSupportedException_ErrorCode,  new Object[] {message});
     }
     public NotSupportedException(String message, Throwable cause) {
-        super(NotSupportedException_ErrorCode, new Object[0], message, cause);
+        super(NotSupportedException_ErrorCode, new Object[] {message}, cause);
     }
     public NotSupportedException(Throwable cause) {
         super(NotSupportedException_ErrorCode, new Object[0], cause);

@@ -2,12 +2,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div class="ss_breadcrumb">
 <ul style="margin-left:-15px;">
-<c:if test="${!empty ssDefinitionEntry.parentBinder.id}">
+<c:if test="${!empty ssDefinitionEntry.parentBinder && ssDefinitionEntry.entityIdentifier.entityType != 'profiles'}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
+		if (((Binder)parentBinder).getEntityIdentifier().getEntityType().equals(com.sitescape.ef.domain.EntityIdentifier.EntityType.profiles)) break;
 		parentTree.push(parentBinder);
 		parentBinder = ((Binder)parentBinder).getParentBinder();
 	}

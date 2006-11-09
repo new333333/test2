@@ -12,6 +12,7 @@ import javax.portlet.ActionRequest;
 
 import org.dom4j.Document;
 
+import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -20,7 +21,6 @@ import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.NoObjectByTheIdException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -30,7 +30,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController.WsTreeBuilder;
+import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
@@ -548,14 +548,14 @@ public class DashboardHelper {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
 				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     			} else {
-    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsTreeBuilder((Workspace)binder, true, getBinderModule()),1);
+    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, getBinderModule()),1);
     				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
     			}
     		} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     			Folder topFolder = ((Folder)binder).getTopFolder();
     			if (topFolder == null) topFolder = (Folder)binder;
     			Binder workspace = (Binder)topFolder.getParentBinder();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsTreeBuilder((Workspace)workspace, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new TreeBuilder(workspace, true, getBinderModule()),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
 			
     		}
@@ -563,11 +563,11 @@ public class DashboardHelper {
     		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
     		if (topId == null) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsTreeBuilder(ws, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, getBinderModule()),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID,ws.getId().toString());
     		} else {
     			Workspace ws = getWorkspaceModule().getWorkspace(topId);
-    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsTreeBuilder(ws, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new TreeBuilder(ws, true, getBinderModule()),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, topId.toString());			
     		}
     			

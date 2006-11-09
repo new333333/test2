@@ -3,6 +3,7 @@ package com.sitescape.ef.security.dao;
 import java.util.List;
 import java.util.Set;
 
+import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 
@@ -19,8 +20,9 @@ public interface SecurityDao {
     public void delete(Object obj);
     public void deleteWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
     
-    public Function loadFunction(Long id);
-    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long id);
+    public Function loadFunction(String zoneName, Long id)  throws NoObjectByTheIdException;
+    public Function loadReservedFunction(String zoneName, String id)  throws NoObjectByTheIdException;
+	public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(String zoneName, Long id)  throws NoObjectByTheIdException;
     	    	     
     public List findFunctions(String zoneName);
 
@@ -38,7 +40,9 @@ public interface SecurityDao {
     		Long workAreaId, String workAreaType, Long functionId);
 
     public List findWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
-    
+	public List findWorkAreaFunctionMemberships(String zoneName, Long functionId);
+	public List findWorkAreaFunctionMemberships(String zoneName, Long functionId, Set membersToLookup);
+
     /**
      * 
      * @param zoneName
