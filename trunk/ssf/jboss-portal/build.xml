@@ -50,9 +50,9 @@
 	<!-- Deploy additional components that are not part of ssf web app -->
 	<target name="deploy-additional-components">
 		<!-- portal-module component is deployed directly into Liferay web app -->
-		<ant dir="${project.dir}/portal-module" target="deploy" inheritAll="false" />
+		<!--<ant dir="${project.dir}/portal-module" target="deploy" inheritAll="false" />-->
 		<!-- liferay component is deployed directly into Liferay web app -->
-		<ant dir="${project.dir}/liferay" target="deploy" inheritAll="false" />
+		<!--<ant dir="${project.dir}/liferay" target="deploy" inheritAll="false" />-->
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 	</target>
@@ -74,12 +74,10 @@
 	<target name="deploy-jboss-jboss-tomcat" depends="clean, init-jboss-portal, clean-app-server">	
 		<unwar src="${project.dir}/war/ssf.war" dest="${app.server.ssf.dir}" />
 		
-		<!-- Skip this for now until we figure out how to spy our own jar files into the portal
 		<antcall target="deploy-additional-components" />
-		-->
 		
 		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="resources/jboss-tomcat" />
+			<fileset dir="resources/${jboss.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
 		
 		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
@@ -90,9 +88,13 @@
 		     comes with its own log4j archive. (You get the following error -
 		     log4j:ERROR A "org.jboss.logging.util.OnlyOnceErrorHandler" object is not assignable to a "org.apache.log4j.spi.ErrorHandler" variable.)
 		     So, we should remove the jar file from our lib area so that it uses
-		     the one that JBoss has. -->
+		     the one that JBoss has.
+		     2. JBoss Portal, of course, comes with its own portlet API archive 
+		     (named porlet-api-lib.jar NOT portlet.jar). If we have our own portlet.jar
+		     in our lib directory, the Portal fails to load our portlets at startup.
+		     So we must remove that too. -->
 		<delete>
-			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar"/>
+			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
 		</delete>		
 	</target>		
 
