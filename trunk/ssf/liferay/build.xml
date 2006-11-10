@@ -141,7 +141,7 @@
 		<antcall target="deploy-additional-components" />
 		
 		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="resources/tomcat" />
+			<fileset dir="resources/${liferay.version.tomcat}/tomcat" />
 		</copy>
 		<!-- this fixes up one of the files copied above -->
 		<antcall target="deploy-jdbc-properties">
@@ -150,7 +150,7 @@
 
 		<ant dir="${project.dir}/tomcat" target="deploy" />
 
-		<copy file="resources/tomcat.portal.properties" tofile="temp/portal.properties" overwrite="true" />
+		<copy file="resources/${liferay.version.tomcat}/tomcat.portal.properties" tofile="temp/portal.properties" overwrite="true" />
 		<jar destfile="${deploy.liferay.lib.dir}/portal-ejb.jar" basedir="temp" 
 			includes="portal.properties" update="true" />
 		
@@ -167,7 +167,7 @@
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.dir}/common/lib" />
 		
-		<copy file="resources/Language-ext.properties" todir="${app.server.dir}/webapps/ROOT/WEB-INF/classes/content" />
+		<copy file="resources/${liferay.version.tomcat}/Language-ext.properties" todir="${app.server.dir}/webapps/ROOT/WEB-INF/classes/content" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">	
@@ -204,7 +204,7 @@
 		<antcall target="deploy-additional-components" />
 		
 		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="resources/jboss-tomcat" />
+			<fileset dir="resources/${liferay.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
 		
 		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
@@ -233,7 +233,7 @@
 			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
 		</delete>		
 		
-		<copy file="resources/Language-ext.properties" todir="${app.server.deploy.dir}/liferay-portal.ear/ext-ejb.jar/content" />
+		<copy file="resources/${liferay.version.jboss.tomcat}/Language-ext.properties" todir="${app.server.deploy.dir}/liferay-portal.ear/ext-ejb.jar/content" />
 	</target>		
 	
 </project>
