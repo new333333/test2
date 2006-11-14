@@ -12,13 +12,83 @@
 	<target name="clean">
 		<delete dir="{jspclasses.dir}" />
 		<delete file="${war.file}" failonerror="false" />
+		<delete file="${web.dir}/WEB-INF/jboss-web.xml" />
+		<delete file="${web.dir}/WEB-INF/web.xml" />
 	</target>
 
-	<target name="war">
+	<target name="make-jboss-web.xml">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>
+				<delete file="${web.dir}/WEB-INF/jboss-web.xml" />
+				<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/jboss-web.xml" />
+				<replace 
+					file="${web.dir}/WEB-INF/jboss-web.xml" 
+					propertyFile="replace.properties">
+					<replacefilter 
+						token="@@SECURITY_DOMAIN@@"
+						value=""/>
+				</replace>
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jboss" />
+				<then>
+					<delete file="${web.dir}/WEB-INF/jboss-web.xml" />
+					<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/jboss-web.xml" />
+					<replace 
+						file="${web.dir}/WEB-INF/jboss-web.xml" 
+						propertyFile="replace.properties">
+						<replacefilter 
+							token="@@SECURITY_DOMAIN@@"
+							property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
+					</replace>
+				</then>
+			</elseif>
+		</if>	
+	</target>
+	
+	<target name="make-web.xml">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>
+				<delete file="${web.dir}/WEB-INF/web.xml" />
+				<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/web.xml" />
+				<replace 
+					file="${web.dir}/WEB-INF/web.xml" 
+					propertyFile="replace.properties">
+					<replacefilter 
+						token="@@SECURITY@@"
+						value=""/>
+					<replacefilter 
+						token="@@LOGIN_FILTER@@"
+						property="jbossportal.jbosstomcat.web.loginfilter"/>
+				</replace>
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jboss" />
+				<then>
+					<delete file="${web.dir}/WEB-INF/web.xml" />
+					<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/web.xml" />
+					<replace 
+						file="${web.dir}/WEB-INF/web.xml" 
+						propertyFile="replace.properties">
+						<replacefilter 
+							token="@@SECURITY@@"
+							property="jbossportal.jbosstomcat.web.security"/>
+						<replacefilter 
+							token="@@LOGIN_FILTER@@"
+							value=""/>
+					</replace>
+				</then>
+			</elseif>
+		</if>	
+	</target>
+		
+	<target name="war" depends="make-jboss-web.xml,make-web.xml">
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml"
+			excludes="WEB-INF/web.xml,WEB-INF/web.xml.tmpl,WEB-INF/jboss-web.xml.tmpl"
 			webxml="${web.dir}/WEB-INF/web.xml"
 		>
 			<!-- No longer necessary
@@ -30,7 +100,9 @@
 
 	<target name="deploy">
 		<copy todir="${app.server.ssf.dir}">
-			<fileset dir="${web.dir}" />
+			<fileset dir="${web.dir}">
+				<exclude name="WEB-INF/*.tmpl" />
+			</fileset>
 		</copy>
 	</target>
 	
