@@ -15,11 +15,13 @@
 	</target>
 	
 	<!-- Incremental deploy for ssf-jboss-portal.jar -->
+	<!--
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar-into-portal">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
 		</antcall>
 	</target>
+	-->
 
 	<target name="clean-app-server">
 		<delete>
@@ -92,7 +94,8 @@
 		     2. JBoss Portal, of course, comes with its own portlet API archive 
 		     (named porlet-api-lib.jar NOT portlet.jar). If we have our own portlet.jar
 		     in our lib directory, the Portal fails to load our portlets at startup.
-		     So we must remove that too. -->
+		     So we must remove that too. 
+		-->
 		<delete>
 			<fileset dir="${app.server.ssf.dir}/WEB-INF/lib" includes="log4j*.jar,portlet.jar"/>
 		</delete>		
