@@ -47,6 +47,10 @@ public class SSBlobSerializable implements Serializable {
 
     }
     public String toString() {
-        return getValue().toString();
+    	Object val = getValue();
+    	if(val != null)
+    		return val.toString();
+    	else
+    		return "";
     }
 }
