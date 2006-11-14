@@ -29,8 +29,11 @@ public class InitRequestContextInterceptor implements HandlerInterceptor {
 			return true;
 		}
 		
+		// The rest of the code assumes that the user is logged in (ie, authenticated).
+		/*
 		if(!WebHelper.isUserLoggedIn(request))
 			throw new UnauthenticatedAccessException();
+		*/
 		
 		String userName = WebHelper.getRequiredUserName(request);
 		String zoneName = WebHelper.getRequiredZoneName(request);
