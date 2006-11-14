@@ -29,7 +29,7 @@ public class SZoneConfig {
 	protected DefaultMergeableXmlClassPathConfigFiles configDocs;
 	private Document doc;
 	private Element root;
-	
+	private String defaultZoneName;
 	
 	public SZoneConfig() {
 		if(instance != null)
@@ -42,6 +42,11 @@ public class SZoneConfig {
 		this.configDocs = configDocs;
 		this.doc = configDocs.getAsMergedDom4jDocument();
 		this.root = doc.getRootElement();
+		
+		// For performance reason, we cache the following value.
+		Element elm = (Element)root.selectSingleNode("/zoneConfiguration/defaultZone");	
+
+		defaultZoneName = elm.attributeValue("name");
 	}
 	public DefaultMergeableXmlClassPathConfigFiles getConfigDocs() {
 		return configDocs;
@@ -97,7 +102,10 @@ public class SZoneConfig {
 			result = (Element)root.selectSingleNode("/zoneConfiguration/" + key);	
 		}
 		return result;
-	}	
+	}
+	public static String getDefaultZoneName() {
+		return getInstance().defaultZoneName;
+	}
 	private static String getRequired(String zoneName, String key) {
 		String val = get(zoneName, key);
 		
