@@ -33,5 +33,8 @@
 			<mapping from="description" to="description"/>
 		</groupMapping>
 	</ldapConfiguration>
-
+	<!-- Unlike all other elements in the file, the following element is
+	     meaningful only at the top-level. In other words, it does not
+	     apply to individual zone instances. This element is required. -->
+	<defaultZone name="liferay.com"/>
 </zoneConfiguration>
