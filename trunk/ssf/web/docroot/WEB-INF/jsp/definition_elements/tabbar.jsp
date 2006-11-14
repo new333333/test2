@@ -1,5 +1,9 @@
 <% // Tabs %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="numTabs" value="0"/>
+<c:forEach var="tab" items="${ss_tabs.tablist}">
+  <c:set var="numTabs" value="${numTabs + 1}"/>
+</c:forEach>
 <div id="ss_tabbar" class="ss_tabs">
 <!-- Start of tabs -->
 
@@ -11,11 +15,11 @@ var ss_nextTabNumber = "${ss_tabs.next_tab_id}";
 </div>
 <script type="text/javascript">
 var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif";
+var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 </script>
 <table cellspacing="0" cellpadding="0" style="background:transparent;">
 <tbody>
 <tr id="ss_tabbar_tr">
-<c:set var="tabNum" value="0"/>
 <c:forEach var="tab" items="${ss_tabs.tablist}">
   <c:set var="active" value=""/>
   <c:if test="${ss_tabs.current_tab == tab.tabId}">
@@ -84,7 +88,7 @@ var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delet
 		   <img style="position:relative; left:-6px;" src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 		   <span>${tab.title}</span></a>
-	<c:if test="${tabNum > 0}">
+	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
 		  <img style="position:relative; left:8px;" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
 		</a>
@@ -97,7 +101,6 @@ var ss_tabs_delete_icon = "<html:imagesPath/>skins/${ss_user_skin}/iconset/delet
 	  </table>
 	</td>
 
-  <c:set var="tabNum" value="${tabNum + 1}"/>
 </c:forEach>
 
 </tr>
