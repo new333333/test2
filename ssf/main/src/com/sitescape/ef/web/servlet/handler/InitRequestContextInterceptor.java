@@ -15,8 +15,11 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
 	    
+		// This interceptor assumes that the user is logged in (ie, authenticated).
+/*
 		if(!WebHelper.isUserLoggedIn(request))
 			throw new UnauthenticatedAccessException();
+			*/
 		
 		String userName = WebHelper.getRequiredUserName(request);
 		String zoneName = WebHelper.getRequiredZoneName(request);
