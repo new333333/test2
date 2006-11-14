@@ -3,7 +3,7 @@
 <c:set var="ss_user_skin" value="r1" scope="request"/>
 <div class="ss_style" align="left">
 
-<span class="ss_style ss_bold ss_largestprint"><ssf:nlt tag="help.on.help.title"/></span> 
+<span class="ss_titlebold"><ssf:nlt tag="help.on.help.title"/></span> 
 
 <p><ssf:nlt tag="help.helpicon.content.description"/></p>
 
