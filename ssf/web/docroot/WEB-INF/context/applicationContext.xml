@@ -230,6 +230,8 @@
 		<property name="interceptors">
 			<list>
 				<ref bean="portletParameterMappingInterceptor"/>
+				<!-- Check user login -->
+				<ref bean="portletLoginCheckInterceptor"/>
 				<!-- Set up request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
@@ -247,6 +249,9 @@
         <property name="order"><value>20</value></property>
 		<property name="interceptors">
 			<list>
+				<!-- Check user login -->
+				<ref bean="portletLoginCheckInterceptor"/>
+				<!-- Set up request context -->
 				<ref bean="portletInitRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
 				     This must come before userPreloadInterceptor since it
@@ -277,6 +282,8 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
+	<bean id="portletLoginCheckInterceptor" class="com.sitescape.ef.web.portlet.handler.LoginCheckInterceptor"/>
+		
 	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
 		
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
