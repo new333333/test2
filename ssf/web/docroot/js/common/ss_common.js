@@ -3216,21 +3216,31 @@ function ss_deleteTab(obj, tabId) {
 		//Get the outer td parent in the tab table
 		var tabParentTdObject = tabTdObject.parentNode.parentNode.parentNode.parentNode;
 		if (tabParentTdObject.tagName.toLowerCase() == "td") {
-			//Ok, delete this td from the tab table
-			tabParentTdObject.parentNode.removeChild(tabParentTdObject)
-			//Hide the tab contents
-			var tabDataObj = document.getElementById("ss_tab_data_" + tabId);
-			if (tabDataObj != null) tabDataObj.style.display = "none";
-			
-			//Now tell the server which tab got deleted
-			var url = ss_deleteTabUrl;
-			url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
-			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-			ajaxRequest.setData("tabId", tabId)
-			//ajaxRequest.setEchoDebugInfo();
-			ajaxRequest.setPostRequest(ss_changeTabDone);
-			ajaxRequest.setUsePOST();
-			ajaxRequest.sendRequest();  //Send the request
+			//Make sure this isn't the last tab
+			var tabs = tabParentTdObject.parentNode.getElementsByTagName("td");
+			var tabCount = 0;
+			for (var i = 0; i < tabs.length; i++) {
+				if (tabs[i].parentNode == tabParentTdObject.parentNode) tabCount++;
+			}
+			if (tabCount > 1) {
+				//Ok, delete this td from the tab table
+				tabParentTdObject.parentNode.removeChild(tabParentTdObject)
+				//Hide the tab contents
+				var tabDataObj = document.getElementById("ss_tab_data_" + tabId);
+				if (tabDataObj != null) tabDataObj.style.display = "none";
+				
+				//Now tell the server which tab got deleted
+				var url = ss_deleteTabUrl;
+				url = ss_replaceSubStr(url, "ss_tabid_place_holder",  tabId);
+				var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+				ajaxRequest.setData("tabId", tabId)
+				//ajaxRequest.setEchoDebugInfo();
+				ajaxRequest.setPostRequest(ss_changeTabDone);
+				ajaxRequest.setUsePOST();
+				ajaxRequest.sendRequest();  //Send the request
+			} else {
+				if (ss_tabs_no_delete_last_tab) alert(ss_tabs_no_delete_last_tab);
+			}
 		}
 	}
 }
