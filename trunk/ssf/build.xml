@@ -29,16 +29,27 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<target name="all" depends="clean,build,deploy" />
+	<target name="all" depends="clean,build,deploy-internal-use-only" />
 
-	<target name="all-without-clean" depends="build,deploy" />
+	<target name="all-without-clean" depends="build,deploy-internal-use-only" />
 
-	<target name="deploy" depends="init">
+	<!-- Do NOT run the following target on its own (unless you know
+	     what you are doing). When executed on its own, it may very
+	     well be deploying an artifact built for different portal. 
+	     So when in doubt, ALWAYS run either "all" or "all-without-clean"
+	     which will re-build the artifacts before deploying them. -->
+	<target name="deploy-internal-use-only" depends="init">
 		<if>
 			<equals arg1="${portal.type}" arg2="liferay" />
 			<then>				
 				<ant dir="liferay" target="full-deploy" inheritAll="false" />
 			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jboss" />
+				<then>				
+					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
 		</if>
 	</target>
 	
