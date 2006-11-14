@@ -9,7 +9,7 @@
 <p><ssf:nlt tag="help.globalStrings.configurations.moreInfo"/></p>
 
 <div style="margin-left:20px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'top', 'middle', 'left');"><ssf:nlt tag="help.configurationOverview.title"/></a>
+<a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/config_concepts', 'ss_config_concepts', 'right', 'bottom');"><ssf:nlt tag="help.configurationOverview.title"/></a>
 </div>
 
 </div>
@@ -22,6 +22,6 @@
 </div>
 
 <div class="ss_style" style="display:inline;margin-right:6px;">
-<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/modify_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/move_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
 </div>
 </div>
