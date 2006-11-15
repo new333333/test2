@@ -215,7 +215,11 @@ public class LocalLuceneSession implements LuceneSession {
         	if (sort == null) 
         		hits = indexSearcher.search(query);
         	else
-        		hits = indexSearcher.search(query,sort);
+        		try {
+        			hits = indexSearcher.search(query,sort);
+        		} catch (Exception ex) {
+        			hits = indexSearcher.search(query);
+        		}
             if(size < 0)
                 size = hits.length();
             com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits, offset, size);
