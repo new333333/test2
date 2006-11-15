@@ -376,8 +376,13 @@ public class IndexObject  {
          */
         //open a new searcher if necessary
         openIndexSearcher();
+        org.apache.lucene.search.Hits hits = null;
         try {
-            org.apache.lucene.search.Hits hits = indexSearcher.search(query, sort);
+        	try {
+        		hits = indexSearcher.search(query, sort);
+        	} catch (Exception ex) {
+        		hits = indexSearcher.search(query);
+        	}
             System.out.println("SEARCH: There were " + hits.length() + " matching hits on query: " + query.toString());
             com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits.transfer(hits,offset,size);
             tempHits.setTotalHits(hits.length());
