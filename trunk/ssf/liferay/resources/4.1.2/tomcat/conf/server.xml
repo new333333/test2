@@ -331,9 +331,7 @@
              resource protected by a security constraint, and then have that
              user identity maintained across *all* web applications contained
              in this virtual host. -->
-        <!--
         <Valve className="org.apache.catalina.authenticator.SingleSignOn" />
-        -->
 
         <!-- Access log processes all requests for this virtual host.  By
              default, log files are created in the "logs" directory relative to
