@@ -22,6 +22,7 @@ import java.util.TreeSet;
 import com.sitescape.ef.InternalException;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.util.PasswordEncryptor;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -47,7 +48,6 @@ public class User extends Principal {
     
     private Set principalIds; // set of Long; this field is computed 
     private SortedSet groupNames; // sorted set of group names; this field is computed
-    private static Long PASSWORD_DIGEST=new Long(32958);
 	public User() {
     }
 	public EntityIdentifier getEntityIdentifier() {
@@ -244,6 +244,8 @@ public class User extends Principal {
 	}
 
 	/**
+	 * Returns encrypted password.
+	 * 
 	 * @hibernate.property length="64"
 	 * 
 	 * @return
@@ -251,8 +253,13 @@ public class User extends Principal {
 	public String getPassword() {
 		return password;
 	}
-	public void setPassword(String password) {
-		this.password = encodePassword(password, PASSWORD_DIGEST);
+	
+	/**
+	 * Sets the password.
+	 * @param clearTextPassword clear text password
+	 */
+	public void setPassword(String clearTextPassword) {
+		this.password = PasswordEncryptor.encrypt(clearTextPassword);
 	}
 	
     /**
@@ -286,30 +293,7 @@ public class User extends Principal {
 		if(digestSeed == null)
 			digestSeed = 0L;
 		
-		return encodePassword(getPassword(), digestSeed);
-	}
-	private String encodePassword(String password, Long digestSeed) {
-		try {
-			MessageDigest algorithm = MessageDigest.getInstance("MD5");
-			algorithm.reset();
-			algorithm.update(password.getBytes("UTF-8"));
-			algorithm.update(digestSeed.toString().getBytes("UTF-8"));
-			byte[] messageDigest = algorithm.digest();
-			
-			StringBuffer hexString = new StringBuffer();
-			for(int i = 0; i < messageDigest.length; i++) {
-				// Convert each digest byte value to hex string (which is either
-				// one or two characters long). 
-				hexString.append(Integer.toHexString(0xff & messageDigest[i]));
-			}
-			return hexString.toString();
-		}
-		catch(NoSuchAlgorithmException e) {
-			throw new InternalException(e);
-		}
-		catch(UnsupportedEncodingException e) {
-			throw new InternalException(e);			
-		}
+		return PasswordEncryptor.encrypt(getPassword(), digestSeed);
 	}
     public Locale getLocale() {
         if (locale != null) return locale;
