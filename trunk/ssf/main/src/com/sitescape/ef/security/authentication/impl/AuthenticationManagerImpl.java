@@ -26,6 +26,7 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
+import com.sitescape.ef.util.PasswordEncryptor;
 import com.sitescape.ef.util.SPropsUtil;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
@@ -157,7 +158,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
      						+ zoneName + "," + username + "]", e);
     	}
     	
-    	if(!password.equals(user.getPassword())) {
+    	if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
     		// Passwords do not match
     		if(passwordAutoSynch) {
     			// Change the user's password to the value passed in. 

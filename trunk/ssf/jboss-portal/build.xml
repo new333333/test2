@@ -79,7 +79,7 @@
 		<antcall target="deploy-additional-components" />
 		
 		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="resources/${jboss.version.jboss.tomcat}/jboss-tomcat" />
+			<fileset dir="resources/${jbossportal.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
 		
 		<!--<echo file="${app.server.deploy.dir}/liferay-portal.ear/portal-web.war/META-INF/MANIFEST.MF" append="true" message=" lib/ssf-liferay.jar lib/ssf-portalmodule.jar" />-->
