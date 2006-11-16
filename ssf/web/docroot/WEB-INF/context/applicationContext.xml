@@ -553,7 +553,7 @@
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
-	<bean id="definitionBuilderConfig" class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+	<bean id="definitionBuilderConfig" class="com.sitescape.ef.module.definition.DefinitionConfigurationBuilder">
 		<property name="configFiles">
 			<list>
 				<value>config/definition_builder_config.xml</value>
