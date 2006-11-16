@@ -3,7 +3,6 @@ package com.sitescape.ef.liferay.events;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -11,12 +10,8 @@ import javax.servlet.http.HttpSession;
 import com.liferay.portal.struts.ActionException;
 
 import com.liferay.portal.util.PortalUtil;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portalmodule.web.security.AuthenticationManager;
 import com.sitescape.ef.portalmodule.web.session.SessionManager;
-import com.sitescape.ef.web.WebKeys;
 import com.liferay.portal.service.spring.UserLocalServiceUtil;
 
 public class LoginPostAction extends AbstractAction {
