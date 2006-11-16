@@ -29,9 +29,9 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<target name="all" depends="clean,build,deploy-internal-use-only" />
+	<target name="clean-build-and-deploy" depends="clean,build,deploy-internal-use-only" />
 
-	<target name="all-without-clean" depends="build,deploy-internal-use-only" />
+	<target name="build-and-deploy" depends="build,deploy-internal-use-only" />
 
 	<!-- Do NOT run the following target on its own (unless you know
 	     what you are doing). When executed on its own, it may very
