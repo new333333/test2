@@ -1,16 +1,12 @@
 package com.sitescape.ef.portalmodule.web.session;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.portalmodule.web.crosscontext.DispatchClient;
-import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
 
@@ -31,9 +27,6 @@ import com.sitescape.util.servlet.DynamicServletRequest;
  */
 public class SessionManager {
 	
-	// Map of portal session id to its context path. 
-	private static Map sessionMap = Collections.synchronizedMap(new HashMap());
-	
 	public static void createSession(HttpServletRequest request, 
 			String portalSessionId, String zoneName, String userName) 
 		throws ServletException, IOException {
@@ -50,27 +43,5 @@ public class SessionManager {
 		NullServletResponse res = new NullServletResponse();
 		
 		DispatchClient.doDispatch(req, res);
-		
-		sessionMap.put(portalSessionId, request.getContextPath());
 	}
-	
-	public static void destroySession(String portalSessionId) throws ServletException, IOException {
-		//System.out.println("### SessionManager [destroySession]: ");
-		//System.out.println("\tportal session id: " + portalSessionId);
-		
-		if(!sessionMap.containsKey(portalSessionId)) {
-			//System.out.println("\tWarning: the session was not even created!");
-			return;
-		}
-		
-		AttributesAndParamsOnlyServletRequest req = new AttributesAndParamsOnlyServletRequest((String) sessionMap.get(portalSessionId));
-		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_DESTROY_SESSION);
-		req.setParameter(CrossContextConstants.PORTAL_SESSION_ID, portalSessionId);
-		NullServletResponse res = new NullServletResponse();
-		
-		DispatchClient.doDispatch(req, res);
-		
-		sessionMap.remove(portalSessionId);
-	}
-
 }
