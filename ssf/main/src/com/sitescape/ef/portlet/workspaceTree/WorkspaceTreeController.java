@@ -64,7 +64,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				//add one
 				if (entry.getWorkspaceId() == null) {
 					Map data = new HashMap();
-					data.put("name", entry.getName());
+					data.put("title", entry.getName());
 					MapInputData inputData = new MapInputData(data);
 					binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
 				} else {

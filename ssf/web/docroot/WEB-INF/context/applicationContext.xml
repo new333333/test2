@@ -183,6 +183,7 @@
 	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
 	<bean id="definitionHelper" class="com.sitescape.ef.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
+		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
 	
 	<bean id="sPropsUtil" class="com.sitescape.ef.util.SPropsUtil">
@@ -552,22 +553,21 @@
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
+	<bean id="definitionBuilderConfig" class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+		<property name="configFiles">
+			<list>
+				<value>config/definition_builder_config.xml</value>
+			</list>		
+		</property>
+		<!-- TODO: We must use validation! -->
+		<property name="validating"><value>true</value></property>
+	</bean>
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref local="workflowModule"/></property>
-				<property name="definitionBuilderConfig">
-					<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
-						<property name="configFiles">
-							<list>
-								<value>config/definition_builder_config.xml</value>
-							</list>		
-						</property>
-						<!-- TODO: We must use validation! -->
-						<property name="validating"><value>true</value></property>
-					</bean>
-				</property>		
+				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 			</bean>	
 		</property>
 	</bean>

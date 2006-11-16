@@ -118,7 +118,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	try {
 	        sp.reset("addBinder_create").begin();
 	        final Binder binder = addBinder_create(def, clazz);
-	        binder.setName(inputData.getSingleValue("name"));
 	        sp.end().print();
 	        
 	    	if (def != null) {
@@ -129,8 +128,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    	}
 	        String title = (String)entryData.get("title");
 	        if (Validator.isNull(title)) {
-	        	title = (String)entryData.get("name");
-		        if (Validator.isNull(title)) title = binder.getName();
+	        	title = (String)inputData.getSingleValue("title");
 	        	entryData.put("title", title);
 	        }
 	        sp.reset("addBinder_validateTitle").begin();
