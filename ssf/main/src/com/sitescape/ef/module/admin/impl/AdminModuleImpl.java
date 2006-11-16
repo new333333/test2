@@ -639,12 +639,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and zoneName=:zoneName", params);
 		//has to exist
 		Binder ws = (Binder)result.get(0);
-		if (!ws.isReserved()) ws.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_DEF);
+		if (!ObjectKeys.DEFAULT_WORKSPACE_DEF.equals(ws.getInternalId())) ws.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_DEF);
 		if (ws.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(ws);
 		params.put("name", "_profiles");
 		result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where name=:name and zoneName=:zoneName", params);
 		ProfileBinder profiles = (ProfileBinder)result.get(0);
-		if (!profiles.isReserved()) profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
+		if (!ObjectKeys.PROFILE_ROOT_ID.equals(profiles.getInternalId())) profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
 		if (profiles.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(profiles);
 		try {
 			Group g = getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, zoneName);
