@@ -3,6 +3,7 @@ package com.sitescape.ef.exception;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collection;
 
 public class UncheckedCodedContainerException extends UncheckedCodedException 
 	implements ContainerSupport {
@@ -50,6 +51,9 @@ public class UncheckedCodedContainerException extends UncheckedCodedException
 		exceptions.add(e);
 	}
 	
+	public void addExceptions(Collection e) {
+		exceptions.addAll(e);
+	}
 	public Iterator iterator() {
 		return exceptions.iterator();
 	}

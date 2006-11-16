@@ -34,19 +34,24 @@ public abstract class Principal extends Entry  {
     protected String signature="";    
     protected String zoneName;
     protected Long workspaceId, calendarId;
-    protected boolean reserved;
     protected List iMemberOf;
+    protected String iId;
     
+
     /**
-     * @hibernate.property
-     * Reserverd principals cannot be deleted or disabled
-     * @return
+     * Internal id used to identify default principals.  This id plus
+     * the zoneName are used to locate default principals.  If we just used the primary key id
+     * the zones would need the same default and that may not be desirable.
+     * @hibernate.property length="32"
      */
-    public boolean isReserved() {
-    	return reserved;
+    public String getInternalId() {
+    	return this.iId;
     }
-    public void setReserved(boolean reserved) {
-    	this.reserved = reserved;
+    public void setInternalId(String iId) {
+    	this.iId = iId;
+    }
+    public boolean isReserved() {
+    	return Validator.isNotNull(iId);
     }
     /**
      * @hibernate.property

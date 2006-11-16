@@ -119,7 +119,9 @@ public class ListFolderController extends  SAbstractController {
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			int style = PortletRequestUtils.getIntParameter(request, "notifyType", Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
-			getBinderModule().addSubscription(binderId, style);
+			if (style == -1) getBinderModule().deleteSubscription(binderId);
+			else getBinderModule().addSubscription(binderId, style);
+
 		} else if (op.equals(WebKeys.OPERATION_UNSUBSCRIBE)) {
 			getBinderModule().deleteSubscription(binderId);
 		}
@@ -521,21 +523,17 @@ public class ListFolderController extends  SAbstractController {
 			//RSS link 
 			footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
 			Subscription sub = getBinderModule().getSubscription(folder.getId());
+			Map qualifiers = new HashMap();
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
+			adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
 			if (sub == null) {
-				Map qualifiers = new HashMap();
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
-				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
-				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
 				footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
 			} else {
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNSUBSCRIBE);
-				footerToolbar.addToolbarMenu("unsubscribeToFolder", NLT.get("toolbar.menu.unsubscribeToFolder"), url);				
+				footerToolbar.addToolbarMenu("subscriptionToFolder", NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
 			}
 
 		}

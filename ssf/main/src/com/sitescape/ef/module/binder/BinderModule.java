@@ -28,16 +28,7 @@ import com.sitescape.ef.security.AccessControlException;
  *
  */
 public interface BinderModule {
-	/**
-     * Find a binder of given name. 
-     * 
-     * @param binderName
-     * @return
-     * @throws NoBinderByTheNameException
-     * @throws AccessControlException
-     */
-    public Binder getBinderByName(String binderName) 
-		throws NoBinderByTheNameException, AccessControlException;
+
     /**
      * 
      * @param binderId
@@ -84,7 +75,6 @@ public interface BinderModule {
 	public void addSubscription(Long binderId, int style);
 	public Subscription getSubscription(Long binderId);
 	public void deleteSubscription(Long binderId);
-	public void modifySubscription(Long binderId, Map updates);
 	
     public boolean hasBinders(Binder binder);
     

@@ -365,8 +365,26 @@ public class DashboardHelper {
 	static public Map getDashboardMap(Dashboard dashboard, Map userProperties, Map model, String componentId) {
 
 		Map ssDashboard = new HashMap();
+		model.put(WebKeys.DASHBOARD, ssDashboard);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, DashboardHelper.Portlet);
 		
+		//Get the lists of dashboard components that are supported
+		String[] components_list = SPropsUtil.getCombinedPropertyList(
+				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
+		
+		List cw = new ArrayList();
+		Map componentTitles = new HashMap();
+		for (int i = 0; i < components_list.length; i++) {
+			if (!components_list[i].trim().equals("")) {
+				String component = components_list[i].trim();
+				cw.add(component);
+				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
+				componentTitles.put(component, componentTitle);
+			}
+		}
+		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_LIST, cw);
+		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
+		if (dashboard == null) return ssDashboard;
 		ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard.getProperties()));
 		int narrowFixedWidth = new Integer(SPropsUtil.getString("dashboard.size.narrowFixedWidth"));
 		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH, 
@@ -386,22 +404,6 @@ public class DashboardHelper {
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard.getProperty(DashboardHelper.Narrow_Variable)));
 		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard.getProperty(DashboardHelper.Wide_Bottom)));
 		
-		//Get the lists of dashboard components that are supported
-		String[] components_list = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		
-		List cw = new ArrayList();
-		Map componentTitles = new HashMap();
-		for (int i = 0; i < components_list.length; i++) {
-			if (!components_list[i].trim().equals("")) {
-				String component = components_list[i].trim();
-				cw.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
-			}
-		}
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_LIST, cw);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
 
 		//Set up the beans
 		if (componentId.equals("")) {
@@ -418,7 +420,6 @@ public class DashboardHelper {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));			
 		};
 		
-		model.put(WebKeys.DASHBOARD, ssDashboard);
 
 		//See if the components are shown or hidden
 		model.put(WebKeys.DASHBOARD_SHOW_ALL, Boolean.valueOf(dashboard.isShowComponents()));

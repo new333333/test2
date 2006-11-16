@@ -53,8 +53,7 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
- 		DashboardPortlet d=null;
-		PortletPreferences prefs = request.getPreferences();
+ 		PortletPreferences prefs = request.getPreferences();
 		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
@@ -71,11 +70,7 @@ public class ViewController  extends SAbstractController {
 				displayType=PROFILE_PORTLET;
 			else if (pName.contains(DASHBOARD_PORTLET)) {
 				displayType=DASHBOARD_PORTLET;
-				d = getDashboardModule().createDashboardPortlet(pName, DashboardHelper.getNewDashboardMap());
-				prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
 			}
-			prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
-			prefs.store();
 			//TODO temporary until we figure out why adding a portlet freezes
 			model.put("ssf_support_files_loaded", "1");
 		}
@@ -155,35 +150,37 @@ public class ViewController  extends SAbstractController {
   			}
  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);		
 		} else if (DASHBOARD_PORTLET.equals(displayType)) {
-			if (d == null) {
-				d = (DashboardPortlet)getDashboardModule().getDashboard(prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null));
+			DashboardPortlet d=null;
+			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+			if (id != null) {
+				d = (DashboardPortlet)getDashboardModule().getDashboard(id);
 			}
+			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+			DashboardHelper.getDashboardMap(d, userProperties, model);
 			Toolbar toolbar = new Toolbar();
+			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 			toolbar.addToolbarMenu("1_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-			
-			qualifiers = new HashMap();
-			qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-			qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-			toolbar.addToolbarMenuItem("1_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+			if (d != null) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				toolbar.addToolbarMenuItem("1_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
 
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
 					response.getNamespace() + "_dashboardComponentCanvas', 'dashboardId="+d.getId()+"');return false;");
-			if (DashboardHelper.checkIfShowingAllComponents(d)) {
-				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-			} else {
-				toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				if (DashboardHelper.checkIfShowingAllComponents(d)) {
+					toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
+				model.put(WebKeys.DASHBOARD_ID, d.getId());
 			}
-			
-			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
-			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
-			model.put(WebKeys.DASHBOARD_ID, d.getId());
-			DashboardHelper.getDashboardMap(d, userProperties, model);
- 			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
+			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
 		}
 		return null;
 	}

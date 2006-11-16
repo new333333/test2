@@ -87,8 +87,8 @@ public interface CoreDao {
      * @throws NoFolderByTheIdException
      */
     public Binder loadBinder(Long binderId, String zoneName);
-    public Binder findBinderByName(String binderName, String zoneName);
-
+    public Binder loadReservedBinder(String reservedId, String zoneName);
+    	   
 	public Definition loadDefinition(String defId, String zoneName);   
     public List loadDefinitions(String zoneName);
     public List loadDefinitions(String zoneName, int type);

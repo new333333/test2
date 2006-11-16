@@ -43,6 +43,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.Folder;
@@ -145,6 +146,55 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		return languageMap;
 	}
+	/**
+	 * Build digest style lists.  Include notifications, minus disabled subscriptions,
+	 * plus digest folder subscriptions and explicit email address
+	 * Determine which users have access to which entries.
+	 * Return a list of Object[].  Each Object[0] contains a list of entries,
+	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
+	 * using that locale that have access to the entries.
+	 * The list of entries will maintain the order used to do lookup.  This is important
+	 * when actually building the message	
+	 */
+	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions) {
+		//done if no-one is interested
+		List result = new ArrayList();
+		Set userIds = new HashSet();
+		Set groupIds = new HashSet();
+		for (Iterator iter=folder.getNotificationDef().getDistribution().iterator(); iter.hasNext();) {
+			Principal p = (Principal)iter.next();
+			if (p.getEntityIdentifier().getEntityType().equals(EntityType.group))
+				groupIds.add(p.getId());
+			else
+				userIds.add(p.getId());
+		}
+		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneName()));
+		//Add users wanting digest style messages, remove users wanting nothing
+		for (Subscription notify: (Collection<Subscription>)subscriptions) {
+			if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
+				userIds.add(notify.getId().getPrincipalId());
+			} else if (notify.getStyle() == Subscription.DISABLE_ALL_NOTIFICATIONS) {
+				userIds.remove(notify.getId().getPrincipalId());
+			}
+		}
+		List<User> users = getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
+		//check access to folder/entry and build lists of users to receive mail
+		List checkList = new ArrayList();
+		for (User u: users) {
+			if (!Validator.isNull(u.getEmailAddress())) {
+				AclChecker check = new AclChecker(u);
+				check.checkEntries(entries);
+				checkList.add(check);
+			}
+		}
+		//get a map containing a list of users mapped to a list of entries
+		while (!checkList.isEmpty()) {
+			Object [] lists = mapEntries(checkList);
+			result.add(lists);
+		}
+		//add in email address only subscriptions
+		return doEmailAddrs(folder, entries, result);
+	}
 
 	/**
 	 * Determine which users have access to which entries.
@@ -157,11 +207,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		//done if no-one is interested
 		List result = new ArrayList();
-		if (subscriptions.isEmpty()) {
-			if (style == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) 
-				return doEmailAddrs(folder, entries, result);
-		 	else return result;
-		}
+		if (subscriptions.isEmpty()) return result;
+		
 		//Users wanting digest style messages
 		List users = getUsers(subscriptions, style);
 		//check access to folder/entry and build lists of users to receive mail
@@ -179,9 +226,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			Object [] lists = mapEntries(checkList);
 			result.add(lists);
 		}
-		//add in email address only subscriptions
-		if (style == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) 
-			return doEmailAddrs(folder, entries, result);
 		return result;
 	}
 	/**
@@ -420,8 +464,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		
 		
-		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), true));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), true));
+//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
 		
 		return result;
 	}

@@ -29,6 +29,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.ef.ErrorCodes;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -465,23 +466,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		);
 	}
 	public Workspace findTopWorkspace(final String zoneName) {
-       return (Workspace)getHibernateTemplate().execute(
-               new HibernateCallback() {
-                   public Object doInHibernate(Session session) throws HibernateException {
-                       Workspace workspace = (Workspace)session.createQuery("from com.sitescape.ef.domain.Workspace w" +
-                       		" where w.zoneName=? and w.name=? and w.parentBinder is null")
-                            .setParameter(0, zoneName)
-                            .setParameter(1, zoneName)
-                            .setCacheable(true)
-                            .uniqueResult();
-                       if (workspace == null) {
-                           throw new NoWorkspaceByTheNameException(zoneName); 
-                       }
-                       return workspace;
-                   }
-               }
-            );
-
+		return (Workspace)loadReservedBinder(ObjectKeys.TOP_WORKSPACE_ID, zoneName);
+ 
 	}
 	
 	/**
@@ -499,18 +485,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return binder;
     }
 
-    public Binder findBinderByName(final String binderName, final String zoneName) {
+    public Binder loadReservedBinder(final String reservedId, final String zoneName) {
         return (Binder)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                        Binder binder = (Binder)session.getNamedQuery("find-Binder-Company")
-                             		.setString(ParameterNames.BINDER_NAME, binderName)
-                             		.setString(ParameterNames.COMPANY_ID, zoneName)
-                             		.uniqueResult();
-                        if (binder == null) {
-                            throw new NoBinderByTheNameException(binderName); 
+                        List results = session.createCriteria(Binder.class)
+                             		.add(Expression.eq("internalId", reservedId))
+                             		.add(Expression.eq("zoneName", zoneName))
+                             		.setCacheable(true)
+                             		.list();
+                        if (results.isEmpty()) {
+                            throw new NoBinderByTheNameException(reservedId); 
                         }
-                        return binder;
+                        return results.get(0);
                     }
                 }
              );

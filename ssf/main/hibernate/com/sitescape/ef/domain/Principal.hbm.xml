@@ -22,8 +22,8 @@
       <key column="principal"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
-    <property name="reserved"/>
     <property name="workspaceId"/>
+    <property name="internalId" length="32"/>
     <property name="calendarId"/>
     <property name="zoneName" length="64" not-null="true"/>
     <property name="signature" length="256"/>

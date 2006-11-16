@@ -23,7 +23,6 @@ array set ::j2ee_Principals_class_MAP {
    zoneName    {zoneName "varchar 100"}
    timeZoneId   {timeZoneId "varchar 10"}
    loginDate	{loginDate timestamp}
-   reserved	{reserved boolean}
    parentBinder {parentBinder int32}
    functionMembershipInherited   {functionMembershipInherited boolean}
    
@@ -406,7 +405,6 @@ proc doUsers {userList} {
     array unset attrs1
 				
 	set attrs(zoneName) $::zoneName
-	set attrs(reserved) 0
     set attrs(parentBinder) $::_profileId
 	
 	user_property load -filter defaultSummit
@@ -535,7 +533,6 @@ proc doGroups {groupList} {
 	set attrs(lockVersion) 1
 	set attrs(disabled) 0
 	set attrs(defaultIdentity) 0
- 	set attrs(reserved) 0
     set attrs(parentBinder) $::_profileId
 	set attrs(functionMembershipInherited) 1
 	
@@ -833,12 +830,10 @@ proc doZone {zoneName {cName {liferay.com}}} {
     if {($::dialect == "frontbase") || ($::dialect == "frontbase-external")} {
 		wimsql_rw "update SS_Forums set notify_teamOn=B'0' where notify_teamOn is null;"
 		wimsql_rw "update SS_Forums set acl_widenRead=B'1',acl_widenModify=B'1',acl_widenDelete=B'1';"
-		wimsql_rw "update SS_Principals set reserved=B'1' where name='wf_admin' or name='avf_admin';"
 #		wimsql_rw "update SS_Forums set notify_enabled=B'0' where notify_enabled is null;"
  	} else {
 		wimsql_rw "update SS_Forums set notify_teamOn=0 where notify_teamOn is null;"
 		wimsql_rw "update SS_Forums set acl_widenRead=1,acl_widenModify=1,acl_widenDelete=1;"
-		wimsql_rw "update SS_Principals set reserved=1 where name='wf_admin' or name='avf_admin';"
 #		wimsql_rw "update SS_Forums set notify_enabled=0 where notify_enabled is null;"
  	}
 	doPathNames $rootTitle $::forumIds(_admin)

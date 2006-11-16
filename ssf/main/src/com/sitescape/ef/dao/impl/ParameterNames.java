@@ -14,4 +14,5 @@ public class ParameterNames {
     public static final String BINDER_NAME = "binderName";
     public static final String USER_NAME = "userName";
     public static final String COMPANY_ID = "zoneName";
+    public static final String INTERNAL_ID = "internalId";
 }

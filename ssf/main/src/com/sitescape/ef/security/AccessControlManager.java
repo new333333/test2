@@ -6,6 +6,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 
@@ -78,8 +79,53 @@ public interface AccessControlManager {
      */
     public void checkOperation(User user, WorkArea workArea,
             WorkAreaOperation workAreaOperation) throws AccessControlException;
-    
     /**
+     * Check if the user associated with the current request contextis assigned 
+     * to the function in the work area. 
+     * <p>
+     * Use this method if one of the following conditions is true.
+     * <p>
+     * 1) There is no <code>RequestContext</code> set up for the calling thread.<br>
+     * 2) The user associated with the current request context is not the same
+     * as the user against which this access check is being performed. 
+     * @param user
+     * @param workArea
+     * @param function
+     * @return
+     */
+	public void checkFunction(User user, WorkArea workArea, Function function) 
+			throws AccessControlException ;
+	/**
+     * Check if the user associated with the current request context is assigned 
+     * to the function in the work area. 
+	 * 
+	 * @param workArea
+	 * @param function
+	 * @throws AccessControlException
+	 */
+	public void checkFunction(WorkArea workArea, Function function) 
+			throws AccessControlException ;
+	/**
+     * Same as <code>checkFunction</code> except that this returns
+     * <code>boolean</code> flag rather than throwing an exception.
+	 * 
+	 * @param user
+	 * @param workArea
+	 * @param function
+	 * @return
+	 */
+	public boolean testFunction(User user, WorkArea workArea, Function function);
+	/**
+     * Same as <code>checkFunction</code> except that this returns
+     * <code>boolean</code> flag rather than throwing an exception.
+	 * 
+	 * @param workArea
+	 * @param function
+	 * @return
+	 */
+	public boolean testFunction(WorkArea workArea, Function function);
+
+   /**
      * Check if the user associated with the current request context has the
      * specified type of access to the object. 
      * 

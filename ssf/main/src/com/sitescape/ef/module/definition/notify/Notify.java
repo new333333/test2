@@ -16,6 +16,7 @@ public class Notify {
 	protected DateFormat dateFormat;
 	protected HashSet files= null;
 	protected Timestamp startTs;
+	protected boolean includeAttachments=false;
 	
 	public Set getAttachments() {
 		if (files == null) files = new HashSet();
@@ -26,6 +27,12 @@ public class Notify {
 	}
 	public void clearAttachments() {
 		if (files != null) files.clear();
+	}
+	public boolean isAttachmentsIncluded() {
+		return includeAttachments;
+	}
+	public void setAttachmentsIncluded(boolean includeAttachments) {
+		this.includeAttachments = includeAttachments;
 	}
 	
 	public String getType() {

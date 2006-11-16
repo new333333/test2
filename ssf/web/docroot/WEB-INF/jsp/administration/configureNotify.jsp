@@ -15,6 +15,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="com.sitescape.ef.util.NLT" %>
+
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="notify.title"/></span><br/>
 <br/>
@@ -40,46 +42,73 @@
 
     action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_notify"/>
-			<portlet:param name="binderId" value="${ssFolder.id}"/>
+			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
 
-<span class="ss_bold"><ssf:nlt tag="notify.forum.label"/> ${ssFolder.title}</span>
+<span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>${ssBinder.title}</span>
+
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<br/>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
-
-
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="notify.schedule" /></legend>
-<table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
+<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
-<input type="checkbox" id="disabled" name="disabled" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="notify.disable"/>
-</td>
-</tr>
-</table><br/>
+<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
+<span class="ss_labelRight ss_bold"><ssf:nlt tag="notify.schedule.enable"/></span><br/>
+</td></tr></table>
+
+<br/>
+<ssf:expandableArea title="<%= NLT.get("notify.schedule") %>">
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-</fieldset>
+<div class="ss_divider"></div>
+</ssf:expandableArea>
+
 
 <fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="notify.addresses" /></legend>
-<br />
-<span class="ss_bold"><ssf:nlt tag="notify.addresses.instructions"/>
-</span><br />
-<textarea name="emailAddress" rows="4" cols="50" >
-<c:forEach var="addr" items="${ssNotification.emailAddress}">
-<c:out value="${addr}"/>
-</c:forEach>
-</textarea>
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+  <legend class="ss_legend"><ssf:nlt tag="notify.distribution.list" /></legend>
+
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="notify.teams"/></td>
+<td valign="top">
+<input type="checkbox" id="teamOn" name="teamOn" <c:if test="${ssBinder.notificationDef.teamOn}">checked</c:if>/>
+</td></tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+<td valign="top">
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="users" 
+    type="user" userList="${ssUsers}"/>
+</td>
+</tr>
+<tr>
+<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+<td valign="top">
+  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="groups" 
+    type="group" userList="${ssGroups}"/>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+<span class="ss_labelAbove ss_bold"><ssf:nlt tag="notify.addresses.instructions"/></span>
+	  	<c:set var="mappings" value="${ssNotification.emailAddress}"/>
+<jsp:useBean id="mappings" type="String[]" scope="page" />
+	  	<%
+			StringBuffer buf = new StringBuffer();
+	  		for (int i=0; i<mappings.length; ++i) {
+				buf.append(mappings[i] + "\n");
+	  		}
+	  	%>
+	  	<textarea name="emailAddress" style="height: 100px; width: 500px; overflow:auto;" wrap="hard"><%=buf.toString()%></textarea>
+</td></tr>
+</table>
 </fieldset>
-
-
 <br/>
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
 </form>
 
 </c:otherwise>

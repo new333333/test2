@@ -25,6 +25,7 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -371,6 +372,9 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxSubscribe(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		Subscription sub = getBinderModule().getSubscription(binderId);
+		model.put(WebKeys.SUBSCRIPTION, sub);
 		return new ModelAndView("forum/subscribe_return", model);
 	}
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 

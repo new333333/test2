@@ -16,6 +16,7 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -28,6 +29,7 @@ import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.exception.UncheckedCodedContainerException;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
@@ -47,6 +49,7 @@ import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
@@ -94,13 +97,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 
-	}
-	public Binder getBinderByName(String binderName) 
-   			throws NoBinderByTheNameException, AccessControlException {
-		Binder binder = getCoreDao().findBinderByName(binderName, RequestContextHolder.getRequestContext().getZoneName());
-	    // Check if the user has "read" access to the binder.
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
-		return binder;
 	}
    
 	public Binder getBinder(Long binderId)
@@ -170,19 +166,30 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	Binder binder = loadBinder(binderId);
     	//if can delete this binder, can delete everything under it??
     	checkDeleteBinderAllowed(binder);
-   		deleteChildBinders(binder);
-     	loadBinderProcessor(binder).deleteBinder(binder);
-    }
-    protected void deleteChildBinders(Binder binder) {
+   		List errors = deleteChildBinders(binder);
+   		if (errors.isEmpty()) loadBinderProcessor(binder).deleteBinder(binder);
+   		else {
+   			UncheckedCodedContainerException ue = new UncheckedCodedContainerException("errorcode.delete.binder");
+   			ue.addExceptions(errors);
+   		}
+     }
+    protected List deleteChildBinders(Binder binder) {
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
+    	List errors = new ArrayList();
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
-   			deleteChildBinders(b);
-    		loadBinderProcessor(b).deleteBinder(b);
+        	try {
+        		checkDeleteBinderAllowed(b);
+       			List e = deleteChildBinders(b);
+       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b);
+       			else errors.addAll(e);
+        	} catch (Exception ex) {
+        		errors.add(ex);
+        	}
+    		
     	}
-    	return;
-    	
+    	return errors;
     }
     public void checkDeleteBinderAllowed(Binder binder) {
     	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
@@ -342,6 +349,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s != null) getCoreDao().delete(s);
     }
+/* not needed
     public void modifySubscription(Long binderId, Map updates) {
 		Binder binder = loadBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -352,7 +360,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
     	ObjectBuilder.updateObject(s, updates);
     }	
-
+*/
 	public Map executeSearchQuery(Document searchQuery) {
 		Binder binder = null;
 		return executeSearchQuery(binder, searchQuery);
@@ -374,7 +382,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
 
 	        	//Create the Lucene query
-		    	QueryBuilder qb = new QueryBuilder();
+		    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
 		    	SearchObject so = qb.buildQuery(qTree);
 		    	
 		    	//Set the sort order
@@ -441,7 +449,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	        	}
 	        	
 	        	//Create the Lucene query
-		    	QueryBuilder qb = new QueryBuilder();
+		    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
 		    	SearchObject so = qb.buildQuery(qTree);
 		    	
 		    	//Set the sort order
@@ -507,13 +515,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 }
 
 	public List getTeamMembers(Long binderId) {
-//TODO: what access is needed here 
 		Binder binder = loadBinder(binderId);
+		User user = RequestContextHolder.getRequestContext().getUser();
 		try {
 			//team membership is implemented by a reserved role
 			Function function = getFunctionManager().getReservedFunction(binder.getZoneName(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
+			//give access to members of role or binder Admins.
+			if (!getAccessControlManager().testFunction(user, binder, function)) 
+				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 			WorkAreaFunctionMembership wfm;
-		    if (!binder.isFunctionMembershipInherited()) {
+			if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
 		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(binder.getZoneName(), binder, function.getId());
 		    } else {
 		    	WorkArea source = binder.getParentWorkArea();
@@ -531,5 +542,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			return new ArrayList();
 		}
 	}
+
 
 }

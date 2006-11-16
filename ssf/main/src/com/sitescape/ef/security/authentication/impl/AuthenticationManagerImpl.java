@@ -10,6 +10,7 @@ import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
@@ -116,6 +117,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 					user.setParentBinder(profiles);
 					user.setZoneName(zoneName);
 					user.setName(userName);
+					user.setForeignName(userName);
 					user.setPassword(password);
 					//get entry def
 					getDefinitionModule().setDefaultEntryDefinition(user);
@@ -188,16 +190,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		//make sure zone exists
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
+			return null;
 		} catch (NoWorkspaceByTheNameException nw) {
-			try {
-				getAdminModule().addZone(zoneName);
-				return getProfileDao().findUserByNameOnlyIfEnabled(userName, zoneName);
-			} catch (Exception ex) {
-				return null;
-			}
-
+		} catch (NoBinderByTheNameException nb) {};
+		try {
+			getAdminModule().addZone(zoneName);
+			return getProfileDao().findUserByNameOnlyIfEnabled(userName, zoneName);
+		} catch (Exception ex) {
+			return null;
 		}
-		return null;
 		
 	}
 

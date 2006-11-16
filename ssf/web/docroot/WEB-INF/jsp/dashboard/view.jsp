@@ -7,7 +7,10 @@
   <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL>
 	    <portlet:param name="action" value="modify_dashboard_portlet"/>
+<c:if test="${!empty ssDashboardId}">
 	    <portlet:param name="dashboardId" value="${ssDashboardId}"/>
+</c:if>
+	    <portlet:param name="scope" value="${ssDashboard.scope}"/>
         </portlet:actionURL>">
 	  <div style="margin:10px;">
         <br/>

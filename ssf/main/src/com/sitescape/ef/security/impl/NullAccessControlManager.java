@@ -2,7 +2,9 @@ package com.sitescape.ef.security.impl;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
 
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Group;
@@ -11,6 +13,8 @@ import com.sitescape.ef.security.AccessControlManager;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.FunctionAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.dao.ProfileDao;
@@ -53,7 +57,20 @@ public class NullAccessControlManager implements AccessControlManager {
         return true; // Permission granted with no checking. 
     }
 
-    public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
+	public void checkFunction(WorkArea workArea, Function function) 
+		throws AccessControlException {
+	}
+	public void checkFunction(User user, WorkArea workArea, Function function) 
+		throws AccessControlException {
+	}
+     
+	public boolean testFunction(WorkArea workArea, Function function) {
+		return true;
+	}
+	public boolean testFunction(User user,	WorkArea workArea, Function function) {
+		return true;
+	}   
+	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
     }
 
     public boolean testAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) {

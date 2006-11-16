@@ -111,6 +111,16 @@ public class NLT implements ApplicationContextAware {
 		}
 	}
 
+	public static String getDef(String tag, Locale locale) {
+		if (tag.startsWith("__")) {
+			//If the tag starts with "__" it is a tag to be translated
+			return get(tag, locale);
+		}
+		else {
+			//Otherwise, this is just a string, so return it unchanged.
+			return tag;
+		}
+	}
 	public static String get(String tag) {
 		return getInstance().getMessageWithTagAsDefault(tag);
 	}

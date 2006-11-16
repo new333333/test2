@@ -759,7 +759,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
        	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
     	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder();
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order

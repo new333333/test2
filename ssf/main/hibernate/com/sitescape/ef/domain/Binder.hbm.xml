@@ -52,7 +52,11 @@
     <property name="pathName" length="1024"/>
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
-      <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+	  <bag inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
+      	<key column="binderId"/>
+ 	     <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="principalId"/>
+    	</bag>
+       <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
     </component>
@@ -99,6 +103,7 @@
     </component>
     <property name="title" length="1024"/>
     <property name="iconName" length="64"/>    
+    <property name="internalId" length="32"/>
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>
@@ -132,5 +137,4 @@
     <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
     </subclass>
   </class>
-  <query name="find-Binder-Company"><![CDATA[from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName]]></query>
 </hibernate-mapping>

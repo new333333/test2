@@ -146,8 +146,23 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 			</xsl:if>
 		<br/>
 		</xsl:when>
-		<xsl:when test="@type = 'attachFiles' or @type = 'file'">
-			<br/>
+		<xsl:when test="@type = 'attachFiles'">
+			<ul>
+			<xsl:for-each select="file">
+			<li>&nbsp;&nbsp;&nbsp;<xsl:choose>
+			<xsl:when test="@href != ''">
+				<a href="{@href}">
+				<xsl:value-of select="."/><br/>
+				</a></xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="."/><br/>
+				</xsl:otherwise>
+			</xsl:choose>
+			</li>
+			</xsl:for-each>
+			</ul>
+		</xsl:when>
+		<xsl:when test="@type = 'file'">
 			<xsl:for-each select="file">
 			<xsl:choose>
 			<xsl:when test="@href != ''">
@@ -162,9 +177,14 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		</xsl:when>
 		<xsl:when test="@type = 'graphic'">
 			<xsl:for-each select="graphic">
-				<xsl:if test="@href != ''">
-					<img src="{@href}" />
-				</xsl:if>
+			<xsl:choose>
+			<xsl:when test="@href != ''">
+				<img src="{@href}" />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="."/><br/>
+				</xsl:otherwise>
+			</xsl:choose>
 			</xsl:for-each>
 		</xsl:when>
 		<xsl:when test="@type = 'event'">

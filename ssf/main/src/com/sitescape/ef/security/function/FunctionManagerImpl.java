@@ -38,7 +38,7 @@ public class FunctionManagerImpl implements FunctionManager {
         getSecurityDao().update(function);
     }
 
-    public List getFunctions(String zoneName) {
+    public List findFunctions(String zoneName) {
         return getSecurityDao().findFunctions(zoneName);
     }
     public Function getFunction(String zoneName, Long id)  throws NoObjectByTheIdException {
@@ -48,12 +48,12 @@ public class FunctionManagerImpl implements FunctionManager {
     	return getSecurityDao().loadReservedFunction(zoneName, id);
     }
 
-    public List getFunctions(String zoneName, WorkAreaOperation workAreaOperation) {
+    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation) {
         // This is implemented on top of getFunctions(Long) based on the
         // assumption that the underlying ORM effectively caches the
         // result of the query. 
         
-        List functions = this.getFunctions(zoneName);
+        List functions = this.findFunctions(zoneName);
         
         List results = new ArrayList();
         

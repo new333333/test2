@@ -2,7 +2,6 @@ package com.sitescape.ef.portlet.administration;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -18,12 +17,12 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.util.Validator;
 
 
 public class ViewController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+		getAdminModule().setZone();
 		response.setRenderParameters(request.getParameterMap());
 	}
 
@@ -263,7 +262,15 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-		
+		//temp to fixup zone
+		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+		element.addAttribute("title", "Temporary check zone");
+		element.addAttribute("image", "bullet");
+		element.addAttribute("id", String.valueOf(nextId++));
+		url = response.createActionURL();
+		url.setPortletMode(PortletMode.VIEW);
+		element.addAttribute("url", url.toString());
+
 		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
 }

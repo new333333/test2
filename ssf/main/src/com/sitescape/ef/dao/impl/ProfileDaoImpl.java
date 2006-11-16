@@ -1,58 +1,57 @@
 package com.sitescape.ef.dao.impl;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Map;
+import java.util.HashMap;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-import org.springframework.orm.hibernate3.HibernateCallback;
-
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
-import org.hibernate.Criteria;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Collection;
+import org.springframework.dao.DataAccessException;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.SQLException;
-
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Group;
-
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Visits;
-import com.sitescape.ef.domain.UserEntityPK;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.UserPropertiesPK;
-import com.sitescape.ef.domain.NoGroupByTheIdException;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.Rating;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Membership;
-import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.NoGroupByTheIdException;
+import com.sitescape.ef.domain.NoGroupByTheNameException;
 import com.sitescape.ef.domain.NoPrincipalByTheIdException;
-import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Rating;
+import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserEntityPK;
+import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.UserPropertiesPK;
+import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.util.LongIdComparator;
 /**
  * @author Jong Kim
@@ -61,14 +60,15 @@ import com.sitescape.ef.util.LongIdComparator;
 public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	protected Log logger = LogFactory.getLog(getClass());
 	private CoreDao coreDao;
-
+	Map reservedIds = new HashMap();
+	
 	public void setCoreDao(CoreDao coreDao) {
 		   this.coreDao = coreDao;
 		}
 	private CoreDao getCoreDao() {
 	    return coreDao;
 	}
-
+	
 	/**
 	 * Delete the binder object and its assocations.
 	 * Entries and child binders should already have been deleted
@@ -276,25 +276,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	
     }
         
-    /**
-     * Lookup binder and cache result.  Profile binder is a fixed name
-     */
-    public ProfileBinder getProfileBinder(final String zoneName) {
-        return (ProfileBinder)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        Binder binder = (Binder)session.getNamedQuery("find-Binder-Company")
-                             		.setString(ParameterNames.BINDER_NAME, "_profiles")
-                             		.setString(ParameterNames.COMPANY_ID, zoneName)
-                             		.setCacheable(true)
-                             		.uniqueResult();
-                        if (binder == null) {
-                            throw new NoBinderByTheNameException("_profiles"); 
-                        }
-                        return binder;
-                    }
-                }
-             );
+    public ProfileBinder getProfileBinder(String zoneName) {
+    	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_ID, zoneName);
     }
 
     /*
@@ -363,9 +346,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	getHibernateTemplate().execute(
         	new HibernateCallback() {
         		public Object doInHibernate(Session session) throws HibernateException {
-        			session.createQuery("UPDATE Principal set disabled = :disable where reserved = :reserve and zoneName = :zone and id in (:pList)")
+        			session.createQuery("UPDATE Principal set disabled = :disable where zoneName = :zone and internalId is null and id in (:pList)")
         			.setBoolean("disable", true)
-        			.setBoolean("reserve", false)
         			.setString("zone", zoneName)
         			.setParameterList("pList", ids)
         			.executeUpdate();
@@ -590,36 +572,61 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	filter.add("zoneName", zoneName);
        	return getCoreDao().countObjects(Group.class, filter);
     }   
- 
+    private Long getReservedGroupId(String internalId, String zoneName) {
+    	String key = internalId + "-" + zoneName;
+    	Long id=null;
+    	synchronized (reservedIds) {
+    		id = (Long)reservedIds.get(key);
+    	}
+    	if (id == null) {
+    		try {
+    			Group g = getReservedGroup(internalId, zoneName);
+    			id = g.getId();
+    		} catch (NoGroupByTheNameException ng) {}
+    		
+        	synchronized (reservedIds) {
+        		reservedIds.put(key, id);
+        	}
+     	}
+   		return id;    	
+    }
+    public Group getReservedGroup(String internalId, String zoneName) {
+   		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(
+    					new String[]{"internalId", "zoneName"},
+    					new Object[]{internalId, zoneName}));
+    	if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
+    	return (Group)objs.get(0);
+    }
+    public Set getPrincipalIds(User user) {
+    	return user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, user.getZoneName()));
+    }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.
-	 * This is used to turn a distribution list or usersIds only.
+	 * This is used to turn a distribution list into usersIds only.
 	 * Use when don't need to load the entire object
 	 * @param Set of principalIds
 	 * @returns Set of userIds
 	 */
-	public Set explodeGroups(final Set ids) {   
+	public Set explodeGroups(final Set ids, String zoneName) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
-	    Set users = (Set)getHibernateTemplate().execute(
+		Set users;
+		if (ids.contains(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, zoneName))) {
+			List<Object[]> result = getCoreDao().loadObjects(new ObjectControls(User.class, 
+					new String[]{"id"}), 
+					new FilterControls(new String[]{"zoneName", "disabled"}, new Object[]{zoneName, Boolean.FALSE}));
+			users = new HashSet(result);
+		} else {
+			users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                     Set result = new TreeSet(ids);
                     List mems;
                     Set currentIds = new HashSet(ids);
                     while (!currentIds.isEmpty()) {
-                    	Criteria crit = session.createCriteria(Membership.class);
-                     	Disjunction dis = Expression.disjunction();
-                       	Long id	;
-                       	for (Iterator iter=currentIds.iterator(); iter.hasNext();) {
-                       		id = (Long)iter.next();
-                       		if (id != null) {
-                       			dis.add(Expression.eq("groupId", id));
-                       		}
-                       	}
-                        
-                       	crit.add(dis);                       	
-                       	mems = crit.list();
+                    	mems  = session.createCriteria(Membership.class)
+                    		.add(Expression.in("groupId", currentIds))
+                        	.list();
                        	currentIds.clear();
 						for (int i=0; i<mems.size(); ++i) {
 							Membership m = (Membership)mems.get(i);
@@ -628,12 +635,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 							result.add(m.getUserId());
 							currentIds.add(m.getUserId());
 						}
-                        	
+						//note: empty groups may appear in the resultant list
                     }
                     return result;
                 }
             }
-        );
+        );}
 		return users;		
 	}
 	/**
@@ -642,7 +649,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param groupId
 	 * @result List of <code>Membership</code>
 	 */
-	public List getMembership(final Long groupId) {
+	public List getMembership(final Long groupId, String zoneName) {
 		if (groupId == null) return new ArrayList();
 	    List membership = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -663,7 +670,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * @param principalId
 	 * @return Set of groupIds
 	 */
-	public Set getAllGroupMembership(final Long principalId) {
+	public Set getAllGroupMembership(final Long principalId, String zoneName) {
 		if (principalId == null)  return new TreeSet();
 		return (Set)getHibernateTemplate().execute(
             new HibernateCallback() {
