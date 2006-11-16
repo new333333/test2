@@ -11,26 +11,24 @@ import org.dom4j.Element;
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class DefinitionHelper {
 	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
+	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
 	public DefinitionHelper() {
 		if(instance != null)
 			throw new SingletonViolationException(DefinitionHelper.class);
 		
 		instance = this;
 	}
-    public static DefinitionHelper getInstance() {
+    protected static DefinitionHelper getInstance() {
     	return instance;
     }
     public void setDefinitionModule(DefinitionModule definitionModule) {
@@ -38,6 +36,12 @@ public class DefinitionHelper {
     }
     public DefinitionModule getDefinitionModule() {
     	return definitionModule;
+    }
+	public static MergeableXmlClassPathConfigFiles getDefinitionBuilderConfig() {
+        return getInstance().definitionBuilderConfig;
+    }
+    public void setDefinitionBuilderConfig(MergeableXmlClassPathConfigFiles definitionBuilderConfig) {
+        this.definitionBuilderConfig = definitionBuilderConfig;
     }
 	
 	public static void getDefinitions(int defType, String key, Map model) {

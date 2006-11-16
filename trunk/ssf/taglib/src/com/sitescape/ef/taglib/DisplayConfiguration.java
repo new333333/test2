@@ -43,7 +43,7 @@ public class DisplayConfiguration extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			this.configDefaultDefinition = DefinitionHelper.getInstance().getDefinitionModule().getDefinitionConfig();
+			this.configDefaultDefinition = DefinitionHelper.getDefinitionBuilderConfig().getAsMergedDom4jDocument();
 			
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");
