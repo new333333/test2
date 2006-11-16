@@ -12,16 +12,16 @@ import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class DefinitionHelper {
 	private static DefinitionHelper instance; // A singleton instance
 	private DefinitionModule definitionModule;
-	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
+	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	public DefinitionHelper() {
 		if(instance != null)
 			throw new SingletonViolationException(DefinitionHelper.class);
@@ -37,10 +37,10 @@ public class DefinitionHelper {
     public DefinitionModule getDefinitionModule() {
     	return definitionModule;
     }
-	public static MergeableXmlClassPathConfigFiles getDefinitionBuilderConfig() {
+	public static DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
         return getInstance().definitionBuilderConfig;
     }
-    public void setDefinitionBuilderConfig(MergeableXmlClassPathConfigFiles definitionBuilderConfig) {
+    public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
 	

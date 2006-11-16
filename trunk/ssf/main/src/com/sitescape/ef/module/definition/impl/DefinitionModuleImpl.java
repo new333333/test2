@@ -23,8 +23,8 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
@@ -38,6 +38,7 @@ import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.module.definition.index.FieldBuilderUtil;
@@ -50,7 +51,6 @@ import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
@@ -64,7 +64,7 @@ import com.sitescape.util.Validator;
  */
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule {
 	private Document definitionConfig;
-	private MergeableXmlClassPathConfigFiles definitionBuilderConfig;
+	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "type"};
 
 	private WorkflowModule workflowModule;
@@ -145,10 +145,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  		return coreDao.loadDefinition(id, companyId);
 	}
 	
-	public MergeableXmlClassPathConfigFiles getDefinitionBuilderConfig() {
+	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
         return definitionBuilderConfig;
     }
-    public void setDefinitionBuilderConfig(MergeableXmlClassPathConfigFiles definitionBuilderConfig) {
+    public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
     
