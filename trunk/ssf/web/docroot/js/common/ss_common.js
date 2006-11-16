@@ -2656,6 +2656,16 @@ function ss_toggleShowHidePortal(obj) {
     	spanObj.innerHTML = ss_nlt_navigation_maximize;
     }
 }
+//show a div as a popup - no ajax
+function ss_showPopupDiv(divId) {
+	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	var divObj = document.getElementById(divId);
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	divObj.style.visibility = "visible";
+	divObj.style.display= "block";
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
 
 //Routine to configure the columns of a folder
 function ss_createPopupDiv(obj, divId) {

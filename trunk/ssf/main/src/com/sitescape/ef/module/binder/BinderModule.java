@@ -1,26 +1,17 @@
 
 package com.sitescape.ef.module.binder;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Collection;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
-import com.sitescape.ef.domain.NoBinderByTheNameException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.security.AccessControlException;
 
 /**

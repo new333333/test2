@@ -26,6 +26,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
@@ -81,12 +82,13 @@ public class ViewEntryController extends  SAbstractController {
 	        //force reload of listing for state change
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 		} else if (formData.containsKey("subscribeBtn")) {
-	        getFolderModule().addSubscription(folderId, entryId);
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		} else if (formData.containsKey("unsubscribeBtn")) {
-	        getFolderModule().deleteSubscription(folderId, entryId);
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		}
+			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
+			if (style != null) {
+				if (style.intValue() == -1) getFolderModule().deleteSubscription(folderId, entryId);
+				else getFolderModule().addSubscription(folderId, entryId, style.intValue());
+				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+			} 
+		} 
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

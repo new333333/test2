@@ -15,6 +15,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -48,14 +49,7 @@ public class EditController extends SAbstractController {
 			String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
 			if (Validator.isNull(displayType)) { 
-				PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
-				String pName = pConfig.getPortletName();
-				if (pName.contains(ViewController.FORUM_PORTLET))
-					displayType=ViewController.FORUM_PORTLET;
-				else if (pName.contains(ViewController.WORKSPACE_PORTLET))
-					displayType=ViewController.WORKSPACE_PORTLET;
-				else if (pName.contains(ViewController.PRESENCE_PORTLET))
-					displayType=ViewController.PRESENCE_PORTLET;
+				displayType = getDisplayType(request);
 				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
@@ -95,6 +89,10 @@ public class EditController extends SAbstractController {
 		else title="";
 		model.put("portletTitle", prefs.getValue(WebKeys.PORTLET_PREF_TITLE, ""));
 		String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
+		if (Validator.isNull(displayType)) {
+			displayType = getDisplayType(request);
+			
+		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {
 		
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new BuildWsFolder());
@@ -141,7 +139,18 @@ public class EditController extends SAbstractController {
 		}
 		return null;
 	}
+	private String getDisplayType(PortletRequest request) {
+		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+		String pName = pConfig.getPortletName();
+		if (pName.contains(ViewController.FORUM_PORTLET))
+			return ViewController.FORUM_PORTLET;
+		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
+			return ViewController.WORKSPACE_PORTLET;
+		else if (pName.contains(ViewController.PRESENCE_PORTLET))
+			return ViewController.PRESENCE_PORTLET;
+		return null;
 
+	}
 	private static class BuildWsFolder implements DomTreeBuilder {
 		public Element setupDomElement(String type, Object source, Element element) {
 			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {

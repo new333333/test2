@@ -549,7 +549,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         checkAddEntryAllowed(destination);
         processor.moveEntry(folder, entry, destination);
     }
-    public void addSubscription(Long folderId, Long entryId) {
+    public void addSubscription(Long folderId, Long entryId, int style) {
     	//getEntry check read access
 		FolderEntry entry = getEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -557,9 +557,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		//digest doesn't make sense here - only individual messages are sent 
 		if (s == null) {
 			s = new Subscription(user.getId(), entry.getEntityIdentifier());
-			s.setStyle(Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+			s.setStyle(style);
 			getCoreDao().save(s);
-		} else 	s.setStyle(Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+		} else 	s.setStyle(style);
   	
     }
     public Subscription getSubscription(Long folderId, Long entryId) {
@@ -575,6 +575,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
 		if (s != null) getCoreDao().delete(s);
     }
+/* not needed
     public void modifySubscription(Long folderId, Long entryId, Map updates) {
 		FolderEntry entry = getEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -585,7 +586,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		}
     	ObjectBuilder.updateObject(s, updates);
     }
-	public List getCommunityTags(Long binderId, Long entryId) {
+*/
+    public List getCommunityTags(Long binderId, Long entryId) {
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
 		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());

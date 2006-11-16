@@ -118,13 +118,12 @@ public class ListFolderController extends  SAbstractController {
 			   	getProfileModule().setUserProperty(user.getId(), Long.valueOf(binderId), WebKeys.FOLDER_COLUMN_POSITIONS, "");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
-			int style = PortletRequestUtils.getIntParameter(request, "notifyType", Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
-			if (style == -1) getBinderModule().deleteSubscription(binderId);
-			else getBinderModule().addSubscription(binderId, style);
-
-		} else if (op.equals(WebKeys.OPERATION_UNSUBSCRIBE)) {
-			getBinderModule().deleteSubscription(binderId);
-		}
+			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
+			if (style != null) {
+				if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
+				else getBinderModule().addSubscription(binderId, style.intValue());
+			}
+		} 
 
 		response.setRenderParameters(request.getParameterMap());
 		
