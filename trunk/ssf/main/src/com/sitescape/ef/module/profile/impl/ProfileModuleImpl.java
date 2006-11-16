@@ -399,7 +399,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         if (Validator.isNotNull(definitionId))
         	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneName());
         else 
-        	definition = getDefinitionModule().createDefaultDefinition(Definition.WORKSPACE_VIEW);
+        	definition = getDefinitionModule().createDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
         //make sure still in a transaction when return.  ApplicationContext takes care of this.
         Workspace ws = (Workspace)processor.addBinder(binder, definition, Workspace.class, inputData, fileItems);
         entry.setWorkspaceId(ws.getId());

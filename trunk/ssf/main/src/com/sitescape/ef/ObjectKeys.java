@@ -24,9 +24,11 @@ public interface ObjectKeys {
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
 	public static final String ADMINISTRATOR_ROLE_ID="402883b90cc53079010cc539bf260009";
 	public static final String TEAM_MEMBER_ROLE_ID="402883b90cc53079010cc539bf26000a";
+	public static final String DEFAULT_USER_WORKSPACE_DEF="402883b90cc53079010cc539bf26000b";
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_FILE_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0003";
+	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
 
     public static final String BINDER="binder";
     public static final String CUSTOM_PROPERTY_PREFIX="custom.";

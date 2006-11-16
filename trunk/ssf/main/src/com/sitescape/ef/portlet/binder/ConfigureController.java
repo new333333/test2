@@ -94,7 +94,11 @@ public class ConfigureController extends AbstractBinderController {
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 			
 		if (binder.getEntityIdentifier().getEntityType().getValue() == EntityType.workspace.getValue()) {
-			DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
+			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			} else {
+				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			}
 		} else if (binder.getEntityIdentifier().getEntityType().getValue() == EntityType.profiles.getValue()) {
 			DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 			DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			

@@ -239,6 +239,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				internalId = ObjectKeys.DEFAULT_WORKSPACE_CONFIG;
 				break;
 			}
+			case Definition.USER_WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(BinderConfig.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (BinderConfig)result.get(0);
+				title = "__configuration_default_user_workspace";
+				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG;
+				break;
+			}
 			case Definition.FILE_FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(BinderConfig.class, 
 					new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_CONFIG, zoneName, Integer.valueOf(type)}));
@@ -264,6 +272,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		BinderConfig config = new BinderConfig();
 		switch (type) {
 			case Definition.WORKSPACE_VIEW: {
+				break;
+			}
+			case Definition.USER_WORKSPACE_VIEW: {
 				break;
 			}
 			case Definition.FOLDER_VIEW: {
