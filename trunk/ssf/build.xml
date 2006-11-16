@@ -45,7 +45,7 @@
 				<ant dir="liferay" target="full-deploy" inheritAll="false" />
 			</then>
 			<elseif>
-				<equals arg1="${portal.type}" arg2="jboss" />
+				<equals arg1="${portal.type}" arg2="jbossportal" />
 				<then>				
 					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
 				</then>
@@ -263,7 +263,7 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		<delete dir="${temp.dir}" />
 		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
 		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
-		<echo file="app.server.${user.name}.properties">portal.type=jboss
+		<echo file="app.server.${user.name}.properties">portal.type=jbossportal
 app.server.type=jboss-tomcat
 app.server.jbossportal.jboss-tomcat.dir=${temp.dir.path}
 		</echo>
