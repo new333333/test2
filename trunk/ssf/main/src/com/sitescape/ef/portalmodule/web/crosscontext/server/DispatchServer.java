@@ -1,8 +1,6 @@
 package com.sitescape.ef.portalmodule.web.crosscontext.server;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.GenericServlet;
@@ -26,8 +24,6 @@ import com.sitescape.ef.web.WebKeys;
 public class DispatchServer extends GenericServlet {
 
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
-	
-	private static Map sessionMap = Collections.synchronizedMap(new HashMap());
 	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
@@ -77,28 +73,7 @@ public class DispatchServer extends GenericServlet {
 			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
 			ses.setAttribute(WebKeys.USER_NAME, userName);
 		
-			sessionMap.put(portalSessionId, ses);	
 			logger.debug("The session with id = [" + ses.getId() + "] is associated with portal key = [" + portalSessionId + "]");
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_DESTROY_SESSION)) {
-			HttpServletRequest request = (HttpServletRequest) req;
-			
-			String portalSessionId = req.getParameter(CrossContextConstants.PORTAL_SESSION_ID);
-			
-			HttpSession ses = (HttpSession) sessionMap.remove(portalSessionId);
-			
-			if(ses != null) {
-				ses.invalidate();
-				logger.debug("The session with id = [" + ses.getId() + "] and portal key = [" + portalSessionId + "] is invalidated.");
-			}
-			else {
-				String errorMessage = "Cannot find the session to destroy with portal key = [" + portalSessionId + "]";
-				// Log the error message here. Once the control returns to the other
-				// side of the context (i.e., back to the portal), then we don't
-				// have access to our own log facility. 
-				logger.error(errorMessage);
-				throw new ServletException(errorMessage);
-			}
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");

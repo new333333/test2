@@ -22,5 +22,4 @@ public abstract class CrossContextConstants {
 	// Operation names
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
 	public static final String OPERATION_CREATE_SESSION = "createSession";
-	public static final String OPERATION_DESTROY_SESSION = "destroySession";
 }
