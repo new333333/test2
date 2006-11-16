@@ -13,9 +13,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.ef.domain.DefinableEntity;
 /**
-* Handle file field in mail notification.  This implememtation will
-* send the file name only in a notification 
-* See <code>NotifyBuilderFileSend</code>to send the actual file.
+* Handle file field in mail notification.
 * @author Janet McCann
 */
 public class NotifyBuilderFile extends AbstractNotifyBuilder {
@@ -28,7 +26,9 @@ public class NotifyBuilderFile extends AbstractNotifyBuilder {
 		    	FileAttachment att = (FileAttachment)iter.next();
 		    	if (att != null && att.getFileItem() != null) {
 		    		value.setText(att.getFileItem().getName());
-		    		if (entry instanceof FolderEntry) {
+		    		if (notifyDef.isAttachmentsIncluded())	
+		    			notifyDef.addAttachment(att);
+		    		else if (entry instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entry;
 		    		
 		    			String webUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +

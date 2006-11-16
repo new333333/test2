@@ -29,7 +29,10 @@ public interface ObjectKeys {
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_FILE_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0003";
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
-
+	public static final String PROFILE_ROOT_ID="402883b90d0de1f3010d0df5582b0005";
+	public static final String ALL_USERS_GROUP_ID="402883b90d0de1f3010d0df5582b0006";
+	public static final String TOP_WORKSPACE_ID="402883b90d0de1f3010d0df5582b0007";
+	
     public static final String BINDER="binder";
     public static final String CUSTOM_PROPERTY_PREFIX="custom.";
     public static final String SEARCH_ENTRIES="search_entries";

@@ -20,7 +20,7 @@ public interface FunctionManager {
     public Function getFunction(String zoneName, Long id) throws NoObjectByTheIdException;
     public Function getReservedFunction(String zoneName, String id)  throws NoObjectByTheIdException;
   
-    public List getFunctions(String zoneName);
+    public List findFunctions(String zoneName);
     
-    public List getFunctions(String zoneName, WorkAreaOperation workAreaOperation);
+    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation);
 }

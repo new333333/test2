@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Collection;
+import java.util.HashMap;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.InvalidArgumentException;
@@ -26,10 +28,12 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EmailAlias;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
@@ -114,12 +118,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     /**
      * Set the notification definition for a folder.  
      * @param id
-     * @param definition - Use map to set NotifcationDef field
-     * Distribution list is built 
-     * by this method based on the Set of userIds passed in.
-     * @throws NoPrincipalByTheIdException
+     * @param updates
+     * @param principals - if null, don't change list.
      */
-    public void modifyNotification(Long id, Map updates) 
+      public void modifyNotification(Long id, Map updates, Collection principals) 
     {
         Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneName()); 
         checkBinderAdmin(binder); 
@@ -129,6 +131,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		binder.setNotificationDef(current);
     	}
     	ObjectBuilder.updateObject(current, updates);
+    	if (principals == null) return;
+  		//	Pre-load for performance
+    	List notifyUsers = new ArrayList();
+    	getProfileDao().loadPrincipals(principals, binder.getZoneName());
+   		for (Iterator iter=principals.iterator(); iter.hasNext();) {
+   			//	make sure user exists and is in this zone
+   			Principal p = getProfileDao().loadPrincipal((Long)iter.next(),binder.getZoneName());
+   			notifyUsers.add(p);   			
+   		}
+
+   		current.setDistribution(notifyUsers);
     }
     public List getEmailAliases() {
     	return coreDao.loadEmailAliases(RequestContextHolder.getRequestContext().getZoneName());
@@ -325,7 +338,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		String zoneName  = RequestContextHolder.getRequestContext().getZoneName();
 		function.setZoneName(zoneName);
 		
-		List zoneFunctions = functionManager.getFunctions(zoneName);
+		List zoneFunctions = functionManager.findFunctions(zoneName);
 		if (zoneFunctions.contains(function)) {
 			//Role already exists
 			throw new FunctionExistsException(function.getName());
@@ -345,7 +358,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
    public List getFunctions() {
 		checkSiteAdmin();			
-        return  functionManager.getFunctions(RequestContextHolder.getRequestContext().getZoneName());
+        return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneName());
     }
     
 	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
@@ -431,15 +444,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	workArea.setFunctionMembershipInherited(inherit);
     } 
 	//return binders this user is a team_member of
-	public List getTeamMemberships(Long id) {
+	public List getTeamMemberships(Long userId) {
 		//team membership is implemented by a reserved role
         User current = RequestContextHolder.getRequestContext().getUser();
         
         User user;
-        if ((id == null) || current.getId().equals(id)) user = current;
-        else user = getProfileDao().loadUser(id, current.getZoneName());
+        if ((userId == null) || current.getId().equals(userId)) user = current;
+        else user = getProfileDao().loadUser(userId, current.getZoneName());
         Function function = getFunctionManager().getReservedFunction(user.getZoneName(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
-		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), user.computePrincipalIds(), function.getId());
+		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(user.getZoneName(), getProfileDao().getPrincipalIds(user), function.getId());
 	    Set ids = new HashSet();
 	    for (WorkAreaFunctionMembership w: wfm) {
 	    	ids.add(w.getWorkAreaId());
@@ -474,14 +487,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			Workspace top = new Workspace();
 			top.setName(name);
 			top.setZoneName(name);
-			top.setTitle(name + " " + NLT.get("administration.initial.workspace.title"));
+			top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {name}, name));
 			top.setPathName("/"+top.getTitle());
+			top.setInternalId(ObjectKeys.TOP_WORKSPACE_ID);
 			getDefinitionModule().setDefaultBinderDefinition(top);
 					
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
-			profiles.setTitle(NLT.get("administration.initial.profile.title"));
+			profiles.setTitle(NLT.get("administration.initial.profile.title", "Users and Groups"));
 			profiles.setZoneName(name);
+			profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
 			getDefinitionModule().setDefaultBinderDefinition(profiles);
 			top.addBinder(profiles);
 			
@@ -491,11 +506,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			//build user
 			User user = new User();
 			user.setName(adminName);
+			user.setLastName(adminName);
+			user.setForeignName(adminName);
 			user.setZoneName(name);
 			user.setParentBinder(profiles);
 			getDefinitionModule().setDefaultEntryDefinition(user);
 			getCoreDao().save(user);
 			
+
 			//indexing needs the user
 			RequestContextHolder.getRequestContext().setUser(user);
 
@@ -507,8 +525,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			profiles.setModification(stamp);
 			user.setCreation(stamp);
 			user.setModification(stamp);
+			Group group = addAllUserGroup(profiles, stamp);
 			
 			addAdminRole(name, top, user);
+			addVisitorsRole(name, top, group);
 			addTeamRole(name, top, user);
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(top);
@@ -523,10 +543,25 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 
 	}
+	private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
+		//build allUsers group
+		Group group = new Group();
+		group.setName("allUsers");
+		group.setForeignName(group.getName());
+		group.setTitle(NLT.get("administration.initial.group.alluser.title", group.getName()));
+		group.setZoneName(parent.getZoneName());
+		group.setParentBinder(parent);
+		group.setInternalId(ObjectKeys.ALL_USERS_GROUP_ID);
+		getDefinitionModule().setDefaultEntryDefinition(group);
+		getCoreDao().save(group);
+		group.setCreation(stamp);
+		group.setModification(stamp);
+		return group;
+	}
 	private void addAdminRole(String zoneName, WorkArea workArea, User user) {
 		Function function = new Function();
 		function.setZoneName(zoneName);
-		function.setName(NLT.get("administration.initial.function.admin"));
+		function.setName(NLT.get("administration.initial.function.admin", "Administrators"));
 		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation(((WorkAreaOperation)iter.next()));
 		}	
@@ -545,17 +580,36 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		getCoreDao().save(ms);
 		
 	}
+	private void addVisitorsRole(String zoneName, WorkArea workArea, Group group) {
+		Function function = new Function();
+		function.setZoneName(zoneName);
+		function.setName(NLT.get("administration.initial.function.visitors", "Visitors"));
+
+		function.addOperation(WorkAreaOperation.READ_ENTRIES);
+		
+		//generate functionId
+		getFunctionManager().addFunction(function);
+		
+		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
+		ms.setWorkAreaId(workArea.getWorkAreaId());
+		ms.setWorkAreaType(workArea.getWorkAreaType());
+		ms.setZoneName(zoneName);
+		ms.setFunctionId(function.getId());
+		Set members = new HashSet();
+		members.add(group.getId());
+		ms.setMemberIds(members);
+		getCoreDao().save(ms);				
+	}
 	private void addTeamRole(String zoneName, WorkArea workArea, User user) {
 		Function function = new Function();
 		function.setZoneName(zoneName);
-		function.setName(NLT.get("administration.initial.function.team_member"));
+		function.setName(NLT.get("administration.initial.function.team_member", "Team Members"));
 		function.setInternalId(ObjectKeys.TEAM_MEMBER_ROLE_ID);
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -577,5 +631,26 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	private void checkBinderAdmin(Binder binder) {
 		getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	       		
+	}
+	public void setZone() {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		Map params = new HashMap();
+		params.put("zoneName", zoneName);
+		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and zoneName=:zoneName", params);
+		//has to exist
+		Binder ws = (Binder)result.get(0);
+		if (!ws.isReserved()) ws.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_DEF);
+		if (ws.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(ws);
+		params.put("name", "_profiles");
+		result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where name=:name and zoneName=:zoneName", params);
+		ProfileBinder profiles = (ProfileBinder)result.get(0);
+		if (!profiles.isReserved()) profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
+		if (profiles.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(profiles);
+		try {
+			Group g = getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, zoneName);
+		} catch (com.sitescape.ef.domain.NoGroupByTheNameException ng) {
+			addAllUserGroup(profiles, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		}
+
 	}
 }

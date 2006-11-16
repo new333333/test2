@@ -22,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
@@ -52,6 +53,7 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.util.Validator;
 
 
@@ -76,9 +78,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
-	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+    /**
+     * Setup by spring
+     * @param transactionTemplate
+     */
+    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
 		this.transactionTemplate = transactionTemplate;
 	}
+    
 	private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
@@ -429,6 +436,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, principalId);
         checkDeleteEntryAllowed(entry);
+       	if (entry.isReserved()) 
+    		throw new NotSupportedException(NLT.get("errorcode.group.reserved", new Object[]{entry.getName()}));
         processor.deleteEntry(binder, entry);    	
     }
  
@@ -452,20 +461,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new UserComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet<User>(c);
-		for (Iterator iter=entryIds.iterator(); iter.hasNext();) {
-			try {
-				// assuming users are cached
-				result.add(getProfileDao().loadUser((Long)iter.next(), user.getZoneName()));
-			} catch (NoUserByTheIdException ex) {
-			} catch (AccessControlException ax) {
-			}
-			
-		}
-		return result;
+       	result.addAll(getProfileDao().loadUsers(entryIds, user.getZoneName()));
+ 		return result;
 	}
    
 	public Collection getUsersFromPrincipals(Set principalIds) {
-		Set ids = getProfileDao().explodeGroups(principalIds);
+		Set ids = getProfileDao().explodeGroups(principalIds, RequestContextHolder.getRequestContext().getZoneName());
 		return getUsers(ids);
 	}
 	public Visits getVisit(EntityIdentifier entityId) {

@@ -10,6 +10,7 @@ import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclSet;
 import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.util.Validator;
 
 /**
  * This object represents a container.
@@ -42,6 +43,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected boolean functionMembershipInherited = true;
     protected PersistentAclSet aclSet; 
     protected boolean inheritAclFromParent = true;
+    private String iId;
     // these bits signify whether entries of a binder can allow wider access
     // than the binder's .  This does not apply to sub-binders.
     protected boolean widenRead=false;
@@ -56,6 +58,21 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public void setZoneName(String zoneName) {
     	this.zoneName = zoneName;
+    }
+    /**
+     * Internal id used to identify default binders.  This id plus
+     * the zoneName are used to locate default binders.  If we just used the primary key id
+     * the zones would need the same default and that may not be desirable.
+     * @hibernate.property length="32"
+     */
+    public String getInternalId() {
+    	return this.iId;
+    }
+    public void setInternalId(String iId) {
+    	this.iId = iId;
+    }
+    public boolean isReserved() {
+    	return Validator.isNotNull(iId);
     }
     /**
      * @hibernate.property length="1024" 

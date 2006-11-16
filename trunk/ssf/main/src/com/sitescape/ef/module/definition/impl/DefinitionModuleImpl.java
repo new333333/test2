@@ -1405,7 +1405,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                             } else {
                                	captionValue = (String) notifyArgs.get("caption");
                             }
-                            notifyArgs.put("_caption", NLT.getDef(captionValue));
+                          
+                            notifyArgs.put("_caption", NLT.getDef(captionValue, notifyDef.getLocale()));
                             notifyArgs.put("_itemName", itemName);
                             NotifyBuilderUtil.buildElement(element, notifyDef, entry,
                                             nameValue, fieldBuilder, notifyArgs);

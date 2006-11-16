@@ -250,7 +250,6 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		if (parent == null) parent = entry;
 		List subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
 		if (subscriptions.isEmpty()) return;
-		Map digestResults = processor.buildDistributionList(entry, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email with attachments
 		Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
@@ -261,9 +260,6 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setEntry(entry);
-		mHelper.setType(Notify.SUMMARY);
-		mHelper.setSendAttachments(false);
-		doSubscription (folder, mailSender, mHelper, digestResults);
 
 		mHelper.setType(Notify.FULL);
 		mHelper.setSendAttachments(false);
@@ -306,8 +302,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			return until;
 		}
  		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
-
-		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
+		List digestResults = processor.buildDistributionList(folder, entries, subscriptions);
 		// Users wanting individual, message style email with attachments
 		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
@@ -455,6 +450,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			//make sure nothing saved yet
 			Notify notify = new Notify();
 			notify.setType(messageType);
+			notify.setAttachmentsIncluded(sendAttachments);
 			notify.setStartDate(startDate);
 			notify.setLocale(locale);
 			notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
@@ -481,7 +477,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
 			else
 				result = processor.buildNotificationMessage(folder, entries, notify);
-			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
+//currently not implemented 			
+//			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
+			helper.setText((String)result.get(FolderEmailFormatter.HTML),true);
 			if (sendAttachments) {
 				Set atts = notify.getAttachments();
 				for (Iterator iter=atts.iterator(); iter.hasNext();) {

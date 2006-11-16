@@ -5,20 +5,21 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletConfig;
+import javax.portlet.PortletPreferences;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.portlet.forum.ViewController;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-
 /**
  * @author Peter Hurley
  *
@@ -29,11 +30,29 @@ public class ModifyDashboardController extends SAbstractController {
 
 		Map formData = request.getParameterMap();
 		response.setRenderParameters(formData);		
-		String dashboardId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
-		DashboardPortlet dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);
+		String scope = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, DashboardHelper.Portlet);
+		DashboardPortlet dashboard;
+		
+		try {
+			String dashboardId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
+			dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);			
+		} catch (Exception ex) {
+			//need to set preferences in an action. The id is not included the during initial setup
+			PortletPreferences prefs = request.getPreferences();
+			String dashboardId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+			if (dashboardId == null) {
+				PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
+				dashboard = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
+				prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, dashboard.getId());
+				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, ViewController.DASHBOARD_PORTLET);
+				prefs.store();
+			} else {
+				dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);			
+			}
+			response.setRenderParameter(WebKeys.URL_DASHBOARD_ID, dashboard.getId());
+		} 
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
 		String operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
-		String scope = DashboardHelper.Portlet;
 
 		if (formData.containsKey("add_wideTop")) {
 			componentId = DashboardHelper.addComponent(request, dashboard, DashboardHelper.Wide_Top, scope);

@@ -5,9 +5,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
@@ -23,10 +24,10 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 
-
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
 	protected AccessControlManager accessControlManager;
+	protected ProfileDao profileDao;
 	public AccessUtils() {
 		if(instance != null)
 			throw new SingletonViolationException(AccessUtils.class);
@@ -44,6 +45,12 @@ public class AccessUtils  {
 	}
 	protected static AccessControlManager getAccessManager() {
 		return getInstance().accessControlManager;
+	}
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
 	}
 
     public static Set getReadAclIds(Entry entry) {
@@ -222,7 +229,7 @@ public class AccessUtils  {
        	 if (binder.isWidenModify()) return;
        	 //make sure acl list is sub-set of binder access
        	 User user = RequestContextHolder.getRequestContext().getUser();
-       	 Set principalIds = user.computePrincipalIds();
+       	 Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
        	 Set memberIds = acl.getPrincipals();
          for (Iterator i = principalIds.iterator(); i.hasNext();) {
              if(memberIds.contains(i.next()))

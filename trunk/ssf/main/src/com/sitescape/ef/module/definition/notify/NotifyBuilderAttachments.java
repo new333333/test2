@@ -10,7 +10,6 @@ import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
-import com.sitescape.util.Validator;
 
 /**
 * Handle unnamed attachments in mail notification.  This implememtation will
@@ -22,12 +21,14 @@ public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
 
 	   protected boolean build(Element element, Notify notifyDef, DefinableEntity entity, String dataElemName, Map args) {
 	    	List atts = entity.getFileAttachments();
-    		for (int i=0; i<atts.size(); ++i) {
+   		for (int i=0; i<atts.size(); ++i) {
 		    	Element value = element.addElement("file");		    		
 		    	FileAttachment att = (FileAttachment)atts.get(i);
-		    	if (att != null && Validator.isNull(att.getName()) && att.getFileItem() != null) {
+		    	if (att != null && att.getFileItem() != null) {
 		    		value.setText(att.getFileItem().getName());
-		    		if (entity instanceof FolderEntry) {
+		    		if (notifyDef.isAttachmentsIncluded())	
+		    			notifyDef.addAttachment(att);
+		    		else if (entity instanceof FolderEntry) {
 		    			FolderEntry fEntry = (FolderEntry)entity;
 		    		
 		    			String webUrl = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
@@ -37,7 +38,7 @@ public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
 		    			value.addAttribute("href", webUrl);
 		    		}
 		    	}
-    		}
+   		}
 	    	return true;
 	   }
 }

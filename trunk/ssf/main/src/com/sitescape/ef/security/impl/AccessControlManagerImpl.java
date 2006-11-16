@@ -13,6 +13,7 @@ import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.FunctionAccessControlException;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
@@ -20,6 +21,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
 
 /**
@@ -30,7 +32,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     private FunctionManager functionManager;
     private WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
-    
+    private ProfileDao profileDao;
     public FunctionManager getFunctionManager() {
         return functionManager;
     }
@@ -44,6 +46,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
             WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
         this.workAreaFunctionMembershipManager = workAreaFunctionMembershipManager;
     }
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
     public List getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
         if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
@@ -55,7 +63,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         else {
 	        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
 	        //Get list of functions that allow the operation
-	        List functions = getFunctionManager().getFunctions(zoneName, workAreaOperation);
+	        List functions = getFunctionManager().findFunctions(zoneName, workAreaOperation);
 	        //get all function memberships for this workarea
 	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneName, workArea);
 	        //build list of users by merging  
@@ -116,7 +124,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			else
 				return testOperation(user, parentWorkArea, workAreaOperation);
 		} else {
-			Set membersToLookup = user.computePrincipalIds();
+			Set membersToLookup = getProfileDao().getPrincipalIds(user);
 
 			return getWorkAreaFunctionMembershipManager()
 					.checkWorkAreaFunctionMembership(user.getZoneName(),
@@ -138,8 +146,41 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.getWorkAreaId());
     }
-        
-    public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
+	public void checkFunction(WorkArea workArea, Function function) 
+		throws AccessControlException {
+		checkFunction(RequestContextHolder.getRequestContext().getUser(),
+				workArea, function);
+	}
+	public void checkFunction(User user, WorkArea workArea, Function function) 
+    	throws AccessControlException {
+        if (!testFunction(user, workArea, function))
+        	throw new FunctionAccessControlException(user.getName(), 
+        			function.toString(), workArea.getWorkAreaId());
+    }
+         
+	public boolean testFunction(WorkArea workArea, Function function) {
+		return testFunction(RequestContextHolder.getRequestContext().getUser(),
+				workArea, function);
+	}
+	public boolean testFunction(User user,
+			WorkArea workArea, Function function) {
+		if (workArea.isFunctionMembershipInherited()) {
+			WorkArea parentWorkArea = workArea.getParentWorkArea();
+			if (parentWorkArea == null)
+				throw new InternalException(
+						"Cannot inherit function membership when it has no parent");
+			else
+				return testFunction(user, parentWorkArea, function);
+		} else {
+			Set membersToLookup = getProfileDao().getPrincipalIds(user);
+
+			return getWorkAreaFunctionMembershipManager()
+					.checkWorkAreaFunctionMembership(user.getZoneName(),
+							workArea, function.getId(), membersToLookup);
+		}
+
+	}
+	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
         checkAcl
         	(RequestContextHolder.getRequestContext().getUser(), parent,
         	        aclControlledObj, accessType);
@@ -220,7 +261,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
            	}
             	
            	// We have to check against the explicit set associated with this object.
-           	Set principalIds = user.computePrincipalIds();
+           	Set principalIds = getProfileDao().getPrincipalIds(user);
            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
            	return intersectedSets(principalIds, memberIds);
         }        

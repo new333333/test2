@@ -76,7 +76,7 @@ import com.sitescape.util.Validator;
  */
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
-	protected String [] principalAttrs = new String[]{"name", "id", "disabled", "reserved", "foreignName"};
+	protected String [] principalAttrs = new String[]{"name", "id", "disabled", "internalId", "foreignName"};
 	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
@@ -336,7 +336,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		Object [] row;
 		for (Iterator iter=rows.iterator(); iter.hasNext();) {
 			row = (Object[])iter.next();
-			if ((Boolean)row[3] == Boolean.TRUE) {
+			if (Validator.isNotNull((String)row[3])) {
 				reservedIds.add(row[1]);
 			}
 		}
@@ -365,7 +365,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			ssName = (String)row[0];
 			ssUsers.put(ssName, row);
 			//initialize all users as not found unless already disabled or reserved
-			if (((Boolean)row[2] == Boolean.FALSE) && ((Boolean)row[3] == Boolean.FALSE)) {
+			if (((Boolean)row[2] == Boolean.FALSE) && (Validator.isNull((String)row[3]))) {
 				notInLdap.put(ssName, row[1]);
 			}
 		}
@@ -489,7 +489,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				dnGroups.put(row[4], row);
 			}
 			//initialize all groups as not found unless already disabled or reserved
-			if (((Boolean)row[2] == Boolean.FALSE) && ((Boolean)row[3] == Boolean.FALSE)) {
+			if (((Boolean)row[2] == Boolean.FALSE) && (Validator.isNull((String)row[3]))) {
 				notInLdap.put(ssName, row[1]);
 			}
 		}	
@@ -777,7 +777,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }
     protected void updateMembership(Long groupId, Collection newMembers, final Collection reservedIds) {
 		//have a list of users, now compare with what exists already
-		List oldMembers = getProfileDao().getMembership(groupId);
+		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneName());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
 		final Set remM = CollectionUtil.differences(oldMembers, newMembers);
 

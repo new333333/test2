@@ -15,6 +15,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
@@ -29,6 +30,7 @@ import com.sitescape.ef.util.NLT;
 public class RssGenerator extends CommonDependencyInjection {
 
 	protected Log logger = LogFactory.getLog(getClass());
+	protected ProfileDao profileDao;
 	
 	private String rssRootDir;
 	
@@ -43,6 +45,12 @@ public class RssGenerator extends CommonDependencyInjection {
 			this.rssRootDir = rssRootDir + Constants.SLASH;
 	}
 
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
 	public void generateRssFeed(Binder binder) {
 		
 		// See if the feed already exists
@@ -148,7 +156,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
 
 		// get the current users acl set
-		Set userAclSet = user.computePrincipalIds();
+		Set userAclSet = getProfileDao().getPrincipalIds(user);
 		// Walk thru the nodes with ACL's and find the ones this
 		// user has read access to, and delete the rest.
 		for (Iterator i = aclNodes.iterator(); i.hasNext();) {

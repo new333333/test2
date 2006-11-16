@@ -2,6 +2,7 @@ package com.sitescape.ef.security.function;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Iterator;
 
 import com.sitescape.ef.security.dao.SecurityDao;
 
@@ -44,11 +45,12 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         return getSecurityDao().findWorkAreaFunctionMemberships
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
-
+    //Find workareas using a specific function.
     public List findWorkAreaFunctionMemberships(String zoneName, Long functionId) {
         return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId);
     }
-
+    //Find workareas assigning this user to a specific function.  Used to implement
+    //what workspaces am I a team member of.
     public List findWorkAreaFunctionMemberships(String zoneName, Set membersToLookup, Long functionId) {
         return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId, membersToLookup);
     }
@@ -85,5 +87,17 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
-
+    //see if user is a member of a role - don't care about rights given to role
+    //Used to implement am I a member of this team?
+    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+            Long functionId, Set membersToLookup) {
+        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(zoneName, workArea, functionId);
+        if (wfm == null) return false;
+        Set<Long> ids = wfm.getMemberIds();
+        for (Iterator iter=membersToLookup.iterator(); iter.hasNext();) {
+        	Long id = (Long)iter.next();
+        	if (ids.contains(id)) return true;
+        }
+        return false;
+    }
 }

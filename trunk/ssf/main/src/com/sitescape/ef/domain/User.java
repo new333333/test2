@@ -351,11 +351,12 @@ public class User extends Principal {
      * 
      * @return
      */
-    public Set computePrincipalIds() {
+    public Set computePrincipalIds(Long reservedGroupId) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
     	if(principalIds == null) {
     		Set ids = new HashSet();
+    		ids.add(reservedGroupId);
     		addPrincipalIds(this, ids);
     		principalIds = ids;
     	}
@@ -385,6 +386,7 @@ public class User extends Principal {
     	if(groupNames == null) {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
+    		names.add("allUsers");
     		groupNames = names;
     	}
     	return groupNames;

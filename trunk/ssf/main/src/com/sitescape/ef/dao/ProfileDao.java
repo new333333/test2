@@ -98,9 +98,11 @@ public interface ProfileDao {
     public int countGroups(FilterControls filter, String zoneName);
     public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException; 
     public List loadGroups(FilterControls filter, String zoneName) throws DataAccessException; 
- 	public Set explodeGroups(Set ids); 
-	public List getMembership(Long groupId);
-	public Set getAllGroupMembership(Long principalId);
+ 	public Set explodeGroups(Set ids, String zoneName); 
+	public List getMembership(Long groupId, String zoneName);
+	public Set getAllGroupMembership(Long principalId, String zoneName);
+	public Set getPrincipalIds(User user);
+	public Group getReservedGroup(String internalId, String zoneName);		   
 
     public SeenMap loadSeenMap(Long userId);
 	public Visits loadVisit(Long userId, EntityIdentifier entityId);

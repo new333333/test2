@@ -44,4 +44,14 @@ public interface WorkAreaFunctionMembershipManager {
      */
     public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
-}
+    /**
+     * Check any membersToLookup id is assigned to a function for a specific workarea
+     * @param zoneName
+     * @param workArea
+     * @param function
+     * @param membersToLookup
+     * @return
+     */
+    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+    		Long functionId, Set membersToLookup);
+ }

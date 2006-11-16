@@ -40,11 +40,14 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+			Set userList = new HashSet();
+			if (formData.containsKey("users")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
+			if (formData.containsKey("groups")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			getScheduleData(request, config);
 			getAdminModule().setNotificationConfig(folderId, config);
 			
-			getAdminModule().modifyNotification(folderId, getNotifyData(request));
+			getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
@@ -62,12 +65,24 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			Map model = new HashMap();
 			Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 			Folder folder = getFolderModule().getFolder(folderId);
-			model.put(WebKeys.FOLDER, folder);
+			model.put(WebKeys.BINDER, folder);
 
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			NotificationDef notify = folder.getNotificationDef();
 			model.put(WebKeys.NOTIFICATION, notify); 
+			List defaultDistribution = folder.getNotificationDef().getDistribution();
+			Set gList = new HashSet();
+			Set uList = new HashSet();
+			for (int i=0; i<defaultDistribution.size(); ++i) {
+				Principal id = ((Principal)defaultDistribution.get(i));
+				if (id.getEntityIdentifier().getEntityType().name().equals(EntityType.group.name()))
+						 gList.add(id); 
+				else uList.add(id);
+			}
+		
+			model.put(WebKeys.USERS, uList);
+			model.put(WebKeys.GROUPS, gList);
 		
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_NOTIFICATION, model);		
 			
@@ -84,11 +99,12 @@ public class ConfigureNotifyController extends  SAbstractController  {
 		
 		String val = PortletRequestUtils.getStringParameter(request, "emailAddress", "");
 		input.put("emailAddress", StringUtil.split(val, "\n"));
+		input.put("teamOn", PortletRequestUtils.getBooleanParameter(request,  "teamOn", false));
 		return input;
 		
 	}
 	private void getScheduleData(PortletRequest request, ScheduleInfo config) {
-		config.setEnabled(!PortletRequestUtils.getBooleanParameter(request,  "disabled", false));
+		config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
 		config.setSchedule(ScheduleHelper.getSchedule(request));
 
 	}

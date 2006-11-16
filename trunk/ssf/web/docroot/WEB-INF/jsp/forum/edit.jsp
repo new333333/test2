@@ -20,7 +20,7 @@
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0">
-<tr><th align="left"><ssf:nlt tag="portlet.forum.selectd.forums" text="Currently selected forums:"/></th></tr>
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums" text="Currently selected forums:"/></th></tr>
 <tr><td>&nbsp;</td></tr>
 <c:forEach var="folder" items="${ssFolderList}">
 <tr><td><c:out value="${folder.title}" /></td></tr>

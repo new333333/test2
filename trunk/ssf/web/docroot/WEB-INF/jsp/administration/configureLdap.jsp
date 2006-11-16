@@ -70,7 +70,7 @@
 	  	<input type="text" name="userIdMapping" size="50" value="${ssLdapConfig.userIdMapping}"/>
 	 	</td></tr>
 		<tr><td>
-		<span class="ss_labelAbove ss_normal"><ssf:nlt tag="ldap.user.mappings"/></span><br/>
+		<span class="ss_labelAbove ss_normal"><ssf:nlt tag="ldap.user.mappings"/></span>
 	  	<c:set var="mappings" value="${ssLdapConfig.userMappings}"/>
 <jsp:useBean id="mappings" type="java.util.Map" scope="page" />
 	  	<%
@@ -79,7 +79,6 @@
 				java.util.Map.Entry me = (java.util.Map.Entry)iter.next();
 				buf.append(me.getValue() + "=" + me.getKey() + "\n");
 	  		}
-	  		buf.toString();
 	  	%>
 	  	<textarea name="userMappings" style="height: 100px; width: 500px;" wrap="hard"><%=buf.toString()%></textarea>
 		</td></tr>

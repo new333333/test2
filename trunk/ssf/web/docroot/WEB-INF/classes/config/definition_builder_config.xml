@@ -651,7 +651,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderAttachmentsSend" />
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
 	
 	<item name="file" caption="__file_upload" type="data" category="commonEntryData">
@@ -675,7 +675,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	
 	<item name="date" caption="__date" type="data" category="commonEntryData">
@@ -1843,7 +1843,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_entry_title_form.jsp" />
 		</jsps>
-		<notify summary="true" full="true" 
+		<notify summary="false" full="true" 
 			notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	

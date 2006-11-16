@@ -494,7 +494,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     	
     	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder();
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(qTree);
     	
     	System.out.println("Query is: " + so.getQueryString());

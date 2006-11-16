@@ -6,17 +6,17 @@
  */
 package com.sitescape.ef.module.admin;
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.domain.BinderConfig;
-import com.sitescape.ef.domain.User;
 /**
  * @author Janet McCann
  *
@@ -25,13 +25,15 @@ import com.sitescape.ef.domain.User;
  */
 public interface AdminModule {
 	public void addZone(String zoneName);
+	//TODO: temporary
+	public void setZone();
 
 	public void addFunction(Function function);
     public void modifyFunction(Long functionId, Map updates);
     public void deleteFunction(Long functionId);
     public List getFunctions();
 
-    public void modifyNotification(Long binderId, Map updates); 
+    public void modifyNotification(Long binderId, Map updates, Collection principals); 
     public void setEnableNotification(Long binderId, boolean enable);
     public ScheduleInfo getNotificationConfig(Long binderId);
     public void setNotificationConfig(Long binderId, ScheduleInfo config);

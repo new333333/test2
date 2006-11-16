@@ -118,22 +118,12 @@ public class EditController extends SAbstractController {
 		} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
+			Set<Long> groupIds = new HashSet<Long>();
 			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
-			userIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+			groupIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getPreferences().getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
 
-			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(userIds));
-			//Build the jsp bean (sorted by folder title)
-//			List<Long> userIds = new ArrayList<Long>();
-//			for (int i = 0; i < uIds.length; i++) {
-//				userIds.add(new Long(uIds[i]));
-//			}
-//			List<Long> groupIds = new ArrayList<Long>();
-//			for (int i = 0; i < gIds.length; i++) {
-//				groupIds.add(new Long(gIds[i]));
-//			}
-//			model.put(WebKeys.USERS, getProfileModule().getUsers(userIds));
-//			model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));
-			
+			model.put(WebKeys.USERS, getProfileModule().getUsers(userIds));
+			model.put(WebKeys.GROUPS, getProfileModule().getGroups(groupIds));			
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
 		} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				

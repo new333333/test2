@@ -1,30 +1,20 @@
 package com.sitescape.ef.search;
 
+import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Set;
 
-import org.dom4j.Element;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.dom4j.Node;
-import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
-import org.apache.lucene.search.*;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
-
-import java.net.URL;
 
 public class QueryBuilder {
 	
@@ -60,7 +50,12 @@ public class QueryBuilder {
 	public static final String TAG_ELEMENT = "TAG";
 	
 	private static final long DAYMILLIS = 1000 * 60 * 60 * 24;
+    private Set principalIds;
     
+    private QueryBuilder() {}
+    public QueryBuilder(Set principalIds) {
+    	this.principalIds = principalIds;
+    }
 	public SearchObject buildQuery(Document domQuery) {
 		SearchObject so = new SearchObject();
 		
@@ -159,7 +154,6 @@ public class QueryBuilder {
 			else if (operator.equals(USERACL_ELEMENT)) {
 				//Always check for aclreaddef
 				User user = RequestContextHolder.getRequestContext().getUser();
-				Set principalIds = user.computePrincipalIds();
 				qString += "(";
 				qString += " " + BasicIndexUtils.READ_DEF_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL + " ";
 				for(Iterator i = principalIds.iterator(); i.hasNext();) {
@@ -254,7 +248,6 @@ public class QueryBuilder {
 		String ptagString = "";	
 		//Always check for aclreaddef
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Set principalIds = user.computePrincipalIds();
 		
 		List children = element.elements();
 		int kidCount = children.size();
