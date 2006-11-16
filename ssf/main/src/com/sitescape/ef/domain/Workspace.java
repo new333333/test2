@@ -85,6 +85,9 @@ public class Workspace extends Binder  {
     }
     public List getEntryDefinitions() {return new ArrayList();}
     public List getViewDefinitions() {
-    	return getDefs(Definition.WORKSPACE_VIEW);
+    	if (definitionType != null) 
+    		return getDefs(definitionType);
+    	else
+    		return getDefs(Definition.WORKSPACE_VIEW);
     }
 }

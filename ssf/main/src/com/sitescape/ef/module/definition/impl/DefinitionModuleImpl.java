@@ -405,6 +405,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				break;				
 			}
 			
+			case Definition.USER_WORKSPACE_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, zoneName, Integer.valueOf(type)}));
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_user_workspace";
+				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_DEF;
+				definitionName="User workspace";
+				break;				
+			}
+			
 			case Definition.PROFILE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, zoneName, Integer.valueOf(type)}));
@@ -484,7 +494,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//Create an empty binder definition
 		int definitionType;
 		if (binder instanceof Workspace) {			
-			definitionType = Definition.WORKSPACE_VIEW;
+			if ((binder.getDefinitionType() != null) &&
+					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+				definitionType = Definition.USER_WORKSPACE_VIEW;
+			} else {
+				definitionType = Definition.WORKSPACE_VIEW;
+			}
 		} else if (binder instanceof ProfileBinder) {
 			definitionType = Definition.PROFILE_VIEW;
 		} else {

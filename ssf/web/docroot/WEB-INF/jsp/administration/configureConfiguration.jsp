@@ -44,6 +44,8 @@ function <portlet:namespace/>_onsub(obj) {
 	<br/>
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace" 
 		  text="Workspace" /><br/>
+	 <input type="radio" name="cfgType" value="12"><ssf:nlt tag="general.type.userWorkspace" 
+		  text="User workspace" /><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder" 
 		  text="Folder" /><br/>
      <input type="radio" name="cfgType" value="9"><ssf:nlt tag="general.type.file" 
@@ -91,7 +93,7 @@ function <portlet:namespace/>_onsub(obj) {
 <ssf:nlt tag="${ssBinderConfig.title}" checkIfTag="true"/><br/>
 <c:if test="${ssBinderConfig.definitionType == 8}">
     <fieldset class="ss_fieldset">
-      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultWorkspaceView" text="Default workspace view"/></legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
           <c:choose>
@@ -111,7 +113,29 @@ function <portlet:namespace/>_onsub(obj) {
     <br>
  </c:if>
 
-<c:if test="${ssBinderConfig.definitionType != 8}">
+<c:if test="${ssBinderConfig.definitionType == 12}">
+    <fieldset class="ss_fieldset">
+      <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultUserWorkspaceView" /></legend>
+
+      <c:forEach var="item" items="${ssPublicBinderDefinitions}">
+          <c:choose>
+	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
+	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
+	        </c:when>
+	        <c:otherwise>
+	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
+	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/> (<c:out value="${item.value.name}"/>)<br/>
+	        </c:otherwise>
+          </c:choose>
+      </c:forEach>
+      <br>
+      <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
+    </fieldset>
+    <br>
+ </c:if>
+
+<c:if test="${ssBinderConfig.definitionType != 8 && ssBinderConfig.definitionType != 12}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed folder views"/></legend>
 

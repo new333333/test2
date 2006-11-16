@@ -3127,6 +3127,7 @@ function ss_getActionFromEntity(entityType) {
 //WORKSPACE_VIEW=8;
 //FILE_FOLDER_VIEW=9;
 //FILE_ENTRY_VIEW=10;
+//USER_WORKSPACE_VIEW=12;
 function ss_getActionFromDefinitionType(definitionType) {
 	if (definitionType == '1') return 'view_folder_entry';
 	if (definitionType == '10') return 'view_folder_entry';
@@ -3134,6 +3135,7 @@ function ss_getActionFromDefinitionType(definitionType) {
 	if (definitionType == '5') return 'view_folder_listing';
 	if (definitionType == '9') return 'view_folder_listing';
 	if (definitionType == '8') return 'view_ws_listing';
+	if (definitionType == '12') return 'view_ws_listing';
 	if (definitionType == '6') return 'view_profile_listing';
 	return 'view_folder_entry'
 }

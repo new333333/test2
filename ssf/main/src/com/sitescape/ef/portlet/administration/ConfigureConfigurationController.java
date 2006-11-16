@@ -98,7 +98,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			model.put(WebKeys.BINDER_CONFIG, config);
 		
 			if (config.getDefinitionType() == Definition.WORKSPACE_VIEW) {
-				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
+				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+			} else if (config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
 			} else if (config.getDefinitionType() == Definition.PROFILE_VIEW) {
 				DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 				DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			

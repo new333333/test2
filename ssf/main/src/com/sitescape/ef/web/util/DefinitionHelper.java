@@ -133,7 +133,7 @@ public class DefinitionHelper {
 			if (forumViewDoc != null) {
 				Element forumViewElement ;
 				forumViewElement = forumViewDoc.getRootElement();
-				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='fileFolderView']");
+				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView' or @name='fileFolderView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
 				model.put(WebKeys.CONFIG_DEFINITION, forumViewDoc);
 			} else {
@@ -145,7 +145,7 @@ public class DefinitionHelper {
 			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, null);
 			//model.put(WebKeys.DEFAULT_FOLDER_DEFINITION_ID, "");
 			//model.put(WebKeys.CONFIG_ELEMENT, null);
-			getDefaultBinderDefinition(binder, model, "//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='fileFolderView']");
+			getDefaultBinderDefinition(binder, model, "//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView' or @name='fileFolderView']");
 		
 		}
 		Map defaultFolderDefinitions = getBinderDefsAsMap(binder);

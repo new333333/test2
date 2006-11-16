@@ -61,6 +61,12 @@
 		</operations>
 	</definition>
 	
+	<definition name="userWorkspaceViewDefinition" definitionType="12" caption="__user_workspace_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="userWorkspaceViewType" caption="__add_a_new_user_workspace_view" />
+		</operations>
+	</definition>
+
 	
 <!-- Items -->
 
@@ -944,12 +950,13 @@
 		</jsps>
 	</item>
 	
-	<item name="binderName" caption="__binder_name" type="data" canBeDeleted="false" 
-		multipleAllowed="false">
+	<item name="binderName" caption="__binder_name" type="data" multipleAllowed="false">
 		<properties>
-			<property name="caption" caption="__caption" type="text" value="__folderName">
+			<property name="name" caption="__binder_name" type="text" value="binderName"
+				  readonly="true" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
 			    <help>__help_binder_name</help>
 	        </property>
+			<property name="caption" caption="__caption" type="text" value="__folderName"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/binder_name_form.jsp" />
@@ -1569,7 +1576,7 @@
 	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
-			<option name="binderName" initial="true" />
+			<option name="binderName" />
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="workspaceIcon" initial="true" />
@@ -1670,6 +1677,38 @@
 		</jsps>
 	</item>
 
+<!-- User Workspace items -->
+	<item name="userWorkspaceViewType" definitionType="12" caption="__user_workspace_view">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		<options>
+			<option name="userWorkspaceView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="userWorkspaceView" caption="__user_workspace_view" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="userWorkspaceBusinessCard" initial="true"/>
+			<option name="dashboardCanvas" initial="true" />
+			<option name="workspaceBinderList" />
+		</options>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" >		
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__user_workspace_businessCard"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
+		</jsps>
+	</item>
+	
 <!-- File folder items -->
 	<item name="fileFolderViewType" definitionType="9" 
 		    caption="__file_folder_view_definition">		
@@ -1692,7 +1731,7 @@
 			canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options>
-			<option name="binderName" initial="true" />
+			<option name="binderName" />
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
