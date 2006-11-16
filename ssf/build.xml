@@ -258,6 +258,24 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>
 	
+	<!-- Build Aspen kit bundled with JBoss-JBoss-Tomcat -->
+	<target name="jbossportal-jboss-tomcat-bundle" depends="init">
+		<delete dir="${temp.dir}" />
+		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=jboss
+app.server.type=jboss-tomcat
+app.server.jbossportal.jboss-tomcat.dir=${temp.dir.path}
+		</echo>
+		<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${forum.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${forum.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip"
+			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>
+	
 	<target name="release">
 		<!--
 		<delete>
