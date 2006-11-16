@@ -26,20 +26,29 @@
   entry="${ssDefinitionEntry}" />
   
 <br>
-<c:if test="${ssDefinitionEntry.docLevel == 1}">
+
 <form class="ss_style ss_form" method="post" action="" style="display:inline;">
-	<c:choose>
-	<c:when test="${empty ssSubscription}">
-	<input type="submit" class="ss_submit" name="subscribeBtn" 
-		     value="<ssf:nlt tag="button.subscribe"/>">
-	</c:when>
-	<c:otherwise>
-	<input type="submit" class="ss_submit" name="unsubscribeBtn" 
-		     value="<ssf:nlt tag="button.unsubscribe"/>">
-	</c:otherwise>
-	</c:choose>
-	
-	
-  </form>
+
+	<input type="submit" class="ss_submit" name="subscribe" 
+	<c:if test="${empty ssSubscription}">value="<ssf:nlt tag="button.subscribe"/>" </c:if>
+	<c:if test="${!empty ssSubscription}">value="<ssf:nlt tag="button.subscription"/>" </c:if>
+	onClick="ss_showPopupDiv('ss_subscription_entry'); return false;">
+
+<div name="ss_subscription_entry" id="ss_subscription_entry" style="display:none; visibility:hidden" class="ss_popupMenu ss_indent_medium">
+  <input type="radio" name="notifyType" value="2"
+  <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
+  /><ssf:nlt tag="subscribe.message"/><br/>
+  <input type="radio" name="notifyType" value="3"
+  <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
+  /><ssf:nlt tag="subscribe.noattachments"/><br/>
+<c:if test="${!empty ssSubscription}">
+  <input type="radio" name="notifyType" value="-1"/><ssf:nlt tag="subscribe.delete"/><br/>
 </c:if>
+  <br/>
+  <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
+ &nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+  onClick="ss_cancelPopupDiv('ss_subscription_entry');return false;">
+</div>	
+</form>
 </div>

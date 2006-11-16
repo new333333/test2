@@ -48,6 +48,7 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SimpleProfiler;
+import com.sitescape.util.Validator;
 /**
  *
  * 
@@ -117,6 +118,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	try {
 	        sp.reset("addBinder_create").begin();
 	        final Binder binder = addBinder_create(def, clazz);
+	        binder.setName(inputData.getSingleValue("name"));
 	        sp.end().print();
 	        
 	    	if (def != null) {
@@ -126,6 +128,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    		}
 	    	}
 	        String title = (String)entryData.get("title");
+	        if (Validator.isNull(title)) {
+	        	title = (String)entryData.get("name");
+		        if (Validator.isNull(title)) title = binder.getName();
+	        	entryData.put("title", title);
+	        }
 	        sp.reset("addBinder_validateTitle").begin();
 	        getCoreDao().validateTitle(parent, title);
 	        sp.end().print();

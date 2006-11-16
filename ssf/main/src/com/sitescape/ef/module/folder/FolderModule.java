@@ -96,11 +96,10 @@ public interface FolderModule {
 	public void setUserVisit(Folder folder);
     public void setTag(Long binderId, Long entryId, String tag, boolean community);
     
-    public void addSubscription(Long folderId, Long entryId); 
+    public void addSubscription(Long folderId, Long entryId, int style); 
     public void deleteSubscription(Long folderId, Long entryId);
     public Subscription getSubscription(Long folderId, Long entryId); 
-    public void modifySubscription(Long folderId, Long entryId, Map updates); 
-    
+     
     public Map getCommonEntryElements();
 
    	  

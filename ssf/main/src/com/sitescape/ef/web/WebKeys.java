@@ -169,7 +169,6 @@ public class WebKeys {
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
-    public static final String OPERATION_UNSUBSCRIBE="unsubscribe";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";

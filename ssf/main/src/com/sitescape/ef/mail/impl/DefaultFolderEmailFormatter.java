@@ -168,12 +168,18 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			else
 				userIds.add(p.getId());
 		}
+		if (folder.getNotificationDef().isTeamOn()) {
+			//TODO: fix when we figure out what a team members is
+//			List team = getAccessControlManager().
+			
+		}
 		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneName()));
 		//Add users wanting digest style messages, remove users wanting nothing
 		for (Subscription notify: (Collection<Subscription>)subscriptions) {
 			if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
 				userIds.add(notify.getId().getPrincipalId());
-			} else if (notify.getStyle() == Subscription.DISABLE_ALL_NOTIFICATIONS) {
+			} else {
+				//user wants some other type of Notificaigton
 				userIds.remove(notify.getId().getPrincipalId());
 			}
 		}
