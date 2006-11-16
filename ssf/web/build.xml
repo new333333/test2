@@ -31,7 +31,7 @@
 				</replace>
 			</then>
 			<elseif>
-				<equals arg1="${portal.type}" arg2="jboss" />
+				<equals arg1="${portal.type}" arg2="jbossportal" />
 				<then>
 					<delete file="${web.dir}/WEB-INF/jboss-web.xml" />
 					<copy file="${web.dir}/WEB-INF/jboss-web.xml.tmpl" tofile="${web.dir}/WEB-INF/jboss-web.xml" />
@@ -65,7 +65,7 @@
 				</replace>
 			</then>
 			<elseif>
-				<equals arg1="${portal.type}" arg2="jboss" />
+				<equals arg1="${portal.type}" arg2="jbossportal" />
 				<then>
 					<delete file="${web.dir}/WEB-INF/web.xml" />
 					<copy file="${web.dir}/WEB-INF/web.xml.tmpl" tofile="${web.dir}/WEB-INF/web.xml" />

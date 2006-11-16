@@ -2,7 +2,7 @@
 
 <project name="jboss-portal" basedir="." default="compile">
 	<!-- This setting will override the value in the properties file -->
-	<property name="portal.type" value="jboss"/>
+	<property name="portal.type" value="jbossportal"/>
 
 	<import file="../build-common.xml" />
 	
