@@ -23,10 +23,11 @@
 <c:set var="userIdList" value=""/>
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
+<div class="ss_portlet_style ss_portlet">
 
 <div>
 
-<div class="ss_portlet_style">
+<div class="ss_portlet_style ss_portlet">
 <table style="width:100%;">
 <tr>
 <td>
@@ -147,4 +148,5 @@ ${ssNamespace}_presenceTimer = setTimeout("${ssNamespace}_presenceTimout()", 300
 <input type="hidden" name="ssComponentId" value="${ssComponentId}">
 </form>
 
+</div>
 

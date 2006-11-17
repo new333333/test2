@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<div class="ss_portlet_style ss_portlet">
 
 <%
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
@@ -35,7 +36,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </script>
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<div class="ss_portlet_style ss_portlet">
 <table width="100%">
 	<tr>
 	  <td colspan="2">
@@ -66,5 +66,5 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 		</td>
 	</tr>
 </table>
-</div>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+</div>
