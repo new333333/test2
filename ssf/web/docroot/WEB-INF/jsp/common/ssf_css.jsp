@@ -1378,11 +1378,14 @@ a.ss_breadcrumb {
 
 /* titlebar */
 .ss_title_bar {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border1.gif) repeat-x top;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border1.gif) repeat-x top !important;
 	color:#FFF;
 	height:24px;
 	margin:0px;
 	padding:0px;
+}
+.ss_title_bar * {
+	background:transparent;
 }
 .ss_title_bar_history_bar {
 	padding-top:2px;
@@ -1461,6 +1464,7 @@ a.ss_breadcrumb {
 }
 .ss_actions_bar li * {
 	font-weight:bold;
+	background:inherit;
 }
 .ss_actions_bar li.ss_actions_bar_last-child {
 	border-right:none;
