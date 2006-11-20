@@ -8,44 +8,73 @@
 		http://dojotoolkit.org/community/licensing.shtml
 */
 
-//
-// this widget provides Delphi-style panel layout semantics
-//
-
 dojo.provide("dojo.widget.LayoutContainer");
-dojo.provide("dojo.widget.html.LayoutContainer");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.html.layout");
+dojo.require("dojo.widget.html.layout");
 
-dojo.widget.html.LayoutContainer = function(){
-	dojo.widget.HtmlWidget.call(this);
-}
-
-dojo.inherits(dojo.widget.html.LayoutContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.LayoutContainer, {
-	widgetType: "LayoutContainer",
+// summary
+//	Provides Delphi-style panel layout semantics.
+//
+// details
+//	A LayoutContainer is a box with a specified size (like style="width: 500px; height: 500px;"),
+//	that contains children widgets marked with "layoutAlign" of "left", "right", "bottom", "top", and "client".
+//	It takes it's children marked as left/top/bottom/right, and lays them out along the edges of the box,
+//	and then it takes the child marked "client" and puts it into the remaining space in the middle.
+//
+//  Left/right positioning is similar to CSS's "float: left" and "float: right",
+//	and top/bottom positioning would be similar to "float: top" and "float: bottom", if there were such
+//	CSS.
+//
+//	Note that there can only be one client element, but there can be multiple left, right, top,
+//	or bottom elements.
+//
+// usage
+//	<style>
+//		html, body{ height: 100%; width: 100%; }
+//	</style>
+//	<div dojoType="LayoutContainer" style="width: 100%; height: 100%">
+//		<div dojoType="ContentPane" layoutAlign="top">header text</div>
+//		<div dojoType="ContentPane" layoutAlign="left" style="width: 200px;">table of contents</div>
+//		<div dojoType="ContentPane" layoutAlign="client">client area</div>
+//	</div>
+dojo.widget.defineWidget(
+	"dojo.widget.LayoutContainer",
+	dojo.widget.HtmlWidget,
+{
 	isContainer: true,
 
+	// String
+	//	- If the value is "top-bottom", then LayoutContainer will first position the "top" and "bottom" aligned elements,
+	//	to and then put the left and right aligned elements in the remaining space, between the top and the bottom elements.
+	//	It aligns the client element at the very end, in the remaining space.
+	//
+	//	- If the value is "left-right", then it first positions the "left" and "right" elements, and then puts the
+	//	"top" and "bottom" elements in the remaining space, between the left and the right elements.
+	//	It aligns the client element at the very end, in the remaining space.
+	//
+	//	- If the value is "none", then it will lay out each child in the natural order the children occur in.
+	//	Basically each child is laid out into the "remaining space", where "remaining space" is initially
+	//	the content area of this widget, but is reduced to a smaller rectangle each time a child is added.
+	//	
 	layoutChildPriority: 'top-bottom',
 
 	postCreate: function(){
-		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	addChild: function(child, overrideContainerNode, pos, ref, insertIndex){
-		dojo.widget.html.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
-		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.widget.LayoutContainer.superclass.addChild.call(this, child, overrideContainerNode, pos, ref, insertIndex);
+		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	removeChild: function(pane){
-		dojo.widget.html.LayoutContainer.superclass.removeChild.call(this,pane);
-		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.widget.LayoutContainer.superclass.removeChild.call(this,pane);
+		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	onResized: function(){
-		dojo.html.layout(this.domNode, this.children, this.layoutChildPriority);
+		dojo.widget.html.layout(this.domNode, this.children, this.layoutChildPriority);
 	},
 
 	show: function(){
@@ -56,7 +85,7 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 		this.domNode.style.display="none";
 		this.domNode.style.visibility="";
 
-		dojo.widget.html.LayoutContainer.superclass.show.call(this);
+		dojo.widget.LayoutContainer.superclass.show.call(this);
 	}
 });
 
@@ -66,5 +95,3 @@ dojo.lang.extend(dojo.widget.html.LayoutContainer, {
 dojo.lang.extend(dojo.widget.Widget, {
 	layoutAlign: 'none'
 });
-
-dojo.widget.tags.addParseTreeHandler("dojo:LayoutContainer");
