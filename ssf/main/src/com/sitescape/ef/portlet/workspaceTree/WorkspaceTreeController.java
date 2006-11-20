@@ -64,15 +64,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 			if (entryId != null) {
 				User entry = (User)getProfileModule().getEntry(binderId, entryId);
-				//add one
-				if (entry.getWorkspaceId() == null) {
+				//TODO: temp - make call to fix up add one
+//				if (entry.getWorkspaceId() == null) {
 					Map data = new HashMap();
 					data.put("title", entry.getName());
 					MapInputData inputData = new MapInputData(data);
 					binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
-				} else {
-					binderId = entry.getWorkspaceId();
-				}
+//				} else {
+//					binderId = entry.getWorkspaceId();
+//				}
 			}
 		}
 
