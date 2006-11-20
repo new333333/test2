@@ -20,30 +20,24 @@
  */
 dojo.provide("dojo.widget.Tree");
 
+dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeNode");
+dojo.require("dojo.html.common");
+dojo.require("dojo.html.selection");
 
 
-
-// make it a tag
-dojo.widget.tags.addParseTreeHandler("dojo:Tree");
-
-
-dojo.widget.Tree = function() {
-	dojo.widget.HtmlWidget.call(this);
-
+dojo.widget.defineWidget("dojo.widget.Tree", dojo.widget.HtmlWidget, function() {
 	this.eventNames = {};
 
 	this.tree = this;
 	this.DNDAcceptTypes = [];
 	this.actionsDisabled = [];
 
-}
-dojo.inherits(dojo.widget.Tree, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.Tree, {
+},
+{
 	widgetType: "Tree",
 
 	eventNamesDefault: {
@@ -338,7 +332,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		// add new child into DOM after it was added into children
 		if (index < this.children.length) { // children[] already has child
 			//dojo.debug("Inserting before "+this.children[index].title);
-			dojo.dom.insertBefore(child.domNode, this.children[index].domNode);
+			dojo.html.insertBefore(child.domNode, this.children[index].domNode);
 		} else {
 			this.containerNode.appendChild(child.domNode);
 			if (this.isExpanded && this.isTreeNode) {
@@ -378,7 +372,7 @@ dojo.lang.extend(dojo.widget.Tree, {
 		// Use-case:
 		// a child was moved down under the last node so last node should be updated
 		var prevSibling = child.getPreviousSibling();
-		if (child.isLastNode() && prevSibling) {
+		if (child.isLastChild() && prevSibling) {
 			prevSibling.updateExpandGridColumn();
 		}
 
@@ -500,9 +494,9 @@ dojo.lang.extend(dojo.widget.Tree, {
 
 
 		children.splice(index,1);
-		dojo.dom.removeNode(child.domNode);
+		dojo.html.removeNode(child.domNode);
 
-		if (parent.children.length == 0) {
+		if (parent.children.length == 0 && !parent.isTree) {
 			parent.containerNode.style.display = "none";
 		}
 
