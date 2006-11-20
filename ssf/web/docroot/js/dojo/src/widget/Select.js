@@ -9,9 +9,8 @@
 */
 
 dojo.provide("dojo.widget.Select");
-dojo.provide("dojo.widget.html.Select");
 
-dojo.require("dojo.widget.html.ComboBox");
+dojo.require("dojo.widget.ComboBox");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.html.stabile");
 
@@ -30,15 +29,15 @@ dojo.require("dojo.widget.html.stabile");
  */
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.Select",
-	dojo.widget.html.ComboBox,
+	"dojo.widget.Select",
+	dojo.widget.ComboBox,
 	{
-		widgetType: "Select",
 		forceValidOption: true,
 
 		setValue: function(value) {
 			this.comboBoxValue.value = value;
 			dojo.widget.html.stabile.setState(this.widgetId, this.getState(), true);
+			this.onValueChanged(value);
 		},
 
 		setLabel: function(value){
@@ -70,7 +69,8 @@ dojo.widget.defineWidget(
 		},
 
 		setAllValues: function(value1, value2){
-			this.setValue(value2);
 			this.setLabel(value1);
+			this.setValue(value2);
 		}
-	});
+	}
+);

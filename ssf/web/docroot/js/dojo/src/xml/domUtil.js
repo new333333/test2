@@ -55,7 +55,7 @@ dojo.xml.domUtil = new function(){
 	this.clearChildren = function() {return dojo.dom.removeChildren.apply(dojo.dom, arguments);}
 	this.replaceChildren = function() {return dojo.dom.replaceChildren.apply(dojo.dom, arguments);}
 
-	this.getStyle = function() {return dojo.style.getStyle.apply(dojo.style, arguments);}
+	this.getStyle = function() {return dojo.html.getStyle.apply(dojo.style, arguments);}
 	this.toCamelCase = function() {return dojo.style.toCamelCase.apply(dojo.style, arguments);}
 	this.toSelectorCase = function() {return dojo.style.toSelectorCase.apply(dojo.style, arguments);}
 
