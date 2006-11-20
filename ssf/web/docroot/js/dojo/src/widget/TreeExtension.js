@@ -8,17 +8,17 @@
 		http://dojotoolkit.org/community/licensing.shtml
 */
 
-dojo.provide("dojo.widget.ShowAction");
-dojo.require("dojo.widget.*");
+
+dojo.provide("dojo.widget.TreeExtension");
+
+dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.widget.TreeCommon");
 
 dojo.widget.defineWidget(
-	"dojo.widget.ShowAction",
-	dojo.widget.HtmlWidget,
-{
-	on: "",
-	action: "fade",
-	duration: 350,
-	from: "",
-	to: "",
-	auto: "false"
-});
+	"dojo.widget.TreeExtension",
+	[dojo.widget.HtmlWidget, dojo.widget.TreeCommon],
+	function() {
+		this.listenedTrees = {};
+	},
+	{}
+);

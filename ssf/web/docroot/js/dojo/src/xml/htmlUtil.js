@@ -79,9 +79,9 @@ dojo.xml.htmlUtil = new function(){
 	this.getElementsByClass = function() {return dojo.html.getElementsByClass.apply(dojo.html, arguments)}
 	this.getElementsByClassName = this.getElementsByClass;
 	
-	this.setOpacity = function() {return dojo.style.setOpacity.apply(dojo.style, arguments)}
-	this.getOpacity = function() {return dojo.style.getOpacity.apply(dojo.style, arguments)}
-	this.clearOpacity = function() {return dojo.style.clearOpacity.apply(dojo.style, arguments)}
+	this.setOpacity = function() {return dojo.html.setOpacity.apply(dojo.style, arguments)}
+	this.getOpacity = function() {return dojo.html.getOpacity.apply(dojo.style, arguments)}
+	this.clearOpacity = function() {return dojo.html.clearOpacity.apply(dojo.style, arguments)}
 	
 	this.gravity = function(){return dojo.html.gravity.apply(dojo.html, arguments)}
 	
@@ -117,5 +117,5 @@ dojo.xml.htmlUtil = new function(){
 
 	this.getUniqueId = function() { return dojo.dom.getUniqueId(); }
 
-	this.getStyle = function() {return dojo.style.getStyle.apply(dojo.style, arguments)}
+	this.getStyle = function() {return dojo.html.getStyle.apply(dojo.style, arguments)}
 }
