@@ -14,18 +14,18 @@
 		auth="Container" 
 		type="javax.mail.Session"
 		
-		mail.transport.protocol="smtp"
-		mail.smtp.host="host54a.simplicato.com"
-		mail.user="mccann@sitescape.com"
+		mail.transport.protocol="@@@mail.transport.protocol.out"
+		mail.host="@@@mail.host.out"
+		mail.user="@@@mail.user.out"
 	/>
 	<Resource 
 		name="mail/SiteScapePosting" 
 		auth="Container" 
 		type="javax.mail.Session"
-		mail.pop3.host="localhost"
-		mail.store.protocol="pop3"
-		mail.pop3.auth="true"
-		mail.user="liferay"
-		mail.password="liferay"
+		mail.store.protocol="@@@mail.store.protocol.in"
+		mail.host="@@@mail.host.in"
+		mail.auth="@@@mail.auth.in"
+		mail.user="@@@mail.user.in"
+		mail.password="@@@mail.password.in"
 	/>
 </Context>
