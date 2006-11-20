@@ -398,6 +398,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	try {
         		Workspace ws = (Workspace)getCoreDao().loadBinder(wsId, RequestContextHolder.getRequestContext().getZoneName());
         		//if worked, don't create another one
+        		if (ws.getOwner() == null) ws.setOwner(new HistoryStamp(entry));
         		return ws.getId(); 
         	} catch (Exception ex) {};
         }
