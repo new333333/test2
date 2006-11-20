@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="liferay" basedir="." default="compile">
+<project name="tomcat" basedir="." default="compile">
 	<import file="../build-common.xml" />
 	
 	<import file="../deploy-support.xml" />
@@ -9,6 +9,8 @@
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<property file="${project.dir}/tools/mail/mail-ext.properties"/>
+		<property file="${project.dir}/tools/mail/mail.properties"/>
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources" />
 		</copy>
@@ -20,5 +22,21 @@
 			token="@@@username" value="${jdbc.username}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
 			token="@@@password" value="${jdbc.password}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.transport.protocol.out" value="${mail.transport.protocol.out}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.host.out" value="${mail.host.out}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.user.out" value="${mail.user.out}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.store.protocol.in" value="${mail.store.protocol.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.host.in" value="${mail.host.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.auth.in" value="${mail.auth.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.user.in" value="${mail.user.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.password.in" value="${mail.password.in}"/>
 	</target>
 </project>
