@@ -1397,6 +1397,7 @@
 		<options>
 			<option name="profileEntryForm" initial="true" />
 			<option name="profileEntryView" initial="true" />
+			<option name="profileEntryBusinessCard" initial="true" />
 		</options>
 	</item>
 	
@@ -1425,6 +1426,7 @@
 		<options>
 			<option name="profileName" initial="true" />
 			<option name="profileTimeZone" initial="true" />
+			<option name="profileEntryPicture" initial="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option name="attachFiles" />
 			<option_select path="//item[@category='profileEntryData']" />
@@ -1493,6 +1495,31 @@
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderProfileElement" />
 	</item>
 		
+	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  value="picture" readonly="true" unique="//item[@type='data']"/>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="maxWidth" caption="__max_graphic_width" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_graphic_height" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+				<help>__help_storage_media</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" />
+		</jsps>
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderGraphic" />
+	</item>
+
 	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
@@ -1501,6 +1528,7 @@
 		<options>
 			<option name="profileTitle" caption="__profile_title" />
 			<option name="profileEntryTimeZone" caption="__preferred_timeZone" />
+			<option name="profileEntryPicture" caption="__profile_entry_picture" />
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
 			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
@@ -1509,6 +1537,24 @@
 		
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card.jsp" />
 		</jsps>
 	</item>
 	

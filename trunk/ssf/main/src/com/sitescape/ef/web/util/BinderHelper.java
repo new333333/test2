@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -48,15 +49,17 @@ public class BinderHelper {
 	//  This routine is callable only from a portlet controller
 	static public void setBinderPermaLink(AllBusinessServicesInjected bs, 
 			RenderRequest request, RenderResponse response) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		PortletURL url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
-		url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
-		if (!url.toString().equals(getBinderPermaLink(bs)))
-			bs.getProfileModule().setUserProperty(user.getId(), 
-					ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
+		if (request.getWindowState().equals(WindowState.MAXIMIZED)) {
+			User user = RequestContextHolder.getRequestContext().getUser();
+			PortletURL url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
+			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
+			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+			if (!url.toString().equals(getBinderPermaLink(bs)))
+				bs.getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
+		}
 	}
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
