@@ -19,16 +19,12 @@ dojo.require("dojo.lang.common");
  * hitch(foo, "bar"); // runs foo.bar() in the scope of foo
  * hitch(foo, myFunction); // runs myFunction in the scope of foo
  */
-dojo.lang.hitch = function(thisObject, method) {
-	if(dojo.lang.isString(method)) {
-		var fcn = thisObject[method];
-	} else {
-		var fcn = method;
-	}
+dojo.lang.hitch = function(thisObject, method){
+	var fcn = (dojo.lang.isString(method) ? thisObject[method] : method) || function(){};
 
 	return function() {
 		return fcn.apply(thisObject, arguments);
-	}
+	};
 }
 
 dojo.lang.anonCtr = 0;
@@ -38,9 +34,11 @@ dojo.lang.nameAnonFunc = function(anonFuncPtr, namespaceObj, searchForNames){
 	if( (searchForNames) ||
 		((dj_global["djConfig"])&&(djConfig["slowAnonFuncLookups"] == true)) ){
 		for(var x in nso){
-			if(nso[x] === anonFuncPtr){
-				return x;
-			}
+			try{
+				if(nso[x] === anonFuncPtr){
+					return x;
+				}
+			}catch(e){} // window.external fails in IE embedded in Eclipse (Eclipse bug #151165)
 		}
 	}
 	var ret = "__"+dojo.lang.anonCtr++;
@@ -93,7 +91,7 @@ dojo.lang.curry = function(ns, func /* args ... */){
 										// with enough args
 							totalArgs,	// a copy
 							expected);	// how many more do we need to run?;
-			}
+			};
 		}
 	}
 	return gather([], outerArgs, ecount);

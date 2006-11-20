@@ -9,9 +9,6 @@
 */
 
 dojo.provide("dojo.widget.SplitContainer");
-dojo.provide("dojo.widget.SplitContainerPanel");
-dojo.provide("dojo.widget.html.SplitContainer");
-dojo.provide("dojo.widget.html.SplitContainerPanel");
 
 //
 // TODO
@@ -20,68 +17,68 @@ dojo.provide("dojo.widget.html.SplitContainerPanel");
 //
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.LayoutContainer");
+dojo.require("dojo.widget.ContentPane");
 dojo.require("dojo.widget.HtmlWidget");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
-dojo.require("dojo.dom");
-dojo.require("dojo.io");	// workaround dojo bug. dojo.io.cookie requires dojo.io but it still doesn't get pulled in
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.layout");
+dojo.require("dojo.html.selection");
 dojo.require("dojo.io.cookie");
 
-dojo.widget.html.SplitContainer = function(){
-
-	dojo.widget.HtmlWidget.call(this);
-
-	this.sizers = [];
-}
-
-dojo.inherits(dojo.widget.html.SplitContainer, dojo.widget.HtmlWidget);
-
-dojo.lang.extend(dojo.widget.html.SplitContainer, {
-	widgetType: "SplitContainer",
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainer",
+	dojo.widget.HtmlWidget,
+	function(){
+		this.sizers = [];
+	},
+{
 	isContainer: true,
 
+	// variables
 	virtualSizer: null,
-	isHorizontal: 0,
+	isHorizontal: null,
 	paneBefore: null,
 	paneAfter: null,
 	isSizing: false,
-	dragOffset: null,
-	startPoint: null,
-	lastPoint: null,
+	dragOffset: 0,
+	startPoint: 0,
+	lastPoint: 0,
 	sizingSplitter: null,
-	isActiveResize: 0,
-	offsetX: 0,
-	offsetY: 0,
+	screenToClientOffset: 0,
 	isDraggingLeft: 0,
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSplitContainer.css"),
-	originPos: null,
-	persist: true,		// save splitter positions in a cookie
+	templateCssPath: dojo.uri.dojoUri("src/widget/templates/SplitContainer.css"),
+	originPos: 0,
 
-	activeSizing: '',
+	// parameters (user settable)
+	activeSizing: false,
 	sizerWidth: 15,
 	orientation: 'horizontal',
+	persist: true,		// save splitter positions in a cookie
 
 	debugName: '',
 
 	fillInTemplate: function(){
 
-		dojo.style.insertCssFile(this.templateCssPath, null, true);
+		dojo.html.insertCssFile(this.templateCssPath, null, true);
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
-		this.domNode.style.overflow='hidden';	// workaround firefox bug
+		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
+		// to keep other combined css classes from inadvertantly making the overflow visible
+		if (dojo.render.html.moz) {
+		        this.domNode.style.overflow = '-moz-scrollbars-none'; // hidden doesn't work
+		}
+		
+		var content = dojo.html.getContentBox(this.domNode);
+		this.paneWidth = content.width;
+		this.paneHeight = content.height;
 
-		this.paneWidth = dojo.style.getContentWidth(this.domNode);
-		this.paneHeight = dojo.style.getContentHeight(this.domNode);
-
-		this.isHorizontal = (this.orientation == 'horizontal') ? 1 : 0;
-		this.isActiveResize = (this.activeSizing == '1') ? 1 : 0;
+		this.isHorizontal = (this.orientation == 'horizontal');
 
 		//dojo.debug("fillInTemplate for "+this.debugName);
 	},
 
 	onResized: function(e){
-		this.paneWidth = dojo.style.getContentWidth(this.domNode);
-		this.paneHeight = dojo.style.getContentHeight(this.domNode);
+		var content = dojo.html.getContentBox(this.domNode);
+		this.paneWidth = content.width;
+		this.paneHeight = content.height;
 		this.layoutPanels();
 	},
 
@@ -105,6 +102,11 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		}
 
 		// create the fake dragger
+		if (typeof this.sizerWidth == "object") { 
+			try {
+				this.sizerWidth = parseInt(this.sizerWidth.toString()); 
+			} catch(e) { this.sizerWidth = 15; }
+		}
 		this.virtualSizer = document.createElement('div');
 		this.virtualSizer.style.position = 'absolute';
 		this.virtualSizer.style.display = 'none';
@@ -161,12 +163,12 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
         }
 
         // Remove widget and repaint
-        dojo.widget.html.SplitContainer.superclass.removeChild.call(this, widget, arguments);
+        dojo.widget.SplitContainer.superclass.removeChild.call(this, widget, arguments);
         this.onResized();
     },
 
     addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
-        dojo.widget.html.SplitContainer.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+        dojo.widget.SplitContainer.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
         this._injectChild(widget);
 
         if (this.children.length > 1) {
@@ -239,7 +241,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		var size = this.children[0].sizeActual;
 		this.movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
-        this.children[0].checkSize();
+		this.children[0].checkSize();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
@@ -252,7 +254,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			size = this.children[i].sizeActual;
 			this.movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
-            this.children[i].checkSize();
+			this.children[i].checkSize();
 			pos += size;
 		}
 	},
@@ -262,14 +264,12 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
 
-			dojo.style.setOuterWidth(panel, size);
-			dojo.style.setOuterHeight(panel, this.paneHeight);
+			dojo.html.setMarginBox(panel, { width: size, height: this.paneHeight });
 		}else{
 			panel.style.left = 0;
 			panel.style.top = pos + 'px';
 
-			dojo.style.setOuterWidth(panel, this.paneWidth);
-			dojo.style.setOuterHeight(panel, size);
+			dojo.html.setMarginBox(panel, { width: this.paneWidth, height: size });
 		}
 	},
 
@@ -338,25 +338,26 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	beginSizing: function(e, i){
-		var clientX = e.layerX;
-		var clientY = e.layerY;
-		var screenX = e.pageX;
-		var screenY = e.pageY;
-
 		this.paneBefore = this.children[i];
 		this.paneAfter = this.children[i+1];
 
 		this.isSizing = true;
 		this.sizingSplitter = this.sizers[i];
-		this.originPos = dojo.style.getAbsolutePosition(this.domNode, true);
-		this.dragOffset = {'x':clientX, 'y':clientY};
-		this.startPoint  = {'x':screenX, 'y':screenY};
-		this.lastPoint  = {'x':screenX, 'y':screenY};
+		this.originPos = dojo.html.getAbsolutePosition(this.children[0].domNode, true, dojo.html.boxSizing.MARGIN_BOX);
+		if (this.isHorizontal){
+			var client = (e.layerX ? e.layerX : e.offsetX);
+			var screen = e.pageX;
+			this.originPos = this.originPos.x;
+		}else{
+			var client = (e.layerY ? e.layerY : e.offsetY);
+			var screen = e.pageY;
+			this.originPos = this.originPos.y;
+		}
+		this.startPoint = this.lastPoint = screen;
+		this.screenToClientOffset = screen - client;
+		this.dragOffset = this.lastPoint - this.paneBefore.sizeActual - this.originPos - this.paneBefore.position;
 
-		this.offsetX = screenX - clientX;
-		this.offsetY = screenY - clientY;
-
-		if (!this.isActiveResize){
+		if (!this.activeSizing){
 			this.showSizingLine();
 		}
 
@@ -366,26 +367,24 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 
 		dojo.event.connect(document.documentElement, "onmousemove", this, "changeSizing");
 		dojo.event.connect(document.documentElement, "onmouseup", this, "endSizing");
+		dojo.event.browser.stopEvent(e);
 	},
 
 	changeSizing: function(e){
-		var screenX = e.pageX;
-		var screenY = e.pageY;
-
-		if (this.isActiveResize){
-			this.lastPoint = {'x':screenX, 'y':screenY};
+		this.lastPoint = this.isHorizontal ? e.pageX : e.pageY;
+		if (this.activeSizing){
 			this.movePoint();
 			this.updateSize();
 		}else{
-			this.lastPoint = {'x':screenX, 'y':screenY};
 			this.movePoint();
 			this.moveSizingLine();
 		}
+		dojo.event.browser.stopEvent(e);
 	},
 
 	endSizing: function(e){
 
-		if (!this.isActiveResize){
+		if (!this.activeSizing){
 			this.hideSizingLine();
 		}
 
@@ -403,53 +402,14 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 
 	movePoint: function(){
 
-		// make sure FLastPoint is a legal point to drag to
-		var p = this.screenToMainClient(this.lastPoint);
+		// make sure lastPoint is a legal point to drag to
+		var p = this.lastPoint - this.screenToClientOffset;
 
-		if (this.isHorizontal){
+		var a = p - this.dragOffset;
+		a = this.legaliseSplitPoint(a);
+		p = a + this.dragOffset;
 
-			var a = p.x - this.dragOffset.x;
-			a = this.legaliseSplitPoint(a);
-			p.x = a + this.dragOffset.x;
-		}else{
-			var a = p.y - this.dragOffset.y;
-			a = this.legaliseSplitPoint(a);
-			p.y = a + this.dragOffset.y;
-		}
-
-		this.lastPoint = this.mainClientToScreen(p);
-	},
-
-	screenToClient: function(pt){
-
-		pt.x -= (this.offsetX + this.sizingSplitter.position);
-		pt.y -= (this.offsetY + this.sizingSplitter.position);
-
-		return pt;
-	},
-
-	clientToScreen: function(pt){
-
-		pt.x += (this.offsetX + this.sizingSplitter.position);
-		pt.y += (this.offsetY + this.sizingSplitter.position);
-
-		return pt;
-	},
-
-	screenToMainClient: function(pt){
-
-		pt.x -= this.offsetX;
-		pt.y -= this.offsetY;
-
-		return pt;
-	},
-
-	mainClientToScreen: function(pt){
-
-		pt.x += this.offsetX;
-		pt.y += this.offsetY;
-
-		return pt;
+		this.lastPoint = p + this.screenToClientOffset;
 	},
 
 	legaliseSplitPoint: function(a){
@@ -458,7 +418,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 
 		this.isDraggingLeft = (a > 0) ? 1 : 0;
 
-		if (!this.isActiveResize){
+		if (!this.activeSizing){
 
 			if (a < this.paneBefore.position + this.paneBefore.sizeMin){
 
@@ -479,11 +439,7 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 	},
 
 	updateSize: function(){
-
-		var p = this.clientToScreen(this.lastPoint);
-		var p = this.screenToClient(this.lastPoint);
-
-		var pos = this.isHorizontal ? p.x - (this.dragOffset.x + this.originPos.x) : p.y - (this.dragOffset.y + this.originPos.y);
+		var pos = this.lastPoint - this.dragOffset - this.originPos;
 
 		var start_region = this.paneBefore.position;
 		var end_region   = this.paneAfter.position + this.paneAfter.sizeActual;
@@ -505,33 +461,27 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 		this.moveSizingLine();
 
 		if (this.isHorizontal){
-			dojo.style.setOuterWidth(this.virtualSizer, this.sizerWidth);
-			dojo.style.setOuterHeight(this.virtualSizer, this.paneHeight);
+			dojo.html.setMarginBox(this.virtualSizer, { width: this.sizerWidth, height: this.paneHeight });
 		}else{
-			dojo.style.setOuterWidth(this.virtualSizer, this.paneWidth);
-			dojo.style.setOuterHeight(this.virtualSizer, this.sizerWidth);
+			dojo.html.setMarginBox(this.virtualSizer, { width: this.paneWidth, height: this.sizerWidth });
 		}
 
 		this.virtualSizer.style.display = 'block';
 	},
 
 	hideSizingLine: function(){
-
 		this.virtualSizer.style.display = 'none';
 	},
 
 	moveSizingLine: function(){
-
-		var origin = {'x':0, 'y':0};
-
+		var pos = this.lastPoint - this.startPoint + this.sizingSplitter.position;
 		if (this.isHorizontal){
-			origin.x += (this.lastPoint.x - this.startPoint.x) + this.sizingSplitter.position;
+			this.virtualSizer.style.left = pos + 'px';
 		}else{
-			origin.y += (this.lastPoint.y - this.startPoint.y) + this.sizingSplitter.position;
+			var pos = (this.lastPoint - this.startPoint) + this.sizingSplitter.position;
+			this.virtualSizer.style.top = pos + 'px';
 		}
 
-		this.virtualSizer.style.left = origin.x + 'px';
-		this.virtualSizer.style.top = origin.y + 'px';
 	},
 	
 	_getCookieName: function(i) {
@@ -544,7 +494,9 @@ dojo.lang.extend(dojo.widget.html.SplitContainer, {
 			var cookieValue = dojo.io.cookie.getCookie(cookieName);
 			if (cookieValue != null) {
 				var pos = parseInt(cookieValue);
-				this.children[i].sizeShare=pos;
+				if (typeof pos == "number") {
+					this.children[i].sizeShare=pos;
+				}
 			}
 		}
 	},
@@ -567,13 +519,9 @@ dojo.lang.extend(dojo.widget.Widget, {
 
 // Deprecated class for split pane children.
 // Actually any widget can be the child of a split pane
-dojo.widget.html.SplitContainerPanel = function(){
-	dojo.widget.html.LayoutContainer.call(this);
-}
-dojo.inherits(dojo.widget.html.SplitContainerPanel, dojo.widget.html.LayoutContainer);
-dojo.lang.extend(dojo.widget.html.SplitContainerPanel, {
-	widgetType: "SplitContainerPanel"
-});
+dojo.widget.defineWidget(
+	"dojo.widget.SplitContainerPanel",
+	dojo.widget.ContentPane,
+	{}
+);
 
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainer");
-dojo.widget.tags.addParseTreeHandler("dojo:SplitContainerPanel");
