@@ -107,7 +107,7 @@ dojo.lang.extend(dojo.widget.html.Spinner, {
 
 
 	resizeUpArrow: function(){
-		var newh = dojo.style.getContentBoxHeight(this.inputNode) >> 1;
+		var newh = dojo.html.getContentBoxHeight(this.inputNode) >> 1;
 		if(newh==0){
 			// need more time to calculate size
 			dojo.lang.setTimeout(this, "resizeUpArrow", 100);
@@ -125,7 +125,7 @@ dojo.lang.extend(dojo.widget.html.Spinner, {
 	},
 
 	resizeDownArrow: function(){
-		var newh = dojo.style.getContentBoxHeight(this.inputNode) >> 1;
+		var newh = dojo.html.getContentBoxHeight(this.inputNode) >> 1;
 		if(newh==0){
 			// need more time to calculate size
 			dojo.lang.setTimeout(this, "resizeDownArrow", 100);
@@ -143,7 +143,7 @@ dojo.lang.extend(dojo.widget.html.Spinner, {
 	},
 
 	resizeSpacer: function(){
-		var newh = dojo.style.getContentBoxHeight(this.inputNode) >> 1;
+		var newh = dojo.html.getContentBoxHeight(this.inputNode) >> 1;
 		if( newh==0 ){
 			// need more time to calculate size
 			dojo.lang.setTimeout(this, "resizeSpacer", 100);

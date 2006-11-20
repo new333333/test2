@@ -114,7 +114,7 @@ function ss_startDragDiv(evt) {
         bodyObj.appendChild(lightBox);
 	}
 	lightBox.style.backgroundColor = "#ffffff";
-	dojo.style.setOpacity(lightBox, .1);
+	dojo.html.setOpacity(lightBox, .1);
     lightBox.onclick = "ss_divStopDrag();";
     lightBox.style.visibility = "hidden";			
     lightBox.style.display = "block";
@@ -245,7 +245,7 @@ function ss_entryClearDrag() {
 	var lightBox = document.getElementById('ss_entry_light_box')
 	if (lightBox != null) {
 		//ss_debug('remove lightbox')
-		dojo.style.setOpacity(lightBox, 1);
+		dojo.html.setOpacity(lightBox, 1);
 		lightBox.style.visibility = "hidden"
 	}
 	ss_slidingTableMouseOverInfoDisabled = false;

@@ -13,57 +13,87 @@ dojo.provide("dojo.lfx.extras");
 dojo.require("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 
-dojo.lfx.html.fadeWipeIn = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeWipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current
+	//			opacity to fully opaque while wiping it in.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
-		dojo.lfx.wipeIn(nodes, duration, easing),
-		dojo.lfx.fadeIn(nodes, duration, easing));
+		dojo.lfx.fadeIn(nodes, duration, easing),
+		dojo.lfx.wipeIn(nodes, duration, easing)
+	);
 	
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
+		anim.connect("onEnd", function(){
 			callback(nodes, anim);
 		});
 	}
 	
-	return anim;
+	return anim; // dojo.lfx.Combine
 }
 
-dojo.lfx.html.fadeWipeOut = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeWipeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current
+	//			opacity to fully transparent while wiping it out.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
-		dojo.lfx.wipeOut(nodes, duration, easing),
-		dojo.lfx.fadeOut(nodes, duration, easing));
+		dojo.lfx.fadeOut(nodes, duration, easing),
+		dojo.lfx.wipeOut(nodes, duration, easing)
+	);
 	
 	if(callback){
-		dojo.event.connect(anim, "onEnd", function(){
+		/* callback: Function
+		   pId: f */
+		anim.connect("onEnd", function(){
 			callback(nodes, anim);
 		});
 	}
 
-	return anim;
+	return anim; // dojo.lfx.Combine
 }
 
-dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, duration, easing, callback){
+dojo.lfx.html.scale = function(/*DOMNode[]*/nodes,
+							   /*int*/ percentage,
+							   /*bool?*/ scaleContent,
+							   /*bool?*/ fromCenter,
+							   /*int?*/ duration,
+							   /*Function?*/ easing,
+							   /*Function?*/ callback){
+	// summary: Returns an animation that will scale "nodes" by "percentage".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// percentage: A whole number representing the percentage to scale "nodes".
+	// scaleContent: If true, will scale the contents of "nodes".
+	// fromCenter: If true, will scale "nodes" from its center rather than the
+	//			   lower right corner.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var origWidth = dojo.style.getOuterWidth(node);
-		var origHeight = dojo.style.getOuterHeight(node);
+		var outer = dojo.html.getMarginBox(node);
 
 		var actualPct = percentage/100.0;
 		var props = [
 			{	property: "width",
-				start: origWidth,
-				end: origWidth * actualPct
+				start: outer.width,
+				end: outer.width * actualPct
 			},
 			{	property: "height",
-				start: origHeight,
-				end: origHeight * actualPct
+				start: outer.height,
+				end: outer.height * actualPct
 			}];
 		
 		if(scaleContent){
-			var fontSize = dojo.style.getStyle(node, 'font-size');
+			var fontSize = dojo.html.getStyle(node, 'font-size');
 			var fontSizeType = null;
 			if(!fontSize){
 				fontSize = parseFloat('100%');
@@ -85,11 +115,11 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		}
 		
 		if(fromCenter){
-			var positioning = dojo.style.getStyle(node, "position");
+			var positioning = dojo.html.getStyle(node, "position");
 			var originalTop = node.offsetTop;
 			var originalLeft = node.offsetLeft;
-			var endTop = ((origHeight * actualPct) - origHeight)/2;
-			var endLeft = ((origWidth * actualPct) - origWidth)/2;
+			var endTop = ((outer.height * actualPct) - outer.height)/2;
+			var endLeft = ((outer.width * actualPct) - outer.width)/2;
 			props.push({
 				property: "top",
 				start: originalTop,
@@ -104,7 +134,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		
 		var anim = dojo.lfx.propertyAnimation(node, props, duration, easing);
 		if(callback){
-			dojo.event.connect(anim, "onEnd", function(){
+			anim.connect("onEnd", function(){
 				callback(node, anim);
 			});
 		}
@@ -112,8 +142,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		anims.push(anim);
 	});
 	
-	if(nodes.length > 1){ return dojo.lfx.combine(anims); }
-	else{ return anims[0]; }
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
 dojo.lang.mixin(dojo.lfx, dojo.lfx.html);
