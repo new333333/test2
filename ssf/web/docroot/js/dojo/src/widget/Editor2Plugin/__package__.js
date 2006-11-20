@@ -9,7 +9,7 @@
 */
 
 dojo.kwCompoundRequire({
-	common: [["dojo.logging.Logger", false, false]],
-	rhino: ["dojo.logging.RhinoLogger"]
+	common: [ "dojo.widget.Editor2", 
+			 "dojo.widget.Editor2Toolbar"]
 });
-dojo.provide("dojo.logging.*");
+dojo.provide("dojo.widget.Editor2Plugin.*");
