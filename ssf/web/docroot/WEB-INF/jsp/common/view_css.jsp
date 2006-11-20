@@ -186,11 +186,11 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		ss_loadJsFile(ss_rootPath, "js/common/ss_coordinates.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/math/Math.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/math/curves.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/Math.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/curves.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 		//ss_loadJsFile(ss_rootPath, "js/common/ss_dragsort.js");
 		
