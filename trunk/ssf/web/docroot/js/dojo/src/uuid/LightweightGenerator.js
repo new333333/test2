@@ -10,28 +10,27 @@
 
 dojo.provide("dojo.uuid.LightweightGenerator");
 
-/**
- * The LightweightGenerator is intended to be small and fast,
- * but not necessarily good.
+/*
+ * summary:
+ *   The LightweightGenerator is intended to be small and fast,
+ *   but not necessarily good.
  * 
- * Small: The LightweightGenerator has a small footprint. 
- * Once comments are stripped, it's only about 25 lines of 
- * code, and it doesn't dojo.require() any other packages.
+ * description:
+ *   Small: The LightweightGenerator has a small footprint. 
+ *   Once comments are stripped, it's only about 25 lines of 
+ *   code, and it doesn't dojo.require() any other packages.
  *
- * Fast: The LightweightGenerator can generate lots of new 
- * UUIDs fairly quickly (at least, more quickly than the other 
- * dojo UUID generators).
+ *   Fast: The LightweightGenerator can generate lots of new 
+ *   UUIDs fairly quickly (at least, more quickly than the other 
+ *   dojo UUID generators).
  *
- * Not necessarily good: We use Math.random() as our source
- * of randomness, which may or may not provide much randomness. 
+ *   Not necessarily good: We use Math.random() as our source
+ *   of randomness, which may or may not provide much randomness. 
  */
+ 
 dojo.uuid.LightweightGenerator = new function() {
-
 	var HEX_RADIX = 16;
 
-// --------------------------------------------------
-// Private functions
-// --------------------------------------------------
 	function _generateRandomEightCharacterHexString() {
 		// Make random32bitNumber be a randomly generated floating point number
 		// between 0 and (4,294,967,296 - 1), inclusive.
@@ -43,26 +42,18 @@ dojo.uuid.LightweightGenerator = new function() {
 		return eightCharacterHexString; // for example: "3B12F1DF"
 	}
 
-// --------------------------------------------------
-// Public functions
-// --------------------------------------------------
+	this.generate = function(/* constructor? */ returnType) {
+		// summary: 
+		//   This function generates random UUIDs, meaning "version 4" UUIDs.
+		// description: 
+		//   A typical generated value would be something like this:
+		//   "3b12f1df-5232-4804-897e-917bf397618a"
+		// returnType: The type of object to return. Usually String or dojo.uuid.Uuid
 
-/**
- * This function generates random UUIDs, meaning "version 4" UUIDs.
- * For example, a typical generated value would be something like
- * "3b12f1df-5232-4804-897e-917bf397618a".
- *
- * Examples:
- * <pre>
- *   var string = dojo.uuid.LightweightGenerator.generate();
- *   var string = dojo.uuid.LightweightGenerator.generate(String);
- *   var uuid   = dojo.uuid.LightweightGenerator.generate(dojo.uuid.Uuid);
- * </pre>
- *
- * @param	returnType	Optional. The type of instance to return.
- * @return	A newly generated version 4 UUID.
- */
-	this.generate = function(returnType) {
+		// examples: 
+		//   var string = dojo.uuid.LightweightGenerator.generate();
+		//   var string = dojo.uuid.LightweightGenerator.generate(String);
+		//   var uuid   = dojo.uuid.LightweightGenerator.generate(dojo.uuid.Uuid);
 		var hyphen = "-";
 		var versionCodeForRandomlyGeneratedUuids = "4"; // 8 == binary2hex("0100")
 		var variantCodeForDCEUuids = "8"; // 8 == binary2hex("1000")

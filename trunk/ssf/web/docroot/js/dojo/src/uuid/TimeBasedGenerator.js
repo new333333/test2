@@ -9,22 +9,21 @@
 */
 
 dojo.provide("dojo.uuid.TimeBasedGenerator");
-dojo.require("dojo.lang.*");
+dojo.require("dojo.lang.common");
+dojo.require("dojo.lang.type");
+dojo.require("dojo.lang.assert");
 
 dojo.uuid.TimeBasedGenerator = new function() {
 
-// --------------------------------------------------
-// Public constants
-// --------------------------------------------------
+	// --------------------------------------------------
+	// Public constants:
 	// Number of hours between October 15, 1582 and January 1, 1970:
 	this.GREGORIAN_CHANGE_OFFSET_IN_HOURS = 3394248;
-	
 	// Number of seconds between October 15, 1582 and January 1, 1970:
 	//   this.GREGORIAN_CHANGE_OFFSET_IN_SECONDS = 12219292800;	
 	
-// --------------------------------------------------
-// Private variables
-// --------------------------------------------------
+	// --------------------------------------------------
+	// Private variables:
 	var _uuidPseudoNodeString = null;
 	var _uuidClockSeqString = null;
 	var _dateValueOfPreviousUuid = null;
@@ -32,20 +31,17 @@ dojo.uuid.TimeBasedGenerator = new function() {
 	var _cachedMillisecondsBetween1582and1970 = null;
 	var _cachedHundredNanosecondIntervalsPerMillisecond = null;
 	var _uniformNode = null;
+	
+	// --------------------------------------------------
+	// Private constants:
 	var HEX_RADIX = 16;
 
-// --------------------------------------------------
-// Private functions
-// --------------------------------------------------
-
-/**
- * Given an array which holds a 64-bit number broken into 4 16-bit elements,
- * this method carries any excess bits (greater than 16-bits) from each array
- * element into the next.
- *
- * @param	arrayA	An array with 4 elements, each of which is a 16-bit number.
- */
-	function _carry(arrayA) {
+	function _carry(/* array */ arrayA) {
+		// summary: 
+		//   Given an array which holds a 64-bit number broken into 4 16-bit 
+		//   elements, this method carries any excess bits (greater than 16-bits) 
+		//   from each array element into the next.
+		// arrayA: An array with 4 elements, each of which is a 16-bit number.
 		arrayA[2] += arrayA[3] >>> 16;
 		arrayA[3] &= 0xFFFF;
 		arrayA[1] += arrayA[2] >>> 16;
@@ -55,14 +51,10 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		dojo.lang.assert((arrayA[0] >>> 16) === 0);
 	}
 
-/**
- * Given a floating point number, this method returns an array which holds a
- * 64-bit number broken into 4 16-bit elements.
- *
- * @param	x	A floating point number.
- * @return   An array with 4 elements, each of which is a 16-bit number.
- */
-	function _get64bitArrayFromFloat(x) {
+	function _get64bitArrayFromFloat(/* float */ x) {
+		// summary: 
+		//   Given a floating point number, this method returns an array which 
+		//   holds a 64-bit number broken into 4 16-bit elements.
 		var result = new Array(0, 0, 0, 0);
 		result[3] = x % 0x10000;
 		x -= result[3];
@@ -74,19 +66,16 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		x -= result[1];
 		x /= 0x10000;
 		result[0] = x;
-		return result;
+		return result; // Array with 4 elements, each of which is a 16-bit number.
 	}
 
-/**
- * Takes two arrays, each of which holds a 64-bit number broken into 4
- * 16-bit elements, and returns a new array that holds a 64-bit number
- * that is the sum of the two original numbers.
- *
- * @param	arrayA	An array with 4 elements, each of which is a 16-bit number.
- * @param	arrayB	An array with 4 elements, each of which is a 16-bit number.
- * @return   An array with 4 elements, each of which is a 16-bit number.
- */
-	function _addTwo64bitArrays(arrayA, arrayB) {
+	function _addTwo64bitArrays(/* array */ arrayA, /* array */ arrayB) {
+		// summary: 
+		//   Takes two arrays, each of which holds a 64-bit number broken into 4
+		//   16-bit elements, and returns a new array that holds a 64-bit number
+		//   that is the sum of the two original numbers.
+		// arrayA: An array with 4 elements, each of which is a 16-bit number.
+		// arrayB: An array with 4 elements, each of which is a 16-bit number.
 		dojo.lang.assertType(arrayA, Array);
 		dojo.lang.assertType(arrayB, Array);
 		dojo.lang.assert(arrayA.length == 4);
@@ -98,19 +87,16 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		result[1] = arrayA[1] + arrayB[1];
 		result[0] = arrayA[0] + arrayB[0];
 		_carry(result);
-		return result;
+		return result; // Array with 4 elements, each of which is a 16-bit number.
 	}
 
-/**
- * Takes two arrays, each of which holds a 64-bit number broken into 4
- * 16-bit elements, and returns a new array that holds a 64-bit number
- * that is the product of the two original numbers.
- *
- * @param	arrayA	An array with 4 elements, each of which is a 16-bit number.
- * @param	arrayB	An array with 4 elements, each of which is a 16-bit number.
- * @return   An array with 4 elements, each of which is a 16-bit number.
- */
-	function _multiplyTwo64bitArrays(arrayA, arrayB) {
+	function _multiplyTwo64bitArrays(/* array */ arrayA, /* array */ arrayB) {
+		// summary: 
+		//   Takes two arrays, each of which holds a 64-bit number broken into 4
+		//   16-bit elements, and returns a new array that holds a 64-bit number
+		//   that is the product of the two original numbers.
+		// arrayA: An array with 4 elements, each of which is a 16-bit number.
+		// arrayB: An array with 4 elements, each of which is a 16-bit number.
 		dojo.lang.assertType(arrayA, Array);
 		dojo.lang.assertType(arrayB, Array);
 		dojo.lang.assert(arrayA.length == 4);
@@ -146,34 +132,28 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		_carry(result);
 		result[3] += arrayA[3] * arrayB[3];
 		_carry(result);
-		return result;
+		return result; // Array with 4 elements, each of which is a 16-bit number.
 	}
 
-/**
- * Pads a string with leading zeros and returns the result.
- * For example:
- * <pre>
- *   result = _padWithLeadingZeros("abc", 6);
- *   dojo.lang.assert(result == "000abc");
- * </pre>
- *
- * @param	string	A string to add padding to.
- * @param	desiredLength	The number of characters the return string should have.
- * @return   A string.
- */
-	function _padWithLeadingZeros(string, desiredLength) {
+	function _padWithLeadingZeros(/* string */ string, /* int */ desiredLength) {
+		// summary: 
+		//   Pads a string with leading zeros and returns the result.
+		// string: A string to add padding to.
+		// desiredLength: The number of characters the return string should have.
+
+		// examples: 
+		//   result = _padWithLeadingZeros("abc", 6);
+		//   dojo.lang.assert(result == "000abc");
 		while (string.length < desiredLength) {
 			string = "0" + string;
 		}
-		return string;
+		return string; // string
 	}
 
-/**
- * Returns a randomly generated 8-character string of hex digits.
- *
- * @return   An 8-character hex string.
- */
 	function _generateRandomEightCharacterHexString() {
+		// summary: 
+		//   Returns a randomly generated 8-character string of hex digits.
+
 		// FIXME: This probably isn't a very high quality random number.
 	
 		// Make random32bitNumber be a randomly generated floating point number
@@ -184,20 +164,18 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		while (eightCharacterString.length < 8) {
 			eightCharacterString = "0" + eightCharacterString;
 		}
-		return eightCharacterString;
+		return eightCharacterString; // String (an 8-character hex string)
 	}
 
-/**
- * Generates a time-based UUID, meaning a version 1 UUID.  JavaScript
- * code running in a browser doesn't have access to the IEEE 802.3 address
- * of the computer, so if a node value isn't supplied, we generate a random 
- * pseudonode value instead.
- *
- * @param	node	Optional. A 12-character string to use as the node in the new UUID.
- * @return   Returns a 36 character string, which will look something like "b4308fb0-86cd-11da-a72b-0800200c9a66".
- */
-	function _generateUuidString(node) {
-		dojo.lang.assertType(node, [String, "optional"]);
+	function _generateUuidString(/* string? */ node) {
+		// summary: 
+		//   Generates a time-based UUID, meaning a version 1 UUID.  
+		// description: 
+		//   JavaScript code running in a browser doesn't have access to the 
+		//   IEEE 802.3 address of the computer, so if a node value isn't 
+		//   supplied, we generate a random pseudonode value instead.
+		// node: An optional 12-character string to use as the node in the new UUID.
+		dojo.lang.assertType(node, String, {optional: true});
 		if (node) {
 			dojo.lang.assert(node.length == 12);
 		} else {
@@ -272,76 +250,60 @@ dojo.uuid.TimeBasedGenerator = new function() {
 					versionCodeForTimeBasedUuids + hexTimeHigh + hyphen +
 					_uuidClockSeqString + hyphen + node;
 		resultUuid = resultUuid.toLowerCase();
-		return resultUuid;
+		return resultUuid; // String (a 36 character string, which will look something like "b4308fb0-86cd-11da-a72b-0800200c9a66")
 	}
 
-// --------------------------------------------------
-// Public functions
-// --------------------------------------------------
-
-/**
- * Sets the 'node' value that will be included in generated UUIDs.
- *
- * @param	node	A 12-character hex string representing a pseudoNode or hardwareNode.
- */
-	this.setNode = function(node) {
+	this.setNode = function(/* string? */ node) {
+		// summary: 
+		//   Sets the 'node' value that will be included in generated UUIDs.
+		// node: A 12-character hex string representing a pseudoNode or hardwareNode.
 		dojo.lang.assert((node === null) || (node.length == 12));
 		_uniformNode = node;
 	};
 
-/**
- * Returns the 'node' value that will be included in generated UUIDs.
- *
- * @return	A 12-character hex string representing a pseudoNode or hardwareNode.
- */
 	this.getNode = function() {
-		return _uniformNode;
+		// summary: 
+		//   Returns the 'node' value that will be included in generated UUIDs.
+		return _uniformNode; // String (a 12-character hex string representing a pseudoNode or hardwareNode)
 	};
 
-/**
- * This function generates time-based UUIDs, meaning "version 1" UUIDs.
- *
- * For more info, see
- *   http://www.webdav.org/specs/draft-leach-uuids-guids-01.txt
- *   http://www.infonuovo.com/dma/csdocs/sketch/instidid.htm
- *   http://kruithof.xs4all.nl/uuid/uuidgen
- *   http://www.opengroup.org/onlinepubs/009629399/apdxa.htm#tagcjh_20
- *   http://jakarta.apache.org/commons/sandbox/id/apidocs/org/apache/commons/id/uuid/clock/Clock.html
- *
- * Examples:
- * <pre>
- *   var generate = dojo.uuid.TimeBasedGenerator.generate;
- *   var uuid;   // an instance of dojo.uuid.Uuid
- *   var string; // a simple string literal
- *   string = generate();
- *   string = generate(String);
- *   uuid   = generate(dojo.uuid.Uuid);
- *   string = generate("017bf397618a");
- *   string = generate({node: "017bf397618a"});         // hardwareNode
- *   string = generate({node: "f17bf397618a"});         // pseudoNode
- *   string = generate({hardwareNode: "017bf397618a"});
- *   string = generate({pseudoNode:   "f17bf397618a"});
- *   string = generate({node: "017bf397618a", returnType: String});
- *   uuid   = generate({node: "017bf397618a", returnType: dojo.uuid.Uuid});
- *   dojo.uuid.TimeBasedGenerator.setNode("017bf397618a");
- *   string = generate(); // the generated UUID has node == "017bf397618a"
- *   uuid   = generate(dojo.uuid.Uuid); // the generated UUID has node == "017bf397618a"
- * </pre>
- *
- * @param	class	The type of instance to return.
- * @param	node	A 12-character hex string representing a pseudoNode or hardwareNode.
- * @namedParam	node	A 12-character hex string representing a pseudoNode or hardwareNode.
- * @namedParam	hardwareNode	A 12-character hex string containing an IEEE 802.3 network node identificator.
- * @namedParam	pseudoNode	A 12-character hex string representing a pseudoNode.
- * @namedParam	returnType	The type of instance to return.
- * @return	A newly generated version 1 UUID.
- */
-	this.generate = function(input) {
+	this.generate = function(/* misc? */ input) {
+		// summary: 
+		//   This function generates time-based UUIDs, meaning "version 1" UUIDs. 
+		// description: 
+		// For more info, see
+		//   http://www.webdav.org/specs/draft-leach-uuids-guids-01.txt
+		//   http://www.infonuovo.com/dma/csdocs/sketch/instidid.htm
+		//   http://kruithof.xs4all.nl/uuid/uuidgen
+		//   http://www.opengroup.org/onlinepubs/009629399/apdxa.htm#tagcjh_20
+		//   http://jakarta.apache.org/commons/sandbox/id/apidocs/org/apache/commons/id/uuid/clock/Clock.html
+
+		// examples: 
+		//   var generate = dojo.uuid.TimeBasedGenerator.generate;
+		//   var uuid;   // an instance of dojo.uuid.Uuid
+		//   var string; // a simple string literal
+		//   string = generate();
+		//   string = generate(String);
+		//   uuid   = generate(dojo.uuid.Uuid);
+		//   string = generate("017bf397618a");
+		//   string = generate({node: "017bf397618a"});         // hardwareNode
+		//   string = generate({node: "f17bf397618a"});         // pseudoNode
+		//   string = generate({hardwareNode: "017bf397618a"});
+		//   string = generate({pseudoNode:   "f17bf397618a"});
+		//   string = generate({node: "017bf397618a", returnType: String});
+		//   uuid   = generate({node: "017bf397618a", returnType: dojo.uuid.Uuid});
+		//   dojo.uuid.TimeBasedGenerator.setNode("017bf397618a");
+		//   string = generate(); // the generated UUID has node == "017bf397618a"
+		//   uuid   = generate(dojo.uuid.Uuid); // the generated UUID has node == "017bf397618a"
 		var nodeString = null;
 		var returnType = null;
 		
 		if (input) {
 			if (dojo.lang.isObject(input) && !dojo.lang.isBuiltIn(input)) {
+				// input: object {node: string, hardwareNode: string, pseudoNode: string}
+				// node: A 12-character hex string representing a pseudoNode or hardwareNode.
+				// hardwareNode: A 12-character hex string containing an IEEE 802.3 network node identificator.
+				// pseudoNode: A 12-character hex string representing a pseudoNode.
 				var namedParameters = input;
 				dojo.lang.assertValidKeywords(namedParameters, ["node", "hardwareNode", "pseudoNode", "returnType"]);
 				var node = namedParameters["node"];
@@ -359,13 +321,15 @@ dojo.uuid.TimeBasedGenerator = new function() {
 					}
 				}
 				returnType = namedParameters["returnType"];
-				dojo.lang.assertType(returnType, [Function, "optional"]);
+				dojo.lang.assertType(returnType, Function, {optional: true});
 			} else {
 				if (dojo.lang.isString(input)) {
+					// input: string A 12-character hex string representing a pseudoNode or hardwareNode.
 					nodeString = input;
 					returnType = null;
 				} else {
 					if (dojo.lang.isFunction(input)) {
+						// input: constructor The type of object to return. Usually String or dojo.uuid.Uuid
 						nodeString = null;
 						returnType = input;
 					}
@@ -376,7 +340,7 @@ dojo.uuid.TimeBasedGenerator = new function() {
 				var integer = parseInt(nodeString, HEX_RADIX);
 				dojo.lang.assert(isFinite(integer));
 			}
-			dojo.lang.assertType(returnType, [Function, "optional"]);
+			dojo.lang.assertType(returnType, Function, {optional: true});
 		}
 		
 		var uuidString = _generateUuidString(nodeString);
@@ -386,6 +350,6 @@ dojo.uuid.TimeBasedGenerator = new function() {
 		} else {
 			returnValue = uuidString;
 		}
-		return returnValue;
+		return returnValue; // object
 	};
 }();

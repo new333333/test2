@@ -63,7 +63,7 @@ dojo.html.renderedTextContent = function(node){
 			case 5: // ENTITY_REFERENCE_NODE
 				var display = "unknown";
 				try {
-					display = dojo.style.getStyle(node.childNodes[i], "display");
+					display = dojo.html.getStyle(node.childNodes[i], "display");
 				} catch(E) {}
 				switch (display) {
 					case "block": case "list-item": case "run-in":
@@ -93,7 +93,7 @@ dojo.html.renderedTextContent = function(node){
 				var text = node.childNodes[i].nodeValue;
 				var textTransform = "unknown";
 				try {
-					textTransform = dojo.style.getStyle(node, "text-transform");
+					textTransform = dojo.html.getStyle(node, "text-transform");
 				} catch(E) {}
 				switch (textTransform){
 					case "capitalize": text = dojo.string.capitalize(text); break;

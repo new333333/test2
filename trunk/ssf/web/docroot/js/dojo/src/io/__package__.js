@@ -9,7 +9,7 @@
 */
 
 dojo.kwCompoundRequire({
-	common: ["dojo.io"],
+	common: ["dojo.io.common"],
 	rhino: ["dojo.io.RhinoIO"],
 	browser: ["dojo.io.BrowserIO", "dojo.io.cookie"],
 	dashboard: ["dojo.io.BrowserIO", "dojo.io.cookie"]

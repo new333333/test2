@@ -12,9 +12,12 @@ dojo.provide("dojo.widget.Rounded");
 dojo.widget.tags.addParseTreeHandler("dojo:rounded");
 
 dojo.require("dojo.widget.*");
-dojo.require("dojo.widget.html.ContentPane");
-dojo.require("dojo.html");
-dojo.require("dojo.style");
+dojo.require("dojo.widget.ContentPane");
+dojo.require("dojo.html.style");
+dojo.require("dojo.html.display");
+dojo.require("dojo.gfx.color");
+
+dojo.deprecated("dojo.widget.Rounded will be removed in version 0.5; you can now apply rounded corners to any block element using dojo.lfx.rounded.", "0.5");
 
 /*
  *	The following script is derived (with permission) from curvyCorners,
@@ -22,15 +25,12 @@ dojo.require("dojo.style");
  *	Lucas (CLA on file)
  */
 
-dojo.widget.Rounded = function() {
-	dojo.widget.html.ContentPane.call(this);
-}
-
-dojo.inherits(dojo.widget.Rounded, dojo.widget.html.ContentPane);
-
-dojo.lang.extend(dojo.widget.Rounded, {
+dojo.widget.defineWidget(
+	"dojo.widget.Rounded",
+	dojo.widget.ContentPane,
+{
 	isSafari: dojo.render.html.safari,
-	widgetType: "Rounded",
+
 	boxMargin: "50px", // margin outside rounded corner box
 	radius: 14, // radius of corners
 	domNode: "",
@@ -40,7 +40,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 	fillInTemplate: function(args, frag) {
 		dojo.widget.Rounded.superclass.fillInTemplate.call(this, args, frag);
 
-		dojo.style.insertCssFile(this.templateCssPath);
+		dojo.html.insertCssFile(this.templateCssPath);
 
 		// Magic to automatically calculate the box height/width if not supplied
 		if (this.domNode.style.height<=0) {
@@ -86,20 +86,20 @@ dojo.lang.extend(dojo.widget.Rounded, {
 		this.masterCorners   = [];
 
 		// Get box formatting details
-		var boxHeight       = dojo.style.getStyle(this.box, "height");
+		var boxHeight       = dojo.html.getStyle(this.box, "height");
 		if(boxHeight=="") boxHeight="0px";
-		var boxWidth        = dojo.style.getStyle(this.box, "width");
-		var borderWidth     = dojo.style.getStyle(this.box, "borderTopWidth");
+		var boxWidth        = dojo.html.getStyle(this.box, "width");
+		var borderWidth     = dojo.html.getStyle(this.box, "borderTopWidth");
 		if(borderWidth=="") borderWidth="0px";
 		//alert(borderWidth);
 
-		var borderColour    = dojo.style.getStyle(this.box, "borderTopColor");
+		var borderColour    = dojo.html.getStyle(this.box, "borderTopColor");
 		// Set to true if we have a border
 		if(borderWidth>0) this.antiAlias=true;
 
-		var boxColour       = dojo.style.getStyle(this.box, "backgroundColor");
-		var backgroundImage = dojo.style.getStyle(this.box, "backgroundImage");
-		var boxPosition     = dojo.style.getStyle(this.box, "position");
+		var boxColour       = dojo.html.getStyle(this.box, "backgroundColor");
+		var backgroundImage = dojo.html.getStyle(this.box, "backgroundImage");
+		var boxPosition     = dojo.html.getStyle(this.box, "position");
 
 		// Set formatting propertes
 		this.boxHeight       = parseInt(((boxHeight != "" && boxHeight != "auto" && boxHeight.indexOf("%") == -1)? boxHeight.substring(0, boxHeight.indexOf("px")) : this.box.scrollHeight));
@@ -109,7 +109,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 		// DEBUG ME?
 
 		//dojo.debug(this.rgb2Hex(boxColour));
-		var test  = new dojo.graphics.color.Color(boxColour);
+		var test  = new dojo.gfx.color.Color(boxColour);
 		//dojo.debug(test.toHex()); 
 
 		this.boxColour       = ((boxColour != "" && boxColour != "transparent")? ((boxColour.substr(0, 3) == "rgb")? this.rgb2Hex(boxColour) : boxColour) : "#ffffff");
@@ -329,7 +329,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 												this.drawPixel(intx, inty, this.borderColour, 100, 1, newCorner, -1, this.settings[cc].radius);
 											}
 										} else {
-											var pixelcolour = dojo.graphics.color.blend(this.boxColour, this.borderColour, this.pixelFraction(intx, inty, borderRadius));
+											var pixelcolour = dojo.gfx.color.blend(this.boxColour, this.borderColour, this.pixelFraction(intx, inty, borderRadius));
 											this.drawPixel(intx, inty, pixelcolour, 100, 1, newCorner, 0, this.settings[cc].radius);
 										}
 									}
@@ -569,7 +569,7 @@ dojo.lang.extend(dojo.widget.Rounded, {
 			
 			// Set opacity if the transparency is anything other than 100
 			if (transAmount != 100) {
-				dojo.style.setOpacity(pixel, transAmount);
+				dojo.html.setOpacity(pixel, transAmount);
 			}
 			// Set the pixels position
 			pixel.style.top = inty + "px";

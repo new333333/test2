@@ -135,7 +135,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_object, {
 	createDragNode: function() {
 		var node = this.domNode.cloneNode(true);
 		if(this.dragClass) { dojo.html.addClass(node, this.dragClass); }
-		if(this.opacity < 1) { dojo.style.setOpacity(node, this.opacity); }
+		if(this.opacity < 1) { dojo.html.setOpacity(node, this.opacity); }
 		if(node.tagName.toLowerCase() == "tr"){
 			// dojo.debug("Dragging table row")
 			// Create a table for the cloned row
@@ -175,7 +175,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_object, {
 		dojo.html.clearSelection();
 
 		this.scrollOffset = dojo.html.getScrollOffset();
-		this.dragStartPosition = dojo.style.getAbsolutePosition(this.domNode, true);
+		this.dragStartPosition = dojo.html.getAbsolutePosition(this.domNode, true);
 ss_debug('this.dragStartPosition.y = '+this.dragStartPosition.y)
 
 		this.dragOffset = {y: this.dragStartPosition.y - e.pageY,
@@ -192,10 +192,10 @@ ss_debug('e.pageY = '+e.pageY)
 		if (titleEles.length >= 1) 
 				this.dragClone.appendChild(titleEles[0].cloneNode(true));
 		
-		dojo.style.setContentBoxWidth(this.dragClone, dojo.style.getContentBoxWidth(this.domNode));
+		dojo.style.setContentBoxWidth(this.dragClone, dojo.html.getContentBoxWidth(this.domNode));
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
-			dojo.style.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
+			dojo.html.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
 
 		if (this.constrainToContainer) {
 			this.constraints = this.getConstraints();
@@ -298,7 +298,7 @@ ss_debug('e.pageY = '+e.pageY)
 				break;
 
 			case "dropFailure": // slide back to the start
-				var startCoords = dojo.style.getAbsolutePosition(this.dragClone, true);
+				var startCoords = dojo.html.getAbsolutePosition(this.dragClone, true);
 				// offset the end so the effect can be seen
 				var endCoords = [this.dragStartPosition.x + 1,
 					this.dragStartPosition.y + 1];
@@ -364,7 +364,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 	onDragOver: function(e) {
 		if(!this.accepts(e.dragObjects)){ return false; }
 
-		var height = parseInt(dojo.style.getContentBoxHeight(this.domNode))+"px";
+		var height = parseInt(dojo.html.getContentBoxHeight(this.domNode))+"px";
 		this.domNode.className = "ss_dashboardDropTarget_over";
 		this.domNode.style.height = height;
 
@@ -373,7 +373,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
 			child = this.domNode.childNodes[i];
 			if (child.nodeType != dojo.dom.ELEMENT_NODE) { continue; }
-			var pos = dojo.style.getAbsolutePosition(child, true);
+			var pos = dojo.html.getAbsolutePosition(child, true);
 			var height = dojo.style.getInnerHeight(child);
 			var width = dojo.style.getInnerWidth(child);
 			this.childBoxes.push({top: pos.y, bottom: pos.y+height,
@@ -434,19 +434,19 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 				}
 			}
 			if (sourceDropSpotDiv != targetNode) {
-				var startCoords = dojo.style.getAbsolutePosition(sourceNode, true)
+				var startCoords = dojo.html.getAbsolutePosition(sourceNode, true)
 				dojo.html.insertAfter(sourceNode, targetNode);
 				if (ss_dashboardSliderObj != null) ss_clearDashboardSlider();
-				ss_dashboardSliderObjEndCoords = dojo.style.getAbsolutePosition(sourceNode, true)
+				ss_dashboardSliderObjEndCoords = dojo.html.getAbsolutePosition(sourceNode, true)
 				ss_dashboardSliderObj = sourceNode.cloneNode(true);
 				ss_dashboardSliderObj.style.position = "absolute";
 				ss_dashboardSliderObj.style.left = parseInt(startCoords.x) + "px"
 				ss_dashboardSliderObj.style.top = parseInt(startCoords.y) + "px"
-				dojo.style.setContentBoxWidth(ss_dashboardSliderObj, dojo.style.getContentBoxWidth(sourceNode));
+				dojo.style.setContentBoxWidth(ss_dashboardSliderObj, dojo.html.getContentBoxWidth(sourceNode));
 				var bodyObj = document.getElementsByTagName("body").item(0);
 				bodyObj.appendChild(ss_dashboardSliderObj);
 				ss_dashboardSliderTargetObj = sourceNode;
-				dojo.style.setOpacity(ss_dashboardSliderTargetObj, .3);
+				dojo.html.setOpacity(ss_dashboardSliderTargetObj, .3);
 				dojo.fx.html.slideTo(ss_dashboardSliderObj, 400, ss_dashboardSliderObjEndCoords, ss_clearDashboardSlider);
 
 				//Signal that the layout changed
