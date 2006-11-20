@@ -267,21 +267,21 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<tr><td>\n");
 			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return viewDefinition();\">");
-			sb.append("View this definition");
+			sb.append(NLT.get("definition.view_this_definition"));
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 			
 			sb.append("<tr><td>\n");
 			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return modifyDefinition();\">");
-			sb.append("Modify the properties of this definition");
+			sb.append(NLT.get("definition.modifyProperties"));
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 
 			sb.append("<tr><td>\n");
 			sb.append("<a href=\"javascript: ;\" "); 
 			sb.append("onClick=\"return deleteDefinition();\">");
-			sb.append("Delete this definition");
+			sb.append(NLT.get("definition.deleteDefinition"));
 			sb.append("</a>\n");
 			sb.append("</td></tr>\n");
 

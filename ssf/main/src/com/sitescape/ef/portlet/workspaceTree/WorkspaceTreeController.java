@@ -11,12 +11,14 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -47,6 +49,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
+		BinderHelper.setBinderPermaLink(this, request, response);
 		Map<String,Object> model = new HashMap<String,Object>();
 		try {
 			//won't work on adapter
@@ -132,6 +135,16 @@ public class WorkspaceTreeController extends SAbstractController  {
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+		
+		//See if this is a user workspace
+		if (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) {
+			Document profileDef = user.getEntryDef().getDefinition();
+			model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
+			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getParentBinder());
+		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
