@@ -126,6 +126,12 @@ dojo.lang.extend(dojo.Deferred, {
 		return null;
 	},
 
+	makeCalled: function() {
+		var deferred = new dojo.Deferred();
+		deferred.callback();
+		return deferred;
+	},
+
 	repr: function(){
 		var state;
 		if(this.fired == -1){

@@ -49,9 +49,9 @@ dojo.lang.extend(dojo.selection.Selection, {
 
 	_find: function(item, inSelection) {
 		if(inSelection) {
-			return dojo.lang.find(item, this.selection);
+			return dojo.lang.find(this.selection, item);
 		} else {
-			return dojo.lang.find(item, this.items);
+			return dojo.lang.find(this.items, item);
 		}
 	},
 
@@ -289,6 +289,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(!noPivot) {
 				this._addPivot(item);
 			}
+			this.length = this.selection.length;
 			return true;
 		}
 		return false;
@@ -303,9 +304,8 @@ dojo.lang.extend(dojo.selection.Selection, {
 			if(item == this.lastSelected) {
 				this.lastSelected = null;
 			}
-
 			this._removePivot(item);
-
+			this.length = this.selection.length;
 			return true;
 		}
 		return false;
@@ -378,7 +378,7 @@ dojo.lang.extend(dojo.selection.Selection, {
 	},
 
 	_removePivot: function(item) {
-		var i = dojo.lang.find(item, this._pivotItems);
+		var i = dojo.lang.find(this._pivotItems, item);
 		if(i > -1) {
 			this._pivotItems.splice(i, 1);
 			this._pivotItem = this._pivotItems[this._pivotItems.length-1];

@@ -19,13 +19,13 @@ dojo.require("dojo.lang.extras");
 try{
 	importPackage(Packages.org.eclipse.swt.widgets);
 
-	dojo.declare("dojo.widget.SwtWidget", dojo.widget.Widget, {
-		initializer: function() {
+	dojo.declare("dojo.widget.SwtWidget", dojo.widget.Widget,
+		function() {
 			if((arguments.length>0)&&(typeof arguments[0] == "object")){
 				this.create(arguments[0]);
 			}
 		},
-
+	{
 		display: null,
 		shell: null,
 
