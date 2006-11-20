@@ -217,9 +217,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 					SearchTerm term = pDef.getSearchTerm();
 					if (term != null) {
 						Message msgs[] = mFolder.search(term);
-						if (pDef.isEnabled()) {
+						
+						if ((msgs.length != 0) && pDef.isEnabled()) {
 							Folder folder = (Folder)pDef.getBinder();
-//TODO: set request context to user who sent the message and clear after
 							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
 							processor.postMessages(folder, pDef, msgs, session);
 						} 

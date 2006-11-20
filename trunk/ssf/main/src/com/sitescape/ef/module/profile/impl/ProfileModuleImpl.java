@@ -8,13 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.HashSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -30,10 +30,10 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NoGroupByTheIdException;
-import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Rating;
@@ -410,6 +410,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         //make sure still in a transaction when return.  ApplicationContext takes care of this.
         Workspace ws = (Workspace)processor.addBinder(binder, definition, Workspace.class, inputData, fileItems);
         entry.setWorkspaceId(ws.getId());
+        ws.setOwner(new HistoryStamp(entry));
  //       ws.setInheritAclFromParent(false);
  //       ws.setFunctionMembershipInherited(false);
         return ws.getId();

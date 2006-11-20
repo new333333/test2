@@ -19,6 +19,10 @@ import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Visits;
+import com.sitescape.ef.domain.NoUserByTheIdException;
+import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.ef.domain.NoGroupByTheIdException;
+import com.sitescape.ef.domain.NoGroupByTheNameException;
 
 /**
  * @author Jong Kim
@@ -52,7 +56,7 @@ public interface ProfileDao {
      * @throws DataAccessException
      * @throws NoUserByTheIdException
      */
-    public User loadUser(Long userId, String zoneName);
+    public User loadUser(Long userId, String zoneName) throws NoUserByTheIdException;
     /**
      * Same as <code>loadUser</code> except that this throws
      * NoUserByTheIdException if the user object is disabled.
@@ -60,7 +64,7 @@ public interface ProfileDao {
      * @param zoneName
      * @return
      */
-    public User loadUserOnlyIfEnabled(Long userId, String zoneName);
+    public User loadUserOnlyIfEnabled(Long userId, String zoneName) throws NoUserByTheIdException;
     /**
      * @param userName
      * @param zoneName
@@ -69,7 +73,7 @@ public interface ProfileDao {
      * @throws NoUserByTheNameException
      * @throws NoZoneByTheIdException
      */
-    public User findUserByName(String principalName, String zoneName);
+    public User findUserByName(String principalName, String zoneName) throws NoUserByTheNameException;
     
     /**
      * Same as <code>findUserByName</code> except that this throws 
@@ -81,19 +85,20 @@ public interface ProfileDao {
      * @throws NoUserByTheNameException
      * @throws NoZoneByTheIdException
      */
-    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName);
+    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName) throws NoUserByTheNameException;
 
     public List loadUsers(Collection usersIds, String zoneName);
     public List loadEnabledUsers (Collection usersIds, String zoneName);
     public SFQuery queryUsers(FilterControls filter, String zoneName) throws DataAccessException; 
     public List loadUsers(FilterControls filter, String zoneName) throws DataAccessException; 
-	public void bulkLoadCollections(final Collection<Principal> entries);
+    public User getReservedUser(String internalId, String zoneName) throws NoUserByTheNameException;
+    public void bulkLoadCollections(final Collection<Principal> entries);
 
     public int countUsers(FilterControls filter, String zoneName);
     public UserProperties loadUserProperties(Long userId);
     public UserProperties loadUserProperties(Long userId, Long binderId);
     
-    public Group loadGroup(Long groupId, String zoneName);
+    public Group loadGroup(Long groupId, String zoneName) throws NoGroupByTheIdException;
     public List loadGroups(Collection groupsIds, String zoneName);
     public int countGroups(FilterControls filter, String zoneName);
     public SFQuery queryGroups(FilterControls filter, String zoneName) throws DataAccessException; 
@@ -102,7 +107,7 @@ public interface ProfileDao {
 	public List getMembership(Long groupId, String zoneName);
 	public Set getAllGroupMembership(Long principalId, String zoneName);
 	public Set getPrincipalIds(User user);
-	public Group getReservedGroup(String internalId, String zoneName);		   
+	public Group getReservedGroup(String internalId, String zoneName) throws NoGroupByTheNameException;	   
 
     public SeenMap loadSeenMap(Long userId);
 	public Visits loadVisit(Long userId, EntityIdentifier entityId);
