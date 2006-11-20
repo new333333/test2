@@ -143,7 +143,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getParentBinder());
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
 		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
