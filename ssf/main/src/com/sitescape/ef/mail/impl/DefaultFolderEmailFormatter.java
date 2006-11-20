@@ -29,6 +29,8 @@ import org.springframework.util.FileCopyUtils;
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.BodyPart;
 import javax.mail.Part;
@@ -42,7 +44,11 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import com.sitescape.ef.context.request.RequestContext;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
@@ -52,6 +58,7 @@ import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.MailManager;
@@ -520,34 +527,63 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		if (definition == null) definition = folder.getDefaultEntryDef();
 		String defId=null;
 		if (definition != null) defId = definition.getId();
-		String [] from = new String[1];
-		String [] title = new String[1];
+		String from=null;
+		String title;
 		for (int i=0; i<msgs.length; ++i) {
-			try {
-				
-				title[0] = msgs[i].getSubject();
-				from[0] = msgs[i].getFrom()[0].toString();
-				inputData.put("from", from); 
-				inputData.put("title", title);
-				type=msgs[i].getContentType().trim();
-				content = msgs[i].getContent();
-				if (type.startsWith("text/plain")) {
-					processText(content, inputData);
-				} else if (type.startsWith("text/html")) {
-					processHTML(content, inputData);
-				} else if (content instanceof MimeMultipart) {
-					processMime((MimeMultipart)content, inputData, fileItems);
+			try {				
+				from = msgs[i].getFrom()[0].toString();
+				title = msgs[i].getSubject();
+				User fromUser = getFromUser(from);
+				RequestContext oldCtx = RequestContextHolder.getRequestContext();
+				try {
+					//need to setup user context for request
+					RequestContextUtil.setThreadContext(fromUser);
+					
+					inputData.put("from", from); 
+					inputData.put("title", title);
+					type=msgs[i].getContentType().trim();
+					content = msgs[i].getContent();
+					if (type.startsWith("text/plain")) {
+						processText(content, inputData);
+					} else if (type.startsWith("text/html")) {
+						processHTML(content, inputData);
+					} else if (content instanceof MimeMultipart) {
+						processMime((MimeMultipart)content, inputData, fileItems);
+					}
+					//	msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
+					folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+				} finally {
+					//reset context
+					RequestContextHolder.setRequestContext(oldCtx);
+					fileItems.clear();
+					inputData.clear();
+					
 				}
-				//msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
-				folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
-				fileItems.clear();
-				inputData.clear();
 			} catch (MessagingException me) {			
-			} catch (IOException io) {}
-			catch(WriteFilesException e) {
+			} catch (IOException io) {				
+			} catch (WriteFilesException e) {
 				logger.error(e.getMessage(), e);
+			} catch (NoUserByTheNameException nu) {
+				logger.error("Cannot post the message, no user: " + from);
 			}
 		}
+	}
+	private User getFromUser(String from) {
+		try {
+			//try to map email address to a user
+			InternetAddress[] fromEmails = InternetAddress.parse(from);
+			if (fromEmails.length > 0) {
+				String fromEmail = fromEmails[0].toString();	
+				List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneName());
+				if (users.size() == 1) return (User)users.get(0);
+				if (users.size() > 1) {
+					logger.error("Multiple users with same email address, cannot use for incoming email");
+				}
+			}
+		} catch (AddressException ax) {
+			logger.error("Error parsing incoming from address: ", ax);
+		}
+		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneName());
 	}
 	private void processText(Object content, Map inputData) {
 		if (inputData.containsKey("description")) return;
@@ -562,10 +598,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	}	
 	private void processMime(MimeMultipart content, Map inputData, Map fileItems) throws MessagingException, IOException {
 		int count = content.getCount();
-		String cType = content.getContentType();
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
-			String type = part.getContentType();
 			String disposition = part.getDisposition();
 			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0))
 				fileItems.put("ss_attachFile" + Integer.toString(fileItems.size() + 1), new FileHandler(part));

@@ -597,6 +597,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
     	return (Group)objs.get(0);
     }
+    public User getReservedUser(String internalId, String zoneName) {
+   		List<User>objs = getCoreDao().loadObjectsCacheable(User.class, new FilterControls(
+    					new String[]{"internalId", "zoneName"},
+    					new Object[]{internalId, zoneName}));
+    	if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
+    	return (User)objs.get(0);
+    }
     public Set getPrincipalIds(User user) {
     	return user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, user.getZoneName()));
     }

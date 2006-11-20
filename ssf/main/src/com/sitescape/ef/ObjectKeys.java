@@ -32,6 +32,7 @@ public interface ObjectKeys {
 	public static final String PROFILE_ROOT_ID="402883b90d0de1f3010d0df5582b0005";
 	public static final String ALL_USERS_GROUP_ID="402883b90d0de1f3010d0df5582b0006";
 	public static final String TOP_WORKSPACE_ID="402883b90d0de1f3010d0df5582b0007";
+	public static final String ANONYMOUS_POSTING_USER_ID="402883b90d0de1f3010d0df5582b0008";
 	
     public static final String BINDER="binder";
     public static final String CUSTOM_PROPERTY_PREFIX="custom.";

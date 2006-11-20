@@ -137,13 +137,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
 		//See if this is a user workspace
-		if (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) {
+		if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
+				binder.getOwner() != null) {
 			Document profileDef = user.getEntryDef().getDefinition();
 			model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-			model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getOwner().getPrincipal());
 		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
