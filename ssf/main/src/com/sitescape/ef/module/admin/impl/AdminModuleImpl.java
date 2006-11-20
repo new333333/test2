@@ -639,7 +639,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and zoneName=:zoneName", params);
 		//has to exist
 		Binder ws = (Binder)result.get(0);
-		if (!ObjectKeys.DEFAULT_WORKSPACE_DEF.equals(ws.getInternalId())) ws.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_DEF);
+		if (!ObjectKeys.TOP_WORKSPACE_ID.equals(ws.getInternalId())) ws.setInternalId(ObjectKeys.TOP_WORKSPACE_ID);
 		if (ws.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(ws);
 		params.put("name", "_profiles");
 		result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where name=:name and zoneName=:zoneName", params);
