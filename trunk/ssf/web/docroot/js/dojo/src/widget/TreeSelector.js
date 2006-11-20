@@ -14,23 +14,13 @@ dojo.provide("dojo.widget.TreeSelector");
 dojo.require("dojo.widget.HtmlWidget");
 
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeSelector");
-
-
-dojo.widget.TreeSelector = function() {
-	dojo.widget.HtmlWidget.call(this);
-
-
+dojo.widget.defineWidget("dojo.widget.TreeSelector", dojo.widget.HtmlWidget, function() {
 	this.eventNames = {};
 
 	this.listenedTrees = [];
 
-}
-
-dojo.inherits(dojo.widget.TreeSelector, dojo.widget.HtmlWidget);
-
-
-dojo.lang.extend(dojo.widget.TreeSelector, {
+},
+{
 	widgetType: "TreeSelector",
 	selectedNode: null,
 
@@ -126,6 +116,12 @@ dojo.lang.extend(dojo.widget.TreeSelector, {
 		var e = message.event;
 
 		if (this.selectedNode === node) {
+			if(e.ctrlKey || e.shiftKey || e.metaKey){
+				// If the node is currently selected, and they select it again while holding
+				// down a meta key, it deselects it
+				this.deselect();
+				return;
+			}
 			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
 			return;
 		}

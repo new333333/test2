@@ -210,7 +210,7 @@ dojo.widget.defineWidget (
 			}
 
 			var offset = dojo.html.getScrollOffset();
-			var parent = dojo.style.getAbsolutePosition(this.domNode, true);
+			var parent = dojo.html.getAbsolutePosition(this.domNode, true);
 			
 			if (this.isEnableX) {
 				var x = offset.x + e.clientX - parent.x;
@@ -423,7 +423,7 @@ dojo.declare (
 	calcValueSizeX: function () {
 		var dragObj = this.createDragMoveObject ();
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
-		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
+		dojo.html.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
 		
 		var constraints = dragObj.getConstraints ();
 		return (constraints.maxX - constraints.minX) / this.slider.valuesX;
@@ -433,7 +433,7 @@ dojo.declare (
 	calcValueSizeY: function () {
 		var dragObj = this.createDragMoveObject ();
 		dragObj.containingBlockPosition = dragObj.domNode.offsetParent ? 
-		dojo.style.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
+		dojo.html.getAbsolutePosition(dragObj.domNode.offsetParent) : {x:0, y:0};
 		var constraints = dragObj.getConstraints ();
 		return (constraints.maxY - constraints.minY) / this.slider.valuesY;
 	}

@@ -9,23 +9,18 @@
 */
 
 dojo.provide("dojo.widget.SlideShow");
-dojo.provide("dojo.widget.html.SlideShow");
 
-dojo.require("dojo.event");
+dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.lfx.*");
-dojo.require("dojo.style");
+dojo.require("dojo.html.display");
 
 dojo.widget.defineWidget(
-	"dojo.widget.html.SlideShow",
+	"dojo.widget.SlideShow",
 	dojo.widget.HtmlWidget,
 	{
-		templatePath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/HtmlSlideShow.css"),
-
-		// over-ride some defaults
-		isContainer: false,
-		widgetType: "SlideShow",
+		templatePath: dojo.uri.dojoUri("src/widget/templates/SlideShow.html"),
+		templateCssPath: dojo.uri.dojoUri("src/widget/templates/SlideShow.css"),
 
 		// useful properties
 		imgUrls: [],		// the images we'll go through
@@ -46,10 +41,16 @@ dojo.widget.defineWidget(
 		controlsContainer: null,
 		img1: null,
 		img2: null,
+		preventCache: false,
 
 		fillInTemplate: function(){
-			dojo.style.setOpacity(this.img1, 0.9999);
-			dojo.style.setOpacity(this.img2, 0.9999);
+			// safari will cache the images and not fire an image onload event if
+			// there are only two images in the slideshow
+			if(dojo.render.html.safari && this.imgUrls.length == 2) {
+				this.preventCache = true;
+			}
+			dojo.html.setOpacity(this.img1, 0.9999);
+			dojo.html.setOpacity(this.img2, 0.9999);
 			with(this.imagesContainer.style){
 				width = this.imgWidth+"px";
 				height = this.imgHeight+"px";
@@ -63,14 +64,23 @@ dojo.widget.defineWidget(
 				height = this.imgHeight+"px";
 			}
 			if(this.imgUrls.length>1){
-				this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+				this.img2.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++] + this.getUrlSuffix();
 				this.endTransition();
 			}else{
-				this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
+				this.img1.src = this.imgUrlBase+this.imgUrls[this.urlsIdx++] + this.getUrlSuffix();
 			}
 		},
 
+		getUrlSuffix: function() {
+			if(this.preventCache) {
+				return "?ts=" + (new Date()).getTime();
+			} else {
+				return "";
+			}
+		},
+		
 		togglePaused: function(){
+			dojo.debug("pause");
 			if(this.stopped){
 				this.stopped = false;
 				this.backgroundImageLoaded();
@@ -106,7 +116,6 @@ dojo.widget.defineWidget(
 			var tmp = this.foreground;
 			this.foreground = this.background;
 			this.background = tmp;
-
 			// keep on truckin
 			this.loadNextImage();
 		},
@@ -122,7 +131,7 @@ dojo.widget.defineWidget(
 				once: true, // make sure we only ever hear about it once
 				delay: this.delay
 			});
-			dojo.style.setOpacity(this[this.background], 1.0);
+			dojo.html.setOpacity(this[this.background], 1.0);
 			this[this.background].src = this.imgUrlBase+this.imgUrls[this.urlsIdx++];
 			if(this.urlsIdx>(this.imgUrls.length-1)){
 				this.urlsIdx = 0;
