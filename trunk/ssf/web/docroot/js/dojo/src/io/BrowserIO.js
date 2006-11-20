@@ -10,7 +10,7 @@
 
 dojo.provide("dojo.io.BrowserIO");
 
-dojo.require("dojo.io");
+dojo.require("dojo.io.common");
 dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.string.extras");
@@ -57,7 +57,7 @@ dojo.io.updateNode = function(node, urlOrArgs){
 dojo.io.formFilter = function(node) {
 	var type = (node.type||"").toLowerCase();
 	return !node.disabled && node.name
-		&& !dojo.lang.inArray(type, ["file", "submit", "image", "reset", "button"]);
+		&& !dojo.lang.inArray(["file", "submit", "image", "reset", "button"], type);
 }
 
 // TODO: Move to htmlUtils
@@ -81,7 +81,7 @@ dojo.io.encodeForm = function(formNode, encoding, formFilter){
 					values.push(name + "=" + enc(elm.options[j].value));
 				}
 			}
-		}else if(dojo.lang.inArray(type, ["radio", "checkbox"])){
+		}else if(dojo.lang.inArray(["radio", "checkbox"], type)){
 			if(elm.checked){
 				values.push(name + "=" + enc(elm.value));
 			}
@@ -139,7 +139,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 
 		for(var i = 0; i < form.elements.length; i++) {
 			var node = form.elements[i];
-			if(node && node.type && dojo.lang.inArray(node.type.toLowerCase(), ["submit", "button"])) {
+			if(node && node.type && dojo.lang.inArray(["submit", "button"], node.type.toLowerCase())) {
 				this.connect(node, "onclick", "click");
 			}
 		}
@@ -177,11 +177,11 @@ dojo.lang.extend(dojo.io.FormBind, {
 		var accept = false;
 		if(node.disabled || !node.name) {
 			accept = false;
-		} else if(dojo.lang.inArray(type, ["submit", "button", "image"])) {
+		} else if(dojo.lang.inArray(["submit", "button", "image"], type)) {
 			if(!this.clickedButton) { this.clickedButton = node; }
 			accept = node == this.clickedButton;
 		} else {
-			accept = !dojo.lang.inArray(type, ["file", "submit", "reset", "button"]);
+			accept = !dojo.lang.inArray(["file", "submit", "reset", "button"], type);
 		}
 		return accept;
 	},
@@ -253,7 +253,7 @@ dojo.io.XMLHTTPTransport = new function(){
 					dojo.debug(http.responseText);
 					ret = null;
 				}
-			}else if(kwArgs.mimetype == "text/json"){
+			}else if(kwArgs.mimetype == "text/json" || kwArgs.mimetype == "application/json"){
 				try{
 					ret = dj_eval("("+http.responseText+")");
 				}catch(e){
@@ -299,41 +299,61 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.startWatchingInFlight = function(){
 		if(!this.inFlightTimer){
-			this.inFlightTimer = setInterval("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
+			// setInterval broken in mozilla x86_64 in some circumstances, see
+			// https://bugzilla.mozilla.org/show_bug.cgi?id=344439
+			// using setTimeout instead
+			this.inFlightTimer = setTimeout("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
 		}
 	}
 
 	this.watchInFlight = function(){
 		var now = null;
-		for(var x=this.inFlight.length-1; x>=0; x--){
-			var tif = this.inFlight[x];
-			if(!tif){ this.inFlight.splice(x, 1); continue; }
-			if(4==tif.http.readyState){
-				// remove it so we can clean refs
-				this.inFlight.splice(x, 1);
-				doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
-			}else if (tif.startTime){
-				//See if this is a timeout case.
-				if(!now){
-					now = (new Date()).getTime();
-				}
-				if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
-					//Stop the request.
-					if(typeof tif.http.abort == "function"){
-						tif.http.abort();
+		// make sure sync calls stay thread safe, if this callback is called during a sync call
+		// and this results in another sync call before the first sync call ends the browser hangs
+		if(!dojo.hostenv._blockAsync && !_this._blockAsync){
+			for(var x=this.inFlight.length-1; x>=0; x--){
+				try{
+					var tif = this.inFlight[x];
+					if(!tif || tif.http._aborted || !tif.http.readyState){
+						this.inFlight.splice(x, 1); continue; 
 					}
-
-					// remove it so we can clean refs
-					this.inFlight.splice(x, 1);
-					tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
+					if(4==tif.http.readyState){
+						// remove it so we can clean refs
+						this.inFlight.splice(x, 1);
+						doLoad(tif.req, tif.http, tif.url, tif.query, tif.useCache);
+					}else if (tif.startTime){
+						//See if this is a timeout case.
+						if(!now){
+							now = (new Date()).getTime();
+						}
+						if(tif.startTime + (tif.req.timeoutSeconds * 1000) < now){
+							//Stop the request.
+							if(typeof tif.http.abort == "function"){
+								tif.http.abort();
+							}
+		
+							// remove it so we can clean refs
+							this.inFlight.splice(x, 1);
+							tif.req[(typeof tif.req.timeout == "function") ? "timeout" : "handle"]("timeout", null, tif.http, tif.req);
+						}
+					}
+				}catch(e){
+					try{
+						var errObj = new dojo.io.Error("XMLHttpTransport.watchInFlight Error: " + e);
+						tif.req[(typeof tif.req.error == "function") ? "error" : "handle"]("error", errObj, tif.http, tif.req);
+					}catch(e2){
+						dojo.debug("XMLHttpTransport error callback failed: " + e2);
+					}
 				}
 			}
 		}
 
+		clearTimeout(this.inFlightTimer);
 		if(this.inFlight.length == 0){
-			clearInterval(this.inFlightTimer);
 			this.inFlightTimer = null;
+			return;
 		}
+		this.inFlightTimer = setTimeout("dojo.io.XMLHTTPTransport.watchInFlight();", 10);
 	}
 
 	var hasXmlHttp = dojo.hostenv.getXmlhttpObject() ? true : false;
@@ -345,7 +365,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return hasXmlHttp
-			&& dojo.lang.inArray((kwArgs["mimetype"].toLowerCase()||""), ["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"])
+			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json", "application/json"], (kwArgs["mimetype"].toLowerCase()||""))
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
@@ -389,7 +409,7 @@ dojo.io.XMLHTTPTransport = new function(){
 			kwArgs.method = "get";
 		}
 
-		// guess the multipart value		
+		// guess the multipart value
 		if(kwArgs.method.toLowerCase() == "get"){
 			// GET cannot use multipart
 			kwArgs.multipart = false;
@@ -506,11 +526,18 @@ dojo.io.XMLHTTPTransport = new function(){
 				"startTime": kwArgs.timeoutSeconds ? (new Date()).getTime() : 0
 			});
 			this.startWatchingInFlight();
+		}else{
+			// block async callbacks until sync is in, needed in khtml, others?
+			_this._blockAsync = true;
 		}
 
 		if(kwArgs.method.toLowerCase() == "post"){
 			// FIXME: need to hack in more flexible Content-Type setting here!
-			http.open("POST", url, async);
+			if (!kwArgs.user) {
+				http.open("POST", url, async);
+			}else{
+        http.open("POST", url, async, kwArgs.user, kwArgs.password);
+			}
 			setHeaders(http, kwArgs);
 			http.setRequestHeader("Content-Type", kwArgs.multipart ? ("multipart/form-data; boundary=" + this.multipartBoundary) : 
 				(kwArgs.contentType || "application/x-www-form-urlencoded"));
@@ -531,7 +558,11 @@ dojo.io.XMLHTTPTransport = new function(){
 				tmpUrl += (dojo.string.endsWithAny(tmpUrl, "?", "&")
 					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
-			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			if (!kwArgs.user) {
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			}else{
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async, kwArgs.user, kwArgs.password);
+			}
 			setHeaders(http, kwArgs);
 			try {
 				http.send(null);
@@ -545,9 +576,13 @@ dojo.io.XMLHTTPTransport = new function(){
 
 		if( !async ) {
 			doLoad(kwArgs, http, url, query, useCache);
+			_this._blockAsync = false;
 		}
 
 		kwArgs.abort = function(){
+			try{// khtml doesent reset readyState on abort, need this workaround
+				http._aborted = true; 
+			}catch(e){/*squelsh*/}
 			return http.abort();
 		}
 

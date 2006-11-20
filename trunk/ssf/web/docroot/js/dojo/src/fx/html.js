@@ -26,7 +26,7 @@ dojo.fx.html._makeFadeable = function(node){
 		// only set the zoom if the "tickle" value would be the same as the
 		// default
 		if( (node.style.zoom.length == 0) &&
-			(dojo.style.getStyle(node, "zoom") == "normal") ){
+			(dojo.html.getStyle(node, "zoom") == "normal") ){
 			// make sure the node "hasLayout"
 			// NOTE: this has been tested with larger and smaller user-set text
 			// sizes and works fine
@@ -36,7 +36,7 @@ dojo.fx.html._makeFadeable = function(node){
 		// don't set the width to auto if it didn't already cascade that way.
 		// We don't want to f anyones designs
 		if(	(node.style.width.length == 0) &&
-			(dojo.style.getStyle(node, "width") == "auto") ){
+			(dojo.html.getStyle(node, "width") == "auto") ){
 			node.style.width = "auto";
 		}
 	}
@@ -73,7 +73,7 @@ dojo.fx.html.fade = function(node, duration, startOpac, endOpac, callback, dontP
 		new dojo.math.curves.Line([startOpac],[endOpac]),
 		duration||dojo.fx.duration, 0);
 	dojo.event.connect(anim, "onAnimate", function(e) {
-		dojo.style.setOpacity(node, e.x);
+		dojo.html.setOpacity(node, e.x);
 	});
 	if(callback) {
 		dojo.event.connect(anim, "onEnd", function(e) {
@@ -94,11 +94,11 @@ dojo.fx.html.slideTo = function(node, duration, endCoords, callback, dontPlay) {
 
 	var top = node.offsetTop;
 	var left = node.offsetLeft;
-	var pos = dojo.style.getComputedStyle(node, 'position');
+	var pos = dojo.html.getComputedStyle(node, 'position');
 
 	if (pos == 'relative' || pos == 'static') {
-		top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
-		left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+		top = parseInt(dojo.html.getComputedStyle(node, 'top')) || 0;
+		left = parseInt(dojo.html.getComputedStyle(node, 'left')) || 0;
 	}
 
 	return dojo.fx.html.slide(node, duration, [left, top],
@@ -115,11 +115,11 @@ dojo.fx.html.slideBy = function(node, duration, coords, callback, dontPlay) {
 
 	var top = node.offsetTop;
 	var left = node.offsetLeft;
-	var pos = dojo.style.getComputedStyle(node, 'position');
+	var pos = dojo.html.getComputedStyle(node, 'position');
 
 	if (pos == 'relative' || pos == 'static') {
-		top = parseInt(dojo.style.getComputedStyle(node, 'top')) || 0;
-		left = parseInt(dojo.style.getComputedStyle(node, 'left')) || 0;
+		top = parseInt(dojo.html.getComputedStyle(node, 'top')) || 0;
+		left = parseInt(dojo.html.getComputedStyle(node, 'left')) || 0;
 	}
 
 	return dojo.fx.html.slideTo(node, duration, [left+coords[0], top+coords[1]],
@@ -135,7 +135,7 @@ dojo.fx.html.slide = function(node, duration, startCoords, endCoords, callback, 
 	}
 	node = dojo.byId(node);
 
-	if (dojo.style.getComputedStyle(node, 'position') == 'static') {
+	if (dojo.html.getComputedStyle(node, 'position') == 'static') {
 		node.style.position = 'relative';
 	}
 
@@ -166,7 +166,7 @@ dojo.fx.html.colorFadeIn = function(node, duration, startColor, delay, callback,
 	}
 	node = dojo.byId(node);
 	var color = dojo.style.getBackgroundColor(node);
-	var bg = dojo.style.getStyle(node, "background-color").toLowerCase();
+	var bg = dojo.html.getStyle(node, "background-color").toLowerCase();
 	var wasTransparent = bg == "transparent" || bg == "rgba(0, 0, 0, 0)";
 	while(color.length > 3) { color.pop(); }
 
@@ -239,7 +239,7 @@ dojo.fx.html.colorFade = function(node, duration, startColor, endColor, callback
 
 dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
-	var overflow = dojo.style.getStyle(node, "overflow");
+	var overflow = dojo.html.getStyle(node, "overflow");
 	if(overflow == "visible") {
 		node.style.overflow = "hidden";
 	}
@@ -258,7 +258,7 @@ dojo.fx.html.wipeIn = function(node, duration, callback, dontPlay) {
 
 dojo.fx.html.wipeOut = function(node, duration, callback, dontPlay) {
 	node = dojo.byId(node);
-	var overflow = dojo.style.getStyle(node, "overflow");
+	var overflow = dojo.html.getStyle(node, "overflow");
 	if(overflow == "visible") {
 		node.style.overflow = "hidden";
 	}

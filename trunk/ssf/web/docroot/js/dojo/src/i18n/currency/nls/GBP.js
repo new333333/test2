@@ -8,7 +8,7 @@
 		http://dojotoolkit.org/community/licensing.shtml
 */
 
-dojo.provide("dojo.html");
-
-dojo.require("dojo.html.*");
-dojo.deprecated("dojo.html", "replaced by dojo.html.*", "0.5");
+({
+	displayName: "GBP",
+	symbol: "\u00A3"
+})

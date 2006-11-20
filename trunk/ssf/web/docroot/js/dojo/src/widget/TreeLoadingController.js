@@ -17,19 +17,7 @@ dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 
 
-dojo.widget.tags.addParseTreeHandler("dojo:TreeLoadingController");
-
-
-dojo.widget.TreeLoadingController = function() {
-	dojo.widget.TreeBasicController.call(this);
-}
-
-dojo.inherits(dojo.widget.TreeLoadingController, dojo.widget.TreeBasicController);
-
-
-dojo.lang.extend(dojo.widget.TreeLoadingController, {
-	widgetType: "TreeLoadingController",
-
+dojo.widget.defineWidget("dojo.widget.TreeLoadingController", dojo.widget.TreeBasicController, {
 	RPCUrl: "",
 
 	RPCActionParam: "action", // used for GET for RPCUrl
@@ -42,7 +30,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 		alert( "RPC Error: " + (obj.message||"no message"));
 	},
 
-
+	preventCache: true,
 
 	getRPCUrl: function(action) {
 
@@ -136,7 +124,7 @@ dojo.lang.extend(dojo.widget.TreeLoadingController, {
 			/* I hitch to get this.loadOkHandler */
 			handle: dojo.lang.hitch(this, handle),
 			mimetype: "text/json",
-			preventCache: true,
+			preventCache: _this.preventCache,
 			sync: kw.sync,
 			content: { data: dojo.json.serialize(kw.params) }
 		});
