@@ -1310,7 +1310,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								} else {
 									entryData.put(nameValue, Boolean.FALSE);
 								}
-							} else if (itemName.equals("file") || itemName.equals("graphic")) {
+							} else if (itemName.equals("file") || itemName.equals("graphic") || 
+									itemName.equals("profileEntryPicture")) {
 							    if(fileItems != null && fileItems.containsKey(nameValue)) {
 							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 							    	String fileName = myFile.getOriginalFilename();
@@ -1324,7 +1325,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							    	// TODO The following piece of code may need a better conditional
 							    	// statement than this, since we probably do not want to generate
 							    	// thumbnails for all graphic-type file uploads. Or do we? 
-							    	if(itemName.equals("graphic")) {
+							    	if(itemName.equals("graphic") || itemName.equals("profileEntryPicture")) {
 							    		fui.setGenerateThumbnail(true);
 							    		fui.setThumbnailDirectlyAccessible(true);
 							    	} 
