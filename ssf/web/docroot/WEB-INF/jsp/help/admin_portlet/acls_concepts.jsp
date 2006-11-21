@@ -1,11 +1,23 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
 
-<span class="ss_titlebold"><ssf:nlt tag="help.accessControlOverview.title"/></span> (1/?)
+<span class="ss_titlebold"><ssf:nlt tag="help.accessControlOverview.title"/></span> (1/3)
 
 <p><ssf:nlt tag="help.accessControlOverview.content.intro"/></p>
 
+<p><ssf:nlt tag="help.accessControlOverview.content.membership"/></p>
+
 <p><ssf:nlt tag="help.accessControlOverview.content.benefits"/></p>
+
+<p><ssf:nlt tag="help.globalStrings.moreinfo.header"/></p>
+
+<ul style="list-style-type:disc;">
+
+<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_role_defs', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.definingRoles"/></a></li>
+
+<li><a href="javascript: ss_helpSystem.showHelpPanel('admin_portlet/acls_default_roles', 'ss_acls_concepts', '', '');"><ssf:nlt tag="help.accessControlOverview.subtopic.defaultRoles"/></a></li>
+
+</ul>
 
 </div>
 <br />

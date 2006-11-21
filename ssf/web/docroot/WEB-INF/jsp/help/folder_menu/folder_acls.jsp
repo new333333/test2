@@ -4,7 +4,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (7/7)<br />
 <span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.accessControl"/></span>
 
-<p><ssf:nlt tag="help.configureFolder.content.listIntro"/></p>
+<p><ssf:nlt tag="help.accessControlMenuItem.content.intro"/></p>
 
 <p><ssf:nlt tag="help.globalStrings.acls.onlineConcepts"/></p>
 
@@ -17,8 +17,6 @@
 <div style="margin-left:20px;">
 <a target="ss_new" href="<html:rootPath/>docs/aspen_manager_guide.pdf"><ssf:nlt tag="help.viewBooks.content.listItem.adminGetStart"/></a> <ssf:nlt tag="help.globalStrings.newWindow"/>
 </div>
-
-
 
 </div>
 
