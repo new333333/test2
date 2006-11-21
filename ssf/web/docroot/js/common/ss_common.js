@@ -265,7 +265,7 @@ function ss_moveDivToTopOfBody(divId) {
 		obj.style.left = startLeft;
 		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
 		obj.style.zIndex = ssPortletZ;
-		dojo.fx.html.slide(divId, 300, [startLeft, startTop], [0, 0], ssf_onLayoutChange);
+		dojo.lfx.html.slideTo(divId, [0, 0], 300, "", ssf_onLayoutChange);
     } else {
 		if (ss_originalSSParentNodes[divId] != null) {
 			bodyObj.removeChild(obj);
@@ -276,7 +276,7 @@ function ss_moveDivToTopOfBody(divId) {
 	    	var endTop = ss_getObjectTop(obj)
 	    	obj.style.top = startTop;
 	    	obj.style.left = startLeft;
-			dojo.fx.html.slide(divId, 300, [startLeft, startTop], [endLeft, endTop], ssf_onLayoutChange);
+			dojo.lfx.html.slideTo(divId, [endLeft, endTop], 300, "", ssf_onLayoutChange);
 		}
 	}
 	//Signal that the layout changed
@@ -366,7 +366,7 @@ function ss_showDivFadeIn(id, ms) {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    dojo.fx.html.fadeIn(id, ms);
+    dojo.lfx.html.fadeIn(id, ms);
 }
 
 //Routine to fade out a div
@@ -378,7 +378,7 @@ function ss_hideDivFadeOut(id, ms) {
     //Is this still being shown? If yes, return.
 	if (ss_divFadeInArray[id] > 1) return;
     if (!ms || ms == undefined) ms = 300;
-    dojo.fx.html.fadeOut(id, ms, function(){
+    dojo.lfx.html.fadeOut(id, ms, function(){
     	ss_hideDiv(id);
     	return true;
     });
@@ -1632,7 +1632,7 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.height = ss_getBodyHeight();
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
-    dojo.fx.html.fade(lightBox, 150, 0, opacity)
+    dojo.lfx.html.fade(lightBox, {end:opacity}, 150)
     return lightBox;
 }
 function ss_hideLightbox(id) {
@@ -1671,7 +1671,7 @@ var ss_helpSystem = {
 	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
 	    	dojo.html.setOpacity(welcomeDiv, 0);
-	    	dojo.fx.html.fade(welcomeDiv, 150, 0, 1.0)
+	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150)
 		}
 	},
 	
@@ -1703,7 +1703,7 @@ var ss_helpSystem = {
     		//Delete all of the highlighted nodes
     		this.clearHighlights();
 
-    		dojo.fx.html.fade(lightBox, 150, .5, 0, function() {
+    		dojo.lfx.html.fade(lightBox, {end: 0}, 150, '', function() {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
 		    	lightBox.style.display = "none";
@@ -2124,7 +2124,7 @@ var ss_helpSystem = {
 		if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
 		
 		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
-			dojo.fx.html.slide(panelId, 300, [startLeft, startTop], [left, top]);
+			dojo.lfx.html.slideTo(panelId, [left, top], 300);
 		} else {
 			pObj.style.top = top + "px";
 			pObj.style.left = left + "px";
@@ -2757,7 +2757,7 @@ function ss_enableDashboardDropTargets() {
 	for (var i = 0; i < targets.length; i++) {
 		ss_dashboardClones[i].style.left = parseInt(dojo.html.getAbsolutePosition(targets[i], true).x) + "px";
 		ss_dashboardClones[i].style.top = parseInt(dojo.html.getAbsolutePosition(targets[i], true).y) + "px";
-		dojo.style.setContentBoxWidth(ss_dashboardClones[i], dojo.html.getContentBoxWidth(targets[i]))
+		dojo.html.setContentBox(ss_dashboardClones[i], {width: dojo.html.getContentBox(targets[i]).width})
 		ss_dashboardClones[i].className = "ss_dashboardDropTarget";
 		ss_dashboardClones[i].style.height = ss_dashboardDropTargetHeight;
 		ss_dashboardClones[i].style.visibility = "visible";

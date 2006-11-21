@@ -21,7 +21,6 @@ dojo.require("dojo.dnd.DragAndDrop");
 dojo.require("dojo.dom");
 dojo.require("dojo.style");
 dojo.require("dojo.html");
-dojo.require("dojo.html.extras");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.event");
@@ -192,7 +191,7 @@ ss_debug('e.pageY = '+e.pageY)
 		if (titleEles.length >= 1) 
 				this.dragClone.appendChild(titleEles[0].cloneNode(true));
 		
-		dojo.style.setContentBoxWidth(this.dragClone, dojo.html.getContentBoxWidth(this.domNode));
+		dojo.html.setContentBox(this.dragClone, {width: dojo.html.getContentBox(this.domNode).width});
 
 		this.containingBlockPosition = this.domNode.offsetParent ? 
 			dojo.html.getAbsolutePosition(this.domNode.offsetParent) : {x:0, y:0};
@@ -442,12 +441,12 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 				ss_dashboardSliderObj.style.position = "absolute";
 				ss_dashboardSliderObj.style.left = parseInt(startCoords.x) + "px"
 				ss_dashboardSliderObj.style.top = parseInt(startCoords.y) + "px"
-				dojo.style.setContentBoxWidth(ss_dashboardSliderObj, dojo.html.getContentBoxWidth(sourceNode));
+				dojo.html.setContentBox(ss_dashboardSliderObj, {width: dojo.html.getContentBox(sourceNode).width});
 				var bodyObj = document.getElementsByTagName("body").item(0);
 				bodyObj.appendChild(ss_dashboardSliderObj);
 				ss_dashboardSliderTargetObj = sourceNode;
 				dojo.html.setOpacity(ss_dashboardSliderTargetObj, .3);
-				dojo.fx.html.slideTo(ss_dashboardSliderObj, 400, ss_dashboardSliderObjEndCoords, ss_clearDashboardSlider);
+				dojo.lfx.html.slideTo(ss_dashboardSliderObj, ss_dashboardSliderObjEndCoords, 400, "", ss_clearDashboardSlider);
 
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) setTimeout('ssf_onLayoutChange();', 100);

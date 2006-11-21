@@ -107,16 +107,18 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 
 function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		dojo.require("dojo.fx.*");
+		//dojo.require("dojo.fx.*");
 		dojo.require("dojo.math");
-		//dojo.require("dojo.lfx.*");
-		dojo.require("dojo.dnd.*");
+		dojo.require("dojo.lfx.*");
 		dojo.require("dojo.event.*");
+		dojo.require("dojo.lang.*");
+		dojo.require("dojo.dnd.*");
 		//dojo.require("dojo.widget.*");
 		//dojo.require("dojo.widget.TaskBar");
 		//dojo.require("dojo.widget.LayoutContainer");
 		//dojo.require("dojo.widget.FloatingPane");
 		//dojo.require("dojo.widget.ResizeHandle");
+		//ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 	}
 }
 
@@ -188,9 +190,9 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/Math.js");
+		ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/curves.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
+		ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 		//ss_loadJsFile(ss_rootPath, "js/common/ss_dragsort.js");
 		
