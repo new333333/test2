@@ -1,9 +1,7 @@
 package com.sitescape.ef.taglib;
 
 import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -58,6 +56,8 @@ public class DisplayConfiguration extends TagSupport {
 					itItems = this.configElement.elementIterator("item");
 				}
 				if (itItems != null) {
+					
+					
 					while (itItems.hasNext()) {
 						Element nextItem = (Element) itItems.next();
 						
@@ -66,15 +66,9 @@ public class DisplayConfiguration extends TagSupport {
 						String itemType = nextItem.attributeValue("name", "");
 						Element itemDefinition = (Element) definitionRoot.selectSingleNode("//item[@name='"+itemType+"']");
 						if (itemDefinition != null) {
-							Element jspEle = (Element) itemDefinition.selectSingleNode("jsps/jsp[@name='"+this.configJspStyle+"']");
-							if (jspEle == null) {
-								//The definition doesn't list the jsp, so try the base definition xml file
-								Element defaultConfigRoot = this.configDefaultDefinition.getRootElement();
-								Element defaultConfigItem = (Element) defaultConfigRoot.selectSingleNode("//item[@name='"+itemType+"']");
-								jspEle = (Element) defaultConfigItem.selectSingleNode("jsps/jsp[@name='"+this.configJspStyle+"']");
-							}
-							if (jspEle != null) {
-								String jsp = jspEle.attributeValue("value", "");
+							// (rsordillo) Jsps contained in configDefaultDefinition only, removed code to check Definition
+							String jsp = DefinitionHelper.getDefinitionBuilderConfig().getItemJspByStyle(itemType, this.configJspStyle);
+
 								if (!jsp.equals("")) {
 									RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
@@ -186,7 +180,7 @@ public class DisplayConfiguration extends TagSupport {
 								pageContext.getOut().print("<br><i>[No jsp for configuration element: "
 										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
 							}
-						}
+//						}
 					}
 				}
 			}
