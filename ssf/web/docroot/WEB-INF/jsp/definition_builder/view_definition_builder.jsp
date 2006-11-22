@@ -29,6 +29,8 @@
 <%@ page import="com.sitescape.ef.domain.Folder" %>
 <%@ page import="com.sitescape.ef.domain.Workspace" %>
 <%
+	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
+
 	String nodeOpen = " ";
 	if (data.containsKey("nodeOpen")) {
 		 nodeOpen = (String) data.get("nodeOpen");
@@ -685,13 +687,16 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
   </span>
 
 <br/>
-<script language="JavaScript" type="text/javascript">
-    if (isIE) document.writeln('<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3"><noembed><xmp>');
-</script>
+<c:if test="<%= isIE %>">
+<object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
+  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
+</c:if>
+<c:if test="<%= !isIE %>">
 <applet CODE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
   JAVA_CODEBASE = "<html:rootPath/>applets" 
   ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
-  WIDTH = "100%" HEIGHT = "600"></xmp>
+  WIDTH = "100%" HEIGHT = "600">
+</c:if>
     <PARAM NAME = CODE VALUE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
     <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" >
@@ -709,10 +714,12 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			<ssf:param name="id" value="<%= selectedItem %>" />
 		    </ssf:url>"/>
 	<param name="nltSaveLayout" value="<ssf:nlt tag="definition.workflow_save_layout" text="Save layout"/>"/>
+<c:if test="<%= !isIE %>">
 </applet>
-</noembed>
-</embed>
+</c:if>
+<c:if test="<%= isIE %>">
 </object>
+</c:if>
 
 </div>
 <br/>
