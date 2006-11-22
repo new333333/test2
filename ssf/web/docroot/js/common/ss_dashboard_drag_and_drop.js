@@ -295,21 +295,16 @@ ss_debug('e.pageY = '+e.pageY)
 			case "dropFailure": // slide back to the start
 				var startCoords = dojo.html.getAbsolutePosition(this.dragClone, true);
 				// offset the end so the effect can be seen
-				var endCoords = [this.dragStartPosition.x + 1,
-					this.dragStartPosition.y + 1];
+				var endCoords = { left: this.dragStartPosition.x + 1,
+					top: this.dragStartPosition.y + 1};
 
 				// animate
-				var line = new dojo.lfx.Line(startCoords, endCoords);
-				var anim = new dojo.lfx.Animation(500, line, dojo.lfx.easeOut);
+				var anim = dojo.lfx.slideTo(this.dragClone, endCoords, 500, dojo.lfx.easeOut);
 				var dragObject = this;
-				dojo.event.connect(anim, "onAnimate", function(e) {
-					dragObject.dragClone.style.left = e[0] + "px";
-					dragObject.dragClone.style.top = e[1] + "px";
-				});
 				dojo.event.connect(anim, "onEnd", function (e) {
 					// pause for a second (not literally) and disappear
 					dojo.lang.setTimeout(function() {
-							dojo.dom.removeNode(dragObject.dragClone);
+							dojo.html.removeNode(dragObject.dragClone);
 							// Allow drag clone to be gc'ed
 							dragObject.dragClone = null;
 						},
