@@ -4,6 +4,12 @@
 <%
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
+<script type="text/javascript">
+		// Dojo configuration
+		djConfig = { 
+			isDebug: false
+		};
+</script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
 var ss_scripts_loaded = "no";
@@ -108,10 +114,13 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		//dojo.require("dojo.fx.*");
-		dojo.require("dojo.math");
+		dojo.require("dojo.html.*");
+		dojo.require("dojo.math.*");
+		dojo.require("dojo.math.curves");
 		dojo.require("dojo.lfx.*");
 		dojo.require("dojo.event.*");
 		dojo.require("dojo.lang.*");
+		dojo.require("dojo.string.*");
 		dojo.require("dojo.dnd.*");
 		//dojo.require("dojo.widget.*");
 		//dojo.require("dojo.widget.TaskBar");
@@ -188,11 +197,16 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		ss_loadJsFile(ss_rootPath, "js/common/ss_coordinates.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lang.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/event.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
 		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/curves.js");
-		ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
+		//ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 		//ss_loadJsFile(ss_rootPath, "js/common/ss_dragsort.js");
 		
