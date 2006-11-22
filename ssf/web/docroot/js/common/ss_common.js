@@ -265,7 +265,7 @@ function ss_moveDivToTopOfBody(divId) {
 		obj.style.left = startLeft;
 		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
 		obj.style.zIndex = ssPortletZ;
-		dojo.lfx.html.slideTo(divId, [0, 0], 300, "", ssf_onLayoutChange);
+		dojo.lfx.html.slideTo(divId, {top: 0, left:0}, 300, null, ssf_onLayoutChange).play();
     } else {
 		if (ss_originalSSParentNodes[divId] != null) {
 			bodyObj.removeChild(obj);
@@ -276,7 +276,7 @@ function ss_moveDivToTopOfBody(divId) {
 	    	var endTop = ss_getObjectTop(obj)
 	    	obj.style.top = startTop;
 	    	obj.style.left = startLeft;
-			dojo.lfx.html.slideTo(divId, [endLeft, endTop], 300, "", ssf_onLayoutChange);
+			dojo.lfx.html.slideTo(divId, {top: endTop, left: endLeft}, 300, null, ssf_onLayoutChange).play();
 		}
 	}
 	//Signal that the layout changed
@@ -366,7 +366,7 @@ function ss_showDivFadeIn(id, ms) {
     	ss_setOpacity(document.getElementById(id),0.1);
     	ss_showDiv(id);
     }
-    dojo.lfx.html.fadeIn(id, ms);
+    dojo.lfx.html.fadeIn(id, ms).play();
 }
 
 //Routine to fade out a div
@@ -381,7 +381,7 @@ function ss_hideDivFadeOut(id, ms) {
     dojo.lfx.html.fadeOut(id, ms, function(){
     	ss_hideDiv(id);
     	return true;
-    });
+    }).play();
 }
 
 //Routine to add the innerHMTL of one div to another div
@@ -1632,7 +1632,7 @@ function ss_showLightbox(id, zIndex, opacity, className) {
     lightBox.style.height = ss_getBodyHeight();
     lightBox.style.zIndex = zIndex;
     lightBox.style.visibility = "visible";
-    dojo.lfx.html.fade(lightBox, {end:opacity}, 150)
+    dojo.lfx.html.fade(lightBox, {end:opacity}, 150).play();
     return lightBox;
 }
 function ss_hideLightbox(id) {
@@ -1671,7 +1671,7 @@ var ss_helpSystem = {
 	        welcomeDiv.style.top = this.getPositionTop(welcomeDiv);
 	        welcomeDiv.style.left = this.getPositionLeft(welcomeDiv);
 	    	dojo.html.setOpacity(welcomeDiv, 0);
-	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150)
+	    	dojo.lfx.html.fade(welcomeDiv, {start:0, end:1.0}, 150).play();
 		}
 	},
 	
@@ -1707,7 +1707,7 @@ var ss_helpSystem = {
     			var lightBox2 = document.getElementById('ss_help_light_box');
 		    	lightBox.style.visibility = "hidden";
 		    	lightBox.style.display = "none";
-   		})
+   		}).play();
     		return
 		}
 	},
@@ -1806,9 +1806,9 @@ var ss_helpSystem = {
 	        var left = parseInt(dojo.html.getAbsolutePosition(nodes[i], true).x + offsetX);
 	        if (nodes[i].getAttribute("align")) {
 	        	if (nodes[i].getAttribute("align") == "center") {
-	        		left += parseInt(dojo.html.getMarginBoxWidth(nodes[i]) / 2);
+	        		left += parseInt(dojo.html.getMarginBox(nodes[i]).width / 2);
 	        	} else if (nodes[i].getAttribute("align") == "right") {
-	        		left += dojo.html.getMarginBoxWidth(nodes[i]);
+	        		left += dojo.html.getMarginBox(nodes[i]).width;
 	        	}
 	        }
 	        helpSpotNode.style.top = top + "px";
@@ -1816,7 +1816,7 @@ var ss_helpSystem = {
 	        bodyObj.appendChild(helpSpotNode);
 			ss_helpSystemNextNodeId++;
 	        helpSpotNode.style.visibility = "visible";
-			//ss_debug("nodes[i] width = "+dojo.html.getMarginBoxWidth(nodes[i]))
+			//ss_debug("nodes[i] width = "+dojo.html.getMarginBox(nodes[i]).width)
 		}
 	},
 	
@@ -1827,15 +1827,15 @@ var ss_helpSystem = {
 				x = ss_help_position_leftOffset
 				break
 			case "center" :
-				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBoxWidth(obj)) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBox(obj).width) / 2)
 				if (x < 0) x = 0;
 				break
 			case "right" :
-				x = parseInt(ss_getWindowWidth() - dojo.html.getMarginBoxWidth(obj) - ss_help_position_rightOffset)
+				x = parseInt(ss_getWindowWidth() - dojo.html.getMarginBox(obj).width - ss_help_position_rightOffset)
 				if (x < 0) x = 0;
 			 	break
 			default :
-				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBoxWidth(obj)) / 2)
+				x = parseInt((ss_getWindowWidth() - dojo.html.getMarginBox(obj).width) / 2)
 				if (x < 0) x = 0;
 		}
 		return x;
@@ -1973,8 +1973,8 @@ var ss_helpSystem = {
 		if (helpSpot != null) {
 		    var top = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).y);
 		    var left = parseInt(dojo.html.getAbsolutePosition(helpSpot, true).x);
-		    var width = parseInt(dojo.html.getContentBoxWidth(helpSpot));
-		    var height = parseInt(dojo.html.getContentBoxHeight(helpSpot));
+		    var width = parseInt(dojo.html.getContentBox(helpSpot).width);
+		    var height = parseInt(dojo.html.getContentBox(helpSpot).height);
 		    var x = parseInt(left + 3);
 		    var y = parseInt(top + height - 8);
 			this.showHelpPanel(id, "ss_help_panel", x, y, xAlignment, yAlignment)
@@ -2056,8 +2056,8 @@ var ss_helpSystem = {
 		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", obj.getData("id"));
 		pObj.style.display = "block"
-		var width = parseInt(dojo.html.getMarginBoxWidth(pObj));
-		var height = parseInt(dojo.html.getMarginBoxHeight(pObj));
+		var width = parseInt(dojo.html.getMarginBox(pObj).width);
+		var height = parseInt(dojo.html.getMarginBox(pObj).height);
 		var x = obj.getData("x");
 		var y = obj.getData("y");
 		var xAlignment = obj.getData("xAlignment");
@@ -2124,7 +2124,9 @@ var ss_helpSystem = {
 		if (left < ss_help_position_leftOffset) left = ss_help_position_leftOffset;
 		
 		if (startTop >= 0 && startLeft >= 0 && startVisibility == "visible") {
-			dojo.lfx.html.slideTo(panelId, [left, top], 300);
+			pObj.style.top = startTop + "px";
+			pObj.style.left = startLeft + "px";
+			dojo.lfx.html.slideTo(panelId, {top: top, left: left}, 300).play();
 		} else {
 			pObj.style.top = top + "px";
 			pObj.style.left = left + "px";
@@ -2750,9 +2752,9 @@ function ss_enableDashboardDropTargets() {
 	for (var i = 0; i < tableElements.length; i++) tableElements[i].className = "ss_dashboardTable_on";
 
 	var narrowFixedObj = document.getElementById('narrow_fixed')
-	var narrowFixedHeight = parseInt(dojo.html.getContentBoxHeight(narrowFixedObj));
+	var narrowFixedHeight = parseInt(dojo.html.getContentBox(narrowFixedObj).height);
 	var narrowVariableObj = document.getElementById('narrow_variable')
-	var narrowVariableHeight = parseInt(dojo.html.getContentBoxHeight(narrowVariableObj));
+	var narrowVariableHeight = parseInt(dojo.html.getContentBox(narrowVariableObj).height);
 	var targets = ss_getElementsByClass('ss_dashboardProtoDropTarget', null, 'div')
 	for (var i = 0; i < targets.length; i++) {
 		ss_dashboardClones[i].style.left = parseInt(dojo.html.getAbsolutePosition(targets[i], true).x) + "px";
@@ -2774,7 +2776,7 @@ function ss_enableDashboardDropTargets() {
 			if (children[0] == sourceNode) {
 				ss_dashboardClones[i].style.height = ss_dashboardTopDropTargetHeight;
 				var top = parseInt(dojo.html.getAbsolutePosition(targets[i], true).y);
-				top += parseInt(dojo.html.getContentBoxHeight(targets[i]));
+				top += parseInt(dojo.html.getContentBox(targets[i]).height);
 				top = top - parseInt(ss_dashboardDropTargetTopOffset);
 				top = top - parseInt(ss_dashboardDropTargetTopOffset);
 				top = top - parseInt(ss_dashboardTopDropTargetHeight);

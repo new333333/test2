@@ -18,13 +18,6 @@ dojo.provide("dojo.dnd.ss_dashboard_object");
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
 
-dojo.require("dojo.dom");
-dojo.require("dojo.style");
-dojo.require("dojo.html");
-dojo.require("dojo.lang.extras");
-dojo.require("dojo.lfx.*");
-dojo.require("dojo.event");
-
 dojo.dnd.ss_dashboard_source = function(node, type){
 	node = dojo.byId(node);
 	this.dragObjects = [];
@@ -149,7 +142,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_object, {
 			var cloneTds = node.childNodes;
 			for(var i = 0; i < domTds.length; i++){
 			    if((cloneTds[i])&&(cloneTds[i].style)){
-				    cloneTds[i].style.width = dojo.style.getContentWidth(domTds[i]) + "px";
+				    cloneTds[i].style.width = dojo.html.getContentBox(domTds[i]).width + "px";
 			    }
 			}
 			node = table;
@@ -173,7 +166,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_object, {
 	onDragStart: function(e) {
 		dojo.html.clearSelection();
 
-		this.scrollOffset = dojo.html.getScrollOffset();
+		this.scrollOffset = dojo.html.getScroll().offset;
 		this.dragStartPosition = dojo.html.getAbsolutePosition(this.domNode, true);
 ss_debug('this.dragStartPosition.y = '+this.dragStartPosition.y)
 
@@ -215,33 +208,36 @@ ss_debug('e.pageY = '+e.pageY)
 	/** Return min/max x/y (relative to document.body) for this object) **/
 	getConstraints: function() {
 		if (this.constrainingContainer.nodeName.toLowerCase() == 'body') {
-			var width = dojo.html.getViewportWidth();
-			var height = dojo.html.getViewportHeight();
+			var viewport = dojo.html.getViewport();
+			var width = viewport.width;
+			var height = viewport.height;
 			var x = 0;
 			var y = 0;
 		} else {
-			width = dojo.style.getContentWidth(this.constrainingContainer);
-			height = dojo.style.getContentHeight(this.constrainingContainer);
+			var content = dojo.html.getContentBox(this.constrainingContainer);
+			width = content.width;
+			height = content.height;
 			x =
 				this.containingBlockPosition.x +
-				dojo.style.getPixelValue(this.constrainingContainer, "padding-left", true) +
-				dojo.style.getBorderExtent(this.constrainingContainer, "left");
+				dojo.html.getPixelValue(this.constrainingContainer, "padding-left", true) +
+				dojo.html.getBorderExtent(this.constrainingContainer, "left");
 			y =
 				this.containingBlockPosition.y +
-				dojo.style.getPixelValue(this.constrainingContainer, "padding-top", true) +
-				dojo.style.getBorderExtent(this.constrainingContainer, "top");
+				dojo.html.getPixelValue(this.constrainingContainer, "padding-top", true) +
+				dojo.html.getBorderExtent(this.constrainingContainer, "top");
 		}
 
+		var mb = dojo.html.getMarginBox(this.domNode);
 		return {
 			minX: x,
 			minY: y,
-			maxX: x + width - dojo.style.getOuterWidth(this.domNode),
-			maxY: y + height - dojo.style.getOuterHeight(this.domNode)
+			maxX: x + width - mb.width,
+			maxY: y + height - mb.height
 		}
 	},
 
 	updateDragOffset: function() {
-		var scroll = dojo.html.getScrollOffset();
+		var scroll = dojo.html.getScroll().offset;
 		if(scroll.y != this.scrollOffset.y) {
 			var diff = scroll.y - this.scrollOffset.y;
 			this.dragOffset.y += diff;
@@ -363,7 +359,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 	onDragOver: function(e) {
 		if(!this.accepts(e.dragObjects)){ return false; }
 
-		var height = parseInt(dojo.html.getContentBoxHeight(this.domNode))+"px";
+		var height = parseInt(dojo.html.getContentBox(this.domNode).height)+"px";
 		this.domNode.className = "ss_dashboardDropTarget_over";
 		this.domNode.style.height = height;
 
@@ -371,12 +367,12 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 		this.childBoxes = [];
 		for (var i = 0, child; i < this.domNode.childNodes.length; i++) {
 			child = this.domNode.childNodes[i];
-			if (child.nodeType != dojo.dom.ELEMENT_NODE) { continue; }
+			if (child.nodeType != dojo.html.ELEMENT_NODE) { continue; }
 			var pos = dojo.html.getAbsolutePosition(child, true);
-			var height = dojo.style.getInnerHeight(child);
-			var width = dojo.style.getInnerWidth(child);
-			this.childBoxes.push({top: pos.y, bottom: pos.y+height,
-				left: pos.x, right: pos.x+width, node: child});
+			var inner = dojo.html.getBorderBox(child);
+			this.childBoxes.push({top: pos.y, bottom: pos.y+inner.height,
+				left: pos.x, right: pos.x+inner.width, height: inner.height, 
+				width: inner.width, node: child});
 		}
 
 		// TODO: use dummy node
@@ -446,7 +442,9 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 				bodyObj.appendChild(ss_dashboardSliderObj);
 				ss_dashboardSliderTargetObj = sourceNode;
 				dojo.html.setOpacity(ss_dashboardSliderTargetObj, .3);
-				dojo.lfx.html.slideTo(ss_dashboardSliderObj, ss_dashboardSliderObjEndCoords, 400, "", ss_clearDashboardSlider);
+				var top = ss_dashboardSliderObjEndCoords.y;
+				var left = ss_dashboardSliderObjEndCoords.x;
+				dojo.lfx.html.slideTo(ss_dashboardSliderObj, {top: top, left: left}, 400, null, ss_clearDashboardSlider).play();
 
 				//Signal that the layout changed
 				if (ssf_onLayoutChange) setTimeout('ssf_onLayoutChange();', 100);
@@ -480,8 +478,8 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 			borderTopWidth = "1px";
 			borderTopColor = "black";
 			borderTopStyle = "solid";
-			width = dojo.style.getInnerWidth(this.domNode) + "px";
-			left = dojo.style.getAbsoluteX(this.domNode, true) + "px";
+			width = dojo.html.getBorderBox(this.domNode).width + "px";
+			left = dojo.html.getAbsolutePosition(this.domNode, true).x + "px";
 		}
 	},
 
@@ -519,7 +517,7 @@ dojo.lang.extend(dojo.dnd.ss_dashboard_target, {
 					top = (before ? this.childBoxes[0].top
 						: this.childBoxes[this.childBoxes.length - 1].bottom) + "px";
 				} else {
-					top = dojo.style.getAbsoluteY(this.domNode, true) + "px";
+					top = dojo.html.getAbsolutePosition(this.domNode, true).y + "px";
 				}
 			} else {
 				var child = this.childBoxes[boxIndex];
