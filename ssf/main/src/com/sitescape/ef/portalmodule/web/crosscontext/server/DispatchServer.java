@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import javax.servlet.GenericServlet;
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -13,11 +15,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.ef.kernel.util.SiteScapeClassLoaderUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 
@@ -25,11 +29,20 @@ public class DispatchServer extends GenericServlet {
 
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
 	
+	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
+	
+	public void init(ServletConfig config) throws ServletException {
+		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
+		SiteScapeClassLoaderUtil.setCCDispatcher(rd);
+	}
+	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(zoneName == null)
+				zoneName = SZoneConfig.getDefaultZoneName();
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
 			String password = req.getParameter(CrossContextConstants.PASSWORD);
 			Map updates = (Map)req.getAttribute(CrossContextConstants.USER_INFO);

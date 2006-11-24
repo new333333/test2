@@ -6,6 +6,7 @@ package com.sitescape.ef.module.profile.impl;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,7 +25,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
@@ -49,6 +52,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
@@ -556,5 +560,74 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return null;
 		}		
 	}
+	
+	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
+		if(updates == null)
+			updates = new HashMap();
+		
+		// The minimum we require is the last name. If it isn't available,
+		// we use the user's login name as the last name just for now.
+		// User can change it later if desired.
+		if(updates.get("lastName") == null)
+			updates.put("lastName", userName);
+		
+		// build user
+		RequestContext oldCtx = RequestContextHolder.getRequestContext();
+		RequestContextUtil.setThreadContext(zoneName, userName);
+		try {
+			ProfileBinder profiles = getProfileDao().getProfileBinder(zoneName);
+			User user = new User();
+			user.setParentBinder(profiles);
+			user.setZoneName(zoneName);
+			user.setName(userName);
+			user.setForeignName(userName);
+			if (password != null)
+				user.setPassword(password);
+			// get entry def
+			getDefinitionModule().setDefaultEntryDefinition(user);
+			HistoryStamp stamp = new HistoryStamp(user);
+			user.setCreation(stamp);
+			user.setModification(stamp);
+			EntryBuilder.updateEntry(user, updates);
+			// save so we have an id to work with
+			getCoreDao().save(user);
+			RequestContextHolder.getRequestContext().setUser(user);
+
+			// indexing needs the user
+			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
+					.getProcessor(
+							profiles,
+							profiles
+									.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+			processor.reindexEntry(user);
+			// do now, with request context set
+			IndexSynchronizationManager.applyChanges();
+			return user;
+		} finally {
+			// leave new context for indexing
+			RequestContextHolder.setRequestContext(oldCtx);
+		}
+	}
+
+	public void modifyUserFromPortal(User user, Map updates) {
+		if(updates == null)
+			return; // nothing to update with
+		
+		RequestContext oldCtx = RequestContextHolder.getRequestContext();
+			RequestContextUtil.setThreadContext(user);
+			try {
+				if (EntryBuilder.updateEntry(user, updates) == true) {
+					ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
+							user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+					processor.reindexEntry(user);
+					//do now, with request context set
+					IndexSynchronizationManager.applyChanges();
+				}
+		} finally {
+			//leave new context for indexing
+			RequestContextHolder.setRequestContext(oldCtx);				
+		};
+	}
+	
 }
 

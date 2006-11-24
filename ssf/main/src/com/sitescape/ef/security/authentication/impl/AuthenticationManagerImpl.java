@@ -1,4 +1,6 @@
 package com.sitescape.ef.security.authentication.impl;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
@@ -21,6 +23,7 @@ import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
+import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
@@ -36,7 +39,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	private CoreDao coreDao;
 	private AdminModule adminModule;
 	private DefinitionModule definitionModule;
-	protected ProcessorManager processorManager;
+	private ProfileModule profileModule;
+	private ProcessorManager processorManager;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -62,13 +66,19 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
-	public void setProcessorManager(ProcessorManager processorManager) {
-		this.processorManager = processorManager;
-	}
 	protected ProcessorManager getProcessorManager() {
 		return processorManager;
 	}
-	
+	public void setProcessorManager(ProcessorManager processorManager) {
+		this.processorManager = processorManager;
+	}
+	protected ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+
 	/**
 	 * Setup by spring
 	 * @param definitionModule
@@ -76,71 +86,27 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-
+	
 	public User authenticate(String zoneName, String userName, String password,
 			boolean passwordAutoSynch, Map updates) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
 		try {
 			user = authenticate(zoneName, userName, password, passwordAutoSynch);
-			if (updates != null) {
-				boolean userModify = 
-					SPropsUtil.getBoolean("portal.user.auto.synchronize", false);
-				if (userModify) {
-					RequestContext oldCtx = RequestContextHolder.getRequestContext();
-	 				RequestContextUtil.setThreadContext(user);
-	 				try {
-	 					if (EntryBuilder.updateEntry(user, updates) == true) {
-	 						ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
-	 								user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-	 						processor.reindexEntry(user);
-	 						//do now, with request context set
-	 						IndexSynchronizationManager.applyChanges();
-	 					}
-					} finally {
-						//leave new context for indexing
-						RequestContextHolder.setRequestContext(oldCtx);
-						
-					};
-					
-				}
-			}
-		} catch (UserDoesNotExistException nu) {
+			
+			boolean userModify = 
+				SPropsUtil.getBoolean("portal.user.auto.synchronize", false);
+			
+			if (userModify && updates != null && !updates.isEmpty())
+				getProfileModule().modifyUserFromPortal(user, updates);
+		} 
+		catch (UserDoesNotExistException nu) {
 			boolean userCreate = 
 				SPropsUtil.getBoolean("portal.user.auto.create", false);
  			if (userCreate) {
- 				//build user
- 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
- 				RequestContextUtil.setThreadContext(zoneName, userName);
-				try {
-					ProfileBinder profiles = getProfileDao().getProfileBinder(zoneName);
-					user = new User();
-					user.setParentBinder(profiles);
-					user.setZoneName(zoneName);
-					user.setName(userName);
-					user.setForeignName(userName);
-					user.setPassword(password);
-					//get entry def
-					getDefinitionModule().setDefaultEntryDefinition(user);
-					HistoryStamp stamp = new HistoryStamp(user);
-					user.setCreation(stamp);
-					user.setModification(stamp);
- 					EntryBuilder.updateEntry(user, updates);
-					//save so we have an id to work with
-					getCoreDao().save(user);
-	 				RequestContextHolder.getRequestContext().setUser(user);
-	 				
-		 			//indexing needs the user
-	 				ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-	 				processor.reindexEntry(user);
-	 				//do now, with request context set
-	 				IndexSynchronizationManager.applyChanges();	
-				} finally {
-					//leave new context for indexing
-					RequestContextHolder.setRequestContext(oldCtx);					
-				}
-	 		} else throw nu;
-
+ 				getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
+ 			} 
+ 			else throw nu;
 		}
 		return user;
 	}
@@ -202,6 +168,4 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		}
 		
 	}
-
-
 }

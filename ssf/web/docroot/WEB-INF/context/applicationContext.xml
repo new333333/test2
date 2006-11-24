@@ -280,6 +280,7 @@
 		
 	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	
 
 	<!-- ============================ Indexing/Search Service =========================== -->
@@ -355,6 +356,7 @@
 					<property name="coreDao"><ref local="coreDao"/></property>						
 					<property name="adminModule"><ref local="adminModule"/></property>						
 					<property name="definitionModule"><ref local="definitionModule"/></property>						
+					<property name="profileModule"><ref local="profileModule"/></property>						
 					<property name="processorManager"><ref local="modelProcessorManager"/></property>
 				</bean>
 			</property>				
@@ -485,6 +487,8 @@
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
 				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="addUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>

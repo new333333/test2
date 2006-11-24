@@ -124,7 +124,7 @@ public class WebHelper {
 				else {
 					// Neither the session nor the request contains username.
 					// The session must have been created via some invalid means
-					// (programmic error) or side effect (portal/app server 
+					// (programming error) or side effect (portal/app server 
 					// environment). In this case we shouldn't allow the caller 
 					// to proceed normally.
 					throw new IllegalStateException("No valid session - Illegal request sequence.");
