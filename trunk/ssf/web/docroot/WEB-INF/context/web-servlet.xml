@@ -30,6 +30,12 @@
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
 			<list>
+				<!-- We do not need LoginCheckInterceptor here, because
+				     1. Under Liferay, the login filter will redirect unauthenticated 
+				     user to Liferay's login page.
+				     1. Under JBoss Portal, all servlets require authentication first.
+				     So in both cases, by the time these handlers are executed, we
+				     can safely assume that the user has already been authenticated. -->
 				<!-- Set up RequestContext -->
 				<ref bean="initRequestContextInterceptor"/>
 				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
@@ -62,6 +68,7 @@
 	
 	<bean id="userPreloadInterceptor" class="com.sitescape.ef.web.servlet.handler.UserPreloadInterceptor">
 		<property name="profileDao"><ref bean="profileDao"/></property>
+		<property name="profileModule"><ref bean="profileModule"/></property>
 	</bean>	
 
 	<!-- Handler Exception Resolver -->

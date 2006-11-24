@@ -13,6 +13,7 @@
      attribute.
     -->
    <classpath codebase="${jboss.server.lib.url:lib}" archives="*"/>
+   <classpath codebase="${jboss.server.lib.url:lib}/ext" archives="*"/>
 
    <!-- ==================================================================== -->
    <!-- JSR-77 Single JBoss Server Management Domain                         -->

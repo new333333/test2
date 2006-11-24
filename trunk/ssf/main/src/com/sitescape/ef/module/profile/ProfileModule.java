@@ -17,6 +17,7 @@ import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Rating;
 import com.sitescape.ef.domain.SeenMap;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -81,5 +82,23 @@ public interface ProfileModule {
     public void setRating(EntityIdentifier entityId, long value);
     public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
-
+    
+	/**
+	 * Create an user from information from the portal.
+	 * 
+	 * @param zoneName 
+	 * @param userName 
+	 * @param password may be null
+	 * @param updates may be null
+	 * @return created user object
+	 */
+	public User addUserFromPortal(String zoneName, String userName, String password, Map updates);
+	
+	/**
+	 * Update user from information from the portal.
+	 * 
+	 * @param user
+	 * @param updates
+	 */
+	public void modifyUserFromPortal(User user, Map updates);
 }

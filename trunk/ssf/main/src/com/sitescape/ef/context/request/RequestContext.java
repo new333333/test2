@@ -36,7 +36,8 @@ public class RequestContext {
     
     public void setUser(User user) {
     	this.user = user;
-    	this.userId = user.getId(); // In case this wasn't already set.
+    	if(user != null)
+    		this.userId = user.getId(); // In case this wasn't already set.
     }
     
     public User getUser() {

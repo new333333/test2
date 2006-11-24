@@ -71,6 +71,7 @@
 	
 	<target name="deploy-jar-into-portal" depends="deploy-init">
 		<property name="deploy.lib.dir" value="${app.server.lib.dir}" />
+		<mkdir dir="${deploy.lib.dir}"/>
 		<copy file="${deploy-support.jar.file}" todir="${deploy.lib.dir}" />
 	</target>
 	

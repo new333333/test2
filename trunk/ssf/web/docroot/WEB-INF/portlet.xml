@@ -158,37 +158,16 @@
         <name>user.name.family</name>
     </user-attribute>
     <user-attribute>
+        <description xml:lang="en">User Middle Name</description>
+        <name>user.name.middle</name>
+    </user-attribute>
+    <user-attribute>
         <description xml:lang="en">User E-Mail</description>
         <name>user.business-info.online.email</name>
     </user-attribute>
     <user-attribute>
-        <description xml:lang="en">User Department</description>
-        <name>user.department</name>
-    </user-attribute>
-
-     <user-attribute>
-        <description xml:lang="en">User Name</description>
-        <name>user.name</name>
-    </user-attribute>
-    <user-attribute>
-        <description xml:lang="en">User Full Name</description>
-        <name>user.name.full</name>
-    </user-attribute>
-    <user-attribute>
-        <description xml:lang="en">User E-Mail</description>
-        <name>user.email</name>
-    </user-attribute>
-    <user-attribute>
         <description xml:lang="en">User Organization</description>
-        <name>user.organization</name>
-    </user-attribute>
-    <user-attribute>
-        <description xml:lang="en">User Timezone</description>
-        <name>user.timezone</name>
-    </user-attribute>
-    <user-attribute>
-        <description xml:lang="en">User Preferred Locale</description>
-        <name>user.locale</name>
+        <name>user.business-info.postal.organization</name>
     </user-attribute>
 
 </portlet-app>

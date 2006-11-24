@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
+import com.sitescape.ef.kernel.util.SiteScapeClassLoaderUtil;
 import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.web.util.DebugHelper;
 
@@ -21,7 +22,7 @@ import com.sitescape.ef.web.util.DebugHelper;
  *
  */
 public class PortletAdapterServlet extends DispatcherServlet {
-    
+	
     public void service(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 
