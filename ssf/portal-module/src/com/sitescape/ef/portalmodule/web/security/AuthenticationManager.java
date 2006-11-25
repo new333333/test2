@@ -2,27 +2,44 @@ package com.sitescape.ef.portalmodule.web.security;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
+
+import com.sitescape.ef.ascore.cc.SiteScapeCCUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
-import com.sitescape.ef.portalmodule.web.crosscontext.DispatchClient;
+import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
-import com.sitescape.util.servlet.DynamicServletRequest;
 
 public class AuthenticationManager {
 	
-	public static void authenticate(HttpServletRequest request, 
-			String zoneName, String userName, String password, Map updates) 
+	/**
+	 * 
+	 * @param request
+	 * @param zoneName may be null
+	 * @param userName
+	 * @param password
+	 * @param updates may be null
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	public static void authenticate(String zoneName, String userName, String password, Map updates) 
 		throws ServletException, IOException {		
-		DynamicServletRequest req = new DynamicServletRequest(request);
+		RequestDispatcher rd = SiteScapeCCUtil.getCCDispatcher();
+
+		AttributesAndParamsOnlyServletRequest req = 
+			new AttributesAndParamsOnlyServletRequest(SiteScapeCCUtil.getSSFContextPath());
+
 		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
+		if(zoneName != null)
+			req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setParameter(CrossContextConstants.USER_NAME, userName);
 		req.setParameter(CrossContextConstants.PASSWORD, password);
-		req.setAttribute(CrossContextConstants.USER_INFO, updates);
+		if(updates != null)
+			req.setAttribute(CrossContextConstants.USER_INFO, updates);
+		
 		NullServletResponse res = new NullServletResponse();
 		
-		DispatchClient.doDispatch(req, res);
+		rd.include(req, res);
 	}
 }

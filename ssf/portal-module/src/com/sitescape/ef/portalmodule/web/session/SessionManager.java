@@ -2,11 +2,13 @@ package com.sitescape.ef.portalmodule.web.session;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import com.sitescape.ef.ascore.cc.SiteScapeCCUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
-import com.sitescape.ef.portalmodule.web.crosscontext.DispatchClient;
+import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
 
@@ -35,13 +37,16 @@ public class SessionManager {
 		//System.out.println("\tzone name: " + zoneName);
 		//System.out.println("\tuser name: " + userName);
 		
+		RequestDispatcher rd = SiteScapeCCUtil.getCCDispatcher();
+
 		DynamicServletRequest req = new DynamicServletRequest(request);
+
 		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_CREATE_SESSION);
 		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
 		req.setParameter(CrossContextConstants.USER_NAME, userName);
-		req.setParameter(CrossContextConstants.PORTAL_SESSION_ID, portalSessionId);
+		
 		NullServletResponse res = new NullServletResponse();
 		
-		DispatchClient.doDispatch(req, res);
+		rd.include(req, res);
 	}
 }
