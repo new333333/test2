@@ -29,16 +29,16 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<target name="clean-build-and-deploy" depends="clean,build,deploy-internal-use-only" />
+	<target name="clean-build-and-deploy" depends="clean,build,deploy-only" />
 
-	<target name="build-and-deploy" depends="build,deploy-internal-use-only" />
+	<target name="build-and-deploy" depends="build,deploy-only" />
 
 	<!-- Do NOT run the following target on its own (unless you know
 	     what you are doing). When executed on its own, it may very
 	     well be deploying an artifact built for different portal. 
 	     So when in doubt, ALWAYS run either "all" or "all-without-clean"
 	     which will re-build the artifacts before deploying them. -->
-	<target name="deploy-internal-use-only" depends="init">
+	<target name="deploy-only" depends="init">
 		<if>
 			<equals arg1="${portal.type}" arg2="liferay" />
 			<then>				
@@ -65,7 +65,7 @@
 		<ant dir="util" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
 		<ant dir="remoting" target="clean" />
-		<ant dir="kernel" target="clean" />
+		<ant dir="as-module" target="clean" />
 
 		<ant dir="applets" target="clean" />
 
@@ -88,7 +88,7 @@
 		<ant dir="util" target="compile" />
 		<ant dir="indexer-lucene" target="compile" />			
 		<ant dir="remoting" target="compile" />			
-		<ant dir="kernel" target="compile" />
+		<ant dir="as-module" target="compile" />
 
 		<ant dir="main" target="compile-common" />
 
@@ -110,7 +110,7 @@
 		<ant dir="util" target="jar" />
 		<ant dir="indexer-lucene" target="jar" />
 		<ant dir="remoting" target="jar" />
-		<ant dir="kernel" target="jar" />
+		<ant dir="as-module" target="jar" />
 
 		<ant dir="applets" target="jar" />
 
@@ -136,7 +136,7 @@
 		<ant dir="util" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
 		<ant dir="remoting" target="java2html" />
-		<ant dir="kernel" target="java2html" />
+		<ant dir="as-module" target="java2html" />
 
 		<ant dir="applets" target="java2html" />
 
@@ -154,7 +154,7 @@
 		<ant dir="util" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
 		<ant dir="remoting" target="javadoc" />
-		<ant dir="kernel" target="javadoc" />
+		<ant dir="as-module" target="javadoc" />
 		
 		<ant dir="applets" target="javadoc" />
 
