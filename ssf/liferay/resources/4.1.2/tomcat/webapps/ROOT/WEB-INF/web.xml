@@ -229,16 +229,6 @@
 		<servlet-class>com.liferay.portlet.httpbridge.servlet.UserService</servlet-class>
 		<load-on-startup>11</load-on-startup>
 	</servlet>
-	<!-- SiteScape: Added SiteScapeServlet servlet -->
-	<servlet>
-		<servlet-name>SiteScapeServlet</servlet-name>
-		<servlet-class>com.sitescape.ef.portalmodule.web.servlet.SiteScapeServlet</servlet-class>
-		<init-param>
-			<param-name>contextPath</param-name>
-			<param-value>/ssf</param-value>
-		</init-param>
-		<load-on-startup>12</load-on-startup>
-	</servlet>
 	<servlet-mapping>
 		<servlet-name>MainServlet</servlet-name>
 		<url-pattern>/c/*</url-pattern>

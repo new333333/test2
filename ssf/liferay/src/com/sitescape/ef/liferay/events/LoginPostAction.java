@@ -60,7 +60,7 @@ public class LoginPostAction extends AbstractAction {
 			updates.put("organization", user.getOrganization().getName());
 			updates.put("location", user.getLocation().getName());
 			// First, authenticate the user against SSF user database.
-			AuthenticationManager.authenticate(req, companyId, userId, password, updates);
+			AuthenticationManager.authenticate(companyId, userId, password, updates);
 			
 			// If you're still here, the authentication was successful. 
 			// Create a SSF session for the user. 
