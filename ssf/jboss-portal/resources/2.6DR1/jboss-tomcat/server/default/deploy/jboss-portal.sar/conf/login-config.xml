@@ -35,6 +35,14 @@
    
    <application-policy name="portal">
       <authentication>
+         <!--
+         <login-module code="org.jboss.portal.identity.auth.IdentityLoginModule" flag="required">
+         -->
+         <!-- SiteScape: SiteScapeLoginModule wraps JBoss Portal's IdentityLoginModule
+              (which is commented out above) so that Aspen can intercept the portal
+              user's login process and provide convenient automatic synchronization
+              of Aspen user database with the information from the Portal.
+         -->
          <login-module code="com.sitescape.ef.jbossportal.jaas.SiteScapeLoginModule" flag="required">
             <module-option name="unauthenticatedIdentity">guest</module-option>
             <module-option name="userModuleJNDIName">java:/portal/UserModule</module-option>
