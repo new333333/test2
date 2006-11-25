@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.kernel.util.SiteScapeClassLoaderUtil;
+import com.sitescape.ef.ascore.cc.SiteScapeCCUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
@@ -30,10 +30,14 @@ public class DispatchServer extends GenericServlet {
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
 	
 	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
+	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
-		SiteScapeClassLoaderUtil.setCCDispatcher(rd);
+		SiteScapeCCUtil.setCCDispatcher(rd);
+		String cxt = config.getInitParameter("ssfContextPath");
+		if(cxt != null && cxt.length() > 0)
+			SiteScapeCCUtil.setSSFContextPath(cxt);
 	}
 	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
@@ -78,15 +82,14 @@ public class DispatchServer extends GenericServlet {
 			HttpServletRequest request = (HttpServletRequest) req;
 			
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(zoneName == null)
+				zoneName = SZoneConfig.getDefaultZoneName();
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
-			String portalSessionId = req.getParameter(CrossContextConstants.PORTAL_SESSION_ID);
 			
 			HttpSession ses = request.getSession();
 			
 			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
 			ses.setAttribute(WebKeys.USER_NAME, userName);
-		
-			logger.debug("The session with id = [" + ses.getId() + "] is associated with portal key = [" + portalSessionId + "]");
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");
