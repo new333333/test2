@@ -14,7 +14,6 @@ public abstract class CrossContextConstants {
 	// (i.e., com.sitescape.crosscontext.portal) so that the name will 
 	// not collide with other names already in the request object.
 	public static final String OPERATION = "com.sitescape.crosscontext.portal.operation";
-	public static final String PORTAL_SESSION_ID = "com.sitescape.crosscontext.portal.portalsessionid";
 	public static final String USER_NAME = "com.sitescape.crosscontext.portal.username";
 	public static final String PASSWORD = "com.sitescape.crosscontext.portal.password";
 	public static final String ZONE_NAME = "com.sitescape.crosscontext.portal.zonename";
