@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.ascore.SiteScapeUtil;
+import com.sitescape.ef.ascore.SiteScapeUtil; 
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
