@@ -6,7 +6,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import java.util.Map;
 
-import com.sitescape.ef.ascore.cc.SiteScapeCCUtil;
+import com.sitescape.ef.ascore.cc.SiteScapeUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
@@ -25,10 +25,10 @@ public class AuthenticationManager {
 	 */
 	public static void authenticate(String zoneName, String userName, String password, Map updates) 
 		throws ServletException, IOException {		
-		RequestDispatcher rd = SiteScapeCCUtil.getCCDispatcher();
+		RequestDispatcher rd = SiteScapeUtil.getCCDispatcher();
 
 		AttributesAndParamsOnlyServletRequest req = 
-			new AttributesAndParamsOnlyServletRequest(SiteScapeCCUtil.getSSFContextPath());
+			new AttributesAndParamsOnlyServletRequest(SiteScapeUtil.getSSFContextPath());
 
 		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
 		if(zoneName != null)
