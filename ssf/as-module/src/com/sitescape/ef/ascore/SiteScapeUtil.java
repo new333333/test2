@@ -1,4 +1,4 @@
-package com.sitescape.ef.ascore.cc;
+package com.sitescape.ef.ascore;
 
 import javax.servlet.RequestDispatcher;
 
