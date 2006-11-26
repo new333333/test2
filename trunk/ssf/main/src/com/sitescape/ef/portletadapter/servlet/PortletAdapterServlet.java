@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.sitescape.ef.ascore.cc.SiteScapeUtil;
+import com.sitescape.ef.ascore.SiteScapeUtil;
 import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.web.util.DebugHelper;
 
