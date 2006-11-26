@@ -2,10 +2,19 @@ package com.sitescape.ef.ascore.cc;
 
 import javax.servlet.RequestDispatcher;
 
-public class SiteScapeCCUtil {
+public class SiteScapeUtil {
 
 	private static RequestDispatcher ccDispatcher;
 	private static String ssfContextPath;
+	private static ClassLoader classLoader;
+
+	public static ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	public static void setClassLoader(ClassLoader contextClassLoader) {
+		classLoader = contextClassLoader;
+	}
 
 	public static RequestDispatcher getCCDispatcher() {
 		return ccDispatcher;
