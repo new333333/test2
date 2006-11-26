@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.ascore.cc.SiteScapeUtil;
+import com.sitescape.ef.ascore.SiteScapeUtil;
 import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
@@ -29,15 +29,16 @@ public class DispatchServer extends GenericServlet {
 
 	private static final Log logger = LogFactory.getLog(DispatchServer.class);
 	
-	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
+	private static final String PORTAL_CC_DISPATCHER = "CCDispatcher";
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
 		SiteScapeUtil.setCCDispatcher(rd);
 		String cxt = config.getInitParameter("ssfContextPath");
-		if(cxt != null && cxt.length() > 0)
-			SiteScapeUtil.setSSFContextPath(cxt);
+		if(cxt == null || cxt.length() == 0)
+			cxt = SSF_CONTEXT_PATH_DEFAULT;
+		SiteScapeUtil.setSSFContextPath(cxt);
 		try {
 			SiteScapeUtil.setClassLoader(Thread.currentThread().getContextClassLoader());
 		}
