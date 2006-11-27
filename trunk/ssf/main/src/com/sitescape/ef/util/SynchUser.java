@@ -1,10 +1,8 @@
-package com.sitescape.ef.portalmodule.util;
+package com.sitescape.ef.util;
 
 import com.sitescape.ef.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SZoneConfig;
 
 /**
  * IMPORTANT: This class must NOT have any dependency on other classes in
