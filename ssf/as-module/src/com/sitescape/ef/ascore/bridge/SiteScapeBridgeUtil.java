@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 
 import javax.servlet.RequestDispatcher;
 
-public class SiteScapeUtil {
+public class SiteScapeBridgeUtil {
 
 	// Servlet request dispatcher to SSF web app to allow cross-context 
 	// access to it. 
@@ -43,7 +43,7 @@ public class SiteScapeUtil {
 	throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
 		try {
-			Thread.currentThread().setContextClassLoader(SiteScapeUtil.getClassLoader());
+			Thread.currentThread().setContextClassLoader(SiteScapeBridgeUtil.getClassLoader());
 				
 			return method.invoke(obj, args);
 		}

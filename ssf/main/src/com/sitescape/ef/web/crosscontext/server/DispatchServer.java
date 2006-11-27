@@ -15,7 +15,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.ascore.bridge.SiteScapeUtil;
+import com.sitescape.ef.ascore.bridge.SiteScapeBridgeUtil;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
@@ -34,13 +34,13 @@ public class DispatchServer extends GenericServlet {
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
-		SiteScapeUtil.setCCDispatcher(rd);
+		SiteScapeBridgeUtil.setCCDispatcher(rd);
 		String cxt = config.getInitParameter("ssfContextPath");
 		if(cxt == null || cxt.length() == 0)
 			cxt = SSF_CONTEXT_PATH_DEFAULT;
-		SiteScapeUtil.setSSFContextPath(cxt);
+		SiteScapeBridgeUtil.setSSFContextPath(cxt);
 		try {
-			SiteScapeUtil.setClassLoader(Thread.currentThread().getContextClassLoader());
+			SiteScapeBridgeUtil.setClassLoader(Thread.currentThread().getContextClassLoader());
 		}
 		catch(Exception e) {
 			new ServletException(e);

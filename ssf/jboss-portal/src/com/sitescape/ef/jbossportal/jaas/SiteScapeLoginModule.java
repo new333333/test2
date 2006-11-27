@@ -2,7 +2,7 @@ package com.sitescape.ef.jbossportal.jaas;
 
 import java.lang.reflect.Method;
 
-import com.sitescape.ef.ascore.bridge.SiteScapeUtil;
+import com.sitescape.ef.ascore.bridge.SiteScapeBridgeUtil;
 import com.sitescape.ef.portalmodule.web.security.AuthenticationManager;
 
 import org.jboss.portal.identity.auth.IdentityLoginModule;
@@ -29,7 +29,7 @@ public class SiteScapeLoginModule extends IdentityLoginModule {
 		try { 
 			// Load the SynchUser class using SSF's webapp classloader.
 			Class classObj = Class.forName(
-					CLASS_NAME, true, SiteScapeUtil.getClassLoader());
+					CLASS_NAME, true, SiteScapeBridgeUtil.getClassLoader());
 
 			// Instantiate a SynchUser and assign it to a variable of Object
 			// type to prevent current classloader from attempting to load
@@ -65,7 +65,7 @@ public class SiteScapeLoginModule extends IdentityLoginModule {
 			*/
 			
 			try {
-				SiteScapeUtil.invoke(synchMethod, synchUser, null, username, password);
+				SiteScapeBridgeUtil.invoke(synchMethod, synchUser, null, username, password);
 			}
 			catch(Exception e) {
 				e.printStackTrace();
