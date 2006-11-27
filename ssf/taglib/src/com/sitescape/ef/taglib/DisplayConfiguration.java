@@ -127,6 +127,13 @@ public class DisplayConfiguration extends TagSupport {
 												propertyValue = property.getText();
 											} else if (propertyConfigType.equals("boolean") || propertyConfigType.equals("checkbox")) {
 												propertyValue = NLT.getDef(property.attributeValue("value", ""));
+											} else if (propertyConfigType.equals("selectbox")) {
+												propertyValue = NLT.getDef(property.attributeValue("value", ""));
+												//There might be multiple values so bulid a list
+												List propertyValues = (List) req.getAttribute("propertyValues_"+propertyName);
+												if (propertyValues == null) propertyValues = new ArrayList();
+												propertyValues.add(propertyValue);
+												req.setAttribute("propertyValues_"+propertyName, propertyValues);
 											} else {
 												propertyValue = NLT.getDef(property.attributeValue("value", ""));
 											}

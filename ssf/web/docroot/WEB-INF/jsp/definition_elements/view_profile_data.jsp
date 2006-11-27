@@ -40,7 +40,7 @@
 	} else if (itemType.equals("file")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_file.jsp" %><%
 		
-	} else if (itemType.equals("graphic")) {
+	} else if (itemType.equals("graphic") || itemType.equals("profileEntryPicture")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
 		
 	} else if (itemType.equals("user_list")) {
