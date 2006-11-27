@@ -616,6 +616,9 @@ public class FileRepositorySession implements RepositorySession {
 			}
 		});
 		
+		if(versionFileNames == null)
+			versionFileNames = new String[0];
+		
 		return versionFileNames;
 	}
 	
