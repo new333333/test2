@@ -54,14 +54,7 @@
     folderId="${ssDefinitionEntry.parentBinder.id}" 
     action="view_profile_entry"
     entryId="${ssDefinitionEntry.id}"/>">
-<table cellspacing="0" cellpadding="0">
-<tr>
-<td>
-  <span class="ss_light ss_smallprint"><ssf:nlt tag="profile.viewProfile"/></span>
-</td>
-<td> <img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"></td>
-</tr>
-</table>
+  <span class="ss_light ss_smallprint"><ssf:nlt tag="profile.viewProfile"/>...</span>
 </a>
 </td>
 </tr>
