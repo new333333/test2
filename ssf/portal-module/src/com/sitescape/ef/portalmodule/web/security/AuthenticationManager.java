@@ -2,7 +2,6 @@ package com.sitescape.ef.portalmodule.web.security;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import java.util.Map;
 
@@ -25,8 +24,6 @@ public class AuthenticationManager {
 	 */
 	public static void authenticate(String zoneName, String userName, String password, Map updates) 
 		throws ServletException, IOException {		
-		RequestDispatcher rd = SiteScapeBridgeUtil.getCCDispatcher();
-
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(SiteScapeBridgeUtil.getSSFContextPath());
 
@@ -40,6 +37,6 @@ public class AuthenticationManager {
 		
 		NullServletResponse res = new NullServletResponse();
 		
-		rd.include(req, res);
+		SiteScapeBridgeUtil.include(req, res);
 	}
 }

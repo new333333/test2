@@ -37,8 +37,6 @@ public class SessionManager {
 		//System.out.println("\tzone name: " + zoneName);
 		//System.out.println("\tuser name: " + userName);
 		
-		RequestDispatcher rd = SiteScapeBridgeUtil.getCCDispatcher();
-
 		DynamicServletRequest req = new DynamicServletRequest(request);
 
 		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_CREATE_SESSION);
@@ -47,6 +45,6 @@ public class SessionManager {
 		
 		NullServletResponse res = new NullServletResponse();
 		
-		rd.include(req, res);
+		SiteScapeBridgeUtil.include(req, res);
 	}
 }
