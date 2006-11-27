@@ -1211,7 +1211,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_decor-round-corners-bottom2{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/border.gif) repeat-x bottom;
-	margin-bottom:10px;
+	margin-bottom:0px;
 }
 .ss_decor-round-corners-bottom2 div{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners2/corner3.gif) no-repeat left;

@@ -2853,11 +2853,19 @@ function ss_postSavePenletLayoutRequest(obj) {
 
 //Presence support
 function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
-    var obj
+    obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
+    ss_moveObjectToBody(obj)
+	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge);
+}
+function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
+    var obj;
+    var objId = divId;
+    if (objId == '') objId = 'ss_presencePopUp';
+    
     var m = ''
     var imgid = "ppgpres"+ssNamespace
     var ostatus = ss_ostatus_none;
-    obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
+    obj = self.document.getElementById(objId+ssNamespace)
     ss_moveObjectToBody(obj)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
@@ -2926,7 +2934,7 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
 
     obj.innerHTML = m;
 
-    ss_activateMenuLayer('ss_presencePopUp'+ssNamespace);
+    if (divId != '') ss_activateMenuLayer(objId+ssNamespace);
     if (self.document.images["ppgpres"+ssNamespace]) {
         self.document.images["ppgpres"+ssNamespace].src = ss_presencePopupGraphics["pres"].src;
     }
@@ -2957,32 +2965,34 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     if (self.document.images["ppgsched"+ssNamespace]) {
         self.document.images["ppgsched"+ssNamespace].src = ss_presencePopupGraphics["sched"].src;
     }
-    // move the div up if it scrolls off the bottom
-    var mousePosX = parseInt(ss_getClickPositionX());
-    var mousePosY = parseInt(ss_getClickPositionY());
-    if (mousePosY != 0) {
-        var divHt = parseInt(ss_getDivHeight('ss_presencePopUp'+ssNamespace));
-        var windowHt = parseInt(ss_getWindowHeight());
-        var scrollHt = self.document.body.scrollTop;
-        var diff = scrollHt + windowHt - mousePosY;
-        if (divHt > 0) {
-            if (diff <= divHt) {
-               ss_positionDiv('ss_presencePopUp'+ssNamespace, mousePosX, mousePosY - divHt);
-            }
-        }
-        //See if we need to make the portlet longer to hold the pop-up menu
-        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssNamespace);
-        if (sizerObj != null) {
-        	var menuTop = ss_getDivTop('ss_presencePopUp'+ssNamespace);
-        	var menuHeight = ss_getDivHeight('ss_presencePopUp'+ssNamespace);
-        	var sizerTop = ss_getDivTop('ss_presence_sizer_div'+ssNamespace);
-        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div'+ssNamespace);
-        	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
-        	if (deltaSizerHeight > 0) {
-        		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));
-        	}
-        }
-    }
+    if (divId != '') {
+	    // move the div up if it scrolls off the bottom
+	    var mousePosX = parseInt(ss_getClickPositionX());
+	    var mousePosY = parseInt(ss_getClickPositionY());
+	    if (mousePosY != 0) {
+	        var divHt = parseInt(ss_getDivHeight(objId+ssNamespace));
+	        var windowHt = parseInt(ss_getWindowHeight());
+	        var scrollHt = self.document.body.scrollTop;
+	        var diff = scrollHt + windowHt - mousePosY;
+	        if (divHt > 0) {
+	            if (diff <= divHt) {
+	               ss_positionDiv(objId+ssNamespace, mousePosX, mousePosY - divHt);
+	            }
+	        }
+	        //See if we need to make the portlet longer to hold the pop-up menu
+	        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssNamespace);
+	        if (sizerObj != null) {
+	        	var menuTop = ss_getDivTop(objId+ssNamespace);
+	        	var menuHeight = ss_getDivHeight(objId+ssNamespace);
+	        	var sizerTop = ss_getDivTop('ss_presence_sizer_div'+ssNamespace);
+	        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div'+ssNamespace);
+	        	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
+	        	if (deltaSizerHeight > 0) {
+	        		ss_setObjectHeight(sizerObj, parseInt(sizerHeight + deltaSizerHeight));
+	        	}
+	        }
+	    }
+	}
 }
 
 //Routines that support the link dropdown menu concept

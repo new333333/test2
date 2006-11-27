@@ -19,6 +19,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -231,7 +232,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		} catch (AccessControlException ac) {};
 		
 		//The "Administration" menu
-		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.administration"));
+		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageThisWorkspace"));
 		//Access control
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
@@ -289,6 +290,46 @@ public class WorkspaceTreeController extends SAbstractController  {
 			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
 		} catch (AccessControlException ac) {};
 		
+		//If this is a user workspace, add the "Manage this profile" menu
+		if ((workspace.getDefinitionType() != null) && 
+				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
+				workspace.getOwner() != null) {
+			Principal owner = workspace.getOwner().getPrincipal();
+			boolean showModifyProfileMenu = false;
+			boolean showDeleteProfileMenu = false;
+			try {
+				getProfileModule().checkModifyEntryAllowed(owner);
+				showModifyProfileMenu = true;
+			} catch (AccessControlException ac) {};
+		
+			try {
+				getProfileModule().checkDeleteEntryAllowed(owner);
+				showDeleteProfileMenu = true;
+			} catch (AccessControlException ac) {};
+			
+			if (showModifyProfileMenu || showDeleteProfileMenu) {
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
+				if (showModifyProfileMenu) {
+					//	The "Modify" menu item
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "1_modify", NLT.get("toolbar.modify"), url);
+				}
+				if (showDeleteProfileMenu) {
+					//	The "Delete" menu item
+					Map qualifiers = new HashMap();
+					qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "2_delete", NLT.get("toolbar.delete"), url, qualifiers);
+				}
+			}
+		}
 		//	The "Manage dashboard" menu
 		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
 			boolean dashboardContentExists = false;
@@ -299,29 +340,29 @@ public class WorkspaceTreeController extends SAbstractController  {
 					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
 				}
 			}
-			toolbar.addToolbarMenu("4_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			toolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 			
 			if (dashboardContentExists) {
 				qualifiers = new HashMap();
 				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
 				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
 	
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter("_scope", "local");
-				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
 	
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter("_scope", "global");
-				toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
 	
 				//Check the access rights of the user
 				try {
@@ -330,7 +371,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					url.setParameter("_scope", "binder");
-					toolbar.addToolbarMenuItem("4_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+					toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
 				} catch(AccessControlException e) {};
 			
 				qualifiers = new HashMap();
@@ -338,9 +379,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 						response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
 						workspace.getId().toString()+"');return false;");
 				if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
-					toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
 				} else {
-					toolbar.addToolbarMenu("5_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
 				}
 			}
 		}
