@@ -1,9 +1,13 @@
 package com.sitescape.ef.ascore.bridge;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 
 public class SiteScapeBridgeUtil {
 
@@ -15,18 +19,10 @@ public class SiteScapeBridgeUtil {
 	// SSF's web app class loader
 	private static ClassLoader classLoader;
 
-	public static ClassLoader getClassLoader() {
-		return classLoader;
-	}
-
 	public static void setClassLoader(ClassLoader contextClassLoader) {
 		classLoader = contextClassLoader;
 	}
 
-	public static RequestDispatcher getCCDispatcher() {
-		return ccDispatcher;
-	}
-	
 	public static void setCCDispatcher(RequestDispatcher dispatcher) {
 		ccDispatcher = dispatcher;
 	}
@@ -51,4 +47,52 @@ public class SiteScapeBridgeUtil {
 			Thread.currentThread().setContextClassLoader(clSave);
 		}
 	}
+	
+	/*
+	 * Get the named method of the class.
+	 */
+	public static Method getMethod(String className, String methodName,
+            Class... parameterTypes)
+     throws NoSuchMethodException, SecurityException, ClassNotFoundException {
+		return getClass(className).getMethod(methodName, parameterTypes);
+	}
+	
+	/*
+	 * Create an instance of the specified class and return it as an Object.
+	 */
+	public static Object newInstance(String className) throws InstantiationException,
+    IllegalAccessException, ClassNotFoundException {
+		return getClass(className).newInstance();
+	}
+	
+	/*
+	 * Includes the content of a resource (servlet, JSP page, HTML file) 
+	 * in the response.
+	 */
+	public static void include(ServletRequest req, ServletResponse res) 
+	throws ServletException, IOException {
+		getCCDispatcher().include(req, res);
+	}
+	
+	/*
+	 * Load the class using SSF's webapp classloader.
+	 */
+	protected static Class getClass(String className) throws ClassNotFoundException {
+		return Class.forName(className, true, getClassLoader());
+	}
+	
+	/*
+	 * Get SSF's web app classloader.
+	 */
+	protected static ClassLoader getClassLoader() {
+		return classLoader;
+	}
+
+	/*
+	 * Get the request dispatcher for SSF's crosscontext dispatcher servlet.
+	 */
+	protected static RequestDispatcher getCCDispatcher() {
+		return ccDispatcher;
+	}
+	
 }

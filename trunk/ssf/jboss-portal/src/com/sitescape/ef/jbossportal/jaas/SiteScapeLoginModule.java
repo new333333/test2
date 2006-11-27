@@ -26,17 +26,14 @@ public class SiteScapeLoginModule extends IdentityLoginModule {
 
 	public SiteScapeLoginModule() {
 		try { 
-			// Load the SynchUser class using SSF's webapp classloader.
-			Class classObj = Class.forName(
-					CLASS_NAME, true, SiteScapeBridgeUtil.getClassLoader());
-
-			// Instantiate a SynchUser and assign it to a variable of Object
-			// type to prevent current classloader from attempting to load
-			// SynchUser class.
-			synchUser = classObj.newInstance();
+			// Instantiate a SynchUser. Assign it to a variable of Object
+			// rather than of SynchUser type to prevent current classloader 
+			// from attempting to load SynchUser class.
+			synchUser = SiteScapeBridgeUtil.newInstance(CLASS_NAME);
 			
 			// We use reflection to invoke the method later on.
-			synchMethod = classObj.getMethod("synch", String.class, String.class, String.class);
+			synchMethod = SiteScapeBridgeUtil.getMethod
+			(CLASS_NAME, "synch", String.class, String.class, String.class);
 		}
 		catch (Exception e) {
 			// Perhaps we should have log facility available here...
