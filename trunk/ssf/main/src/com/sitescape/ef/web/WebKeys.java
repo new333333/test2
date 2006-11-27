@@ -296,6 +296,7 @@ public class WebKeys {
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
+    public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";
