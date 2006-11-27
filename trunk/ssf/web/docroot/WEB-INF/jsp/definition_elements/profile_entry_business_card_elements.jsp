@@ -1,6 +1,8 @@
 <% //Business card elements %>
 <%@ page import="java.lang.reflect.Method" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ssNamespace" value=""/>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");
@@ -56,7 +58,8 @@
 
 </td>
 <td valign="top" class="ss_profile_elements_spacer">
-  <ssf:presenceInfo user="${ssDefinitionEntry}"/>
+  <ssf:presenceInfo user="${ssDefinitionEntry}" showOptionsInline="true" optionsDivId="ss_presenceOptions"/>
+  <div id="ss_presenceOptions"></div>
 </td>
 </tr>
 </table>

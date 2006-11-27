@@ -2866,7 +2866,6 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     var imgid = "ppgpres"+ssNamespace
     var ostatus = ss_ostatus_none;
     obj = self.document.getElementById(objId+ssNamespace)
-    ss_moveObjectToBody(obj)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
@@ -2934,7 +2933,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 
     obj.innerHTML = m;
 
-    if (divId != '') ss_activateMenuLayer(objId+ssNamespace);
+    if (divId == '') ss_activateMenuLayer(objId+ssNamespace);
     if (self.document.images["ppgpres"+ssNamespace]) {
         self.document.images["ppgpres"+ssNamespace].src = ss_presencePopupGraphics["pres"].src;
     }
@@ -2965,7 +2964,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     if (self.document.images["ppgsched"+ssNamespace]) {
         self.document.images["ppgsched"+ssNamespace].src = ss_presencePopupGraphics["sched"].src;
     }
-    if (divId != '') {
+    if (divId == '') {
 	    // move the div up if it scrolls off the bottom
 	    var mousePosX = parseInt(ss_getClickPositionX());
 	    var mousePosY = parseInt(ss_getClickPositionY());

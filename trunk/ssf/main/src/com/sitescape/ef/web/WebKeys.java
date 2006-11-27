@@ -294,6 +294,7 @@ public class WebKeys {
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
+    public static final String PRESENCE_DIV_ID="ss_presence_div_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
