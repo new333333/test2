@@ -170,6 +170,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 </script>
 
 <ssf:ifnotadapter>
+<div class="ss_style ss_portlet">
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
@@ -205,6 +206,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
+</div>
 </div>
 </div>
 </ssf:ifnotadapter>

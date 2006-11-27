@@ -1,4 +1,5 @@
 <% //Graphic view %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />

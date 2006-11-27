@@ -625,7 +625,8 @@ public class BuildDefinitionDivs extends TagSupport {
 							for (int i = 0; i < propertyValues.size(); i++) {
 								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
 									checked = " selected=\"selected\"";
-									if (type.equals("radio")) checked = " checked=\"checked\"";									break;
+									if (type.equals("radio")) checked = " checked=\"checked\"";
+									break;
 								}
 							}
 							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
@@ -636,6 +637,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
 								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
 								sb.append("</option>\n");
+								optionCount++;
 							} else if (type.equals("radio")) {
 								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 								sb.append(selection.attributeValue("name", ""));
@@ -1134,7 +1136,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("\" class=\"ss_helpPopUp\">\n");
+									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");

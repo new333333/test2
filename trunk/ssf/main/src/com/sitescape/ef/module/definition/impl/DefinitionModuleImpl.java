@@ -687,9 +687,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (attr != null)
 							newPropertyEle.remove(attr);
 						
-						attr = newPropertyEle.attribute("type");
-						if (attr != null)
-							newPropertyEle.remove(attr);
+						//attr = newPropertyEle.attribute("type");
+						//if (attr != null)
+							//newPropertyEle.remove(attr);
 						
 						attr = newPropertyEle.attribute("unique");
 						if (attr != null)
@@ -1374,75 +1374,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									v.setValue((String[])users.toArray(userIds));
 									entryData.put(nameValue, v);
 								}
-
-							} else if (itemName.equals("selectbox")) {
-								if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
-							} else if (itemName.equals("checkbox")) {
-								if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
-									entryData.put(nameValue, Boolean.TRUE);
-								} else {
-									entryData.put(nameValue, Boolean.FALSE);
-								}
-							} else if (itemName.equals("file") || itemName.equals("graphic") || 
-									itemName.equals("profileEntryPicture")) {
-							    if(fileItems != null && fileItems.containsKey(nameValue)) {
-							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-							    	String fileName = myFile.getOriginalFilename();
-							    	if (fileName.equals("")) continue;
-							    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-							    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
-								    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
-					    			fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
-					    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
-							    	// TODO The following piece of code may need a better conditional
-							    	// statement than this, since we probably do not want to generate
-							    	// thumbnails for all graphic-type file uploads. Or do we? 
-							    	if(itemName.equals("graphic") || itemName.equals("profileEntryPicture")) {
-							    		fui.setGenerateThumbnail(true);
-							    		fui.setThumbnailDirectlyAccessible(true);
-							    	} 
-							    	
-							    	fileData.add(fui);
-								}
-							} else if (itemName.equals("fileEntryTitle")) {
-							    if(fileItems != null && fileItems.containsKey(nameValue)) {
-							    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-							    	String fileName = myFile.getOriginalFilename();
-							    	if (fileName.equals("")) continue;
-							    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-							    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-							    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
-							    	fileData.add(fui);
-							    }
-							} else if (itemName.equals("attachFiles")) {
-							    if(fileItems != null) {
-									int number = GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "number"), 1);
-									for (int i=1;i <= number;i++) {
-										String fileEleName = nameValue + Integer.toString(i);
-										if (fileItems.containsKey(fileEleName)) {												
-									    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-									    	String fileName = myFile.getOriginalFilename();
-									    	if (fileName.equals("")) continue;
-									    	// Different repository can be specified for each file uploaded.
-									    	// If not specified, use the statically selected one.  
-									    	String repositoryName = null;
-									    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
-									    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-									    	if (repositoryName == null) {
-										    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-										    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-									    	}
-									    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-									    	fileData.add(fui);
-										}
-									}
-							    }
+							}
+						} else if (itemName.equals("selectbox")) {
+							if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getValues(nameValue));
+						} else if (itemName.equals("checkbox")) {
+							if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
+								entryData.put(nameValue, Boolean.TRUE);
 							} else {
 								entryData.put(nameValue, Boolean.FALSE);
 							}
-						} else if (itemName.equals("file") || itemName.equals("graphic")) {
-						    if(fileItems != null && fileItems.containsKey(nameValue)) {
+						} else if (itemName.equals("file") || itemName.equals("graphic") || 
+								itemName.equals("profileEntryPicture")) {
+						    if (fileItems != null && fileItems.containsKey(nameValue)) {
 						    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 						    	String fileName = myFile.getOriginalFilename();
 						    	if (fileName.equals("")) continue;
@@ -1455,15 +1398,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	// TODO The following piece of code may need a better conditional
 						    	// statement than this, since we probably do not want to generate
 						    	// thumbnails for all graphic-type file uploads. Or do we? 
-						    	if(itemName.equals("graphic")) {
+						    	if(itemName.equals("graphic") || itemName.equals("profileEntryPicture")) {
 						    		fui.setGenerateThumbnail(true);
 						    		fui.setThumbnailDirectlyAccessible(true);
 						    	} 
 						    	
 						    	fileData.add(fui);
-							}
+						    }
 						} else if (itemName.equals("fileEntryTitle")) {
-						    if(fileItems != null && fileItems.containsKey(nameValue)) {
+						    if (fileItems != null && fileItems.containsKey(nameValue)) {
 						    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
 						    	String fileName = myFile.getOriginalFilename();
 						    	if (fileName.equals("")) continue;
@@ -1473,7 +1416,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	fileData.add(fui);
 						    }
 						} else if (itemName.equals("attachFiles")) {
-						    if(fileItems != null) {
+						    if (fileItems != null) {
 								int number = GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "number"), 1);
 								for (int i=1;i <= number;i++) {
 									String fileEleName = nameValue + Integer.toString(i);
