@@ -26,7 +26,7 @@ public class PresenceInfo extends BodyTagSupport {
     private String componentId;
     private int userStatus=-1;
     private Boolean showOptionsInline=false;
-    private Boolean showLargeDude=false;
+    private String optionsDivId="";
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -43,9 +43,6 @@ public class PresenceInfo extends BodyTagSupport {
 
 			if (this.componentId == null) this.componentId = "";
 			if (this.showOptionsInline == null) this.showOptionsInline = false;
-			if (this.showLargeDude == null) this.showLargeDude = false;
-			String gifSize = "s";
-			if (this.showLargeDude) gifSize = "m";
 
 			if (zonName != null) {
 				userStatus = PresenceServiceUtils.getPresence(zonName);
@@ -55,18 +52,18 @@ public class PresenceInfo extends BodyTagSupport {
 				userStatus = -99;
 			}
 			if (userStatus != -99) {
-				String dudeGif = "sym_"+gifSize+"_white_dude.gif"; 
+				String dudeGif = "sym_s_white_dude.gif"; 
 				String altText = NLT.get("presence.none");
 				if (userStatus > 0) {
 					if ((userStatus & 16) == 16) {
-						dudeGif = "sym_"+gifSize+"_yellow_dude.gif";
+						dudeGif = "sym_s_yellow_dude.gif";
 						altText = NLT.get("presence.away");
 					} else {
-						dudeGif = "sym_"+gifSize+"_green_dude.gif";
+						dudeGif = "sym_s_green_dude.gif";
 						altText = NLT.get("presence.online");
 					}
 				} else if (userStatus == 0) {
-					dudeGif = "sym_"+gifSize+"_gray_dude.gif";
+					dudeGif = "sym_s_gray_dude.gif";
 					altText = NLT.get("presence.offline");
 				}
 				
@@ -79,6 +76,7 @@ public class PresenceInfo extends BodyTagSupport {
 				httpReq.setAttribute(WebKeys.PRESENCE_TEXT, altText);
 				httpReq.setAttribute(WebKeys.PRESENCE_ZON_BRIDGE, "enabled");
 				httpReq.setAttribute(WebKeys.PRESENCE_COMPONENT_ID, this.componentId);
+				httpReq.setAttribute(WebKeys.PRESENCE_DIV_ID, this.optionsDivId);
 				httpReq.setAttribute(WebKeys.PRESENCE_SHOW_OPTIONS_INLINE, this.showOptionsInline);
 	
 				// Output the presence info
@@ -116,8 +114,8 @@ public class PresenceInfo extends BodyTagSupport {
 	public void setShowOptionsInline(Boolean showOptionsInline) {
 		this.showOptionsInline = showOptionsInline;
 	}
-	public void setShowLargeDude(Boolean showLargeDude) {
-		this.showLargeDude = showLargeDude;
+	public void setOptionsDivId(String optionsDivId) {
+		this.optionsDivId = optionsDivId;
 	}
 
 }

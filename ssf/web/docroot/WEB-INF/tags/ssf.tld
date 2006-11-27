@@ -414,11 +414,10 @@
 			<type>java.lang.Boolean</type>
 		</attribute>		
 		<attribute>
-			<name>showLargeDude</name>
+			<name>optionsDivId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>		
+		</attribute>
 	</tag>	
 
 	<tag>

@@ -13,8 +13,6 @@
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
 <c:if test="${empty ss_presence_user && ss_presence_show_options_inline}">
-<img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
- alt="<c:out value="${ss_presence_text}"/>"/>
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -62,7 +60,19 @@
 ><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 <c:if test="${ss_presence_show_options_inline}">
-<img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/>
+<a href="javascript: ;"
+ style="background:url(<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>) no-repeat left;
+ padding-left:10px; text-decoration:none;"
+ onClick="ss_presenceMenu('ss_presenceOptions', this, 
+    '${ss_presence_user.id}', 
+    '<%= presenceUserTitle %>', 
+    '${ss_presence_userStatus}', 
+    '<%= presenceUserZonName %>', 
+    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
+    '<%= presenceUserEmailAddress %>', 
+    '${ss_presence_vcard}', 
+    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
+><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 
 </c:if>
