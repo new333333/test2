@@ -20,18 +20,23 @@ import javax.security.auth.login.LoginException;
 public class SiteScapeLoginModule extends IdentityLoginModule {
 	
 	private static final String CLASS_NAME =
-		"com.sitescape.ef.portalmodule.util.SynchUser";
+		"com.sitescape.ef.util.SynchUser";
 	
 	private Object synchUser;
 	private Method synchMethod;
 
 	public SiteScapeLoginModule() {
-		try {
+		try { 
+			// Load the SynchUser class using SSF's webapp classloader.
 			Class classObj = Class.forName(
 					CLASS_NAME, true, SiteScapeUtil.getClassLoader());
 
+			// Instantiate a SynchUser and assign it to a variable of Object
+			// type to prevent current classloader from attempting to load
+			// SynchUser class.
 			synchUser = classObj.newInstance();
 			
+			// We use reflection to invoke the method later on.
 			synchMethod = classObj.getMethod("synch", String.class, String.class, String.class);
 		}
 		catch (Exception e) {
@@ -59,21 +64,14 @@ public class SiteScapeLoginModule extends IdentityLoginModule {
 			}
 			*/
 			
-			ClassLoader clSave = Thread.currentThread().getContextClassLoader();
 			try {
-				Thread.currentThread().setContextClassLoader(SiteScapeUtil.getClassLoader());
-				try {
-					synchMethod.invoke(synchUser, null, username, password);
-				} 
-				catch (Exception e) {
-					e.printStackTrace();
-					// It's unclear whether we should abort the user login or let
-					// the user continue in this case. For now, we will abort it.
-					throw new LoginException(e.toString());
-				} 
+				SiteScapeUtil.invoke(synchMethod, synchUser, null, username, password);
 			}
-			finally {
-				Thread.currentThread().setContextClassLoader(clSave);
+			catch(Exception e) {
+				e.printStackTrace();
+				// It's unclear whether we should abort the user login or let
+				// the user continue in this case. For now, we will abort it.
+				throw new LoginException(e.toString());				
 			}
 		}
 		return result;

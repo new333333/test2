@@ -1,5 +1,8 @@
 package com.sitescape.ef.ascore;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import javax.servlet.RequestDispatcher;
 
 public class SiteScapeUtil {
@@ -34,5 +37,18 @@ public class SiteScapeUtil {
 	
 	public static String getSSFContextPath() {
 		return ssfContextPath;
+	}
+	
+	public static Object invoke(Method method, Object obj, Object... args) 
+	throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		ClassLoader clSave = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(SiteScapeUtil.getClassLoader());
+				
+			return method.invoke(obj, args);
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(clSave);
+		}
 	}
 }
