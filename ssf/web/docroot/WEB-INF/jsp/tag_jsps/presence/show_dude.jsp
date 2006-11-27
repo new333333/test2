@@ -6,11 +6,15 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
-<c:if test="${empty ss_presence_user}">
+<c:if test="${empty ss_presence_user && !ss_presence_show_options_inline}">
 <a href="javascript: ;"
  onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
+</c:if>
+<c:if test="${empty ss_presence_user && ss_presence_show_options_inline}">
+<img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+ alt="<c:out value="${ss_presence_text}"/>"/>
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -42,6 +46,7 @@
 <c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 <c:set var="current" value="current"/>
 </c:if>
+<c:if test="${!ss_presence_show_options_inline}">
 <a href="javascript: ;"
  style="background:url(<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>) no-repeat left;
  padding-left:10px; text-decoration:none;"
@@ -55,4 +60,9 @@
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
 ><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+</c:if>
+<c:if test="${ss_presence_show_options_inline}">
+<img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/>
+</c:if>
+
 </c:if>

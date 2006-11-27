@@ -9,6 +9,7 @@
 	if (height == null || height.equals("")) {
 		height = "200";
 	}
+	if (Integer.valueOf(height).intValue() < 100) height = "100";
 	if (caption == null || caption.equals("")) {
 		caption = "";
 	} else {
@@ -35,8 +36,10 @@
 </c:if>
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
-<div style="border:1px solid #CECECE; height:<%= height %>;">
-<textarea dojoType="Editor" 
+<div style="border:1px solid #CECECE; height:<%= height %>px;">
+<textarea dojoType="Editor2" 
+  htmlEditing="true" useActiveX="false" 
+  shareToolbar="false" toolbarAlwaysVisible="true"
   items="textGroup;|;colorGroup;|;listGroup;|;indentGroup;|;justifyGroup;|;linkGroup;"
   id="${property_name}" 
   minHeight="<%= height %>"

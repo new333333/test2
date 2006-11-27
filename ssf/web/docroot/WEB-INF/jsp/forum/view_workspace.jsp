@@ -20,6 +20,7 @@
 <script type="text/javascript">
 var ss_reloadUrl = "${ss_reloadUrl}";
 var ss_confirmDeleteWorkspaceText = "<ssf:nlt tag="workspace.confirmDeleteWorkspace"/>";
+var ss_confirmDeleteProfileText = "<ssf:nlt tag="workspace.confirmDeleteProfile"/>";
 
 function ss_confirmDeleteWorkspace() {
 	if (confirm(ss_confirmDeleteWorkspaceText)) {
@@ -28,6 +29,14 @@ function ss_confirmDeleteWorkspace() {
 		return false
 	}
 }
+function ss_confirmDeleteProfile() {
+	if (confirm(ss_confirmDeleteProfileText)) {
+		return true
+	} else {
+		return false
+	}
+}
+
 </script>
 
 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer">
