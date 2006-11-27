@@ -1231,6 +1231,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar{
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
 	height:34px;
+	padding-top:4px;
 <c:if test="<%= isIE %>">
 	margin-bottom:6px;
 </c:if>
@@ -1646,5 +1647,8 @@ div.ss_bottomlinks {
 	margin-top:9px;
 }
 
-
+/* Profile elements */
+.ss_profile_elements_spacer {
+	padding-right:10px;
+}
 </c:if>
