@@ -614,8 +614,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (type.equals("selectbox")) {
 							//See if multiple selections are allowed
 							String multipleText = "";
+							String sizeText = "";
+							propertyConfig.selectNodes("option").size()
+							if (propertyConfig.selectNodes("option").size() > 1) 
+								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
-							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + ">\n");
+							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						}
 						//See if there are any built-in options
 						Iterator  itSelections = propertyConfig.elementIterator("option");
