@@ -1,4 +1,4 @@
-package com.sitescape.ef.portalmodule.web.crosscontext.server;
+package com.sitescape.ef.web.crosscontext.server;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,7 +16,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.ascore.SiteScapeUtil; 
-import com.sitescape.ef.portalmodule.CrossContextConstants;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
@@ -24,6 +23,7 @@ import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.crosscontext.CrossContextConstants;
 
 public class DispatchServer extends GenericServlet {
 

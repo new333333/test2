@@ -7,7 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.ascore.SiteScapeUtil;
-import com.sitescape.ef.portalmodule.CrossContextConstants;
+import com.sitescape.ef.web.crosscontext.CrossContextConstants;
 import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
