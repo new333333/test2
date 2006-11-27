@@ -24,6 +24,7 @@ Hibernate 3.1.3
 Jackrabbit core 1.0.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
+JBoss App Server 4.0.4.GA jbosssx.jar
 JBoss Portal 2.6 DR1 portal-identity-lib.jar
 JBPM 3.1.2
 JBPM-Identity 3.1.2
