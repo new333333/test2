@@ -615,7 +615,6 @@ public class BuildDefinitionDivs extends TagSupport {
 							//See if multiple selections are allowed
 							String multipleText = "";
 							String sizeText = "";
-							propertyConfig.selectNodes("option").size()
 							if (propertyConfig.selectNodes("option").size() > 1) 
 								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
 							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
