@@ -1675,9 +1675,19 @@ div.ss_thumbnail_small div {
     margin-left:   5px;
     margin-right:  5px;
 }
+div.ss_thumbnail_small_no_text div {
+    width: 44px;
+    height: 44px;
+    margin-left:   5px;
+    margin-right:  5px;
+    opacity: 0.75;
+}
+div.ss_thumbnail_small_no_text div:hover{
+    opacity: 1.0;
+}
 div.ss_thumbnail_small img {
-    width: 75px;
-    height: 75px;
+    width: 40px;
+    height: 40px;
 }
 div.ss_thumbnail_big div {
     width: 152px;

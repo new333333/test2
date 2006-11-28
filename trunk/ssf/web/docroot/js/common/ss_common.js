@@ -2860,12 +2860,13 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
 function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
     var obj;
     var objId = divId;
-    if (objId == '') objId = 'ss_presencePopUp';
+    if (objId == '') objId = 'ss_presencePopUp'+ssNamespace;
     
     var m = ''
     var imgid = "ppgpres"+ssNamespace
     var ostatus = ss_ostatus_none;
-    obj = self.document.getElementById(objId+ssNamespace)
+    obj = self.document.getElementById(objId)
+    if (obj == null) alert('Could not find '+objId)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
 
@@ -2933,7 +2934,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 
     obj.innerHTML = m;
 
-    if (divId == '') ss_activateMenuLayer(objId+ssNamespace);
+    if (divId == '') ss_activateMenuLayer(objId);
     if (self.document.images["ppgpres"+ssNamespace]) {
         self.document.images["ppgpres"+ssNamespace].src = ss_presencePopupGraphics["pres"].src;
     }
@@ -2969,20 +2970,20 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	    var mousePosX = parseInt(ss_getClickPositionX());
 	    var mousePosY = parseInt(ss_getClickPositionY());
 	    if (mousePosY != 0) {
-	        var divHt = parseInt(ss_getDivHeight(objId+ssNamespace));
+	        var divHt = parseInt(ss_getDivHeight(objId));
 	        var windowHt = parseInt(ss_getWindowHeight());
 	        var scrollHt = self.document.body.scrollTop;
 	        var diff = scrollHt + windowHt - mousePosY;
 	        if (divHt > 0) {
 	            if (diff <= divHt) {
-	               ss_positionDiv(objId+ssNamespace, mousePosX, mousePosY - divHt);
+	               ss_positionDiv(objId, mousePosX, mousePosY - divHt);
 	            }
 	        }
 	        //See if we need to make the portlet longer to hold the pop-up menu
 	        var sizerObj = document.getElementById('ss_presence_sizer_div'+ssNamespace);
 	        if (sizerObj != null) {
-	        	var menuTop = ss_getDivTop(objId+ssNamespace);
-	        	var menuHeight = ss_getDivHeight(objId+ssNamespace);
+	        	var menuTop = ss_getDivTop(objId);
+	        	var menuHeight = ss_getDivHeight(objId);
 	        	var sizerTop = ss_getDivTop('ss_presence_sizer_div'+ssNamespace);
 	        	var sizerHeight = ss_getDivHeight('ss_presence_sizer_div'+ssNamespace);
 	        	var deltaSizerHeight = parseInt((menuTop + menuHeight) - (sizerTop + sizerHeight));
@@ -3280,4 +3281,17 @@ function ss_changeTabDone(obj) {
 
 function ss_doSearch(obj, title) {
 	ss_addTab(obj, "query");
+}
+
+//Profile functions
+function ss_showProfileImg(obj, targetImgId) {
+	//Get the url of the current image
+	var imgObjs = obj.getElementsByTagName('img');
+	if (imgObjs != null) {
+		var imgObj = imgObjs.item(0);
+		var targetImgObj = document.getElementById(targetImgId);
+		if (targetImgObj != null) {
+			targetImgObj.src = imgObj.src;
+		}
+	}
 }
