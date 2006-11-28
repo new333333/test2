@@ -29,8 +29,8 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.util.PasswordEncryptor;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
 	protected Log logger = LogFactory.getLog(getClass());

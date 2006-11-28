@@ -30,9 +30,15 @@ public class PWCallback implements CallbackHandler {
                 // Set the password given a username - Because we need to pass 
                 // both zone name and user name as a single user identity, we
                 // use our own convention where WS's user identity is made up 
-                // of zone name, ":", and user name concatenated in that order.
-                if ("liferay.com:liferay.com.1".equals(pc.getIdentifer())) {
+                // of zone name, ";", and user name concatenated in that order.
+                String id = pc.getIdentifer();
+                System.out.println("Identifier [" + id + "]");
+                if ("liferay.com##liferay.com.1".equals(id)) {
+                	System.out.println("Setting password to [test]");
                 	pc.setPassword(("test"));
+                }
+                else {
+                	System.out.println("Password is not set");
                 }
             } else {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
