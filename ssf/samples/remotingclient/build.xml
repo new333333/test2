@@ -90,6 +90,23 @@
 		</javac>
 	</target>
 	
+	<target name="wsdl2java" depends="cleanGenerated" description="Generate client service bindings from WSDL">
+		<mkdir dir="${generated.dir}" />
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="http://peace:8080/ssf/ws/Facade?wsdl" >
+			<mapping
+				namespace="http://peace:8080/ssf/ws/Facade"
+				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
+			<mapping
+				namespace="urn:SSF"
+				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
+		</axis-wsdl2java>
+	</target>
+	
+	<!-- THE FOLLOWING TARGETS ARE USED TO RUN SAMPLE PROGRAMS -->
+	
 	<target name="readDefinitionSpring" depends="compile">
 		<java 
 			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
@@ -251,21 +268,6 @@
 			<arg value="picture"/>
 			<arg value="C:/junk/dog6.gif"/>
 		</java>
-	</target>
-	
-	<target name="wsdl2java" depends="cleanGenerated" description="Generate client service bindings from WSDL">
-		<mkdir dir="${generated.dir}" />
-		<axis-wsdl2java
-			output="${generated.dir}"
-			verbose="true"
-			url="http://peace:8080/ssf/ws/Facade?wsdl" >
-			<mapping
-				namespace="http://peace:8080/ssf/ws/Facade"
-				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
-			<mapping
-				namespace="urn:SSF"
-				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
-		</axis-wsdl2java>
 	</target>
 	
 </project>

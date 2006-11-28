@@ -20,9 +20,9 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.sitescape.ef.InternalException;
+import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.NotSupportedException;
-import com.sitescape.ef.util.PasswordEncryptor;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"

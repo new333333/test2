@@ -1,4 +1,4 @@
-package com.sitescape.ef.util;
+package com.sitescape.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
