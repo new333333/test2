@@ -4,8 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.sitescape.ef.InternalException;
-
 /**
  * Miscellaneous utilities.
  */
@@ -34,10 +32,10 @@ public class PasswordEncryptor {
 			return hexString.toString();
 		}
 		catch(NoSuchAlgorithmException e) {
-			throw new InternalException(e);
+			throw new RuntimeException(e);
 		}
 		catch(UnsupportedEncodingException e) {
-			throw new InternalException(e);			
+			throw new RuntimeException(e);			
 		}
 	}
 }
