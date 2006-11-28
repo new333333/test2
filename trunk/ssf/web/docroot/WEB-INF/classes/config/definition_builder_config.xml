@@ -1568,8 +1568,6 @@
 				<option name="phone" caption="__phone" />
 				<option name="emailAddress" caption="__emailAddress" />
 				<option name="zonName" caption="__zonName" />
-				<option name="timeZoneName" caption="__timeZoneName" />
-				<option name="zonName" caption="__zonName" />
 		    </property>
 		</properties>
 
