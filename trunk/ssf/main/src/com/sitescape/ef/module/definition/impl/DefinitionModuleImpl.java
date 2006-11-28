@@ -1398,10 +1398,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	// TODO The following piece of code may need a better conditional
 						    	// statement than this, since we probably do not want to generate
 						    	// thumbnails for all graphic-type file uploads. Or do we? 
-						    	if(itemName.equals("graphic") || itemName.equals("profileEntryPicture")) {
+						    	if (itemName.equals("graphic")) {
+						    		fui.setGenerateThumbnail(true);
+						    		fui.setThumbnailDirectlyAccessible(false);
+						    		fui.setIsSquareThumbnail(true);
+						    	} else if (itemName.equals("profileEntryPicture")) {
 						    		fui.setGenerateThumbnail(true);
 						    		fui.setThumbnailDirectlyAccessible(true);
-						    	} 
+						    	}
 						    	
 						    	fileData.add(fui);
 						    }
