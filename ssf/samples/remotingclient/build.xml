@@ -160,7 +160,7 @@
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="readEntry"/>
 			<arg value="74"/>
-			<arg value="482"/>
+			<arg value="556"/>
 		</java>
 	</target>
 	
@@ -191,7 +191,7 @@
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="readDefinition"/>
 			<!-- id of "discussion" definition -->
-			<arg value="402883cc08da22a50108da5a83260002"/>
+			<arg value="402883cc0c10eb75010c10fa9f970002"/>
 		</java>
 	</target>
 	
@@ -233,7 +233,7 @@
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="readEntry"/>
 			<arg value="74"/>
-			<arg value="482"/>
+			<arg value="556"/>
 		</java>
 	</target>
 	
