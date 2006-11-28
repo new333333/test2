@@ -109,6 +109,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 <c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
 
+<c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/>
+<c:set var="ss_gallery_image_background_color" value="#707070" scope="request"/>
+<c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
+<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
+
 <%
 //Color theme: "black and white"
 %>
@@ -199,6 +204,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<c:set var="ss_calendar_today_background_color" value="#ffffe8" scope="request"/>
 	<c:set var="ss_calendar_notInView_background_color" value="#f7f7f7" scope="request"/>
+
+	<c:set var="ss_gallery_background_color" value="#F0F0F0" scope="request"/>
+	<c:set var="ss_gallery_image_background_color" value="#707070" scope="request"/>
+	<c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
+	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
 </c:if>
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
@@ -1651,4 +1661,63 @@ div.ss_bottomlinks {
 .ss_profile_elements_spacer {
 	padding-right:10px;
 }
+
+/* Photo gallery */
+div.ss_thumbnail_gallery {
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+div.ss_thumbnail_small div {
+    width: 77px;
+    height: 105px;
+    margin-left:   5px;
+    margin-right:  5px;
+}
+div.ss_thumbnail_small img {
+    width: 75px;
+    height: 75px;
+}
+div.ss_thumbnail_big div {
+    width: 152px;
+    height: 180px;
+    margin-left:   10px;
+    margin-right:  10px;
+}
+div.ss_thumbnail_big img {
+    width: 150px;
+    height: 150px;
+}
+div.ss_thumbnail_gallery div {
+    float: left;
+    margin-top:    0px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 8pt;
+    font-family: ${ss_style_font_family};
+    overflow: hidden;
+    background-color: ${ss_gallery_background_color};
+}
+div.ss_thumbnail_gallery img {
+    border-width: 1px;
+    border-style: solid;
+    border-color: ${ss_gallery_image_background_color};
+}
+div.ss_thumbnail_gallery a {
+    padding: 0px;
+    text-decoration: none;
+    color: ${ss_gallery_anchor_color};
+}
+div.ss_thumbnail_gallery a:hover img {
+    border-color: ${ss_gallery_anchor_hover_color};
+}
+div.ss_thumbnail_gallery a:hover {
+    text-decoration: underline;
+    color: ${ss_gallery_anchor_hover_color};
+}
+div.ss_end_thumbnail_gallery {
+    clear: both;
+}
+
 </c:if>
