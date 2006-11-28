@@ -8,6 +8,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.ws.security.WSPasswordCallback;
 
+import com.sitescape.util.PasswordEncryptor;
+
 /**
  * This class implements standard <code>CallbackHandler</code> interface
  * to allow security system (WS client-side runtime in this case) to interact 
@@ -35,7 +37,8 @@ public class PWCallback implements CallbackHandler {
                 System.out.println("Identifier [" + id + "]");
                 if ("liferay.com##liferay.com.1".equals(id)) {
                 	System.out.println("Setting password to [test]");
-                	pc.setPassword(("test"));
+                	String encryptedPassword = PasswordEncryptor.encrypt("test");
+                	pc.setPassword(encryptedPassword);
                 }
                 else {
                 	System.out.println("Password is not set");
