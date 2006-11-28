@@ -1563,7 +1563,6 @@
 				  type="selectbox" multipleAllowed="true">
 				<option name="name" caption="__userName" />
 				<option name="title" caption="__userTitle" />
-				<option name="country" caption="__country" />
 				<option name="organization" caption="__organization" />
 				<option name="phone" caption="__phone" />
 				<option name="emailAddress" caption="__emailAddress" />
