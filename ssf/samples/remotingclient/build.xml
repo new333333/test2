@@ -8,7 +8,7 @@
 
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-		<pathelement path="${classes.dir};${project.dir}/remoting/classes" />
+		<pathelement path="${classes.dir};${project.dir}/util/classes;${project.dir}/remoting/classes" />
 		<pathelement location="${project.dir}/lib/activation.jar" />
 		<pathelement location="${project.dir}/lib/mail.jar" />
 		<pathelement location="${project.dir}/lib/dom4j.jar" />
@@ -118,7 +118,7 @@
 			<jvmarg value="-Daxis.ClientConfigFile=client_deploy.wsdd"/>
 			<arg value="readDefinition"/>
 			<!-- id of "discussion" definition -->
-			<arg value="402883cc08da22a50108da5a83260002"/>
+			<arg value="402883cc0c10eb75010c10fa9f970002"/>
 		</java>
 	</target>
 	
