@@ -34,6 +34,7 @@ public class FileUploadItem {
 	// Used for generating thumbnail file - the following boolean flag is
 	// used to indicate whether to generate thumbnail or not.
 	private boolean generateThumbnail = false;
+	private boolean isSquareThumbnail = false;
 	private boolean thumbnailDirectlyAccessible = true;
 	private int thumbnailMaxWidth = SPropsUtil.getInt("thumbnail.max.width", THUMBNAIL_MAX_WIDTH_DEFAULT);
 	private int thumbnailMaxHeight = SPropsUtil.getInt("thumbnail.max.height", THUMBNAIL_MAX_HEIGHT_DEFAULT);
@@ -63,6 +64,14 @@ public class FileUploadItem {
 		this.generateThumbnail = generateThumbnail;
 	}
 
+	public boolean getIsSquareThumbnail() {
+		return isSquareThumbnail;
+	}
+
+	public void setIsSquareThumbnail(boolean isSquareThumbnail) {
+		this.isSquareThumbnail = isSquareThumbnail;
+	}
+
 	public boolean isThumbnailDirectlyAccessible() {
 		return thumbnailDirectlyAccessible;
 	}
@@ -88,7 +97,11 @@ public class FileUploadItem {
 	}
 
 	public int getThumbnailMaxHeight() {
-		return thumbnailMaxHeight;
+		if (isSquareThumbnail) {
+			return 0;
+		} else {
+			return thumbnailMaxHeight;			
+		}
 	}
 
 	public void setThumbnailMaxHeight(int thumbnailMaxHeight) {
