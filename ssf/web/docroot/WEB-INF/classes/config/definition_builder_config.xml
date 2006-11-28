@@ -1569,6 +1569,14 @@
 				<option name="emailAddress" caption="__emailAddress" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
+			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
 		</properties>
 
 		<options>

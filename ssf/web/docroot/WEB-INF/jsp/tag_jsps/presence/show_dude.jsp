@@ -60,10 +60,8 @@
 ><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </c:if>
 <c:if test="${ss_presence_show_options_inline}">
-<a href="javascript: ;"
- style="background:url(<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>) no-repeat left;
- padding-left:10px; text-decoration:none;"
- onClick="ss_presenceMenu('ss_presenceOptions', this, 
+<script type="text/javascript">
+ss_presenceMenu('${ss_presence_div_id}', this, 
     '${ss_presence_user.id}', 
     '<%= presenceUserTitle %>', 
     '${ss_presence_userStatus}', 
@@ -71,8 +69,11 @@
     '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
-    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+    '${current}', 
+    '${ss_presence_component_id}', 
+    '${ss_presence_zonBridge}');
+
+</script>
 </c:if>
 
 </c:if>

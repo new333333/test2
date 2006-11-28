@@ -311,11 +311,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
 				if (showModifyProfileMenu) {
 					//	The "Modify" menu item
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "1_modify", NLT.get("toolbar.modify"), url);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString());
 				}
 				if (showDeleteProfileMenu) {
 					//	The "Delete" menu item
@@ -326,7 +326,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "2_delete", NLT.get("toolbar.delete"), url, qualifiers);
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
 				}
 			}
 		}
