@@ -1355,7 +1355,12 @@ public class FileModuleImpl implements FileModule {
 			// Generate thumbnail.
 			ThumbnailException te = null;
 			try {
-				Thumbnail.createThumbnail(inputData, fos, maxWidth, maxHeight);
+				// maxHeight is 0 if square thumbnail
+				if (maxHeight == 0) {
+					Thumbnail.createThumbnail(inputData, fos, maxWidth);
+				} else {
+					Thumbnail.createThumbnail(inputData, fos, maxWidth, maxHeight);
+				}
 			}
 			catch(ThumbnailException e) {
 				te = e;
@@ -1389,7 +1394,12 @@ public class FileModuleImpl implements FileModule {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			
 			// Generate thumbnail
-			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
+			// maxHeight is 0 if square thumbnail
+			if (maxHeight == 0) {
+				Thumbnail.createThumbnail(inputData, baos, maxWidth);
+			} else {
+				Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
+			}
 			
 			// Store the thumbnail into the repository.
 			
