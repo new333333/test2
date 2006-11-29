@@ -48,6 +48,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 <c:set var="ss_style_light_color" value="#999999" scope="request"/>
+<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
@@ -144,6 +145,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
+	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
@@ -339,6 +341,10 @@ div.ss_replies {
 .ss_form input.ss_submit {}
 
 .ss_form input.ss_submit:hover {}
+
+.ss_text_field {
+  background-color: ${ss_style_text_field_background_color};
+}
   
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
@@ -1658,7 +1664,7 @@ div.ss_bottomlinks {
 }
 
 /* Profile elements */
-.ss_profile_elements_spacer {
+.ss_table_spacer_right {
 	padding-right:10px;
 }
 

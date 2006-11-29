@@ -3295,3 +3295,14 @@ function ss_showProfileImg(obj, targetImgId) {
 		}
 	}
 }
+
+function ss_showThisImage(obj) {
+	//Get the url of the current image
+	var imgObjs = obj.getElementsByTagName('img');
+	if (imgObjs != null) {
+		var imgObj = imgObjs.item(0);
+		var url = imgObj.src
+		url = ss_replaceSubStr(url, "viewType=scaled", "viewType=normal")
+		self.window.open(url, "_blank")
+	}
+}
