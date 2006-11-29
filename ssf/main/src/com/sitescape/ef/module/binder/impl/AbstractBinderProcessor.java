@@ -467,7 +467,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
     		if (binder.getOwner() != null) {
-    			Principal owner = binder.getOwner().getPrincipal();
+    			User owner = binder.getOwner();
     			if (binder.getId().equals(owner.getWorkspaceId()))
     				owner.setWorkspaceId(null);
     		}

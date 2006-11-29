@@ -11,11 +11,12 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneName" length="100" not-null="true"/>
     <many-to-one name="parentBinder"/>
-      <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
+    <many-to-one name="owner"/>
+    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
         <key column="parentBinder"/>
         <one-to-many class="com.sitescape.ef.domain.Binder"/>
-      </bag>
+    </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
       <key column="binder"/>
       <map-key type="string" column="name"/>
@@ -64,12 +65,6 @@
       <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.PostingDef"/>
     </bag>
-    <component name="owner" node="owner">
-      <property name="date" column="owner_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
-        <column name="owner_principal"/>
-      </many-to-one>
-    </component>
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
     <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
