@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.servlet.ServletException;
 import java.util.Map;
 
-import com.sitescape.ef.ascore.bridge.SiteScapeBridgeUtil;
+import com.sitescape.ef.asmodule.bridge.SiteScapeBridgeUtil;
 import com.sitescape.ef.web.crosscontext.CrossContextConstants;
 import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.ef.web.util.NullServletResponse;
