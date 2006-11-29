@@ -1676,8 +1676,8 @@ div.ss_thumbnail_small div {
     margin-right:  5px;
 }
 div.ss_thumbnail_small_no_text div {
-    width: 44px;
-    height: 44px;
+    width: 54px;
+    height: 54px;
     margin-left:   5px;
     margin-right:  5px;
     opacity: 0.75;
@@ -1686,8 +1686,12 @@ div.ss_thumbnail_small_no_text div:hover{
     opacity: 1.0;
 }
 div.ss_thumbnail_small img {
-    width: 40px;
-    height: 40px;
+    width: 75px;
+    height: 75px;
+}
+div.ss_thumbnail_small_no_text img {
+    width: 50px;
+    height: 50px;
 }
 div.ss_thumbnail_big div {
     width: 152px;
