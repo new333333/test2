@@ -12,6 +12,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.ProfileDao;
@@ -97,6 +98,14 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 	 			if (userCreate) {
 	 				Map updates = new HashMap();
 					Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
+					if(userAttrs == null) {
+						// According to JSR-168 spec, this means that the user is un-authenticatecd.
+						// However, this interceptor is designed to be invoked only if the user
+						// is authenticated. This indicates some internal problem (which tends 
+						// to occur under Liferay when it's automatic login facility is enabled).
+						// We can not allow the user to proceed in this case.
+						throw new InternalException("User must log off and log in again");
+					}
 					// The userAttrs map should be always non-null (althouth it may
 					// be empty), since this code is always executed in the context of
 					// an authenticated user.
@@ -149,6 +158,14 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 		if (userModify && !isRunByAdapter && (sync == null || sync.equals(Boolean.FALSE))) {
 			Map updates = new HashMap();
 			Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
+			if(userAttrs == null) {
+				// According to JSR-168 spec, this means that the user is un-authenticatecd.
+				// However, this interceptor is designed to be invoked only if the user
+				// is authenticated. This indicates some internal problem (which tends 
+				// to occur under Liferay when it's automatic login facility is enabled).
+				// We can not allow the user to proceed in this case.
+				throw new InternalException("User must log off and log in again");
+			}
 			String val = null;
 			if(userAttrs.containsKey("user.name.given")) {
 				val = (String) userAttrs.get("user.name.given");
