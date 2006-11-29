@@ -145,7 +145,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getOwner().getPrincipal());
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getOwner());
 		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -294,7 +294,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		if ((workspace.getDefinitionType() != null) && 
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				workspace.getOwner() != null) {
-			Principal owner = workspace.getOwner().getPrincipal();
+			User owner = workspace.getOwner();
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
 			try {

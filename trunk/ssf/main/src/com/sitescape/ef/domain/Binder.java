@@ -26,7 +26,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
 	protected String name="";
-    protected HistoryStamp owner;
+    protected User owner;
     protected Map properties;
     protected Binder parentBinder;
     protected NotificationDef notificationDef;
@@ -43,7 +43,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected boolean functionMembershipInherited = true;
     protected PersistentAclSet aclSet; 
     protected boolean inheritAclFromParent = true;
-    private String iId;
+    private String internalId;
     // these bits signify whether entries of a binder can allow wider access
     // than the binder's .  This does not apply to sub-binders.
     protected boolean widenRead=false;
@@ -66,13 +66,13 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      * @hibernate.property length="32"
      */
     public String getInternalId() {
-    	return this.iId;
+    	return this.internalId;
     }
-    public void setInternalId(String iId) {
-    	this.iId = iId;
+    public void setInternalId(String internalId) {
+    	this.internalId = internalId;
     }
     public boolean isReserved() {
-    	return Validator.isNotNull(iId);
+    	return Validator.isNotNull(internalId);
     }
     /**
      * @hibernate.property length="1024" 
@@ -193,12 +193,12 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
        	return null;
     }
     /**
-     * @hibernate.component prefix="owner_" node="owner"
+     * @hibernate.many-to-one
      */
-    public HistoryStamp getOwner() {
+    public User getOwner() {
         return owner;
     }
-    public void setOwner(HistoryStamp owner) {
+    public void setOwner(User owner) {
         this.owner = owner;
     }
     /**

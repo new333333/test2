@@ -395,14 +395,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        		Map fileItems) throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
-        Principal entry = (Principal)processor.getEntry(binder, entryId);
+        User entry = (User)processor.getEntry(binder, entryId);
         if (entry.getWorkspaceId() != null) {
         	//better not exist
         	Long wsId = entry.getWorkspaceId();
         	try {
         		Workspace ws = (Workspace)getCoreDao().loadBinder(wsId, RequestContextHolder.getRequestContext().getZoneName());
         		//if worked, don't create another one
-        		if (ws.getOwner() == null) ws.setOwner(new HistoryStamp(entry));
+        		if (ws.getOwner() == null) ws.setOwner(entry);
         		return ws.getId(); 
         	} catch (Exception ex) {};
         }
@@ -415,7 +415,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         //make sure still in a transaction when return.  ApplicationContext takes care of this.
         Workspace ws = (Workspace)processor.addBinder(binder, definition, Workspace.class, inputData, fileItems);
         entry.setWorkspaceId(ws.getId());
-        ws.setOwner(new HistoryStamp(entry));
+        ws.setOwner(entry);
  //       ws.setInheritAclFromParent(false);
  //       ws.setFunctionMembershipInherited(false);
         return ws.getId();
