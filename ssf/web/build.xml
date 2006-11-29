@@ -62,6 +62,9 @@
 					<replacefilter 
 						token="@@LOGIN_FILTER@@"
 						property="jbossportal.jbosstomcat.web.loginfilter"/>
+					<replacefilter 
+						token="@@TAGLIB_PORTLET@@"
+						value=""/>
 				</replace>
 			</then>
 			<elseif>
@@ -78,6 +81,9 @@
 						<replacefilter 
 							token="@@LOGIN_FILTER@@"
 							value=""/>
+						<replacefilter 
+							token="@@TAGLIB_PORTLET@@"
+							property="jbossportal.jbosstomcat.web.taglib.portlet"/>
 					</replace>
 				</then>
 			</elseif>
