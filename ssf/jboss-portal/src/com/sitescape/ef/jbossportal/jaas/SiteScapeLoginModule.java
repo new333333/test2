@@ -2,7 +2,7 @@ package com.sitescape.ef.jbossportal.jaas;
 
 import java.lang.reflect.Method;
 
-import com.sitescape.ef.ascore.bridge.SiteScapeBridgeUtil;
+import com.sitescape.ef.asmodule.bridge.SiteScapeBridgeUtil;
 
 import org.jboss.portal.identity.auth.IdentityLoginModule;
 

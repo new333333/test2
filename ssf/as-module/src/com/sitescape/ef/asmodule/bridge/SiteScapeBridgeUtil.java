@@ -1,4 +1,4 @@
-package com.sitescape.ef.ascore.bridge;
+package com.sitescape.ef.asmodule.bridge;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
