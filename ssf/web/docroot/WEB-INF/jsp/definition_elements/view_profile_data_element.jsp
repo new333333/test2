@@ -14,9 +14,24 @@
     } catch (Exception ex) {}
     if (ss_profileElementValue == null) ss_profileElementValue = "";
 %>
+<c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
 <c:if test="${!empty property_caption}">
 <span class="ss_bold"><c:out value="${property_caption}"/>:</span>
 </c:if>
 <%= ss_profileElementValue %>
 </div>
+</c:if>
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <c:out value="${property_caption}" />
+  </td>
+  <td valign="top">
+	<span class="ss_bold">
+	  <%= ss_profileElementValue %>
+	</span>
+  </td>
+</tr>
+</c:if>
