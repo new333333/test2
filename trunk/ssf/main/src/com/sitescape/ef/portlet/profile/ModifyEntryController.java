@@ -66,7 +66,7 @@ public class ModifyEntryController extends SAbstractController {
 			response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewEntry(response, binderId, entryId);
+			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 		} else {
 			response.setRenderParameters(formData);
 		}
