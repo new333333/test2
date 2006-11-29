@@ -82,6 +82,7 @@ public class WebKeys {
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
+	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_FORUM = "configure_forum";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";

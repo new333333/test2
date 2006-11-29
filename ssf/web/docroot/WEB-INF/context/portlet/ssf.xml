@@ -5,6 +5,7 @@
 	<!-- Controllers -->
 
 	<bean id="viewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
+	<bean id="closeWindowController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.CloseWindowController" />
 	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
 
 	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
@@ -42,6 +43,7 @@
 				<entry key="view">
 					<map>
 						<entry key="build_filter"><ref bean="filterController"/></entry>
+						<entry key="close_window"><ref bean="closeWindowController"/></entry>
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
 						<entry key="configure_forum"><ref bean="configureController"/></entry>
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>
