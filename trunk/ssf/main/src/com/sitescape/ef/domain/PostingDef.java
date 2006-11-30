@@ -1,12 +1,7 @@
 package com.sitescape.ef.domain;
 
-import javax.mail.search.RecipientStringTerm;
-import javax.mail.search.SubjectTerm;
-import javax.mail.search.AndTerm;
-import javax.mail.Message;
 import javax.mail.search.SearchTerm;
-
-import com.sitescape.util.Validator;
+import javax.mail.search.SubjectTerm;
 
 
 /**
@@ -16,14 +11,14 @@ import com.sitescape.util.Validator;
  *
  */
 public class PostingDef extends PersistentObject {
-    public static final int RETURN_TO_SENDER = 1; // default
-    public static final int POST_AS_A_NEW_TOPIC = 2;
-    
-    private int replyPostingOption = RETURN_TO_SENDER;
+
+    public static final Integer RETURN_TO_SENDER = 3; // default
+    public static final Integer POST_AS_A_NEW_TOPIC = 2;
+    public static final Integer POST_AS_A_REPLY = 1;
+    private Integer replyPostingOption = POST_AS_A_REPLY;
     private boolean enabled=true;
-    private String subject;
     private Binder binder;
-    private EmailAlias emailAlias;
+    private String emailAddress;
     private Definition definition;
     private String zoneName;
  
@@ -68,46 +63,22 @@ public class PostingDef extends PersistentObject {
     	this.definition = definition;
     }   
     /**
-     * @hibernate.many-to-one class="com.sitescape.ef.domain.EmailAlias"
-     * hibernate.column name="emailAlias" sql-type="char(32)"
-     * @return
+     * @hibernate.property
      */
-    public EmailAlias getEmailAlias() {
-    	return emailAlias;
+    public String getEmailAddress() {
+    	return emailAddress;
     }
-    public void setEmailAlias(EmailAlias emailAlias) {
-    	this.emailAlias = emailAlias;
+    public void setEmailAddress(String emailAddress) {
+    	this.emailAddress = emailAddress;
     }
-    /**
-     * @hibernate.property length="256" 
-     * @return
-     */
-    public String getSubject() {
-        return subject;
-    }
-    public void setSubject(String subject) {
-        this.subject = subject;
-    }
-    public SearchTerm getSearchTerm() {
-    	if (emailAlias == null) return null;
-    	
-    	if (Validator.isNull(emailAlias.getAliasName())) return null;
-    	if (Validator.isNull(subject)) {
-    		return new RecipientStringTerm(Message.RecipientType.TO,emailAlias.getAliasName());
-    	} else {
-    		return new AndTerm(new RecipientStringTerm(Message.RecipientType.TO,emailAlias.getAliasName()), new SubjectTerm(subject));
-    	}
-    }
-    /**
+     /**
      * @hibernate.property
      * @return
      */
-    public int getReplyPostingOption() {
+    public Integer getReplyPostingOption() {
         return replyPostingOption;
     }
-    public void setReplyPostingOption(int replyPostingOption) {
-    	if ((replyPostingOption != RETURN_TO_SENDER) &&
-    		(replyPostingOption != POST_AS_A_NEW_TOPIC)) throw new IllegalArgumentException("replyPostingOption");
+    public void setReplyPostingOption(Integer replyPostingOption) {
         this.replyPostingOption = replyPostingOption;
     }
 }

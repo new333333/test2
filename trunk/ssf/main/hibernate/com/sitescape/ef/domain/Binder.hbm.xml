@@ -61,10 +61,7 @@
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
     </component>
-    <bag inverse="true" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="postings">
-      <key column="binder"/>
-      <one-to-many class="com.sitescape.ef.domain.PostingDef"/>
-    </bag>
+    <many-to-one name="posting"/>
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
     <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">

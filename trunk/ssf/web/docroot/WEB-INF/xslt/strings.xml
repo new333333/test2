@@ -6,7 +6,7 @@
 	   	<lang name="en">Forum:</lang>
    	</str>
     <str name="ChangedOne">
-   		<lang name="en">changed entry in</lang>
+   		<lang name="en">changed entry in </lang>
     </str>
     <str name="ChangedMany">
    		<lang name="en">changed entries in </lang>

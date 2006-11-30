@@ -42,14 +42,10 @@ public interface AdminModule {
     public ScheduleInfo getPostingSchedule();
     public void setPostingSchedule(ScheduleInfo config) throws ParseException;
 
-    public void modifyPosting(Long binderId, String postingId, Map updates);
-    public void addPosting(Long binderId, Map updates);
-    public void deletePosting(Long binderId, String postingId);
-
-    public List getEmailAliases();
-    public void modifyEmailAlias(String aliasId, Map updates);
-    public void addEmailAlias(Map updates);
-    public void deleteEmailAlias(String aliasId);
+    public List getPostings();
+    public void modifyPosting(String postingId, Map updates);
+    public void addPosting(Map updates);
+    public void deletePosting(String postingId);
 
     public BinderConfig createDefaultConfiguration(int type);
 	public String addConfiguration(int type, String title);

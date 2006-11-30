@@ -14,13 +14,15 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.activation.DataSource;
-import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
+import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.MimeMessage;
+import javax.mail.search.OrTerm;
+import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 
 import org.apache.commons.logging.Log;
@@ -132,7 +134,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		
 			SpringContextUtil.applyDependencies(sender, "mailSender");
 			sender.setSession((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
-			sender.setName(jndiName);
+			sender.setName(jndiName);		
 			mailSenders.put(jndiName, sender);
 			return sender;
 		} catch (Exception ex) {
@@ -184,6 +186,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	public void receivePostings(ScheduleInfo config) {
 		String storeProtocol, prefix, auth;
 		List posters = getMailPosters(config.getZoneName());
+		List<PostingDef> postings = getCoreDao().loadPostings(config.getZoneName());
+		SearchTerm[] aliasSearch = new SearchTerm[2];
+		
 		for (int i=0; i<posters.size(); ++i) {
 			Session session = (Session)posters.get(i);
 			storeProtocol = session.getProperty("mail.store.protocol");
@@ -195,9 +200,14 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			auth = session.getProperty(prefix + "auth");
 			if (Validator.isNull(auth)) 
 				auth = session.getProperty("mail.auth");
+			String from = session.getProperty(prefix + "user");
+			if (Validator.isNull(from)) 
+				from = session.getProperty("mail.user");
+			javax.mail.Folder mFolder=null;
+			Store store=null;
 			try {
 				
-				Store store = session.getStore();
+				store = session.getStore();
 				if ("true".equals(auth)) {
 					String password = session.getProperty(prefix + "password");
 					if (Validator.isNull(password)) 
@@ -207,36 +217,56 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 					store.connect();
 				}
 
-				javax.mail.Folder mFolder = store.getFolder("inbox");
+				mFolder = store.getFolder("inbox");
 				
 				mFolder.open(javax.mail.Folder.READ_WRITE);
-				//get list of folders acception postings
-				List pDefs = getCoreDao().loadPostings(config.getZoneName());
-				for (int j=0; j<pDefs.size(); ++j) {
-					PostingDef pDef = (PostingDef)pDefs.get(j); 
-					SearchTerm term = pDef.getSearchTerm();
-					if (term != null) {
-						Message msgs[] = mFolder.search(term);
-						
-						if ((msgs.length != 0) && pDef.isEnabled()) {
-							Folder folder = (Folder)pDef.getBinder();
-							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-							processor.postMessages(folder, pDef, msgs, session);
-						} 
-						for (int m=0; m<msgs.length; ++m) {
-							Message msg = msgs[i];
-							msg.setFlag(Flags.Flag.DELETED, true);
-						}
-					}
-				}
-
-				//Close connection and expunge
-				mFolder.close(true);
-				store.close();
-			} catch (Exception ex) {
-				logger.error("Error posting mail from " + hostName + " " + ex.getLocalizedMessage());
 				
+				//determine which alias a message belongs to and post it
+				for (PostingDef postingDef: postings) {
+					if (!postingDef.isEnabled()) continue;
+					if (postingDef.getBinder() == null) continue;
+					aliasSearch[0] = new RecipientStringTerm(Message.RecipientType.TO,postingDef.getEmailAddress());
+					aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
+					Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
+					if (aliasMsgs.length == 0) continue;
+					//	handle replies first
+					Folder folder = (Folder)postingDef.getBinder();
+					FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+					sendErrors(folder, processor.postMessages(folder,postingDef, aliasMsgs, session));
+				}				
+
+			} catch (Exception ex) {
+				logger.error("Error posting mail from " + hostName + " " + ex);				
+			} finally  {
+				//Close connection and expunge
+				if (mFolder != null) try {mFolder.close(true);} catch (Exception ex) {};
+				if (store != null) try {store.close();} catch (Exception ex) {};
 			}						
+		}		
+		
+	}
+	private void sendErrors(Binder binder, List errors) {
+		if (!errors.isEmpty()) {
+			for (int i=0; i<errors.size(); ++i) {
+				MimeMessage mailMsg = null;
+				try {
+					mailMsg = (MimeMessage)errors.get(i);
+					mailMsg.saveChanges();
+					Transport.send(mailMsg);
+				} catch (MailParseException px) {
+					logger.error(px.getMessage());	    		
+				} catch (MailSendException sx) {
+					if (binder != null) {
+				  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
+				   		process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
+					}
+					logger.error("Error sending posting reject:" + sx.getMessage());
+				} catch (MailAuthenticationException ax) {
+					logger.error("Authentication Exception:" + ax.getMessage());
+				} catch (Exception ex) {
+					logger.error("Error sending posting reject:" + ex.getMessage());
+				}
+			}
 		}
 		
 	}

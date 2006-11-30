@@ -24,7 +24,6 @@ public class ProfileIndexUtils  {
     public static final String EMAIL_FIELD="_email";
     public static final String COUNTRY_FIELD="_country";
     public static final String ORGANIZATION_FIELD="_org";
-    public static final String HOMEPAGE_FIELD="_homepage";
     public static final String ZONNAME_FIELD="_zonName";
     public static final String MEMBEROF_FIELD="_memberOf";
     

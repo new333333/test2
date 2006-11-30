@@ -25,15 +25,12 @@
       <key column="parentEntry"/>
       <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
     </bag>
-    <property name="docContent"/>
-    <property name="allowEdits"/>
     <component name="reservation" class="com.sitescape.ef.domain.HistoryStamp">
       <property name="date" column="reserved_date" type="timestamp"/>
       <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="reserved_principal"/>
       </many-to-one>
     </component>
-    <property name="sendMail"/>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowStates">
       <key column="folderEntry"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
@@ -51,6 +48,7 @@
     <property name="replyCount" not-null="true"/>
     <property name="nextDescendant" not-null="true"/>
     <property name="totalReplyCount" not-null="true"/>
+    <property name="postedBy" length="256"/>
     <many-to-one class="com.sitescape.ef.domain.FolderEntry" name="topEntry"/>
     <many-to-one class="com.sitescape.ef.domain.FolderEntry" name="parentEntry"/>
     <component name="workflowChange" class="com.sitescape.ef.domain.HistoryStamp">

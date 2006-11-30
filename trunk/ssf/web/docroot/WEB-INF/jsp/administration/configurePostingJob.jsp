@@ -18,13 +18,6 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-function <portlet:namespace/>setEnable() {
-	if (document.<portlet:namespace/>fm.disabled.checked) {
-		document.<portlet:namespace/>fm.enabled.value = "false";
-	} else {
-		document.<portlet:namespace/>fm.enabled.value = "true";
-	}
-}
 
 var <portlet:namespace/>_alias_count=0;
 
@@ -76,14 +69,12 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="incoming.job_title"/></legend>
 
-<input type="hidden" id="enabled" name="enabled" value="${ssScheduleInfo.enabled}"/>
-
 <br/>
 
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
-<input type="checkbox" id="disabled" name="disabled" onClick="<portlet:namespace/>setEnable();" <c:if test="${!ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="incoming.disable.all"/><br/>
+<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
+<ssf:nlt tag="incoming.enable.all"/><br/>
 </td></tr></table>
 
 <div class="ss_divider"></div>
@@ -91,10 +82,9 @@ function <portlet:namespace/>_addAlias(alias, forums) {
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 </fieldset>
 <br/>
-<ssf:expandableArea title="<%= NLT.get("incoming.aliases") %>">
+
 <fieldset class="ss_fieldset">
 <table class="ss_style" border="0" cellspacing="0" cellpadding="3">
 <tr><td>
@@ -107,59 +97,33 @@ function <portlet:namespace/>_addAlias(alias, forums) {
   <tr class="ss_headerRow">
   <td class="ss_finestprintgray" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete" /></td>
   <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.alias" /></td>
-  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.forums" /></td>
+  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.folder" /></td>
 </tr>
 </tBody>
 </table>
 </td></tr></table>
 
-<jsp:useBean id="ssEmailAliases" type="java.util.List" scope="request" />
-<%
-			java.util.HashMap postingMap = new java.util.HashMap();
-			java.util.HashSet forums;
-			for (int i=0; i<ssEmailAliases.size(); ++i) {
-				com.sitescape.ef.domain.EmailAlias alias = (com.sitescape.ef.domain.EmailAlias)ssEmailAliases.get(i);
-				forums = new java.util.HashSet();
-				postingMap.put(alias.getId(), forums);
-				java.util.List postings = alias.getPostings();
-				for (int j=0; j<postings.size(); ++j) {
-					com.sitescape.ef.domain.PostingDef post = (com.sitescape.ef.domain.PostingDef)postings.get(j);
-					com.sitescape.ef.domain.Binder top = post.getBinder();
-					if (top instanceof com.sitescape.ef.domain.Folder) {
-						if (((com.sitescape.ef.domain.Folder)top).getTopFolder() != null) {
-							top = ((com.sitescape.ef.domain.Folder)top).getTopFolder();
-						}
-					}						
-					forums.add(top);
-				}
-			}
-			request.setAttribute("postMap", postingMap);
-	
-%>
-
-<c:forEach var="alias" varStatus="status" items="${ssEmailAliases}" >
+<c:forEach var="alias" varStatus="status" items="${ssPostings}" >
 <c:set var="title" value=" " scope="request"/>
-<c:forEach var="forum" varStatus="fStatus" items="${postMap[alias.id]}">
-<c:choose>
-<c:when test="${fStatus.first}"><c:set var="title" value="${forum.title}"/></c:when>
-<c:otherwise><c:set var="title" value="${title},${forum.title}"/></c:otherwise>
-</c:choose>
-</c:forEach>
+<c:if test="${!empty alias.binder}">
+<c:set var="title" value="${alias.binder.title}" scope="request"/>
+</c:if>
 <input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${alias.id}"/>
 <script type="text/javascript">
-<portlet:namespace/>_addAlias('<c:out value="${alias.aliasName}"/>','<c:out value="${title}"/>');
+<portlet:namespace/>_addAlias('<c:out value="${alias.emailAddress}"/>','<c:out value="${title}"/>');
 </script>
 </c:forEach>
 
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
+
 </fieldset>
-</ssf:expandableArea>
+
 
 </div>
 <br/>
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-
+</div>
 </form>
 
 </div>

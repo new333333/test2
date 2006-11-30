@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
@@ -24,7 +25,9 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
@@ -62,42 +65,39 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param entryData
      */
     protected void doFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
-    	if (inputData.exists("foreignName") && !entryData.containsKey("foreignName")) {
-    		entryData.put("foreignName", inputData.getSingleValue("foreignName"));
+    	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME)) {
+    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME));
     	} 
-    	if (inputData.exists("displayStyle") && !entryData.containsKey("displayStyle")) {
-    		entryData.put("displayStyle", inputData.getSingleValue("displayStyle"));
+    	if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
+    		entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
     	}
-    	if (inputData.exists("firstName") && !entryData.containsKey("firstName")) {
-    		entryData.put("firstName", inputData.getSingleValue("firstName"));
+    	if (inputData.exists(ObjectKeys.FIELD_USER_FIRSTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_FIRSTNAME)) {
+    		entryData.put(ObjectKeys.FIELD_USER_FIRSTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_FIRSTNAME));
     	}
-    	if (inputData.exists("lastName") && !entryData.containsKey("lastName")) {
-    		entryData.put("lastName", inputData.getSingleValue("lastName"));
+    	if (inputData.exists(ObjectKeys.FIELD_USER_LASTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_LASTNAME)) {
+    		entryData.put(ObjectKeys.FIELD_USER_LASTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_LASTNAME));
     	}
-    	if (inputData.exists("middleName") && !entryData.containsKey("middleName")) {
-    		entryData.put("middleName", inputData.getSingleValue("middleName"));
+    	if (inputData.exists(ObjectKeys.FIELD_USER_MIDDLENAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_MIDDLENAME)) {
+    		entryData.put(ObjectKeys.FIELD_USER_MIDDLENAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_MIDDLENAME));
     	}
-    	if (inputData.exists("languageId") && !entryData.containsKey("languageId")) {
-    		entryData.put("languageId", inputData.getSingleValue("languageId"));
+    	if (inputData.exists(ObjectKeys.FIELD_USER_LOCALE) && !entryData.containsKey(ObjectKeys.FIELD_USER_LOCALE)) {
+    		entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleValue(ObjectKeys.FIELD_USER_LOCALE));
     	}
-    	if (inputData.exists("country") && !entryData.containsKey("country")) {
-    		entryData.put("country", inputData.getSingleValue("country"));
+       	if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
+    		entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
     	}
-       	if (inputData.exists("emailAddress") && !entryData.containsKey("emailAddress")) {
-    		entryData.put("emailAddress", inputData.getSingleValue("emailAddress"));
+       	if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
+    		entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleValue(ObjectKeys.FIELD_USER_TIMEZONE));
     	}
-       	if (inputData.exists("timeZoneName") && !entryData.containsKey("timeZoneName")) {
-    		entryData.put("timeZoneName", inputData.getSingleValue("timeZoneName"));
+       	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_NAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
+    		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
     	}
-       	if (inputData.exists("name") && !entryData.containsKey("name")) {
-    		entryData.put("name", inputData.getSingleValue("name"));
-    	}
-       	String name = (String)entryData.get("name");
-       	String foreignName = (String)entryData.get("foreignName");
+       	String name = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_NAME);
+       	String foreignName = (String)entryData.get(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME);
        	if (Validator.isNotNull(name)) {
        		//setting the name - see if new entry and force foreign name to be same
        		if (Validator.isNull(((Principal)entry).getName())) {
-       			if (Validator.isNull(foreignName)) entryData.put("foreignName", name);
+       			if (Validator.isNull(foreignName)) entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, name);
        		}
        	}
        	
@@ -183,16 +183,55 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneName());        
     }
           
-    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
-    	Principal p = (Principal)entry;
-    	//we just disable principals, cause their ids are used all over
-    	p.setDisabled(true);
-    	return ctx;
+    //***********************************************************************************************************
+    //Overload entire delete entry.  Only want to disable users
+    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+    	if (entry instanceof User) return null;
+    	return super.deleteEntry_preDelete(parentBinder, entry);
     }
+        
+    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
+       	if (entry instanceof User) return ctx;
+       	return super.deleteEntry_workflow(parentBinder, entry, ctx);
+    }
+    
+    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
+       	if (entry instanceof User) {
+       		User p = (User)entry;
+       		//we just disable principals, cause their ids are used all over
+       		p.setDisabled(true);
+       		return ctx;
+       	}
+       	return super.deleteEntry_delete(parentBinder, entry, ctx);
+    }
+
+   protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
+     	if (entry instanceof User) return ctx;
+     	return super.deleteEntry_processFiles(parentBinder, entry, ctx);
+    }
+    
+
+    protected Object deleteEntry_postDelete(Binder parentBinder, Entry entry, Object ctx) {
+      	//TODO: what about disabled users??
+    	if (entry instanceof User) return ctx;
+      	return super.deleteEntry_postDelete(parentBinder, entry, ctx);
+   }
+
+    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
+        // Delete the document that's currently in the index.
+    	// Since all matches will be deleted, this will also delete the attachments
+      	if (entry instanceof User) {
+      		IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
+      		return ctx;
+      	} 
+      	return super.deleteEntry_indexDel(entry, ctx);
+   }
+    //***********************************************************************************************************
+    
     public void deleteBinder(Binder binder) {
     	throw new InternalException("Cannot delete profile binder");
     }
-    
+    //***********************************************************************************************************    
     public void moveBinder(Binder source, Binder destination) {
     	throw new InternalException("Cannot move profile binder");
     }
@@ -219,7 +258,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      */
 	public void syncEntry(final Principal entry, final InputDataAccessor inputData) {
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
-	    final Map entryData = (Map) entryDataAll.get("entryData");
+	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	        
         // The following part requires update database transaction.
         Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
@@ -272,7 +311,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
         	    	
         	    	Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
-        	    	Map entryData = (Map) entryDataAll.get("entryData");
+        	    	Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         	    	boolean result1 = syncEntry_fillIn(entry, inputData, entryData);
 	                
         	    	boolean result2 = syncEntry_postFillIn(entry, inputData, entryData);
@@ -298,7 +337,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        		for (int i=0; i<inputAccessors.size(); ++i) {
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
 	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null);
-	        			Map entryData = (Map) entryDataAll.get("entryData");
+	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
 	        			Entry entry = addEntry_create(definition, clazz);
 	        			//	need to set entry/binder information before generating file attachments

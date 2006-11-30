@@ -84,7 +84,7 @@ public class Toolbar {
 			if (toolbarCategories.containsKey(category)) {
 				toolbarCategory = (Map) toolbarCategories.get(category);
 			} else {
-				toolbarCategory = new HashMap();
+				toolbarCategory = new TreeMap();
 				toolbarCategories.put(category, toolbarCategory);
 			}
 			return toolbarCategory;

@@ -80,6 +80,7 @@ public class WebKeys {
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
+    public static final String ACTION_CONFIG_EMAIL="config_email";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 

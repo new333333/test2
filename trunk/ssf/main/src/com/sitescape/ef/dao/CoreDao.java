@@ -14,10 +14,10 @@ import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
+import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.UserDashboard;
@@ -98,8 +98,8 @@ public interface CoreDao {
     public List loadConfigurations(String zoneName, int type);
  
     public List loadPostings(String zoneName);
-	public List loadEmailAliases(String zoneName);
-	public EmailAlias loadEmailAlias(String aliasId, String zoneName);
+	public PostingDef loadPosting(String aliasId, String zoneName);
+	
     public void bulkLoadCollections(Collection entries);
     
 	public List loadCommunityTagsByEntity(EntityIdentifier entityId);

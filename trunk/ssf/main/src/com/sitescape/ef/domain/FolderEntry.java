@@ -19,14 +19,7 @@ import java.util.ArrayList;
  */
 public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupport, Reservable {
 
-    protected boolean allowEdits = false;
     protected HistoryStamp reservation;
-    protected boolean sendMail = false;
-    public static final int ABSTRACT=1;
-    public static final int FILESET= 2;
-    public static final int URL=3;
-    public static final int WEBFILE=4;
-    protected int docContent=ABSTRACT;
     protected List replies;//initialized by hibernate access=field
     protected HKey docHKey;
     protected int replyCount=0;
@@ -36,11 +29,10 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     protected FolderEntry topEntry;
     protected FolderEntry parentEntry;
     protected String owningFolderSortKey;
-     //missing
-    String docProps;
     // Number of locked files - This refers to all "not-yet-cleared" locks
     // including both effective and expired locks. 
     protected Integer lockedFileCount; // access="field"
+    protected String postedBy;
  
     public FolderEntry() {
         super();
@@ -48,17 +40,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folderEntry);
     }
-    /**
-     * @hibernate.property
-     * @return
-     */
-
-    public int getDocContent() {
-        return this.docContent;
-    }
-    public void setDocContent(int docContent) {
-        this.docContent = docContent;
-    }
+ 
      public Folder getParentFolder() {
         return (Folder)getParentBinder();
     }
@@ -78,13 +60,12 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
      * @hibernate.property 
      * @return
      */
-    public boolean isAllowEdits() {
-        return allowEdits;
+    public String getPostedBy() {
+    	return postedBy;
     }
-    public void setAllowEdits(boolean allowEdits) {
-        this.allowEdits = allowEdits;
+    public void setPostedBy(String postedBy) {
+        this.postedBy = postedBy;
     }
-
     /**
      * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="reserved_"
      */
@@ -101,18 +82,6 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     
     public void clearReservation() {
     	this.reservation = null;
-    }
-
-    /** 	
-     * @hibernate.property
-     * @return
-     */
-    public boolean isSendMail() {
-        return this.sendMail;
-    }
-
-    public void setSendMail(boolean sendMail) {
-        this.sendMail = sendMail;
     }
     
     /**

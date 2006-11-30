@@ -543,6 +543,8 @@
 				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifySubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deletePosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -607,7 +609,7 @@
 		
 	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" depends-on="zoneConfig, scheduler, workflowFactory" init-method="init">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" depends-on="zoneConfig, scheduler, workflowFactory">
 			</bean>
 		</property>
 	</bean>	

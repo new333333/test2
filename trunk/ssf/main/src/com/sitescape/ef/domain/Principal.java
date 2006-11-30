@@ -35,7 +35,7 @@ public abstract class Principal extends Entry  {
     protected String zoneName;
     protected Long workspaceId, calendarId;
     protected List iMemberOf;
-    protected String iId;
+    protected String internalId;
     
 
     /**
@@ -45,13 +45,13 @@ public abstract class Principal extends Entry  {
      * @hibernate.property length="32"
      */
     public String getInternalId() {
-    	return this.iId;
+    	return this.internalId;
     }
-    public void setInternalId(String iId) {
-    	this.iId = iId;
+    public void setInternalId(String internalId) {
+    	this.internalId = internalId;
     }
     public boolean isReserved() {
-    	return Validator.isNotNull(iId);
+    	return Validator.isNotNull(internalId);
     }
     /**
      * @hibernate.property

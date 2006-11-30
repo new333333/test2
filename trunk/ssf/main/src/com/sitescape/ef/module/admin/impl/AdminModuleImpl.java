@@ -8,14 +8,14 @@ package com.sitescape.ef.module.admin.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collection;
-import java.util.HashMap;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.InvalidArgumentException;
@@ -27,10 +27,8 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.NoPrincipalByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Principal;
@@ -143,32 +141,30 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
    		current.setDistribution(notifyUsers);
     }
-    public List getEmailAliases() {
-    	return coreDao.loadEmailAliases(RequestContextHolder.getRequestContext().getZoneName());
+    public List getPostings() {
+    	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneName());
     }
-    public void modifyEmailAlias(String aliasId, Map updates) {
+    public void modifyPosting(String postingId, Map updates) {
     	checkSiteAdmin();
-    	EmailAlias alias = coreDao.loadEmailAlias(aliasId, RequestContextHolder.getRequestContext().getZoneName());
-    	ObjectBuilder.updateObject(alias, updates);
+    	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneName());
+    	ObjectBuilder.updateObject(post, updates);
     }
-    public void addEmailAlias(Map updates) {
+    public void addPosting(Map updates) {
     	checkSiteAdmin();
+    	//database ensures zone,alias combo are unique
     	String zoneName = RequestContextHolder.getRequestContext().getZoneName(); 
-    	EmailAlias alias = new EmailAlias();
-    	alias.setZoneName(zoneName);
-       	ObjectBuilder.updateObject(alias, updates);
-       	coreDao.save(alias);   	
+    	PostingDef post = new PostingDef();
+    	post.setZoneName(zoneName);
+       	ObjectBuilder.updateObject(post, updates);
+       	coreDao.save(post);   	
     }
-    public void deleteEmailAlias(String aliasId) {
+    public void deletePosting(String postingId) {
     	checkSiteAdmin();
-    	EmailAlias alias = coreDao.loadEmailAlias(aliasId, RequestContextHolder.getRequestContext().getZoneName());
-    	List postings = alias.getPostings();
-    	for (int i=0; i<postings.size(); ++i) {
-    		PostingDef post = (PostingDef)postings.get(i);
-    		post.setEmailAlias(null);
-    		post.setEnabled(false);
+    	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneName());
+    	if (post.getBinder() != null) {
+    		post.getBinder().setPosting(null);
     	}
-       	coreDao.delete(alias);
+       	coreDao.delete(post);
     }
     /**
      * Enable/disable email posting.
@@ -205,28 +201,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
                     "Cannot instantiate EmailPosting of type '"
                             + emailPostingClass + "'");
         }
-    }
-    public void modifyPosting(Long binderId, String postingId, Map updates) {
-    	//posting defs are defined by admin
-    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-        checkBinderAdmin(binder); 
-    	//Locate the posting
-   		PostingDef post = binder.getPosting(postingId); 
-    	if (post != null) ObjectBuilder.updateObject(post, updates);
-    }
-    public void addPosting(Long binderId, Map updates) {
-    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-        checkBinderAdmin(binder); 
-   		PostingDef post = new PostingDef();
-   		post.setZoneName(binder.getZoneName());
-		ObjectBuilder.updateObject(post, updates);
-		binder.addPosting(post);
-    }    	
-    public void deletePosting(Long binderId, String postingId) {
-    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-        checkBinderAdmin(binder); 
-   		PostingDef post = binder.getPosting(postingId); 
-    	if (post != null) binder.removePosting(post);
     }
  
 	public BinderConfig createDefaultConfiguration(int type) {
@@ -525,9 +499,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			profiles.setModification(stamp);
 			user.setCreation(stamp);
 			user.setModification(stamp);
+			addAnnonymous(profiles, stamp);
 			Group group = addAllUserGroup(profiles, stamp);
 			
 			addAdminRole(name, top, user);
+			//all users are visitors
 			addVisitorsRole(name, top, group);
 			addTeamRole(name, top, user);
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
@@ -557,6 +533,20 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		group.setCreation(stamp);
 		group.setModification(stamp);
 		return group;
+	}
+	private User addAnnonymous(Binder parent, HistoryStamp stamp) {
+		//build allUsers group
+		User user = new User();
+		user.setName("postingAgent");
+		user.setForeignName(user.getName());
+		user.setZoneName(parent.getZoneName());
+		user.setParentBinder(parent);
+		user.setInternalId(ObjectKeys.ANONYMOUS_POSTING_USER_ID);
+		getDefinitionModule().setDefaultEntryDefinition(user);
+		getCoreDao().save(user);
+		user.setCreation(stamp);
+		user.setModification(stamp);
+		return user;
 	}
 	private void addAdminRole(String zoneName, WorkArea workArea, User user) {
 		Function function = new Function();
@@ -647,9 +637,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (!ObjectKeys.PROFILE_ROOT_ID.equals(profiles.getInternalId())) profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
 		if (profiles.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(profiles);
 		try {
-			Group g = getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, zoneName);
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, zoneName);
 		} catch (com.sitescape.ef.domain.NoGroupByTheNameException ng) {
 			addAllUserGroup(profiles, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		}
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, zoneName);
+		} catch (com.sitescape.ef.domain.NoUserByTheNameException nu) {
+			addAnnonymous(profiles, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		}
 
 	}

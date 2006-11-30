@@ -67,6 +67,10 @@ public interface BinderModule {
 	public Subscription getSubscription(Long binderId);
 	public void deleteSubscription(Long binderId);
 	
+    public void modifyPosting(Long binderId, Map updates);
+    public void setPosting(Long binderId, String postingId);
+    public void deletePosting(Long binderId);
+
     public boolean hasBinders(Binder binder);
     
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
@@ -77,7 +81,7 @@ public interface BinderModule {
     public void checkModifyBinderAllowed(Binder binder) throws AccessControlException;
     public void deleteBinder(Long binderId) throws AccessControlException;
     public void checkDeleteBinderAllowed(Binder binder) throws AccessControlException;
-
+    public void checkAdminBinderAllowed(Binder binder) throws AccessControlException;
     public void moveBinder(Long fromId, Long toId);
     public void checkMoveBinderAllowed(Binder binder);
     public Map executeSearchQuery(Document searchQuery);

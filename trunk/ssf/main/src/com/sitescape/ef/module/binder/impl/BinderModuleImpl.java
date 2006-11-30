@@ -17,6 +17,7 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -26,6 +27,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
@@ -542,6 +544,44 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			return new ArrayList();
 		}
 	}
+	   public void modifyPosting(Long binderId, Map updates) {
+	    	//posting defs are defined by admin
+	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+			checkAdminBinderAllowed(binder); 	       		
+	    	//Locate the posting
+	   		PostingDef post = binder.getPosting(); 
+	   		//cannot modify address through this interface
+	   		updates.remove("emailAddress");
+	    	if (post != null) ObjectBuilder.updateObject(post, updates);
+	    }
+	    public void setPosting(Long binderId, String postingId) {
+	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+			checkAdminBinderAllowed(binder); 	       		
+	   		PostingDef post = getCoreDao().loadPosting(postingId, binder.getZoneName());
+	   		Binder oldBinder = post.getBinder();
+	   		if ((oldBinder != null) && !oldBinder.equals(binder)) {
+				if (getAccessControlManager().testOperation(oldBinder, WorkAreaOperation.BINDER_ADMINISTRATION) == false)
+					throw new NotSupportedException(NLT.get(ErrorCodes.PostingAssigned,new Object[] {post.getEmailAddress()}));
+				oldBinder.setPosting(null);
+	   		}
+	   		binder.setPosting(post);
+	   		post.setBinder(binder);
+	   		post.setEnabled(true);
+	   		post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
+	    }    	
+	    public void deletePosting(Long binderId) {
+	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+			checkAdminBinderAllowed(binder); 	       		
+	   		PostingDef post = binder.getPosting(); 
+	    	if (post != null) {
+	    		post.setBinder(null);
+	    		binder.setPosting(null);
+	    	}
+	    }
+	    public void checkAdminBinderAllowed(Binder binder) throws AccessControlException {
+			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	       		
+	    	
+	    }
 
 
 }

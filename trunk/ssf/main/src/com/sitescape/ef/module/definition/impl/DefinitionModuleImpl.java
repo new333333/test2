@@ -10,12 +10,14 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TimeZone;
 
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.ConfigurationException;
@@ -57,7 +59,7 @@ import com.sitescape.util.Validator;
  * @author hurley
  *
  */
-public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule {
+public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
 	private Document definitionConfig;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "type"};
@@ -70,7 +72,12 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
-	public String addDefinition(Document doc) {
+    public void afterPropertiesSet() {
+		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
+
+    }
+    	
+    public String addDefinition(Document doc) {
 		Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
 		String caption = root.attributeValue("caption");
@@ -1288,14 +1295,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	
     public Document getDefinitionConfig() {
-    	if (this.definitionConfig == null) {
-	    	try {
-	    		//TODO - Fix this to use a file in the html tree
-	    		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
-	    	} catch (Exception fe) {
-	    		fe.printStackTrace();
-	    	}
-    	}
     	return this.definitionConfig;
     }
 
@@ -1307,8 +1306,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Map entryDataAll = new HashMap();
 		Map entryData = new HashMap();
 		List fileData = new ArrayList();
-		entryDataAll.put("entryData", entryData);
-		entryDataAll.put("fileData", fileData);
+		entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
+		entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
 		
 		if (definitionTree != null) {
 			//root is the root of the entry's definition
@@ -1382,6 +1381,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								entryData.put(nameValue, Boolean.TRUE);
 							} else {
 								entryData.put(nameValue, Boolean.FALSE);
+							}
+						} else if (itemName.equals("profileTimeZone")) {
+							if (inputData.exists(nameValue)) {
+								String val = inputData.getSingleValue(nameValue);
+								if (Validator.isNull(val))
+									entryData.put(nameValue, null);
+								else entryData.put(nameValue, TimeZone.getTimeZone(val));
 							}
 						} else if (itemName.equals("file") || itemName.equals("graphic") || 
 								itemName.equals("profileEntryPicture")) {

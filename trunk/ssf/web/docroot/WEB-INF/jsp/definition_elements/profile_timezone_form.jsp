@@ -17,7 +17,7 @@
 %>
 <c:forEach var="zone" items="<%= sort %>">
 <option value="${zone}" 
-<c:if test="${zone == ssDefinitionEntry.timeZoneName}"> selected </c:if>
+<c:if test="${zone == ssDefinitionEntry.timeZone.ID}"> selected </c:if>
 >${zone}</option>
 </c:forEach>
 </select>

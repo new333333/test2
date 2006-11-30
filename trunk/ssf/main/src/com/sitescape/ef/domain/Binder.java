@@ -30,7 +30,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected Map properties;
     protected Binder parentBinder;
     protected NotificationDef notificationDef;
-    protected List postings;
+    protected PostingDef posting;
     protected Integer upgradeVersion;   
     protected String zoneName; 
     protected String type;
@@ -163,35 +163,16 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         this.notificationDef = notificationDef;
     }
     /**
-     * @hibernate.bag  lazy="true" cascade="all,delete-orphan" inverse="true" optimistic-lock="false" 
-     * @hibernate.key column="binder" 
-     * @hibernate.one-to-many class="com.sitescape.ef.domain.PostingDef" 
+     * @hibernate.many-to-one 
      * @return
      */
-    public List getPostings() {
-    	if (postings == null) return new ArrayList();
-    	return postings;
+    public PostingDef getPosting() {
+    	return posting;
     }
-    public void setPostings(List postings) {
-    	this.postings = postings;
+    public void setPosting(PostingDef posting) {
+    	this.posting = posting;
     }
-    public void addPosting(PostingDef post) {
-    	post.setBinder(this);
-    	getPostings().add(post);
-    }
-    public void removePosting(PostingDef post) {
-    	getPostings().remove(post);
-    }
-    public PostingDef getPosting(String postingId) {
-       	//initialize them first
-    	getPostings();
-    	for (int i=0; i<postings.size(); ++i) {
-    		PostingDef post = (PostingDef)postings.get(i);
-    		if (post.getId().equals(postingId)) 
-    			return post;
-       	}
-       	return null;
-    }
+
     /**
      * @hibernate.many-to-one
      */
@@ -233,7 +214,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     
 
     public String toString() {
-    	return getZoneName() + ":" + name; 
+    	return getPathName(); 
     }
 
     public Long getWorkAreaId() {

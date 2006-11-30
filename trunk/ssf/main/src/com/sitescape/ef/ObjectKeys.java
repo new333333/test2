@@ -1,7 +1,7 @@
 package com.sitescape.ef;
 
 /**
- * Defines symbols for that the core is aware of.
+ * Defines symbols that the core is aware of.
  * 
  * @author Jong Kim
  *
@@ -64,6 +64,7 @@ public interface ObjectKeys {
     public static final String SEARCH_SORT_BY = "sortBy";
     public static final String SEARCH_SORT_DESCEND = "sortDescend";
 
+    //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
@@ -83,9 +84,36 @@ public interface ObjectKeys {
 
     public static final String WORKAREA_OPERATION = "workarea_operation";
     
+    //workflow definition names
     public static final String WORKFLOW_START_STATE = "__start_state";
     public static final String WORKFLOW_END_STATE = "__end_state";
     public static final String WORKFLOW_PARALLEL_THREAD_NAME = "name";
     public static final String WORKFLOW_PARALLEL_THREAD_START_STATE = "startState";
     public static final String WORKFLOW_PARALLEL_THREAD_END_TRANSITION = "transitionState";
+    
+    //Reserved data field names
+    public static final String FIELD_POSTING_FROM="__poster";
+    public static final String FIELD_ENTRY_TITLE="title";
+    public static final String FIELD_ENTRY_DESCRIPTION="description";
+    public static final String FIELD_ENTRY_ID="id";
+    public static final String FIELD_PARENT_BINDER="parentBinder";
+    public static final String FIELD_ENTRY_ATTACHMENTS="ss_attachFile";
+    
+    public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
+    public static final String FIELD_PRINCIPAL_NAME="name";
+    public static final String FIELD_PRINCIPAL_ZONENAMNE="zoneName";
+    public static final String FIELD_PRINCIPAL_DISABLED="disabled";
+    public static final String FIELD_PRINCIPAL_INTERNALID="internalId";
+    
+    public static final String FIELD_USER_FIRSTNAME="firstName";
+    public static final String FIELD_USER_MIDDLENAME="middleName";
+    public static final String FIELD_USER_LASTNAME="lastName";
+    public static final String FIELD_USER_DISPLAYSTYLE="displayStyle";
+    public static final String FIELD_USER_EMAIL="emailAddress";
+    public static final String FIELD_USER_LOCALE="locale";
+    public static final String FIELD_USER_TIMEZONE="timeZone";
+    //map keys from definition module
+    public static final String DEFINITION_ENTRY_DATA="entryData";
+    public static final String DEFINITION_FILE_DATA="fileData";
+    
 }

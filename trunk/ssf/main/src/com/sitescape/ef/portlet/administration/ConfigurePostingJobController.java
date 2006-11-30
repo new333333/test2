@@ -31,7 +31,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			ScheduleInfo config = getAdminModule().getPostingSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
-			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
+			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
 			getAdminModule().setPostingSchedule(config);
 			
 			int pos =0;
@@ -47,15 +47,15 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				
 				if (!formData.containsKey("delete" + pos)) {
 					if (!Validator.isNull(alias)) {
-						updates.put("aliasName", alias);
+						updates.put("emailAddress", alias);
 						if (!Validator.isNull(aliasId)) {
-							getAdminModule().modifyEmailAlias(aliasId, updates);
+							getAdminModule().modifyPosting(aliasId, updates);
 						} else {
-							getAdminModule().addEmailAlias(updates);
+							getAdminModule().addPosting(updates);
 						}
 						
 					}
-				} else if (!Validator.isNull(aliasId)) getAdminModule().deleteEmailAlias(aliasId);
+				} else if (!Validator.isNull(aliasId)) getAdminModule().deletePosting(aliasId);
 				++pos;
 				updates.clear();
 			}
@@ -75,7 +75,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		HashMap model = new HashMap();
 		ScheduleInfo config = getAdminModule().getPostingSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, config);	
-		model.put(WebKeys.EMAIL_ALIASES, getAdminModule().getEmailAliases());
+		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
 		Toolbar toolbar = new Toolbar();
 		PortletURL url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);

@@ -57,8 +57,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************	
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
+    	FolderEntry fEntry = (FolderEntry)entry;
     	getCoreDao().refresh(folder);
-    	folder.addEntry((FolderEntry)entry);         
+    	folder.addEntry((FolderEntry)entry);
+    	if (inputData.exists(ObjectKeys.FIELD_POSTING_FROM)) {
+    		fEntry.setPostedBy(inputData.getSingleValue(ObjectKeys.FIELD_POSTING_FROM)); 
+    	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
    }
  
@@ -73,7 +77,128 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
     }
 
-	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    //***********************************************************************************************************
+    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
+   		throws AccessControlException, WriteFilesException {
+        // This default implementation is coded after template pattern. 
+               
+ 
+    	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
+        final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+        List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
+        try {
+        	// Before doing anything else (especially writing anything to the 
+        	// database), make sure to run the filter on the uploaded files. 
+        	FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
+        
+        	final FolderEntry entry = addReply_create(def);
+        
+        	// The following part requires update database transaction.
+        	getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+        		addReply_fillIn(parent, entry, inputData, entryData);
+        
+        		addReply_preSave(parent, entry, inputData, entryData);
+        		
+        		addReply_save(entry);
+        
+        		addReply_postSave(parent, entry, inputData, entryData);
+        		return null;
+        	}});
+        
+        	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
+        
+        	addReply_startWorkflow(entry);
+         
+        	addReply_indexAdd(parent, entry, inputData, entryData, fileData);
+                
+        	addReply_done(parent, entry, inputData);
+
+        	if(filesErrors.getProblems().size() > 0) {
+        		// 	At least one error occured during the operation. 
+        		throw new WriteFilesException(filesErrors);
+        	}
+        	else {
+        		return entry;
+        	}
+    	} finally {
+        	cleanupFiles(fileData);
+    		
+    	}
+    }
+        
+    protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
+     	return addEntry_toEntryData(parent.getParentBinder(), def, inputData, fileItems);
+    }
+    
+    /**
+     * Subclass must implement this.
+     * @return
+     */
+    protected FolderEntry addReply_create(Definition def) {
+    	try {
+    		FolderEntry entry =  new FolderEntry();
+           	entry.setEntryDef(def);
+           	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
+           	return entry;
+    	} catch (Exception ex) {
+    		return null;
+    	}
+    	
+    }
+
+    protected FilesErrors addReply_filterFiles(Binder binder, List fileData) throws FilterException {
+    	return getFileModule().filterFiles(binder, fileData);
+    }
+
+    protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
+    		List fileData, FilesErrors filesErrors) {
+    	return getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
+    }
+    
+    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
+        parent.addReply(entry);         
+    	if (inputData.exists(ObjectKeys.FIELD_POSTING_FROM)) {
+    		entry.setPostedBy(inputData.getSingleValue(ObjectKeys.FIELD_POSTING_FROM)); 
+    	}
+    	super.addEntry_fillIn(entry.getParentBinder(), entry, inputData, entryData);
+    }
+    
+    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    }
+    
+    protected void addReply_save(FolderEntry entry) {
+        getCoreDao().save(entry);
+    }
+    
+    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	if (parent instanceof WorkflowSupport)
+    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
+    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);    			
+    		}
+
+    }
+    
+    protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData) {
+       	if (entry instanceof AclControlled)
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
+    	else
+    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry.getParentBinder())); // Just for testing
+    }
+
+    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
+    		InputDataAccessor inputData, Map entryData, List fileData) {
+    	indexEntry(entry.getParentFolder(), entry, fileData, null, true);
+    }
+    
+    protected void addReply_startWorkflow(FolderEntry entry) {
+    	//Starting a workflow on a reply works the same as for the entry
+    	addEntry_startWorkflow(entry);
+    }
+    //***********************************************************************************************************
+   
+ 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
@@ -82,10 +207,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	else
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
  	}
+    //***********************************************************************************************************
 
  	protected SFQuery indexEntries_getQuery(Binder binder) {
         //do actual db query 
-    	FilterControls filter = new FilterControls("parentBinder", binder);
+    	FilterControls filter = new FilterControls(ObjectKeys.FIELD_PARENT_BINDER, binder);
         return (SFQuery)getFolderDao().queryEntries(filter);
    	}
  	protected void indexEntries_preIndex(Binder binder) {
@@ -376,140 +502,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         return indexDoc;
     }
        
-    //***********************************************************************************************************
-    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
-   		throws AccessControlException, WriteFilesException {
-        // This default implementation is coded after template pattern. 
-               
- 
-    	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
-        final Map entryData = (Map) entryDataAll.get("entryData");
-        List fileData = (List) entryDataAll.get("fileData");
-        try {
-        	// Before doing anything else (especially writing anything to the 
-        	// database), make sure to run the filter on the uploaded files. 
-        	FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
-        
-        	final FolderEntry entry = addReply_create(def);
-        
-        	// The following part requires update database transaction.
-        	getTransactionTemplate().execute(new TransactionCallback() {
-        	public Object doInTransaction(TransactionStatus status) {
-        		addReply_fillIn(parent, entry, inputData, entryData);
-        
-        		addReply_preSave(parent, entry, inputData, entryData);
-        		
-        		addReply_save(entry);
-        
-        		addReply_postSave(parent, entry, inputData, entryData);
-        		return null;
-        	}});
-        
-        	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
-        
-        	addReply_startWorkflow(entry);
-         
-        	addReply_indexAdd(parent, entry, inputData, entryData, fileData);
-                
-        	addReply_done(parent, entry, inputData);
-
-        	if(filesErrors.getProblems().size() > 0) {
-        		// 	At least one error occured during the operation. 
-        		throw new WriteFilesException(filesErrors);
-        	}
-        	else {
-        		return entry;
-        	}
-    	} finally {
-        	cleanupFiles(fileData);
-    		
-    	}
-    }
-        
-    protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
-        //Call the definition processor to get the entry data to be stored
-        if (def != null) {
-        	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
-        } else {
-        	return new HashMap();
-        }
-    }
-    
-    /**
-     * Subclass must implement this.
-     * @return
-     */
-    protected FolderEntry addReply_create(Definition def) {
-    	try {
-    		FolderEntry entry =  new FolderEntry();
-           	entry.setEntryDef(def);
-       	return entry;
-    	} catch (Exception ex) {
-    		return null;
-    	}
-    	
-    }
-
-    protected FilesErrors addReply_filterFiles(Binder binder, List fileData) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileData);
-    }
-
-    protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
-    		List fileData, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
-    }
-    
-    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
-        parent.addReply(entry);         
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setCreation(new HistoryStamp(user));
-        entry.setModification(entry.getCreation());
-        
-            // The entry inherits acls from the parent by default. 
- //TODO::           getAclManager().doInherit(parent, (AclControlledEntry) entry);
-        
-        for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
-        	Object obj = iter.next();
-        	//need to generate id for the event so its id can be saved in customAttr
-        	if (obj instanceof Event)
-        		getCoreDao().save(obj);
-        }
-        EntryBuilder.buildEntry(entry, entryData);
-    }
-    
-    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-    }
-    
-    protected void addReply_save(FolderEntry entry) {
-        getCoreDao().save(entry);
-    }
-    
-    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
-    	if (parent instanceof WorkflowSupport)
-    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
-    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);    			
-    		}
-
-    }
-    
-    protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData) {
-       	if (entry instanceof AclControlled)
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-    	else
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry.getParentBinder())); // Just for testing
-    }
-
-    protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
-    		InputDataAccessor inputData, Map entryData, List fileData) {
-    	indexEntry(entry.getParentFolder(), entry, fileData, null, true);
-    }
-    
-    protected void addReply_startWorkflow(FolderEntry entry) {
-    	//Starting a workflow on a reply works the same as for the entry
-    	addEntry_startWorkflow(entry);
-    }
-    
  
     //***********************************************************************************************************
           
