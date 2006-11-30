@@ -273,10 +273,17 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 	<target name="jbossportal-jboss-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
 		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<property name="aspen-jboss-portal.top.dir" value="${temp.dir}/sitescape-forum-${forum.version}-jboss-portal-${jbossportal.version.jboss.tomcat}" />
+		<rename dest="${aspen-jboss-portal.top.dir}" src="${temp.dir}/${jbossportal.jboss-tomcat.zip.file.top.dir}"/>
+		<pathconvert targetos="unix" property="aspen-jboss-portal.top.dir.path">
+			<path>
+				<pathelement location="${aspen-jboss-portal.top.dir}"/>
+			</path>
+		</pathconvert>
 		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
 		<echo file="app.server.${user.name}.properties">portal.type=jbossportal
 app.server.type=jboss-tomcat
-app.server.jbossportal.jboss-tomcat.dir=${temp.dir.path}
+app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
 		</echo>
 		<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
 		<mkdir dir="${dist.dir}" />
