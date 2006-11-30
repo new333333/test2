@@ -64,11 +64,22 @@ type="time" /></span>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u1.id}"/>"
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssNamespace}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><a href="<portlet:renderURL windowState="maximized">
+					  <td>
+					  <ssf:ifadapter>
+					  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					    action="view_permalink"
+					    binderId="${u1.parentBinder.id}"
+					    entryId="${u1.id}">
+					    <ssf:param name="entityType" value="workspace" />
+						</ssf:url>"><c:out value="${u1.title}"/></a>
+					  </ssf:ifadapter>
+					  <ssf:ifnotadapter>
+					  <a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="view_ws_listing"/>
 						<portlet:param name="binderId" value="${u1.parentBinder.id}"/>
 						<portlet:param name="entryId" value="${u1.id}"/>
 						</portlet:renderURL>"><c:out value="${u1.title}"/></a>
+					  </ssf:ifnotadapter>
 					  </td>							
 					  </tr>
 					  <%
@@ -90,11 +101,22 @@ type="time" /></span>
 					    componentId="${ssNamespace}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td><a href="<portlet:renderURL windowState="maximized">
+					  <td>
+					  <ssf:ifadapter>
+					  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					    action="view_permalink"
+						binderId="${u2.parentBinder.id}"
+						entryId="${u2.id}">
+						<ssf:param name="entityType" value="workspace" />
+						</ssf:url>"><c:out value="${u2.title}"/></a>
+					  </ssf:ifadapter>
+					  <ssf:ifnotadapter>
+					  <a href="<portlet:renderURL windowState="maximized">
 						<portlet:param name="action" value="view_ws_listing"/>
 						<portlet:param name="binderId" value="${u2.parentBinder.id}"/>
 						<portlet:param name="entryId" value="${u2.id}"/>
 						</portlet:renderURL>"><c:out value="${u2.title}"/></a>
+					  </ssf:ifnotadapter>
 					  </td>							
 					  </tr>
 					</c:if>
