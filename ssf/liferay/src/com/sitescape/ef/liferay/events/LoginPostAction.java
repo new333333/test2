@@ -50,15 +50,23 @@ public class LoginPostAction extends AbstractAction {
 			com.liferay.portal.model.User user = UserLocalServiceUtil.getUserById(companyId, userId);
 			//sync user attributes
 			Map updates = new HashMap();
+			updates.put("lastName", user.getLastName());
+			updates.put("location", user.getLocation().getName());
+			updates.put("timeZoneName", user.getTimeZoneId());
 			updates.put("firstName", user.getFirstName());
 			updates.put("middleName", user.getMiddleName());
-			updates.put("lastName", user.getLastName());
 			updates.put("emailAddress", user.getEmailAddress());
 			updates.put("languageId", user.getLocale().getLanguage());
 			updates.put("country", user.getLocale().getCountry());
-			updates.put("timeZoneName", user.getTimeZoneId());
-			updates.put("organization", user.getOrganization().getName());
-			updates.put("location", user.getLocation().getName());
+			
+			// Due to a bug in Liferay, the following information we get directly
+			// from the user model object does not match the user attributes
+			// obtainable from the portal in a portable way (using
+			// javax.portlet.PortletRequest.USER_INFO). So do not deal with it
+			// here. Additional information, if any, can be updated when the
+			// user actually accesses the system. 
+			//updates.put("organization", user.getOrganization().getName());
+			
 			// First, authenticate the user against SSF user database.
 			AuthenticationManager.authenticate(companyId, userId, password, updates);
 			
