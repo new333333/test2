@@ -61,7 +61,10 @@
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
       <property name="subject" length="128" column="notify_subject"/>
     </component>
-    <many-to-one name="posting"/>
+    <many-to-one name="posting">
+		<column name="posting" sql-type="char(32)"/>
+    </many-to-one>
+
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
     <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
