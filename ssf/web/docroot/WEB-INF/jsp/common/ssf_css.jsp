@@ -1691,7 +1691,7 @@ div.ss_thumbnail_small_no_text div {
     filter:alpha(opacity=75);
 </c:if>
 }
-div.ss_thumbnail_small_no_text div:hover{
+div.ss_thumbnail_small_no_text div:hover {
     opacity: 1.0;
 <c:if test="<%= isIE %>">
     filter:alpha(opacity=100);
