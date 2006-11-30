@@ -2389,6 +2389,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr) {
 	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, divId);
 }
 function ss_showComponentCallback(s, divId) {
+	ss_debug(s)
 	var targetDiv = document.getElementById(divId);
 	if (targetDiv) {
 		targetDiv.innerHTML = s;

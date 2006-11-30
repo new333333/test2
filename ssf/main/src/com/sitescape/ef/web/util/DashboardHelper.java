@@ -24,6 +24,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -32,6 +33,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.Validator;
@@ -607,6 +609,20 @@ public class DashboardHelper {
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
 		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
+		//Also get the folder titles
+		Set ids = new HashSet();
+		Iterator itEntries = entries.iterator();
+		while (itEntries.hasNext()) {
+			Map r = (Map) itEntries.next();
+			String entityType = (String) r.get("_entityType");
+			if (entityType != null && r.containsKey("_docId") && 
+					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
+				ids.add(Long.valueOf((String)r.get("_docId")));
+			} else if (r.containsKey("_binderId")) {
+				ids.add(Long.valueOf((String)r.get("_binderId")));
+			}
+		}
+		model.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
     }
     
     public static void setTitle(ActionRequest request, Binder binder, String scope) {

@@ -1687,9 +1687,15 @@ div.ss_thumbnail_small_no_text div {
     margin-left:   5px;
     margin-right:  5px;
     opacity: 0.75;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=75);
+</c:if>
 }
 div.ss_thumbnail_small_no_text div:hover{
     opacity: 1.0;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=100);
+</c:if>
 }
 div.ss_thumbnail_small img {
     width: 75px;

@@ -5,10 +5,10 @@
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
 <script type="text/javascript">
-		// Dojo configuration
-		djConfig = { 
-			isDebug: false
-		};
+// Dojo configuration
+djConfig = { 
+	isDebug: false
+};
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
@@ -29,11 +29,7 @@ var ss_imagesPath;
 var ss_1pix;
 var ss_defaultStyleSheet;
 var ss_forumCssUrl;
-var niftyCornersCssUrl;
-//var htmlareaCssUrl;
 var ss_forumColorsCssUrl;
-var ss_forumColorDebugCssUrl;
-var ss_forumColorBlackAndWhiteCssUrl;
 var ss_helpSystemUrl;
 var ss_addTabUrl;
 var ss_not_logged_in;
@@ -48,19 +44,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_defaultStyleSheet = 'blackandwhite';
 	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
 	ss_1pix = ss_imagesPath + "pics/1pix.gif";
-	niftyCornersCssUrl = ss_urlBase + ss_rootPath + "css/nifty_corners.css";
-	//htmlareaCssUrl = ss_urlBase + ss_rootPath + "js/htmleditor/htmlarea.css";
 	ss_forumColorsCssUrl = "<ssf:url
 	    webPath="viewCss">
 	    <ssf:param name="theme" value=""/>
-	    </ssf:url>";
-	ss_forumColorDebugCssUrl = "<ssf:url
-	    webPath="viewCss">
-	    <ssf:param name="theme" value="debug"/>
-	    </ssf:url>";
-	ss_forumColorBlackAndWhiteCssUrl = "<ssf:url
-	    webPath="viewCss">
-	    <ssf:param name="theme" value="blackandwhite"/>
 	    </ssf:url>";
 	
 	//Help system url (used to request a help panel to be shown).
@@ -183,32 +169,18 @@ function ss_loadJsFile(rootPath, jsFile) {
 	}
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-	//ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
 }
 </script>
 <script type="text/javascript">
 if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded == "undefined" ) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		//ss_loadJsFile(ss_rootPath, "js/dojo/dojo.js");
-		//ss_loadJsFile(ss_rootPath, "js/common/nifty_corners.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_drag.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dragdrop.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_coordinates.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lang.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/event.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/lfx/html.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/style.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/fx/html.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/math/curves.js");
-		//ss_loadJsFile(ss_rootPath, "js/dojo/src/html.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
-		//ss_loadJsFile(ss_rootPath, "js/common/ss_dragsort.js");
 		
 		<c:if test="${!empty ssFooterToolbar.RSS.url}">
 			//Add the rss feed info
@@ -230,17 +202,9 @@ if (!ss_css_files_loaded || ss_css_files_loaded == undefined || ss_css_files_loa
 		if (document.createStyleSheet) {
 			document.createStyleSheet(ss_forumCssUrl);
 			document.createStyleSheet(ss_forumColorsCssUrl);
-			document.createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
-			document.createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-			//document.createStyleSheet(niftyCornersCssUrl);
-			//document.createStyleSheet(htmlareaCssUrl);
 		} else {
 			ss_createStyleSheet(ss_forumCssUrl);
 			ss_createStyleSheet(ss_forumColorsCssUrl);
-			ss_createStyleSheet(ss_forumColorBlackAndWhiteCssUrl, "blackandwhite", true);
-			ss_createStyleSheet(ss_forumColorDebugCssUrl, "debug");
-			//ss_createStyleSheet(niftyCornersCssUrl);
-			//ss_createStyleSheet(htmlareaCssUrl);
 		}
 	}
 }
