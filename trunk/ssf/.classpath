@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="as-module/src"/>
 	<classpathentry kind="src" path="tools/src"/>
 	<classpathentry kind="src" path="ssfs/src"/>
 	<classpathentry kind="src" path="remoting/src"/>
@@ -32,7 +33,6 @@
 	<classpathentry kind="lib" path="lib/quartz.jar"/>
 	<classpathentry kind="lib" path="lib/trove.jar"/>
 	<classpathentry kind="lib" path="lib/velocity.jar"/>
-	<classpathentry kind="lib" path="lib/md5crypt.jar"/>
 	<classpathentry kind="lib" path="lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry kind="lib" path="lib/portlet.jar"/>
@@ -41,11 +41,9 @@
 	<classpathentry kind="lib" path="lib/portal-ejb.jar"/>
 	<classpathentry kind="lib" path="lib/cglib.jar"/>
 	<classpathentry kind="lib" path="lib/jtds.jar"/>
-	<classpathentry kind="lib" path="lib/antlr-2.7.5H3.jar"/>
 	<classpathentry kind="lib" path="lib/bsh.jar"/>
 	<classpathentry kind="lib" path="lib/dbunit-2.1.jar"/>
 	<classpathentry kind="lib" path="lib/easymock.jar"/>
-	<classpathentry kind="lib" path="lib/ehcache-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
 	<classpathentry kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry kind="lib" path="lib/jbpm-identity.jar"/>
@@ -73,5 +71,6 @@
 	<classpathentry kind="lib" path="lib/jcr.jar"/>
 	<classpathentry kind="lib" path="lib/slide-jaas.jar"/>
 	<classpathentry kind="lib" path="lib/slide-kernel.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
