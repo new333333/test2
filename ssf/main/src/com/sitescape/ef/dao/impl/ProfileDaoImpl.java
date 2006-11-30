@@ -362,13 +362,17 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      * @see com.sitescape.ef.dao.CoreDao#loadUser(java.lang.Long, java.lang.Long)
      */
     public User loadUser(Long userId, String zoneName) {
-    	User user = (User)getHibernateTemplate().get(User.class, userId);
-        if (user == null) {throw new NoUserByTheIdException(userId);}
-        //make sure from correct zone
-        if ((zoneName != null ) && !user.getZoneName().equals(zoneName)) {
-        	throw new NoUserByTheIdException(userId);
-        }
-        return user;
+    	try {
+    		User user = (User)getHibernateTemplate().get(User.class, userId);
+    		if (user == null) {throw new NoUserByTheIdException(userId);}
+    		//	make sure from correct zone
+    		if ((zoneName != null ) && !user.getZoneName().equals(zoneName)) {
+    			throw new NoUserByTheIdException(userId);
+    		}
+    		return user;
+    	} catch (ClassCastException ce) {
+   			throw new NoUserByTheIdException(userId);   		
+    	}
     }
 	public User loadUserOnlyIfEnabled(Long userId, String zoneName) {
         User user = loadUser(userId, zoneName);
@@ -556,11 +560,15 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     }
  
 	public Group loadGroup(final Long groupId, String zoneName)  {
-		Group group = (Group)getHibernateTemplate().get(Group.class, groupId);
-		if (group == null) {throw new NoGroupByTheIdException(groupId);}
-        //make sure from correct zone
-        if ((zoneName != null ) && !group.getZoneName().equals(zoneName)) {throw new NoGroupByTheIdException(groupId);}
-		return group;
+		try {
+			Group group = (Group)getHibernateTemplate().get(Group.class, groupId);
+			if (group == null) {throw new NoGroupByTheIdException(groupId);}
+			//make sure from correct zone
+			if ((zoneName != null ) && !group.getZoneName().equals(zoneName)) {throw new NoGroupByTheIdException(groupId);}
+			return group;
+		} catch (ClassCastException ce) {
+			throw new NoGroupByTheIdException(groupId);
+		}
 	}
 	public List loadGroups(Collection ids, String zoneName) {
 		return getCoreDao().loadObjects(ids, Group.class, zoneName);
@@ -621,8 +629,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		if (ids.contains(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, zoneName))) {
 			List<Object[]> result = getCoreDao().loadObjects(new ObjectControls(User.class, 
 					new String[]{"id"}), 
-					new FilterControls(new String[]{"zoneName", "disabled"}, new Object[]{zoneName, Boolean.FALSE}));
+					new FilterControls(new String[]{"zoneName"}, new Object[]{zoneName}));
 			users = new HashSet(result);
+			//remove postingAgent
+			User u = getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, zoneName);
+			users.remove(u.getId());
 		} else {
 			users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {

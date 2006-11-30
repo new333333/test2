@@ -80,8 +80,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 	 				// system is configured to support auto synch of user.
 	 				// If not, the user can manually change the info later on. 
 	 				updates.put("lastName", userName);
-					updates.put("languageId", request.getLocale().getLanguage());
-					updates.put("country", request.getLocale().getCountry());
+					updates.put("locale", request.getLocale());
 					
 	 				user = getProfileModule().addUserFromPortal(zoneName, userName, null, updates);
 	 			}

@@ -28,15 +28,9 @@ public class FieldBuilderProfileElement extends AbstractFieldBuilder {
        	} else if ("lastName".equals(dataElemName)) {
    	        Field nameField = new Field(ProfileIndexUtils.LASTNAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
   	        return new Field[] {nameField};    		
-      	} else if ("country".equals(dataElemName)) {
-   	        Field nameField = new Field(ProfileIndexUtils.COUNTRY_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
-  	        return new Field[] {nameField};    		
       	} else if ("organization".equals(dataElemName)) {
    	        Field nameField = new Field(ProfileIndexUtils.ORGANIZATION_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
-  	        return new Field[] {nameField};    		
-    	} else if ("homepage".equals(dataElemName)) {
-	        Field nameField = new Field(ProfileIndexUtils.HOMEPAGE_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
-	        return new Field[] {nameField};    		
+  	        return new Field[] {nameField};    			
     	}
     	return new Field[0];
     }

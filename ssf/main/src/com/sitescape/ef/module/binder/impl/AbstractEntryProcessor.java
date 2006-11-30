@@ -2,6 +2,7 @@ package com.sitescape.ef.module.binder.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -10,60 +11,57 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.lang.Long;
-import java.util.Collection;
 
+import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.index.Term;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.TitleException;
-import com.sitescape.ef.domain.WorkflowResponse;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.lucene.Hits;
+import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.EntryBuilder;
+import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.search.SearchFieldResult;
-import com.sitescape.ef.module.binder.AccessUtils;
-import com.sitescape.ef.module.binder.EntryProcessor;
-import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.search.SearchObject;
+import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.util.Validator;
 /**
  *
  * Add entries to the binder
@@ -85,8 +83,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
         sp.end().print();
         
-        final Map entryData = (Map) entryDataAll.get("entryData");
-        List fileUploadItems = (List) entryDataAll.get("fileData");
+        final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+        List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 
         try {
             sp.reset("addEntry_filterFiles").begin();
@@ -163,14 +161,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	//handle basic fields only without definition
         	Map entryDataAll = new HashMap();
 	        Map entryData = new HashMap();
-	        entryDataAll.put("entryData", entryData);
-	        entryDataAll.put("fileData", new ArrayList());
- 			if (inputData.exists("title")) entryData.put("title", inputData.getSingleValue("title"));
-			if (inputData.exists("description")) {
+	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, new ArrayList());
+ 			if (inputData.exists(ObjectKeys.FIELD_ENTRY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTRY_TITLE, inputData.getSingleValue("title"));
+			if (inputData.exists(ObjectKeys.FIELD_ENTRY_DESCRIPTION)) {
 				Description description = new Description();
-				description.setText(inputData.getSingleValue("description"));
+				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTRY_DESCRIPTION));
 				description.setFormat(Description.FORMAT_HTML);
-				entryData.put("description", description);
+				entryData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, description);
 			}
       	
         	return entryDataAll;
@@ -194,6 +192,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         entry.setModification(entry.getCreation());
         entry.setParentBinder(binder);
         
+        //initialize collections, or else hibernate treats any new 
+        //empty collections as a change and attempts a version update which
+        //may happen outside the transaction
+        entry.getAttachments();
+        entry.getEvents();
+        entry.getCustomAttributes();
         
         // The entry inherits acls from the parent by default. 
         if (entry instanceof AclControlled) {
@@ -236,7 +240,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Definition entryDef = entry.getEntryDef();
     		if (entryDef != null) {
 	    		if (workflowAssociations.containsKey(entryDef.getId()) && 
-	    				!workflowAssociations.get(entryDef.getId()).equals("")) {
+	    				Validator.isNotNull((String)workflowAssociations.get(entryDef.getId()))) {
 	    			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
 	    			getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
 	    		}
@@ -254,8 +258,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
 	    sp.end().print();
 	    
-	    final Map entryData = (Map) entryDataAll.get("entryData");
-	    List fileUploadItems = (List) entryDataAll.get("fileData");
+	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    
 	    try {	    	
 	    	sp.reset("modifyEntry_filterFiles").begin();
@@ -344,8 +348,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
         } else {
            	Map entryDataAll = new HashMap();
-	        entryDataAll.put("entryData",  new HashMap());
-	        entryDataAll.put("fileData",  new ArrayList());
+	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
 	        return entryDataAll;
         }
     }

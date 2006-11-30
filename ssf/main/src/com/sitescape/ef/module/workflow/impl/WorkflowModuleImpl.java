@@ -58,8 +58,9 @@ import org.jbpm.scheduler.def.CreateTimerAction;
 import org.jbpm.scheduler.exe.Timer;
 
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
+import org.springframework.beans.factory.InitializingBean;
 
-public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
+public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule, InitializingBean {
    static BusinessCalendar businessCalendar;
 
    /**
@@ -67,7 +68,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     * scheduler has workflowtimeout job active
     *
     */
-   public void init() {
+   public void afterPropertiesSet() {
 //	   businessCalendar = new BusinessCalendar();
 	   List companies = getCoreDao().findCompanies();
 	   for (int i=0; i<companies.size(); ++i) {

@@ -27,11 +27,6 @@
 		
 		<subclass name="com.sitescape.ef.domain.FolderEntry">
 			<!-- Property of primitive type must specify its type -->
-			<property name="allowEdits">
-				<!-- This property maps to a String-valued keyword field -->
-				<keyword name="allowEdits" type="java.lang.String"/>
-				<to-string-converter class="com.sitescape.ef.search.docbuilder.mapped.property.YesNoBooleanConverter" />
-			</property>
 		</subclass>
 		
 	</class>

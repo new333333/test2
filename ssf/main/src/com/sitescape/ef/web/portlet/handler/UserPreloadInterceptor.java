@@ -119,8 +119,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 						updates.put("emailAddress", userAttrs.get("user.business-info.online.email"));
 					if(userAttrs.containsKey("user.business-info.postal.organization"))
 						updates.put("organization", userAttrs.get("user.business-info.postal.organization"));
-					updates.put("languageId", request.getLocale().getLanguage());
-					updates.put("country", request.getLocale().getCountry());
+					updates.put("locale", request.getLocale());
 
 	 				user = getProfileModule().addUserFromPortal(zoneName, userName, null, updates);
 	 				
@@ -192,12 +191,8 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 				if (!identical(val, user.getOrganization())) 
 					updates.put("organization", val);
 			}
-			val = request.getLocale().getLanguage();
-			if (!val.equals(user.getLanguageId())) 
-				updates.put("languageId", val);
-			val = request.getLocale().getCountry();
-			if (!val.equals(user.getCountry())) 
-				updates.put("country", val);
+			if (!request.getLocale().equals(user.getLocale())) 
+				updates.put("locale", request.getLocale());
 
 			if(!updates.isEmpty()) {
 				getProfileModule().modifyUserFromPortal(user, updates);				

@@ -25,18 +25,35 @@
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
 			token="@@@mail.transport.protocol.out" value="${mail.transport.protocol.out}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.host.out" value="${mail.host.out}"/>
+			token="@@@mail.smtp.host.out" value="${mail.smtp.host.out}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.user.out" value="${mail.user.out}"/>
+			token="@@@mail.smtp.user.out" value="${mail.smtp.user.out}"/>
+
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
 			token="@@@mail.store.protocol.in" value="${mail.store.protocol.in}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.host.in" value="${mail.host.in}"/>
+			token="@@@mail.pop3.host.in" value="${mail.pop3.host.in}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.auth.in" value="${mail.auth.in}"/>
+			token="@@@mail.pop3.auth.in" value="${mail.pop3.auth.in}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.user.in" value="${mail.user.in}"/>
+			token="@@@mail.pop3.user.in" value="${mail.pop3.user.in}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
-			token="@@@mail.password.in" value="${mail.password.in}"/>
+			token="@@@mail.pop3.password.in" value="${mail.pop3.password.in}"/>
+
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.imap.host.in" value="${mail.imap.host.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.imap.auth.in" value="${mail.imap.auth.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.imap.user.in" value="${mail.imap.user.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.imap.password.in" value="${mail.imap.password.in}"/>
+
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.transport.protocol.in" value="${mail.transport.protocol.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.smtp.host.in" value="${mail.smtp.host.in}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.smtp.user.in" value="${mail.smtp.user.in}"/>
 	</target>
 </project>

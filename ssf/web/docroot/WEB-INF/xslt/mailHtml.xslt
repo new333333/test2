@@ -41,7 +41,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:template>
 
 <xsl:template match="mail">
-<xsl:if test="$TOC = 'true'">
+
 <xsl:if test="topFolder/@changeCount = '1'">
 <xsl:value-of select="topFolder/@changeCount"/>&nbsp;
 <xsl:call-template name="getString">
@@ -83,26 +83,28 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 </xsl:for-each>
 </xsl:for-each>
 <hr size="1" color="black" noshade="true"/>
-<a href="#toc"><span style="font-family:
-  arial, helvetica, sans-serif; font-size: 13px;">
-<xsl:call-template name="getString">
-  <xsl:with-param name="stringName" select="'TOC'"/>
-</xsl:call-template>
-</span></a>
-<br/><br/>
-</xsl:if>
+
 <span style="font-family: arial, helvetica,
   sans-serif; font-size: 13px;"><b>
 <xsl:call-template name="getString">
-  <xsl:with-param name="stringName" select="'forumLabel'"/>
+  <xsl:with-param name="stringName" select="'folderLabel'"/>
 </xsl:call-template>
 :&nbsp;<xsl:value-of select="topFolder/@title"/></b></span>
 <br/>
 <xsl:for-each select="folder">
 <xsl:for-each select="folderEntry">
 <div style="border-bottom: thin solid #cccccc;">
-		<xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
+<xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
+<a href="#toc"><span style="font-family:
+  arial, helvetica, sans-serif; font-size: 13px;">
+<xsl:call-template name="getString">
+  <xsl:with-param name="stringName" select="'TOC'"/>
+</xsl:call-template>
+</span></a>
+<br/>		
 		<a name="id{@name}"/>
+<table border="0" width="100%">
+<tr><td valign="top" style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
 		<a href="{@href}">
 		<span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
              <xsl:value-of select="@docNumber"/>&nbsp;&nbsp;
@@ -113,6 +115,31 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		  <xsl:with-param name="stringName" select="@notifyType"/>
 		</xsl:call-template>
 	    )</xsl:if>
+</td>
+<td nowrap="nowrap" valign="top" align="right">
+		<xsl:if test="../@replyTo != ''">&nbsp;&nbsp;<a href="mailto:{../@replyTo}?subject=RE: DocId:{../@name}:{@name}" 
+		style="font-size: 11px; color: #3366cc; font-weight:bold;
+border-top: 1px solid #d5d5d5; border-left:
+  1px solid #d5d5d5;
+border-right: 1px solid #666666;
+  border-bottom: 1px solid #666666;
+background-color:
+  #e5e5e5; padding: 3px;
+font-family: arial, helvetica,
+  sans-serif;
+margin-left: 0px; margin-right: 6px; margin-bottom,
+  margin-top: 2px;
+line-height: 200%; text-decoration:
+  none;" >ReplyTo</a></xsl:if>
+</td>
+</tr></table>
+		</xsl:if>
+		<xsl:if test="@hasChanges = 'false' and @docLevel != '1'">
+		<span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
+             <xsl:value-of select="@docNumber"/>&nbsp;&nbsp;
+			 <xsl:value-of select="@title"/>
+  		</span>
+		</xsl:if>
 		<br/>
 		<xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'fromLabel'"/>
@@ -122,13 +149,6 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   			<xsl:with-param name="stringName" select="'dateLabel'"/>
 		</xsl:call-template>
 		:&nbsp;<xsl:value-of select="@notifyDate"/><br/>
-		</xsl:if>
-		<xsl:if test="@hasChanges = 'false' and @docLevel != '1'">
-		<span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
-             <xsl:value-of select="@docNumber"/>&nbsp;&nbsp;
-			 <xsl:value-of select="@title"/>
-  		</span>
-		</xsl:if>
 		<xsl:for-each select="attribute">
 		<xsl:value-of select="@caption"/>&nbsp;
 		<xsl:choose>

@@ -44,7 +44,6 @@ import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
@@ -53,7 +52,6 @@ import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoConfigurationByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
@@ -596,17 +594,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        }
 	    );		
 	}
-	public List loadEmailAliases(String zoneName) {
-    	return loadObjects(new ObjectControls(EmailAlias.class), new FilterControls("zoneName", zoneName));
-	}
-	public EmailAlias loadEmailAlias(String aliasId, String zoneName) {
- 		EmailAlias alias = (EmailAlias)load(EmailAlias.class, aliasId);
-        if (alias == null) {throw new NoObjectByTheIdException(ErrorCodes.NoEmailAliasByTheIdException, aliasId);}
-        //make sure from correct zone
-        if (!alias.getZoneName().equals(zoneName)) {throw new NoObjectByTheIdException(ErrorCodes.NoEmailAliasByTheIdException, aliasId);}
-  		return alias;
-		
-	}
 	
 	/**
 	 * Perform a write of a new object now using a new Session so we can commit it fast
@@ -632,6 +619,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public List loadPostings(String zoneName) {
     	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneName", zoneName));
+	}
+	public PostingDef loadPosting(String postingId, String zoneName) {
+		PostingDef post = (PostingDef)load(PostingDef.class, postingId);
+        if (post == null) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
+        //make sure from correct zone
+        if (!post.getZoneName().equals(zoneName)) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
+  		return post;
+		
 	}
 
 	//build collections manually as an optimization for indexing

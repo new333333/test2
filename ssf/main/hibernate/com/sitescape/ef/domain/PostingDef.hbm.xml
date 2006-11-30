@@ -9,15 +9,12 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="enabled"/>
+    <property name="emailAddress" length="256"/>
     <property name="zoneName" length="100" not-null="true"/>
     <many-to-one name="binder"/>
     <many-to-one name="definition">
         <column name="definition" sql-type="char(32)"/>
     </many-to-one>
-    <many-to-one name="emailAlias">
-       <column name="emailAlias" sql-type="char(32)"/>
-    </many-to-one>
-    <property name="subject" length="256"/>
     <property name="replyPostingOption"/>
   </class>
 </hibernate-mapping>

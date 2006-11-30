@@ -54,16 +54,10 @@
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		</portlet:actionURL>">
 <script type="text/javascript">
-function <portlet:namespace/>setEnable() {
-	if (document.<portlet:namespace/>fm.disabled.checked) {
-		document.<portlet:namespace/>fm.enabled.value = "false";
-	} else {
-		document.<portlet:namespace/>fm.enabled.value = "true";
-	}
-}
+
 var <portlet:namespace/>_alias_count=0;
 
-function <portlet:namespace/>_addAlias(title, alias, subject) {
+function <portlet:namespace/>_addAlias(title, alias) {
    var tbl = document.getElementById('<portlet:namespace/>_alias_table');
    var body = document.getElementById('<portlet:namespace/>_alias_body');
    var row = document.createElement("tr");
@@ -89,16 +83,6 @@ function <portlet:namespace/>_addAlias(title, alias, subject) {
 	row.appendChild(cellLeft);
 	cellLeft.innerHTML=<portlet:namespace/>_buildSelectBox(alias);
 	
-	//subject
-	cellLeft = document.createElement("td");
-	row.appendChild(cellLeft);
-	inner = document.createElement("input");
-	inner.setAttribute("type", "text");
-  	inner.setAttribute("size", "32");
-	inner.setAttribute("name", "subject" + <portlet:namespace/>_alias_count);
-	inner.setAttribute("id", "subject" + <portlet:namespace/>_alias_count);
-	inner.setAttribute("value", subject);
-    cellLeft.appendChild(inner);
 	<portlet:namespace/>_select(alias);
 	<portlet:namespace/>_alias_count++;
 
@@ -113,16 +97,16 @@ function t_<portlet:namespace/>_folderTree_showId(id, obj) {
 	inner.setAttribute("id", "folder" + <portlet:namespace/>_alias_count);
 	inner.setAttribute("value", id);
 	frm.appendChild(inner);
- 	<portlet:namespace/>_addAlias(<portlet:namespace/>_folderList[id],'','');
+ 	<portlet:namespace/>_addAlias(<portlet:namespace/>_folderList[id],'');
 	return true;
 }
 var <portlet:namespace/>_selectKeys = new Array();
 var <portlet:namespace/>_selectValues = new Array();
 
-<c:forEach var="alias" varStatus="aStatus" items="${ssEmailAliases}">
+<c:forEach var="alias" varStatus="aStatus" items="${ssPostings}">
 
 <portlet:namespace/>_selectValues[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.id}"/>';
-<portlet:namespace/>_selectKeys[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.aliasName}"/>';
+<portlet:namespace/>_selectKeys[<c:out value="${aStatus.index}"/>] = '<c:out value="${alias.emailAddress}"/>';
 
 </c:forEach>
 function <portlet:namespace/>_buildSelectBox(alias) {
@@ -178,7 +162,6 @@ function <portlet:namespace/>_select(alias) {
 <td class="ss_finestprintgray" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete" /></td>
 <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.folder"/></td>
 <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.alias"/></td>
-<td class="ss_bold" scope="col"><ssf:nlt tag="incoming.subject"/></td>
 </tr>
 </tbody>
 </table>
@@ -188,26 +171,23 @@ var <portlet:namespace/>_folderList = new Array();
 
 <c:forEach var="fld" items="${ssFolders}">
 <portlet:namespace/>_folderList['<c:out value="${fld.id}"/>']='<c:out value="${fld.title}"/>';
-<c:forEach var="post" items="${fld.postings}">
-
-<portlet:namespace/>_addAlias('<c:out value="${post.binder.title}"/>', '<c:out value="${post.emailAlias.id}"/>', 
-					'<c:out value="${post.subject}"/>');
-</c:forEach>
+<c:if test="${!empty fld.posting}">
+<portlet:namespace/>_addAlias('<c:out value="${fld.title}"/>', '<c:out value="${fld.posting.id}"/>');
+</c:if>
 </c:forEach>
 </script>
 <c:set var="pCount" value="0"/>
 <c:forEach var="fld" items="${ssFolders}">
-<c:forEach var="post" items="${fld.postings}">
-<input type="hidden" id="posting<c:out value="${pCount}"/>" name="posting<c:out value="${pCount}"/>" value="<c:out value="${post.id}"/>"/>
 <input type="hidden" id="folder<c:out value="${pCount}"/>" name="folder<c:out value="${pCount}"/>" value="<c:out value="${fld.id}"/>"/>
 <c:set var="pCount" value="${pCount+1}"/>
-</c:forEach>
 </c:forEach>
 <br/>
 <div class="ss_divider"></div>
 <br/>
+<div class="ss_buttonBarLeft">
 	<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+</div>
 </form>
 
 </c:otherwise>

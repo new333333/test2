@@ -24,7 +24,6 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EmailAlias;
 import com.sitescape.util.Validator;
 
 
@@ -34,39 +33,21 @@ public class ConfigurePostingController extends  SAbstractController  {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			Map updates = new HashMap();		
-			List aliases = getAdminModule().getEmailAliases();
 			for (int i=0; i != -1; ++i) {
 				Long id = null;
 				try {
 					id = PortletRequestUtils.getLongParameter(request, "folder" + i);
 				} catch (Exception ex) {break;};
 				if (id == null) break;
-				String postingId = PortletRequestUtils.getStringParameter(request, "posting" + i, "");
-				if (!Validator.isNull(postingId)) {
-					if (formData.containsKey("delete" + i)) {
-						getAdminModule().deletePosting(id, postingId);
-					} else {				
-						//update existing posting
-						if (formData.containsKey("subject" + i)) {
-							updates.put("subject", PortletRequestUtils.getStringParameter(request, "subject" + i, ""));
-						}
-						if (formData.containsKey("select" + i)) {
-							EmailAlias alias = findAlias(aliases, PortletRequestUtils.getStringParameter(request, "select" + i,  ""));
-							updates.put("emailAlias", alias);
-						}
-						getAdminModule().modifyPosting(id, postingId, updates);
-					} 
-				} else {
-					//new entry
-					if (formData.containsKey("subject" + i)) {
-						updates.put("subject", PortletRequestUtils.getStringParameter(request, "subject" + i, ""));
-					}
+				if (formData.containsKey("delete" + i)) {
+					getBinderModule().deletePosting(id);
+				} else {				
+					//update existing posting
 					if (formData.containsKey("select" + i)) {
-						EmailAlias alias = findAlias(aliases, PortletRequestUtils.getStringParameter(request, "select" + i,  ""));
-						updates.put("emailAlias", alias);
+						String alias = PortletRequestUtils.getStringParameter(request, "select" + i,  "");
+						if (!Validator.isNull(alias)) getBinderModule().setPosting(id, alias);
 					}
-					getAdminModule().addPosting(id, updates);
-				}
+				} 
 				updates.clear();
 			}			
 			response.setRenderParameters(formData);
@@ -97,7 +78,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 			model.put(WebKeys.FOLDER_DOM_TREE, tree);
 			model.put(WebKeys.FOLDER, folder);
 			model.put(WebKeys.SCHEDULE_INFO, getAdminModule().getPostingSchedule());
-			model.put(WebKeys.EMAIL_ALIASES, getAdminModule().getEmailAliases());	
+			model.put(WebKeys.POSTINGS, getAdminModule().getPostings());	
 			model.put(WebKeys.FOLDERS, helper.getFolders());
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING, model); 
 		} catch (Exception e) {
@@ -106,14 +87,7 @@ public class ConfigurePostingController extends  SAbstractController  {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING, WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 		}
 	}
-	private EmailAlias findAlias(List aliases, String aliasId) {
-		if (Validator.isNull(aliasId)) return null;
-		for (int i=0; i<aliases.size(); ++i) {
-			EmailAlias alias = (EmailAlias)aliases.get(i);
-			if (alias.getId().equals(aliasId)) return alias;
-		}
-		return null;
-	}
+
 	private class FolderTreeHelper implements DomTreeBuilder {
 		private List folderList=new ArrayList();
 		public List getFolders() {

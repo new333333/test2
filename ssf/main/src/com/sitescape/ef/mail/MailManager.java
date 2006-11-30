@@ -22,7 +22,8 @@ public interface MailManager {
 	public static final String NOTIFY_TEMPLATE_CACHE_DISABLED="notify.templateCacheDisabled";
 	public static final String NOTIFY_FROM="notify.from";
 	public static final String NOTIFY_SUBJECT="notify.subject";
-	
+    public static final String REPLY_SUBJECT="RE: DocId:";
+
 	public Date sendNotifications(Long folderId, Date start);
 	public void fillSubscription(Long folderId, Long entryId, Date stamp);
 	public void receivePostings(ScheduleInfo info);

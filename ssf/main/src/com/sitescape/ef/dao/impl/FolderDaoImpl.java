@@ -269,12 +269,16 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException {
         if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
        
-        Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
-        if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-        if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
+        try {
+        	Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
+        	if (folder == null) {throw new NoFolderByTheIdException(folderId);}
+        	if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
+        		throw new NoFolderByTheIdException(folderId);
+        	}
+            return folder;
+        } catch (ClassCastException ce) {
         	throw new NoFolderByTheIdException(folderId);
         }
-        return folder;
     }
 
 	public HistoryMap loadHistoryMap(Long userId, Long folderId) {

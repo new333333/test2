@@ -1079,7 +1079,7 @@
 		<options>
 			<option name="onEntry"/>
 			<option name="transitions" initial="true" />
-			<option name="accessControls" initial="true" />
+			<option name="accessControls"/>
 			<option name="onExit"/>
 			<option name="workflowQuestion" />
 		</options>
@@ -1227,12 +1227,12 @@
 		</properties>
 	</item>
 	
-	<item name="accessControls" caption="__accessControls" canBeDeleted="false" unique="./item[@name='accessControls']">
+	<item name="accessControls" caption="__accessControls" canBeDeleted="true" unique="./item[@name='accessControls']">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
 		<options>
-			<option_select path="//item[@category='accessControlsLayout']" initial="true" />
+			<option_select path="//item[@category='accessControlsLayout']" />
 		</options>
 	</item>
 	
@@ -1459,7 +1459,7 @@
 	<item name="profileTimeZone" caption="__preferred_timeZone" type="data" 
 		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
 		<properties>
-			<property name="name" caption="__data_name" type="text" value="timeZoneName" 
+			<property name="name" caption="__data_name" type="text" value="timeZone" 
 			  readonly="true" unique="//item[@type='data']">
 				<help>__help_timeZone_name</help>
 			</property>
@@ -1480,7 +1480,6 @@
 				<option name="emailAddress" caption="__emailAddress" />
 				<option name="country" caption="__country" />
 				<option name="organization" caption="__organization" />
-				<option name="homepage" caption="__homepage" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
 			<property name="caption" caption="__caption" type="text" />
@@ -1614,7 +1613,7 @@
 					path="//item[@name='profileEntryForm']/.//item" 
 					optionCaption="__profile_data_items_from_the_profile_form">
 					<exclude name="title" />
-					<exclude name="timeZoneName" />
+					<exclude name="timeZone" />
 				</option_entry_data>
 			</property>
 			<property name="caption" caption="__caption" type="text"/>

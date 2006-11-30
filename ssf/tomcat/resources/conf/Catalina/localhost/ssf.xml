@@ -15,17 +15,24 @@
 		type="javax.mail.Session"
 		
 		mail.transport.protocol="@@@mail.transport.protocol.out"
-		mail.host="@@@mail.host.out"
-		mail.user="@@@mail.user.out"
+		mail.smtp.host="@@@mail.smtp.host.out"
+		mail.smtp.user="@@@mail.smtp.user.out"
 	/>
 	<Resource 
 		name="mail/SiteScapePosting" 
 		auth="Container" 
 		type="javax.mail.Session"
 		mail.store.protocol="@@@mail.store.protocol.in"
-		mail.host="@@@mail.host.in"
-		mail.auth="@@@mail.auth.in"
-		mail.user="@@@mail.user.in"
-		mail.password="@@@mail.password.in"
+		mail.pop3.host="@@@mail.pop3.host.in"
+		mail.pop3.auth="@@@mail.pop3.auth.in"
+		mail.pop3.user="@@@mail.pop3.user.in"
+		mail.pop3.password="@@@mail.pop3.password.in"
+		mail.imap.host="@@@mail.imap.host.in"
+		mail.imap.auth="@@@mail.imap.auth.in"
+		mail.imap.user="@@@mail.imap.user.in"
+		mail.imap.password="@@@mail.imap.password.in"
+		mail.transport.protocol="@@@mail.transport.protocol.in"
+		mail.smtp.host="@@@mail.smtp.host.in"
+		mail.smtp.user="@@@mail.smtp.user.in"
 	/>
 </Context>

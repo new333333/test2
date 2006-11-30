@@ -6,31 +6,25 @@
  */
 package com.sitescape.ef.domain;
 
-import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Locale;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import com.sitescape.ef.InternalException;
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.NotSupportedException;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
  *
  */
 public class User extends Principal {
-    protected String languageId="en";
-    protected String country="US";
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
@@ -38,9 +32,8 @@ public class User extends Principal {
     protected String organization="";
     protected String phone="";
     protected String zonName="";
-    protected Locale locale;
-	protected TimeZone timeZone;
-	protected String timeZoneName;
+    protected Locale locale;//set by hibernate access="field"
+	protected TimeZone timeZone;//set by hibernate access="field"
     protected Date loginDate;
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
@@ -55,14 +48,22 @@ public class User extends Principal {
     }
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
-		if (Validator.isNull(timeZoneName)) {
-			timeZone = TimeZone.getDefault();
-		} else {
-			timeZone = TimeZone.getTimeZone(timeZoneName);
-		}
-		return timeZone;
-	
+		return TimeZone.getDefault();
 	}
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
+	}
+
+   public Locale getLocale() {
+       if (locale != null) return locale;
+       return Locale.getDefault();
+   	}
+    public void setLocale(Locale locale) {
+    	this.locale = locale;
+    }
+    public void setLocale(String localeName) {
+    	locale = new Locale(localeName);
+    }
 
 	public String getTitle() {
 		// title is set by hibernate access=field
@@ -110,43 +111,7 @@ public class User extends Principal {
 		this.loginDate = loginDate;
 	}
 
-	/**
-	 * @hibernate.property length="10"
-	 * @param timeZoneName
-	 */
-	public String getTimeZoneName() {
-		return timeZoneName;
-	} 
-
-	public void setTimeZoneName(String timeZoneName) {
-		this.timeZoneName = timeZoneName;
-		timeZone = null;
-	}
-
-    /**
-     * @hibernate.property length="2" 
-     * @return
-     */
-    public String getLanguageId() {
-        return this.languageId;
-    }
-    public void setLanguageId(String languageId) {
-        this.languageId = languageId;
-        locale = null;
-    }
-    /**
-     * @hibernate.property length="2"
-     * @return
-     */
-    public String getCountry() {
-        return this.country;
-    }
-    public void setCountry(String country) {
-        this.country = country;
-        locale = null;
-    }     
- 
-    
+     
     /**
      * @hibernate.property length="256"
      * @return Returns the emailAddress.
@@ -295,20 +260,7 @@ public class User extends Principal {
 		
 		return PasswordEncryptor.encrypt(getPassword(), digestSeed);
 	}
-    public Locale getLocale() {
-        if (locale != null) return locale;
-        if(languageId == null) {
-        	locale = Locale.getDefault();
-        	return locale;
-        }
-        else {
-            if(country == null)
-                return new Locale(languageId);
-            else
-                return new Locale(languageId, country);
-        }
-    }
-
+ 
     /**
      * This method computes a complete graph of membership starting bottom up
      * from this user object, and returns their ids as a set of 

@@ -27,6 +27,7 @@ import org.dom4j.Element;
 import org.dom4j.io.DocumentSource;
 import org.springframework.util.FileCopyUtils;
 
+import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
@@ -48,6 +49,7 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.FolderEntry;
@@ -363,6 +365,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	protected void doFolder(Element element, Folder folder) {
 		element.addAttribute("name", folder.getId().toString());
 		element.addAttribute("title", folder.getTitle());
+		PostingDef post = folder.getPosting();
+		if (post != null) {
+			element.addAttribute("replyTo", post.getEmailAddress());
+		}
 
 	}
 
@@ -517,7 +523,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		return result;
 	}
-	public void postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
+	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
 		String type;
 		Object content;
 		Map fileItems = new HashMap();
@@ -527,11 +533,15 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		if (definition == null) definition = folder.getDefaultEntryDef();
 		String defId=null;
 		if (definition != null) defId = definition.getId();
-		String from=null;
+		InternetAddress from=null;
 		String title;
+		List errors = new ArrayList();
+		Integer option = pDef.getReplyPostingOption();
+		if (option == null) option = PostingDef.POST_AS_A_REPLY;
+		
 		for (int i=0; i<msgs.length; ++i) {
-			try {				
-				from = msgs[i].getFrom()[0].toString();
+			try {
+				from = (InternetAddress)msgs[i].getFrom()[0];
 				title = msgs[i].getSubject();
 				User fromUser = getFromUser(from);
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
@@ -539,8 +549,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					//need to setup user context for request
 					RequestContextUtil.setThreadContext(fromUser);
 					
-					inputData.put("from", from); 
-					inputData.put("title", title);
+					inputData.put(ObjectKeys.FIELD_POSTING_FROM, from.toString()); 
+					inputData.put(ObjectKeys.FIELD_ENTRY_TITLE, title);
 					type=msgs[i].getContentType().trim();
 					content = msgs[i].getContent();
 					if (type.startsWith("text/plain")) {
@@ -550,8 +560,28 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					} else if (content instanceof MimeMultipart) {
 						processMime((MimeMultipart)content, inputData, fileItems);
 					}
-					//	msgs[i].setFlag(Flags.Flag.DELETED, true); // set the DELETED flag
-					folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+					//parse subject to see if this is a reply
+					if (title.startsWith(MailManager.REPLY_SUBJECT)) {
+						String flag = MailManager.REPLY_SUBJECT+folder.getId().toString()+":";
+						//see if for this folder
+						if (title.startsWith(flag)) {
+							if (option == PostingDef.RETURN_TO_SENDER) throw new NotSupportedException("Replies not allowed");
+							String docId = title.substring(flag.length());
+							Long id=null;
+							int index = docId.indexOf(" ");
+							if (index == -1) id=Long.valueOf(docId);
+							else id=Long.valueOf(docId.substring(0, index));
+							if (option == PostingDef.POST_AS_A_REPLY)
+								folderModule.addReply(folder.getId(), id, defId, new MapInputData(inputData), fileItems);
+							else
+								folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+							msgs[i].setFlag(Flags.Flag.DELETED, true);
+						}
+					} else {
+						folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+						msgs[i].setFlag(Flags.Flag.FLAGGED, true);
+					}
+
 				} finally {
 					//reset context
 					RequestContextHolder.setRequestContext(oldCtx);
@@ -559,42 +589,48 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					inputData.clear();
 					
 				}
-			} catch (MessagingException me) {			
-			} catch (IOException io) {				
-			} catch (WriteFilesException e) {
-				logger.error(e.getMessage(), e);
-			} catch (NoUserByTheNameException nu) {
-				logger.error("Cannot post the message, no user: " + from);
+			} catch (Exception ex) {
+				logger.error("Cannot post the message from: " + from + "Error: " + ex.getLocalizedMessage());
+				//if fails and from self, don't reply or we will get it back
+				errors.add(postError(pDef, msgs[i], from, ex.getLocalizedMessage()));
 			}
 		}
+		return errors;
 	}
-	private User getFromUser(String from) {
+	private Message postError(PostingDef pDef, Message msg, InternetAddress from, String error) {
 		try {
-			//try to map email address to a user
-			InternetAddress[] fromEmails = InternetAddress.parse(from);
-			if (fromEmails.length > 0) {
-				String fromEmail = fromEmails[0].toString();	
-				List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneName());
-				if (users.size() == 1) return (User)users.get(0);
-				if (users.size() > 1) {
-					logger.error("Multiple users with same email address, cannot use for incoming email");
-				}
-			}
-		} catch (AddressException ax) {
-			logger.error("Error parsing incoming from address: ", ax);
+			msg.setFlag(Flags.Flag.DELETED, true);
+			if (!pDef.getEmailAddress().equals(from.getAddress())) {
+				Message reject = msg.reply(false);
+				reject.setText("Unable to post: " + error);
+				reject.setFrom(new InternetAddress(pDef.getEmailAddress()));
+				reject.setContent(msg.getContent(), msg.getContentType());
+				reject.setSubject(reject.getSubject() + " (Unable to post message: " + error + ")");
+				return reject;
+			} 
+		} catch (Exception ex2) {}
+		return null;
+	}
+	private User getFromUser(InternetAddress from) {
+		//try to map email address to a user
+		String fromEmail = from.getAddress();	
+		List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneName());
+		if (users.size() == 1) return (User)users.get(0);
+		if (users.size() > 1) {
+			logger.error("Multiple users with same email address, cannot use for incoming email");
 		}
 		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneName());
 	}
 	private void processText(Object content, Map inputData) {
-		if (inputData.containsKey("description")) return;
+		if (inputData.containsKey(ObjectKeys.FIELD_ENTRY_DESCRIPTION)) return;
 		String[] val = new String[1];
 		val[0] = (String)content;
-		inputData.put("description", val);			
+		inputData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, val);			
 	}
 	private void processHTML(Object content, Map inputData) {
 		String[] val = new String[1];
 		val[0] = (String)content;
-		inputData.put("description", val);			
+		inputData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, val);			
 	}	
 	private void processMime(MimeMultipart content, Map inputData, Map fileItems) throws MessagingException, IOException {
 		int count = content.getCount();
@@ -602,7 +638,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			BodyPart part = content.getBodyPart(i);
 			String disposition = part.getDisposition();
 			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0))
-				fileItems.put("ss_attachFile" + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				fileItems.put(ObjectKeys.FIELD_ENTRY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 			else if (part.isMimeType("text/html"))
 				processHTML(part.getContent(), inputData);
 			else if (part.isMimeType("text/plain"))

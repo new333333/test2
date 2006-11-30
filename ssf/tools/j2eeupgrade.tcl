@@ -94,15 +94,15 @@ array set ::j2ee_FolderEntry_class_MAP {
    topEntry {topEntry int32}
    parentEntry {parentEntry int32}
    commandDef  {commandDef "varchar 32"}
-   allowEdits   {allowEdits boolean}
+#   allowEdits   {allowEdits boolean}
    lastActivity {lastActivity timestamp}
    totalReplyCount   {totalReplyCount int32}
    reserved_principal  {reserved_principal int32}
    owningFolderSortKey {owningFolderSortKey "varchar 512"}
    description_text {description_text clob}
    description_format       {description_format int32}
-   sendMail     {sendMail boolean}
-   docContent   {docContent int32}
+#   sendMail     {sendMail boolean}
+#   docContent   {docContent int32}
    wfp1_state {wfp1_state uuid}
    wfp1_principal {wfp1_principal int32}
    wfp1_date {wfp1_date timestamp}
@@ -988,13 +988,13 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
             set attrs(entry_level) [expr [aval -name $forum docLevel $entry] -1]
             set key [aval -name $forum hKey $entry]
             set attrs(entry_sortKey) "${eRoot}[string range $key 8 end]"
-            set attrs(allowEdits) [aval -name $forum allowEdits $entry]
+ #           set attrs(allowEdits) [aval -name $forum allowEdits $entry]
             set attrs(lastActivity) [aval -name $forum lastActivity $entry]
             set attrs(totalReplyCount) [aval -name $forum replyCount $entry]
             try {
                 set attrs(reserved_principal) [mapName [aval -name $forum reserveDoc $entry] 0]
             }
-            set attrs(sendMail) [aval -name $forum sendMail $entry]
+ #           set attrs(sendMail) [aval -name $forum sendMail $entry]
             set attrs(owningFolderSortKey) $folderSortKey
  			set abstract [read_abstract  -name $forum $entry]
             if {![isnull $abstract]} {set attrs(description_text) [doClob $abstract]}
@@ -1015,16 +1015,6 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
 			}
 
             set content [aval -name $forum docContent $entry]
-            switch -- [lindex $content 0] {
-                text/x-wgw-see-abstract {set attrs(docContent) 1}
-                multipart/x-wgw-fileset {set attrs(docContent) 2}
-                none/x-is-url {set attrs(docContent) 1}
-                webDirFile {set attrs(docContent) 4}
-                default {
-                    puts "Unknown docContent $entry: $content"
-                    set attrs(docContent) 1
-                }
-            }
             set results [setupColVals $map attrs insert]
             set cmdList [lindex $results 1]
             set cmd [lindex $cmdList 0] 
@@ -1063,7 +1053,7 @@ proc doEntries {forum root eRoot folderSortKey parentFolderID topDocShareID pare
                 set cmdList [lindex $results 1]
                 set cmd [lindex $cmdList 0] 
                 wimsql_rw "INSERT INTO SS_Attachments $cmd ;" [lindex $cmdList 1]
-             } elseif {$attrs(docContent) == 4} {
+             } elseif {[strequal [lindex $content 0] "webDirFile"]} {
                 array unset attaches
                 set attaches(id) [newuuid]
                 set attaches(lockVersion) 1

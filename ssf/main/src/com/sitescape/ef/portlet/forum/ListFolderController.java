@@ -315,13 +315,11 @@ public class ListFolderController extends  SAbstractController {
 		//	The "Add" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
-		boolean addMenuAdded = false;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {
 				getFolderModule().checkAddEntryAllowed(folder);
 				int count = 1;
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				addMenuAdded = true;
 				Map qualifiers = new HashMap();
 				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
 				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
@@ -414,6 +412,23 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
 		} catch (AccessControlException ac) {};
 
+		//Schedule outgoing email
+		if (folder.isTop()) {
+			try {
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_NOTIFY_CONFIGURE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.outgoing_email_folder"), url);
+			} catch (AccessControlException ac) {};
+		}
+		//set incoming email
+/*		try {
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
+		} catch (AccessControlException ac) {};
+*/		
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
 		//Get the definitions available for use in this folder
