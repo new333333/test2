@@ -14,7 +14,9 @@
 	   name="conditionElementName" 
 	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_operations')">
 	     <option value="" selected="selected"><ssf:nlt 
-	       tag="filter.selectElement" text="--select an element--"/></option>
+	       tag="filter.selectElement"/></option>
+	     <option value="_all_entries" ><ssf:nlt 
+	       tag="filter.selectEntryAny"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
 	       <c:if test="${element.value.type == 'event' || 
 	                     element.value.type == 'selectbox' || 

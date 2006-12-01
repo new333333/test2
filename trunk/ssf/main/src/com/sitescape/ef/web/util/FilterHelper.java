@@ -126,7 +126,11 @@ public class FilterHelper {
 							value = new String[] {"false"};
 						}
 					}
-					if (!defId.equals("") && !name.equals("") && value.length > 0) {
+					if (!defId.equals("") && name.equals("_all_entries")) {
+						Element filterTerm = filterTerms.addElement(FilterTerm);
+						filterTerm.addAttribute(FilterType, filterType);
+						filterTerm.addAttribute(FilterEntryDefId, defId);
+					} else if (!defId.equals("") && !name.equals("") && value.length > 0) {
 						Element filterTerm = filterTerms.addElement(FilterTerm);
 						filterTerm.addAttribute(FilterType, filterType);
 						//If not selecting a "common" element, store the definition id, too
@@ -286,30 +290,44 @@ public class FilterHelper {
     			//This is an entry term. Build booleans from the element name and values.
     			String defId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
     			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
-    			Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
-    			while (itTermValues.hasNext()) {
-    				String value = ((Element) itTermValues.next()).getText();
-    				if (!value.equals("")) {
-    					Element field;
-    					Element child;
-    					Element andField = orField;
-    	    			if (!defId.equals("")) {
-    	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-        	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
-        	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	    	    	child.setText(defId);
-    	    			}
-    	    			
-    	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
-    	    			if (value.contains("*"))
-    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
-    	    			else
-    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-    	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	    	    	child.setText(value);
-    				}
+    			if (elementName.equals("")) {
+    				//If no element name is specified, search for all entries with this definition id
+					Element field;
+					Element child;
+					Element andField = orField;
+	    			if (!defId.equals("")) {
+	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+    	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+    	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	    	    	child.setText(defId);
+	    			}
+    			} else {
+    				Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
+	    			while (itTermValues.hasNext()) {
+	    				String value = ((Element) itTermValues.next()).getText();
+	    				if (!value.equals("")) {
+	    					Element field;
+	    					Element child;
+	    					Element andField = orField;
+	    	    			if (!defId.equals("")) {
+	    	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+	        	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+	        	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	        	    	    	child.setText(defId);
+	    	    			}
+	    	    			
+	    	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
+	    	    			if (value.contains("*"))
+	    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
+	    	    			else
+	    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+	    	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	    	child.setText(value);
+	    				}
+	    			}
     			}
     		} else if (filterType.equals(FilterTypeWorkflow)) {
     			//This is a workflow state term. Build booleans from the state name.

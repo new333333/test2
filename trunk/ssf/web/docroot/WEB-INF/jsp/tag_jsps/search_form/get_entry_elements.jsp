@@ -14,6 +14,8 @@
 	   onChange="ss_getFilterSelectionBox(this, 'elementName', 'get_searchForm_element_values')">
 	     <option value="" selected="selected"><ssf:nlt 
 	       tag="searchForm.selectElement" text="--select an element--"/></option>
+	     <option value="_all_entries" ><ssf:nlt 
+	       tag="filter.selectEntryAny"/></option>
 	     <c:forEach var="element" items="${ssEntryDefinitionElementData}">
 	       <c:if test="${element.value.type == 'title' || element.value.type == 'event' || 
 	                     element.value.type == 'text'  || element.value.type == 'selectbox' || 

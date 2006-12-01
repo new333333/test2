@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -54,6 +55,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
 /**
  * @author Janet McCann
@@ -365,9 +367,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 */
 	public Map executeSearchQuery(Document searchQuery) {
 		Binder binder = null;
-		return executeSearchQuery(binder, searchQuery);
+		Map options = new HashMap();
+		return executeSearchQuery(binder, searchQuery, options);
+	}
+	public Map executeSearchQuery(Document searchQuery, Map options) {
+		Binder binder = null;
+		return executeSearchQuery(binder, searchQuery, options);
 	}
 	public Map executeSearchQuery(Binder binder, Document searchQuery) {
+		Map options = new HashMap();
+		return executeSearchQuery(binder, searchQuery, options);
+	}
+	public Map executeSearchQuery(Binder binder, Document searchQuery, Map options) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
         
@@ -388,8 +399,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		    	SearchObject so = qb.buildQuery(qTree);
 		    	
 		    	//Set the sort order
-		    	//SortField[] fields = getBinderEntries_getSortFields(binder); 
-		    	//so.setSortBy(fields);
+		    	SortField[] fields = BinderHelper.getBinderEntries_getSortFields(options); 
+		    	so.setSortBy(fields);
 		    	
 		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
 		    	
@@ -501,7 +512,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         return retMap;
 	}
 
-	public Binder getBinderByPathName(String pathName) throws AccessControlException {
+   	public Binder getBinderByPathName(String pathName) throws AccessControlException {
 	   	List binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
 	    	
 	   	if(binders.size() > 0) {

@@ -1696,7 +1696,9 @@ div.ss_thumbnail_small_no_text a img {
 div.ss_thumbnail_small_no_text a:hover img {
     border-color: blue;
     opacity: 1.0;
+<c:if test="<%= isIE %>">
     filter:alpha(opacity=100);
+</c:if>
 }
 div.ss_thumbnail_small img {
     width: 75px;
