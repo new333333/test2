@@ -1475,7 +1475,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
             org.apache.lucene.document.Document indexDoc,
             DefinableEntity entry) {
 
-        //Element configRoot = this.definitionConfig.getRootElement();
+		this.getDefinitionConfig();
+		Element configRoot = this.definitionConfig.getRootElement();
         Definition def = entry.getEntryDef();
         if (def != null) {
 	        Field[] fields;
@@ -1497,7 +1498,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String itemName = (String) nextItem.attributeValue("name", "");
 							
 							//Find the item in the base configuration definition to see if it is a data item
-							Element configItem = (Element) nextItem.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+							Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 							if (configItem != null) {
 								//Get the form element name (property name)
 								String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
