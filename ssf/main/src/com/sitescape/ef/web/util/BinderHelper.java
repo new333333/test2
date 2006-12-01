@@ -58,6 +58,7 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+			url.setParameter(WebKeys.URL_NEW_TAB, WebKeys.URL_NEW_TAB_PLACE_HOLDER);
 			if (!url.toString().equals(getBinderPermaLink(bs)))
 				bs.getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
