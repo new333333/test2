@@ -55,6 +55,7 @@ public class WebKeys {
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
     public static final String URL_NEW_TAB="newTab";
+    public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
 	public static final String URL_RANDOM = "random";

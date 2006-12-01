@@ -25,26 +25,34 @@
     <div>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-    <a target="_blank" href="<ssf:url action="view_folder_entry" 
-    folderId="${fileEntry._binderId}"
-    entryId="${fileEntry._docId}" />" >
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${fileEntry._binderId}"
+		    entryId="${fileEntry._docId}">
+		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>">
     </c:when>
-    <c:when test="${fileEntry._entityType == 'user' || fileEntry._entityType == 'group'}">
+    <c:when test="${fileEntry._entityType == 'user'}">
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			action="view_permalink"
+			binderId="${fileEntry._principal.workspaceId}">
+			<ssf:param name="entityType" value="workspace" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>" >
+    </c:when>
+    <c:when test="${fileEntry._entityType == 'group'}">
     <a target="_blank" href="<ssf:url action="view_profile_entry" 
-    folderId="${fileEntry._binderId}"
-    entryId="${fileEntry._docId}" />" >
+    		folderId="${fileEntry._binderId}"
+    		entryId="${fileEntry._docId}" />" >
     </c:when>
-    <c:when test="${fileEntry._entityType == 'folder'}">
-    <a target="_blank" href="<ssf:url action="view_folder_listing" 
-    folderId="${fileEntry._docId}" />" >
-    </c:when>
-    <c:when test="${fileEntry._entityType == 'workspace'}">
-    <a target="_blank" href="<ssf:url action="view_ws_listing" 
-    folderId="${fileEntry._docId}" />" >
-    </c:when>
-    <c:when test="{fileEntry._entityType == 'profiles'}">
-    <a target="_blank" href="<ssf:url action="view_profile_listing" 
-    folderId="${fileEntry._docId}" />" >
+    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${fileEntry._docId}">
+		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>" >
     </c:when>
  	</c:choose>
     <c:if test="${empty fileEntry.title}">
@@ -63,12 +71,12 @@
     &nbsp;&nbsp;&nbsp;
     <c:if test="${fileEntry._entityType == 'folderEntry' || 
       		fileEntry._entityType == 'reply'}">
-      <a href="<ssf:url 
-  		folderId="${fileEntry._binderId}" 
-  		action="view_folder_listing">
-    	<ssf:param name="binderId" value="${fileEntry._binderId}"/>
-    	<ssf:param name="newTab" value="1"/>
-    	</ssf:url>" 
+      <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${fileEntry._binderId}">
+		    <ssf:param name="entityType" value="folder" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>" 
     	onMouseover="ss_showObjInline('ss_folderName_${hitCount}');"
     	onMouseout="ss_hideObj('ss_folderName_${hitCount}');"
       >
