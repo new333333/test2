@@ -17,46 +17,12 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<table class="ss_style" style="width:100%;">
-<tr>
-  <th align="left"><ssf:nlt tag="folder.column.Folder"/></th>
-  <th align="left"><ssf:nlt tag="folder.column.Title"/></th>
-  <th align="left"><ssf:nlt tag="folder.column.Author"/></th>
-  <th align="left"><ssf:nlt tag="folder.column.Date"/></th>
-</tr>
+<div>
+<c:set var="hitCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.searchResults}" >
-<tr>
-  <td valign="top" width="25%">
-    <c:if test="${fileEntry._entityType == 'folderEntry' || 
-      		fileEntry._entityType == 'reply'}">
-      <a href="<ssf:url 
-  		folderId="${fileEntry._binderId}" 
-  		action="view_folder_listing">
-    	<ssf:param name="binderId" value="${fileEntry._binderId}"/>
-    	<ssf:param name="newTab" value="1"/>
-    	</ssf:url>" 
-       ><span
-      <c:if test="${empty ssBinderData[fileEntry._binderId].iconName}">
-        style="background:url(<html:imagesPath/>icons/folder.gif)  no-repeat left;
-        padding-left:20px;"
-      </c:if>
-      <c:if test="${!empty ssBinderData[fileEntry._binderId].iconName}">
-        style="background:url(<html:imagesPath/>${ssBinderData[fileEntry._binderId].iconName})  no-repeat left;
-        padding-left:20px;"
-      </c:if>
-       >${ssBinderData[fileEntry._binderId].title}</span></a>
-    </c:if>
-    <c:if test="${fileEntry._entityType == 'user'}">
-      <a href="<ssf:url 
-  		folderId="${fileEntry._binderId}" 
-  		action="view_profile_listing" >
-    	<ssf:param name="binderId" value="${fileEntry._binderId}"/>
-    	<ssf:param name="newTab" value="1"/>
-    	</ssf:url>" 
-       ><span>${ssBinderData[fileEntry._binderId].title}</span>
-    </c:if>
-  </td
-  <td valign="top" width="25%">
+  <c:set var="hitCount" value="${hitCount + 1}"/>
+  <div style="padding-bottom:6px;">
+    <div>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
     <a target="_blank" href="<ssf:url action="view_folder_entry" 
@@ -84,14 +50,55 @@
     <c:if test="${empty fileEntry.title}">
     <span class="ss_fineprint"><i>(no title)</i></span>
     </c:if>
-    <c:out value="${fileEntry.title}"/></a>
-  </td>
-  <td valign="top" width="20%">
-    <c:out value="${fileEntry._principal.title}"/>&nbsp;&nbsp;
-  </td>
-  <td valign="top" width="25%">
-    <c:out value="${fileEntry._modificationDate}"/>
-  </td>
-</tr>
+    <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
+
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="ss_smallprint">
+      <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
+	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+      value="${fileEntry._modificationDate}" type="both" 
+	  timeStyle="short" dateStyle="short" /></span>
+    
+    
+    &nbsp;&nbsp;&nbsp;
+    <c:if test="${fileEntry._entityType == 'folderEntry' || 
+      		fileEntry._entityType == 'reply'}">
+      <a href="<ssf:url 
+  		folderId="${fileEntry._binderId}" 
+  		action="view_folder_listing">
+    	<ssf:param name="binderId" value="${fileEntry._binderId}"/>
+    	<ssf:param name="newTab" value="1"/>
+    	</ssf:url>" 
+    	onMouseover="ss_showObjInline('ss_folderName_${hitCount}');"
+    	onMouseout="ss_hideObj('ss_folderName_${hitCount}');"
+      >
+      <c:if test="${empty ssBinderData[fileEntry._binderId].iconName}">
+        <img src="<html:imagesPath/>icons/folder.gif"/>
+      </c:if>
+      <c:if test="${!empty ssBinderData[fileEntry._binderId].iconName}">
+        <img src="<html:imagesPath/>${ssBinderData[fileEntry._binderId].iconName}" />
+      </c:if>
+       <div id="ss_folderName_${hitCount}" 
+       style="position:absolute; display:none;">${ssBinderData[fileEntry._binderId].title}</div></a>
+    </c:if>
+
+    </div>
+  
+    <c:if test="${!empty fileEntry._desc}">
+    <div class="ss_smallprint ss_indent_medium">  
+      <c:out value="${fileEntry._desc}" escapeXml="false"/>&nbsp;&nbsp;
+    </div>
+    </c:if>
+  
+  </div>
 </c:forEach>
-</table>
+  <div align="right">
+    <span class="ss_light ss_fineprint">
+	[<ssf:nlt tag="search.results">
+	<ssf:param name="value" value="1"/>
+	<ssf:param name="value" value="${hitCount}"/>
+	<ssf:param name="value" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssEntrySearchCount}"/>
+	</ssf:nlt>]
+	</span>
+  </div>
+</div>

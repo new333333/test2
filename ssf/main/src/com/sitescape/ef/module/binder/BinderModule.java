@@ -85,7 +85,9 @@ public interface BinderModule {
     public void moveBinder(Long fromId, Long toId);
     public void checkMoveBinderAllowed(Binder binder);
     public Map executeSearchQuery(Document searchQuery);
+    public Map executeSearchQuery(Document searchQuery, Map options);
     public Map executeSearchQuery(Binder binder, Document searchQuery);
+    public Map executeSearchQuery(Binder binder, Document searchQuery, Map options);
     public Map executePeopleSearchQuery(Document searchQuery);
     public Map executePeopleSearchQuery(Binder binder, Document searchQuery);
     

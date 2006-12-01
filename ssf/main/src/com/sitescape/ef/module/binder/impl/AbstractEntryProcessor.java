@@ -60,6 +60,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -767,7 +768,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
-    	SortField[] fields = getBinderEntries_getSortFields(options); 
+    	SortField[] fields = BinderHelper.getBinderEntries_getSortFields(options); 
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
@@ -816,20 +817,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     	return qTree;
     }
-   	protected SortField[] getBinderEntries_getSortFields(Map options) {
-   		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;
-    	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
-    		sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
-   		
-    	boolean descend = true;
-    	if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-    		descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
-    	
-    	fields[0] = new SortField(sortBy, descend);
-    	return fields;
-   	}
-    
 
     //***********************************************************************************************************
     public Entry getEntry(Binder parentBinder, Long entryId) {

@@ -8,6 +8,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
@@ -21,6 +22,7 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 
@@ -138,5 +140,19 @@ public class BinderHelper {
 			return element;
 		}
 	}	
+
+   	public static SortField[] getBinderEntries_getSortFields(Map options) {
+   		SortField[] fields = new SortField[1];
+   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;
+    	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
+    		sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
+   		
+    	boolean descend = true;
+    	if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+    		descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+    	
+    	fields[0] = new SortField(sortBy, descend);
+    	return fields;
+   	}
 
 }

@@ -30,6 +30,7 @@ import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.ef.security.AccessControlException;
@@ -604,7 +605,10 @@ public class DashboardHelper {
 						elementData));
 		
 		//Do the search and store the search results in the bean
-		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery);
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DATE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery, options);
 		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
