@@ -87,7 +87,7 @@
 	  <c:if test="${!empty function.value.ssUsers || !empty function.value.ssGroups}">
  <tr>
   <td valign="top">
-	<span calss="ss_bold"><c:out value="${function.key.name}"/></span>
+	<span class="ss_bold"><c:out value="${function.key.name}"/></span>
   </td>
   <td valign="top">
 	<c:if test="${!empty function.value.ssUsers}">

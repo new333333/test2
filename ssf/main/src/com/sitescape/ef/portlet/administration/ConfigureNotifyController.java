@@ -69,8 +69,6 @@ public class ConfigureNotifyController extends  SAbstractController  {
 
 			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
-			NotificationDef notify = folder.getNotificationDef();
-			model.put(WebKeys.NOTIFICATION, notify); 
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();
 			Set uList = new HashSet();

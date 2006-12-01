@@ -287,7 +287,6 @@ public class WebKeys {
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
-    public static final String NOTIFICATION="ssNotification";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
     public static final String PEOPLE_RESULTS="ssPeopleResults";
@@ -384,6 +383,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
+    public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
