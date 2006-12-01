@@ -34,6 +34,7 @@
 
 	<bean id="updatePresenceController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.presence.UpdatePresenceController" />
 	<bean id="dashboardPortletModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.dashboard.ModifyDashboardController" />
+	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.EmailConfigController" />
 
  	<!-- Handlers -->
 
@@ -67,6 +68,7 @@
 						<entry key="view_ws_listing"><ref bean="listWSController"/></entry>
 						<entry key="view_presence"><ref bean="updatePresenceController"/></entry>
 						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
+						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

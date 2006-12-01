@@ -92,7 +92,7 @@
 <tr>
 <td colspan="2">
 <span class="ss_labelAbove ss_bold"><ssf:nlt tag="notify.addresses.instructions"/></span>
-	  	<c:set var="mappings" value="${ssNotification.emailAddress}"/>
+	  	<c:set var="mappings" value="${ssBinder.notificationDef.emailAddress}"/>
 <jsp:useBean id="mappings" type="String[]" scope="page" />
 	  	<%
 			StringBuffer buf = new StringBuffer();

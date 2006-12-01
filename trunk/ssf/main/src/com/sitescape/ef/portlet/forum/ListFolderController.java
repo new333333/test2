@@ -422,13 +422,13 @@ public class ListFolderController extends  SAbstractController {
 			} catch (AccessControlException ac) {};
 		}
 		//set incoming email
-/*		try {
+		try {
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
 		} catch (AccessControlException ac) {};
-*/		
+		
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
 		//Get the definitions available for use in this folder
