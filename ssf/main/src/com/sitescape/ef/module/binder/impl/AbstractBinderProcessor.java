@@ -605,9 +605,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_BINDER);
         
-        // Add command definition
-        EntityIndexUtils.addCommandDefinition(indexDoc, binder); 
-        
+         
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder);
         
@@ -741,7 +739,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         // Add DefinitionType
         EntityIndexUtils.addDefinitionType(indexDoc, entity);
-        
+ 
+        // Add command definition
+        EntityIndexUtils.addCommandDefinition(indexDoc, entity); 
+       
        // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);
         
