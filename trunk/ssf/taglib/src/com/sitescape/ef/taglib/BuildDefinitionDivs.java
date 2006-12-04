@@ -105,6 +105,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
 		Iterator itRootElements2;
+		
 		helpImgUrl = contextPath + "/images/pics/sym_s_help.gif";
 
 		if (filter.equals("")) {
@@ -114,7 +115,39 @@ public class BuildDefinitionDivs extends TagSupport {
 			itRootElements = root.elementIterator(filter);
 			itRootElements2 = root.elementIterator(filter);
 		}
+		
 		//See if this is a request for just one item
+		if (this.itemName.equals("profileElements")
+		|| this.itemName.equals("profileEntryDataItem"))
+		{
+			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
+			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
+		}
+		else
+		if (this.itemName.equals("firstName")
+		|| this.itemName.equals("middleName")
+		|| this.itemName.equals("lastName")
+		|| this.itemName.equals("emailAddress")
+		|| this.itemName.equals("country")
+		|| this.itemName.equals("organization")
+		|| this.itemName.equals("homepage")
+		|| this.itemName.equals("zonName"))
+		{
+			// Processing Form Profile Element
+			// Get information from root document
+			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();
+			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();	
+		}
+		else
+		if (this.itemName.length() > 0
+		&& Character.isDigit(this.itemName.charAt(0)))
+		{
+			// Processing View Profile Element
+			// We need to get information from document that the item was saved to
+			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
+			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();			
+		}
+		else
 		if (!this.option.equals("") && !this.itemId.equals("")) {
 			//We are looking for a single item, so only do that item
 			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
@@ -454,7 +487,21 @@ public class BuildDefinitionDivs extends TagSupport {
 						//See if multiple are allowed
 						if (!optionsSeen.containsKey(optionName)) {
 							if (testOption(optionItem, sourceRoot, optionName)) {
-								addOption(sb, hb, optionItem, optionId, optionName);
+								/**
+								 * (rsordillo) Add property options a links (Profile definition view)
+								 */
+								if (optionName.equals("profileEntryDataItem"))
+								{
+									Iterator options = sourceRoot.selectNodes("//item[@name='profileElements']/properties/property[@name='caption']").iterator();
+									while (options.hasNext())
+									{
+										Element o = (Element)options.next();
+										addOption(sb, hb, o, o.getParent().getParent().attributeValue("id"), o.attributeValue("value"));
+									}
+									sb.append("<br />");
+								}
+								else
+									addOption(sb, hb, optionItem, optionId, optionName);
 								optionsSeen.put(optionName, optionName);								
 							}
 						}
@@ -487,7 +534,21 @@ public class BuildDefinitionDivs extends TagSupport {
 						//See if multiple are allowed
 						if (!optionsSeen.containsKey(optionSelectName)) {
 							if (testOption(optionSelect, sourceRoot, optionSelectName)) {
-								addOption(sb, hb, optionSelect, optionSelectId, optionSelectName);
+								/**
+								 * (rsordillo) Add property options a links (Profile definition form)
+								 */
+								if (optionSelectName.equals("profileElements"))
+								{
+									Iterator options = optionSelect.selectNodes("properties/property/option").iterator();
+									while (options.hasNext())
+									{
+										Element o = (Element)options.next();
+										addOption(sb, hb, o, o.attributeValue("name"), o.attributeValue("name"));
+									}
+									sb.append("<br />");
+								}
+								else
+									addOption(sb, hb, optionSelect, optionSelectId, optionSelectName);
 								optionsSeen.put(optionSelectName, optionSelectName);
 							}
 						}
@@ -554,7 +615,18 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 
 			//Add the list of properties
-			Element propertiesConfig = rootConfigElement.element("properties");
+			/**
+			 * (rsordillo) If we have an itemId at this point we are working with the
+			 * items instance document. We need to reference the root config document to
+			 * determine what items to exclude from modify screen. We must determine if the itemId
+			 * if a View or Form item to show the correct properties
+			 */
+			Element propertiesConfig = null;
+			if (!this.itemId.equals("") && root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.itemId + "']") != null)
+				propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='profileEntryDataItem']/properties");
+			else
+				propertiesConfig = rootConfigElement.element("properties");
+			
 			Element properties = rootElement.element("properties");
 			if (propertiesConfig != null) {
 				Iterator itProperties = propertiesConfig.elementIterator("property");
@@ -612,43 +684,64 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 						if (type.equals("selectbox")) {
-							//See if multiple selections are allowed
-							String multipleText = "";
-							String sizeText = "";
-							if (propertyConfig.selectNodes("option").size() > 1) 
-								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
-							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
-							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
+							if (rootConfigElement.attributeValue("name").equals("profileElements")
+							|| rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
+							{
+								String name = "";
+								
+								name = this.itemName;
+								if (rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
+									name = ((Element)this.sourceDocument.getRootElement().selectSingleNode("//item[@id='" + this.itemName + "']/properties/property[@name='caption']")).attributeValue("value");
+										
+								sb.append("<p>" + name + "</p>\n");
+								sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
+							}
+							else
+							{
+								//See if multiple selections are allowed
+								String multipleText = "";
+								String sizeText = "";
+								if (propertyConfig.selectNodes("option").size() > 1) 
+									sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
+								if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
+								sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
+							}
 						}
 						//See if there are any built-in options
-						Iterator  itSelections = propertyConfig.elementIterator("option");
-						while (itSelections.hasNext()) {
-							Element selection = (Element) itSelections.next();
-							String checked = "";
-							for (int i = 0; i < propertyValues.size(); i++) {
-								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
+						Iterator  itSelections = null;
+						if (!rootConfigElement.attributeValue("name").equals("profileElements")
+						&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
+						{
+							itSelections = propertyConfig.elementIterator("option");
+							while (itSelections.hasNext()) {
+								Element selection = (Element) itSelections.next();
+								String checked = "";
+								for (int i = 0; i < propertyValues.size(); i++) {
+									if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
+										checked = " selected=\"selected\"";
+										if (type.equals("radio")) checked = " checked=\"checked\"";
+										break;
+									}
+								}
+								if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
+										propertyValueDefault.equals(selection.attributeValue("name", "")))) {
 									checked = " selected=\"selected\"";
-									if (type.equals("radio")) checked = " checked=\"checked\"";
-									break;
+									if (type.equals("radio")) checked = " checked=\"checked\"";							}
+								if (type.equals("selectbox")) {
+									sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
+									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+									sb.append("</option>\n");
+									optionCount++;
+								} else if (type.equals("radio")) {
+									sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
+									sb.append(selection.attributeValue("name", ""));
+									sb.append("\"").append(checked).append("/>");
+									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+									sb.append("<br/>\n");
 								}
 							}
-							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
-									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
-								checked = " selected=\"selected\"";
-								if (type.equals("radio")) checked = " checked=\"checked\"";							}
-							if (type.equals("selectbox")) {
-								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-								sb.append("</option>\n");
-								optionCount++;
-							} else if (type.equals("radio")) {
-								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
-								sb.append(selection.attributeValue("name", ""));
-								sb.append("\"").append(checked).append("/>");
-								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-								sb.append("<br/>\n");
-							}
 						}
+						
 						//See if there are any items to be shown from the "sourceRoot"
 						itSelections = propertyConfig.elementIterator("option_entry_data");
 						while (itSelections.hasNext()) {
@@ -708,10 +801,14 @@ public class BuildDefinitionDivs extends TagSupport {
 										}
 
 										if (type.equals("selectbox")) {
-											sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
-											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
-											sb.append("</option>\n");
-											optionCount++;
+											if (!rootConfigElement.attributeValue("name").equals("profileElements")
+											&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
+											{
+												sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
+												sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
+												sb.append("</option>\n");
+												optionCount++;
+											}
 										} else if (type.equals("radio")) {
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
@@ -724,7 +821,10 @@ public class BuildDefinitionDivs extends TagSupport {
 							}
 						}
 						
-						if (type.equals("selectbox")) {
+						if (type.equals("selectbox")
+						&& !rootConfigElement.attributeValue("name").equals("profileElements")
+						&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem")) 
+						{
 							if (optionCount == 0) {
 								//No options were output, show something to avoid having an empty select box
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
@@ -1248,5 +1348,3 @@ public class BuildDefinitionDivs extends TagSupport {
 	}
 	
 }
-
-
