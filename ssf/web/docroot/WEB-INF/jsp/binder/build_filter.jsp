@@ -176,17 +176,22 @@ function ss_deleteFilterTerm(obj, termNumber) {
 	  <td valign="top">
 	    <div id="typeList1" style="display:inline;">
 	      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
-	      <li><a href="javascript: ;" 
+	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
 	          <ssf:nlt tag="filter.searchText" text="Search text"/>
 	      </a></li>
 	      
-	      <li><a href="javascript: ;" 
+	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
 	          <ssf:nlt tag="filter.entryAttributes" text="Entry attributes"/>
 	      </a></li>
 
-	      <li><a href="javascript: ;" 
+	      <li><a href="#" 
+	        onClick="ss_getFilterTypeSelection(this, 'folders');return false;">
+	          <ssf:nlt tag="filter.folders"/>
+	      </a></li>
+
+	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
 	          <ssf:nlt tag="filter.workflowStates" text="Workflow states"/>
 	      </a></li>

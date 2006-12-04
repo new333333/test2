@@ -92,14 +92,29 @@
 
     </div>
   
-    <c:if test="${!empty fileEntry._desc}">
+<jsp:useBean id="fileEntry" type="java.util.Map" />
+<%
+	if (fileEntry.containsKey("_desc")) {
+		String[] words = ((String)fileEntry.get("_desc")).split(" ");
+		String summary = "";
+		for (int i = 0; i < words.length; i++) {
+			summary = summary + " " + words[i];
+			//Limit the summary to 30 words
+			if (i >= 30) {
+				if (i < words.length - 1) summary = summary + "...";
+				break;
+			}
+		}
+%>
     <div class="ss_smallprint ss_indent_medium">  
-      <c:out value="${fileEntry._desc}" escapeXml="false"/>&nbsp;&nbsp;
+      <c:out value="<%= summary %>" escapeXml="false"/>
     </div>
-    </c:if>
-  
+<%
+	}
+%>  
   </div>
 </c:forEach>
+<c:if test="${hitCount > 0}">
   <div align="right">
     <span class="ss_light ss_fineprint">
 	[<ssf:nlt tag="search.results">
@@ -109,4 +124,12 @@
 	</ssf:nlt>]
 	</span>
   </div>
+</c:if>
+<c:if test="${hitCount == 0}">
+  <div>
+    <span class="ss_light ss_fineprint">
+	  [<ssf:nlt tag="search.noneFound"/>]
+	</span>
+  </div>
+</c:if>
 </div>

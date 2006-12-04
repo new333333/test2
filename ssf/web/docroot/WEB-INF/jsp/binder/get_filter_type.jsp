@@ -43,6 +43,8 @@
 		  </c:forEach>
     	</select>
 	  </c:if>
+	 <c:if test="${ss_filterType == 'folders'}">
+	 </c:if>
 	  <input type="hidden" name="filterType<c:out value="${ss_filterTermNumber}"/>"
 	    value="<c:out value="${ss_filterType}"/>"/>
 	</div></taconite-replace>
