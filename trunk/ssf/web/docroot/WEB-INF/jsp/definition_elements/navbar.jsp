@@ -66,7 +66,13 @@ function ss_turnOffDebugMode() {
 	</li>
 
 <!-- My workspace -->
-	<li class="ss_global_toolbar_myworkspace" onClick="ss_moveDivToTopOfBody('ss_portlet_content');return false;">
+	<li class="ss_global_toolbar_myworkspace" 
+      onClick="self.location.href='<portlet:renderURL windowState="maximized">
+		<portlet:param name="action" value="view_ws_listing"/>
+		<portlet:param name="binderId" value="${ssUser.parentBinder.id}"/>
+		<portlet:param name="entryId" value="${ssUser.id}"/>
+		<portlet:param name="newTab" value="1"/>
+		</portlet:renderURL>';">
 	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
