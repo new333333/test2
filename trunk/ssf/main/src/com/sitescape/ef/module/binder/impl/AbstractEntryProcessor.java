@@ -584,7 +584,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
        		        //Create separate documents one for each attached file and index them.
        				List atts = entry.getFileAttachments();
-       		        for (int j = 0; i < atts.size(); i++) {
+       		        for (int j = 0; j < atts.size(); j++) {
        		        	FileAttachment fa = (FileAttachment)atts.get(j);
        		        	try {
        		        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null);
@@ -960,10 +960,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
     	// Add document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ENTRY);
-        
-        // Add command definition
-        EntityIndexUtils.addCommandDefinition(indexDoc, entry); 
-        
+                
         // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry);
         
