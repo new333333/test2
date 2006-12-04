@@ -362,7 +362,7 @@ function setStateMachine(newState) {
 			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 			showDisplayButtons()
-			loadDiv('properties', "", operationSelectedItem)
+			loadDiv('properties', selectedIdMapped, operationSelectedItem)
 		} else if (operationSelection == "addOption") {
 			ss_setDivHtml("displaydiv", "")
 			//ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
@@ -407,7 +407,7 @@ function setStateMachine(newState) {
 		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 		showDisplayButtons()
-		loadDiv('properties', "", operationSelectedItem)
+		loadDiv('properties', operationSelection, operationSelectedItem)
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
 		showDisplayButtons()
