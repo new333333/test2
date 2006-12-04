@@ -49,7 +49,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -161,6 +161,11 @@ function ss_deleteFilterTerm(obj, termNumber) {
 	      <li><a href="javascript: ;" 
 	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
 	          <ssf:nlt tag="searchForm.workflowStates" text="Workflow states"/>
+	      </a></li>
+
+	      <li><a href="#" 
+	        onClick="ss_getFilterTypeSelection(this, 'folders');return false;">
+	          <ssf:nlt tag="filter.folders"/>
 	      </a></li>
 
 	    </div>

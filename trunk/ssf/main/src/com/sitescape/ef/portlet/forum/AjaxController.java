@@ -24,6 +24,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
@@ -574,6 +575,13 @@ public class AjaxController  extends SAbstractController {
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				}
 			}
+		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
+			String defId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_WORKFLOW_DEF_ID+filterTermNumber);
+			if (Validator.isNotNull(defId)) {
+				model.put(WebKeys.FILTER_WORKFLOW_DEF_ID, defId);
+				Map stateData = getDefinitionModule().getWorkflowDefinitionStates(defId);
+				model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+			}
 		}
 		
 		String elementName = PortletRequestUtils.getStringParameter(request, "elementName" + filterTermNumber);
@@ -585,14 +593,26 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE)) {
 			model.put(WebKeys.FILTER_TYPE, op2);
-			DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
-			DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
-	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+			if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) && op2.equals("folders")) {
+    			Workspace ws = getWorkspaceModule().getWorkspace();
+    			Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, getBinderModule()),1);
+    			model.put(WebKeys.DOM_TREE, tree);
+			} else {
+				DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+				DefinitionHelper.getDefinitions(Definition.FILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+		    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+				model.put(WebKeys.WORKFLOW_DEFINTION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
+			}
 			return new ModelAndView("tag_jsps/search_form/get_filter_type", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS)) {
+			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("tag_jsps/search_form/get_entry_elements", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES)) {
+			model.put(WebKeys.FILTER_TYPE, "entry");
 			return new ModelAndView("tag_jsps/search_form/get_element_value", model);
+		} else if (op.equals(WebKeys.OPERATION_GET_WORKFLOW_STATES)) {
+			model.put(WebKeys.FILTER_TYPE, "workflow");
+			return new ModelAndView("binder/get_entry_elements", model);
 		} else {
 			model.put(WebKeys.FILTER_VALUE_TYPE, PortletRequestUtils.getStringParameter(request,
 					"elementValueDateType" + filterTermNumber, ""));

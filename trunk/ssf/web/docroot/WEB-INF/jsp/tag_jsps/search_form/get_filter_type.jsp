@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.ArrayList" %>
 
 <%@ page contentType="text/xml; charset=UTF-8" %>
 <taconite-root xml:space="preserve">
@@ -16,7 +17,7 @@
 	  <c:if test="${ss_filterType == 'entry'}">
     	<select name="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
     	   id="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
-    	  onChange="ss_getFilterSelectionBox(this, 'ss_entry_def_id', 'get_searchForm_entry_elements')">
+    	  onChange="ss_getFilterSelectionBox(this, 'ss_entry_def_id', 'get_searchForm_entry_elements', '${ss_filterType}')">
     	  <option value="" selected="selected"><ssf:nlt 
     	    tag="searchForm.selectElement" text="--select an entry type--"/></option>
     	  <option value="_common"><ssf:nlt 
@@ -28,7 +29,25 @@
     	</select>
 	  </c:if>
 	  <c:if test="${ss_filterType == 'workflow'}">
-	    [workflows and workflow states will be listed here]
+    	<select name="ss_workflow_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	   id="ss_workflow_def_id<c:out value="${ss_filterTermNumber}"/>" 
+    	  onChange="ss_getFilterSelectionBox(this, 'ss_workflow_def_id', 'get_workflow_states', '${ss_filterType}')">
+    	  <option value="" selected="selected"><ssf:nlt tag="filter.selectWorkflow"/></option>
+		  <c:forEach var="item" items="${ssWorkflowDefinitionMap}">
+		    <option value="<c:out value="${item.value.id}"/>"><c:out 
+		      value="${item.value.title}"/></option>
+		  </c:forEach>
+    	</select>
+	  </c:if>
+	  
+	  <c:if test="${ss_filterType == 'folders'}">
+<jsp:useBean id="ss_filterTermNumber" type="String" scope="request" />
+		<ssf:tree 
+		  treeName="<%= "t_wsTree_" + ss_filterTermNumber %>" 
+		  treeDocument="${ssDomTree}"  
+		  rootOpen="false" 
+		  multiSelect="<%= new ArrayList() %>" 
+		  multiSelectPrefix="id_" />
 	  </c:if>
 	  <input type="hidden" name="filterType<c:out value="${ss_filterTermNumber}"/>"
 	    value="<c:out value="${ss_filterType}"/>"/>
