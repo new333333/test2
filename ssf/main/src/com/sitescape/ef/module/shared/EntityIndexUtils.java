@@ -318,6 +318,8 @@ public class EntityIndexUtils {
     public static void addFileAttachmentName(Document doc,String filename) {
       	Field fileNameField = new Field(FILENAME_FIELD, filename, Field.Store.YES, Field.Index.UN_TOKENIZED);
        	doc.add(fileNameField);
+       	fileNameField = BasicIndexUtils.allTextField(filename);
+    	doc.add(fileNameField);
     }
     
     public static void addFileExtension(Document doc,String fileName) {
