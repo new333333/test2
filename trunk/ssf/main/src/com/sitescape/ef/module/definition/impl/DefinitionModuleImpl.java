@@ -567,6 +567,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
 		
 		Document definitionTree = def.getDefinition();
+		
+		if (itemNameToAdd.equals("firstName")
+		|| itemNameToAdd.equals("middleName")
+		|| itemNameToAdd.equals("lastName")
+		|| itemNameToAdd.equals("emailAddress")
+		|| itemNameToAdd.equals("country")
+		|| itemNameToAdd.equals("organization")
+		|| itemNameToAdd.equals("homepage")
+		|| itemNameToAdd.equals("zonName")
+		|| (itemNameToAdd.length() > 0
+		&& Character.isDigit(itemNameToAdd.charAt(0))))
+			itemNameToAdd = "profileElements";
+			
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, inputData);
 		if (newItem != null) {
 			//Save the updated document
