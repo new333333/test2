@@ -443,6 +443,11 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
 			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
 		}
+		//WebDav folder view
+		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
+		Map qualifiers = new HashMap();
+		qualifiers.put("folder", webdavUrl);
+		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
 		//vertical
 		url = response.createActionURL();
@@ -487,7 +492,7 @@ public class ListFolderController extends  SAbstractController {
 			
 			//This folder is showing the dashboard
 			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
-			Map qualifiers = new HashMap();
+			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 
@@ -537,7 +542,7 @@ public class ListFolderController extends  SAbstractController {
 			//RSS link 
 			footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
 			Subscription sub = getBinderModule().getSubscription(folder.getId());
-			Map qualifiers = new HashMap();
+			qualifiers = new HashMap();
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -557,8 +562,7 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
 		
-		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
-		Map qualifiers = new HashMap();
+		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 

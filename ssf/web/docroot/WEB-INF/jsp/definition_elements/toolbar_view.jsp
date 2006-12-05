@@ -1,4 +1,5 @@
 <% // Toolbar viewer %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%
 String ss_portletNamespace = renderResponse.getNamespace();
 
@@ -76,6 +77,17 @@ String menuDivWidth = "300px";
 	            <c:otherwise>
 	            </c:otherwise>
 	   		  </c:choose>
+	    	  <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
+    	      	  style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
+    	      	  folder="${toolbarMenuCategoryItem.value.qualifiers.folder}"
+    	      	  target="_blank"
+    	      </c:if>
 	          <c:if test="${empty toolbarMenuCategoryItem.value.qualifiers.onClick}">
 	          	onClick="return(ss_openUrlInPortlet(this.href, ${popup}));">
 	          </c:if>
@@ -108,6 +120,31 @@ String menuDivWidth = "300px";
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
 	      <li><a href="${toolbarMenu.value.url}"
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
+    	      	style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
+    	      	folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"
+    	      	target="_blank"
+    	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
+    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+    	    </c:if>
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
+    	      	style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
+    	      	folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"
+    	      	target="_blank"
+    	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
     	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
@@ -131,6 +168,17 @@ String menuDivWidth = "300px";
 	          <ssf:param name="${key2}" value="${value2}" />
 	        </c:forEach>
 	 	    </ssf:url>"
+    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+<%
+		if (BrowserSniffer.is_ie(request)) {
+%>
+    	      	style="behavior: url(#default#AnchorClick);"
+<%
+		}
+%>
+    	      	folder="<c:out value="${toolbarMenu.value.qualifiers.folder}" />"
+    	      	target="_blank"
+    	    </c:if>
     	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
     	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
     	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
