@@ -136,6 +136,15 @@ function ss_deleteFilterTerm(obj, termNumber) {
 	return true;
 }
 
+function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
+	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
+		self.document.<portlet:namespace />fm["id_"+forum].checked=false
+	} else {
+		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+	}
+	return false
+}
+
 </script>
 
 <form name="filterData" id="filterData" method="post" 

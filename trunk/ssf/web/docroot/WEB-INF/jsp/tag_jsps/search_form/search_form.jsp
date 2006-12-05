@@ -49,7 +49,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -131,6 +131,15 @@ function ss_deleteFilterTerm(obj, termNumber) {
 	//Set the term number into the form
 	formObj.ss_filterTermNumber.value = parseInt(termNumber);
 	return true;
+}
+
+function t_searchForm_wsTree_showId(forum, obj) {
+	if (self.document.${ssSearchFormForm}["ss_sf_id_"+forum] && self.document.${ssSearchFormForm}["ss_sf_id_"+forum].checked) {
+		self.document.${ssSearchFormForm}["ss_sf_id_"+forum].checked=false
+	} else {
+		self.document.${ssSearchFormForm}["ss_sf_id_"+forum].checked=true
+	}
+	return false
 }
 
 </script>

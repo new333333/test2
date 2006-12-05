@@ -1,5 +1,6 @@
 package com.sitescape.ef.web.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,9 +37,11 @@ public class FilterHelper {
    	public final static String FilterEntryDefId = "filterEntryDefId";
    	public final static String FilterElementName = "filterElementName";
    	public final static String FilterElementValue = "filterElementValue";
+   	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeEntry = "entry";
    	public final static String FilterTypeWorkflow = "workflow";
+   	public final static String FilterTypeFolders = "folders";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	
@@ -153,6 +156,21 @@ public class FilterHelper {
 							Element newTerm = filterTerm.addElement(FilterWorkflowStateName);
 							newTerm.setText(states[i2]);
 						}
+					}
+				} else if (filterType.equals(FilterTypeFolders)) {
+					//Get the list of folders
+					Iterator itFormData = formData.keySet().iterator();
+					List folderIds = new ArrayList();
+					while (itFormData.hasNext()) {
+						String key = (String)itFormData.next();
+						if (key.matches("^ss_sf_id_[0-9]+$")) {
+							folderIds.add(key.replaceFirst("^ss_sf_id_", ""));
+						}
+					}
+					for (Object id : folderIds) {
+						Element filterTerm = filterTerms.addElement(FilterTerm);
+						filterTerm.addAttribute(FilterType, filterType);
+						filterTerm.addAttribute(FilterFolderId, (String)id);
 					}
 				}
 			}
@@ -355,6 +373,18 @@ public class FilterHelper {
     					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     					child2.setText(stateName);
     				}
+    			}
+    		} else if (filterType.equals(FilterTypeFolders)) {
+    			String folderId = filterTerm.attributeValue(FilterHelper.FilterFolderId, "");
+				Element field;
+				Element child;
+				Element andField = orField;
+    			if (!folderId.equals("")) {
+    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
+	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText(folderId);
     			}
     		}
     	}

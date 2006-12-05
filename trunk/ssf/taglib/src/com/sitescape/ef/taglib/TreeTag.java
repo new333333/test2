@@ -75,6 +75,7 @@ public class TreeTag extends TagSupport {
 	    this.lastListStyle = "";
 	    if (this.topId == null) this.topId = "";
 	    if (this.displayStyle == null) this.displayStyle = "";
+	    if (this.multiSelectPrefix == null) this.multiSelectPrefix = "";
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
@@ -86,6 +87,11 @@ public class TreeTag extends TagSupport {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
+			if (multiSelect != null) {
+				//This request is displaying the checkboxes. Remember that in the url
+				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT, "1");
+				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, multiSelectPrefix);
+			}
 			if (!this.topId.equals("")) {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
 			}
@@ -217,6 +223,7 @@ public class TreeTag extends TagSupport {
 	    	rootOpen=false;
 	    	singleSelect=null;
 	    	multiSelect=null;
+	    	multiSelectPrefix=null;
 	    	topId="";
 	    	showIdRoutine="";
 	    }

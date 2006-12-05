@@ -77,8 +77,8 @@
 		    <ssf:param name="entityType" value="folder" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-    	onMouseover="ss_showObjInline('ss_folderName_${hitCount}');"
-    	onMouseout="ss_hideObj('ss_folderName_${hitCount}');"
+    	onMouseover="ss_showObjInline('ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>');"
+    	onMouseout="ss_hideObj('ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>');"
       >
       <c:if test="${empty ssBinderData[fileEntry._binderId].iconName}">
         <img src="<html:imagesPath/>icons/folder.gif"/>
@@ -86,7 +86,7 @@
       <c:if test="${!empty ssBinderData[fileEntry._binderId].iconName}">
         <img src="<html:imagesPath/>${ssBinderData[fileEntry._binderId].iconName}" />
       </c:if>
-       <div id="ss_folderName_${hitCount}" 
+       <div id="ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>" 
        style="position:absolute; display:none;">${ssBinderData[fileEntry._binderId].title}</div></a>
     </c:if>
 

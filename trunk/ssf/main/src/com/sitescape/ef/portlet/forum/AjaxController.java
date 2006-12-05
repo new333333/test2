@@ -24,7 +24,6 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
@@ -662,12 +661,20 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 //		Map formData = (Map) context.get("formData");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String multiSelect = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT, "");
+		String multiSelectId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT_ID, "");
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		if (binderId != null) {
 			model.put("ss_tree_treeName", PortletRequestUtils.getStringParameter(request, "treeName", ""));
 			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
 			model.put("ss_tree_binderId", binderId.toString());
 			model.put("ss_tree_topId", op2);
+			model.put("ss_tree_select", null);
+			model.put("ss_tree_select_id", "");
+			if (multiSelect.equals("1")) {
+				model.put("ss_tree_select", new ArrayList());
+				model.put("ss_tree_select_id", multiSelectId);
+			}
 			Binder binder = getBinderModule().getBinder(binderId);
 			Long topId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_OPERATION2);
 			Document tree;
