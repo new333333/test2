@@ -60,6 +60,8 @@ public class WebKeys {
     public static final String URL_OPERATION2="operation2";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_TAB_ID = "tabId";
+	public static final String URL_TREE_SELECT = "tree_select";
+	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
