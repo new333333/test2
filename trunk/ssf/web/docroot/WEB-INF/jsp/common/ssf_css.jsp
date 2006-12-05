@@ -1738,6 +1738,36 @@ div.ss_thumbnail_gallery a {
     text-decoration: none;
     color: ${ss_gallery_anchor_color};
 }
+
+div.ss_faded a img {
+    opacity: 0.5;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=50);
+</c:if>
+}
+
+div.ss_faded_alot a img {
+    opacity: 0.25;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=25);
+</c:if>
+}
+
+div.ss_faded_abit a img {
+    opacity: 0.75;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=75);
+</c:if>
+}
+
+div.ss_faded_pop a:hover img {
+    opacity: 1.0;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=100);
+</c:if>
+}
+
+
 div.ss_thumbnail_gallery a:hover img {
     border-color: ${ss_gallery_anchor_hover_color};
 }
