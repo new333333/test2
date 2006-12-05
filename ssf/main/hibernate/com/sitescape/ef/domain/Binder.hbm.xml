@@ -14,11 +14,11 @@
     <many-to-one name="owner"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
-        <key column="parentBinder"/>
+        <key column="parentBinder" on-delete="cascade"/>
         <one-to-many class="com.sitescape.ef.domain.Binder"/>
     </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
-      <key column="binder"/>
+      <key column="binder" on-delete="cascade"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
@@ -30,11 +30,11 @@
       </many-to-many>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
-      <key column="binder"/>
+      <key column="binder" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
-      <key column="binder"/>
+      <key column="binder" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
     <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
@@ -46,7 +46,7 @@
       </many-to-many>
     </list>
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="defaultPostingDef">
-      <column name="defaultPostingDef" sql-type="char(32)"/>
+      <column name="defaultPostingDef" sql-type="char(32)" />
     </many-to-one>
     <property name="type" length="16" update="false" insert="false"/>
     <property name="name" length="128" not-null="true"/>
@@ -54,7 +54,7 @@
     <component name="notificationDef">
       <property name="teamOn" column="notify_teamOn"/>
 	  <bag inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
-      	<key column="binderId"/>
+      	<key column="binderId" />
  	     <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="principalId"/>
     	</bag>
        <property name="emailAddress" access="field" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
@@ -128,8 +128,8 @@
         <property name="sortKey" length="512" column="entryRoot_sortKey"/>
       </component>
     </subclass>
-    <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
+     <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     </subclass>
   </class>
 </hibernate-mapping>
