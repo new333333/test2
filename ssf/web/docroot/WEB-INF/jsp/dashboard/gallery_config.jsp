@@ -17,6 +17,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <br/>
+<span class="ss_bold"><ssf:nlt tag="dashboard.galleryImageSize"/></span>
+<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="big">Big
+<input type="radio" id="galleryImageSizeHandle" name="data_galleryImageSize" value="small">Small
+
+<br/>
 <br/>
 Search configuration
 <br/>
@@ -26,3 +31,21 @@ Search configuration
   data="${ssDashboard.beans[ssComponentId].ssSearchFormData}" />
 
 <br/>
+
+<script type="text/javascript">
+function ss_setRadioCheckedByValue(id, value) {
+  var rbHandle = document.getElementById(id);
+  var formObj, buttonName, radioGroup;
+  if (rbHandle) {
+  	formObj = rbHandle.form;
+  	buttonName = rbHandle.name;
+  	radioGroup = formObj.elements[buttonName];
+  	for (var i = 0; i < radioGroup.length; i++) {
+  		if (radioGroup[i].value == value) {
+  			radioGroup[i].checked = true;
+  		}
+  	}
+  }
+}
+ss_setRadioCheckedByValue('galleryImageSizeHandle','${ssDashboard.dashboard.components[ssComponentId].data.galleryImageSize[0]}');
+</script>

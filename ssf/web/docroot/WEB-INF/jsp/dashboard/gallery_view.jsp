@@ -19,8 +19,14 @@
 
 <div>
 <table><tr><td>
+<c:choose>
+<c:when test="${ssDashboard.dashboard.components[ssComponentId].data.galleryImageSize[0] == 'small'}">
 <div class="ss_thumbnail_gallery ss_thumbnail_small"> 
-
+</c:when>
+<c:otherwise>
+<div class="ss_thumbnail_gallery ss_thumbnail_big"> 
+</c:otherwise>
+</c:choose>
 <c:set var="hitCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.searchResults}" >
  <c:if test="${not empty fileEntry._fileID}">
