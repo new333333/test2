@@ -362,7 +362,7 @@ function setStateMachine(newState) {
 			//ss_addToDiv("displaydiv", "operations_"+selectedIdMapped)
 			//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 			showDisplayButtons()
-			loadDiv('properties', selectedIdMapped, operationSelectedItem)
+			loadDiv('properties', "", operationSelectedItem)
 		} else if (operationSelection == "addOption") {
 			ss_setDivHtml("displaydiv", "")
 			//ss_addToDiv("displaydiv", "info_"+selectedIdMapped)
