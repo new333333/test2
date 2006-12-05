@@ -618,7 +618,7 @@
 				characterMask="^[0-9]*$">
 				<help>__help_graphic_constraints</help>
 			</property>
-			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<help>__help_storage_media</help>
 			</property>
 		</properties>
@@ -635,7 +635,7 @@
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60" value="60"/>
 			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
-			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<!-- 
 					IMPORTANT: Make sure that the following option list contains
 				    union of all repository names appearing in this definition. 
@@ -662,7 +662,7 @@
 			</property>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
-			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<help>__help_storage_media</help>
 			</property>
 			<property name="inline" caption="__inline" type="boolean">
@@ -1508,7 +1508,7 @@
 				characterMask="^[0-9]*$" default="200">
 				<help>__help_graphic_constraints</help>
 			</property>
-			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<help>__help_storage_media</help>
 			</property>
 		</properties>
@@ -1910,7 +1910,7 @@
 			</property>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
-			<property name="storage" caption="__storage_media" type="repositoryList" default="fileRepositoryService">
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
 				<help>__help_storage_media</help>
 			</property>
 		</properties>
