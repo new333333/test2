@@ -194,7 +194,8 @@ public class DashboardHelper {
 						getInstance().getWorkspaceTreeBean(binder, 
 								ssDashboard, model, id, component);
 					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)  ||
+							component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 						//Set up the search results bean
 						getInstance().getSearchResultsBean(binder, ssDashboard, 
 								model, id, component);
@@ -224,7 +225,8 @@ public class DashboardHelper {
 						//Set up the workspace tree bean
 						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+							ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
+							component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 						//Set up the search results bean
 						getInstance().getSearchResultsBean(null, ssDashboard, 
 								model, id, component);
@@ -704,8 +706,8 @@ public class DashboardHelper {
 			Map componentMap = (Map) components.get(componentId);
 			if (componentMap != null) {
 				//Get any component specific data
-				if (componentMap.get(DashboardHelper.Name).
-						equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH)) {
+				if (componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
+				    componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
 					//Get the search query
 					try {
 						Document query = FilterHelper.getSearchFilter(request);
