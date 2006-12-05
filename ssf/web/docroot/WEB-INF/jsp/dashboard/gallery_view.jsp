@@ -18,10 +18,14 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div>
+<table><tr><td>
+<div class="ss_thumbnail_gallery ss_thumbnail_small"> 
+
 <c:set var="hitCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.searchResults}" >
+ <c:if test="${not empty fileEntry._fileID}">
+
   <c:set var="hitCount" value="${hitCount + 1}"/>
-  <div style="padding-bottom:6px;">
     <div>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
@@ -55,78 +59,20 @@
 			</ssf:url>" >
     </c:when>
  	</c:choose>
-    <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(no title)</i></span>
-    </c:if>
-    <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
-
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-
-    <c:if test="${not empty fileEntry._fileID}">
-  
     <img src="<ssf:url 
     webPath="viewFile"
     folderId="${fileEntry._binderId}"
     entryId="${fileEntry._docId}" >
     <ssf:param name="fileId" value="${fileEntry._fileID}"/>
     <ssf:param name="viewType" value="thumbnail"/>
-    </ssf:url>">
-    </c:if>
-    
-    
-    <span class="ss_smallprint">
-      <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
-	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
-      value="${fileEntry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="short" /></span>
-    
-    
-    &nbsp;&nbsp;&nbsp;
-    <c:if test="${fileEntry._entityType == 'folderEntry' || 
-      		fileEntry._entityType == 'reply'}">
-      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}">
-		    <ssf:param name="entityType" value="folder" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-    	onMouseover="ss_showObjInline('ss_folderName_${hitCount}');"
-    	onMouseout="ss_hideObj('ss_folderName_${hitCount}');"
-      >
-      <c:if test="${empty ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>icons/folder.gif"/>
-      </c:if>
-      <c:if test="${!empty ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>${ssBinderData[fileEntry._binderId].iconName}" />
-      </c:if>
-       <div id="ss_folderName_${hitCount}" 
-       style="position:absolute; display:none;">${ssBinderData[fileEntry._binderId].title}</div></a>
-    </c:if>
+    </ssf:url>"><br\>
+    <c:out value="${fileEntry.title}"/></a></div>
+ </c:if>
 
-    </div>
-  
-<jsp:useBean id="fileEntry" type="java.util.Map" />
-<%
-	if (fileEntry.containsKey("_desc")) {
-		String[] words = ((String)fileEntry.get("_desc")).split(" ");
-		String summary = "";
-		for (int i = 0; i < words.length; i++) {
-			summary = summary + " " + words[i];
-			//Limit the summary to 30 words
-			if (i >= 30) {
-				if (i < words.length - 1) summary = summary + "...";
-				break;
-			}
-		}
-%>
-    <div class="ss_smallprint ss_indent_medium">  
-      <c:out value="<%= summary %>" escapeXml="false"/>
-    </div>
-<%
-	}
-%>  
-  </div>
 </c:forEach>
+</div>
+</table>
+
 <c:if test="${hitCount > 0}">
   <div align="right">
     <span class="ss_light ss_fineprint">
