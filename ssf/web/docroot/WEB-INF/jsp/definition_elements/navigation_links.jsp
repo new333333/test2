@@ -8,7 +8,7 @@
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
-		if (((Binder)parentBinder).getEntityIdentifier().getEntityType().equals(com.sitescape.ef.domain.EntityIdentifier.EntityType.profiles)) break;
+		//if (((Binder)parentBinder).getEntityIdentifier().getEntityType().equals(com.sitescape.ef.domain.EntityIdentifier.EntityType.profiles)) break;
 		parentTree.push(parentBinder);
 		parentBinder = ((Binder)parentBinder).getParentBinder();
 	}
