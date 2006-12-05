@@ -148,7 +148,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();			
 		}
 		else
-		if (!this.option.equals("") && !this.itemId.equals("")) {
+		if (!this.option.equals("") && !this.itemId.equals("") && this.itemName.equals("")) {
 			//We are looking for a single item, so only do that item
 			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
 			itRootElements2 = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
