@@ -416,6 +416,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_SEARCH_RESULTS="binder/view_search_results";
+    public static final String VIEW_TOOLBAR="toolbar/view";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     

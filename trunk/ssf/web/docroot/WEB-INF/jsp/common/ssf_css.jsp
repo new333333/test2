@@ -1259,6 +1259,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	float:right;
 	margin-top:0px;
 	margin-right:50px;
+	background:inherit !important;
 }
 * html .ss_global_toolbar_links {
 	margin-right:25px;
@@ -1266,13 +1267,14 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar_links li {
 	float:left;
 	margin-left:19px;
+	background:inherit !important;
 }
 .ss_global_toolbar_links li:hover {
 	cursor:pointer;
 }
 .ss_global_toolbar_links li div {
 	display:block;
-	padding-top:18px;
+	padding-top:20px;
 	color:#484848;
 	text-align:center;
 }
@@ -1295,7 +1297,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
 }
 .ss_global_toolbar_search {
-	background:transparent;
+	background:inherit !important;
 }
 .ss_global_toolbar_search form {
 	background:transparent;
@@ -1312,9 +1314,10 @@ div.ss_global_toolbar_search_text {
 	text-align:center;
 	padding:0px !important;
 	margin:0px !important;
+	background:inherit !important;
 }
 .ss_global_toolbar_search a {
-	background:transparent;
+	background:inherit !important;
 }
 
 /* tabs: */

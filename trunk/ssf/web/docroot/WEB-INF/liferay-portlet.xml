@@ -36,4 +36,11 @@
 		<maximize-edit>true</maximize-edit>
 		<instanceable>true</instanceable>
 	</portlet>
+	
+	<portlet>
+		<portlet-name>ss_toolbar</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>true</maximize-edit>
+		<instanceable>true</instanceable>
+	</portlet>
 </liferay-portlet-app>
