@@ -93,7 +93,8 @@ public class SearchController extends AbstractBinderController {
 		Document searchQuery = null;
 
 		Map tab = tabs.getTab(tabs.getCurrentTab());
-		String tabType = (String)tab.get(Tabs.TYPE);
+		String tabType = null;
+		if (tab != null) tabType = (String)tab.get(Tabs.TYPE);
 		//See if the search form was submitted
 		if (formData.containsKey("searchBtn") || formData.containsKey("searchBtn.x") || formData.containsKey("searchBtn.y")) {
 			//Parse the search filter
