@@ -628,7 +628,7 @@ public class DashboardHelper {
 				ids.add(Long.valueOf((String)r.get("_binderId")));
 			}
 		}
-		model.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
+		searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
     }
     
     public static void setTitle(ActionRequest request, Binder binder, String scope) {
