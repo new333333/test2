@@ -139,7 +139,7 @@
 					file="resources/slide-war/WEB-INF/web.xml" 
 					propertyFile="replace.properties">
 					<replacefilter 
-						token="@@SECURITY_ROLE_DEF@@"
+						token="@@SECURITY_ROLE_REF@@"
 						property="liferay.*.web.security.role.ref"/>
 					<replacefilter 
 						token="@@AUTH_CONSTRAINT@@"
@@ -161,7 +161,7 @@
 						file="resources/slide-war/WEB-INF/web.xml" 
 						propertyFile="replace.properties">
 						<replacefilter 
-							token="@@SECURITY_ROLE_DEF@@"
+							token="@@SECURITY_ROLE_REF@@"
 							property="jbossportal.jbosstomcat.web.security.role.ref"/>
 						<replacefilter 
 							token="@@AUTH_CONSTRAINT@@"
