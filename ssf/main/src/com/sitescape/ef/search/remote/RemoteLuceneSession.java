@@ -90,14 +90,14 @@ public class RemoteLuceneSession implements LuceneSession {
 
     public Hits search(Query query, Sort sort) throws LuceneException {
     	try {
-    		return index.search(indexName, query);
+    		return index.search(indexName, query, sort);
     	} catch (RemoteException re) {throw new LuceneException(re);}
     }
 
     public Hits search(Query query, Sort sort, int offset, int size) throws LuceneException {
     	Hits hits;
     	try {
-    		hits = index.search(indexName, query,offset,size);
+    		hits = index.search(indexName, query, sort, offset,size);
     	} catch (RemoteException re) {throw new LuceneException(re);}
         return hits;
     }
