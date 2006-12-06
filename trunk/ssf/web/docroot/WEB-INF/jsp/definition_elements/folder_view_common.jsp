@@ -103,21 +103,150 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 
 <ssf:slidingTableRow headerRow="true">
   <c:if test="${!empty ssFolderColumns['number']}">
-    <ssf:slidingTableColumn width="10%"><ssf:nlt tag="folder.column.Number"/></ssf:slidingTableColumn>
+    <ssf:slidingTableColumn width="10%">
+
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_sortNum"/>
+		
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>
+	</portlet:actionURL>">
+    	<ssf:nlt tag="folder.column.Number"/>
+    <a/>
+
+    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
+		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	</c:if>
+    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
+		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
+	</c:if>
+
+    </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['title']}">
     <ssf:slidingTableColumn width="30%">
-      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/></div>
+    
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_title1"/>
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>
+	</portlet:actionURL>">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
+    <a/>
+
+    <c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
+		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	</c:if>
+	<c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
+	</c:if>
+      
     </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['state']}">
-    <ssf:slidingTableColumn width="20%"><ssf:nlt tag="folder.column.State"/></ssf:slidingTableColumn>
+    <ssf:slidingTableColumn width="20%">
+
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_workflowState"/>
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>		
+	</portlet:actionURL>">
+    	<ssf:nlt tag="folder.column.State"/>
+    <a/>
+
+    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
+		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	</c:if>
+	<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
+	</c:if>
+
+    </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['author']}">
-    <ssf:slidingTableColumn width="20%"><ssf:nlt tag="folder.column.Author"/></ssf:slidingTableColumn>
+    <ssf:slidingTableColumn width="20%">
+
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_creatorId"/>
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>		
+	</portlet:actionURL>">
+		<ssf:nlt tag="folder.column.Author"/>
+    <a/>
+
+    <c:if test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'true'}">
+		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	</c:if>
+	<c:if test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'false'}">
+		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
+	</c:if>
+    
+    </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['date']}">
-    <ssf:slidingTableColumn width="20%"><ssf:nlt tag="folder.column.Date"/></ssf:slidingTableColumn>
+    <ssf:slidingTableColumn width="20%">
+    
+    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssFolder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
+		<c:choose>
+		  <c:when test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  </c:when>
+		  <c:otherwise>
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  </c:otherwise>
+		</c:choose>		
+	</portlet:actionURL>">
+		<ssf:nlt tag="folder.column.Date"/>
+    <a/>
+
+    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
+		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	</c:if>
+	<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
+		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
+	</c:if>
+    
+    </ssf:slidingTableColumn>
   </c:if>
 </ssf:slidingTableRow>
 

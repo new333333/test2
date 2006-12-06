@@ -123,11 +123,16 @@ public class ListFolderController extends  SAbstractController {
 				if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
 				else getBinderModule().addSubscription(binderId, style.intValue());
 			}
-		} 
+		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {
+
+			String folderSortBy = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_BY, "");
+			String folderSortDescend = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_DESCEND, "");
+			
+			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_BY, folderSortBy);
+			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_DESCEND, folderSortDescend);
+		}
 
 		response.setRenderParameters(request.getParameterMap());
-		
-			
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -218,9 +223,22 @@ public class ListFolderController extends  SAbstractController {
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 		
+		String searchSortBy = (String)userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+		String searchSortDescend = (String)userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		
+		if (searchSortBy != null && !searchSortBy.equals("")) {
+			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
+			if (("true").equalsIgnoreCase(searchSortDescend)) {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			}
+			else {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			}
+		}
 
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
@@ -275,6 +293,15 @@ public class ListFolderController extends  SAbstractController {
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getEntries(folderId, options);
 		}
+
+		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
+		if (sortBy == null) sortBy = "";
+		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+		if (sortDescend == null) sortDescend = new Boolean(true);
+		
+		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
+		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
+		
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
