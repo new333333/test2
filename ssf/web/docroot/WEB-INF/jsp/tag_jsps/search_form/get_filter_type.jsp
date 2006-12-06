@@ -47,7 +47,8 @@
 		  treeDocument="${ssDomTree}"  
 		  rootOpen="false" 
 		  multiSelect="<%= new ArrayList() %>" 
-		  multiSelectPrefix="ss_sf_id_" />
+		  multiSelectPrefix="ss_sf_id_"
+		  noInit="true" />
 	  </c:if>
 	  <input type="hidden" name="filterType<c:out value="${ss_filterTermNumber}"/>"
 	    value="<c:out value="${ss_filterType}"/>"/>

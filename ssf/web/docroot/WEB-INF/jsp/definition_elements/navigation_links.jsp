@@ -29,6 +29,11 @@
   folderId="${nextBinder.id}" 
   action="view_ws_listing"/>"
 </c:if>
+<c:if test="${nextBinder.entityIdentifier.entityType == 'profiles'}">
+  href="<ssf:url 
+  folderId="${nextBinder.id}" 
+  action="view_profile_listing"/>"
+</c:if>
   onClick="return(ss_navigation_goto(this.href));"
 >
 <c:if test="${empty nextBinder.title}" >
