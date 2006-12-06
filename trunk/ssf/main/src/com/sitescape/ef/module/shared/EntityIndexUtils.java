@@ -50,7 +50,11 @@ public class EntityIndexUtils {
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
     public static final String CREATORID_FIELD = "_creatorId";
+    public static final String CREATOR_NAME_FIELD = "_creatorName";
+    public static final String CREATOR_TITLE_FIELD = "_creatorTitle"; 
     public static final String MODIFICATIONID_FIELD = "_modificationId";
+    public static final String MODIFICATION_NAME_FIELD = "_modificationName";
+    public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
     public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
@@ -229,6 +233,10 @@ public class EntityIndexUtils {
         if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) {
         	Field creationIdField = new Field(CREATORID_FIELD, entry.getCreation().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(creationIdField);
+            Field creationNameField = new Field(CREATOR_NAME_FIELD, entry.getCreation().getPrincipal().getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationNameField);
+            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationTitleField);
         }
     }   
 
@@ -237,6 +245,10 @@ public class EntityIndexUtils {
         if (entry.getModification() != null && entry.getModification().getPrincipal() != null) {
         	Field modificationIdField = new Field(MODIFICATIONID_FIELD, entry.getModification().getPrincipal().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(modificationIdField);
+        	Field modificationNameField = new Field(MODIFICATION_NAME_FIELD, entry.getModification().getPrincipal().getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(modificationNameField);
+        	Field modificationTitleField = new Field(MODIFICATION_TITLE_FIELD, entry.getModification().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(modificationTitleField);
         }
     }   
 
