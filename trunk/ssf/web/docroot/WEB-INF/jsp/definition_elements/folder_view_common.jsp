@@ -103,7 +103,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 
 <ssf:slidingTableRow headerRow="true">
   <c:if test="${!empty ssFolderColumns['number']}">
-    <ssf:slidingTableColumn width="10%">
+    <ssf:slidingTableColumn width="12%">
 
     <a href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
@@ -133,7 +133,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
     </ssf:slidingTableColumn>
   </c:if>
   <c:if test="${!empty ssFolderColumns['title']}">
-    <ssf:slidingTableColumn width="30%">
+    <ssf:slidingTableColumn width="28%">
     
     <a href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
