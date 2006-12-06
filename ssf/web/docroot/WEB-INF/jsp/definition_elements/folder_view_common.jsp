@@ -141,11 +141,11 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="ssFolderSortBy" value="_title1"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
-		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  <c:when test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
-		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
 		  </c:otherwise>
 		</c:choose>
 	</portlet:actionURL>">
@@ -170,8 +170,8 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="ssFolderSortBy" value="_workflowState"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
 		  	<portlet:param name="ssFolderSortDescend" value="true"/>
@@ -199,8 +199,8 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="ssFolderSortBy" value="_creatorTitle"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-		  	<portlet:param name="ssFolderSortDescend" value="false"/>
+		  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
 		  	<portlet:param name="ssFolderSortDescend" value="true"/>
