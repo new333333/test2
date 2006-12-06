@@ -174,6 +174,7 @@ public class WebKeys {
 	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
+	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";
@@ -370,6 +371,8 @@ public class WebKeys {
     public static final String WORKSPACE_DOM_TREE_BINDER_ID="ssWsDomTreeBinderId";
     public static final String WORKSPACES="ssWorkspaces";
     public static final String ZONE_NAME = "com.sitescape.zonename";
+    public static final String FOLDER_SORT_BY = "ssFolderSortBy";
+    public static final String FOLDER_SORT_DESCEND = "ssFolderSortDescend";
 
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
@@ -415,6 +418,7 @@ public class WebKeys {
     public static final String VIEW_SEARCH_RESULTS="binder/view_search_results";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
+    
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
