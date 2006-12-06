@@ -1267,6 +1267,9 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	float:left;
 	margin-left:19px;
 }
+.ss_global_toolbar_links li:hover {
+	cursor:pointer;
+}
 .ss_global_toolbar_links li div {
 	display:block;
 	padding-top:18px;
