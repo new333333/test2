@@ -1424,6 +1424,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	} else if (itemName.equals("profileEntryPicture")) {
 						    		fui.setGenerateThumbnail(true);
 						    		fui.setThumbnailDirectlyAccessible(true);
+						    	} else if (fileName.endsWith(".jpg")) {
+						    		fui.setGenerateThumbnail(true);
+						    		fui.setThumbnailDirectlyAccessible(false);
+						    		fui.setIsSquareThumbnail(true);						    		
 						    	}
 						    	
 						    	fileData.add(fui);

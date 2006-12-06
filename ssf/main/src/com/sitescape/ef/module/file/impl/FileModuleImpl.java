@@ -285,6 +285,23 @@ public class FileModuleImpl implements FileModule {
 	public void readIndirectlyAccessibleThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
+
+		String repositoryName = fa.getRepositoryName();
+		String relativeFilePath = fa.getFileItem().getName();
+		
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+
+		
+		// Dynamically generate a thumbnail file if there isn't one.
+		String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
+		if (session.fileInfo(binder, entry, thumbnailFileName) 
+				== RepositorySession.NON_EXISTING_FILE) {
+			if (relativeFilePath.endsWith(".jpg")) {
+				generateThumbnailFile(binder, entry, fa, 150, 0, false);
+			}
+		}
+		
+		
 		RepositoryUtil.read(fa.getRepositoryName(), binder, 
 				entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
 	}
