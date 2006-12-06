@@ -174,7 +174,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
-		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
 		  </c:otherwise>
 		</c:choose>		
 	</portlet:actionURL>">
@@ -203,7 +203,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
-		  	<portlet:param name="ssFolderSortDescend" value="true"/>
+		  	<portlet:param name="ssFolderSortDescend" value="false"/>
 		  </c:otherwise>
 		</c:choose>		
 	</portlet:actionURL>">
