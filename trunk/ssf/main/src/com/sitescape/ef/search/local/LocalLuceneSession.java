@@ -197,7 +197,7 @@ public class LocalLuceneSession implements LuceneSession {
     }
     
     public com.sitescape.ef.lucene.Hits search(Query query, Sort sort) {
-        return this.search(query, 0, -1);
+        return this.search(query, sort, 0, -1);
     }
 
     public com.sitescape.ef.lucene.Hits search(Query query, Sort sort, int offset, int size) {
