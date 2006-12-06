@@ -24,6 +24,8 @@
 		<delete>
 			<fileset dir="." includes="${output.war.file}" />
 		</delete>
+		<delete file="resources/slide-war/WEB-INF/jboss-web.xml" />
+		<delete file="resources/slide-war/WEB-INF/web.xml" />
 	</target>
 		
 	<target name="jar" depends="compile,build-common.jar">
@@ -56,7 +58,7 @@
 		<unwar src="resources/${slide.war.file}" dest="${temp.dir}"/>
 	</target>
 	
-	<target name="apply-changes" depends="jar,unwar-original">
+	<target name="apply-changes" depends="jar,unwar-original,make-jboss-web.xml,make-web.xml">
 		<!-- The following archives and files are not needed by SSFS. -->
 		<delete failonerror="true">
 			<fileset dir="${temp.dir}/WEB-INF/lib">
@@ -72,8 +74,14 @@
 			</fileset>
 		</delete>
 		<copy todir="${temp.dir}" overwrite="true">
-			<fileset dir="resources/slide-war" includes="**/*" />
+			<fileset dir="resources/slide-war" excludes="WEB-INF/jboss-web.xml.tmpl,WEB-INF/web.xml.tmpl,WEB-INF/context.xml" />
 		</copy>
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>
+				<copy file="resources/slide-war/WEB-INF/context.xml" todir="${temp.dir}" overwrite="true"/>
+			</then>
+		</if>
 		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
 	
@@ -121,6 +129,86 @@
 		</if>
     </target>
 
+	<target name="make-web.xml">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>
+				<delete file="resources/slide-war/WEB-INF/web.xml" />
+				<copy file="resources/slide-war/WEB-INF/web.xml.tmpl" tofile="resources/slide-war/WEB-INF/web.xml" />
+				<replace 
+					file="resources/slide-war/WEB-INF/web.xml" 
+					propertyFile="replace.properties">
+					<replacefilter 
+						token="@@SECURITY_ROLE_DEF@@"
+						property="liferay.*.web.security.role.ref"/>
+					<replacefilter 
+						token="@@AUTH_CONSTRAINT@@"
+						property="liferay.*.web.auth.constraint"/>
+					<replacefilter 
+						token="@@REALM_NAME@@"
+						property="liferay.*.web.realm-name"/>
+					<replacefilter 
+						token="@@SECURITY_ROLE@@"
+						property="liferay.*.web.security.role"/>
+				</replace>
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jbossportal" />
+				<then>
+					<delete file="resources/slide-war/WEB-INF/web.xml" />
+					<copy file="resources/slide-war/WEB-INF/web.xml.tmpl" tofile="resources/slide-war/WEB-INF/web.xml" />
+					<replace 
+						file="resources/slide-war/WEB-INF/web.xml" 
+						propertyFile="replace.properties">
+						<replacefilter 
+							token="@@SECURITY_ROLE_DEF@@"
+							property="jbossportal.jbosstomcat.web.security.role.ref"/>
+						<replacefilter 
+							token="@@AUTH_CONSTRAINT@@"
+							property="jbossportal.jbosstomcat.web.auth.constraint"/>
+						<replacefilter 
+							token="@@REALM_NAME@@"
+							property="jbossportal.jbosstomcat.web.realm-name"/>
+						<replacefilter 
+							token="@@SECURITY_ROLE@@"
+							property="jbossportal.jbosstomcat.web.security.role"/>
+					</replace>
+				</then>
+			</elseif>
+		</if>	
+	</target>
+
+	<target name="make-jboss-web.xml">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>
+				<delete file="resources/slide-war/WEB-INF/jboss-web.xml" />
+				<copy file="resources/slide-war/WEB-INF/jboss-web.xml.tmpl" tofile="resources/slide-war/WEB-INF/jboss-web.xml" />
+				<replace 
+					file="resources/slide-war/WEB-INF/jboss-web.xml" 
+					propertyFile="replace.properties">
+					<replacefilter 
+						token="@@SECURITY_DOMAIN@@"
+						property="liferay.*.jbossweb.security.domain"/>
+				</replace>
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jbossportal" />
+				<then>
+					<delete file="resources/slide-war/WEB-INF/jboss-web.xml" />
+					<copy file="resources/slide-war/WEB-INF/jboss-web.xml.tmpl" tofile="resources/slide-war/WEB-INF/jboss-web.xml" />
+					<replace 
+						file="resources/slide-war/WEB-INF/jboss-web.xml" 
+						propertyFile="replace.properties">
+						<replacefilter 
+							token="@@SECURITY_DOMAIN@@"
+							property="jbossportal.jbosstomcat.jbossweb.security.domain"/>
+					</replace>
+				</then>
+			</elseif>
+		</if>	
+	</target>
+
 	<!-- Build ssfs.war from scratch by first re-building slide.war (which
 	     ssfs.war is based on) from its source pool. This is necessary only 
 	     when slide.war has changed, which should be very rare. In all other
@@ -157,6 +245,8 @@
 	</target>
 	
 	<target name="jong-slide-build-cycle" depends="build-custom-slide-war,deploy,jong-slide-debug-aid" />
+
+	<target name="jong-slide-build-cycle-plus" depends="unzip-slide-src,jong-slide-build-cycle" />
 	
 	<target name="jong-slide-debug-aid">
 		<copy todir="C:/slide" overwrite="true">

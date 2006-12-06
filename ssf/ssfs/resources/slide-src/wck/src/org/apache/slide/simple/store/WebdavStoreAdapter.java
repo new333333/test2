@@ -498,7 +498,26 @@ public class WebdavStoreAdapter extends AbstractXAServiceBase implements Service
                             Logger.WARNING);
                 }
             } else {
-                connection = null;
+            	// 12/01/06 JK - Instead of setting connection to null, we set it
+            	// to the principal name. This behavior is exactly identical to 
+            	// the way we handle it with the use of 
+            	// com.sitescape.ef.ssfs.wck.AuthenticationManager (see
+            	// getAuthenticationSession method) under 
+            	// com.sitescape.ef.ssfs.jaas.SiteScapeLoginModule login module
+            	// (which extends Slide's JAASLoginModule). However, when we 
+            	// substitute different login module (for use under different app 
+            	// servers, for example), we lose that functionality because Slide
+            	// wouldn't initialize JAASLoginModule and therefore the code 
+            	// inside the "if" branch above doesn't get executed. The change 
+            	// below brings back the same consistent behavior regardless of the 
+            	// login module in use.  
+            	
+                //connection = null;
+            	
+            	if(principal != null)
+            		connection = principal.getName();
+            	else
+            		connection = null;
             }
         }
 

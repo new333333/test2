@@ -238,19 +238,7 @@
             </description>
         </init-param-->
         <load-on-startup>1</load-on-startup>
-        <!-- Uncomment this to get authentication -->
-        <security-role-ref>
-            <role-name>root</role-name>
-            <role-link>root</role-link>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>guest</role-name>
-            <role-link>guest</role-link>
-        </security-role-ref>
-        <security-role-ref>
-            <role-name>user</role-name>
-            <role-link>user</role-link>
-        </security-role-ref>
+@@SECURITY_ROLE_REF@@
     </servlet>
 	<servlet>
 		<servlet-name>SiteScapeServlet</servlet-name>
@@ -725,23 +713,11 @@
             <http-method>POLL</http-method>
             <http-method>NOTIFY</http-method>
         </web-resource-collection>
-        <auth-constraint>
-            <role-name>root</role-name>
-            <role-name>guest</role-name>
-            <role-name>user</role-name>
-        </auth-constraint>
+@@AUTH_CONSTRAINT@@
     </security-constraint>
     <login-config>
         <auth-method>BASIC</auth-method>
-        <realm-name>SiteScape DAV Server</realm-name>
+@@REALM_NAME@@
     </login-config>
-    <security-role>
-        <role-name>root</role-name>
-    </security-role>
-    <security-role>
-        <role-name>guest</role-name>
-    </security-role>
-    <security-role>
-        <role-name>user</role-name>
-    </security-role>
+@@SECURITY_ROLE@@
 </web-app>
