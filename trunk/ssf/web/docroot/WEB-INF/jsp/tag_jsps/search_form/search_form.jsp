@@ -17,13 +17,14 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Iterator" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="ssSearchFormData" type="java.util.Map" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-
+<script type="text/javascript" src="<html:rootPath/>js/tree/tree_widget.js"></script>
 <script type="text/javascript">
 
 function ss_getFilterTypeSelection(obj, op2) {
@@ -49,7 +50,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -143,6 +144,14 @@ function t_searchForm_wsTree_showId(forum, obj) {
 }
 
 </script>
+
+<ssf:tree 
+  treeName="<%= "t_searchForm_wsTree" %>" 
+  treeDocument="${ssDomTree}"  
+  rootOpen="false" 
+  multiSelect="<%= new ArrayList() %>" 
+  multiSelectPrefix="ss_sf_id_" 
+  initOnly="true" />
 
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="searchForm.terms" text="Filter terms"/></legend>

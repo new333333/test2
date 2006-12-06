@@ -61,6 +61,8 @@ public class TreeTag extends TagSupport {
 	private String userDisplayStyle;
 	private boolean tableOpened = false;
 	private boolean startingIdSeen = false;
+	private boolean initOnly = false;
+	private boolean noInit = false;
 	private boolean finished = false;
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
@@ -99,117 +101,119 @@ public class TreeTag extends TagSupport {
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
-			if (this.startingId == null || this.startingId.equals("")) {
+			if (!this.noInit && (this.startingId == null || this.startingId.equals("") || this.initOnly)) {
 				sb.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 				sb.append("<script type=\"text/javascript\">\n");
 				sb.append("ssTree_defineBasicIcons('"+contextPath+"/images');\n");
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
 				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
 				sb.append("var ss_treeShowIdRoutine_"+this.treeName+" = '" + this.showIdRoutine + "';\n");
-			}
-			
-			List recursedNodes = new ArrayList();
-
-			//Get the starting point of the tree
-			Element treeRoot = (Element)tree.getRootElement();
-			//Mark that the root is the last item in its list
-			treeRoot.addAttribute("treeLS","1");
-			if (this.rootOpen || this.allOpen || treeRoot.attributeValue("id", "-1").equals(this.nodeOpen)) {
-				treeRoot.addAttribute("treeOpen","1");
-			} else {
-				treeRoot.addAttribute("treeOpen","0");
-			}
-			List treeRootElements = (List) treeRoot.elements("child");
-			if (treeRootElements.size() > 0) {
-				treeRoot.addAttribute("treeHasChildren","1");
-				treeRoot.addAttribute("treeHasHiddenChildren","0");
-			} else {
-				treeRoot.addAttribute("treeHasChildren","0");
-				if (treeRoot.attributeValue("hasChildren", "").equalsIgnoreCase("true")) {
-					treeRoot.addAttribute("treeHasHiddenChildren","1");
-				} else {
-					treeRoot.addAttribute("treeHasHiddenChildren","0");
-				}
-			}
-			
-			//Build a list of elements starting with the root
-			List treeElements = new ArrayList();
-			treeElements.add(0,treeRoot);
-			
-			//Process the tree by traversing each branch all the way to its tips
-			//  remembering all elements seen along the way
-			while (treeElements.size() > 0) {
-				//Process the first branch on the list. Then process its children if any.
-				Element currentTreeElement = (Element) treeElements.get(0);
-				treeElements.remove(0);
-
-				//If this branch has children, add those to the front of the processing list
-				// Then, loop back to process the children before continuing with the other branches
-				List treeElements2 = (List) currentTreeElement.elements("child");
-				if (treeElements2.size() > 0) {
-					ListIterator it = treeElements2.listIterator();
-					while (it.hasNext()) {
-						Element nextTreeElement2 = (Element) it.next();
-						nextTreeElement2.addAttribute("parentId", nextTreeElement2.getParent().attributeValue("id", ""));
-						if (it.hasNext()) {
-							nextTreeElement2.addAttribute("treeLS","0");
-						} else {
-							nextTreeElement2.addAttribute("treeLS","1");							
-						}
-						if (this.allOpen || nextTreeElement2.attributeValue("id", "-1").equals(this.nodeOpen)) {
-							nextTreeElement2.addAttribute("treeOpen","1");
-							
-							//Make sure the parents are all open, too
-							Element parentElement = nextTreeElement2.getParent();
-							while (parentElement != null && !parentElement.isRootElement()) {
-								parentElement.addAttribute("treeOpen", "1");
-								if (parentElement.isRootElement()) {break;}
-								parentElement = parentElement.getParent();
-							}
-						} else {
-							nextTreeElement2.addAttribute("treeOpen","0");
-						}
-						List treeElements3 = (List) nextTreeElement2.elements("child");
-						if (treeElements3.size() > 0) {
-							nextTreeElement2.addAttribute("treeHasChildren","1");
-							nextTreeElement2.addAttribute("treeHasHiddenChildren","0");
-						} else {
-							nextTreeElement2.addAttribute("treeHasChildren","0");
-							if (nextTreeElement2.attributeValue("hasChildren", "").equalsIgnoreCase("true")) {
-								nextTreeElement2.addAttribute("treeHasHiddenChildren","1");
-							} else {
-								nextTreeElement2.addAttribute("treeHasHiddenChildren","0");
-							}
-						}
-					}
-					treeElements.addAll(0,treeElements2);
-				}
-			}
-			if (this.startingId == null || this.startingId.equals("")) {
 				sb.append("</script>\n\n\n");
 			}
 
-			if (this.startingId == null || this.startingId.equals("")) {
-				sb.append("<div class=\"ss_treeWidget\">\n");
-			}
-			if (userDisplayStyle != null && userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-				//This user is in accessibility mode, output a flat version of the tree
-				outputTreeNodesFlat(treeRoot, recursedNodes);
-				
-			} else {
+			if (this.initOnly) {
 				jspOut.print(sb.toString());
-				
-				//Output the tree
-				outputTreeNodes(treeRoot, recursedNodes);
-				
-				//Close the sortable table if needed
-				if (this.tableOpened) {
-					jspOut.print("<li></li></ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
-					this.tableOpened = false;
+			} else {
+				List recursedNodes = new ArrayList();
+	
+				//Get the starting point of the tree
+				Element treeRoot = (Element)tree.getRootElement();
+				//Mark that the root is the last item in its list
+				treeRoot.addAttribute("treeLS","1");
+				if (this.rootOpen || this.allOpen || treeRoot.attributeValue("id", "-1").equals(this.nodeOpen)) {
+					treeRoot.addAttribute("treeOpen","1");
+				} else {
+					treeRoot.addAttribute("treeOpen","0");
 				}
-			}
-			if (this.startingId == null || this.startingId.equals("")) {
-				jspOut.print("</div>\n");
+				List treeRootElements = (List) treeRoot.elements("child");
+				if (treeRootElements.size() > 0) {
+					treeRoot.addAttribute("treeHasChildren","1");
+					treeRoot.addAttribute("treeHasHiddenChildren","0");
+				} else {
+					treeRoot.addAttribute("treeHasChildren","0");
+					if (treeRoot.attributeValue("hasChildren", "").equalsIgnoreCase("true")) {
+						treeRoot.addAttribute("treeHasHiddenChildren","1");
+					} else {
+						treeRoot.addAttribute("treeHasHiddenChildren","0");
+					}
+				}
+				
+				//Build a list of elements starting with the root
+				List treeElements = new ArrayList();
+				treeElements.add(0,treeRoot);
+				
+				//Process the tree by traversing each branch all the way to its tips
+				//  remembering all elements seen along the way
+				while (treeElements.size() > 0) {
+					//Process the first branch on the list. Then process its children if any.
+					Element currentTreeElement = (Element) treeElements.get(0);
+					treeElements.remove(0);
+	
+					//If this branch has children, add those to the front of the processing list
+					// Then, loop back to process the children before continuing with the other branches
+					List treeElements2 = (List) currentTreeElement.elements("child");
+					if (treeElements2.size() > 0) {
+						ListIterator it = treeElements2.listIterator();
+						while (it.hasNext()) {
+							Element nextTreeElement2 = (Element) it.next();
+							nextTreeElement2.addAttribute("parentId", nextTreeElement2.getParent().attributeValue("id", ""));
+							if (it.hasNext()) {
+								nextTreeElement2.addAttribute("treeLS","0");
+							} else {
+								nextTreeElement2.addAttribute("treeLS","1");							
+							}
+							if (this.allOpen || nextTreeElement2.attributeValue("id", "-1").equals(this.nodeOpen)) {
+								nextTreeElement2.addAttribute("treeOpen","1");
+								
+								//Make sure the parents are all open, too
+								Element parentElement = nextTreeElement2.getParent();
+								while (parentElement != null && !parentElement.isRootElement()) {
+									parentElement.addAttribute("treeOpen", "1");
+									if (parentElement.isRootElement()) {break;}
+									parentElement = parentElement.getParent();
+								}
+							} else {
+								nextTreeElement2.addAttribute("treeOpen","0");
+							}
+							List treeElements3 = (List) nextTreeElement2.elements("child");
+							if (treeElements3.size() > 0) {
+								nextTreeElement2.addAttribute("treeHasChildren","1");
+								nextTreeElement2.addAttribute("treeHasHiddenChildren","0");
+							} else {
+								nextTreeElement2.addAttribute("treeHasChildren","0");
+								if (nextTreeElement2.attributeValue("hasChildren", "").equalsIgnoreCase("true")) {
+									nextTreeElement2.addAttribute("treeHasHiddenChildren","1");
+								} else {
+									nextTreeElement2.addAttribute("treeHasHiddenChildren","0");
+								}
+							}
+						}
+						treeElements.addAll(0,treeElements2);
+					}
+				}
+				
+				if (this.startingId == null || this.startingId.equals("")) {
+					sb.append("<div class=\"ss_treeWidget\">\n");
+				}
+				if (userDisplayStyle != null && userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					//This user is in accessibility mode, output a flat version of the tree
+					outputTreeNodesFlat(treeRoot, recursedNodes);
+					
+				} else {
+					jspOut.print(sb.toString());
+					
+					//Output the tree
+					outputTreeNodes(treeRoot, recursedNodes);
+					
+					//Close the sortable table if needed
+					if (this.tableOpened) {
+						jspOut.print("<li></li></ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
+						this.tableOpened = false;
+					}
+				}
+				if (this.startingId == null || this.startingId.equals("")) {
+					jspOut.print("</div>\n");
+				}
 			}
 		}
 	    catch(Exception e) {
@@ -226,6 +230,8 @@ public class TreeTag extends TagSupport {
 	    	multiSelectPrefix=null;
 	    	topId="";
 	    	showIdRoutine="";
+	    	initOnly=false;
+	    	noInit=false;
 	    }
 	    
 		return SKIP_BODY;
@@ -431,6 +437,10 @@ public class TreeTag extends TagSupport {
 							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
 							jspOut.print(this.multiSelectPrefix + s_id + "\" " + checked + "/>");
+							if (this.startingId != null && !this.startingId.equals("")) {
+								jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+								//recursedNodes.add(0, "1");
+							}
 						}
 					} else if (singleSelect != null) {
 						//can only select one item from tree, but probably other things going on
@@ -857,6 +867,14 @@ public class TreeTag extends TagSupport {
 	
 	public void setNowrap(boolean nowrap) {
 	    this.nowrap = nowrap;
+	}
+	
+	public void setInitOnly(boolean initOnly) {
+	    this.initOnly = initOnly;
+	}
+	
+	public void setNoInit(boolean noInit) {
+	    this.noInit = noInit;
 	}
 	
 	public void setCommonImg(String commonImg) {

@@ -107,13 +107,13 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
     } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
-		if (bottom == 0) {
+		if (bottom == '0') {
 			if (parentId == "") {
 				jObj.className = "ss_twMinusTop";	     // minus_top.gif
 			} else {
 				jObj.className = "ss_twMinus";	         // minus.gif
 			}
-		} else if (bottom == 1) {
+		} else if (bottom == '1') {
 			if (parentId == "") {
 				jObj.className = "ss_twMinusTopBottom";	 // minus_top_bottom.gif
 			} else {

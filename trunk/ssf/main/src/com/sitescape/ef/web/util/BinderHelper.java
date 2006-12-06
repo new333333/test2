@@ -90,7 +90,10 @@ public class BinderHelper {
 						new TreeBuilder(null, true, bs.getBinderModule()),0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
 				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder(null, true, bs.getBinderModule()), 0);
-			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {break;}
+			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
+						new TreeBuilder(null, true, bs.getBinderModule()),0);
+			}
 			navigationLinkMap.put(parentBinder.getId(), tree);
 			parentBinder = ((Binder)parentBinder).getParentBinder();
 		}
