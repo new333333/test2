@@ -47,6 +47,7 @@ public class ViewController  extends SAbstractController {
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String PROFILE_PORTLET="ss_profile";
 	public static final String DASHBOARD_PORTLET="ss_dashboard";
+	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -69,8 +70,10 @@ public class ViewController  extends SAbstractController {
 				displayType=PRESENCE_PORTLET;
 			else if (pName.contains(PROFILE_PORTLET))
 				displayType=PROFILE_PORTLET;
-			else if (pName.contains(DASHBOARD_PORTLET)) {
+			else if (pName.contains(DASHBOARD_PORTLET)) 
 				displayType=DASHBOARD_PORTLET;
+			else if (pName.contains(TOOLBAR_PORTLET)) {
+				displayType=TOOLBAR_PORTLET;
 			}
 			//TODO temporary until we figure out why adding a portlet freezes
 			model.put("ssf_support_files_loaded", "1");
@@ -182,6 +185,9 @@ public class ViewController  extends SAbstractController {
 				model.put(WebKeys.DASHBOARD_ID, d.getId());
 			}
 			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
+		
+		} else if (TOOLBAR_PORTLET.equals(displayType)) {
+ 			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
 		}
 		return null;
 	}

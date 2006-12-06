@@ -37,7 +37,7 @@ function ss_turnOffDebugMode() {
 <!-- Search form -->
 	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton">
 		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 
-		  action="<portlet:actionURL>
+		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="search"/>
 			</portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="40" offsetY="10"
@@ -82,6 +82,7 @@ function ss_turnOffDebugMode() {
 	</li>
 
 <!-- Clipboard -->
+<c:if test="">
 	<li class="ss_global_toolbar_clipboard" onClick="alert('Show the clipboard (tbd)');">
 	  <ssHelpSpot helpId="personal_toolbar/clipboard_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
@@ -90,8 +91,10 @@ function ss_turnOffDebugMode() {
 	    </div>
 	  </ssHelpSpot>
 	</li>
+</c:if>
 
 <!-- Show/hide portal -->
+<c:if test="${ss_navbar_style != 'portlet'}">
 	<li class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;">
 	  <ssHelpSpot helpId="personal_toolbar/maximize_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
@@ -100,6 +103,7 @@ function ss_turnOffDebugMode() {
 	    </div>
 	  </ssHelpSpot>
 	</li>
+</c:if>
 
 <!-- Help button -->
 	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();">

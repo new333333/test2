@@ -6,7 +6,7 @@ function ss_highlightLineById(id) {
     var obj = self.document.getElementById(id)
     if (obj == null) {
     	//Didn't find it by this name. Look for it by its other names.
-    	if (ss_columnCount && ss_columnCount > 0) {
+    	if (ss_columnCount != null && ss_columnCount > 0) {
     		//This is a sliding table. Go highlight all of the columns.
     		for (var i = 0; i <= ss_columnCount; i++) {
     			var rowId = id + "_" + i;
