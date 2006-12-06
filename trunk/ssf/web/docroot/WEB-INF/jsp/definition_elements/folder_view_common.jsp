@@ -197,9 +197,9 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		<portlet:param name="ssFolderSortBy" value="_creatorId"/>
+		<portlet:param name="ssFolderSortBy" value="_creatorTitle"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'true'}">
+		  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
 		  	<portlet:param name="ssFolderSortDescend" value="false"/>
 		  </c:when>
 		  <c:otherwise>
@@ -210,10 +210,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<ssf:nlt tag="folder.column.Author"/>
     <a/>
 
-    <c:if test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'true'}">
+    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
 		<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 	</c:if>
-	<c:if test="${ ssFolderSortBy == '_creatorId' && ssFolderSortDescend == 'false'}">
+	<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 		<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 	</c:if>
     
