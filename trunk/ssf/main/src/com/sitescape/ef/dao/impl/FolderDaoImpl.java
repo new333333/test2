@@ -336,6 +336,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
+ 		   			//remove foreign keys or mysql complains
+        	  		session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
+        	  			.setEntity("parent", folder)
+   	   					.executeUpdate();
         	  		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
        	   				.setEntity("parent", folder)
        	   				.executeUpdate();
@@ -354,6 +358,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                			StringBuffer inList = new StringBuffer();
                			FolderEntry p;
                			ids.add(entry.getId());
+        	    		inList.append(entry.getId().toString() + ",");
             			for (int i=0; i<entries.size(); ++i) {
             				p = (FolderEntry)entries.get(i); 
             	    		ids.add(p.getId());
@@ -382,6 +387,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      	   					.setParameterList("pList", ids)
      	   					.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
      	   					.executeUpdate();
+     		   			//remove foreign key or mysql complains
+    		   			session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
+    	   				.setParameterList("pList", ids)
+    	   				.executeUpdate();
      		   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
         	   				.setParameterList("pList", ids)
         	   				.executeUpdate();
