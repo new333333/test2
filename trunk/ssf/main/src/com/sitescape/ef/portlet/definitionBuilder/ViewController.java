@@ -258,6 +258,10 @@ public class ViewController extends SAbstractController {
 		
 		data.put("itemName", itemName);
 		
+		String selectionId = PortletRequestUtils.getStringParameter(request, "selectionId", "");
+		
+		data.put("selectionId", selectionId);
+		
         //There is a forum specified, so get the forum object
 		model.put("definitionTree", definitionTree);
 		data.put("selectedItem", selectedItem);
