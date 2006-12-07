@@ -10,6 +10,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
+import com.sitescape.ef.lucene.SsfQueryAnalyzer;
+
 public class SearchObject {//implements Serializable {
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -25,7 +27,7 @@ public class SearchObject {//implements Serializable {
 		//synchronized(SearchObject.class){
 		if (qp == null) {
 			logger.info("QueryParser instantiating new QP");
-			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new WhitespaceAnalyzer());
+			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		}
 		//}
