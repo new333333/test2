@@ -79,9 +79,9 @@ function initializeStateMachine() {
 	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
 }
 
-function loadDiv(option, itemId, itemName) {
+function loadDiv(option, itemId, itemName, selectionId) {
 	//alert("Load div: " + option + ", " + itemId + ", " + itemName)
-	ss_loadNextDiv(option, itemId, itemName)
+	ss_loadNextDiv(option, itemId, itemName, selectionId)
 	return
 	
 	
@@ -94,6 +94,7 @@ function loadDiv(option, itemId, itemName) {
 	url += "\&option=" + option
 	if (itemId != "") {url += "\&itemId=" + itemId;}
 	if (itemName != "") {url += "\&itemName=" + itemName;}
+	if (selectionId != "") {url += "\&selectionId=" + selectionId;}
 	url += "\&rn=" + rn++
 	//alert(url)
 	ss_fetch_url(url, loadDivCallback)
@@ -407,11 +408,14 @@ function setStateMachine(newState) {
 		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 		showDisplayButtons()
-		loadDiv('properties', operationSelection, operationSelectedItem)
+		//loadDiv('properties', operationSelection, operationSelectedItem)
+		//loadDiv('properties', "", operationSelectedItem, operationSelection)
+		loadDiv('properties', "", operationSelectedItem, operationSelectedItem)
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
 		showDisplayButtons()
-		loadDiv('properties', selectedIdMapped, "")
+		//loadDiv('properties', selectedIdMapped, "")
+		loadDiv('properties', selectedIdMapped, "", selectedIdMapped)
 	} else if (state == "deleteItem") {
 		//alert("deleteItem: " + selectedId)
 		ss_setDivHtml("displaydiv", "")
@@ -467,7 +471,7 @@ function setSubmitData(formObj) {
 	formObj.sourceDefinitionId.value = sourceDefinitionId;
 }
 
-function ss_loadNextDiv(option, itemId, itemName) {
+function ss_loadNextDiv(option, itemId, itemName, selectionId) {
 	ss_setupStatusMessageDiv()
 	//alert("load div: " + option + ", " + itemId + ", " + itemName)
 	hideDisplayDiv();
@@ -479,6 +483,7 @@ function ss_loadNextDiv(option, itemId, itemName) {
 	url += "\&option=" + option
 	if (itemId != "") {url += "\&itemId=" + itemId;}
 	if (itemName != "") {url += "\&itemName=" + itemName;}
+	if (selectionId != "") {url += "\&selectionId=" + selectionId;}
 	url += "\&rn=" + rn++
 	//alert(url)
 	
