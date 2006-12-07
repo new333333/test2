@@ -29,7 +29,7 @@ Search configuration
 
 <ssf:searchForm form="${ss_dashboard_config_form_name}" element="data.query" 
   data="${ssDashboard.beans[ssComponentId].ssSearchFormData}" />
-
+<input type="hidden" name="data_ssMaxHits" value="24"/>
 <br/>
 
 <script type="text/javascript">

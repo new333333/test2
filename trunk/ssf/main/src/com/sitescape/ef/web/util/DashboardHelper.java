@@ -626,6 +626,10 @@ public class DashboardHelper {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DATE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
+			String[] maxHitsStr = (String[])data.get(WebKeys.SEARCH_FORM_MAX_HITS);
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr[0]));
+		}
 		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery, options);
 		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
