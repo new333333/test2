@@ -146,14 +146,15 @@
 		<move file="${basedir}/database.${user.name}.properties.moved" tofile="${basedir}/database.${user.name}.properties" failonerror="false"/>
 	</target>
 	
-	<target name="execute-create-tables-script" depends="init-database-type"
+<!--	<target name="execute-create-tables-script" depends="init-database-type"
 		description="Execute sql script that creates tables in sitescape database.">
 		<antcall target="execute-script">
 			<param name="jdbc.properties" value="${basedir}/jdbc-${database.type}.properties"/>
 			<param name="sql.script" value="${basedir}/create/create-tables-${database.type}.sql"/>
 		</antcall>
 	</target>
-	
+-->
+<!--
 	<target name="execute-create-unconstrained-script" depends="init-database-type"
 		description="Execute sql script that creates unconstrained tables in sitescape database.">
 		<antcall target="execute-script">
@@ -161,7 +162,7 @@
 			<param name="sql.script" value="${basedir}/create/create-unconstrained-tables-${database.type}.sql"/>
 		</antcall>
 	</target>
-	
+-->	
 	<target name="execute-add-constraints-script" depends="init-database-type"
 		description="Execute sql script that adds constraints to tables in sitescape database.">
 		<antcall target="execute-script">
@@ -190,6 +191,7 @@
 		</sql>
 	</target>
 	
+<!--
 	<target name="execute-test-create-tables-script"  
 		description="Execute test script that creates tables in test SQLSERVER database">
 		<antcall target="execute-script">
@@ -197,7 +199,7 @@
 			<param name="sql.script" value="${basedir}/test/test-create-tables-sqlserver.sql"/>
 		</antcall>
 	</target>
-	
+-->	
 	<!-- Only called by other targets (like subroutines) -->
 	<target name="load-data">
   		<property file="${jdbc.properties}" />

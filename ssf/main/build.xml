@@ -122,6 +122,7 @@
 			message="${line.separator}hibernate.connection.password ${jdbc.password}"/>
 	</target>
 
+<!--
 	<target name="ss-create-tables" depends="init-database-type"
 			description="Creates database creation script for all sitescape domain">
 		<property name="schemaexport.text.value" value="no" />
@@ -152,7 +153,7 @@
 		        </fileset>
 		     </schemaexport>
 	    </target>
-	
+-->	
 
 	<target name="ss-update-tables" 
 		description="Update database tables for sitescape domain"
