@@ -21,7 +21,8 @@ import com.sitescape.ef.lucene.SsfIndexAnalyzer;
 
 public class LuceneUtil {
 
-
+/* These methods are no longer supported
+ * 
 	public static void addTerm(
 			BooleanQuery booleanQuery, String field, String text)
 		throws ParseException {
@@ -47,7 +48,7 @@ public class LuceneUtil {
 
 		booleanQuery.add(termQuery, true, false);
 	}
-
+*/
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		try {
