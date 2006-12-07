@@ -22,35 +22,10 @@
 <c:forEach var="fileEntry" items="${ssDashboard.beans[ssComponentId].ssSearchFormData.searchResults}" >
   <c:set var="hitCount" value="${hitCount + 1}"/>
   
-<div class="ss_blog_title">
-<span class="ss_bold ss_largerprint">
- <a style="text-decoration: none;" href="<ssf:url 
-            adapter="true" 
-            portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>">
-<c:if test="${empty ssDefinitionEntry.title}">
-  <span class="ss_light">
-    --<ssf:nlt tag="entry.noTitle"/>--
-  </span>
-</c:if>
-<c:out value="${fileEntry.title}"/></a>
-</span>
-</div>
-<br>
-<span class="ss_italic ss_smallprint">
-<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     value="${fileEntry._creationDate}" type="both" 
-	 timeStyle="short" dateStyle="medium" />
- by <c:out value="${fileEntry.creation.principal.title}"/>
-</span>
-
-  <div style="padding-bottom:6px;">
-    <div>
+<div class="ss_blog_summary_title">
+  <table cellspacing="0" cellpadding="0" width="100%">
+  <tr>
+  <td valign="top"><span class="ss_bold ss_largerprint">
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -87,16 +62,8 @@
     <span class="ss_fineprint"><i>(no title)</i></span>
     </c:if>
     <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
-
-    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <span class="ss_smallprint">
-      <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
-	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
-      value="${fileEntry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="short" /></span>
-    
-    
-    &nbsp;&nbsp;&nbsp;
+	</td>
+	<td align="right" nowrap valign="top"><span class="ss_italic ss_smallprint">
     <c:if test="${fileEntry._entityType == 'folderEntry' || 
       		fileEntry._entityType == 'reply'}">
       <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -117,9 +84,17 @@
        <div id="ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>" 
        style="position:absolute; display:none;">${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</div></a>
     </c:if>
+    &nbsp;&nbsp;
+    <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
+	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+      value="${fileEntry._modificationDate}" type="both" 
+	  timeStyle="short" dateStyle="short" /></span>&nbsp;&nbsp;
+	</td>
+	</tr>
+	</table>
+</div>
 
-    </div>
-  
+<div style="padding-bottom:10px;">
 <jsp:useBean id="fileEntry" type="java.util.Map" />
 <%
 	if (fileEntry.containsKey("_desc")) {
@@ -127,8 +102,8 @@
 		String summary = "";
 		for (int i = 0; i < words.length; i++) {
 			summary = summary + " " + words[i];
-			//Limit the summary to 30 words
-			if (i >= 30) {
+			//Limit the summary to 200 words
+			if (i >= 200) {
 				if (i < words.length - 1) summary = summary + "...";
 				break;
 			}
@@ -140,8 +115,9 @@
 <%
 	}
 %>  
-  </div>
+</div>
 </c:forEach>
+
 <c:if test="${hitCount > 0}">
   <div align="right">
     <span class="ss_light ss_fineprint">
