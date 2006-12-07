@@ -410,10 +410,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		    	}
 		    	
 		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-		        
-		        int maxResults = 10;
+		    	int maxResults = 10;
+		    	int offset = 0;
+		    	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+		    		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+		    	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+		    		offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		        try {
-			        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
+			        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 		        }
 		        finally {
 		            luceneSession.close();
