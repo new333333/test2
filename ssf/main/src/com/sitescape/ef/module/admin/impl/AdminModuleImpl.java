@@ -607,9 +607,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);		
 	}
-	public void setZone1() {
+	public void setZone1(String zoneName) {
 		Map params = new HashMap();
-		params.put("name", RequestContextHolder.getRequestContext().getZoneName());
+		params.put("name", zoneName);
 		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and name=:name", params);
 		//has to exist
 		Binder ws = (Binder)result.get(0);
@@ -622,9 +622,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.PostingDef set zoneId=" + ws.getId() + " where zoneId is null");
 		getCoreDao().evict(ws);
 	}
-	public void setZone2() {
+	public void setZone2(String zoneName) {
 		Map params = new HashMap();
-		params.put("name", RequestContextHolder.getRequestContext().getZoneName());
+		params.put("name", zoneName);
 		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and name=:name", params);
 		//has to exist
 		Binder ws = (Binder)result.get(0);
@@ -643,12 +643,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		try {
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, ws.getId());
 		} catch (com.sitescape.ef.domain.NoGroupByTheNameException ng) {
-			addAllUserGroup(profiles, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+			addAllUserGroup(profiles, new HistoryStamp(ws.getCreation().getPrincipal()));
 		}
 		try {
 			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, ws.getId());
 		} catch (com.sitescape.ef.domain.NoUserByTheNameException nu) {
-			addAnnonymous(profiles, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+			addAnnonymous(profiles, new HistoryStamp(ws.getCreation().getPrincipal()));
 		}
 		
 	}

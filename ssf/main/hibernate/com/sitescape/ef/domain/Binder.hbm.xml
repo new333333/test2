@@ -14,11 +14,11 @@
     <many-to-one name="owner"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
-        <key column="parentBinder" on-delete="cascade"/>
+        <key column="parentBinder"/>
         <one-to-many class="com.sitescape.ef.domain.Binder"/>
     </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
-      <key column="binder" on-delete="cascade"/>
+      <key column="binder"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
@@ -30,7 +30,7 @@
       </many-to-many>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
-      <key column="binder" on-delete="cascade"/>
+      <key column="binder"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">

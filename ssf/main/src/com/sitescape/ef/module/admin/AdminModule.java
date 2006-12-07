@@ -26,8 +26,8 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 public interface AdminModule {
 	public void addZone(String zoneName);
 	//TODO: temporary
-	public void setZone1();
-	public void setZone2();
+	public void setZone1(String zoneName);
+	public void setZone2(String zoneName);
 
 	public void addFunction(Function function);
     public void modifyFunction(Long functionId, Map updates);

@@ -48,7 +48,7 @@
       </component>
       <property name="lastVersion"/>
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
-        <key column="parentAttachment" on-delete="cascade"/>
+        <key column="parentAttachment" />
         <one-to-many class="com.sitescape.ef.domain.VersionAttachment"/>
       </bag>
       <property name="repositoryName" access="field" length="128"/>
