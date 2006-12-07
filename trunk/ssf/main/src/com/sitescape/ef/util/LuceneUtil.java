@@ -17,9 +17,10 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import com.sitescape.ef.lucene.MixedCaseAnalyzer;
+import com.sitescape.ef.lucene.SsfIndexAnalyzer;
 
 public class LuceneUtil {
+
 
 	public static void addTerm(
 			BooleanQuery booleanQuery, String field, String text)
@@ -47,6 +48,7 @@ public class LuceneUtil {
 		booleanQuery.add(termQuery, true, false);
 	}
 
+	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		try {
 			return IndexReader.open(indexPath);
@@ -84,7 +86,7 @@ public class LuceneUtil {
 	public static IndexWriter getWriter(String indexPath, boolean create)
 		throws IOException {
 
-		return new IndexWriter(indexPath, new MixedCaseAnalyzer(), create);
+		return new IndexWriter(indexPath, new SsfIndexAnalyzer(), create);
 	}
 
 	private static boolean initializeIndex(String indexPath) throws IOException {
