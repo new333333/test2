@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
@@ -37,6 +39,7 @@ public class BuildDefinitionDivs extends TagSupport {
     private String option = "";
     private String itemId = "";
     private String itemName = "";
+    private String selectionId = "";
 	private int helpDivCount;
 	
 	private String helpImgUrl = "";
@@ -105,7 +108,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
 		Iterator itRootElements2;
-		
+		boolean found = false;
+
 		helpImgUrl = contextPath + "/images/pics/sym_s_help.gif";
 
 		if (filter.equals("")) {
@@ -120,6 +124,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		if (this.itemName.equals("profileElements")
 		|| this.itemName.equals("profileEntryDataItem"))
 		{
+			found = true;
 			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
 			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
 		}
@@ -135,28 +140,59 @@ public class BuildDefinitionDivs extends TagSupport {
 		{
 			// Processing Form Profile Element
 			// Get information from root document
+			found = true;
 			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();
 			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();	
 		}
 		else
-		if (this.itemName.length() > 0
-		&& Character.isDigit(this.itemName.charAt(0)))
+		if (!this.selectionId.equals("")
+		&& !this.selectionId.equals("undefined")
+		&& Character.isDigit(this.selectionId.charAt(0)))
 		{
-			// Processing View Profile Element
-			// We need to get information from document that the item was saved to
-			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
-			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();			
+			Element item = (Element)root.selectSingleNode("item[@name='profileEntryForm']//item[@id='" + this.selectionId + "']"); 
+			if (item != null && item.attributeValue("type", "").equals("data"))
+			{
+				try
+				{
+					OutputFormat format = OutputFormat.createPrettyPrint();
+					XMLWriter writer = new XMLWriter(System.out, format);
+					writer.write(item);
+				} catch (Exception e) {}
+				System.out.println("Form");
+				
+				found = true;
+				itRootElements = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
+				itRootElements2 = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
+			}
+			else
+			{
+				item = (Element) root.selectSingleNode("item[@name='profileEntryView']//item[@id='" + this.selectionId + "']");
+				if (item != null && item.attributeValue("type", "").equals("data"))
+				{
+					try
+					{
+						OutputFormat format = OutputFormat.createPrettyPrint();
+						XMLWriter writer = new XMLWriter(System.out, format);
+						writer.write(item);
+					} catch (Exception e) {}
+					System.out.println("View");
+					
+					found = true;
+					itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
+					itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();					
+				}
+			}
 		}
-		else
-		if (!this.option.equals("") && !this.itemId.equals("") && this.itemName.equals("")) {
+		
+		if (!found && !this.option.equals("") && !this.itemId.equals("") && this.itemName.equals("")) {
 			//We are looking for a single item, so only do that item
 			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
 			itRootElements2 = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
-		} else if (!this.option.equals("") && !this.itemName.equals("")) {
+		} else if (!found && !this.option.equals("") && !this.itemName.equals("")) {
 			//We are looking for an item in the definition config
 			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
 			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
-		} else if (!this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
+		} else if (!found && !this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
 			//We are looking for the definition itself
 			String definitionType = root.attributeValue("type", "");
 			if (!definitionType.equals("")) {
@@ -165,7 +201,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 		
-
 		if (this.option.equals("") && filter.equals("")) {
 			//Only do this routine once
 			sb.append("<script type=\"text/javascript\">\n");
@@ -492,7 +527,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								 */
 								if (optionName.equals("profileEntryDataItem"))
 								{
-									Iterator options = sourceRoot.selectNodes("//item[@name='profileElements']/properties/property[@name='caption']").iterator();
+									Iterator options = sourceRoot.selectNodes("//item[@name='profileEntryFormForm']/item[@name='profileElements']/properties/property[@name='caption']").iterator();
 									while (options.hasNext())
 									{
 										Element o = (Element)options.next();
@@ -581,9 +616,17 @@ public class BuildDefinitionDivs extends TagSupport {
 		
 	}
 	protected void addOption(StringBuffer sb, StringBuffer hb, Element item, String id, String name) {
+		
 		sb.append("<li>");
 		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+id+"', '"+name+"');return false;\">");
-		sb.append(NLT.getDef(item.attributeValue("caption", name)));
+
+		/**
+		 * (rsordillo) have to take into account a property can be an Option
+		 */
+		if (item.getName().equals("property"))
+			sb.append(NLT.getDef(item.attributeValue("value", name)));
+		else
+			sb.append(NLT.getDef(item.attributeValue("caption", name)));
 		sb.append("</a>");
 		//See if this item has any help
 		Element help = (Element) item.selectSingleNode("./help");
@@ -621,10 +664,19 @@ public class BuildDefinitionDivs extends TagSupport {
 			 * determine what items to exclude from modify screen. We must determine if the itemId
 			 * if a View or Form item to show the correct properties
 			 */
+			boolean found = false;
 			Element propertiesConfig = null;
-			if (!this.itemId.equals("") && root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.itemId + "']") != null)
-				propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='profileEntryDataItem']/properties");
-			else
+			if (!this.selectionId.equals("") && root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']") != null)
+			{
+				Element item = (Element)root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']");
+				if (item != null && item.attributeValue("type", "").equals("data"))
+				{
+					found = true;
+					propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='profileEntryDataItem']/properties");
+				}
+			}
+			
+			if (!found)
 				propertiesConfig = rootConfigElement.element("properties");
 			
 			Element properties = rootElement.element("properties");
@@ -691,10 +743,18 @@ public class BuildDefinitionDivs extends TagSupport {
 								
 								name = this.itemName;
 								if (rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
-									name = ((Element)this.sourceDocument.getRootElement().selectSingleNode("//item[@id='" + this.itemName + "']/properties/property[@name='caption']")).attributeValue("value");
-										
-								sb.append("<p>" + name + "</p>\n");
-								sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
+								{
+									Element item = ((Element)this.sourceDocument.getRootElement().selectSingleNode("//item[@id='" + this.selectionId + "']/properties/property[@name='caption']"));
+									// Some Item do not have captions (ex) Box we must take this into account
+									if (item == null)
+										name = "";
+									else
+									{
+										name = item.attributeValue("value");
+										sb.append("<p>" + name + "</p>\n");
+										sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
+									}
+								}
 							}
 							else
 							{
@@ -1347,4 +1407,11 @@ public class BuildDefinitionDivs extends TagSupport {
 	    this.itemName = itemName;
 	}
 	
+	public String getSelectionId() {
+	    return this.selectionId;
+	}
+	
+	public void setSelectionId(String selectionId) {
+	    this.selectionId = selectionId;
+	}
 }
