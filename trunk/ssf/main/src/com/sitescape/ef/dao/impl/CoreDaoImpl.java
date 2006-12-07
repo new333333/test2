@@ -144,6 +144,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where binderId=:owner")
 		   				.setLong("owner", binder.getId().longValue())
 		   				.executeUpdate();
+		   			delete((DefinableEntity)binder);
+		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
+		   			session.evict(binder);
+		   			
 /*		   			Connection connect = session.connection();
 		   			try {
 		   				Statement s = connect.createStatement();
@@ -178,11 +182,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
  		   			//will this be a problem if the entry is proxied??
  		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
 		   				.executeUpdate();
-		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
 		   			session.getSessionFactory().evict(Binder.class, binder.getId());
 		   			session.evict(binder);
 */
-		   			delete((DefinableEntity)binder);
 		   			return null;
     	   		}
     	   	}
@@ -190,17 +192,23 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
  
 	    			
 	}
-	/** not needed anymore.  Using on-delete in hibernate
+	/* 
+	 * Becuse we have relationships within the same table, 
+	 * not all databases handle on-delete correctly.  
+	 * We are forced to do it ourselves
+	 */
  	public void deleteEntityAssociations(final String whereClause, final Class clazz) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {
 	    	   		public Object doInHibernate(Session session) throws HibernateException {
 	    	   		session.createQuery("DELETE com.sitescape.ef.domain.Attachment where " + whereClause)
 	    	   			.executeUpdate();
-	    	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where " + whereClause)
-	       	   			.executeUpdate();
 	       	   		session.createQuery("DELETE com.sitescape.ef.domain.CustomAttribute where " + whereClause)
 	  	   				.executeUpdate();
+/*
+ * hibernate can deal with these cause on-delete cascade will work
+ * 	    	   		session.createQuery("DELETE com.sitescape.ef.domain.Event where " + whereClause)
+       	   			.executeUpdate();
 	       	   		try {
 	       	   			if (clazz.newInstance() instanceof WorkflowSupport) {
 	       	   			session.createQuery("DELETE com.sitescape.ef.domain.WorkflowState where " + whereClause)
@@ -209,14 +217,15 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        	   				.executeUpdate();
 	       	   			}
 	       	   		} catch (Exception ex) {};
+*/
 	       	   		return null;
-	    	   		}
-	    	   	}
+	       	   		}
+	       	   	}
 	    	 );    	
 	    	
 		
 	}
-*/
+
 	/**
      * Delete an object.  Delete associations not maintained with foreign-keys.
       * @param entry
@@ -225,9 +234,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	getHibernateTemplate().execute(
     	   	new HibernateCallback() {
     	   		public Object doInHibernate(Session session) throws HibernateException {
- //    	   		EntityIdentifier id = entity.getEntityIdentifier();
- //    	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
- //    	   		deleteEntityAssociations(whereClause, entity.getClass());
+     	   		EntityIdentifier id = entity.getEntityIdentifier();
+     	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
+     	   		deleteEntityAssociations(whereClause, entity.getClass());
 
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
@@ -251,11 +260,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
 	   				.executeUpdate();
     	   		//will this be a problem if the entry is proxied??
- //   	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
-  //  	   			.setLong("id", id.getEntityId().longValue())
-   // 	   			.executeUpdate();
-		   		session.delete(entity);
-		   		//session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
+    	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
+    	   			.setLong("id", id.getEntityId().longValue())
+   	   			.executeUpdate();
+	//	   		session.delete(entity);
+		   		session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
        	   		return null;
     	   		}
     	   	}

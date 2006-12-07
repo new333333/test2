@@ -39,7 +39,7 @@
     <property name="xmlValue" type="com.sitescape.ef.dao.util.SSClobStringType"/>
     <property name="booleanValue" />
     <set inverse="true" cascade="all,delete-orphan" lazy="true" batch-size="4" name="values">
-      <key column="parent" on-delete="cascade"/>
+      <key column="parent"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttributeListElement"/>
     </set>
     <property name="valueType"/>

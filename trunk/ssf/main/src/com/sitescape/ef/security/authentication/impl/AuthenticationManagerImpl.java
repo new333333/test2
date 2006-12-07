@@ -132,8 +132,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
 			//TODO: temporary to fixup zones
-			getAdminModule().setZone1();
-			getAdminModule().setZone2();
+			getAdminModule().setZone1(zoneName);
+			getAdminModule().setZone2(zoneName);
 		} catch (NoWorkspaceByTheNameException nw) {
 			getAdminModule().addZone(zoneName);
 		} catch (NoBinderByTheNameException nb) {
