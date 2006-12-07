@@ -199,6 +199,12 @@ public class DashboardHelper {
 						//Set up the search results bean
 						getInstance().getSearchResultsBean(binder, ssDashboard, 
 								model, id, component);
+					} else if (component.get(Name).equals(
+							ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
+						//Set up the search results bean
+						getInstance().getSearchResultsBean(binder, ssDashboard, 
+								model, id, component);
+						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 					}
 				}
 			}
@@ -544,8 +550,13 @@ public class DashboardHelper {
     		beans = new HashMap();
     		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
     	}
-    	Map idData = new HashMap();
-    	beans.put(id, idData);
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
 
     	Document tree = null;
  
@@ -590,8 +601,13 @@ public class DashboardHelper {
     		beans = new HashMap();
     		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
     	}
-    	Map idData = new HashMap();
-    	beans.put(id, idData);
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
 
 		Map searchSearchFormData = new HashMap();
 		searchSearchFormData.put("searchFormTermCount", new Integer(0));
@@ -721,6 +737,12 @@ public class DashboardHelper {
 					if (componentData.containsKey("groups")) {
 					componentData.put("groups", FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 					}
+				} else if (componentMap.get(DashboardHelper.Name).
+						equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
+					try {
+						Document query = FilterHelper.getBlogSummaryQuery(request);
+						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
+					} catch(Exception ex) {}
 				}
 					
 				//Save the title and data map
