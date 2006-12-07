@@ -19,7 +19,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.Term;
 
-import com.sitescape.ef.lucene.MixedCaseAnalyzer;
+import com.sitescape.ef.lucene.SsfIndexAnalyzer;
 
 
 /**
@@ -277,7 +277,7 @@ public class IndexObject  {
      * @throws RemoteException
      */
     private void emptyAddQ() throws RemoteException {
-        Analyzer manlzr = new MixedCaseAnalyzer();
+        Analyzer manlzr = new SsfIndexAnalyzer();
         System.out.println("addQ has: " + addQ.size() + " entries");
         if (addQ.size() == 0) return;
         try {
