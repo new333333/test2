@@ -348,7 +348,7 @@ public class DashboardHelper {
 		
 		//Check the access rights of the user
 		try {
-			getInstance().getBinderModule().checkModifyBinderAllowed(binder);
+			getInstance().getBinderModule().checkAccess(binder, "setProperty");
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(true));
 		} catch(AccessControlException e) {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));			
@@ -601,7 +601,7 @@ public class DashboardHelper {
 		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) 
 				searchQuery = (Document)data.get(DashboardHelper.SearchFormSavedSearchQuery);
 
-		Map elementData = getFolderModule().getCommonEntryElements();
+		Map elementData = BinderHelper.getCommonEntryElements();
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, 
 				FilterHelper.buildFilterFormMap(searchQuery,
 						elementData));

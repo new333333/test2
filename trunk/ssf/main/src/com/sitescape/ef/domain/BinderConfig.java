@@ -17,11 +17,12 @@ import com.sitescape.util.Validator;
  *
  */
 public class BinderConfig extends PersistentTimestampObject implements AclControlled {
-	private String zoneName, title;
+	private String title;
 	private int definitionType;
 	private PersistentAclSet aclSet; 
     private String iId;
     private SSBlobSerializable definitions,workflows; //assigned by hibernate access="field"
+    private Long zoneId;
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
@@ -54,13 +55,13 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     	return null;
     }   
 	/**
-     * @hibernate.property length="100" not-null="true" node="zoneName"
+     * @hibernate.property not-null="true"
      */
-    public String getZoneName() {
-    	return this.zoneName;
+    public Long getZoneId() {
+    	return this.zoneId;
     }
-    public void setZoneName(String zoneName) {
-    	this.zoneName = zoneName;
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
     /**
      * @hibernate.property length="128"
@@ -73,7 +74,7 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     }
     /**
      * Internal id used to identify default definitions.  This id plus
-     * the zoneName are used to locate default definitions.  If we just used the primary key id
+     * the zoneId are used to locate default definitions.  If we just used the primary key id
      * the zones would need the same default and that may not be desirable.
      * @hibernate.property length="32"
      */

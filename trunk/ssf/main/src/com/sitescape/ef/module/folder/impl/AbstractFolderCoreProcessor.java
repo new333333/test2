@@ -266,12 +266,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
           
     protected Entry entry_load(Binder parentBinder, Long entryId) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-        return folderDao.loadFolderEntry(parentBinder.getId(), entryId, user.getZoneName()); 
+        return folderDao.loadFolderEntry(parentBinder.getId(), entryId, parentBinder.getZoneId()); 
     }
          
-     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
        	//pass replies along as context so we can delete them all at once
+    	 //load in reverse hkey order so foreign keys constraints are handled correctly
        	return getFolderDao().loadEntryDescendants((FolderEntry)entry); 
     }
         
@@ -298,9 +298,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-    	List entries = new ArrayList((List)ctx);
-    	entries.add(entry);
-    	getFolderDao().deleteEntries(entries);   
+    	getFolderDao().deleteEntries((FolderEntry)entry, (List)ctx);   
       	return ctx;
     }
     protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
@@ -437,7 +435,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
             ids.add(fEntry.getModification().getPrincipal().getId());
         if (fEntry.getReservation() != null) 
             ids.add(fEntry.getReservation().getPrincipal().getId());
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      } 
 
     protected void loadEntryHistory(HashMap entry) {
@@ -451,7 +449,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
     		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
     	    } catch (Exception ex) {};
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      } 
     protected List loadEntryHistoryLuc(List pList) {
         Set ids = new HashSet();
@@ -469,7 +467,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
 	    	} catch (Exception ex) {};
         }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      }   
 
     protected void loadEntryHistory(List pList) {
@@ -485,7 +483,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
             if (entry.getReservation() != null) 
                 ids.add(entry.getReservation().getPrincipal().getId());
         }
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      }     
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);

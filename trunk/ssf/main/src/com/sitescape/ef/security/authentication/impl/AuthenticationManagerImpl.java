@@ -1,31 +1,20 @@
 package com.sitescape.ef.security.authentication.impl;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.context.request.RequestContext;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.module.admin.AdminModule;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
@@ -38,9 +27,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	private ProfileDao profileDao;
 	private CoreDao coreDao;
 	private AdminModule adminModule;
-	private DefinitionModule definitionModule;
 	private ProfileModule profileModule;
-	private ProcessorManager processorManager;
 
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -63,15 +50,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 	public void setAdminModule(AdminModule adminModule) {
 		this.adminModule = adminModule;
 	}
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	protected ProcessorManager getProcessorManager() {
-		return processorManager;
-	}
-	public void setProcessorManager(ProcessorManager processorManager) {
-		this.processorManager = processorManager;
-	}
 	protected ProfileModule getProfileModule() {
 		return profileModule;
 	}
@@ -79,13 +57,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		this.profileModule = profileModule;
 	}
 
-	/**
-	 * Setup by spring
-	 * @param definitionModule
-	 */
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
 	
 	public User authenticate(String zoneName, String userName, String password,
 			boolean passwordAutoSynch, Map updates) 
@@ -114,6 +85,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			boolean passwordAutoSynch)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
+
 		try {
 			user = getProfileDao().findUserByNameOnlyIfEnabled(username, zoneName);
 		}
@@ -128,7 +100,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     		// Passwords do not match
     		if(passwordAutoSynch) {
     			// Change the user's password to the value passed in. 
-    			user.setPassword(password);
+    			Map updates = new HashMap();
+    			updates.put("password", password);
+				getProfileModule().modifyUserFromPortal(user, updates);
     		}
     		else {
     			throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
@@ -157,11 +131,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		//make sure zone exists
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
-			return null;
+			//TODO: temporary to fixup zones
+			getAdminModule().setZone1();
+			getAdminModule().setZone2();
 		} catch (NoWorkspaceByTheNameException nw) {
-		} catch (NoBinderByTheNameException nb) {};
-		try {
 			getAdminModule().addZone(zoneName);
+		} catch (NoBinderByTheNameException nb) {
+			getAdminModule().addZone(zoneName);			
+		};
+		try {
 			return getProfileDao().findUserByNameOnlyIfEnabled(userName, zoneName);
 		} catch (Exception ex) {
 			return null;

@@ -9,20 +9,20 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
-      <key column="folderEntry"/>
+      <key column="folderEntry" on-delete="cascade"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
-      <key column="folderEntry"/>
+      <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
-      <key column="folderEntry"/>
+      <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
     <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" name="replies">
-      <key column="parentEntry"/>
+      <key column="parentEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.FolderEntry"/>
     </bag>
     <component name="reservation" class="com.sitescape.ef.domain.HistoryStamp">
@@ -32,11 +32,11 @@
       </many-to-one>
     </component>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowStates">
-      <key column="folderEntry"/>
+      <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowState"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="workflowResponses">
-      <key column="folderEntry"/>
+      <key column="folderEntry" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.WorkflowResponse"/>
     </set>
     <component name="HKey" class="com.sitescape.ef.domain.HKey">

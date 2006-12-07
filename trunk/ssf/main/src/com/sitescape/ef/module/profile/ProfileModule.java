@@ -25,11 +25,13 @@ import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 
 public interface ProfileModule {
+	public void checkAccess(ProfileBinder binder, String operation) throws AccessControlException;
+	public void checkAccess(Principal entry, String operation) throws AccessControlException;
+
    public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
-   public void checkAddEntryAllowed(ProfileBinder binder) throws AccessControlException;
    public void addEntries(Long binderId, Document doc);
    public boolean checkUserSeeCommunity();
 
@@ -39,13 +41,9 @@ public interface ProfileModule {
 		throws AccessControlException, WriteFilesException;
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;
-   public void modifyWorkflowState(Long binderId, Long entryId, Long tokenId, String toState) 
-	throws AccessControlException;
-   public void checkModifyEntryAllowed(Principal entry) throws AccessControlException;
   
    public void deleteEntry(Long binderId, Long id)
 		throws AccessControlException, WriteFilesException;
-   public void checkDeleteEntryAllowed(Principal entry) throws AccessControlException;
 
    public ProfileBinder getProfileBinder();
 
@@ -76,10 +74,6 @@ public interface ProfileModule {
     public SeenMap getUserSeenMap(Long userId);
     public void setSeen(Long userId, Entry entry);
     public void setSeen(Long userId, List entries);
-	public Visits getVisit(EntityIdentifier entityId);
-    public void setVisit(EntityIdentifier entityId);
-	public Rating getRating(EntityIdentifier entityId);
-    public void setRating(EntityIdentifier entityId, long value);
     public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
     

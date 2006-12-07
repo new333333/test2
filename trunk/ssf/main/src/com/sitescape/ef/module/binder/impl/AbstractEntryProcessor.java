@@ -386,7 +386,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler sp = new SimpleProfiler(false);
 
     	sp.reset("deleteEntry_preDelete").begin();
-        Object ctx  = deleteEntry_preDelete(parentBinder, entry);
+        Object ctx  = deleteEntry_preDelete(parentBinder, entry, null);
         sp.end().print();
         
         sp.reset("deleteEntry_workflow").begin();
@@ -409,7 +409,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         ctx = deleteEntry_indexDel(entry, ctx);
         sp.end().print();
     }
-     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
       	return null;
     }
         
@@ -839,7 +839,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             ids.add(entry.getCreation().getPrincipal().getId());
         if (entry.getModification() != null)
             ids.add(entry.getModification().getPrincipal().getId());
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      } 
 
     protected List loadEntryHistoryLuc(List pList) {
@@ -855,7 +855,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
         		} catch (Exception ex) {}
         }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      }   
 
     protected void loadEntryHistory(List pList) {
@@ -869,7 +869,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             if (entry.getModification() != null)
                 ids.add(entry.getModification().getPrincipal().getId());
         }
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
      }     
     
 

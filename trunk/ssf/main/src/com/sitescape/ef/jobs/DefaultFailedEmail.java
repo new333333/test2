@@ -95,7 +95,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
     }
 
 		
-    public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
+    public void schedule(Binder binder, String zoneName, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
@@ -111,7 +111,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 			jobDetail.setDescription(description);
 			JobDataMap data = new JobDataMap();
 			data.put("binder",binder.getId());
-			data.put("zoneName",binder.getZoneName());
+			data.put("zoneName",zoneName);
 			
 			if(!fileDir.exists())
 				fileDir.mkdirs();

@@ -10,32 +10,32 @@
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="customAttributes">
-      <key column="principal"/>
+      <key column="principal" on-delete="cascade"/>
       <map-key type="string" column="name"/>
       <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
-      <key column="principal"/>
+      <key column="principal" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
-      <key column="principal"/>
+      <key column="principal" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
     <property name="workspaceId"/>
     <property name="internalId" length="32"/>
     <property name="calendarId"/>
-    <property name="zoneName" length="64" not-null="true"/>
+    <property name="zoneId" not-null="true"/>
     <property name="signature" length="256"/>
     <property name="disabled"/>
     <property name="name" length="82" not-null="true"/>
     <property name="foreignName" length="128" not-null="true"/>
 <properties name="nameKey" unique="true" update="false" insert="false">
-<property name="zoneName" update="false" insert="false"/>
+<property name="zoneId" update="false" insert="false"/>
 <property name="name" update="false" insert="false"/>
 </properties>
 <properties name="foreignKey" unique="true" update="false" insert="false">
-<property name="zoneName" update="false" insert="false"/>
+<property name="zoneId" update="false" insert="false"/>
 <property name="foreignName" update="false" insert="false"/>
 </properties>
     <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
@@ -89,5 +89,5 @@
 	  <property name="locale" access="field" length="32"/>
     </subclass>
   </class>
-  <query name="find-User-Company"><![CDATA[from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName]]></query>
+  <query name="find-User-Company"><![CDATA[from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
 </hibernate-mapping>

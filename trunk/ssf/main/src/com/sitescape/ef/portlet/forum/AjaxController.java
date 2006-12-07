@@ -36,6 +36,7 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.Favorites;
@@ -501,7 +502,7 @@ public class AjaxController  extends SAbstractController {
 			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
 					model.put(WebKeys.FILTER_ENTRY_DEF_ID, "");
-					Map elementData = getFolderModule().getCommonEntryElements();
+					Map elementData = BinderHelper.getCommonEntryElements();
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				} else {
 					model.put(WebKeys.FILTER_ENTRY_DEF_ID, defId);
@@ -566,7 +567,7 @@ public class AjaxController  extends SAbstractController {
 			if (Validator.isNotNull(defId)) {
 				if (defId.equals("_common")) {
 					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, "");
-					Map elementData = getFolderModule().getCommonEntryElements();
+					Map elementData = BinderHelper.getCommonEntryElements();
 					model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 				} else {
 					model.put(WebKeys.SEARCH_FORM_ENTRY_DEF_ID, defId);

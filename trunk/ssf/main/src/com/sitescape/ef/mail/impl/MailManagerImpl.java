@@ -104,7 +104,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		this.mailSender = mailSender;
 	}
 	public File getMailDirPath(Binder binder) {
-		return new File(new StringBuffer(mailRootDir).append(binder.getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
+		return new File(new StringBuffer(mailRootDir).append(RequestContextHolder.getRequestContext().getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
 	}
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");
@@ -120,10 +120,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	}
 
 	public String getMailAttribute(Binder binder, String node, String name) {
-		String result = getMailAttribute(binder.getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
+		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
 		if (result != null) return result;
 		if (binder.getParentBinder() != null) return getMailAttribute(binder.getParentBinder(), node, name);
-		return getMailAttribute(binder.getZoneName(), node, name);
+		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
 
 	}
 	private synchronized JavaMailSender getSender(String jndiName) {
@@ -183,10 +183,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	 * Read mail from all incoming mail servers.
 	 *
 	 */
-	public void receivePostings(ScheduleInfo config) {
+	public void receivePostings() {
 		String storeProtocol, prefix, auth;
-		List posters = getMailPosters(config.getZoneName());
-		List<PostingDef> postings = getCoreDao().loadPostings(config.getZoneName());
+		List posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
+		List<PostingDef> postings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
 		SearchTerm[] aliasSearch = new SearchTerm[2];
 		
 		for (int i=0; i<posters.size(); ++i) {
@@ -229,7 +229,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 					aliasSearch[1] = new RecipientStringTerm(Message.RecipientType.CC,postingDef.getEmailAddress());
 					Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
 					if (aliasMsgs.length == 0) continue;
-					//	handle replies first
+					
 					Folder folder = (Folder)postingDef.getBinder();
 					FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
 					sendErrors(folder, processor.postMessages(folder,postingDef, aliasMsgs, session));
@@ -258,7 +258,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				} catch (MailSendException sx) {
 					if (binder != null) {
 				  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
-				   		process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
+				   		process.schedule(binder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mailMsg, getMailDirPath(binder));			
 					}
 					logger.error("Error sending posting reject:" + sx.getMessage());
 				} catch (MailAuthenticationException ax) {
@@ -271,8 +271,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		
 	}
 	public void fillSubscription(Long folderId, Long entryId, Date stamp) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, zoneName);
+		FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());
 		Folder folder = entry.getParentFolder();
 		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
 		//subscriptions are made to toplevel entries only
@@ -311,7 +310,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
+		   		process.schedule(folder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mHelper.getMessage(), getMailDirPath(folder));
  	    	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());
 	    	} 
@@ -322,8 +321,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	 * Send email notifications for recent changes
 	 */
     public Date sendNotifications(Long folderId, Date start) {
-        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
- 		Folder folder = (Folder)coreDao.loadBinder(folderId, zoneName); 
+ 		Folder folder = (Folder)coreDao.loadBinder(folderId, RequestContextHolder.getRequestContext().getZoneId()); 
 		Date until = new Date();
 		//get folder specific helper to build message
   		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);

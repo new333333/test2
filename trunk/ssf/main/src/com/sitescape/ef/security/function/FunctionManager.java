@@ -17,10 +17,10 @@ public interface FunctionManager {
     
     public void updateFunction(Function function);
     
-    public Function getFunction(String zoneName, Long id) throws NoObjectByTheIdException;
-    public Function getReservedFunction(String zoneName, String id)  throws NoObjectByTheIdException;
+    public Function getFunction(Long zoneId, Long id) throws NoObjectByTheIdException;
+    public Function getReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException;
   
-    public List findFunctions(String zoneName);
+    public List findFunctions(Long zoneId);
     
-    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation);
+    public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation);
 }

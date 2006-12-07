@@ -28,6 +28,7 @@ import com.sitescape.ef.domain.Workspace;
  *
  */
 public interface CoreDao {
+	public void executeUpdate(String update);
 	/**
 	 * 
 	 * @parm obj
@@ -43,6 +44,7 @@ public interface CoreDao {
 	public Object saveNewSession(Object obj);
 	public Object merge(Object obj); 
 	public void evict(Object obj); 
+	public void update(Object obj);
 	/**
 	 * 
 	 * @param obj
@@ -51,14 +53,14 @@ public interface CoreDao {
 	public void delete(Binder binder);
     public void delete(DefinableEntity entity);
 	public void delete(Definition def);
-	public void deleteEntityAssociations(String whereClause, Class clazz);
+//	public void deleteEntityAssociations(String whereClause, Class clazz);
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
 	public List loadObjectsCacheable(Class className, FilterControls filter);
-    public List loadObjects(Collection ids, Class className, String zoneName);
+    public List loadObjects(Collection ids, Class className, Long zoneId);
 	public List loadObjects(String query, Map namedValues);
 	/**
 	 * Performance optimization.
@@ -66,11 +68,11 @@ public interface CoreDao {
 	 * 
 	 * @param ids
 	 * @param className
-	 * @param zoneName
+	 * @param zoneId
 	 * @param collections
 	 * @return
 	 */
-	public List loadObjects(Collection ids, Class className, String zoneName, List collections);
+	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
     public void validateTitle(Binder binder, String title) throws TitleException;
    	public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
@@ -81,24 +83,24 @@ public interface CoreDao {
 	/**
      * 
      * @param binderId
-     * @param zoneName
+     * @param zoneId
      * @return
      * @throws DataAccessException
      * @throws NoFolderByTheIdException
      */
-    public Binder loadBinder(Long binderId, String zoneName);
-    public Binder loadReservedBinder(String reservedId, String zoneName);
+    public Binder loadBinder(Long binderId, Long zoneId);
+    public Binder loadReservedBinder(String reservedId, Long zoneId);
     	   
-	public Definition loadDefinition(String defId, String zoneName);   
-    public List loadDefinitions(String zoneName);
-    public List loadDefinitions(String zoneName, int type);
+	public Definition loadDefinition(String defId, Long zoneId);   
+    public List loadDefinitions(Long zoneId);
+    public List loadDefinitions(Long zoneId, int type);
     
-	public BinderConfig loadConfiguration(String defId, String zoneName);   
-    public List loadConfigurations(String zoneName);
-    public List loadConfigurations(String zoneName, int type);
+	public BinderConfig loadConfiguration(String defId, Long zoneId);   
+    public List loadConfigurations(Long zoneId);
+    public List loadConfigurations(Long zoneId, int type);
  
-    public List loadPostings(String zoneName);
-	public PostingDef loadPosting(String aliasId, String zoneName);
+    public List loadPostings(Long zoneId);
+	public PostingDef loadPosting(String aliasId, Long zoneId);
 	
     public void bulkLoadCollections(Collection entries);
     

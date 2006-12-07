@@ -56,11 +56,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     * Load 1 FolderEntry and its customAttributes collection
      * @param parentFolderId
      * @param entryId
-     * @param zoneName
+     * @param zoneId
      * @return
      * @throws DataAccessException
 	 */
-	public FolderEntry loadFolderEntry(final Long parentFolderId, final Long entryId, final String zoneName) throws DataAccessException {
+	public FolderEntry loadFolderEntry(final Long parentFolderId, final Long entryId, final Long zoneId) throws DataAccessException {
         return (FolderEntry)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -73,7 +73,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                         if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
                         //because of join may get non-distinct results (wierd)
                         FolderEntry entry = (FolderEntry)results.get(0);
-                        if ((zoneName != null ) && !entry.getParentFolder().getZoneName().equals(zoneName)) {
+                        if (!entry.getParentFolder().getZoneId().equals(zoneId)) {
                            	throw new NoFolderEntryByTheIdException(entryId);
                         }
                         if (!parentFolderId.equals(entry.getParentFolder().getId())) {
@@ -266,13 +266,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	/**
 	 * Load 1 folder
 	 */
-    public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException {
+    public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException {
         if (folderId == null) {throw new NoFolderByTheIdException(folderId);}
        
         try {
         	Folder folder = (Folder)getHibernateTemplate().get(Folder.class, folderId);
         	if (folder == null) {throw new NoFolderByTheIdException(folderId);}
-        	if ((zoneName != null ) && !folder.getZoneName().equals(zoneName)) {
+        	if (!folder.getZoneId().equals(zoneId)) {
         		throw new NoFolderByTheIdException(folderId);
         	}
             return folder;
@@ -307,7 +307,8 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
        	getHibernateTemplate().execute(
            	new HibernateCallback() {
            		public Object doInHibernate(Session session) throws HibernateException {
-		   			getCoreDao().deleteEntityAssociations("owningBinderId=" + folder.getId(), FolderEntry.class);
+//handled by on-delete
+//           			getCoreDao().deleteEntityAssociations("owningBinderId=" + folder.getId(), FolderEntry.class);
 		   			//delete ratings/visits for these entries
  		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in " + 
  			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
@@ -345,23 +346,23 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	 );    	
     	
     }
-    public void deleteEntries(final List entries) {
+    public void deleteEntries(final FolderEntry entry, final List entries) {
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
                	   	   	Set ids = new HashSet();
-               			StringBuffer inList = new StringBuffer();
+//               			StringBuffer inList = new StringBuffer();
                			FolderEntry p;
+               			ids.add(entry.getId());
             			for (int i=0; i<entries.size(); ++i) {
             				p = (FolderEntry)entries.get(i); 
             	    		ids.add(p.getId());
-            	    		inList.append(p.getId().toString() + ",");
-            	    		session.evict(p);
+//            	    		inList.append(p.getId().toString() + ",");
+//            	    		session.evict(p);
             	    	}
-            			inList.deleteCharAt(inList.length()-1);
-            			//need to use ownerId, cause attachments/custom sets not indexed by folderEntry
-    		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
-    		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
+//            			inList.deleteCharAt(inList.length()-1);
+// handled on on-delete    		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
+//   		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
     		   			//delete ratings/visits for these entries
      		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
@@ -381,10 +382,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      	   					.setParameterList("pList", ids)
      	   					.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
      	   					.executeUpdate();
-
-     		   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
-        	   				.setParameterList("pList", ids)
-        	   				.executeUpdate();
+     		   			//this will delete the entry and its replies
+     		   			session.delete(entry);
+//     		   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
+//        	   				.setParameterList("pList", ids)
+//        	   				.executeUpdate();
            	  			//if these are ever cached in secondary cache, clear them out.      	   				
            	   		return null;
         	   		}
@@ -517,7 +519,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	       	   			.executeUpdate();
-      	   			session.createQuery("update com.sitescape.ef.domain.FolderEntry set owningFolderSortKey=:sortKey where parentBinder=:id")
+       	   			session.createQuery("update com.sitescape.ef.domain.WorkflowResponse set owningFolderSortKey=:sortKey where owningBinderId=:id")
+       	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
+       	   				.setLong("id", folder.getId().longValue())
+       	   				.executeUpdate();
+     	   			session.createQuery("update com.sitescape.ef.domain.FolderEntry set owningFolderSortKey=:sortKey where parentBinder=:id")
       	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())
       	   				.executeUpdate();

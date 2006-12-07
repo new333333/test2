@@ -1,83 +1,79 @@
 
 package com.sitescape.ef.mail.impl;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.TreeSet;
-import java.util.ArrayList;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.IOException;
-import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.mail.BodyPart;
+import javax.mail.Flags;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Part;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMultipart;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.DocumentSource;
 import org.springframework.util.FileCopyUtils;
 
-import javax.mail.Flags;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.BodyPart;
-import javax.mail.Part;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.Session;
-import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.Templates;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
-import com.sitescape.ef.context.request.RequestContext;
-import com.sitescape.ef.context.request.RequestContextUtil;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContext;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.domain.WorkflowControlledEntry;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.MailManager;
+import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.definition.notify.Notify;
+import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.WebUrlUtil;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.util.GetterUtil;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -98,7 +94,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
     }
-	public void setMailManager(MailManager mailManager) {
+ 	public void setMailManager(MailManager mailManager) {
 		this.mailManager = mailManager;
 	}
 
@@ -182,7 +178,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 //			List team = getAccessControlManager().
 			
 		}
-		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneName()));
+		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
 		//Add users wanting digest style messages, remove users wanting nothing
 		for (Subscription notify: (Collection<Subscription>)subscriptions) {
 			if (notify.getStyle() == Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION) {
@@ -192,7 +188,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				userIds.remove(notify.getId().getPrincipalId());
 			}
 		}
-		List<User> users = getProfileDao().loadEnabledUsers(userIds, folder.getZoneName());
+		List<User> users = getProfileDao().loadEnabledUsers(userIds, folder.getZoneId());
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (User u: users) {
@@ -324,7 +320,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getSubject(Folder folder, Notify notify) {
 		String subject = folder.getNotificationDef().getSubject();
 		if (Validator.isNull(subject))
-			subject = mailManager.getMailProperty(folder.getZoneName(), MailManager.NOTIFY_SUBJECT);
+			subject = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_SUBJECT);
 		//if not specified, us a localized default
 		if (Validator.isNull(subject))
 			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
@@ -334,7 +330,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getFrom(Folder folder, Notify notify) {
 		String from = folder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
-			from = mailManager.getMailProperty(folder.getZoneName(), MailManager.NOTIFY_FROM);
+			from = mailManager.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_FROM);
 		return from;
 	}
 
@@ -347,7 +343,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			} 
 		}
 		
- 		return getProfileDao().loadEnabledUsers(userIds,  RequestContextHolder.getRequestContext().getZoneName());
+ 		return getProfileDao().loadEnabledUsers(userIds,  RequestContextHolder.getRequestContext().getZoneId());
 
 		
 	}
@@ -484,7 +480,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
 		
 		return result;
 	}
@@ -518,8 +514,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element = fElement.addElement("folderEntry");
 		doEntry(element, entry, notify, true);
 		
-		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
+//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailManager.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailManager.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
 		
 		return result;
 	}
@@ -571,7 +567,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 							int index = docId.indexOf(" ");
 							if (index == -1) id=Long.valueOf(docId);
 							else id=Long.valueOf(docId.substring(0, index));
-							if (option == PostingDef.POST_AS_A_REPLY)
+							if (option.longValue() == PostingDef.POST_AS_A_REPLY.longValue())
 								folderModule.addReply(folder.getId(), id, defId, new MapInputData(inputData), fileItems);
 							else
 								folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
@@ -579,7 +575,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						}
 					} else {
 						folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
-						msgs[i].setFlag(Flags.Flag.FLAGGED, true);
+						msgs[i].setFlag(Flags.Flag.DELETED, true);
 					}
 
 				} finally {
@@ -614,12 +610,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	private User getFromUser(InternetAddress from) {
 		//try to map email address to a user
 		String fromEmail = from.getAddress();	
-		List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneName());
+		List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneId());
 		if (users.size() == 1) return (User)users.get(0);
 		if (users.size() > 1) {
 			logger.error("Multiple users with same email address, cannot use for incoming email");
 		}
-		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneName());
+		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	private void processText(Object content, Map inputData) {
 		if (inputData.containsKey(ObjectKeys.FIELD_ENTRY_DESCRIPTION)) return;

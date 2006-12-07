@@ -9,7 +9,7 @@
     </id>
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <property name="zoneName" length="100" not-null="true"/>
+    <property name="zoneId" not-null="true"/>
     <many-to-one name="parentBinder"/>
     <many-to-one name="owner"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">

@@ -23,7 +23,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			throws JobExecutionException {
     	LdapModule ldap = (LdapModule)SpringContextUtil.getBean("ldapModule");
 		try {
-			ldap.syncAll(zoneName);
+			ldap.syncAll();
 		} catch (NamingException ne) {
 			if (ne.getCause() != null)
 				logger.error("Ldap Syncronization error:" + ne.getCause().getLocalizedMessage());

@@ -56,7 +56,6 @@ public class LoginPostAction extends AbstractAction {
 			updates.put("emailAddress", user.getEmailAddress());
 			updates.put("locale", user.getLocale());
 			updates.put("timeZone", user.getTimeZone());
-			updates.put("organization", user.getOrganization().getName());
 			updates.put("location", user.getLocation().getName());
 			// Due to a bug in Liferay, the following information we get directly
 			// from the user model object does not match the user attributes

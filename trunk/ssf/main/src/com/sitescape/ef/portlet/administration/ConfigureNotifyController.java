@@ -43,11 +43,11 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			Set userList = new HashSet();
 			if (formData.containsKey("users")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+			ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 			getScheduleData(request, config);
-			getAdminModule().setNotificationConfig(folderId, config);
+			getBinderModule().setNotificationConfig(folderId, config);
 			
-			getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
+			getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
@@ -67,7 +67,7 @@ public class ConfigureNotifyController extends  SAbstractController  {
 			Folder folder = getFolderModule().getFolder(folderId);
 			model.put(WebKeys.BINDER, folder);
 
-			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+			ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();

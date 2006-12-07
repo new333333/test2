@@ -68,7 +68,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 			Folder folder = createFolder(top, "testFolder");
 			FolderEntry entry = createEntry(folder);
 		
-			Definition workflowDef = importWorkflow("testManual");
+			Definition workflowDef = importWorkflow(top, "testManual");
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
 			WorkflowState ws = checkState(entry, "start");
 			wfi.modifyWorkflowState(entry, ws, "state1");
@@ -102,7 +102,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		try {
 			FolderEntry entry = createEntry(folder);
 		
-			Definition workflowDef = importWorkflow("testTransitionOnVariable");
+			Definition workflowDef = importWorkflow(top, "testTransitionOnVariable");
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
 			WorkflowState ws = checkState(entry, "start");
 			//This transition will set a variable, which will cause state1 to
@@ -135,9 +135,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		Folder folder = createFolder(top, "testFolder");
 
 		try {
-			Definition commandDef = importCommand("testEntry");
+			Definition commandDef = importCommand(top, "testEntry");
 		
-			Definition workflowDef = importWorkflow("testDataTransitions");
+			Definition workflowDef = importWorkflow(top, "testDataTransitions");
 			FolderEntry entry = createEntry(folder);
 			entry.setEntryDef(commandDef);
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
@@ -207,9 +207,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		Folder folder = createFolder(top, "testFolder");
 
 		try {
-			Definition commandDef = importCommand("testEntry");
+			Definition commandDef = importCommand(top, "testEntry");
 		
-			Definition workflowDef = importWorkflow("testDateTransitions");
+			Definition workflowDef = importWorkflow(top, "testDateTransitions");
 			FolderEntry entry = createEntry(folder);
 			entry.setEntryDef(commandDef);
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
@@ -247,9 +247,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		Folder folder = createFolder(top, "testFolder");
 
 		try {
-			Definition commandDef = importCommand("testEntry");
+			Definition commandDef = importCommand(top, "testEntry");
 		
-			Definition workflowDef = importWorkflow("testDateTransitions");
+			Definition workflowDef = importWorkflow(top, "testDateTransitions");
 			FolderEntry entry = createEntry(folder);
 			entry.setEntryDef(commandDef);
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
@@ -342,9 +342,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		Folder folder = createFolder(top, "testFolder");
 		
 		try {
-			Definition commandDef = importCommand("testEntry");
+			Definition commandDef = importCommand(top, "testEntry");
 		
-			Definition workflowDef = importWorkflow("testDateTransitions");
+			Definition workflowDef = importWorkflow(top, "testDateTransitions");
 			FolderEntry entry = createEntry(folder);
 			entry.setEntryDef(commandDef);
 			wfi.addEntryWorkflow(entry, entry.getEntityIdentifier(), workflowDef);
@@ -481,17 +481,18 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		} catch (NoWorkspaceByTheNameException nw) {
 			top = new Workspace();
 			top.setName(name);
-			top.setZoneName(name);
+			top.setZoneId(new Long(-1));
 			cdi.save(top);
+			top.setZoneId(top.getId());
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
-			profiles.setZoneName(name);
+			profiles.setZoneId(top.getZoneId());
 			profiles.setParentBinder(top);
 			//	generate id for top
 			cdi.save(profiles);
 			User user = new User();
 			user.setName(adminUser);
-			user.setZoneName(name);
+			user.setZoneId(top.getZoneId());
 			user.setParentBinder(profiles);
 			cdi.save(user);
 		}
@@ -504,7 +505,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 	private Folder createFolder(Workspace top, String name) {
 		Folder folder = new Folder();
 		folder.setName(name);
-		folder.setZoneName(top.getZoneName());
+		folder.setZoneId(top.getZoneId());
 		cdi.save(folder);
 		top.addBinder(folder);
 		return folder;
@@ -517,9 +518,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		return entry;
 		
 	}
-	private Definition importWorkflow(String name) {
+	private Definition importWorkflow(Workspace top, String name) {
 		Definition def = new Definition();
-		def.setZoneName(zoneName);
+		def.setZoneId(top.getId());
 		def.setType(Definition.WORKFLOW);
 		def.setName(name);
 		def.setTitle(name);
@@ -534,9 +535,9 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		wfi.modifyProcessDefinition(def.getId(), def);
     	return def;		
 	}
-	private Definition importCommand(String name) {
+	private Definition importCommand(Workspace top, String name) {
 		Definition def = new Definition();
-		def.setZoneName(zoneName);
+		def.setZoneId(top.getId());
 		def.setType(Definition.FOLDER_ENTRY);
 		def.setName(name);
 		def.setTitle(name);

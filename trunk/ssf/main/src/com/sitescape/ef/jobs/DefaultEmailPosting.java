@@ -13,8 +13,7 @@ import com.sitescape.ef.util.SpringContextUtil;
 public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
 	public void doExecute(final JobExecutionContext context) throws JobExecutionException {
     	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
-		ScheduleInfo config = new ScheduleInfo((Map)(context.getJobDetail().getJobDataMap()));
-		mail.receivePostings(config);
+		mail.receivePostings();
     }
 	public ScheduleInfo getScheduleInfo(String zoneName) {
 		return getScheduleInfo(new MailJobDescription(zoneName));

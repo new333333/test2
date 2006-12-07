@@ -110,7 +110,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
 		cdi.clear();
-		Folder f = fdi.loadFolder(folder.getId(), zoneName);
+		Folder f = fdi.loadFolder(folder.getId(), top.getZoneId());
 		assertEquals(f, folder);
 		assertEquals(f.getName(),"testFolder"); 
 	}
@@ -124,7 +124,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		
 		// Test the situation where zone exists but folder does not. 
 		try {
-			fdi.loadFolder(Long.valueOf(-1), zoneName);			
+			fdi.loadFolder(Long.valueOf(-1), top.getZoneId());			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -133,7 +133,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		
 		// Test the situation where folder exists but zone doesn't.
 		try {
-			fdi.loadFolder(folder.getId(), "nonExistingZone");			
+			fdi.loadFolder(folder.getId(), Long.valueOf(-1));			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -142,7 +142,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		
 		// Test the situation where folder and zone don't exist
 		try {
-			fdi.loadFolder(Long.valueOf(-1), "nonExistingZone");			
+			fdi.loadFolder(Long.valueOf(-1), Long.valueOf(-1));			
 			fail("Should throw NoFolderByTheIdException");
 		}
 		catch(NoFolderByTheIdException e) {
@@ -182,7 +182,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		FolderEntry entry = createBaseEntry(folder);
 		//clear session
 		cdi.clear();
-		FolderEntry partial = fdi.loadFolderEntry(folder.getId(), entry.getId(), zoneName);
+		FolderEntry partial = fdi.loadFolderEntry(folder.getId(), entry.getId(), top.getZoneId());
 		
 		// phase2: Test lazy loading, by ending the transation (it rolls back).
 		// Here we expect LazyInitializationException from Hibernate because
@@ -233,7 +233,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		
 		//have to clear session cause we are bypassing hibernate cascade.
 		cdi.clear();
-		fdi.deleteEntries(entries);
+		fdi.deleteEntries((FolderEntry)entries.get(0), entries);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((FolderEntry)entries.get(i));
 		}
@@ -266,22 +266,23 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		} catch (NoWorkspaceByTheNameException nw) {
 			top = new Workspace();
 			top.setName(name);
-			top.setZoneName(name);
+			top.setZoneId(new Long(-1));
 			cdi.save(top);
+			top.setZoneId(top.getId());
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
-			profiles.setZoneName(name);
+			profiles.setZoneId(top.getId());
 			profiles.setParentBinder(top);
 			//	generate id for top
 			cdi.save(profiles);
 			Group group = new Group();
 			group.setName(adminGroup);
-			group.setZoneName(name);
+			group.setZoneId(top.getId());
 			group.setParentBinder(profiles);
 			cdi.save(group);
 			User user = new User();
 			user.setName(adminUser);
-			user.setZoneName(name);
+			user.setZoneId(top.getId());
 			user.setParentBinder(profiles);
 			cdi.save(user);
 			group.addMember(user);
@@ -296,7 +297,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 	private Folder createFolder(Workspace top, String name) {
 		Folder folder = new Folder();
 		folder.setName(name);
-		folder.setZoneName(top.getZoneName());
+		folder.setZoneId(top.getId());
 		cdi.save(folder);
 		top.addBinder(folder);
 		return folder;
@@ -305,7 +306,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 	private Folder createFolder(Folder top, String name) {
 		Folder folder = new Folder();
 		folder.setName(name);
-		folder.setZoneName(top.getZoneName());
+		folder.setZoneId(top.getZoneId());
 		cdi.save(folder);
 		assertNotNull(folder.getId());
 		top.addFolder(folder);

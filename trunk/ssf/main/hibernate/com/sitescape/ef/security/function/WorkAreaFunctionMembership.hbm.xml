@@ -15,11 +15,11 @@
     </set>
     <property name="workAreaId" column="workAreaId" not-null="true" type="long"/>
     <property name="workAreaType" length="16" column="workAreaType" not-null="true"/>
-    <property name="zoneName" length="100" not-null="true"/>
+    <property name="zoneId" not-null="true"/>
     <property name="functionId" column="functionId" not-null="true" type="long"/>
   </class>
-  <query name="check-WorkAreaFunctionMembership"><![CDATA[select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
-  <query name="get-WorkAreaOperation"><![CDATA[select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
-  <query name="get-WorkAreaByFunctionMembership"><![CDATA[from com.sitescape.ef.security.function.WorkAreaFunctionMembership wfm join wfm.memberIds memberId where wfm.functionId=:functionId and wfm.zoneName=:zoneName and memberId in (:principalIds)]]></query>
+  <query name="check-WorkAreaFunctionMembership"><![CDATA[select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+  <query name="get-WorkAreaOperation"><![CDATA[select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+  <query name="get-WorkAreaByFunctionMembership"><![CDATA[from com.sitescape.ef.security.function.WorkAreaFunctionMembership wfm join wfm.memberIds memberId where wfm.functionId=:functionId and wfm.zoneId=:zoneId and memberId in (:principalIds)]]></query>
 	                    			
 </hibernate-mapping>

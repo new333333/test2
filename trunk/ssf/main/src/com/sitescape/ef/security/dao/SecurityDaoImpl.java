@@ -25,7 +25,7 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
  */
 public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao {
 
-    private static final String ZONE_ID = "zoneName"; 
+    private static final String ZONE_ID = "zoneId"; 
     private static final String WORK_AREA_ID = "workAreaId";
     private static final String WORK_AREA_TYPE = "workAreaType";
     private static final String FUNCTION_ID = "functionId";
@@ -43,17 +43,17 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public void delete(Object obj) {
         getHibernateTemplate().delete(obj);
     }
-    public Function loadFunction(String zoneName, Long id)  throws NoObjectByTheIdException {
+    public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
         Function f = (Function)getHibernateTemplate().get(Function.class, id);
-        if (zoneName.equals(f.getZoneName())) return f;
+        if (zoneId.equals(f.getZoneId())) return f;
         throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
     }
-    public Function loadReservedFunction(final String zoneName, final String id)  throws NoObjectByTheIdException {
+    public Function loadReservedFunction(final Long zoneId, final String id)  throws NoObjectByTheIdException {
         return (Function)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Function.class)
-                        	.add(Expression.eq(ZONE_ID, zoneName))
+                        	.add(Expression.eq(ZONE_ID, zoneId))
                         	.add(Expression.eq(RESERVED_ID, id))
                         	.setCacheable(true)
                         	.list();
@@ -63,18 +63,18 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                 }
             );
     }
-    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(String zoneName, Long id)  throws NoObjectByTheIdException {
+    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long zoneId, Long id)  throws NoObjectByTheIdException {
         WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)getHibernateTemplate().get(WorkAreaFunctionMembership.class, id);
-        if (zoneName.equals(m.getZoneName())) return m;
+        if (zoneId.equals(m.getZoneId())) return m;
         throw new NoObjectByTheIdException(ErrorCodes.NoWorkAreaFunctionMembershipByTheIdException, id);
            	
     }
-    public List findFunctions(final String zoneName) {
+    public List findFunctions(final Long zoneId) {
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Function.class)
-                        	.add(Expression.eq(ZONE_ID, zoneName))
+                        	.add(Expression.eq(ZONE_ID, zoneId))
                         	.setFetchMode("operationNames", FetchMode.JOIN)
                         	.setCacheable(true)
                         	.list();
@@ -86,14 +86,14 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     }
 
 
-	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final String zoneName, 
+	public WorkAreaFunctionMembership getWorkAreaFunctionMembership(final Long zoneId, 
 			final Long workAreaId, final String workAreaType, final Long functionId) {
         return (WorkAreaFunctionMembership) getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                     	List results = session.createCriteria(WorkAreaFunctionMembership.class)
                                 .add(Expression.conjunction() 
-                               			.add(Expression.eq(ZONE_ID, zoneName))
+                               			.add(Expression.eq(ZONE_ID, zoneId))
                                			.add(Expression.eq(WORK_AREA_ID, workAreaId))
                                			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
                                			.add(Expression.eq(FUNCTION_ID, functionId))
@@ -110,13 +110,13 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
             );	
 	}
 
-	public List findWorkAreaFunctionMemberships(final String zoneName, final Long functionId) {
+	public List findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId) {
         return (List) getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                     	return session.createCriteria(WorkAreaFunctionMembership.class)
                                 .add(Expression.conjunction() 
-                               			.add(Expression.eq(ZONE_ID, zoneName))
+                               			.add(Expression.eq(ZONE_ID, zoneId))
                                			.add(Expression.eq(FUNCTION_ID, functionId))
                                		)
                                	.list();
@@ -125,12 +125,12 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                 	
             );		
 	}
-	public List findWorkAreaFunctionMemberships(final String zoneName, final Long functionId, final Set membersToLookup) {
+	public List findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId, final Set membersToLookup) {
 	       return (List)getHibernateTemplate().execute(
 	                new HibernateCallback() {
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	return session.getNamedQuery("get-WorkAreaByFunctionMembership")
-	                    		.setString(ZONE_ID, zoneName)
+	                    		.setLong(ZONE_ID, zoneId)
 	                    		.setLong(FUNCTION_ID, functionId)
 	                    		.setParameterList(PRINCIPAL_IDS, membersToLookup)
  	                            .list();
@@ -139,7 +139,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	            );
 		
 	}
-	public List findWorkAreaFunctionMemberships(final String zoneName, 
+	public List findWorkAreaFunctionMemberships(final Long zoneId,
             final Long workAreaId, final String workAreaType) {
 		
 	       return (List)getHibernateTemplate().execute(
@@ -147,7 +147,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	                    public Object doInHibernate(Session session) throws HibernateException {
 	                    	List results = session.createCriteria(WorkAreaFunctionMembership.class)
 	                                .add(Expression.conjunction() 
-	                               			.add(Expression.eq(ZONE_ID, zoneName))
+	                               			.add(Expression.eq(ZONE_ID, zoneId))
 	                               			.add(Expression.eq(WORK_AREA_ID, workAreaId))
 	                               			.add(Expression.eq(WORK_AREA_TYPE, workAreaType))
 	                               		)
@@ -160,8 +160,8 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 	                	}
 	            );
 	 	}
-    public void deleteWorkAreaFunctionMemberships(final String zoneName, final Long workAreaId, final String workAreaType) {
-    	List members = findWorkAreaFunctionMemberships(zoneName, workAreaId, workAreaType);
+    public void deleteWorkAreaFunctionMemberships(final Long zoneId, final Long workAreaId, final String workAreaType) {
+    	List members = findWorkAreaFunctionMemberships(zoneId, workAreaId, workAreaType);
     	for (int i=0; i<members.size(); ++i) {
     		WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)members.get(i);
     		//hibernate will delete memberids
@@ -179,7 +179,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         return disjunction;
     }
 
-    public boolean checkWorkAreaFunctionMembership(final String zoneName,
+    public boolean checkWorkAreaFunctionMembership(final Long zoneId,
             final Long workAreaId, final String workAreaType, 
             final String workAreaOperationName, final Set membersToLookup) {
     	List matches = (List) getHibernateTemplate().execute(
@@ -192,7 +192,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                         // SELECT statement that would have been normally required otherwise. 
                         // So, in summary, this query is as efficient as it can get. 
                         return session.getNamedQuery("check-WorkAreaFunctionMembership")
-                       		.setString(ZONE_ID, zoneName)
+                       		.setLong(ZONE_ID, zoneId)
                             .setLong(WORK_AREA_ID, workAreaId.longValue())
                         	.setString(WORK_AREA_TYPE, workAreaType)
                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)

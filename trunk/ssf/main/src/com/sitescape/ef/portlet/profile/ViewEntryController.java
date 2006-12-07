@@ -28,15 +28,6 @@ public class ViewEntryController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-		
-		//See if the user asked to change state
-		if (formData.containsKey("changeStateBtn")) {
-			//Change the state
-			//Get the workflow process to change and the name of the new state
-	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
-			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
-			getProfileModule().modifyWorkflowState(folderId, entryId, tokenId, toState);
-		}
 		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -80,7 +71,7 @@ public class ViewEntryController extends SAbstractController {
 		Toolbar toolbar = new Toolbar();
 		PortletURL url;
 		try {
-			getProfileModule().checkModifyEntryAllowed(entry);
+			getProfileModule().checkAccess(entry, "modifyEntry");
 			//	The "Modify" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
@@ -92,7 +83,7 @@ public class ViewEntryController extends SAbstractController {
     
 		//	The "Delete" menu
 		try {
-			getProfileModule().checkDeleteEntryAllowed(entry);
+			getProfileModule().checkAccess(entry, "deleteEntry");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);

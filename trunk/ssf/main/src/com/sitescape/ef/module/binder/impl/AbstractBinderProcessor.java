@@ -222,7 +222,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
-        binder.setZoneName(parent.getZoneName());
+        binder.setZoneId(parent.getZoneId());
         binder.setCreation(new HistoryStamp(user));
         binder.setModification(binder.getCreation());
     	//Since parent collection is a list we can add the binder without an id
@@ -482,7 +482,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected Object deleteBinder_delete(Binder binder, Object ctx) {
-    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(binder.getZoneName(), binder);
+    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    			RequestContextHolder.getRequestContext().getZoneId(), binder);
     	getCoreDao().delete(binder);
        	return ctx;
     }

@@ -1,5 +1,8 @@
 package com.sitescape.ef.portlet.binder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -8,17 +11,13 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionHelper;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 
@@ -118,7 +117,7 @@ public class FilterController extends AbstractBinderController {
 		} else if (formData.containsKey("modifyBtn") || formData.containsKey("deleteTerm")) {
 			//Build a bean that contains all of the fields to be shown
 			if (searchFilters.containsKey(selectedSearchFilter)) {
-				Map elementData = getFolderModule().getCommonEntryElements();
+				Map elementData = BinderHelper.getCommonEntryElements();
 				searchFilterData = FilterHelper.buildFilterFormMap(
 						(Document)searchFilters.get(selectedSearchFilter),
 						elementData);

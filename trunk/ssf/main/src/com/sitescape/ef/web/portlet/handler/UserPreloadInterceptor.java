@@ -137,8 +137,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} 
 		else {
-			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
-			if (user.isDisabled()) throw new NoUserByTheIdException(userId);
+			user = getProfileDao().loadUserOnlyIfEnabled(userId, reqCxt.getZoneName());
 		}
 		
 		boolean userModify = 

@@ -59,30 +59,65 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.TagUtil;
 import com.sitescape.util.Validator;
 /**
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule {
+public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule { 
    	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
     protected ProfileModule profileModule;
+
+
+	/*
+	 * Check access to folder.  If operation not listed, assume read_entries needed
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 */
+	public void checkAccess(Folder folder, String operation) throws AccessControlException {
+		if ("getFolder".equals(operation)) {
+			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+		} else if ("addEntry".equals(operation)) {
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
+		} else if ("addFolder".equals(operation)) { 	
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_BINDERS);
+		} else {
+	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
+		}
+	}
+	public void checkAccess(FolderEntry entry, String operation) throws AccessControlException {
+		if ("getEntry".equals(operation)) {
+	    	AccessUtils.readCheck(entry);			
+		} else if ("addReply".equals(operation)) { 	//TODO: this check is missing workflow checks??
+	    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
+	    } else if ("deleteEntry".equals(operation)) {
+			AccessUtils.deleteCheck(entry);   		
+		} else if ("modifyEntry".equals(operation)) {
+			AccessUtils.modifyCheck(entry);   		
+		} else if ("reserveEntry".equals(operation)) {
+			AccessUtils.modifyCheck(entry);   		
+		} else if ("moveEntry".equals(operation)) {
+			AccessUtils.modifyCheck(entry);   		
+	    } else {
+	    	AccessUtils.readCheck(entry);
+	    }
+
+	}
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
+	 
 	/**
+	 * 
 	 * Setup by spring
 	 * @param definitionModule
 	 */
@@ -103,9 +138,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	
 	private Folder loadFolder(Long folderId)  {
-        String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        return  getFolderDao().loadFolder(folderId, companyId);
+        return  getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
 		
+	}
+	private FolderEntry loadEntry(Long folderId, Long entryId) {
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        return (FolderEntry)processor.getEntry(folder, entryId);		
 	}
 	private FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -121,7 +160,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		Folder folder = loadFolder(folderId);
 	
 		// Check if the user has "read" access to the folder.
-		getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);		
+		checkAccess(folder, "getFolder");		
 		return folder;        
 	} 
 	public Collection getFolders(List folderIds) {
@@ -129,7 +168,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Comparator c = new BinderComparator(user.getLocale());
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (int i=0; i<folderIds.size(); ++i) {
-			try {
+			try {//access check done by getFolder
 				result.add(getFolder((Long)folderIds.get(i)));
 			} catch (NoFolderByTheIdException ex) {
 			} catch (AccessControlException ax) {
@@ -143,10 +182,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder parentFolder = loadFolder(parentFolderId);
-        checkAddFolderAllowed(parentFolder);
+        checkAccess(parentFolder, "addFolder");
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, parentFolder.getZoneName());
+        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         } else {
         	def = parentFolder.getEntryDef();
         }
@@ -155,43 +194,33 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
     }
  
-    public void checkAddFolderAllowed(Folder parentFolder) {
-        getAccessControlManager().checkOperation(parentFolder, WorkAreaOperation.CREATE_BINDERS);        
-    }
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
-        checkAddEntryAllowed(folder);
+        checkAccess(folder, "addEntry");
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
+        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         } else {
         	def = folder.getDefaultEntryDef();
         }
         
         return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems).getId();
     }
-    public void checkAddEntryAllowed(Folder folder) {
-        getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);        
-    }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
-        Definition def = getCoreDao().loadDefinition(definitionId, folder.getZoneName());
+        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
-        checkAddReplyAllowed(entry);
+        checkAccess(entry, "addReply");
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
         Date stamp = reply.getCreation().getDate();
         scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
         
         return reply.getId();
-    }
-    public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException {
-    	//TODO: this check is missing workflow checks??
-    	getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.ADD_REPLIES);
     }
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 			throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
@@ -203,7 +232,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkModifyEntryAllowed(entry);
+        checkAccess(entry, "modifyEntry");
         
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
@@ -232,14 +261,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
     }
 
-    public void checkModifyEntryAllowed(FolderEntry entry) {
-		AccessUtils.modifyCheck(entry);   		
-    }
     
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
         Folder folder = loadFolder(folderId);       
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        //access checks
 		checkTransitionOutStateAllowed(entry, stateId);
 		checkTransitionInStateAllowed(entry, stateId, toState);
     	Date stamp = entry.getWorkflowChange().getDate();
@@ -263,6 +290,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		for (Iterator iter=result.entrySet().iterator(); iter.hasNext();) {
 			Map.Entry me = (Map.Entry)iter.next();
 			try {
+				//access check
 				AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), (String)me.getKey());  
 				transitionData.put(me.getKey(), me.getValue());
 			} catch (AccessControlException ac) {};
@@ -288,52 +316,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         
     }
 
-    public List applyEntryFilter(Definition entryFilter) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-    
-    
-    
-    public Map getCommonEntryElements() {
-    	Map entryElements = new HashMap();
-    	Map itemData;
-    	//Build a map of common elements for use in search filters
-    	//  Each map has a "type" and a "caption". Types can be: title, text, user_list, or date.
-    	
-    	//title
-    	itemData = new HashMap();
-    	itemData.put("type", "title");
-    	itemData.put("caption", NLT.get("filter.title"));
-    	entryElements.put("title", itemData);
-    	
-    	//author
-    	itemData = new HashMap();
-    	itemData.put("type", "user_list");
-    	itemData.put("caption", NLT.get("filter.author"));
-    	entryElements.put("owner", itemData);
-    	
-    	//creation date
-    	itemData = new HashMap();
-    	itemData.put("type", "date");
-    	itemData.put("caption", NLT.get("filter.creationDate"));
-    	entryElements.put("creation", itemData);
-    	
-    	//modification date
-    	itemData = new HashMap();
-    	itemData.put("type", "date");
-    	itemData.put("caption", NLT.get("filter.modificationDate"));
-    	entryElements.put("modification", itemData);
-    	
-    	return entryElements;
-    }
-    
+
+
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
     	return getDomFolderTree(folderId, domTreeHelper, -1);
     }
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels) {
         Folder top = loadFolder(folderId);
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        checkAccess(top, "getDomFolderTree");
         
         User user = RequestContextHolder.getRequestContext().getUser();
     	Comparator c = new BinderComparator(user.getLocale());
@@ -465,7 +455,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return results;
     }
  
-    public Hits getRecentEntries(List folders) {
+    protected Hits getRecentEntries(List folders) {
     	Hits results = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
@@ -516,17 +506,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
            
      public FolderEntry getEntry(Long parentFolderId, Long entryId) {
-        Folder folder = loadFolder(parentFolderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        AccessUtils.readCheck(entry);
+        FolderEntry entry = loadEntry(parentFolderId, entryId);
+        checkAccess(entry, "getEntry");
         return entry;
     }
     public Map getEntryTree(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        AccessUtils.readCheck(entry);
+        checkAccess(entry, "getEntryTree");
         return processor.getEntryTree(folder, entry);   	
     }
     
@@ -534,19 +522,16 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkDeleteEntryAllowed(entry);
+        checkAccess(entry, "deleteEntry");
         processor.deleteEntry(folder, entry);
-    }
-    public void checkDeleteEntryAllowed(FolderEntry entry) {
-        AccessUtils.deleteCheck(entry);    	
     }
     public void moveEntry(Long folderId, Long entryId, Long destinationId) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkModifyEntryAllowed(entry);
+        checkAccess(entry, "moveEntry");
         Folder destination =  loadFolder(destinationId);
-        checkAddEntryAllowed(destination);
+        checkAccess(destination, "addEntry");
         processor.moveEntry(folder, entry, destination);
     }
     public void addSubscription(Long folderId, Long entryId, int style) {
@@ -569,31 +554,22 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
     public void deleteSubscription(Long folderId, Long entryId) {
-    	//getEntry check read access
-		FolderEntry entry = getEntry(folderId, entryId);
+    	//should be able to delete you own
+		FolderEntry entry = loadEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
 		if (s != null) getCoreDao().delete(s);
     }
-/* not needed
-    public void modifySubscription(Long folderId, Long entryId, Map updates) {
-		FolderEntry entry = getEntry(folderId, entryId);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-		if (s == null) {
-			s = new Subscription(user.getId(), entry.getEntityIdentifier());
-			getCoreDao().save(s);		
-		}
-    	ObjectBuilder.updateObject(s, updates);
-    }
-*/
+
     public List getCommunityTags(Long binderId, Long entryId) {
-		FolderEntry entry = getEntry(binderId, entryId);
+		//getEntry does read check
+    	FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
 		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
 		return TagUtil.uniqueTags(tags);		
 	}
 	public List getPersonalTags(Long binderId, Long entryId) {
+		//getEntry does read check
 		FolderEntry entry = getEntry(binderId, entryId);
 		List tags = new ArrayList<Tag>();
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -603,10 +579,18 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
 	   	Tag tag = coreDao.loadTagById(tagId);
-	   	tag.setName(newtag);
+	   	User user = RequestContextHolder.getRequestContext().getUser();
+	   	//if created tag for this entry, by this user- can modify it
+	   	if (tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
+	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
+	   		tag.setName(newtag);
+	   	}
+	   	//TODO: access
 	}
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
+		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
+		//TODO: can anyone add a tag
 	   	Tag tag = new Tag();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
@@ -616,25 +600,35 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	  	coreDao.save(tag);
 	}
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
-		FolderEntry entry = getEntry(binderId, entryId);
+	   	FolderEntry entry = loadEntry(binderId, entryId);
 	   	Tag tag = coreDao.loadTagById(tagId);
-	   	getCoreDao().delete(tag);
+	   	User user = RequestContextHolder.getRequestContext().getUser();
+	   	//if created tag for this entry, by this user- can delete it
+	   	if (tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
+	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
+		   	getCoreDao().delete(tag);
+	   	}
+	   	//TODO: what access is needed?
+	   	//checkAccess(entry, "deleteTag");
 	}
 	public void setUserRating(Long folderId, Long entryId, long value) {
+		//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		setRating(entry, value);
 	}
 	public void setUserRating(Long folderId, long value) {
-		Folder folder = loadFolder(folderId);
+		//getFolder does read check
+		Folder folder = getFolder(folderId);
 		setRating(folder, value);
 	} 
 	private void setRating(DefinableEntity entity, long value) {
+		//TODO: what access is needed
 		EntityIdentifier id = entity.getEntityIdentifier();
 		//update entity average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
-		Rating rating = getProfileModule().getRating(id);
+	    User user = RequestContextHolder.getRequestContext().getUser();
+       	Rating rating = getProfileDao().loadRating(user.getId(), id);
 		if (rating == null) {
-		   	User user = RequestContextHolder.getRequestContext().getUser();
       		rating = new Rating(user.getId(), id);
 			getCoreDao().save(rating);
 		} 
@@ -653,14 +647,17 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
    		avg.setCount(count);
  			
 	}
-	public void setUserVisit(Long folderId, Long entryId) {
-		FolderEntry entry = getEntry(folderId, entryId);
-		setUserVisit(entry);
-	}
 	public void setUserVisit(FolderEntry entry) {
+		//assume already have access
 		EntityIdentifier id = entry.getEntityIdentifier();
-		//set user rating
-       	getProfileModule().setVisit(id);
+		//set user visit
+        User user = RequestContextHolder.getRequestContext().getUser();
+       	Visits visit = getProfileDao().loadVisit(user.getId(), id);
+       	if (visit == null) {
+       		visit = new Visits(user.getId(), id);
+       		getCoreDao().save(visit);
+       	}
+        visit.incrReadCount();   	
        	//update entry average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
     	// see if title exists for this folder
@@ -668,21 +665,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
      	entry.setPopularity(Long.valueOf(result));		
 	}
 	
-	public void setUserVisit(Long folderId) {
-		Folder folder = loadFolder(folderId);
-		setUserVisit(folder); 
-	}
-	public void setUserVisit(Folder folder) {
-		EntityIdentifier id = folder.getEntityIdentifier();
-		//set user rating
-       	getProfileModule().setVisit(id);
-       	//update entry average
-     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
-    	// see if title exists for this folder
-     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues));
-     	folder.setPopularity(Long.valueOf(result));
-	}   
-
 	public List<String> getFolderIds(Integer type) {
     	// TODO 
     	// NOTE: This implementation utilizes database lookup to fetch the
@@ -697,15 +679,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	// from the search index lookup (similar to getBinderEntries method
     	// in AbstractEntryProcessor class).  
     	
-    	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	
     	FilterControls filter = null;
     	
     	if(type != null) {
-    		filter = new FilterControls(new String[]{"zoneName", "definitionType"}, new Object[]{zoneName, Integer.valueOf(type)});
+    		filter = new FilterControls(new String[]{"zoneId", "definitionType"}, new Object[]{zoneId, Integer.valueOf(type)});
     	}
     	else {
-    		filter = new FilterControls("zoneName", zoneName);
+    		filter = new FilterControls("zoneId", zoneId);
     	}
     	
     	List folders = getCoreDao().loadObjects(Folder.class, filter);
@@ -736,7 +718,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
         // For now, check against the same access right needed for modifying
         // entry. We might want to have a separate right for reserving entry...
-    	checkModifyEntryAllowed(entry);
+    	checkAccess(entry, "reserveEntry");
 
         User user = RequestContextHolder.getRequestContext().getUser();
     	
@@ -834,14 +816,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	if(entry == null)
     		return null;
     	
-        AccessUtils.readCheck(entry);
+        checkAccess(entry, "getEntry");
 
     	return entry;
     }
  
     public Set<String> getSubfoldersTitles(Folder folder) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-
+    	//already have access to folder
     	TreeSet<String> titles = new TreeSet<String>();
    		
     	for(Object o : folder.getFolders()) {
@@ -854,9 +835,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     }
     
     public Set<Folder> getSubfolders(Folder folder) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-
-        Set<Folder> subFolders = new HashSet<Folder>();
+    	//already have access to folder
+    	Set<Folder> subFolders = new HashSet<Folder>();
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;

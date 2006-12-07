@@ -344,7 +344,7 @@ public class ListFolderController extends  SAbstractController {
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
 			try {
-				getFolderModule().checkAddEntryAllowed(folder);
+				getFolderModule().checkAccess(folder, "addEntry");				
 				int count = 1;
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				Map qualifiers = new HashMap();
@@ -368,7 +368,7 @@ public class ListFolderController extends  SAbstractController {
 		folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisFolder"));
 		//Add Folder
 		try {
-			getFolderModule().checkAddFolderAllowed(folder);
+			getFolderModule().checkAccess(folder, "addFolder");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -406,7 +406,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Delete binder
 		try {
-			getBinderModule().checkDeleteBinderAllowed(folder);
+			getBinderModule().checkAccess(folder, "deleteBinder");
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
@@ -419,7 +419,7 @@ public class ListFolderController extends  SAbstractController {
 
 		//Modify binder
 		try {
-			getBinderModule().checkModifyBinderAllowed(folder);
+			getBinderModule().checkAccess(folder, "modifyBinder");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
@@ -430,7 +430,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Move binder
 		try {
-			getBinderModule().checkMoveBinderAllowed(folder);
+			getBinderModule().checkAccess(folder, "moveBinder");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -439,16 +439,7 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
 		} catch (AccessControlException ac) {};
 
-		//Schedule outgoing email
-		if (folder.isTop()) {
-			try {
-				url = response.createRenderURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_NOTIFY_CONFIGURE);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.outgoing_email_folder"), url);
-			} catch (AccessControlException ac) {};
-		}
-		//set incoming email
+		//set email
 		try {
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
@@ -544,7 +535,7 @@ public class ListFolderController extends  SAbstractController {
 	
 				//Check the access rights of the user
 				try {
-					getBinderModule().checkModifyBinderAllowed(folder);
+					getBinderModule().checkAccess(folder, "setProperty");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);

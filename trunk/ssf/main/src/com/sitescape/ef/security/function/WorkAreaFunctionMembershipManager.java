@@ -11,47 +11,47 @@ public interface WorkAreaFunctionMembershipManager {
     
     public void addWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
-    public void deleteWorkAreaFunctionMemberships(String zoneName, WorkArea workArea);
+    public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
     public void updateWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership);
     
     /**
      * Returns <code>WorkAreaFunctionMembership</code> for
-     * @param zoneName
+     * @param zoneId
      * @param workArea
      * @param functionId
      * @return
      */
-    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId);
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, Long functionId);
     
     /**
      * Returns a list of <code>WorkAreaFunctionMembership</code>
-     * @param zoneName
+     * @param zoneId
      * @param workArea
      * @return
      */
-    public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea);
-    public List findWorkAreaFunctionMemberships(String zoneName, Long functionId);
-    public List findWorkAreaFunctionMemberships(String zoneName, Set membersToLookup, Long functionId);
+    public List findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
+    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
+    public List findWorkAreaFunctionMemberships(Long zoneId, Set membersToLookup, Long functionId);
     /**
      * 
-     * @param zoneName
+     * @param zoneId
      * @param workArea
      * @param workAreaOperation
      * @param membersToLookup a set of <code>Long</code>
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
     /**
      * Check any membersToLookup id is assigned to a function for a specific workarea
-     * @param zoneName
+     * @param zoneId
      * @param workArea
      * @param function
      * @param membersToLookup
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
     		Long functionId, Set membersToLookup);
  }

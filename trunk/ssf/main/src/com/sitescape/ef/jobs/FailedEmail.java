@@ -14,6 +14,6 @@ public interface FailedEmail {
     public static final String PROCESSOR_KEY = "processorKey_failedEmailJob";
 	public static final String RETRY_NOTIFICATION_GROUP="retry-send-email-notification";
 
-    public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir);
+    public void schedule(Binder binder, String zoneName, JavaMailSender mailSender, MimeMessage mail, File fileDir);
 
 }

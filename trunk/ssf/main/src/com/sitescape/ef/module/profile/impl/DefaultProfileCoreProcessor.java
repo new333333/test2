@@ -50,7 +50,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         doFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData);
-        ((Principal)entry).setZoneName(binder.getZoneName());
+        ((Principal)entry).setZoneId(binder.getZoneId());
      }
        
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
@@ -106,7 +106,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
    	protected SFQuery indexEntries_getQuery(Binder binder) {
    		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
-   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneName());
+   		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId());
    	}
    	protected void indexEntries_load(Binder binder, List entries)  {
    		// bulkd load any collections that neeed to be indexed
@@ -180,14 +180,14 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
            
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneName());        
+        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId());        
     }
           
     //***********************************************************************************************************
     //Overload entire delete entry.  Only want to disable users
-    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry) {
+    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
     	if (entry instanceof User) return null;
-    	return super.deleteEntry_preDelete(parentBinder, entry);
+    	return super.deleteEntry_preDelete(parentBinder, entry, ctx);
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {

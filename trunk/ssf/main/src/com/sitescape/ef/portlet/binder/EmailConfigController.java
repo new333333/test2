@@ -48,10 +48,10 @@ public class EmailConfigController extends  AbstractBinderController  {
 				Set userList = new HashSet();
 				if (formData.containsKey("users")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) userList.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-				ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 				getScheduleData(request, config);
-				getAdminModule().setNotificationConfig(folderId, config);			
-				getAdminModule().modifyNotification(folderId, getNotifyData(request), userList);
+				getBinderModule().setNotificationConfig(folderId, config);			
+				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
 			}
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
@@ -71,7 +71,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		model.put(WebKeys.BINDER, folder);
 
 		if (folder.isTop()) {
-			ScheduleInfo config = getAdminModule().getNotificationConfig(folderId);
+			ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 			model.put(WebKeys.SCHEDULE_INFO, config);
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();

@@ -55,7 +55,7 @@ public class Notify extends AbstractActionHandler {
 			details.put(SendEmail.SUBJECT, s);
 			ArrayList addrs = new ArrayList();
 			if (notify.isCreatorEnabled()) {
-				User user = getProfileDao().loadUser(entry.getCreation().getPrincipal().getId(), entry.getCreation().getPrincipal().getZoneName());
+				User user = getProfileDao().loadUser(entry.getCreation().getPrincipal().getId(), entry.getCreation().getPrincipal().getZoneId());
 				String email = user.getEmailAddress();
 				try	{
 					if (!Validator.isNull(email)) {
@@ -68,7 +68,7 @@ public class Notify extends AbstractActionHandler {
 				}
 				
 			}
-			List<User> users = getProfileDao().loadEnabledUsers(notify.getPrincipalIds(), entry.getParentBinder().getZoneName());
+			List<User> users = getProfileDao().loadEnabledUsers(notify.getPrincipalIds(), entry.getParentBinder().getZoneId());
 			for (User u: users)  {
 				String email = u.getEmailAddress();
 				try	{
