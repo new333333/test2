@@ -13,7 +13,7 @@ public interface LdapModule {
 	public LdapConfig getLdapConfig();
 	public void setLdapConfig(LdapConfig config);
 
-	public void syncAll(String companyId) throws NamingException;
-	public boolean authenticate(String companyId, String LoginName,String password) throws NamingException;
+	public void syncAll() throws NamingException;
+	public boolean authenticate(String companyId, String loginName,String password) throws NamingException;
 	public void syncUser(String companyId, String loginName) throws NoUserByTheNameException,NamingException;
 }

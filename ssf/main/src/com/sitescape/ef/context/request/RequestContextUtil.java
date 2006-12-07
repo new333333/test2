@@ -20,15 +20,9 @@ public class RequestContextUtil {
 		return rc;
 	}
 	
-	public static RequestContext setThreadContext(String zoneName, String userName,
-			Long userId) {
-		RequestContext rc = setThreadContext(zoneName, userName);
-		rc.setUserId(userId);
-		return rc;
-	}
 	
 	public static RequestContext setThreadContext(User user) {
-		RequestContext rc = setThreadContext(user.getZoneName(), user.getName(), user.getId());
+		RequestContext rc = setThreadContext(user.getParentBinder().getParentBinder().getName(), user.getName());
 		rc.setUser(user);
 		return rc;		
 	}

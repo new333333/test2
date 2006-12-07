@@ -170,6 +170,13 @@
 		</antcall>
 	</target>
 	
+	<target name="execute-drop-constraints-script" depends="init-database-type"
+		description="Execute sql script that drops constraints to tables in sitescape database.">
+		<antcall target="execute-script">
+			<param name="jdbc.properties" value="${basedir}/jdbc-${database.type}.properties"/>
+			<param name="sql.script" value="${basedir}/create/drop-constraints-${database.type}.sql"/>
+		</antcall>
+	</target>
 	<!-- Only called by other targets (like subroutines) -->
 	<target name="execute-script" description="Execute a sql script.">
   		<property file="${jdbc.properties}" />

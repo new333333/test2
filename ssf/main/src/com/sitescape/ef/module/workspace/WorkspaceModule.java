@@ -18,14 +18,14 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
  *
  */
 public interface WorkspaceModule {
+    public void checkAccess(Workspace workspace, String operation) throws AccessControlException;
     /**
      * 
-     * @param zoneName
-     * @param workspaceName If <code>null</code>, default workspace is assumed.
      * @return
-     * @throws NoWorkspaceByTheNameException
+     * @throws NoWorkspaceByTheIdException
+     * @throws AccessControlException
      */
-	public Workspace getWorkspace() throws NoWorkspaceByTheIdException, AccessControlException;
+    public Workspace getWorkspace() throws NoWorkspaceByTheIdException, AccessControlException;
 	public Workspace getWorkspace(Long workspaceId)	throws NoWorkspaceByTheIdException, AccessControlException;
   	/**
   	 * Return list of child binders, that have been verified for read access
@@ -51,9 +51,7 @@ public interface WorkspaceModule {
 
     public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
- 	public void checkAddWorkspaceAllowed(Workspace parent) throws AccessControlException;
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
- 	public void checkAddFolderAllowed(Workspace parent) throws AccessControlException;
 }
 

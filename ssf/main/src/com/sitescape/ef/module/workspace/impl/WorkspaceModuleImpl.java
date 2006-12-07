@@ -41,7 +41,23 @@ import org.dom4j.Element;
 public class WorkspaceModuleImpl extends CommonDependencyInjection implements WorkspaceModule {
 
     protected DefinitionModule definitionModule;
-	protected DefinitionModule getDefinitionModule() {
+	/*
+	 * Check access to folder.  If operation not listed, assume read_entries needed
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 */
+	public void checkAccess(Workspace workspace, String operation) throws AccessControlException {
+		if ("getWorkspace".equals(operation)) {
+			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+		} else if ("addFolder".equals(operation)) {
+	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_BINDERS);
+		} else if ("addWorkspace".equals(operation)) { 	
+	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_BINDERS);
+		} else {
+	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+		}
+	}
+
+    protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
 	/**
@@ -52,8 +68,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		this.definitionModule = definitionModule;
 	}
 	private Workspace loadWorkspace(Long workspaceId)  {
-        String companyId = RequestContextHolder.getRequestContext().getZoneName();
-        return  (Workspace)getCoreDao().loadBinder(workspaceId, companyId);
+        return  (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());
 		
 	}
 	private BinderProcessor loadProcessor(Workspace workspace) {
@@ -72,24 +87,22 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	throws NoWorkspaceByTheIdException, AccessControlException {
         Workspace workspace=null;        
          
-        User user = RequestContextHolder.getRequestContext().getUser();
         if (workspaceId == null) {
-        	workspace = getCoreDao().findTopWorkspace(user.getZoneName());
+        	workspace = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
         } else {
-        	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, user.getZoneName());  
+        	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());  
         }
 		// Check if the user has "read" access to the workspace.
-        getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
+        checkAccess(workspace, "getWorkspace");
  
        return workspace;
     }
    	public Collection getWorkspaceTree(Long id) throws AccessControlException {
     	Workspace top;
-        User user = RequestContextHolder.getRequestContext().getUser();
-        if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
-        else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneName());
+        if (id == null) top =  getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+        else top = (Workspace)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
 		// Check if the user has "read" access to the workspace
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        checkAccess(top, "getWorkspace");
         return getWorkspaceTree(top);
     }
    	
@@ -148,11 +161,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException {
     	Workspace top;
         User user = RequestContextHolder.getRequestContext().getUser();
-        if (id == null) top =  getCoreDao().findTopWorkspace(user.getZoneName());
-        else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneName());
+        if (id == null) top =  getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+        else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneId());
 		
 		// Check if the user has "read" access to the top folder.
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        checkAccess(top, "getWorkspace");
 
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
@@ -163,10 +176,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     
     public org.dom4j.Document getDomWorkspaceTree(Long topId, Long bottomId, DomTreeBuilder domTreeHelper) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
-        Workspace top = (Workspace)getCoreDao().loadBinder(topId, user.getZoneName());
-		Workspace bottom = (Workspace)getCoreDao().loadBinder(bottomId, user.getZoneName());
+        Workspace top = (Workspace)getCoreDao().loadBinder(topId, user.getZoneId());
+		Workspace bottom = (Workspace)getCoreDao().loadBinder(bottomId, user.getZoneId());
 		// Check if the user has "read" access to the top folder.
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+        checkAccess(top, "getWorkspace");
         
         List<Workspace> ancestors = new ArrayList<Workspace>();
         Workspace parent = bottom;
@@ -227,10 +240,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-        checkAddFolderAllowed(parentWorkspace);
+        checkAccess(parentWorkspace, "addFolder");
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, parentWorkspace.getZoneName());
+        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
 //        } else {
 //        	def = parentWorkspace.getFolderDef();
         }
@@ -239,16 +252,13 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 
     }
  
-    public void checkAddFolderAllowed(Workspace parentWorkspace) {
-        getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_BINDERS);        
-    }
-    public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
+     public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-    	checkAddWorkspaceAllowed(parentWorkspace);
+    	checkAccess(parentWorkspace, "addWorkspace");
     	Definition def = null;
         if (!Validator.isNull(definitionId)) { 
-        	def = getCoreDao().loadDefinition(definitionId, parentWorkspace.getZoneName());
+        	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
 //        } else {
 //        	def = parentWorkspace.getDefaultWorkspaceDef();
         }
@@ -256,8 +266,4 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
     }
  
-    public void checkAddWorkspaceAllowed(Workspace parentWorkspace) {
-        getAccessControlManager().checkOperation(parentWorkspace, WorkAreaOperation.CREATE_BINDERS);        
-    }
-
 }

@@ -33,7 +33,7 @@ public class NullAccessControlManager implements AccessControlManager {
 			synchronized (lock) {
 				if (groups == null) {
 					ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-					List result = profileDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneName());
+					List result = profileDao.loadGroups(new FilterControls(), RequestContextHolder.getRequestContext().getZoneId());
 					groups = new ArrayList();
 					for (int i=0; i<result.size(); ++i) {
 						groups.add(((Group)result.get(i)).getId());

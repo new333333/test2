@@ -26,19 +26,14 @@ import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 public interface AdminModule {
 	public void addZone(String zoneName);
 	//TODO: temporary
-	public void setZone();
+	public void setZone1();
+	public void setZone2();
 
 	public void addFunction(Function function);
     public void modifyFunction(Long functionId, Map updates);
     public void deleteFunction(Long functionId);
     public List getFunctions();
 
-    public void modifyNotification(Long binderId, Map updates, Collection principals); 
-    public void setEnableNotification(Long binderId, boolean enable);
-    public ScheduleInfo getNotificationConfig(Long binderId);
-    public void setNotificationConfig(Long binderId, ScheduleInfo config);
- 
-    public void setEnablePostings(boolean enable);
     public ScheduleInfo getPostingSchedule();
     public void setPostingSchedule(ScheduleInfo config) throws ParseException;
 

@@ -19,7 +19,6 @@ import com.sitescape.ef.NotSupportedException;
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"
 * @hibernate.discriminator type="string" length="1" column="type"
-* @hibernate.query name="find-User-Company" query="from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneName=:zoneName"
 * @hibernate.mapping auto-import="false"
 * @hibernate.cache usage="read-write"
 * need auto-import = false so names don't collide with jbpm
@@ -32,7 +31,7 @@ public abstract class Principal extends Entry  {
     protected String foreignName="";
     protected List memberOf;//initialized by hiberate access=field
     protected String signature="";    
-    protected String zoneName;
+    protected Long zoneId;
     protected Long workspaceId, calendarId;
     protected List iMemberOf;
     protected String internalId;
@@ -40,7 +39,7 @@ public abstract class Principal extends Entry  {
 
     /**
      * Internal id used to identify default principals.  This id plus
-     * the zoneName are used to locate default principals.  If we just used the primary key id
+     * the zoneId are used to locate default principals.  If we just used the primary key id
      * the zones would need the same default and that may not be desirable.
      * @hibernate.property length="32"
      */
@@ -78,13 +77,13 @@ public abstract class Principal extends Entry  {
     }
     
     /**
-     * @hibernate.property length="64" not-null="true"
+     * @hibernate.property not-null="true"
      */
-    public String getZoneName() {
-    	return this.zoneName;
+    public Long getZoneId() {
+    	return this.zoneId;
     }
-    public void setZoneName(String id) {
-    	this.zoneName = id;
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
 
 	/**
@@ -174,7 +173,7 @@ public abstract class Principal extends Entry  {
     }
  
     public String toString() {
-    	return zoneName + ":" + name;
+    	return name;
     }
     /*
      * The following methods are used for performance optimization during indexing.

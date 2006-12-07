@@ -46,7 +46,7 @@ public class PWCallback implements CallbackHandler {
         			// the user information, since this is our only change to 
         			// get at that piece of info when invoked by WS runtime
         			// (as opposed to web framework).
-        			RequestContextUtil.setThreadContext(zoneName, userName);
+        			RequestContextUtil.setThreadContext(user);
         		}
             	catch(NoUserByTheNameException e) {
             		// Do not throw an exception. Just not setting the password

@@ -1,8 +1,5 @@
 package com.sitescape.ef.domain;
 
-import javax.mail.search.SearchTerm;
-import javax.mail.search.SubjectTerm;
-
 
 /**
  * @hibernate.class table="SS_Postings" dynamic-update="true"
@@ -20,7 +17,7 @@ public class PostingDef extends PersistentObject {
     private Binder binder;
     private String emailAddress;
     private Definition definition;
-    private String zoneName;
+    private Long zoneId;
  
     /**
      * @hibernate.property 
@@ -34,13 +31,13 @@ public class PostingDef extends PersistentObject {
     	this.enabled = enabled;
     }
     /**
-     * @hibernate.property length="100" not-null="true"
+     * @hibernate.property not-null="true"
      */
-    public String getZoneName() {
-    	return zoneName;
+    public Long getZoneId() {
+    	return zoneId;
     }
-    public void setZoneName(String zoneName) {
-    	this.zoneName = zoneName;
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
     /**
      * @hibernate.many-to-one

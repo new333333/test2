@@ -25,7 +25,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	private int visibility=PUBLIC;
     private byte[] xmlencoding;
     private Document doc;
-    private String zoneName;
+    private Long zoneId;
     private PersistentAclSet aclSet; //initialized by hiberate access=field
     private boolean inheritAclFromParent = false;
     private String title="";
@@ -109,18 +109,18 @@ public class Definition extends PersistentTimestampObject implements AclControll
     	this.visibility = visibility;
     }    
     /**
-     * @hibernate.property length="100" not-null="true"
+     * @hibernate.property not-null="true"
      */
-    public String getZoneName() {
-    	return this.zoneName;
+    public Long getZoneId() {
+    	return this.zoneId;
     }
-    public void setZoneName(String id) {
-    	this.zoneName = id;
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
     
     /**
      * Internal id used to identify default definitions.  This id plus
-     * the zoneName are used to locate default definitions.  If we just used the primary key id
+     * the zoneId are used to locate default definitions.  If we just used the primary key id
      * the zones would need the same default and that may not be desirable.
      * @hibernate.property length="32"
      */
@@ -175,7 +175,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
 
  
     public String toString() {
-    	return zoneName + ":" + name;
+    	return name;
     }
 
     /**

@@ -15,10 +15,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 
+import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.NotSupportedException;
-import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -26,13 +27,16 @@ import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
-import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
+import com.sitescape.ef.domain.NotificationDef;
 import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.exception.UncheckedCodedContainerException;
+import com.sitescape.ef.jobs.EmailNotification;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
@@ -61,13 +65,34 @@ import com.sitescape.ef.web.util.FilterHelper;
  * @author Janet McCann
  *
  */
-public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
+public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule, InitializingBean {
     protected DefinitionModule definitionModule;
     protected ProfileModule profileModule;
-    
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
+	protected Map operations = new HashMap();
+
+   /**
+    * Called after bean is initialized.  
+    */
+	public void afterPropertiesSet() {
+		operations.put("indexBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("indexTree", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("modifyBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("deleteBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("moveBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("setProperty", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("setDefinitions", WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);
+		operations.put("modifyTag", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("deleteTag", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("modifyPosting", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("deletePosting", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("setPosting", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("setNotificationConfig", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("modifyNotification", WorkAreaOperation.BINDER_ADMINISTRATION);
 	}
+ 
+   protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+   }
 	/**
 	 * Setup by spring
 	 * @param definitionModule
@@ -81,9 +106,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
 	}
-	
+	/*
+	 * Check access to binder.  If operation not listed, assume read_entries needed
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 */
+	public void checkAccess(Binder binder, String operation) throws AccessControlException {
+		WorkAreaOperation wfo = (WorkAreaOperation)operations.get(operation);
+		if (wfo == null) getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+		else getAccessControlManager().checkOperation(binder, wfo);
+//getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
+//addSubscription,modifySubscription,deleteSubscription (personal)
+	}
 	private Binder loadBinder(Long binderId) {
-		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
+		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	private EntryProcessor loadEntryProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -102,13 +137,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 
 	}
-   
+
 	public Binder getBinder(Long binderId)
 			throws NoBinderByTheIdException, AccessControlException {
 		Binder binder = loadBinder(binderId);
 		// Check if the user has "read" access to the binder.
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
-
+		checkAccess(binder, "getBinder"); 
         return binder;        
 	}
     public boolean hasBinders(Binder binder) {
@@ -121,7 +155,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }	
     public void indexTree(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
+		checkAccess(binder, "indexTree");
     	//get sub-binder and index them all
 		indexBinder(binder);
     }
@@ -136,18 +170,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     public void indexBinder(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder,  WorkAreaOperation.BINDER_ADMINISTRATION);
+		checkAccess(binder, "indexBinder");
  	    loadBinderProcessor(binder).indexBinder(binder);
     }
 
     public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
-	throws AccessControlException, WriteFilesException {
+    	throws AccessControlException, WriteFilesException {
     	modifyBinder(binderId, inputData, new HashMap(),  null);
-}
+    }
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
     	Binder binder = loadBinder(binderId);
-    	checkModifyBinderAllowed(binder);
+		checkAccess(binder, "modifyBinder");
     	List atts = new ArrayList();
     	if (deleteAttachments != null) {
     		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
@@ -158,18 +192,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
     }
-    public void checkModifyBinderAllowed(Binder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-    }
     public void setProperty(Long binderId, String property, Object value) {
     	Binder binder = loadBinder(binderId);
-    	checkModifyBinderAllowed(binder);
+		checkAccess(binder, "setProperty");
 		binder.setProperty(property, value);	
    }    
     public void deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
     	//if can delete this binder, can delete everything under it??
-    	checkDeleteBinderAllowed(binder);
+		checkAccess(binder, "deleteBinder");
    		List errors = deleteChildBinders(binder);
    		if (errors.isEmpty()) loadBinderProcessor(binder).deleteBinder(binder);
    		else {
@@ -184,7 +215,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
         	try {
-        		checkDeleteBinderAllowed(b);
+        		checkAccess(b, "deleteBinder");
        			List e = deleteChildBinders(b);
        			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b);
        			else errors.addAll(e);
@@ -195,15 +226,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	return errors;
     }
-    public void checkDeleteBinderAllowed(Binder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-    }
-    public void checkMoveBinderAllowed(Binder binder) {
-    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-    }
-    public void moveBinder(Long fromId, Long toId) {
+     public void moveBinder(Long fromId, Long toId) {
        	Binder source = loadBinder(fromId);
-       	checkMoveBinderAllowed(source);
+		checkAccess(source, "moveBinder");
        	Binder destination = loadBinder(toId);
 		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_BINDERS); 
        	
@@ -212,7 +237,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
 	public Binder setDefinitions(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS); 
+		checkAccess(binder, "setDefinitions"); 
 		boolean oldInherit = binder.isDefinitionsInherited();
 		if (inheritFromParent != oldInherit) {
 			if (inheritFromParent) {
@@ -236,16 +261,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
 		Binder binder = setDefinitions(binderId, definitionIds);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);    	
+		checkAccess(binder, "setDefinitions"); 
 		Map wf = new HashMap();
 		Definition def;
-		String companyId = binder.getZoneName();
 		if (workflowAssociations != null) {
 			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry me = (Map.Entry)iter.next();
 				//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
 				try {
-					def = getCoreDao().loadDefinition((String)me.getValue(), companyId);
+					def = getCoreDao().loadDefinition((String)me.getValue(), 
+							RequestContextHolder.getRequestContext().getZoneId());
 					wf.put(me.getKey(), def);
 				} catch (NoDefinitionByTheIdException nd) {}
 			}
@@ -256,15 +281,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
-		String companyId = binder.getZoneName();
 		List definitions = new ArrayList(); 
 		Definition def;
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
+		checkAccess(binder, "setDefinitions"); 
 		//	Build up new set - domain object will handle associations
 		if (definitionIds != null) {
 			for (int i=0; i<definitionIds.size(); ++i) {
 				try {
-					def = getCoreDao().loadDefinition((String)definitionIds.get(i), companyId);
+					def = getCoreDao().loadDefinition((String)definitionIds.get(i), 
+							RequestContextHolder.getRequestContext().getZoneId());
 					//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
 					definitions.add(def);
 				} catch (NoDefinitionByTheIdException nd) {}
@@ -282,6 +307,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	
 	public List getCommunityTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "getCommunityTags");
 		List tags = new ArrayList<Tag>();
 		tags = getCoreDao().loadCommunityTagsByEntity(binder.getEntityIdentifier());
 		return TagUtil.uniqueTags(tags);		
@@ -289,6 +315,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	
 	public List getPersonalTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "getPersonalTags");
 		List tags = new ArrayList<Tag>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		tags = getCoreDao().loadPersonalEntityTags(binder.getEntityIdentifier(),user.getEntityIdentifier());
@@ -301,7 +328,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void modifyTag(Long binderId, String tagId, String newTag) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
+		checkAccess(binder, "modifyTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	tag.setName(newTag);
 	}
@@ -310,7 +337,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void setTag(Long binderId, String newTag, boolean community) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
+		checkAccess(binder, "setTag"); 
 	   	Tag tag = new Tag();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
@@ -324,7 +351,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void deleteTag(Long binderId, String tagId) {
 		Binder binder = loadBinder(binderId);
-		getAccessControlManager().checkOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);    	
+		checkAccess(binder, "deleteTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
 	}
@@ -332,6 +359,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void addSubscription(Long binderId, int style) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "addSubscription"); 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s == null) {
@@ -343,28 +371,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Subscription getSubscription(Long binderId) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "getSubscription"); 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
     }
     public void deleteSubscription(Long binderId) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "deleteSubscription"); 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s != null) getCoreDao().delete(s);
     }
-/* not needed
-    public void modifySubscription(Long binderId, Map updates) {
-		Binder binder = loadBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
-		if (s == null) {
-			s = new Subscription(user.getId(), binder.getEntityIdentifier());
-			getCoreDao().save(s);		
-		}
-    	ObjectBuilder.updateObject(s, updates);
-    }	
-*/
 	public Map executeSearchQuery(Document searchQuery) {
 		Binder binder = null;
 		Map options = new HashMap();
@@ -509,7 +527,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         	    } catch (Exception ex) {}
             }
         }
-        entries =  getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+        entries =  getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
         Map retMap = new HashMap();
         retMap.put(WebKeys.PEOPLE_RESULTS, entries);
         retMap.put(WebKeys.PEOPLE_RESULTCOUNT, new Integer(hits.getTotalHits()));
@@ -521,8 +539,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    	
 	   	if(binders.size() > 0) {
 	   		Binder binder = (Binder) binders.get(0); // only one matching binder
-	   		
-	   		getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);		
+			checkAccess(binder, "getBinder"); 
 	
 	   		return binder;
 	   	}
@@ -536,67 +553,108 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		User user = RequestContextHolder.getRequestContext().getUser();
 		try {
 			//team membership is implemented by a reserved role
-			Function function = getFunctionManager().getReservedFunction(binder.getZoneName(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
+			Function function = getFunctionManager().getReservedFunction(RequestContextHolder.getRequestContext().getZoneId(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
 			//give access to members of role or binder Admins.
 			if (!getAccessControlManager().testFunction(user, binder, function)) 
 				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 			WorkAreaFunctionMembership wfm;
 			if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(binder.getZoneName(), binder, function.getId());
+		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(RequestContextHolder.getRequestContext().getZoneId(), binder, function.getId());
 		    } else {
 		    	WorkArea source = binder.getParentWorkArea();
 		    	while (source.isFunctionMembershipInherited()) {
 			    	source = source.getParentWorkArea();
 			    }
-		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(binder.getZoneName(), source, function.getId());
+		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(RequestContextHolder.getRequestContext().getZoneId(), source, function.getId());
 		    }
 		    if (wfm == null) return new ArrayList();
 		    Set ids = wfm.getMemberIds();
 		    //do we want to explode groups??
-		    return getProfileDao().loadPrincipals(ids, binder.getZoneName());
+		    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
 
 		} catch (NoObjectByTheIdException no) {
 			return new ArrayList();
 		}
 	}
-	   public void modifyPosting(Long binderId, Map updates) {
-	    	//posting defs are defined by admin
-	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-			checkAdminBinderAllowed(binder); 	       		
-	    	//Locate the posting
-	   		PostingDef post = binder.getPosting(); 
-	   		//cannot modify address through this interface
-	   		updates.remove("emailAddress");
-	    	if (post != null) ObjectBuilder.updateObject(post, updates);
-	    }
-	    public void setPosting(Long binderId, String postingId) {
-	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-			checkAdminBinderAllowed(binder); 	       		
-	   		PostingDef post = getCoreDao().loadPosting(postingId, binder.getZoneName());
-	   		Binder oldBinder = post.getBinder();
-	   		if ((oldBinder != null) && !oldBinder.equals(binder)) {
-				if (getAccessControlManager().testOperation(oldBinder, WorkAreaOperation.BINDER_ADMINISTRATION) == false)
-					throw new NotSupportedException(NLT.get(ErrorCodes.PostingAssigned,new Object[] {post.getEmailAddress()}));
-				oldBinder.setPosting(null);
-	   		}
-	   		binder.setPosting(post);
-	   		post.setBinder(binder);
-	   		post.setEnabled(true);
-	   		post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
-	    }    	
-	    public void deletePosting(Long binderId) {
-	    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneName());
-			checkAdminBinderAllowed(binder); 	       		
-	   		PostingDef post = binder.getPosting(); 
-	    	if (post != null) {
-	    		post.setBinder(null);
-	    		binder.setPosting(null);
-	    	}
-	    }
-	    public void checkAdminBinderAllowed(Binder binder) throws AccessControlException {
-			getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 	       		
-	    	
-	    }
-
-
+	public void modifyPosting(Long binderId, Map updates) {
+	   	//posting defs are defined by admin
+	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		checkAccess(binder, "modifyPosting"); 
+	   	//Locate the posting
+		PostingDef post = binder.getPosting(); 
+		//cannot modify address through this interface
+		updates.remove("emailAddress");
+	   	if (post != null) ObjectBuilder.updateObject(post, updates);
+	}
+	public void setPosting(Long binderId, String postingId) {
+	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		checkAccess(binder, "modifyPosting"); 
+		PostingDef post = getCoreDao().loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
+		Binder oldBinder = post.getBinder();
+		if ((oldBinder != null) && !oldBinder.equals(binder)) {
+			if (getAccessControlManager().testOperation(oldBinder, WorkAreaOperation.BINDER_ADMINISTRATION) == false)
+				throw new NotSupportedException(NLT.get(ErrorCodes.PostingAssigned,new Object[] {post.getEmailAddress()}));
+			oldBinder.setPosting(null);
+		}
+		binder.setPosting(post);
+		post.setBinder(binder);
+		post.setEnabled(true);
+		post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
+	}    	
+	public void deletePosting(Long binderId) {
+	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		checkAccess(binder, "modifyPosting"); 
+		PostingDef post = binder.getPosting(); 
+	   	if (post != null) {
+    		post.setBinder(null);
+    		binder.setPosting(null);
+    	}
+    }
+	/**
+     * Do actual work to either enable or disable email notification.
+     * @param id
+     * @param value
+     */
+	public ScheduleInfo getNotificationConfig(Long id) {
+       Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+        checkAccess(binder, "getNotificationConfig"); 
+        //data is stored with job
+		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+  		return process.getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName(), binder);
+    }
+	    
+    public void setNotificationConfig(Long id, ScheduleInfo config) {
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+        checkAccess(binder, "setNotificationConfig"); 
+        //data is stored with job
+        EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
+  		process.setScheduleInfo(config, RequestContextHolder.getRequestContext().getZoneName(), binder);
+    }
+    /**
+     * Set the notification definition for a folder.  
+     * @param id
+     * @param updates
+     * @param principals - if null, don't change list.
+     */
+    public void modifyNotification(Long id, Map updates, Collection principals) 
+    {
+        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+        checkAccess(binder, "modifyNotification"); 
+    	NotificationDef current = binder.getNotificationDef();
+    	if (current == null) {
+    		current = new NotificationDef();
+    		binder.setNotificationDef(current);
+    	}
+    	ObjectBuilder.updateObject(current, updates);
+    	if (principals == null) return;
+  		//	Pre-load for performance
+    	List notifyUsers = new ArrayList();
+    	getProfileDao().loadPrincipals(principals, binder.getZoneId());
+   		for (Iterator iter=principals.iterator(); iter.hasNext();) {
+   			//	make sure user exists and is in this zone
+   			Principal p = getProfileDao().loadPrincipal((Long)iter.next(),binder.getZoneId());
+   			notifyUsers.add(p);   			
+   		}
+   		current.setDistribution(notifyUsers);
+    }
 }

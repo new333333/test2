@@ -25,8 +25,8 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().save(functionMembership);
     }
 
-    public void deleteWorkAreaFunctionMemberships(String zoneName, WorkArea workArea) {
-    	getSecurityDao().deleteWorkAreaFunctionMemberships(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
+    public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {
+    	getSecurityDao().deleteWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
     public void deleteWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership) {
         getSecurityDao().delete(functionMembership);
@@ -36,23 +36,23 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         getSecurityDao().update(functionMembership);
     }
 
-    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, WorkArea workArea, Long functionId) {
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, Long functionId) {
         return getSecurityDao().getWorkAreaFunctionMembership
-    	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionId);
+    	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), functionId);
     }
 
-    public List findWorkAreaFunctionMemberships(String zoneName, WorkArea workArea) {
+    public List findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {
         return getSecurityDao().findWorkAreaFunctionMemberships
-        	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType());
+        	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
     //Find workareas using a specific function.
-    public List findWorkAreaFunctionMemberships(String zoneName, Long functionId) {
-        return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId);
+    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId) {
+        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, functionId);
     }
     //Find workareas assigning this user to a specific function.  Used to implement
     //what workspaces am I a team member of.
-    public List findWorkAreaFunctionMemberships(String zoneName, Set membersToLookup, Long functionId) {
-        return getSecurityDao().findWorkAreaFunctionMemberships(zoneName, functionId, membersToLookup);
+    public List findWorkAreaFunctionMemberships(Long zoneId, Set membersToLookup, Long functionId) {
+        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, functionId, membersToLookup);
     }
     /*
     public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
@@ -81,17 +81,17 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         return false;
     }*/
     
-    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup) {
         return getSecurityDao().checkWorkAreaFunctionMembership
-        	(zoneName, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
+        	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
     //see if user is a member of a role - don't care about rights given to role
     //Used to implement am I a member of this team?
-    public boolean checkWorkAreaFunctionMembership(String zoneName, WorkArea workArea, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             Long functionId, Set membersToLookup) {
-        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(zoneName, workArea, functionId);
+        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(zoneId, workArea, functionId);
         if (wfm == null) return false;
         Set<Long> ids = wfm.getMemberIds();
         for (Iterator iter=membersToLookup.iterator(); iter.hasNext();) {

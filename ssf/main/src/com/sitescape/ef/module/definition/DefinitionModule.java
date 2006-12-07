@@ -36,7 +36,6 @@ public interface DefinitionModule {
 	 * @param inputData
 	 * @return
 	 */
-	public Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public Document getDefinitionConfig();
 	public void modifyDefinitionName(String id, String name, String caption);
 	public void modifyDefinitionAttribute(String id, String key, String value);
@@ -58,7 +57,6 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
-	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
 	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;

@@ -8,7 +8,7 @@
       <generator class="native"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" type="long"/>
-    <property name="zoneName" length="100" not-null="true"/>
+    <property name="zoneId" not-null="true"/>
     <property name="name" length="128" not-null="true"/>
     <property name="internalId" length="32"/>
     <set cascade="all" lazy="false" table="SS_FunctionOperations" name="operationNames">

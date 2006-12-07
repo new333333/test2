@@ -29,7 +29,7 @@ public class FunctionManagerImpl implements FunctionManager {
 
     public void deleteFunction(Function function) throws NotSupportedException {
     	if (function.isReserved()) throw new NotSupportedException(NLT.get("errorcode.role.reserved", new Object[]{function.getName()}));
-    	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneName(), function.getId());
+    	List result = getSecurityDao().findWorkAreaFunctionMemberships(function.getZoneId(), function.getId());
     	if (result.isEmpty()) getSecurityDao().delete(function);
     	else throw new NotSupportedException(NLT.get("errorcode.role.inuse", new Object[]{function.getName()}));
     }
@@ -38,22 +38,22 @@ public class FunctionManagerImpl implements FunctionManager {
         getSecurityDao().update(function);
     }
 
-    public List findFunctions(String zoneName) {
-        return getSecurityDao().findFunctions(zoneName);
+    public List findFunctions(Long zoneId) {
+        return getSecurityDao().findFunctions(zoneId);
     }
-    public Function getFunction(String zoneName, Long id)  throws NoObjectByTheIdException {
-    	return getSecurityDao().loadFunction(zoneName, id);
+    public Function getFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
+    	return getSecurityDao().loadFunction(zoneId, id);
     }
-    public Function getReservedFunction(String zoneName, String id)  throws NoObjectByTheIdException {
-    	return getSecurityDao().loadReservedFunction(zoneName, id);
+    public Function getReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException {
+    	return getSecurityDao().loadReservedFunction(zoneId, id);
     }
 
-    public List findFunctions(String zoneName, WorkAreaOperation workAreaOperation) {
+    public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation) {
         // This is implemented on top of getFunctions(Long) based on the
         // assumption that the underlying ORM effectively caches the
         // result of the query. 
         
-        List functions = this.findFunctions(zoneName);
+        List functions = this.findFunctions(zoneId);
         
         List results = new ArrayList();
         

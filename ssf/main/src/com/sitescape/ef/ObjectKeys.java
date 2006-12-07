@@ -102,7 +102,7 @@ public interface ObjectKeys {
     
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
-    public static final String FIELD_PRINCIPAL_ZONENAMNE="zoneName";
+    public static final String FIELD_PRINCIPAL_ZONEID="zoneId";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_PRINCIPAL_INTERNALID="internalId";
     

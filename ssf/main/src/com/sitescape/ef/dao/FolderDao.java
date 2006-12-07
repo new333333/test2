@@ -19,7 +19,7 @@ import com.sitescape.ef.domain.TitleException;
  *
  */
 public interface FolderDao {
-	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, String zoneName) throws DataAccessException;
+	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException;
    /**
      * Return iterator of child entries
      * @param filter
@@ -52,12 +52,12 @@ public interface FolderDao {
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before);
 	public List loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order);
 	
-	public Folder loadFolder(Long folderId, String zoneName) throws DataAccessException,NoFolderByTheIdException;
+	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
   
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
     public void delete(Folder folder);
     public void deleteEntries(Folder folder);
-    public void deleteEntries(List entries);
+    public void deleteEntries(FolderEntry entry, List entries);
     public void deleteEntryWorkflows(Folder folder);
     public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);

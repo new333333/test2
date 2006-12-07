@@ -10,6 +10,7 @@ import org.hibernate.LazyInitializationException;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
 import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.Group;
@@ -95,7 +96,8 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	
 	public void testLoadUserAndLazyLoading() {
 		// phase1: Load it. 
-		User user = pdi.loadUser(new Long(59), "liferay.com");
+		Binder top = cdi.findTopWorkspace("liferay.com");
+		User user = pdi.loadUser(new Long(59), top.getZoneId());
 		assertNotNull(user);
 		
 		// phase2: Test lazy loading, by ending the transation (it rolls back).
@@ -119,16 +121,17 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	}
 	
 	public void testAddGroup() {
-		FilterControls filter = new FilterControls();
-		int count = pdi.countGroups(filter, "liferay.com");
+		Binder top = cdi.findTopWorkspace("liferay.com");
+		FilterControls filter = new FilterControls("zoneId", top.getZoneId());
+		int count = cdi.countObjects(Group.class, filter);
 		
 		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
-		newGroup.setZoneName("liferay.com");
+		newGroup.setZoneId(top.getZoneId());
 		
 		cdi.save(newGroup);
 		
-		int newCount = pdi.countGroups(filter, "liferay.com");
+		int newCount = cdi.countObjects(Group.class, filter);
 		
 		assertEquals(count + 1, newCount);
 	}
@@ -141,10 +144,10 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		String zoneName="testZone";
 		String userName = "testUser";
 		Workspace top = createZone(zoneName);
-		FilterControls filter = new FilterControls();
-		int count = pdi.countUsers(filter, top.getZoneName());
+		FilterControls filter = new FilterControls("zoneName", zoneName);
+		int count = cdi.countObjects(User.class, filter);
 		User user = createBaseUser(top, userName);
-		int newCount = pdi.countUsers(filter, top.getZoneName());
+		int newCount = cdi.countObjects(User.class, filter);
 		assertEquals(count + 1, newCount);
 
 		FilterControls fc = new FilterControls("owner.principal", user);
@@ -167,13 +170,13 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	 */
 	public void testLoadPrincipals() {
 		Workspace top = createZone("testZone");
-		FilterControls filter = new FilterControls();
-		int count = pdi.countUsers(filter, top.getZoneName());
-		List users = pdi.loadUsers(new FilterControls(), top.getZoneName());
+		FilterControls filter = new FilterControls("zoneId",top.getZoneId());
+		int count = cdi.countObjects(User.class, filter);
+		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		assertEquals(count,users.size());
 
-		count = pdi.countGroups(filter, top.getZoneName());
-		List groups = pdi.loadGroups(new FilterControls(), top.getZoneName());
+		count = cdi.countObjects(Group.class, filter);
+		List groups = pdi.loadGroups(new FilterControls(), top.getZoneId());
 		assertEquals(count,groups.size());
 		List ids = new ArrayList();
 		for (int i=0; i<users.size(); ++i) {
@@ -188,7 +191,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 			cdi.evict(g);
 		}
 		
-		List prins = pdi.loadPrincipals(ids, top.getZoneName());
+		List prins = pdi.loadPrincipals(ids, top.getZoneId());
 		if (prins.size() != (users.size() + groups.size())) {
 			fail("Principals don't add up " + prins.size());
 		}
@@ -212,18 +215,18 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		cdi.flush();
 		cdi.clear();
 		try {
-			pdi.loadUserOnlyIfEnabled(user1.getId(), top.getZoneName());
+			pdi.loadUserOnlyIfEnabled(user1.getId(), top.getZoneId());
 			fail("Disabled user loaded with loadUserOnlyIfEnabled");
 		} catch (NoUserByTheIdException nu) {}
 		//load all users
-		List users = pdi.loadUsers(new FilterControls(), top.getZoneName());
+		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		List ids = new ArrayList();
 		for (int i=0; i<users.size(); ++i) {
 			User u = (User)users.get(i);
 			ids.add(u.getId());
 			cdi.evict(u);
 		}
-		users = pdi.loadEnabledUsers(ids, top.getZoneName());
+		users = pdi.loadEnabledUsers(ids, top.getZoneId());
 		if (users.contains(user1))
 			fail("Disabled user loaded with loadEnabledUsers");
 
@@ -302,7 +305,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		//have to clear session cause we are bypassing hibernate cascade.
 		cdi.clear();
 		
-		ProfileBinder p = pdi.getProfileBinder(top.getZoneName());
+		ProfileBinder p = pdi.getProfileBinder(top.getZoneId());
 		pdi.deleteEntries(p);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((Principal)entries.get(i));
@@ -317,22 +320,22 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		} catch (NoWorkspaceByTheNameException nw) {
 			top = new Workspace();
 			top.setName(name);
-			top.setZoneName(name);
+			top.setZoneId(top.getZoneId());
 			cdi.save(top);
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
-			profiles.setZoneName(name);
+			profiles.setZoneId(top.getZoneId());
 			profiles.setParentBinder(top);
 			//	generate id for top
 			cdi.save(profiles);
 			Group group = new Group();
 			group.setName(adminGroup);
-			group.setZoneName(name);
+			group.setZoneId(top.getZoneId());
 			group.setParentBinder(profiles);
 			cdi.save(group);
 			User user = new User();
 			user.setName(adminUser);
-			user.setZoneName(name);
+			user.setZoneId(top.getZoneId());
 			user.setParentBinder(profiles);
 			cdi.save(user);
 			group.addMember(user);
@@ -345,9 +348,9 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	}
 	private User createBaseUser(Workspace top, String name) {
 		User user = new User();
-		user.setZoneName(top.getZoneName());
+		user.setZoneId(top.getZoneId());
 		user.setName(name);
-		user.setParentBinder(pdi.getProfileBinder(top.getZoneName()));
+		user.setParentBinder(pdi.getProfileBinder(top.getZoneId()));
 		//add some attributes
 		user.addCustomAttribute("aString", "I am a string");
 		String vals[] = new String[] {"red", "white", "blue"};
@@ -362,10 +365,10 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		cdi.save(user);
 		assertNotNull(user.getId());
 		//add user to a group
-		Group group = (Group)pdi.loadGroups(new FilterControls("name", adminGroup), top.getZoneName()).get(0);
+		Group group = (Group)pdi.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
 		group.addMember(user);
 		try {
-			user = pdi.findUserByName(name, top.getZoneName());			
+			user = pdi.findUserByName(name, top.getName());			
 		} catch (NoUserByTheNameException e) {
 			fail("New user test not found");
 		}
@@ -378,7 +381,6 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	}
 	private List fillProfile(Workspace top) {
 		List entries = new ArrayList();
-		String zoneName = top.getZoneName();
 		User user1 = createBaseUser(top, "testUser1");
 		entries.add(user1);
 		pdi.loadUserProperties(user1.getId());
@@ -396,21 +398,21 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		
 		Group group1 = new Group();
 		group1.setName("group1");
-		group1.setZoneName(zoneName);
+		group1.setZoneId(top.getZoneId());
 		group1.setParentBinder(user1.getParentBinder());
 		cdi.save(group1);
 		entries.add(group1);
 		
 		Group group2 = new Group();
 		group2.setName("group2");
-		group2.setZoneName(zoneName);
+		group2.setZoneId(top.getZoneId());
 		group2.setParentBinder(user1.getParentBinder());
 		cdi.save(group2);
 		entries.add(group2);
 		
 		Group group3 = new Group();
 		group3.setName("group3");
-		group3.setZoneName(zoneName);
+		group3.setZoneId(top.getZoneId());
 		group3.setParentBinder(user1.getParentBinder());
 		cdi.save(group3);
 		entries.add(group3);

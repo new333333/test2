@@ -85,14 +85,14 @@ public class AddFolderController extends SAbstractController {
 		if (Validator.isNull(defId)) {
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 				if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
-					getFolderModule().checkAddFolderAllowed((Folder)binder);
+					getFolderModule().checkAccess((Folder)binder, "addFolder");
 					List result = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
 					if (result.isEmpty()) {
 						result.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
 					}
 					model.put(WebKeys.CONFIGURATIONS, result);
 				} else {
-					getFolderModule().checkAddFolderAllowed((Folder)binder);
+					getFolderModule().checkAccess((Folder)binder, "addFolder");
 					List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
 					if (result.isEmpty()) {
 						result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
@@ -106,9 +106,9 @@ public class AddFolderController extends SAbstractController {
 				}
 			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 				if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
-					getFolderModule().checkAddFolderAllowed((Folder)binder);
+					getFolderModule().checkAccess((Folder)binder, "addFolder");
 				} else {
-					getWorkspaceModule().checkAddFolderAllowed((Workspace)binder);
+					getWorkspaceModule().checkAccess((Workspace)binder, "addFolder");
 				}
 				List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
 				if (result.isEmpty()) {
@@ -121,7 +121,7 @@ public class AddFolderController extends SAbstractController {
 				result.addAll(result2);	
 				model.put(WebKeys.CONFIGURATIONS, result);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-				getWorkspaceModule().checkAddWorkspaceAllowed((Workspace)binder);
+				getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");
 				List result = getAdminModule().getConfigurations(Definition.WORKSPACE_VIEW);
 				if (result.isEmpty()) {
 					result.add(getAdminModule().createDefaultConfiguration(Definition.WORKSPACE_VIEW));	

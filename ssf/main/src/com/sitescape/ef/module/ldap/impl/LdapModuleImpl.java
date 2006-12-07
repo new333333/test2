@@ -34,6 +34,7 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Membership;
@@ -248,7 +249,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (!mods.isEmpty()) {
 			try {
-				updateUser(zoneName, loginName, mods);
+				Binder zone = getCoreDao().findTopWorkspace(zoneName);
+				updateUser(zone, loginName, mods);
 			} catch (NoUserByTheNameException nu) {
 				//do nothing - liferay will catch it
 			}
@@ -266,18 +268,19 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	public void syncUser(String zoneName, String loginName) 
 		throws NoUserByTheNameException, NamingException {
 		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zoneName));
-
+		Binder zone = getCoreDao().findTopWorkspace(zoneName);
 		Map mods = new HashMap();
 		getUpdates(info, loginName, mods);
-		updateUser(zoneName, loginName, mods);
+		updateUser(zone, loginName, mods);
 
 	}
 	/**
 	 * This routine alters group membership without updateing the local caches.
 	 * Need to flush cache after use
 	 */
-	public void syncAll(String zoneName)throws NamingException {
-		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zoneName));
+	public void syncAll() throws NamingException {
+		Binder top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(top.getName()));
    		LdapContext ctx=null;
    		String dn;
    		Object[] gRow,uRow;
@@ -285,8 +288,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    		try {
    			
 			ctx = getContext(info);
-			Map dnUsers  = syncUsers(zoneName, ctx, info); 
-			Map [] gResults = syncGroups(zoneName, ctx, info);
+			Map dnUsers  = syncUsers(top, ctx, info); 
+			Map [] gResults = syncGroups(top, ctx, info);
 			if (info.isMembershipSync()) {
 				Map dnGroups = (Map)gResults[0];
 				Map ldapGroups = (Map)gResults[1];
@@ -302,7 +305,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Long groupId = (Long)gRow[1];
 					List membership = new ArrayList();
 					Attributes lAttrs = (Attributes)entry.getValue();
-					List memberAttributes = (List)getZoneMap(zoneName).get(MEMBER_ATTRIBUTES);
+					List memberAttributes = (List)getZoneMap(top.getName()).get(MEMBER_ATTRIBUTES);
 					for (int i=0; i<memberAttributes.size(); i++) {
 						Attribute att = lAttrs.get((String)memberAttributes.get(i));
 						if (att == null) continue;
@@ -345,7 +348,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	}
 	
 
-	protected Map syncUsers(String zoneName, LdapContext ctx, LdapConfig info) 
+	protected Map syncUsers(Binder zone, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -359,7 +362,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String [] sample = new String[0];
 	 
 		//get list of users.
-		List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONENAMNE, zoneName));
+		List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId()));
 		//convert list of objects to a Map of forumNames 
 		for (int i=0; i<attrs.size(); ++i) {
 			row = (Object [])attrs.get(i);
@@ -370,7 +373,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				notInLdap.put(ssName, row[1]);
 			}
 		}
-		Map zoneMap = getZoneMap(zoneName);
+		Map zoneMap = getZoneMap(zone.getName());
 		Map userAttributes = info.getUserMappings();
 		if (userAttributes == null) userAttributes = (Map)zoneMap.get(USER_ATTRIBUTES);
 		Set la = new HashSet(userAttributes.keySet());
@@ -415,20 +418,20 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
 				userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 				userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-				userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONENAMNE, zoneName);
+				userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId());
 				ldap_new.put(ssName, userMods); 
 				dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
 			}
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating users:", ldap_existing);
-				updateUsers(zoneName, ldap_existing);
+				updateUsers(zone, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating users:", ldap_new);
-				List results = createUsers(zoneName, ldap_new);
+				List results = createUsers(zone, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -440,11 +443,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating users:", ldap_existing);
-			updateUsers(zoneName, ldap_existing);
+			updateUsers(zone, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating users:", ldap_new);
-			List results = createUsers(zoneName, ldap_new);
+			List results = createUsers(zone, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				User user = (User)results.get(i);
 				row = (Object[])dnUsers.get(user.getForeignName());
@@ -455,12 +458,12 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//if disable is enabled, remove users that were not found in ldap
 		if (info.isUserDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling users:", notInLdap);
-			disableUsers(zoneName, notInLdap.values());
+			disableUsers(zone, notInLdap.values());
 		}
 		return dnUsers;
 	}
 
-	protected Map[] syncGroups(String zoneName, LdapContext ctx, LdapConfig info) 
+	protected Map[] syncGroups(Binder zone, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
 		Object[] row;
@@ -480,7 +483,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		dnGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
 		//get list of existing groups.
-		List attrs = coreDao.loadObjects(new ObjectControls(Group.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONENAMNE, zoneName));
+		List attrs = coreDao.loadObjects(new ObjectControls(Group.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId()));
 		//convert list of objects to a Map of forumNames 
 		for (int i=0; i<attrs.size(); ++i) {
 			row = (Object [])attrs.get(i);
@@ -494,7 +497,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				notInLdap.put(ssName, row[1]);
 			}
 		}	
-		Map zoneMap = getZoneMap(zoneName);
+		Map zoneMap = getZoneMap(zone.getName());
 		Map groupAttributes = (Map)zoneMap.get(GROUP_ATTRIBUTES);
 		Set la = new HashSet(groupAttributes.keySet());
 		la.addAll((List)zoneMap.get(MEMBER_ATTRIBUTES));
@@ -528,7 +531,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						ldap_new.put(ssName, userMods);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
-						userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONENAMNE, zoneName);
+						userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId());
 						dnGroups.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
 						ldapGroups.put(dn, lAttrs);
 					}
@@ -547,13 +550,13 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			//do updates after every 100 users
 			if (sync && (ldap_existing.size()%100 == 0) && !ldap_existing.isEmpty()) {
 				//doLog("Updating groups:", ldap_existing);
-				updateGroups(zoneName, ldap_existing);
+				updateGroups(zone, ldap_existing);
 				ldap_existing.clear();
 			}
 			//do creates after every 100 users
 			if (create && (ldap_new.size()%100 == 0) && !ldap_new.isEmpty()) {
 				doLog("Creating Groups:", ldap_new);
-				List results = createGroups(zoneName, ldap_new);
+				List results = createGroups(zone, ldap_new);
 				ldap_new.clear();
 				// fill in mapping from distinquished name to id
 				for (int i=0; i<results.size(); ++i) {
@@ -565,11 +568,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 		if (sync && !ldap_existing.isEmpty()) {
 			//doLog("Updating groups:", ldap_existing);
-			updateGroups(zoneName, ldap_existing);
+			updateGroups(zone, ldap_existing);
 		}
 		if (create && !ldap_new.isEmpty()) {
 			doLog("Creating Groups:", ldap_new);
-			List results = createGroups(zoneName, ldap_new);
+			List results = createGroups(zone, ldap_new);
 			for (int i=0; i<results.size(); ++i) {
 				Group group = (Group)results.get(i);
 				row = (Object[])dnGroups.get(group.getForeignName());
@@ -580,7 +583,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		//if disable is enabled, remove groups that were not found in ldap
 		if (info.isGroupDisable() && !notInLdap.isEmpty()) {
 			doLog("Disabling groups:", notInLdap);
-			disableGroups(zoneName,notInLdap.values());
+			disableGroups(zone,notInLdap.values());
 		}
 		return new Map[]{dnGroups,ldapGroups};
 	}
@@ -726,9 +729,9 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @param mods
 	 * @throws NoUserByTheNameException
 	 */
-	protected void updateUser(String zoneName, String loginName, Map mods) throws NoUserByTheNameException {
+	protected void updateUser(Binder zone, String loginName, Map mods) throws NoUserByTheNameException {
 
-		User profile = getProfileDao().findUserByName(loginName, zoneName); 
+		User profile = getProfileDao().findUserByName(loginName, zone.getName()); 
  		IndexSynchronizationManager.begin();
 		ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager().getProcessor(
 	            	profile.getParentBinder(), ProfileCoreProcessor.PROCESSOR_KEY);
@@ -739,11 +742,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Update users with their own map of updates
 	 * @param users - Map indexed by user id, value is map of updates for a user
 	 */
-	protected void updateUsers(String zoneName, final Map users) {
-		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+	protected void updateUsers(Binder zone, final Map users) {
+		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List collections = new ArrayList();
 		collections.add("customAttributes");
-	   	List foundEntries = getCoreDao().loadObjects(users.keySet(), User.class, zoneName, collections);
+	   	List foundEntries = getCoreDao().loadObjects(users.keySet(), User.class, zone.getZoneId(), collections);
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		User u = (User)foundEntries.get(i);
@@ -760,11 +763,11 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * Update groups with their own updates
      * @param groups - Map keyed by group id, value is map of updates for a group
      */    
-	protected void updateGroups(String zoneName, final Map groups) {
-		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+	protected void updateGroups(Binder zone, final Map groups) {
+		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List collections = new ArrayList();
 		collections.add("customAttributes");
-	   	List foundEntries = getCoreDao().loadObjects(groups.keySet(), Group.class, zoneName, collections);
+	   	List foundEntries = getCoreDao().loadObjects(groups.keySet(), Group.class, zone.getZoneId(), collections);
 	   	Map entries = new HashMap();
 	   	for (int i=0; i<foundEntries.size(); ++i) {
 	   		Group g = (Group)foundEntries.get(i);
@@ -778,7 +781,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
     }
     protected void updateMembership(Long groupId, Collection newMembers, final Collection reservedIds) {
 		//have a list of users, now compare with what exists already
-		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneName());
+		List oldMembers = getProfileDao().getMembership(groupId, RequestContextHolder.getRequestContext().getZoneId());
 		final Set newM = CollectionUtil.differences(newMembers, oldMembers);
 		final Set remM = CollectionUtil.differences(oldMembers, newMembers);
 
@@ -806,8 +809,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param users - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List createUsers(String zoneName, Map users) {
-		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+    protected List createUsers(Binder zone, Map users) {
+		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newUsers = new ArrayList();
 		for (Iterator i=users.values().iterator(); i.hasNext();) {
 			newUsers.add(new MapInputData((Map)i.next()));
@@ -832,8 +835,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
      * @param groups - Map keyed by user id, value is map of attributes
      * @return
      */
-    protected List createGroups(String zoneName, Map groups) {
-		ProfileBinder pf = getProfileDao().getProfileBinder(zoneName);
+    protected List createGroups(Binder zone, Map groups) {
+		ProfileBinder pf = getProfileDao().getProfileBinder(zone.getZoneId());
 		List newGroups = new ArrayList();
 		for (Iterator i=groups.values().iterator(); i.hasNext();) {
 			newGroups.add(new MapInputData((Map)i.next()));
@@ -850,10 +853,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		IndexSynchronizationManager.applyChanges();
 		return newGroups;
     }
-    protected void disableUsers(final String zoneName, final Collection ids) {
+    protected void disableUsers(final Binder zone, final Collection ids) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		getProfileDao().disablePrincipals(ids, zoneName);
+        		getProfileDao().disablePrincipals(ids, zone.getZoneId());
         		return null;
         	}});
         //remove from index
@@ -864,10 +867,10 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    		IndexSynchronizationManager.applyChanges();
    	    
     }
-    protected void disableGroups(final String zoneName, final Collection ids) {
+    protected void disableGroups(final Binder zone, final Collection ids) {
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		getProfileDao().disablePrincipals(ids, zoneName);
+        		getProfileDao().disablePrincipals(ids, zone.getZoneId());
         		return null;
         	}});
         //remove from index

@@ -22,7 +22,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.context.request.RequestContext;
+import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
@@ -67,18 +67,15 @@ public abstract class SSStatefulJob implements StatefulJob {
            	//Validate user and zone are compatible
            	if (jobDataMap.containsKey("user")) {
            		Long id = new Long(jobDataMap.getLong("user"));
-           		user = profileDao.loadUser(id, zoneName);
-           		if (user.isDisabled()) throw new NoUserByTheIdException(id);
+           		user = profileDao.loadUserOnlyIfEnabled(id, zoneName);
            	} else {
         		String name = SZoneConfig.getString(zoneName, "property[@name='adminUser']");
            		user = profileDao.findUserByNameOnlyIfEnabled(name, zoneName);
            	}
     	
            	//Setup thread context expected by business logic
-           	RequestContext rc = new RequestContext(user.getZoneName(), user.getName());
-           	rc.setUser(user);
-           	RequestContextHolder.setRequestContext(rc);
-           	//	do the real work
+           	RequestContextUtil.setThreadContext(user);
+            	//	do the real work
            	doExecute(context);
 
 		} catch (NoUserByTheIdException nu) {
@@ -97,7 +94,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     		throw new JobExecutionException(e);
     	} finally {
     		SessionUtil.sessionStop();
-    		RequestContextHolder.clear();
+    		RequestContextUtil.clearThreadContext();
     	}
 
 	}  

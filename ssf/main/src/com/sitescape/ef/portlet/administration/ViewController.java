@@ -22,7 +22,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 public class ViewController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-		getAdminModule().setZone();
+//		getAdminModule().setZone();
 		response.setRenderParameters(request.getParameterMap());
 	}
 
@@ -262,7 +262,7 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-		//temp to fixup zone
+/*		//temp to fixup zone
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", "Temporary check zone");
 		element.addAttribute("image", "bullet");
@@ -270,7 +270,7 @@ public class ViewController extends  SAbstractController {
 		url = response.createActionURL();
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-
+*/
 		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
 	}
 }

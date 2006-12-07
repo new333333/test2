@@ -61,11 +61,11 @@ public class AccessControlManagerImpl implements AccessControlManager {
                 return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
         }
         else {
-	        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	        //Get list of functions that allow the operation
-	        List functions = getFunctionManager().findFunctions(zoneName, workAreaOperation);
+	        List functions = getFunctionManager().findFunctions(zoneId, workAreaOperation);
 	        //get all function memberships for this workarea
-	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneName, workArea);
+	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneId, workArea);
 	        //build list of users by merging  
 	        List result = new ArrayList();
 	        for (int i=0; i<memberships.size(); ++i) {
@@ -127,7 +127,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			Set membersToLookup = getProfileDao().getPrincipalIds(user);
 
 			return getWorkAreaFunctionMembershipManager()
-					.checkWorkAreaFunctionMembership(user.getZoneName(),
+					.checkWorkAreaFunctionMembership(user.getParentBinder().getParentBinder().getId(),
 							workArea, workAreaOperation, membersToLookup);
 		}
 
@@ -175,7 +175,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			Set membersToLookup = getProfileDao().getPrincipalIds(user);
 
 			return getWorkAreaFunctionMembershipManager()
-					.checkWorkAreaFunctionMembership(user.getZoneName(),
+					.checkWorkAreaFunctionMembership(user.getParentBinder().getParentBinder().getId(),
 							workArea, function.getId(), membersToLookup);
 		}
 

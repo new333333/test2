@@ -36,7 +36,6 @@ public interface FolderModule {
 	public Collection getFolders(List folderIds);
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
-    public void checkAddFolderAllowed(Folder parentFolder) throws AccessControlException;
 
    /**
      * Create an entry object from the input data and add it to the specified
@@ -49,30 +48,19 @@ public interface FolderModule {
      */
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
-    public void checkAddEntryAllowed(Folder folder) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
-    public void checkAddReplyAllowed(FolderEntry entry) throws AccessControlException;
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, 
     		WriteFilesException, ReservedByAnotherUserException;
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
-    public void checkModifyEntryAllowed(FolderEntry entry) throws AccessControlException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
 	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;
 	public Map getManualTransitions(FolderEntry entry, Long stateId);
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
     public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData);
-    /**
-     * Apply the filter and get back a list of matching entries. 
-     * Access control is also applied implicitly.
-     * 
-     * @param entryFilter
-     * @return a list of {@link com.sitescape.ef.domain.Entry}
-     */
-    public List applyEntryFilter(Definition entryFilter);
     
    /**
      * Return Dom tree of folders starting at the topFolder of the specified folder
@@ -90,23 +78,16 @@ public interface FolderModule {
     public List getPersonalTags(Long binderId, Long entryId);
     public void setUserRating(Long folderId, Long entryId, long value);
 	public void setUserRating(Long folderId, long value);
-	public void setUserVisit(Long folderId, Long entryId);
-	public void setUserVisit(Long folderId);
 	public void setUserVisit(FolderEntry entry);
-	public void setUserVisit(Folder folder);
     public void setTag(Long binderId, Long entryId, String tag, boolean community);
     
     public void addSubscription(Long folderId, Long entryId, int style); 
     public void deleteSubscription(Long folderId, Long entryId);
     public Subscription getSubscription(Long folderId, Long entryId); 
-     
-    public Map getCommonEntryElements();
-
-   	  
+        	  
     public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
-    public void checkDeleteEntryAllowed(FolderEntry entry) throws AccessControlException;
     public void moveEntry(Long folderId, Long entryId, Long destinationId);
     
     /**
@@ -156,5 +137,7 @@ public interface FolderModule {
     public Set<String> getSubfoldersTitles(Folder folder);
     
     public Set<Folder> getSubfolders(Folder folder);
+    public void checkAccess(Folder folder, String operation) throws AccessControlException;
+    public void checkAccess(FolderEntry entry, String operation) throws AccessControlException;
 
 }

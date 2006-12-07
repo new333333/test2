@@ -205,7 +205,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//Add Workspace
 		if ((parent == null) || !parent.getEntityIdentifier().getEntityType().equals(EntityType.profiles)) {
 			try {
-				getWorkspaceModule().checkAddWorkspaceAllowed(workspace);
+				getWorkspaceModule().checkAccess(workspace, "addWorkspace");
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
 				url = response.createActionURL();
@@ -218,7 +218,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		//Add Folder
 		try {
-			getWorkspaceModule().checkAddFolderAllowed(workspace);
+			getWorkspaceModule().checkAccess(workspace, "addFolder");
 			if (addMenuCreated == false) {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
@@ -255,7 +255,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//Delete
 		if (!workspace.isReserved()) {
 			try {
-				getBinderModule().checkDeleteBinderAllowed(workspace);
+				getBinderModule().checkAccess(workspace, "deleteBinder");
 				Map qualifiers = new HashMap();
 				qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
 				url = response.createActionURL();
@@ -268,7 +268,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		//Modify
 		try {
-			getBinderModule().checkModifyBinderAllowed(workspace);
+			getBinderModule().checkAccess(workspace, "modifyBinder");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
@@ -281,7 +281,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//Move
 		try {
-			getBinderModule().checkMoveBinderAllowed(workspace);
+			getBinderModule().checkAccess(workspace, "moveBinder");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
@@ -298,12 +298,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
 			try {
-				getProfileModule().checkModifyEntryAllowed(owner);
+				getProfileModule().checkAccess(owner, "modifyEntry");
 				showModifyProfileMenu = true;
 			} catch (AccessControlException ac) {};
 		
 			try {
-				getProfileModule().checkDeleteEntryAllowed(owner);
+				getProfileModule().checkAccess(owner, "deleteEntry");
 				showDeleteProfileMenu = true;
 			} catch (AccessControlException ac) {};
 			
@@ -368,7 +368,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 	
 				//Check the access rights of the user
 				try {
-					getBinderModule().checkModifyBinderAllowed(workspace);
+					getBinderModule().checkAccess(workspace, "setProperty");
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);

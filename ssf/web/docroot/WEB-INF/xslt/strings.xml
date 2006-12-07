@@ -2,9 +2,6 @@
     <str name="TOC">
 	   	<lang name="en">Table of contents</lang>
     </str>
-    <str name="forumLabel">
-	   	<lang name="en">Forum:</lang>
-   	</str>
     <str name="ChangedOne">
    		<lang name="en">changed entry in </lang>
     </str>
@@ -12,13 +9,13 @@
    		<lang name="en">changed entries in </lang>
     </str>
     <str name="fromLabel">
-   		<lang name="en">From</lang>
+   		<lang name="en">From:</lang>
     </str>
     <str name="dateLabel">
-   		<lang name="en">Date</lang>
+   		<lang name="en">Date:</lang>
     </str>
     <str name="folderLabel">
-	   <lang name="en">Folder</lang>
+	   <lang name="en">Folder:</lang>
     </str>
     <str name="newEntry">
 	   <lang name="en">new</lang></str>

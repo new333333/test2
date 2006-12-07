@@ -18,41 +18,41 @@ public interface SecurityDao {
     public void update(Object obj);
     
     public void delete(Object obj);
-    public void deleteWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
+    public void deleteWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType);
     
-    public Function loadFunction(String zoneName, Long id)  throws NoObjectByTheIdException;
-    public Function loadReservedFunction(String zoneName, String id)  throws NoObjectByTheIdException;
-	public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(String zoneName, Long id)  throws NoObjectByTheIdException;
+    public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException;
+    public Function loadReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException;
+	public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long zoneId, Long id)  throws NoObjectByTheIdException;
     	    	     
-    public List findFunctions(String zoneName);
+    public List findFunctions(Long zoneId);
 
     /**
      * Returns specified <code>WorkAreaFunctionMembership</code>.
      * Returns <code>null</code> if not exists.
      * 
-     * @param zoneName
+     * @param zoneId
      * @param workAreaId
      * @param workAreaType
      * @param functionId
      * @return
      */
-    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(String zoneName, 
+    public WorkAreaFunctionMembership getWorkAreaFunctionMembership(Long zoneId, 
     		Long workAreaId, String workAreaType, Long functionId);
 
-    public List findWorkAreaFunctionMemberships(String zoneName, Long workAreaId, String workAreaType);
-	public List findWorkAreaFunctionMemberships(String zoneName, Long functionId);
-	public List findWorkAreaFunctionMemberships(String zoneName, Long functionId, Set membersToLookup);
+    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
+	public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId, String workAreaType);
+	public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId, Set membersToLookup);
 
     /**
      * 
-     * @param zoneName
+     * @param zoneId
      * @param workAreaId
      * @param workAreaType
      * @param workAreaOperationName
      * @param membersToLookup	a set of Long
      * @return
      */
-    public boolean checkWorkAreaFunctionMembership(String zoneName, Long workAreaId, 
+    public boolean checkWorkAreaFunctionMembership(Long zoneId, Long workAreaId, 
             String workAreaType, String workAreaOperationName, Set membersToLookup);
     
 }

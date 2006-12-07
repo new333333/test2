@@ -7,8 +7,6 @@ import java.util.Set;
  * @hibernate.cache usage="nonstrict-read-write"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @hibernate.query name="check-WorkAreaFunctionMembership" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
- * @hibernate.query name="get-WorkAreaOperation" query="select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneName=:zoneName and fm.zoneName=:zoneName and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)"
  * 
  * <code>FunctionMembership</code> defines the members of a function for 
  * a work area.
@@ -20,7 +18,7 @@ public class WorkAreaFunctionMembership {
     private static final String SPLIT_CHAR = ",";
     
     private Long id;
-    private String zoneName;
+    private Long zoneId;
     private Long workAreaId;
     private String workAreaType;
     private Long functionId;
@@ -84,17 +82,17 @@ public class WorkAreaFunctionMembership {
     }
     
 	/**
-	 * @hibernate.property length="100" not-null="true"
+	 * @hibernate.property not-null="true"
 	 */    
-    public String getZoneName() {
-        return zoneName;
+    public Long getZoneId() {
+        return zoneId;
     }
-    public void setZoneName(String zoneName) {
-        this.zoneName = zoneName;
+    public void setZoneId(Long zoneId) {
+        this.zoneId = zoneId;
     }
     
     /**
-     * @hibernate.property column="functionId" type="long" not-null="true"
+     * @hibernate.property not-null="true"
      * 
      * @return
      */
@@ -117,7 +115,7 @@ public class WorkAreaFunctionMembership {
         // Don't bring surrogate key value (id) into consideration.
         // Use business key only (which is a combination of zone name + 
         // work area id + work area type + function id). 
-        if (!o.getZoneName().equals(zoneName)) return false;               
+        if (!o.getZoneId().equals(zoneId)) return false;               
         if (!o.getWorkAreaId().equals(workAreaId)) return false;               
         if (!o.getWorkAreaType().equals(workAreaType)) return false;               
         if (!o.getFunctionId().equals(functionId)) return false;               
@@ -127,7 +125,7 @@ public class WorkAreaFunctionMembership {
     
     public int hashCode() {
        	int hash = 7;
-    	hash = 31*hash + zoneName.hashCode();
+    	hash = 31*hash + zoneId.hashCode();
     	hash = 31*hash + workAreaId.hashCode();
     	hash = 31*hash + workAreaType.hashCode();
     	hash = 31*hash + functionId.hashCode();

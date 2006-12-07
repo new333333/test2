@@ -24,6 +24,7 @@ import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 
 public class BinderHelper {
@@ -158,5 +159,38 @@ public class BinderHelper {
     	fields[0] = new SortField(sortBy, descend);
     	return fields;
    	}
+    public static Map getCommonEntryElements() {
+    	Map entryElements = new HashMap();
+    	Map itemData;
+    	//Build a map of common elements for use in search filters
+    	//  Each map has a "type" and a "caption". Types can be: title, text, user_list, or date.
+    	
+    	//title
+    	itemData = new HashMap();
+    	itemData.put("type", "title");
+    	itemData.put("caption", NLT.get("filter.title"));
+    	entryElements.put("title", itemData);
+    	
+    	//author
+    	itemData = new HashMap();
+    	itemData.put("type", "user_list");
+    	itemData.put("caption", NLT.get("filter.author"));
+    	entryElements.put("owner", itemData);
+    	
+    	//creation date
+    	itemData = new HashMap();
+    	itemData.put("type", "date");
+    	itemData.put("caption", NLT.get("filter.creationDate"));
+    	entryElements.put("creation", itemData);
+    	
+    	//modification date
+    	itemData = new HashMap();
+    	itemData.put("type", "date");
+    	itemData.put("caption", NLT.get("filter.modificationDate"));
+    	entryElements.put("modification", itemData);
+    	
+    	return entryElements;
+    }
+       	
 
 }

@@ -24,14 +24,14 @@ public class ResolveIds {
 			}
 			
 			ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-			return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+			return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 
 		}
 		return null;
 	}
 	public static Collection getPrincipals(Collection ids) {
 		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneName());
+		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	//This is used after a search to map the binder id to a title
 	public static Map getBinderTitlesAndIcons(Collection ids) {

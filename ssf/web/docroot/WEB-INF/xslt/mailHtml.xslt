@@ -61,15 +61,16 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'TOC'"/>
 </xsl:call-template>
-
-<br/></span>
-
+:<br/></span>
+<span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
 <xsl:for-each select="folder">
+		<br/><a><xsl:attribute name="href">#f<xsl:value-of select="@name"/></xsl:attribute>
+	<xsl:value-of select="@title"/></a><br/>
 <xsl:for-each select="folderEntry">
+		&nbsp;&nbsp;&nbsp;&nbsp;
 		<xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
 		<a><xsl:attribute name="href">#id<xsl:value-of select="@name"/></xsl:attribute>
 		<xsl:if test="@docLevel != '1'">&nbsp;&nbsp;&nbsp;</xsl:if>
-		<span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
              <xsl:value-of select="@docNumber"/>&nbsp;&nbsp;
 			 <xsl:value-of select="@title"/>
          <xsl:if test="@hasChanges = 'true'">&nbsp;(
@@ -77,21 +78,23 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 		  <xsl:with-param name="stringName" select="@notifyType"/>
 		</xsl:call-template>
 		)</xsl:if>
- 		</span></a><br/>
+ 		</a><br/>
 		</xsl:if>
 
 </xsl:for-each>
 </xsl:for-each>
+</span>
 <hr size="1" color="black" noshade="true"/>
 
+<xsl:for-each select="folder">
+<a name="f{@name}"/>
 <span style="font-family: arial, helvetica,
   sans-serif; font-size: 13px;"><b>
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'folderLabel'"/>
 </xsl:call-template>
-:&nbsp;<xsl:value-of select="topFolder/@title"/></b></span>
+&nbsp;<xsl:value-of select="@title"/></b></span>
 <br/>
-<xsl:for-each select="folder">
 <xsl:for-each select="folderEntry">
 <div style="border-bottom: thin solid #cccccc;">
 <xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
@@ -219,6 +222,7 @@ line-height: 200%; text-decoration:
 <br/>
 
 </xsl:for-each>
+
 </xsl:for-each>
 
 

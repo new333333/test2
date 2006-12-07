@@ -59,7 +59,9 @@ public class GenerateCreateTablesUnconstrained {
 			line = line.trim();
 			if (line.trim().length() == 0) continue;
 			if (line.startsWith("#")) continue;
-			if (line.contains("create table") || line.contains("CREATE TABLE")) {
+			if (line.contains("create table") || line.contains("CREATE TABLE") || 
+					line.startsWith("create index") || line.startsWith("CREATE INDEX") ||
+					line.startsWith("insert") || line.startsWith("INSERT")) {
 				// Processing "create table" statement
 				if(!createTablesStarted)
 					createTablesStarted = true;

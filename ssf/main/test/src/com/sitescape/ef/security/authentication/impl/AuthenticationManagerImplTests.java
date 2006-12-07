@@ -30,7 +30,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 		profileDaoControl = MockControl.createControl(ProfileDao.class);
 		profileDao = (ProfileDao) profileDaoControl.getMock();
 		user = new User();
-		user.setZoneName("testZone");
+//		user.setZoneName("testZone");
 		user.setName("testUser");
 		
 		// Set up the actual object that we are testing.

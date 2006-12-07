@@ -36,7 +36,7 @@ public class RssAuthenticationFilter implements Filter {
 		try {
 			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, passwordDigest);
 			
-			RequestContextUtil.setThreadContext(zoneName, user.getName(), user.getId());
+			RequestContextUtil.setThreadContext(user);
 			
 			chain.doFilter(request, response); // Proceed
 			

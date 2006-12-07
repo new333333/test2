@@ -62,7 +62,7 @@ import com.sitescape.util.Validator;
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
 	private Document definitionConfig;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
-	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneName", "type"};
+	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneId", "type"};
 
 	private WorkflowModule workflowModule;
 	
@@ -76,21 +76,55 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 
     }
-    	
+   	public void checkAccess(String operation) {
+   		Binder top = RequestContextHolder.getRequestContext().getZone();
+        getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);        		
+
+        if ("addDefinition".equals(operation)) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("modifyDefinitionName")) {
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("modifyDefinitionAttribute")) {
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+ 		} else if (operation.startsWith("modifyDefinitionProperties")) {
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("setDefinitionLayout")) {
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("deleteDefinition")) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("addItem")) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("modifyItem")) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("deleteItem")) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("modifyItemLocation")) {
+			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else {
+	        //getDefinitions
+			accessControlManager.checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+		}
+   	}
     public String addDefinition(Document doc) {
-		Element root = doc.getRootElement();
+    	checkAccess("addDefinition");
+    	return doAddDefinition(doc, null).getId();
+    }
+    protected Definition doAddDefinition(Document doc, String internalId) {
+    	Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
 		String caption = root.attributeValue("caption");
 		String type = root.attributeValue("type");
-		String zone = RequestContextHolder.getRequestContext().getZoneName();
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
+		Definition def=null;
 		if (Validator.isNull(id)) {
 			//doesn't have an id, so generate one
-			Definition def = new Definition();
-			def.setZoneName(zone);
+			def = new Definition();
+			def.setZoneId(zoneId);
 			def.setName(name);
 			def.setTitle(caption);
 			def.setType(Integer.parseInt(type));
+			def.setInternalId(internalId);
 			getCoreDao().save(def);
 			root.addAttribute("databaseId", def.getId());
 			setDefinition(def,doc);
@@ -100,12 +134,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			// see if already exist in any zone
 			List oldDefs = getCoreDao().loadObjects(Definition.class, new FilterControls("id", id));
 			if (oldDefs.isEmpty()) {
-				Definition def = new Definition();
+				def = new Definition();
 				def.setId(id);
-				def.setZoneName(zone);
+				def.setZoneId(zoneId);
 				def.setName(name);
 				def.setTitle(caption);
 				def.setType(Integer.parseInt(type));
+				def.setInternalId(internalId);	
 				root.addAttribute("databaseId", def.getId());
 				setDefinition(def,doc);
 				getCoreDao().replicate(def);				
@@ -114,23 +149,26 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				boolean found=false;
 				for (int i=0; i<oldDefs.size(); ++i) {
 					Definition oldDef = (Definition)oldDefs.get(i);
-					if (oldDef.getZoneName().equals(zone)) {
+					if (oldDef.getZoneId().equals(zoneId)) {
 						found=true;
 						//update it
 						oldDef.setName(name);
 						oldDef.setTitle(caption);
 						oldDef.setType(Integer.parseInt(type));
+						oldDef.setInternalId(internalId);	
 						setDefinition(oldDef, doc);
+						def = oldDef;
 						break;
 					}
 				}
 				if (!found) {
 					//generate a new one
-					Definition def = new Definition();
-					def.setZoneName(zone);
+					def = new Definition();
+					def.setZoneId(zoneId);
 					def.setName(name);
 					def.setTitle(caption);
 					def.setType(Integer.parseInt(type));
+					def.setInternalId(internalId);	
 					getCoreDao().save(def);
 					root.addAttribute("databaseId", def.getId());
 					setDefinition(def,doc);
@@ -138,13 +176,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				}
 			}			
 		}
-		return id;
+		return def;
 	}
 	public Definition getDefinition(String id) {
 		String companyId = RequestContextHolder.getRequestContext().getZoneName();
 		Workspace workspace = getCoreDao().findTopWorkspace(companyId);
         accessControlManager.checkOperation(workspace, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);        
- 		return coreDao.loadDefinition(id, companyId);
+ 		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
@@ -155,13 +193,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+    	checkAccess("addDefinition");
 
 		Definition newDefinition = new Definition();
 		newDefinition.setName(name);
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
-		newDefinition.setZoneName(zoneName);
+		newDefinition.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		getCoreDao().save(newDefinition);
 		Document doc = getInitialDefinition(name, title, type, inputData);
 		Element root = doc.getRootElement();
@@ -171,6 +209,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyDefinitionName(String id, String name, String title) {
+    	checkAccess("modifyDefinitionName");
 		Definition def = getDefinition(id);
 		if (def != null) {
 			
@@ -205,6 +244,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyDefinitionAttribute(String id, String key, String value) {
+	   	checkAccess("modifyDefinitionAttribute");
 		Definition def = getDefinition(id);
 		//Store this attribute in the definition document (but only if it is different)
 		Document defDoc = def.getDefinition();
@@ -231,6 +271,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {
+	   	checkAccess("modifyDefinitionProperties");
 		Definition def = getDefinition(id);
 		if (def != null) {			
 			String definitionName = "";
@@ -308,6 +349,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
+		checkAccess("setDefinitionLayout");
 		Definition def = getDefinition(id);
 		Document defDoc = def.getDefinition();
 		
@@ -348,6 +390,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void deleteDefinition(String id) {
+		checkAccess("deleteDefinition");
 		Definition def = getDefinition(id);
 		getCoreDao().delete(def);
 		if (def.getType() == Definition.WORKFLOW) {
@@ -361,15 +404,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return
 	 */
 	public Definition createDefaultDefinition(int type) {
-		Definition def = null;
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		// no access needed, just fills indefaults
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String definitionTitle=null;
 		String internalId=null;
 		String definitionName=null;
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder";
 				definitionName="Folder";
@@ -378,7 +421,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.FOLDER_ENTRY: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder_entry";
 				internalId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
@@ -387,7 +430,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.FILE_FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_file_folder";				
 				internalId = ObjectKeys.DEFAULT_FILE_FOLDER_DEF;
@@ -397,7 +440,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.FILE_ENTRY_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_ENTRY_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_ENTRY_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_FILE_ENTRY_DEF;
 				definitionTitle = "__definition_default_file_entry";
@@ -407,7 +450,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_workspace";
 				internalId = ObjectKeys.DEFAULT_WORKSPACE_DEF;
@@ -417,7 +460,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			
 			case Definition.USER_WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_user_workspace";
 				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_DEF;
@@ -427,7 +470,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			
 			case Definition.PROFILE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_PROFILES_DEF;
 				definitionTitle = "__definition_default_profiles";
@@ -436,7 +479,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.PROFILE_ENTRY_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_USER_DEF;
 				definitionTitle = "__definition_default_user";
@@ -445,7 +488,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.PROFILE_GROUP_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, zoneName, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, zoneId, Integer.valueOf(type)}));
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_GROUP_DEF;
 				definitionTitle = "__definition_default_group";
@@ -454,10 +497,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
-		String id = addDefinition(doc);
-		def = getCoreDao().loadDefinition(id, zoneName);
-		def.setInternalId(internalId);	
-		return def;
+		return doAddDefinition(doc, internalId);
 	}
 	
 /*
@@ -480,8 +520,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 */
 	
-	public Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData) {
-		
+	protected Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData) {
 		Element configRoot = this.definitionConfig.getRootElement();
 		Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 		if (definition == null) {return null;}
@@ -505,6 +544,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return newTree;
 	}
 	public Definition setDefaultBinderDefinition(Binder binder) {
+		//no access - fixing up stuff
 		//Create an empty binder definition
 		int definitionType;
 		if (binder instanceof Workspace) {			
@@ -530,6 +570,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return def;
 	}
 	public Definition setDefaultEntryDefinition(Entry entry) {
+		//no access - fixing up stuff
 		//Create an empty entry definition
 		int definitionType;
 		if (entry instanceof Principal) {
@@ -564,7 +605,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
+		checkAccess("addItem");
+		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
 		
 		Document definitionTree = def.getDefinition();
 		
@@ -589,7 +631,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return newItem;
 	}
 	
-	public Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
+	protected Element addItemToDefinitionDocument(String defId, Document definitionTree, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
 	
 		Element newItem = null;
 		
@@ -805,7 +847,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
+		checkAccess("modifyItem");
+		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
 		Document definitionTree = def.getDefinition();
 		
 		if (definitionTree != null) {
@@ -888,7 +931,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 	}
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException {
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
+		checkAccess("deleteItem");
+		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
 
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
@@ -936,7 +980,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
 	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneName());
+		checkAccess("modifyItemLocation");
+		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
 		if (!sourceItemId.equals(targetItemId.toString())) {
 			Document definitionTree = def.getDefinition();
 			if (definitionTree != null) {
@@ -1312,6 +1357,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
+		//access check not needed = have tree already
 		//Get the base configuration definition file root (i.e., not the entry's definition file)
 		//Element configRoot = this.definitionConfig.getRootElement();
 		
@@ -1476,21 +1522,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	return entryDataAll;
     }
     public List getDefinitions() {
-    	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-    	List defs = coreDao.loadDefinitions(companyId);
-    	//TODO: acl check
+    	checkAccess("getDefinitions");
+    	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId());
     	return defs;
     }
     
     public List getDefinitions(int type) {
-    	String companyId = RequestContextHolder.getRequestContext().getZoneName();
-    	List defs = coreDao.loadDefinitions(companyId, type);
-    	//TODO: acl check
+    	checkAccess("getDefinitions");
+    	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId(), type);
     	return defs;
     }
 	public void addIndexFieldsForEntity(
             org.apache.lucene.document.Document indexDoc,
             DefinableEntity entry) {
+		//access check not needed = assumed okay from entry
 
 		this.getDefinitionConfig();
 		Element configRoot = this.definitionConfig.getRootElement();
@@ -1585,7 +1630,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
 	public void addNotifyElementForEntity(Element element, Notify notifyDef, 
 			DefinableEntity entry) {
-
+		//access check not needed = assumed okay from entry
         //Element configRoot = this.definitionConfig.getRootElement();
         Definition def = entry.getEntryDef();
 
@@ -1670,6 +1715,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	//Routine to get the data elements for use in search queries
     public Map getEntryDefinitionElements(String id) {
 		//Get a map for the results
+		//TODO: access doesn't seem needed
     	Map dataElements = new TreeMap();
 		
 		Definition def = getDefinition(id);
@@ -1753,7 +1799,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public Map getWorkflowDefinitionStates(String id) {
 		//Get a map for the results
     	Map dataStates = new TreeMap();
-		
+		//TODO: access doesn't seem needed
 		Definition def = getDefinition(id);
 		
 		Document definitionTree = def.getDefinition();

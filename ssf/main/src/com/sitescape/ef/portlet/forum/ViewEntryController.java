@@ -168,7 +168,7 @@ public class ViewEntryController extends  SAbstractController {
 		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
 		if (!replyStyles.isEmpty()) {
 			try {
-				getFolderModule().checkAddReplyAllowed(entry);
+				getFolderModule().checkAccess(entry, "addReply");
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
@@ -203,7 +203,7 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	    
 		try {
-			getFolderModule().checkModifyEntryAllowed(entry);
+			getFolderModule().checkAccess(entry, "modifyEntry");
 			//The "Modify" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -222,7 +222,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 	    
 		try {
-			getFolderModule().checkDeleteEntryAllowed(entry);
+			getFolderModule().checkAccess(entry, "deleteEntry");
 			//The "Delete" menu
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "return ss_confirmDeleteEntry();");

@@ -17,7 +17,6 @@ import com.sitescape.util.Validator;
  * 
  * @hibernate.class table="SS_Forums" dynamic-update="true" dynamic-insert="false" lazy="false"
  * @hibernate.discriminator type="string" length="16" column="type"
- * @hibernate.query name="find-Binder-Company" query="from com.sitescape.ef.domain.Binder binder where binder.name=:binderName and binder.zoneName=:zoneName"
  * @hibernate.cache usage="read-write"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
@@ -32,7 +31,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected NotificationDef notificationDef;
     protected PostingDef posting;
     protected Integer upgradeVersion;   
-    protected String zoneName; 
+    protected Long zoneId; 
     protected String type;
     protected String pathName;
     protected List definitions;	//initialized by hiberate access=field
@@ -51,17 +50,17 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected boolean widenDelete=false;
     
     /**
-     * @hibernate.property length="100" not-null="true" node="zoneName"
+     * @hibernate.property not-null="true"
      */
-    public String getZoneName() {
-    	return this.zoneName;
+    public Long getZoneId() {
+    	return this.zoneId;
     }
-    public void setZoneName(String zoneName) {
-    	this.zoneName = zoneName;
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
     }
     /**
      * Internal id used to identify default binders.  This id plus
-     * the zoneName are used to locate default binders.  If we just used the primary key id
+     * the zoneId are used to locate default binders.  If we just used the primary key id
      * the zones would need the same default and that may not be desirable.
      * @hibernate.property length="32"
      */

@@ -1,12 +1,7 @@
 
 package com.sitescape.ef.jobs;
 
-import java.text.ParseException;
-
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.jobs.DefaultEmailNotification.MailJobDescription;
-
-import org.quartz.Scheduler;
 /**
  * @author Janet McCann
  *
@@ -20,7 +15,7 @@ public interface EmailNotification  {
     public static final String PROCESSOR_KEY = "processorKey_emailNotificationJob";
 	public static final String NOTIFICATION_GROUP="email-notifications";
 
-	public ScheduleInfo getScheduleInfo(Binder binder);
-	public void setScheduleInfo(ScheduleInfo info, Binder binder);
-	public void enable(boolean enable, Binder binder);
+	public ScheduleInfo getScheduleInfo(String zoneName, Binder binder);
+	public void setScheduleInfo(ScheduleInfo info, String zoneName, Binder binder);
+	public void enable(boolean enable, String zoneName, Binder binder);
 }

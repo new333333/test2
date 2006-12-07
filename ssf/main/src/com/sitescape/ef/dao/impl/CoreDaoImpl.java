@@ -135,16 +135,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   	getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
-        			//need to use ownerId, cause attachments/custom sets not indexed by binder
-		   			deleteEntityAssociations("ownerId=" + binder.getId() + " and ownerType='" +
-		   					binder.getEntityIdentifier().getEntityType().name() + "'", Binder.class);
-		   			session.createQuery("DELETE com.sitescape.ef.domain.PostingDef where binder=:owner")
-	       				.setLong("owner", binder.getId().longValue())
-	       				.executeUpdate();
+
+//		   			deleteEntityAssociations("ownerId=" + binder.getId() + " and ownerType='" +
+//		   					binder.getEntityIdentifier().getEntityType().name() + "'", Binder.class);
+	    			PostingDef def = binder.getPosting();
+	    			if (def != null) def.setBinder(null);
+	    			//free alias for someone else
 		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where binderId=:owner")
 		   				.setLong("owner", binder.getId().longValue())
 		   				.executeUpdate();
-		   			Connection connect = session.connection();
+/*		   			Connection connect = session.connection();
 		   			try {
 		   				Statement s = connect.createStatement();
 		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
@@ -176,11 +176,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
 		   				.executeUpdate();
  		   			//will this be a problem if the entry is proxied??
-		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
+ 		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
 		   				.executeUpdate();
 		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
 		   			session.getSessionFactory().evict(Binder.class, binder.getId());
 		   			session.evict(binder);
+*/
+		   			delete((DefinableEntity)binder);
 		   			return null;
     	   		}
     	   	}
@@ -188,7 +190,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
  
 	    			
 	}
-	public void deleteEntityAssociations(final String whereClause, final Class clazz) {
+	/** not needed anymore.  Using on-delete in hibernate
+ 	public void deleteEntityAssociations(final String whereClause, final Class clazz) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {
 	    	   		public Object doInHibernate(Session session) throws HibernateException {
@@ -213,17 +216,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    	
 		
 	}
-    /**
-     * Delete an object and its assocations more efficiently then letting hibernate do it.
+*/
+	/**
+     * Delete an object.  Delete associations not maintained with foreign-keys.
       * @param entry
      */
     public void delete(final DefinableEntity entity) {
     	getHibernateTemplate().execute(
     	   	new HibernateCallback() {
     	   		public Object doInHibernate(Session session) throws HibernateException {
-     	   		EntityIdentifier id = entity.getEntityIdentifier();
-     	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
-     	   		deleteEntityAssociations(whereClause, entity.getClass());
+ //    	   		EntityIdentifier id = entity.getEntityIdentifier();
+ //    	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType=" + id.getEntityType().name();
+ //    	   		deleteEntityAssociations(whereClause, entity.getClass());
 
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
@@ -247,10 +251,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
 	   				.executeUpdate();
     	   		//will this be a problem if the entry is proxied??
-    	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
-    	   			.setLong("id", id.getEntityId().longValue())
-    	   			.executeUpdate();
-    	   		session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
+ //   	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
+  //  	   			.setLong("id", id.getEntityId().longValue())
+   // 	   			.executeUpdate();
+		   		session.delete(entity);
+		   		//session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
        	   		return null;
     	   		}
     	   	}
@@ -316,7 +321,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @param className
 	 * @return
 	 */
-   public List loadObjects(final Collection ids, final Class className, final String zoneName) {
+   public List loadObjects(final Collection ids, final Class className, final Long zoneId) {
         if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -324,8 +329,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                          Criteria crit = session.createCriteria(className)
                         	.add(Expression.in(Constants.ID, ids));
  
-                        if (!Validator.isNull(zoneName))
-                        	crit.add(Expression.eq("zoneName", zoneName));
+                        if (zoneId != null)
+                        	crit.add(Expression.eq("zoneId", zoneId));
                         return crit.list();
                         
                     }
@@ -334,7 +339,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return result;
         
     }	
-   public List loadObjects(final Collection ids, final Class className, final String zoneName, final List collections) {
+   public List loadObjects(final Collection ids, final Class className, final Long zoneId, final List collections) {
        if ((ids == null) || ids.isEmpty()) return new ArrayList();
        List result = (List)getHibernateTemplate().execute(
            new HibernateCallback() {
@@ -342,8 +347,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         Criteria crit = session.createCriteria(className)
                        	.add(Expression.in(Constants.ID, ids));
 
-                       if (!Validator.isNull(zoneName))
-                       	crit.add(Expression.eq("zoneName", zoneName));
+                        if (zoneId != null)
+                        	crit.add(Expression.eq("zoneId", zoneId));
                        for (int i=0; i<collections.size(); ++i) {
                     	   crit.setFetchMode((String)collections.get(i), FetchMode.JOIN);
                        }
@@ -457,39 +462,54 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return (List)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
-                 	return session.createQuery("select distinct x.zoneName from com.sitescape.ef.domain.Principal x")
-                 	.list();
+                 	return session.createCriteria(Workspace.class)
+             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_ID))
+             				.list();
                }
             }
 		);
 	}
 	public Workspace findTopWorkspace(final String zoneName) {
-		return (Workspace)loadReservedBinder(ObjectKeys.TOP_WORKSPACE_ID, zoneName);
- 
+        return (Workspace)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(Workspace.class)
+                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_ID))
+                             		.add(Expression.eq("name", zoneName))
+                             		.setCacheable(true)
+                             		.list();
+                        if (results.isEmpty()) {
+                            throw new NoBinderByTheNameException(ObjectKeys.TOP_WORKSPACE_ID); 
+                        }
+                        return (Workspace)results.get(0);
+                    }
+                }
+             );
+
 	}
 	
 	/**
 	 * Load binder and validate it belongs to the zone
 	 * @param binderId
-	 * @param zoneName
+	 * @param zoneId
 	 * @return
 	 */
-    public Binder loadBinder(Long binderId, String zoneName) {  
+    public Binder loadBinder(Long binderId, Long zoneId) {  
 		Binder binder = (Binder)load(Binder.class, binderId);
         if (binder == null) {throw new NoBinderByTheIdException(binderId);};
-        if ((zoneName != null ) && !binder.getZoneName().equals(zoneName)) {
+        if (!binder.getZoneId().equals(zoneId)) {
         	throw new NoBinderByTheIdException(binderId);
         }
         return binder;
     }
 
-    public Binder loadReservedBinder(final String reservedId, final String zoneName) {
+    public Binder loadReservedBinder(final String reservedId, final Long zoneId) {
         return (Binder)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Binder.class)
                              		.add(Expression.eq("internalId", reservedId))
-                             		.add(Expression.eq("zoneName", zoneName))
+                             		.add(Expression.eq("zoneId", zoneId))
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
@@ -502,50 +522,50 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     }
  
  
-	public Definition loadDefinition(String defId, String zoneName) {
+	public Definition loadDefinition(String defId, Long zoneId) {
   		Definition def = (Definition)load(Definition.class, defId);
         if (def == null) {throw new NoDefinitionByTheIdException(defId);}
         //make sure from correct zone
-        if (!def.getZoneName().equals(zoneName)) {throw new NoDefinitionByTheIdException(defId);}
+        if (!def.getZoneId().equals(zoneId)) {throw new NoDefinitionByTheIdException(defId);}
   		return def;
 	}
 
-	public List loadDefinitions(String zoneName) {
+	public List loadDefinitions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
 		order.addColumn("name");
-		FilterControls filter = new FilterControls("zoneName", zoneName);
+		FilterControls filter = new FilterControls("zone", zoneId);
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(Definition.class), filter);
 	}
-	public List loadDefinitions(String zoneName, int type) {
+	public List loadDefinitions(Long zoneId, int type) {
 		OrderBy order = new OrderBy();
 		order.addColumn("name");
-		FilterControls filter = new FilterControls(new String[]{"zoneName", "type"}, new Object[]{zoneName, Integer.valueOf(type)});
+		FilterControls filter = new FilterControls(new String[]{"zoneId", "type"}, new Object[]{zoneId, Integer.valueOf(type)});
 		filter.setOrderBy(order);
     	return loadObjectsCacheable(new ObjectControls(Definition.class), filter);
 	}
 	
-	public BinderConfig loadConfiguration(String defId, String zoneName) {
+	public BinderConfig loadConfiguration(String defId, Long zoneId) {
 		BinderConfig def = (BinderConfig)load(BinderConfig.class, defId);
         if (def == null) {throw new NoConfigurationByTheIdException(defId);}
         //make sure from correct zone
-        if (!def.getZoneName().equals(zoneName)) {throw new NoConfigurationByTheIdException(defId);}
+        if (!def.getZoneId().equals(zoneId)) {throw new NoConfigurationByTheIdException(defId);}
   		return def;
 	}
 
-	public List loadConfigurations(String zoneName) {
+	public List loadConfigurations(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("definitionType");
 		order.addColumn("title");
-		FilterControls filter = new FilterControls("zoneName", zoneName);
+		FilterControls filter = new FilterControls("zoneId", zoneId);
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(BinderConfig.class), filter);
 	}
-	public List loadConfigurations(String zoneName, int type) {
+	public List loadConfigurations(Long zoneId, int type) {
 		OrderBy order = new OrderBy();
 		order.addColumn("title");
-		FilterControls filter = new FilterControls(new String[]{"zoneName", "definitionType"}, new Object[]{zoneName, Integer.valueOf(type)});
+		FilterControls filter = new FilterControls(new String[]{"zoneId", "definitionType"}, new Object[]{zoneId, Integer.valueOf(type)});
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(BinderConfig.class), filter);
 	}
@@ -617,14 +637,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	return obj;
 		
 	}
-	public List loadPostings(String zoneName) {
-    	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneName", zoneName));
+	public List loadPostings(Long zoneId) {
+    	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneId", zoneId));
 	}
-	public PostingDef loadPosting(String postingId, String zoneName) {
+	public PostingDef loadPosting(String postingId, Long zoneId) {
 		PostingDef post = (PostingDef)load(PostingDef.class, postingId);
         if (post == null) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
         //make sure from correct zone
-        if (!post.getZoneName().equals(zoneName)) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
+        if (!post.getZoneId().equals(zoneId)) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
   		return post;
 		
 	}
@@ -941,4 +961,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         if (d != null) return d;
         throw new NoObjectByTheIdException(ErrorCodes.NoDashboardByTheIdException, id);
 	}
+	public void executeUpdate(final String query) {
+    	getHibernateTemplate().execute(
+        	   	new HibernateCallback() {
+        	   		public Object doInHibernate(Session session) throws HibernateException {
+    		   			session.createQuery(query)
+		   				.executeUpdate();
+          	   		
+          	   			return null;
+
+        	   		}
+        	   	}
+       	   	);
+	}
+	
 }

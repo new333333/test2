@@ -10,6 +10,7 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
@@ -78,12 +79,8 @@ public interface BinderModule {
     public void modifyBinder(Long binderId, InputDataAccessor inputData) 
     	throws AccessControlException, WriteFilesException;
     public void setProperty(Long binderId, String property, Object value);
-    public void checkModifyBinderAllowed(Binder binder) throws AccessControlException;
     public void deleteBinder(Long binderId) throws AccessControlException;
-    public void checkDeleteBinderAllowed(Binder binder) throws AccessControlException;
-    public void checkAdminBinderAllowed(Binder binder) throws AccessControlException;
     public void moveBinder(Long fromId, Long toId);
-    public void checkMoveBinderAllowed(Binder binder);
     public Map executeSearchQuery(Document searchQuery);
     public Map executeSearchQuery(Document searchQuery, Map options);
     public Map executeSearchQuery(Binder binder, Document searchQuery);
@@ -94,6 +91,12 @@ public interface BinderModule {
     public void indexTree(Long binderId);
     public void indexBinder(Long binderId);
 
+    public void modifyNotification(Long binderId, Map updates, Collection principals); 
+    public ScheduleInfo getNotificationConfig(Long binderId);
+    public void setNotificationConfig(Long binderId, ScheduleInfo config);
+ 
     
 	public List getTeamMembers(Long binderId);
+	public void checkAccess(Binder binder, String operation) throws AccessControlException;
+	
 }

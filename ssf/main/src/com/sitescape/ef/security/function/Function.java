@@ -20,7 +20,7 @@ import com.sitescape.util.Validator;
 public class Function {
     
     private Long id;
-    private String zoneName;
+    private Long zoneId;
     private String name;
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only
@@ -38,13 +38,13 @@ public class Function {
     }
 
 	/**
-	 * @hibernate.property length="100" not-null="true"
+	 * @hibernate.property not-null="true"
 	 */    
-    public String getZoneName() {
-        return zoneName;
+    public Long getZoneId() {
+        return zoneId;
     }
-    public void setZoneName(String zoneName) {
-        this.zoneName = zoneName;
+    public void setZoneId(Long zoneId) {
+        this.zoneId = zoneId;
     }
 
     /**
@@ -76,7 +76,7 @@ public class Function {
     
     /**
      * Internal id used to identify reserved functions.  This id plus
-     * the zoneName are used to locate reserved functions.  If we just used the primary key id
+     * the zoneId are used to locate reserved functions.  If we just used the primary key id
      * the zones would need the same default and that may not be desirable.
      * @hibernate.property length="32"
      */
@@ -166,13 +166,13 @@ public class Function {
         Function o = (Function) obj;
         //assume object not persisted yet
         if (!o.getName().equals(name)) return false;
-        if (!o.getZoneName().equals(zoneName)) return false;               
+        if (!o.getZoneId().equals(zoneId)) return false;               
         return true;
     }
     public int hashCode() {
        	int hash = 7;
     	hash = 31*hash + name.hashCode();
-    	hash = 31*hash + zoneName.hashCode();
+    	hash = 31*hash + zoneId.hashCode();
     	return hash;
     }
 }

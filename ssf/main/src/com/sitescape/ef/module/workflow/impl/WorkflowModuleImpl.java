@@ -1,41 +1,17 @@
 package com.sitescape.ef.module.workflow.impl;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
-import java.io.Writer;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Date;
-
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.util.Validator;
-import com.sitescape.ef.jobs.WorkflowTimeout;
-import com.sitescape.ef.module.binder.EntryProcessor;
-import com.sitescape.ef.module.workflow.TransitionUtils;
-import com.sitescape.ef.module.definition.DefinitionUtils;
-
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.hibernate.HibernateException;
-
 import org.jbpm.JbpmContext;
 import org.jbpm.calendar.BusinessCalendar;
 import org.jbpm.calendar.Duration;
@@ -52,13 +28,32 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.node.EndState;
 import org.jbpm.graph.node.StartState;
 import org.jbpm.instantiation.Delegation;
-import org.jbpm.jpdl.xml.JpdlXmlWriter;
 import org.jbpm.scheduler.def.CancelTimerAction;
 import org.jbpm.scheduler.def.CreateTimerAction;
 import org.jbpm.scheduler.exe.Timer;
-
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.SessionFactoryUtils;
+
+import com.sitescape.ef.ConfigurationException;
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.jobs.WorkflowTimeout;
+import com.sitescape.ef.module.binder.EntryProcessor;
+import com.sitescape.ef.module.definition.DefinitionUtils;
+import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.workflow.TransitionUtils;
+import com.sitescape.ef.module.workflow.WorkflowModule;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.util.Validator;
 
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule, InitializingBean {
    static BusinessCalendar businessCalendar;
@@ -72,19 +67,19 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 //	   businessCalendar = new BusinessCalendar();
 	   List companies = getCoreDao().findCompanies();
 	   for (int i=0; i<companies.size(); ++i) {
-		   String zoneName = (String)companies.get(i);
-		   String jobClass = SZoneConfig.getString(zoneName, "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
+		   Workspace zone = (Workspace)companies.get(i);
+		   String jobClass = SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
 		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.ef.jobs.DefaultWorkflowTimeout";
 		   try {
 			   Class processorClass = ReflectHelper.classForName(jobClass);
 			   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
 			   //make sure a timeout job is scheduled for the zone
-			   String secsString = (String)SZoneConfig.getString(zoneName, "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
+			   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
 			   int seconds = 300;
 			   try {
 				   seconds = Integer.parseInt(secsString);
 			   } catch (Exception ex) {};
-			   	job.schedule(zoneName, seconds);
+			   	job.schedule(zone.getName(), seconds);
     	
 		   } catch (ClassNotFoundException e) {
 			   throw new ConfigurationException(
@@ -764,6 +759,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 
 	public void modifyWorkflowStateOnTimeout(Long timerId) {
 		JbpmContext context=WorkflowFactory.getContext();
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 	    try {
 	    	
     		SchedulerSession schedulerSession = context.getSchedulerSession();
@@ -776,7 +772,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     			WorkflowState ws = (WorkflowState)getCoreDao().load(WorkflowState.class, new Long(token.getId()));
     			entry = (Entry)ws.getOwner().getEntity();
         		//only process timers in current zone
-        		if (!ws.getDefinition().getZoneName().equals(RequestContextHolder.getRequestContext().getZoneName())) return;
+        		if (!ws.getDefinition().getZoneId().equals(zoneId)) return;
     		}
   
 			if (timer.getName().equals("onDataValue")) {

@@ -335,7 +335,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		
 		binder.setId(dbinder.getId().longValue());
 		binder.setName(dbinder.getName());
-		binder.setZoneName(dbinder.getZoneName());
+		binder.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
 		binder.setType(dbinder.getType());
 		binder.setTitle(dbinder.getTitle());
 		binder.setParentBinderId(dbinder.getParentBinder().getId().longValue());
