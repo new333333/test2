@@ -66,24 +66,27 @@
 	<td align="right" nowrap valign="top"><span class="ss_italic ss_smallprint">
     <c:if test="${fileEntry._entityType == 'folderEntry' || 
       		fileEntry._entityType == 'reply'}">
-      <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}">
-		    <ssf:param name="entityType" value="folder" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-    	onMouseover="ss_showObjInline('ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>');"
-    	onMouseout="ss_hideObj('ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>');"
-      >
-      <c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>icons/folder.gif"/>
-      </c:if>
-      <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
-      </c:if>
-       <div id="ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>" 
-       style="position:absolute; display:none;">${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</div></a>
-    </c:if>
+		<ssf:menu titleId="ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>" 
+		    menuClass="ss_actions_bar_submenu">
+		  <ssf:param name="title" useBody="true">
+		      <c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
+		        <img src="<html:imagesPath/>icons/folder.gif"/>
+		      </c:if>
+		      <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
+		        <img src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
+		      </c:if>
+		  </ssf:param>
+		  <ul class="ss_actions_bar_submenu">
+		  <li><a href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="view_permalink"
+				    binderId="${fileEntry._binderId}">
+				    <ssf:param name="entityType" value="folder" />
+		    	    <ssf:param name="newTab" value="1"/>
+					</ssf:url>" 
+		  >${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
+		  </ul>
+		</ssf:menu>
+     </c:if>
     &nbsp;&nbsp;
     <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
 	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"

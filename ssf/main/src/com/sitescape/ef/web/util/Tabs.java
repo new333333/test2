@@ -72,6 +72,29 @@ public class Tabs {
 		return setTab(tabId, binder, options);
 	}
 	
+	public int findTab(Binder binder) {
+		Map options = new HashMap();
+		return findTab(binder, options);
+	}
+	public int findTab(Binder binder, Map options) {
+		List tabList = (List) tabs.get(TABLIST);
+		int tabId = -1;
+		//Look for this tab
+		for (int i = 0; i < tabList.size(); i++) {
+			Map tab = (Map)tabList.get(i);
+			if ((tab.get(TYPE).equals(BINDER) || 
+					tab.get(TYPE).equals(WORKSPACE) || 
+					tab.get(TYPE).equals(PROFILES)) && 
+					tab.containsKey(BINDER_ID) && 
+					((Long)tab.get(BINDER_ID)).equals(binder.getId())) {
+				tabId = ((Integer)tab.get(TAB_ID)).intValue();
+				break;
+			}
+		}
+		if (tabId == -1) tabId = addTab();
+		return setTab(tabId, binder, options);
+	}
+	
 	//Entry tab
 	public int addTab(Entry entry) {
 		Map options = new HashMap();
@@ -82,6 +105,28 @@ public class Tabs {
 		return setTab(tabId, entry, options);
 	}
 	
+	public int findTab(Entry entry) {
+		Map options = new HashMap();
+		return findTab(entry, options);
+	}
+	public int findTab(Entry entry, Map options) {
+		List tabList = (List) tabs.get(TABLIST);
+		int tabId = -1;
+		//Look for this tab
+		for (int i = 0; i < tabList.size(); i++) {
+			Map tab = (Map)tabList.get(i);
+			if ((tab.get(TYPE).equals(ENTRY) || 
+					tab.get(TYPE).equals(USER)) && 
+					tab.containsKey(ENTRY_ID) && 
+					((Long)tab.get(ENTRY_ID)).equals(entry.getId())) {
+				tabId = ((Integer)tab.get(TAB_ID)).intValue();
+				break;
+			}
+		}
+		if (tabId == -1) tabId = addTab();
+		return setTab(tabId, entry, options);
+	}
+	
 	//Search tab
 	public int addTab(Document query) {
 		Map options = new HashMap();
@@ -89,6 +134,25 @@ public class Tabs {
 	}
 	public int addTab(Document query, Map options) {
 		int tabId = addTab();
+		return setTab(tabId, query, options);
+	}
+	public int findTab(Document query) {
+		Map options = new HashMap();
+		return findTab(query, options);
+	}
+	public int findTab(Document query, Map options) {
+		List tabList = (List) tabs.get(TABLIST);
+		int tabId = -1;
+		//Look for this tab
+		for (int i = 0; i < tabList.size(); i++) {
+			Map tab = (Map)tabList.get(i);
+			if (tab.get(TYPE).equals(QUERY) && tab.containsKey(QUERY_DOC) && 
+					((Document)tab.get(QUERY_DOC)).asXML().equals(query.asXML())) {
+				tabId = ((Integer)tab.get(TAB_ID)).intValue();
+				break;
+			}
+		}
+		if (tabId == -1) tabId = addTab();
 		return setTab(tabId, query, options);
 	}
 	

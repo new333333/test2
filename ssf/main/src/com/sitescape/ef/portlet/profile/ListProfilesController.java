@@ -119,13 +119,15 @@ public class ListProfilesController extends   SAbstractController {
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.findTab(binder));
+		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(binder));
 		} else if (tabId != null) {
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {
 			//Don't overwrite a search tab
 			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-				tabs.setCurrentTab(tabs.addTab(binder));
+				tabs.setCurrentTab(tabs.findTab(binder));
 			} else {
 				tabs.setCurrentTab(tabs.setTab(binder));
 			}
