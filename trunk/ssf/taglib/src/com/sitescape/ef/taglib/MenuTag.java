@@ -29,9 +29,9 @@ import javax.portlet.PortletURL;
  * @author Peter Hurley
  *
  */
-public class MenuTag extends BodyTagSupport {
+public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 	private String _bodyContent;
-	private String title = "";
+	private String title = null;
 	private String titleId = "";
 	private String titleClass = "";
 	private String menuClass = "";
@@ -40,6 +40,7 @@ public class MenuTag extends BodyTagSupport {
 	private String anchor = "";
 	private String offsetTop = "8";
 	private String offsetLeft = "4";
+	private Map _params;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -58,9 +59,11 @@ public class MenuTag extends BodyTagSupport {
 			
 			//Output the start of the area
 			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menu/top.jsp");
+			
+			if (this._params == null) this._params = new HashMap();
 
-			Map _params = new HashMap();
-			_params.put("title", new String[] {this.title});
+			if (this.title != null) _params.put("title", new String[] {this.title});
+			if (!_params.containsKey("title")) _params.put("title", "---");
 			_params.put("titleId", new String[] {this.titleId});
 			_params.put("titleClass", new String[] {this.titleClass});
 			_params.put("menuClass", new String[] {this.menuClass});
@@ -92,7 +95,7 @@ public class MenuTag extends BodyTagSupport {
 	        throw new JspException(e);
 	    }
 		finally {
-			this.title = "";
+			this.title = null;
 			this.titleId = "";
 			this.titleClass = "";
 			this.menuClass = "";
@@ -101,7 +104,33 @@ public class MenuTag extends BodyTagSupport {
 			this.anchor = "";
 			this.offsetTop = "8";
 			this.offsetLeft = "4";
+			if (_params != null) {
+				_params.clear();
+			}
 		}
+	}
+
+	public void addParam(String name, String value) {
+		if (_params == null) {
+			_params = new HashMap();
+		}
+
+		String[] values = (String[])_params.get(name);
+
+		if (values == null) {
+			values = new String[] {value};
+		}
+		else {
+			String[] newValues = new String[values.length + 1];
+
+			System.arraycopy(values, 0, newValues, 0, values.length);
+
+			newValues[newValues.length - 1] = value;
+
+			values = newValues;
+		}
+
+		_params.put(name, values);
 	}
 
 	public void setTitle(String title) {

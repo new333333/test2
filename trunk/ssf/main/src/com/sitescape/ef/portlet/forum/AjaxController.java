@@ -858,18 +858,18 @@ public class AjaxController  extends SAbstractController {
 		if (type.equals(Tabs.BINDER)) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
 			Binder binder = getBinderModule().getBinder(binderId);
-			tabId = tabs.addTab(binder);
+			tabId = tabs.findTab(binder);
 		} else if (type.equals(Tabs.ENTRY)) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
 			Long entryId = PortletRequestUtils.getLongParameter(request, "binderId");				
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
-			tabId = tabs.addTab(entry);
+			tabId = tabs.findTab(entry);
 		} else if (type.equals(Tabs.QUERY)) {
 			Document query = null;
 			try {
 				query = FilterHelper.getSearchFilter(request);
 			} catch(Exception ex) {}
-			tabId = tabs.addTab(query);
+			tabId = tabs.findTab(query);
 		}
 		tabs.setCurrentTab(tabId);
 		response.setContentType("text/xml");

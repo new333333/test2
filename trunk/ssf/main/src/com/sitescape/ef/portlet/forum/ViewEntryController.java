@@ -118,6 +118,8 @@ public class ViewEntryController extends  SAbstractController {
 			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 			String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 			if (newTab.equals("1")) {
+				tabs.setCurrentTab(tabs.findTab(fe));
+			} else if (newTab.equals("2")) {
 				tabs.setCurrentTab(tabs.addTab(fe));
 			} else if (tabId != null) {
 				tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
@@ -127,7 +129,7 @@ public class ViewEntryController extends  SAbstractController {
 					// Indicates that the request is being served by the adapter framework.
 					//Don't overwrite a search tab
 					if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-						tabs.setCurrentTab(tabs.addTab(fe));
+						tabs.setCurrentTab(tabs.findTab(fe));
 					} else {
 						tabs.setCurrentTab(tabs.setTab(fe));
 					}
