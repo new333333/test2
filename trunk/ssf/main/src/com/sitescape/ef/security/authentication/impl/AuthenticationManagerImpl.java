@@ -19,6 +19,7 @@ import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {
@@ -62,7 +63,9 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			boolean passwordAutoSynch, Map updates) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
+		boolean closeIt = !SessionUtil.sessionActive();
 		try {
+			if (closeIt) SessionUtil.sessionStartup();
 			user = authenticate(zoneName, userName, password, passwordAutoSynch);
 			
 			boolean userModify = 
@@ -78,6 +81,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
  				getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
  			} 
  			else throw nu;
+		} finally {
+			if (closeIt) SessionUtil.sessionStop();
 		}
 		return user;
 	}
@@ -85,8 +90,10 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			boolean passwordAutoSynch)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
+		boolean closeIt = !SessionUtil.sessionActive();
 
 		try {
+			if (closeIt) SessionUtil.sessionStartup();
 			user = getProfileDao().findUserByNameOnlyIfEnabled(username, zoneName);
 		}
     	catch(NoUserByTheNameException e) {
@@ -95,18 +102,21 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     				throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
      						+ zoneName + "," + username + "]", e);
     	}
-    	
-    	if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
-    		// Passwords do not match
-    		if(passwordAutoSynch) {
-    			// Change the user's password to the value passed in. 
-    			Map updates = new HashMap();
-    			updates.put("password", password);
-				getProfileModule().modifyUserFromPortal(user, updates);
+    	try {
+    		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
+    			// 	Passwords do not match
+    			if(passwordAutoSynch) {
+    				// 	Change the user's password to the value passed in. 
+    				Map updates = new HashMap();
+    				updates.put("password", password);
+    				getProfileModule().modifyUserFromPortal(user, updates);
+    			}
+    			else {
+    				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
+    			}
     		}
-    		else {
-    			throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
-    		}
+    	} finally {
+			if (closeIt) SessionUtil.sessionStartup();    		
     	}
 		return user;
 	}

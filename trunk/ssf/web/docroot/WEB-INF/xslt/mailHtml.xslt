@@ -46,13 +46,19 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:value-of select="topFolder/@changeCount"/>&nbsp;
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'ChangedOne'"/>
-</xsl:call-template><xsl:value-of select="topFolder/@title"/>
+</xsl:call-template>
+<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
+<xsl:value-of select="topFolder/@title"/>
+</a>
 </xsl:if>
 <xsl:if test="topFolder/@changeCount != '1'">
 <xsl:value-of select="topFolder/@changeCount"/>&nbsp;
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'ChangedMany'"/>
-</xsl:call-template><xsl:value-of select="topFolder/@title"/>
+</xsl:call-template>
+<a><xsl:attribute name="href"><xsl:value-of select="topFolder/@href"/></xsl:attribute>
+<xsl:value-of select="topFolder/@title"/>
+</a>
 </xsl:if>
 <br/><br/>
 <span
@@ -64,8 +70,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 :<br/></span>
 <span style="font-family: arial, helvetica, sans-serif; font-size: 13px;">
 <xsl:for-each select="folder">
-		<br/><a><xsl:attribute name="href">#f<xsl:value-of select="@name"/></xsl:attribute>
-	<xsl:value-of select="@title"/></a><br/>
+		<br/><xsl:value-of select="@title"/><br/>
 <xsl:for-each select="folderEntry">
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<xsl:if test="@hasChanges = 'true' or @docLevel = '1'">
@@ -93,7 +98,9 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <xsl:call-template name="getString">
   <xsl:with-param name="stringName" select="'folderLabel'"/>
 </xsl:call-template>
-&nbsp;<xsl:value-of select="@title"/></b></span>
+&nbsp;<a><xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+	<xsl:value-of select="@title"/></a>
+</b></span>
 <br/>
 <xsl:for-each select="folderEntry">
 <div style="border-bottom: thin solid #cccccc;">

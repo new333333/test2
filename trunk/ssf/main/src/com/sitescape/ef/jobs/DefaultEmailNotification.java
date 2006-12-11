@@ -45,6 +45,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
 		private String zoneName;
 		public MailJobDescription(String zoneName, Binder binder) {
 			this.binder = binder;
+			this.zoneName = zoneName;
 		}
     	public  String getDescription() {
     		return SSStatefulJob.trimDescription(binder.toString());
