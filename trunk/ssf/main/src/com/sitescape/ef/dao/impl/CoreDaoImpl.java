@@ -552,7 +552,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
 		order.addColumn("name");
-		FilterControls filter = new FilterControls("zone", zoneId);
+		FilterControls filter = new FilterControls("zoneId", zoneId);
 		filter.setOrderBy(order);
     	return loadObjects(new ObjectControls(Definition.class), filter);
 	}
