@@ -16,8 +16,38 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-Displaying 0 of 0 comments ( View All | Add Comment )
-<div style="border-style: solid; border-color: #222222; border-width: 2px; padding: 5px; background-color: #cccccc;">
+<script type="text/javascript">
+function fakePost() {
+	document.getElementById('currentComments').innerHTML += 
+	  document.getElementById('mycomment').value + '<p>';
+	  document.getElementById('mycomment').value = '';
+}
+</script>
+<span class="ss_fineprint ss_light">Displaying 0 of 0 comments<br/>( View All | <a href="#" onClick="ss_showPopupDivCentered('commentForm_${ssComponentId}_<portlet:namespace/>', 'mycomment'); return false;">Add Comment</a> )</span>
+<div id="currentComments" style="border-style: ridge; border-color: #cccccc; border-width: 2px; padding: 5px; background-color: #eeeeee;">
 <c:out value="${ssDashboard.dashboard.components[ssComponentId].data.comment[0]}" escapeXml="false"/>
 </div>
-Add Comment
+<a class="ss_fineprint" href="#" onClick="ss_showPopupDivCentered('commentForm_${ssComponentId}_<portlet:namespace/>', 'mycomment'); return false;">Add Comment</a>
+<div id="commentForm_${ssComponentId}_<portlet:namespace/>" style="display: none; visibility: hidden; position: absolute;">
+
+     <div  style="width: 300px; height: 200px; background: #eeeeee; border: 1px solid #cccccc; padding: 3px;">
+	<form onsubmit="fakePost(); ss_cancelPopupDiv('commentForm_${ssComponentId}_<portlet:namespace/>'); return false;">
+ 
+		<table>
+			<tr>
+				<td colspan="2" align="center">
+					Post a comment
+			</tr>
+			<tr>
+				<td>Your comment:</td>
+				<td><textarea id="mycomment" cols="30" rows="8"></textarea></td>
+			</tr>
+			<tr>
+				<td colspan="2" align="center">
+					<input type="submit" value="Post this comment"/></td>
+			</tr>
+	</table>
+	</form>
+
+     </div>
+  </div>
