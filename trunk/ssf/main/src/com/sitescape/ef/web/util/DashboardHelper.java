@@ -11,6 +11,8 @@ import java.util.Set;
 import javax.portlet.ActionRequest;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
@@ -615,9 +617,16 @@ public class DashboardHelper {
 		idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
 		
 		Document searchQuery = null;
-		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) 
-				searchQuery = (Document)data.get(DashboardHelper.SearchFormSavedSearchQuery);
-
+		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) {
+			// Retrieve and parse the saved search query.  If it fails for some
+			// reason failover with a empty search query.
+			try {
+				searchQuery = DocumentHelper.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
+			} catch (Exception e) {
+				searchQuery = DocumentHelper.createDocument();
+				Element sfRoot = searchQuery.addElement(FilterHelper.FilterRootName);		
+			}
+		}
 		Map elementData = BinderHelper.getCommonEntryElements();
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, 
 				FilterHelper.buildFilterFormMap(searchQuery,
@@ -735,7 +744,7 @@ public class DashboardHelper {
 					//Get the search query
 					try {
 						Document query = FilterHelper.getSearchFilter(request);
-						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
+						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 					} catch(Exception ex) {}
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
@@ -764,7 +773,7 @@ public class DashboardHelper {
 					if (folderIds.size() > 0) {
 						try {
 							Document query = FilterHelper.getFolderListQuery(request, folderIds);
-							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
+							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
 							componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
 						} catch(Exception ex) {}
 					}
