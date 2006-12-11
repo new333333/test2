@@ -742,12 +742,17 @@ public class BuildDefinitionDivs extends TagSupport {
 								String name = "";
 								
 								name = this.itemName;
-								if (rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
+								if (rootConfigElement.attributeValue("name").equals("profileElements")
+								|| rootConfigElement.attributeValue("name").equals("profileEntryDataItem"))
 								{
 									Element item = ((Element)this.sourceDocument.getRootElement().selectSingleNode("//item[@id='" + this.selectionId + "']/properties/property[@name='caption']"));
 									// Some Item do not have captions (ex) Box we must take this into account
-									if (item == null)
-										name = "";
+									if (item == null && 
+									rootConfigElement.attributeValue("name").equals("profileElements"))
+									{
+										sb.append("<p>" + name + "</p>\n");
+										sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
+									}
 									else
 									{
 										name = item.attributeValue("value");
