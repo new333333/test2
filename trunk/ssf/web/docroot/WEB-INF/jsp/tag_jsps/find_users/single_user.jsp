@@ -69,7 +69,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	var searchText = text;
 	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	ajaxRequest.addKeyValue("searchText", searchText)
-	ajaxRequest.addKeyValue("maxEntries", "3")
+	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber)
 	ajaxRequest.addKeyValue("findUserGroupType", findUserGroupType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
