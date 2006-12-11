@@ -47,11 +47,10 @@
 <br><br>
 <form class="ss_form" name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure_access_control"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  </portlet:actionURL>">
+  action="<portlet:actionURL><portlet:param 
+  		name="action" value="configure_access_control"/><portlet:param 
+  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 <ssf:nlt tag="binder.configure.access_control.inherit"
  text="Inherit role membership from the parent folder or workspace:"/>
 <br>
@@ -117,11 +116,10 @@
   <td valign="top">
 <c:if test="${!ssBinder.functionMembershipInherited}">
     <form method="post" style="display:inline;"
-	  action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_access_control"/>
-			  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		     <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-			  </portlet:actionURL>">
+	  action="<portlet:actionURL><portlet:param 
+	  		name="action" value="configure_access_control"/><portlet:param 
+	  		name="binderId" value="${ssBinder.id}"/><portlet:param 
+	  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 
 	<table class="ss_form" cellspacing="0" cellpadding="0">
 	<tr>
@@ -162,11 +160,10 @@
   <c:if test="${!empty ssFunctionMap}">
 <form class="ss_form" name="${renderResponse.namespace}rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure_access_control"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-			<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  </portlet:actionURL>">
+  action="<portlet:actionURL><portlet:param 
+  		name="action" value="configure_access_control"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/><portlet:param 
+  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 <table cellspacing="10px" cellpadding="10px" width="100%">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="binder.configure.access_control.role" 
@@ -218,11 +215,10 @@
   <c:if test="${!empty ssFunctionMap}">
 <form class="ss_style" name="${renderResponse.namespace}rolesForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure_access_control"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  </portlet:actionURL>">
+  action="<portlet:actionURL><portlet:param 
+  		name="action" value="configure_access_control"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/><portlet:param 
+  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 
 <c:forEach var="function" items="${ssFunctionMap}">
   <c:if test="${roleId == function.key.id}">
@@ -288,11 +284,10 @@ function ss_checkRoleIdField(btnObj) {
 
 <c:if test="${empty roleId}">
 <form class="ss_form" method="post" style="display:inline;" 
-		action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_access_control"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-			<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		</portlet:actionURL>">
+	action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_access_control"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 
 <table cellspacing="4px" cellpadding="4px" width="100%">
 <tr>

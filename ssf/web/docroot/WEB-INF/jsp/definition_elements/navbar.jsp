@@ -85,12 +85,12 @@ function ss_turnOffDebugMode() {
 
 <!-- My workspace -->
 	<li class="ss_global_toolbar_myworkspace" 
-      onClick="self.location.href='<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="view_ws_listing"/>
-		<portlet:param name="binderId" value="${ssUser.parentBinder.id}"/>
-		<portlet:param name="entryId" value="${ssUser.id}"/>
-		<portlet:param name="newTab" value="1"/>
-		</portlet:renderURL>';">
+      onClick="self.location.href='<portlet:renderURL 
+      	windowState="maximized"><portlet:param 
+      	name="action" value="view_ws_listing"/><portlet:param 
+      	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
+      	name="entryId" value="${ssUser.id}"/><portlet:param 
+      	name="newTab" value="1"/></portlet:renderURL>';">
 	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
@@ -174,10 +174,9 @@ var ss_getFavoritesTreeUrl = "<ssf:url
 	<ssf:param name="operation" value="get_favorites_tree" />
 	</ssf:url>";
 
-var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized">
-			<portlet:param name="action" value="ssActionPlaceHolder"/>
-			<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
-			</portlet:renderURL>";
+var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="ssActionPlaceHolder"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
 
 
 </script>

@@ -25,10 +25,9 @@
 %>
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle2 %>";
-var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
-		<portlet:param name="action" value="view_search_results_listing"/>
-		<portlet:param name="operation" value="save_folder_columns"/>
-		</portlet:actionURL>";
+var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="view_search_results_listing"/><portlet:param 
+		name="operation" value="save_folder_columns"/></portlet:actionURL>";
 </script>
 
 <% // People, places, things selection bar %>

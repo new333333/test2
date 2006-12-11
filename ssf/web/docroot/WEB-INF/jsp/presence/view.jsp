@@ -74,11 +74,10 @@ type="time" /></span>
 						</ssf:url>"><c:out value="${u1.title}"/></a>
 					  </ssf:ifadapter>
 					  <ssf:ifnotadapter>
-					  <a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="view_ws_listing"/>
-						<portlet:param name="binderId" value="${u1.parentBinder.id}"/>
-						<portlet:param name="entryId" value="${u1.id}"/>
-						</portlet:renderURL>"><c:out value="${u1.title}"/></a>
+					  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+					  	name="action" value="view_ws_listing"/><portlet:param 
+					  	name="binderId" value="${u1.parentBinder.id}"/><portlet:param 
+					  	name="entryId" value="${u1.id}"/></portlet:renderURL>"><c:out value="${u1.title}"/></a>
 					  </ssf:ifnotadapter>
 					  </td>							
 					  </tr>
@@ -111,11 +110,10 @@ type="time" /></span>
 						</ssf:url>"><c:out value="${u2.title}"/></a>
 					  </ssf:ifadapter>
 					  <ssf:ifnotadapter>
-					  <a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="view_ws_listing"/>
-						<portlet:param name="binderId" value="${u2.parentBinder.id}"/>
-						<portlet:param name="entryId" value="${u2.id}"/>
-						</portlet:renderURL>"><c:out value="${u2.title}"/></a>
+					  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+					  	name="action" value="view_ws_listing"/><portlet:param 
+					  	name="binderId" value="${u2.parentBinder.id}"/><portlet:param 
+					  	name="entryId" value="${u2.id}"/></portlet:renderURL>"><c:out value="${u2.title}"/></a>
 					  </ssf:ifnotadapter>
 					  </td>							
 					  </tr>
