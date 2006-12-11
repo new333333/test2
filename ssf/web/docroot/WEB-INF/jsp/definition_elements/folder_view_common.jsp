@@ -286,7 +286,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
     onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
-    ><img class="ss_title_menu"
+    ><img border="0" class="ss_title_menu"
     onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._definitionType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
