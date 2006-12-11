@@ -141,6 +141,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		//make sure zone exists
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
+			User user = getProfileDao().loadUserOnlyIfEnabled(ws.getCreation().getPrincipal().getId(), zoneName);
+			com.sitescape.ef.context.request.RequestContextUtil.setThreadContext(user);
 			//TODO: temporary to fixup zones
 			getAdminModule().setZone1(zoneName);
 			getAdminModule().setZone2(zoneName);
