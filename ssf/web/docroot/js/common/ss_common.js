@@ -2680,6 +2680,20 @@ function ss_createPopupDiv(obj, divId) {
 	
 	ss_fetch_url(url, ss_callbackPopupDiv, divId);
 }
+// Lightbox a dialog centered.  Optionally take an id to set focus on.
+function ss_showPopupDivCentered(divId, focusId) {
+	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
+	lightBox.onclick = function(e) {ss_cancelPopupDiv(divId);};
+	var divObj = document.getElementById(divId);
+    ss_moveObjectToBody(divObj); 
+	divObj.style.zIndex = parseInt(ssLightboxZ + 1);
+	ss_setupPopupDiv(divObj);
+	if (focusId && (focusId != '')) {
+		document.getElementById(focusId).focus();
+	}
+}
+
+
 function ss_setupPopupDiv(targetDiv) {
 		targetDiv.style.display = "block";
 		var x = parseInt(ss_getWindowWidth() / 2);
