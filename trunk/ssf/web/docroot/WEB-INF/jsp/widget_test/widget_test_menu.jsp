@@ -24,38 +24,31 @@
 			<td valign="top">
 			    <span><b>Element tests</b></span>
 			    <br>
-				<a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="tree" />
-					</portlet:renderURL>">Tree test</a><br>
-				<a href="<portlet:actionURL windowState="maximized">
-						<portlet:param name="action" value="time" />
-					</portlet:actionURL>">Datepicker and timepicker test</a><br>
-				<a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="htmledit" />
-					</portlet:renderURL>">Html Editor test</a><br>
-				<a href="<portlet:actionURL windowState="maximized">
-						<portlet:param name="action" value="event" />
-					</portlet:actionURL>">Event tester</a>
+				<a href="<portlet:renderURL windowState="maximized"><portlet:param 
+					name="action" value="tree" /></portlet:renderURL>">Tree test</a><br>
+				<a href="<portlet:actionURL windowState="maximized"><portlet:param 
+					name="action" value="time" /></portlet:actionURL>">Datepicker and timepicker test</a><br>
+				<a href="<portlet:renderURL windowState="maximized"><portlet:param 
+					name="action" value="htmledit" /></portlet:renderURL>">Html Editor test</a><br>
+				<a href="<portlet:actionURL windowState="maximized"><portlet:param 
+					name="action" value="event" /></portlet:actionURL>">Event tester</a>
 				<br>
 				<br><span><b>JBPM workflow tests</b></span>
 				<br>
-				<a href="<portlet:actionURL windowState="maximized">
-						<portlet:param name="action" value="workflow" />
-						<portlet:param name="operation" value="null" />
-					</portlet:actionURL>">Workflow tester</a>
+				<a href="<portlet:actionURL windowState="maximized"><portlet:param 
+					name="action" value="workflow" /><portlet:param 
+					name="operation" value="null" /></portlet:actionURL>">Workflow tester</a>
 				<br>
 				<br><span><b>Servlet tests</b></span>
 				<br>
-				<a href="<portlet:renderURL windowState="maximized">
-						<portlet:param name="action" value="fragment" />
-					</portlet:renderURL>">Fragment test</a>
+				<a href="<portlet:renderURL windowState="maximized"><portlet:param 
+					name="action" value="fragment" /></portlet:renderURL>">Fragment test</a>
 				<br>
 				<br><span><b>General tests</b></span>
 				<br>
-				<a href="<portlet:actionURL windowState="normal">
-						<portlet:param name="action" value="flush" />
-						<portlet:param name="operation" value="null" />
-					</portlet:actionURL>">Flush cache</a>
+				<a href="<portlet:actionURL windowState="normal"><portlet:param 
+					name="action" value="flush" /><portlet:param 
+					name="operation" value="null" /></portlet:actionURL>">Flush cache</a>
 				
 			</td>
 		</tr>

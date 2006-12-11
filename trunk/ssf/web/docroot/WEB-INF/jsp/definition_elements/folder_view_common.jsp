@@ -26,22 +26,19 @@
 %>
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle %>";
-var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized">
-		<portlet:param name="action" value="${action}"/>
-		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		<portlet:param name="operation" value="save_folder_columns"/>
-		</portlet:actionURL>";
-var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized">
-		<portlet:param name="action" value="${action}"/>
-		<portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="operation" value="subscribe"/>
-		</portlet:actionURL>";
-var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="view_folder_entry"/>
-		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
-		<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
-		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
-		</portlet:renderURL>";
+var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssFolder.id}"/><portlet:param 
+		name="operation" value="save_folder_columns"/></portlet:actionURL>";
+var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/><portlet:param 
+		name="operation" value="subscribe"/></portlet:actionURL>";
+var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="view_folder_entry"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
+		name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
 var ss_placeholderFileUrl = "<ssf:url 
     	webPath="viewFile"
     	folderId="ssBinderIdPlaceHolder"

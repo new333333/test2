@@ -99,12 +99,10 @@ function ss_postFindUserRequest(obj) {
 //Routine called when item is clicked
 function ss_findUserSelectItem(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	var url = "<portlet:renderURL windowState="maximized">
-				<portlet:param name="action" value="view_ws_listing"/>
-				<portlet:param name="binderId" value="${ssUser.parentBinder.id}"/>
-				<portlet:param name="entryId" value="ss_entryIdPlaceholder"/>
-				<portlet:param name="newTab" value="1"/>
-				</portlet:renderURL>";
+	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
+	name="action" value="view_ws_listing"/><portlet:param name="binderId" 
+	value="${ssUser.parentBinder.id}"/><portlet:param name="entryId" 
+	value="ss_entryIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
 	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 	self.location.href = url;
