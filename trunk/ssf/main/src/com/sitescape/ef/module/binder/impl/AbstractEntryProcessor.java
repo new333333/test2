@@ -672,7 +672,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	Map model = new HashMap();
         model.put(ObjectKeys.BINDER, binder);      
         model.put(ObjectKeys.SEARCH_ENTRIES, childEntries);
-        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.length()));
+        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
         return model;
    }
  

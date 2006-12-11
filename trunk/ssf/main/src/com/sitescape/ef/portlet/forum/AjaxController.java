@@ -422,132 +422,129 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxUserListSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	Map model = new HashMap();;
-	String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-	String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
-	String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
-	String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
-	String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
-	String[] idsToSkip = PortletRequestUtils.getStringParameter(request, "idsToSkip", "").split(" ");
-	
-	Map userIdsToSkip = new HashMap();
-	for (int i = 0; i < idsToSkip.length; i++) {
-		if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
+		Map model = new HashMap();;
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
+		String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
+		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
+		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
+		String[] idsToSkip = PortletRequestUtils.getStringParameter(request, "idsToSkip", "").split(" ");
+		
+		Map userIdsToSkip = new HashMap();
+		for (int i = 0; i < idsToSkip.length; i++) {
+			if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
+		}
+		
+		String nameType = ProfileIndexUtils.LASTNAME_FIELD;
+		if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
+		if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
+		if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
+		if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
+		    	     	
+		//Build the search query
+		Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
+		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(searchText);
+	   	
+		// check to see if the user has the right to see all users, just users in their community,
+		// or no users.
+		if (!getProfileModule().checkUserSeeAll()) {
+			Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+			if (getProfileModule().checkUserSeeCommunity())
+	    	{
+	    		// Add the group visibility element to the filter terms document
+				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
+	    	} else {
+	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
+	    	}
+		}
+	   	
+		//Do a search to find the first few users who match the search text
+		User u = RequestContextHolder.getRequestContext().getUser();
+		Map users = new HashMap();
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
+			users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
+		} else {
+			users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
+		}
+		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
+		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
+		model.put("listDivId", listDivId);
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/user_list_search", model);
 	}
-	
-	String nameType = ProfileIndexUtils.LASTNAME_FIELD;
-	if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
-	if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
-	if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
-	if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
-	    	     	
-	//Build the search query
-	Document searchFilter = DocumentHelper.createDocument();
-	Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
-	Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-	Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-	filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-	filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
-	Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-	filterTermValueEle.setText(searchText);
-   	
-	// check to see if the user has the right to see all users, just users in their community,
-	// or no users.
-	if (!getProfileModule().checkUserSeeAll()) {
-		Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
-		if (getProfileModule().checkUserSeeCommunity())
-    	{
-    		// Add the group visibility element to the filter terms document
-			field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-    	} else {
-    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-    	}
-	}
-   	
-	//Do a search to find the first few users who match the search text
-	User u = RequestContextHolder.getRequestContext().getUser();
-	Map users = new HashMap();
-	Map options = new HashMap();
-	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
-	options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-	if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
-		users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
-	} else {
-		users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
-	}
-	model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
-	model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
-	model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
-	model.put("listDivId", listDivId);
-	response.setContentType("text/xml");
-	return new ModelAndView("forum/user_list_search", model);
-}
 
 	private ModelAndView ajaxFindUserSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	Map model = new HashMap();;
-	String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
-	String searchType = PortletRequestUtils.getStringParameter(request, "searchType", "");
-	String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
-	String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
-	String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "");
+		Map model = new HashMap();;
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String userGroupType = PortletRequestUtils.getStringParameter(request, "userGroupType", "");
+		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
+		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
+		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
+		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
+		
+		//Build the search query
+		Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
+		
+		//Add the login name term
+		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(searchText);
 	
-	String nameType = ProfileIndexUtils.LASTNAME_FIELD;
-	if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
-	if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
-	if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
-	if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
-	    	     	
-	//Build the search query
-	Document searchFilter = DocumentHelper.createDocument();
-	Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
+		//Add a term to search the title field
+		filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+		filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(searchText);
 	
-	//Add the login name term
-	Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-	Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-	filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-	filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
-	Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-	filterTermValueEle.setText(searchText);
-
-	//Add a term to search the title field
-	filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-	filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-	filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-	filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-	filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-	filterTermValueEle.setText(searchText);
-
-	// check to see if the user has the right to see all users, just users in their community,
-	// or no users.
-	if (!getProfileModule().checkUserSeeAll()) {
-		Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
-		if (getProfileModule().checkUserSeeCommunity())
-    	{
-    		// Add the group visibility element to the filter terms document
-			field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-    	} else {
-    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-    	}
+		// check to see if the user has the right to see all users, just users in their community,
+		// or no users.
+		if (!getProfileModule().checkUserSeeAll()) {
+			Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
+			if (getProfileModule().checkUserSeeCommunity())
+	    	{
+	    		// Add the group visibility element to the filter terms document
+				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
+	    	} else {
+	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
+	    	}
+		}
+	   	
+		//Do a search to find the first few users who match the search text
+		User u = RequestContextHolder.getRequestContext().getUser();
+		Map users = new HashMap();
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
+			users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
+		} else {
+			users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
+		}
+		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
+		model.put(WebKeys.SEARCH_TOTAL_HITS, users.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
+		model.put("listDivId", listDivId);
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/find_user_search", model);
 	}
-   	
-	//Do a search to find the first few users who match the search text
-	User u = RequestContextHolder.getRequestContext().getUser();
-	Map users = new HashMap();
-	Map options = new HashMap();
-	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
-	options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-	if (userGroupType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
-		users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
-	} else {
-		users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
-	}
-	model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
-	model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, userGroupType);
-	model.put("listDivId", listDivId);
-	response.setContentType("text/xml");
-	return new ModelAndView("forum/find_user_search", model);
-}
 
 	private ModelAndView ajaxGetFilterData(RenderRequest request, 
 				RenderResponse response) throws Exception {
