@@ -12,6 +12,7 @@
 <c:if test="${empty ss_find_user_support_stuff_loaded}">
 <script type="text/javascript">
 var ss_findUser_searchText = ""
+var ss_findUser_pageNumber = 0;
 
 var ss_findUserSearchInProgress = 0;
 var ss_findUserSearchWaiting = 0;
@@ -22,7 +23,8 @@ var ss_findUserSearchLastfindUserGroupType = "";
 function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findUserGroupType)
+	if (text == '' || text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
+	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findUserGroupType+', '+ss_findUser_pageNumber)
 	ss_setupStatusMessageDiv()
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress == 1) {
@@ -37,6 +39,10 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	}
 	ss_findUserSearchInProgress = 1;
 	ss_findUserSearchWaiting = 0;
+	ss_findUserSearchLastTextObjId = textObjId;
+	ss_findUserSearchLastElement = elementName;
+	ss_findUserSearchLastText = text;
+	ss_findUserSearchLastfindUserGroupType = findUserGroupType;
  	//Save the text in case the user changes the search type
  	ss_findUser_searchText = text;
  	
@@ -63,7 +69,8 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	var searchText = text;
 	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
 	ajaxRequest.addKeyValue("searchText", searchText)
-	ajaxRequest.addKeyValue("maxEntries", "10")
+	ajaxRequest.addKeyValue("maxEntries", "3")
+	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber)
 	ajaxRequest.addKeyValue("findUserGroupType", findUserGroupType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
 	ajaxRequest.setEchoDebugInfo();
@@ -91,6 +98,7 @@ function ss_postFindUserRequest(obj) {
 }
 //Routine called when item is clicked
 function ss_findUserSelectItem(obj) {
+	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<portlet:renderURL windowState="maximized">
 				<portlet:param name="action" value="view_ws_listing"/>
 				<portlet:param name="binderId" value="${ssUser.parentBinder.id}"/>
@@ -110,6 +118,11 @@ function ss_saveFindUserData_${prefix}() {
 		ss_findUserSelectItem(liObjs[0]);
 	}
 	return false;
+}
+
+function ss_findUserNextPage() {
+	ss_findUser_pageNumber++;
+	ss_findUserSearch(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType);
 }
 
 </script>

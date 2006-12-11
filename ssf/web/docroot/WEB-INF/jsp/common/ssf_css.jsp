@@ -1604,7 +1604,7 @@ div.ss_actions_bar_submenu {
 div.ss_findUserList {
 	position:absolute;
 	margin:2px;
-	padding:10px;
+	padding:15px;
 	border:solid black 1px; 
 	background:${ss_style_background_color};
 	z-index:500;

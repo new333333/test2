@@ -314,6 +314,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
