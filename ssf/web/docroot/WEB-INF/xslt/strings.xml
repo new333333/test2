@@ -25,5 +25,8 @@
     <str name="workflowEntry">
 	   <lang name="en">Workflow state modified</lang>
     </str>
+   <str name="folderPermalink">
+	   <lang name="en">Folder permalink</lang>
+    </str>
 
 </strings>

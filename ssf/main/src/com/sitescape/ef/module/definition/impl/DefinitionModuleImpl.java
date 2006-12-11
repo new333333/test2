@@ -1537,8 +1537,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
             DefinableEntity entry) {
 		//access check not needed = assumed okay from entry
 
-		this.getDefinitionConfig();
-		Element configRoot = this.definitionConfig.getRootElement();
+		Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
         if (def != null) {
 	        Field[] fields;
@@ -1633,6 +1632,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//access check not needed = assumed okay from entry
         //Element configRoot = this.definitionConfig.getRootElement();
         Definition def = entry.getEntryDef();
+		Element configRoot = getDefinitionConfig().getRootElement();
 
         Document definitionTree = def.getDefinition();
         if (definitionTree != null) {
@@ -1650,7 +1650,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						String itemName = (String) nextItem.attributeValue("name", "");
 						
 						//Find the item in the base configuration definition to see if it is a data item
-						Element configItem = (Element) nextItem.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+						//Find the item in the base configuration definition to see if it is a data item
+						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 						if (configItem != null) {
 							//Get the form element name (property name)
 							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									

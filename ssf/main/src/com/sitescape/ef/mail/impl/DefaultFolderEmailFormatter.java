@@ -69,8 +69,10 @@ import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
@@ -361,6 +363,11 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	protected void doFolder(Element element, Folder folder) {
 		element.addAttribute("name", folder.getId().toString());
 		element.addAttribute("title", folder.getTitle());
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
+		element.addAttribute("href", adapterUrl.toString());
 		PostingDef post = folder.getPosting();
 		if (post != null) {
 			element.addAttribute("replyTo", post.getEmailAddress());
@@ -450,7 +457,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element = rootElement.addElement("topFolder");
 		element.addAttribute("changeCount", String.valueOf(entries.size()));
       	element.addAttribute("title", folder.getTitle());
- 		
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
+		element.addAttribute("href", adapterUrl.toString());
+
 		for (Iterator i=entries.iterator();i.hasNext();) {
 			parentChain.clear();
 			FolderEntry entry = (FolderEntry)i.next();	
