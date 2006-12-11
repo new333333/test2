@@ -19,9 +19,6 @@
 <%@ page import="java.util.ArrayList" %>
 <br/>
 <br/>
-<ssf:nlt tag="dashboard.config.blog"/>
-<br/>
-<br/>
 
 <script type="text/javascript">
 function t_blogFolder_wsTree_showId(forum, obj) {
@@ -35,6 +32,12 @@ function t_blogFolder_wsTree_showId(forum, obj) {
 }
 </script>
 
+<span class="ss_bold">
+  <ssf:nlt tag="dashboard.blog.selectBlogFolder"/>
+</span>
+<br>
+<br>
+<div class="ss_indent_large">
 <ssf:tree 
   treeName="<%= "t_blogFolder_wsTree" %>" 
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
@@ -42,7 +45,6 @@ function t_blogFolder_wsTree_showId(forum, obj) {
   multiSelect="<%= new ArrayList() %>" 
   multiSelectPrefix="ss_folder_id_"
 />
-
-<input type="hidden" name="data_folders"/>
+</div>
 
 <br/>

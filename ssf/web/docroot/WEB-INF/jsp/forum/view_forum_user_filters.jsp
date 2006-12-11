@@ -24,8 +24,11 @@
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
 		<portlet:param name="operation" value="select_filter"/>
 		</portlet:actionURL>" method="post" >
-<ssf:menu title="<%= filterName %>" titleId="ss_filterTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu">
-<ul class="ss_actions_bar_submenu">
+<ssf:menu title="<%= filterName %>" 
+  titleId="ss_filterTitle" 
+  titleClass="ss_compact"
+  menuClass="ss_actions_bar_submenu">
+<ul class="ss_actions_bar_submenu" style="width:250px;">
 <li><a href="javascript: ;" 
   onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
 >--<ssf:nlt tag="none" text="none"/>--</a></li>

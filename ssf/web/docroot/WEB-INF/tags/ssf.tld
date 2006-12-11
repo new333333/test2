@@ -257,6 +257,17 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>width</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>singleUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
 			<name>userList</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

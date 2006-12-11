@@ -131,6 +131,7 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
     public static final String OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
     public static final String OPERATION_DELETE_TAB="delete_tab";
+	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";

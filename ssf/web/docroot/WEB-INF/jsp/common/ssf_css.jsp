@@ -1302,6 +1302,29 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar_help div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
 }
+.ss_global_toolbar_findUser {
+	background:inherit !important;
+}
+.ss_global_toolbar_findUser form {
+	background:transparent;
+}
+.ss_global_toolbar_findUser .form-text {
+	width:150px;
+	background:#FFF;
+}
+div.ss_global_toolbar_findUser_text {
+    position:relative;
+    top:-3px;
+    width:100px;
+	color:#484848;
+	text-align:center;
+	padding:0px !important;
+	margin:0px !important;
+	background:inherit !important;
+}
+.ss_global_toolbar_findUser a {
+	background:inherit !important;
+}
 .ss_global_toolbar_search {
 	background:inherit !important;
 }
@@ -1536,7 +1559,6 @@ div.ss_actions_bar_submenu {
 	border-bottom:1px solid #E0DFEF;
 	border-right-style:none;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
-	width:350px;
     line-height:20px;
 }
 .ss_actions_bar_submenu div {
@@ -1578,6 +1600,23 @@ div.ss_actions_bar_submenu {
 	text-decoration:none;
 }
 .ss_search_results_selection_inactive {
+}
+div.ss_findUserList {
+	position:absolute;
+	margin:2px;
+	padding:10px;
+	border:solid black 1px; 
+	background:${ss_style_background_color};
+	z-index:500;
+}
+.ss_findUserList ul {
+	list-style-type:none;
+	margin:-10px 0px 0px -15px;
+	padding:0px;
+	text-align:left;
+}
+.ss_findUserList li {
+	float:none;
 }
 
 a.ss_title_menu {
