@@ -71,12 +71,6 @@ function ss_turnOffDebugMode() {
 		</form>
 	</li>
 
-<c:if test="${ss_navbar_style == 'portlet'}">
-  </ul>
-</div>
-<div class="ss_global_toolbar">
-  <ul class="ss_global_toolbar_links ss_font-x-small">
-</c:if>
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
       <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 

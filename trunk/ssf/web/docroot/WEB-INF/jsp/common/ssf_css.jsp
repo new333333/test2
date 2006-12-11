@@ -1309,12 +1309,12 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:transparent;
 }
 .ss_global_toolbar_findUser .form-text {
-	width:150px;
+	width:70px;
 	background:#FFF;
 }
 div.ss_global_toolbar_findUser_text {
     position:relative;
-    top:-3px;
+    top:-1px;
     width:100px;
 	color:#484848;
 	text-align:center;
@@ -1332,13 +1332,13 @@ div.ss_global_toolbar_findUser_text {
 	background:transparent;
 }
 .ss_global_toolbar_search .form-text {
-	width:150px;
+	width:120px;
 	background:#FFF;
 }
 div.ss_global_toolbar_search_text {
     position:relative;
     top:-3px;
-    width:150px;
+    width:120px;
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
