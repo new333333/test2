@@ -282,10 +282,9 @@ public class FilterHelper {
    	}
 
 	//Routine to parse the results of submitting the blog summary dashboard config form
-   	static public Document getBlogSummaryQuery (PortletRequest request) throws Exception {
+   	static public Document getFolderListQuery (PortletRequest request, List folderIds) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterRootName);
-		Map formData = request.getParameterMap();
 
 		String filterName = PortletRequestUtils.getStringParameter(request, FilterNameField, "");
 		Element filterNameEle = sfRoot.addElement(FilterName);
@@ -293,15 +292,6 @@ public class FilterHelper {
 		
 		Element filterTerms = sfRoot.addElement(FilterTerms);
 		
-		//Get the folderIds out of the formData
-		Iterator itFormData = formData.keySet().iterator();
-		List folderIds = new ArrayList();
-		while (itFormData.hasNext()) {
-			String key = (String)itFormData.next();
-			if (key.matches("^ss_folder_id_[0-9]+$")) {
-				folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
-			}
-		}
 		for (Object id : folderIds) {
 			Element filterTerm = filterTerms.addElement(FilterTerm);
 			filterTerm.addAttribute(FilterType, FilterTypeFolders);

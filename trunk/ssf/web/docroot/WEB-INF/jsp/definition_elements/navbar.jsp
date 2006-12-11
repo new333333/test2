@@ -34,6 +34,27 @@ function ss_turnOffDebugMode() {
 <div class="ss_global_toolbar">
   <ul class="ss_global_toolbar_links ss_font-x-small">
 
+<!-- Find user form -->
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton">
+		<form method="post" id="ss_findUserForm" name="ss_findUserForm" 
+		  action="<portlet:actionURL windowState="maximized">
+			<portlet:param name="action" value="findUser"/>
+			</portlet:actionURL>">
+		  <ssHelpSpot helpId="personal_toolbar/findUser_button" offsetX="40" offsetY="10"
+		    title="<ssf:nlt tag="helpSpot.findUserButton"/>">
+			  <ssf:findUsers formName="ss_findUserForm" 
+			    formElement="searchText" 
+			    width="100px" singleUser="true"/> 
+			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+			    onClick="document.ss_findUserForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
+			    <input type="hidden" name="searchBtn" value="searchBtn"/>
+		      <div class="ss_global_toolbar_findUser_text">
+		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
+		      </div>
+		  </ssHelpSpot>
+		</form>
+	</li>
+
 <!-- Search form -->
 	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton">
 		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 

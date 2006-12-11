@@ -76,7 +76,7 @@
 		        <img src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
 		      </c:if>
 		  </ssf:param>
-		  <ul class="ss_actions_bar_submenu">
+		  <ul class="ss_actions_bar_submenu" style="width:250px;">
 		  <li><a href="<ssf:url adapter="true" portletName="ss_forum" 
 				    action="view_permalink"
 				    binderId="${fileEntry._binderId}">

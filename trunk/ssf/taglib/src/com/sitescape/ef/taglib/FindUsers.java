@@ -29,7 +29,9 @@ public class FindUsers extends TagSupport {
     private Set userList;
     private String formName;
     private String formElement;
+    private String width = "30";
     private String type;
+    private Boolean singleUser;
     
 	public int doStartTag() throws JspException {
 		try {
@@ -38,16 +40,24 @@ public class FindUsers extends TagSupport {
 			
 			if (this.userList == null) this.userList = new HashSet();
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
+			if (singleUser == null) singleUser = false;
 			
 			//Output the start of the area
-			RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/find_users/user_list.jsp");
+			RequestDispatcher rd;
+			if (singleUser) {
+				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/find_users/single_user.jsp");
+			} else {
+				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/find_users/user_list.jsp");
+			}
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute("user_list", this.userList);
 			req.setAttribute("form_name", this.formName);
 			req.setAttribute("form_element", this.formElement);
+			req.setAttribute("element_width", this.width);
 			req.setAttribute("list_type", this.type);
+			req.setAttribute("singleUser", this.singleUser);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -59,6 +69,8 @@ public class FindUsers extends TagSupport {
 	    }
 		finally {
 			this.userList = null;
+			this.singleUser = false;
+			this.width = "30";
 		}
 	}
 
@@ -78,8 +90,16 @@ public class FindUsers extends TagSupport {
 	    this.formElement = formElement;
 	}
 
+	public void setWidth(String width) {
+	    this.width = width;
+	}
+
 	public void setType(String type) {
 	    this.type = type;
+	}
+
+	public void setSingleUser(Boolean singleUser) {
+	    this.singleUser = singleUser;
 	}
 
 }

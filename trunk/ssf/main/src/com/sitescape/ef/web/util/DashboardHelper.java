@@ -65,6 +65,7 @@ public class DashboardHelper {
 	
 	//Component data keys
 	public final static String SearchFormSavedSearchQuery = "__savedSearchQuery";
+	public final static String SearchFormSavedFolderIdList = "__savedFolderIdList";
 	
 	//Scopes
 	public final static String Local = "local";
@@ -725,6 +726,9 @@ public class DashboardHelper {
 		if (components != null) {
 			Map componentMap = (Map) components.get(componentId);
 			if (componentMap != null) {
+				Map originalComponentData = new HashMap();
+				if (componentMap.containsKey(Data)) originalComponentData = (Map) componentMap.get(Data);
+				
 				//Get any component specific data
 				if (componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
 				    componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
@@ -743,10 +747,27 @@ public class DashboardHelper {
 					}
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
-					try {
-						Document query = FilterHelper.getBlogSummaryQuery(request);
-						componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
-					} catch(Exception ex) {}
+					//Get the folderIds out of the formData
+					Iterator itFormData = formData.keySet().iterator();
+					List folderIds = new ArrayList();
+					while (itFormData.hasNext()) {
+						String key = (String)itFormData.next();
+						if (key.matches("^ss_folder_id_[0-9]+$")) {
+							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
+						}
+					}
+					if (folderIds.size() == 0 && 
+							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {
+						//There was a list saved in a prior configuration, use it
+						folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
+					}
+					if (folderIds.size() > 0) {
+						try {
+							Document query = FilterHelper.getFolderListQuery(request, folderIds);
+							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query);
+							componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
+						} catch(Exception ex) {}
+					}
 				}
 					
 				//Save the title and data map

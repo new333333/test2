@@ -35,7 +35,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 	private String titleId = "";
 	private String titleClass = "";
 	private String menuClass = "";
-	private String menuWidth = "200px";
+	private String menuWidth = "";
 	private String openStyle = "slide_down";     //slide_down, slide_right, immediate, popup
 	private String anchor = "";
 	private String offsetTop = "8";
@@ -99,7 +99,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			this.titleId = "";
 			this.titleClass = "";
 			this.menuClass = "";
-			this.menuWidth = "200px";
+			this.menuWidth = "";
 			this.openStyle = "slide_down";
 			this.anchor = "";
 			this.offsetTop = "8";
