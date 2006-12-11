@@ -152,6 +152,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			Element item = (Element)root.selectSingleNode("item[@name='profileEntryForm']//item[@id='" + this.selectionId + "']"); 
 			if (item != null && item.attributeValue("type", "").equals("data"))
 			{
+/*
 				try
 				{
 					OutputFormat format = OutputFormat.createPrettyPrint();
@@ -159,7 +160,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					writer.write(item);
 				} catch (Exception e) {}
 				System.out.println("Form");
-				
+*/				
 				found = true;
 				itRootElements = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
 				itRootElements2 = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
@@ -169,6 +170,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				item = (Element) root.selectSingleNode("item[@name='profileEntryView']//item[@id='" + this.selectionId + "']");
 				if (item != null && item.attributeValue("type", "").equals("data"))
 				{
+/*
 					try
 					{
 						OutputFormat format = OutputFormat.createPrettyPrint();
@@ -176,7 +178,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						writer.write(item);
 					} catch (Exception e) {}
 					System.out.println("View");
-					
+*/					
 					found = true;
 					itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
 					itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();					
