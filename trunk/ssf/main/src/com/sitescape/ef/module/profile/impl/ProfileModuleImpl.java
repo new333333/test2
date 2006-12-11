@@ -568,6 +568,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			user.setForeignName(userName);
 			if (password != null)
 				user.setPassword(password);
+			RequestContextUtil.setThreadContext(user);
 			// get entry def
 			getDefinitionModule().setDefaultEntryDefinition(user);
 			HistoryStamp stamp = new HistoryStamp(user);
@@ -576,7 +577,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			EntryBuilder.updateEntry(user, updates);
 			// save so we have an id to work with
 			getCoreDao().save(user);
-			RequestContextHolder.getRequestContext().setUser(user);
 
 			// indexing needs the user
 			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
