@@ -45,9 +45,6 @@ function ss_turnOffDebugMode() {
 			  <ssf:findUsers formName="ss_findUserForm" 
 			    formElement="searchText" 
 			    width="100px" singleUser="true"/> 
-			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-			    onClick="document.ss_findUserForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
-			    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		      <div class="ss_global_toolbar_findUser_text">
 		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
 		      </div>
@@ -74,6 +71,12 @@ function ss_turnOffDebugMode() {
 		</form>
 	</li>
 
+<c:if test="${ss_navbar_style == 'portlet'}">
+  </ul>
+</div>
+<div class="ss_global_toolbar">
+  <ul class="ss_global_toolbar_links ss_font-x-small">
+</c:if>
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
       <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
