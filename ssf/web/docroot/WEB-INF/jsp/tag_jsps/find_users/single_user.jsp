@@ -26,6 +26,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	if (text == '' || text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
 	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findUserGroupType+', '+ss_findUser_pageNumber)
 	ss_setupStatusMessageDiv()
+	//ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -127,18 +128,18 @@ function ss_findUserNextPage() {
 <c:set var="ss_find_user_support_stuff_loaded" value="1" scope="request"/>
 </c:if>
 
-<textarea class="ss_text" style="height:17px; width:<%= findUserElementWidth %>;" 
-  name="ss_findUser_searchText" 
-  id="ss_findUser_searchText"
-  onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
-  onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea>
-<input type="hidden" name="<%= findUserElementName %>"/>
-
-  <div id="ss_findUserNavBarDiv_<portlet:namespace/>"
+<div style="margin:0px; padding:0px;"><textarea 
+    class="ss_text" style="height:15px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+    name="ss_findUser_searchText" 
+    id="ss_findUser_searchText"
+    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
+    onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
+<div id="ss_findUserNavBarDiv_<portlet:namespace/>"
     class="ss_findUserList" style="visibility:hidden;">
     <ul id="available_<%= findUserElementName %>_${prefix}">
     </ul>
-  </div>	
+</div>	
+<input type="hidden" name="<%= findUserElementName %>"/>
   
 <script type="text/javascript">
 ss_createOnSubmitObj('${prefix}onSubmit', '<%= findUserFormName %>', ss_saveFindUserData_${prefix});
