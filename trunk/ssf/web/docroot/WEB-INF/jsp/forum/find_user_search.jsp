@@ -19,15 +19,21 @@
 	    <c:if test="${count < ss_searchTotalHits}">
 	    <li>
 	      <div align="right">
-	        <a href="#" onClick="ss_findUserNextPage();return false;">
-	          <ssf:nlt tag="findUser.more"/>
-	        </a>
+	        <table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
+	          <a href="#" onClick="ss_findUserNextPage();return false;">
+	            <ssf:nlt tag="findUser.more"/>
+	          </a>
+	        </td></tr></table>
 	      </div>
 	    </li>
 	  </c:if>
 		</c:if>
 		<c:if test="${empty ssUsers}">
-		  <li><ssf:nlt tag="findUser.noneFound"/></li>
+		  <li>
+		    <table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
+		      <ssf:nlt tag="findUser.noneFound"/>
+		    </td></tr></table>
+		  </li>
 		</c:if>
 	  </ul>
 	</taconite-replace>
