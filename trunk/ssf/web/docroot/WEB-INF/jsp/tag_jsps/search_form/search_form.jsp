@@ -146,7 +146,7 @@ function t_searchForm_wsTree_showId(forum, obj) {
 </script>
 
 <ssf:tree 
-  treeName="<%= "t_searchForm_wsTree" %>" 
+  treeName="t_searchForm_wsTree" 
   treeDocument="${ssDomTree}"  
   rootOpen="false" 
   multiSelect="<%= new ArrayList() %>" 
