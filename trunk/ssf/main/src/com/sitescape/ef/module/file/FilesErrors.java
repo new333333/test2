@@ -45,6 +45,7 @@ public class FilesErrors {
 		public static int PROBLEM_CANCELING_LOCK			= 10;
 		public static int PROBLEM_LOCKED_BY_ANOTHER_USER	= 11;
 		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  = 12;
+		public static int PROBLEM_FILE_EXISTS				= 13;
 		
 		public static String[] typeCodes = {
 			"fileupload.error.other",
@@ -59,7 +60,8 @@ public class FilesErrors {
 			"fileupload.error.deleting.thumbnail.file",
 			"fileupload.error.canceling.lock",
 			"fileupload.error.locked.by.another.user",
-			"fileupload.error.reserved.by.another.user"
+			"fileupload.error.reserved.by.another.user",
+			"fileupload.error.file.exists"
 		};
 		
 		private String repositoryName;

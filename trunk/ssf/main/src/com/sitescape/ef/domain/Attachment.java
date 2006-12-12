@@ -20,10 +20,22 @@ public abstract class Attachment extends PersistentTimestampObject
     protected AnyOwner owner;
     protected String usage="";
     protected String name;
+    protected char type;
     public Attachment() {
     }
     public Attachment(String name) {
     	this.name = name;
+    }
+    /**
+     * @hibernate.property insert="false" update="false"
+     * use in queries
+     *
+     */
+    protected char getType() {
+    	return type;
+    }
+    protected void setType(char type) {
+    	this.type = type;
     }
     /**
      * @hibernate.component class="com.sitescape.ef.domain.AnyOwner"

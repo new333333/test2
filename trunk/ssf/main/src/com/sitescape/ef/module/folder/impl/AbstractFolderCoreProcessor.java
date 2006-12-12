@@ -24,6 +24,7 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.HKey;
@@ -67,10 +68,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
  
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    	super.addEntry_postSave(binder, entry, inputData, entryData);
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
      }
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
+       	super.addEntry_done(binder, entry, inputData);
        	if (entry instanceof AclControlled)
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
     	else
@@ -89,9 +92,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         try {
         	// Before doing anything else (especially writing anything to the 
         	// database), make sure to run the filter on the uploaded files. 
-        	FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), fileData);
-        
-        	final FolderEntry entry = addReply_create(def);
+            FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), def, entryData, fileData);
+         	final FolderEntry entry = addReply_create(def);
+         	        
         
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
@@ -100,7 +103,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
         		addReply_preSave(parent, entry, inputData, entryData);
         		
-        		addReply_save(entry);
+        		addReply_save(parent, entry, inputData, entryData);
         
         		addReply_postSave(parent, entry, inputData, entryData);
         		return null;
@@ -110,7 +113,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         
         	addReply_startWorkflow(entry);
          
-        	addReply_indexAdd(parent, entry, inputData, entryData, fileData);
+        	addReply_indexAdd(parent, entry, inputData, fileData);
                 
         	addReply_done(parent, entry, inputData);
 
@@ -147,13 +150,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	
     }
 
-    protected FilesErrors addReply_filterFiles(Binder binder, List fileData) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileData);
+    protected FilesErrors addReply_filterFiles(Binder binder, Definition def, 
+    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
+    	return addEntry_filterFiles(binder, def, entryData, fileUploadItems);
     }
 
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
     		List fileData, FilesErrors filesErrors) {
-    	return getFileModule().writeFiles(parent.getParentFolder(), entry, fileData, filesErrors);
+    	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors);
     }
     
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
@@ -165,14 +169,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    	addEntry_preSave(parent.getParentBinder(), entry, inputData, entryData);
     }
     
-    protected void addReply_save(FolderEntry entry) {
-        getCoreDao().save(entry);
+    protected void addReply_save(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    	addEntry_save(parent.getParentBinder(), entry, inputData, entryData);
     }
     
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-    	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData);
     	if (parent instanceof WorkflowSupport)
     		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
     			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);    			
@@ -181,15 +186,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData) {
-       	if (entry instanceof AclControlled)
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-    	else
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry.getParentBinder())); // Just for testing
+    	addEntry_done(parent.getParentBinder(), entry, inputData);
     }
 
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
-    		InputDataAccessor inputData, Map entryData, List fileData) {
-    	indexEntry(entry.getParentFolder(), entry, fileData, null, true);
+    		InputDataAccessor inputData, List fileData) {
+    	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData);
     }
     
     protected void addReply_startWorkflow(FolderEntry entry) {
@@ -198,6 +200,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
    
+    protected void modifyBinder_validateTitle(Binder binder, String title) {
+		getCoreDao().validateTitle((Folder)binder.getParentBinder(), title);  	
+    }
  	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }
@@ -349,12 +354,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	
     }
     protected void checkFolderMoveType(Integer source, Integer destination) {
-    	if (source == null) source=Integer.valueOf(Definition.FOLDER_VIEW);
-    	if (destination == null) destination=Integer.valueOf(Definition.FOLDER_VIEW);
-    	
-   		if (source.equals(destination)) return;
-   		if (source.intValue() == Definition.FILE_FOLDER_VIEW) return;
-   		throw new NotSupportedException("Cannot move discussion folder to a library folder");    	
     }
     protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent) {
     	HKey oldKey = child.getFolderHKey();

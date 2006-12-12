@@ -23,6 +23,7 @@ public class FileUploadItem {
 	private static final String HTMLCONVERTED_FILE_PREFIX = "htmlconvert_";
 	
 	private int type;
+	private boolean uniqueName=true;
 	
 	private String name; // This is NOT file name.
 	
@@ -123,7 +124,12 @@ public class FileUploadItem {
 	public String getName() {
 		return name;
 	}
-	
+	public boolean isUniqueName() {
+		return uniqueName;
+	}
+	public void setUniqueName(boolean uniqueName) {
+		this.uniqueName = uniqueName;
+	}
 	/**
 	 * Return the original filename in the client's filesystem. 
 	 * @return

@@ -74,6 +74,7 @@ public class EntityIndexUtils {
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
     public static final String FILE_ID_FIELD = "_fileID";
+    public static final String FILE_UNIQUE_FIELD="_fileNameUnique";
     public static final String RATING_FIELD="_rating";
     public static final String ENTITY_FIELD="_entityType"; 
     public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
@@ -378,4 +379,9 @@ public class EntityIndexUtils {
        	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
     }
+    public static void addFileUnique(Document doc, boolean unique) {
+       	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(unique), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	doc.add(uniqueField);     	
+    }
+
 }

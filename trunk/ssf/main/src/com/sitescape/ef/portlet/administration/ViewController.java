@@ -58,19 +58,7 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-		
-		//Definition builder - File entry form designer
-		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.definition_builder_file_entry_form_designer"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_ENTRY_VIEW));
-		url.setWindowState(WindowState.MAXIMIZED);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-		
+				
 		//Definition builder - Folder view designer
 		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
@@ -82,19 +70,7 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-		
-		//Definition builder - File folder view designer
-		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.definition_builder_file_folder_view_designer"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FILE_FOLDER_VIEW));
-		url.setWindowState(WindowState.MAXIMIZED);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-		
+				
 		//Definition builder - Workflow designer
 		element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));

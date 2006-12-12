@@ -1,42 +1,40 @@
 package com.sitescape.ef.module.profile.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.lang.Long;
-import java.util.HashMap;
 
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
+import com.sitescape.ef.module.profile.ProfileCoreProcessor;
+import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.EntryBuilder;
+import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.module.profile.ProfileCoreProcessor;
-import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
-import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
-import com.sitescape.ef.module.shared.EntryBuilder;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.InternalException;
 import com.sitescape.util.Validator;
 /**
  *

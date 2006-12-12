@@ -48,8 +48,6 @@ function <portlet:namespace/>_onsub(obj) {
 		  text="User workspace" /><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder" 
 		  text="Folder" /><br/>
-     <input type="radio" name="cfgType" value="9"><ssf:nlt tag="general.type.file" 
-		  text="File" />
 	<br/><br/>
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
