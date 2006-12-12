@@ -129,7 +129,7 @@ function ss_findUserNextPage() {
 </c:if>
 
 <div style="margin:0px; padding:0px;"><textarea 
-    class="ss_text" style="height:15px; width:<%= findUserElementWidth %>; overflow:hidden;" 
+    class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
     name="ss_findUser_searchText" 
     id="ss_findUser_searchText"
     onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
