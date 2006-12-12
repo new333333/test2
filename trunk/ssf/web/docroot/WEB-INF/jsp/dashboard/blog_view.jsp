@@ -70,10 +70,11 @@
 		    menuClass="ss_actions_bar_submenu">
 		  <ssf:param name="title" useBody="true">
 		      <c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img src="<html:imagesPath/>icons/folder.gif"/>
+		        <img border="0" src="<html:imagesPath/>icons/folder.gif"/>
 		      </c:if>
 		      <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
+		        <img border="0" 
+		          src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
 		      </c:if>
 		  </ssf:param>
 		  <ul class="ss_actions_bar_submenu" style="width:250px;">

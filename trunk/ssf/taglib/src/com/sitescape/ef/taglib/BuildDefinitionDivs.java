@@ -636,7 +636,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			helpDivCount++;
 			hb.append("<div id=\"help_div_" + rootElementId);
 			hb.append(Integer.toString(helpDivCount));
-			hb.append("\" class=\"ss_helpPopUp\">\n");
+			hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 			hb.append("<span>");
 			hb.append(NLT.getDef(help.getText()));
 			hb.append("</span>\n</div>\n");
@@ -644,7 +644,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append(Integer.toString(helpDivCount));
 			sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
 			sb.append(Integer.toString(helpDivCount));
-			sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
+			sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 		}
 		sb.append("</li>\n");
 		
@@ -998,7 +998,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 							sb.append(iconListValue);
 							sb.append("\"").append(checked).append("/>");
-							sb.append("<img src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
+							sb.append("<img border=\"0\" src=\"").append(contextPath + "/images").append(iconListValue).append("\"/>");
 							sb.append("<br/><br/>\n");
 						}
 					
@@ -1200,7 +1200,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						helpDivCount++;
 						hb.append("<div id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
-						hb.append("\" class=\"ss_helpPopUp\">\n");
+						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
 						hb.append(NLT.getDef(help.getText()));
 						hb.append("</span>\n</div>\n");
@@ -1208,7 +1208,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(Integer.toString(helpDivCount));
 						sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
-						sb.append("');return false;\"><img src=\""+helpImgUrl+"\"/></a>\n");
+						sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 					}
 					
 					sb.append("<input type=\"hidden\" name=\"propertyName_" + propertyId + "\" ");
@@ -1345,7 +1345,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									helpDivCount++;
 									hb.append("<div id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
-									hb.append("\" class=\"ss_helpPopUp\">\n");
+									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
 									hb.append(NLT.getDef(help.getText()));
 									hb.append("</span>\n</div>\n");
@@ -1375,7 +1375,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						helpDivCount++;
 						hb.append("<div id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
-						hb.append("\" class=\"ss_helpPopUp\">\n");
+						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
 						hb.append(NLT.getDef(help.getText()));
 						hb.append("</span>\n</div>\n");

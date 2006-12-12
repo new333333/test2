@@ -148,10 +148,10 @@ function ss_userListInterceptCR(e) {
 </div>
 </td>
 <td valign="top">
-  <div style="margin:0px; padding:0px;"><img 
+  <div style="margin:0px; padding:0px;"><img border="0"
     src="<html:imagesPath />pics/sym_s_arrow_left.gif" 
     alt="<ssf:nlt tag="userlist.dragLeft" text="Drag to the left to add a name."/>"
-    ><br><img 
+    ><br><img border="0"
     src="<html:imagesPath />pics/sym_s_arrow_right.gif" 
     alt="<ssf:nlt tag="userlist.dragRight" 
       text="Drag to the right to delete a name."/>"

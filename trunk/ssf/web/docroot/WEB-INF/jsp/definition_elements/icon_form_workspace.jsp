@@ -29,7 +29,7 @@
 %>
 <input type="radio" class="ss_text" name="${property_name}" 
   value="<%= iconListValue %>" <%= checked %>
-/><img src="<html:imagesPath/>.<%= iconListValue %>" /><br/>
+/><img border="0" src="<html:imagesPath/>.<%= iconListValue %>" /><br/>
 <%
 		}
 %>

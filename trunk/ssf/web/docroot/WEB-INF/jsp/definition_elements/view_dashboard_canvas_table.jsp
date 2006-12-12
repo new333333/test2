@@ -15,7 +15,7 @@
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
 			<div id="wide_top">
-			  <div class="ss_dashboardProtoDropTarget"><img 
+			  <div class="ss_dashboardProtoDropTarget"><img border="0"
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_top}">
 			  	  <c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
@@ -29,12 +29,12 @@
 				    <ssf:dashboard id="${component.id}" 
 				      type="viewComponent" configuration="${ssDashboard}"/>
 				  </div>
-			      <div class="ss_dashboardProtoDropTarget"><img 
+			      <div class="ss_dashboardProtoDropTarget"><img border="0"
 			        src="<html:imagesPath/>pics/1pix.gif"></div>
 			  </c:forEach>
 			</div>
 			
-			<div style="width:${ssDashboard.narrowFixedWidth}px;"><img 
+			<div style="width:${ssDashboard.narrowFixedWidth}px;"><img border="0"
 			  src="<html:imagesPath/>pics/1pix.gif" /></div>
 	
   </td>
@@ -43,7 +43,7 @@
 <tr>
   <td valign="top" class="ss_dashboardTable_off">
 			<div id="narrow_fixed">
-			  <div class="ss_dashboardProtoDropTarget"><img 
+			  <div class="ss_dashboardProtoDropTarget"><img border="0"
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
@@ -57,19 +57,19 @@
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
 				</div>
-			    <div class="ss_dashboardProtoDropTarget"><img 
+			    <div class="ss_dashboardProtoDropTarget"><img border="0"
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  </c:forEach>
 			</div>
 
 			<div style="visibility:hidden; 
-			  width:${ssDashboard.narrowFixedWidth}px;"><img 
+			  width:${ssDashboard.narrowFixedWidth}px;"><img border="0"
 			  src="<html:imagesPath/>pics/1pix.gif"></div></td>
   
   
   <td valign="top" class="ss_dashboardTable_off">
 			<div id="narrow_variable">
-			  <div class="ss_dashboardProtoDropTarget"><img 
+			  <div class="ss_dashboardProtoDropTarget"><img border="0"
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
@@ -83,7 +83,7 @@
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
 				</div>
-			    <div class="ss_dashboardProtoDropTarget"><img 
+			    <div class="ss_dashboardProtoDropTarget"><img border="0"
 			      src="<html:imagesPath/>pics/1pix.gif"></div>
 			  </c:forEach>
 			</div>
@@ -93,7 +93,7 @@
 <tr>
   <td colspan="2" class="ss_dashboardTable_off">
 			<div id="wide_bottom">
-			  <div class="ss_dashboardProtoDropTarget"><img 
+			  <div class="ss_dashboardProtoDropTarget"><img border="0"
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
@@ -107,7 +107,7 @@
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
 				</div>
-			    <div class="ss_dashboardProtoDropTarget"><img 
+			    <div class="ss_dashboardProtoDropTarget"><img border="0"
 			      src="<html:imagesPath/>pics/1pix.gif"></div>
 			  </c:forEach>
 			</div>

@@ -10,7 +10,7 @@
     <td>Debug window</td>
     <td align="right">
       <a href="" onClick="ss_turnOffDebugMode();return false;">
-        <img src="<html:imagesPath/>pics/sym_s_delete.gif">
+        <img border="0" src="<html:imagesPath/>pics/sym_s_delete.gif">
       </a>
 <script type="text/javascript">
 function ss_turnOffDebugMode() {
@@ -79,7 +79,7 @@ function ss_turnOffDebugMode() {
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
 	    <div id="ss_navbar_favorites" style="visibility:hidden;margin:0px;padding:0px;"
-	    ><img src="<html:imagesPath/>pics/1pix.gif"></div>
+	    ><img border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </ssHelpSpot>
 	</li>
 

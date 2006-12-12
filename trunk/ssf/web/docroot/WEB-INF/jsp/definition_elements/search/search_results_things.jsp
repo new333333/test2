@@ -202,7 +202,7 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized">
       </c:if>
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
-    ><img class="ss_title_menu"
+    ><img border="0" class="ss_title_menu"
     onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
