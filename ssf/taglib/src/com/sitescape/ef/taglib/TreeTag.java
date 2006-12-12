@@ -71,7 +71,7 @@ public class TreeTag extends TagSupport {
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
-	    if(tree == null)
+	    if(tree == null && !initOnly)
 	        throw new JspException("Tree document must be specified");
 	    this.finished = false;
 	    this.tableOpened = false;
