@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -352,7 +353,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			return folderIds.toArray(new String[folderIds.size()]);
 		}
 
-		List<String> children = new ArrayList<String>();
+		Set<String> children = new HashSet<String>();
 
 		Entry entry = (Entry) objMap.get(ENTRY);
 		if (entry == null) {
@@ -451,22 +452,14 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
 		} else if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
 			if (getReposName(uri) == null) {
-				Document def = (Document) objMap.get(DEFINITION);
-				Element root = def.getRootElement();
-				Element attachFilesItem = (Element) root
-						.selectSingleNode("//item[@name='attachFiles' and @type='data']");
-				Iterator it = attachFilesItem.selectNodes(
-						"./properties/property[@name='storage']/option")
-						.iterator();
+				Iterator it = entry.getFileAttachments().iterator();
 				while (it.hasNext()) {
-					Element optionElem = (Element) it.next();
-					String optionName = optionElem.attributeValue("name");
-					if (optionName != null && !optionName.equals(""))
-						children.add(optionName);
+					FileAttachment fa = (FileAttachment) it.next();
+					children.add(fa.getRepositoryName());
 				}
 				return children.toArray(new String[children.size()]);
 			}
-
+		
 			if (getFilePath(uri) == null) {
 				Iterator it = entry.getFileAttachments(getReposName(uri))
 						.iterator();
@@ -672,11 +665,8 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 						.selectSingleNode("./properties/property[@name='name']");
 				elementName = nameProperty.attributeValue("value");
 				objMap.put(ELEMENT_NAME, elementName);
-				Element optionElem = (Element) attachFilesItem
-						.selectSingleNode("./properties/property[@name='storage']/option[@name='"
-								+ reposName + "']");
-				if (optionElem == null)
-					return false; // The repository name does not appear in the definition.
+				if(entry.getFileAttachments(reposName).size() == 0)
+					return false; // The repository shouldn't be listed under the attachment.
 			} else { // primary
 				Element primaryItem = (Element) items.get(0); // only one item in there
 				Element nameProperty = (Element) primaryItem
