@@ -95,12 +95,15 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		try {
 			if (closeIt) SessionUtil.sessionStartup();
 			user = getProfileDao().findUserByNameOnlyIfEnabled(username, zoneName);
+			user = checkZone(zoneName, username);
 		}
     	catch(NoUserByTheNameException e) {
     		user = checkZone(zoneName, username);
-    		if (user == null) 
-    				throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
+    		if (user == null) {
+    			if (closeIt) SessionUtil.sessionStop();    	
+    			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
      						+ zoneName + "," + username + "]", e);
+    		}
     	}
     	try {
     		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
@@ -116,7 +119,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
     			}
     		}
     	} finally {
-			if (closeIt) SessionUtil.sessionStartup();    		
+			if (closeIt) SessionUtil.sessionStop();    		
     	}
 		return user;
 	}
