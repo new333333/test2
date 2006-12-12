@@ -619,9 +619,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			e.setEntryDef(eDef);
 			e.setDefinitionType(eDef.getType());
 			CustomAttribute ca = e.getCustomAttribute("_fileEntryTitle");
-			for (Iterator iter = ca.getValueSet().iterator(); iter.hasNext();) {
-				com.sitescape.ef.domain.FileAttachment fa = (com.sitescape.ef.domain.FileAttachment)iter.next();
-				fa.setUniqueName(true);
+			if(ca != null) {
+				for (Iterator iter = ca.getValueSet().iterator(); iter.hasNext();) {
+					com.sitescape.ef.domain.FileAttachment fa = (com.sitescape.ef.domain.FileAttachment)iter.next();
+					fa.setUniqueName(true);
+				}
 			}
 		}
 		List<Definition> defs = getCoreDao().loadDefinitions(zone.getId(), 9);
