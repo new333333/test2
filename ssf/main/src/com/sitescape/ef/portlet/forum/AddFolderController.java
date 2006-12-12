@@ -84,26 +84,12 @@ public class AddFolderController extends SAbstractController {
 		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
 		if (Validator.isNull(defId)) {
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-				if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
-					getFolderModule().checkAccess((Folder)binder, "addFolder");
-					List result = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
-					if (result.isEmpty()) {
-						result.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
-					}
-					model.put(WebKeys.CONFIGURATIONS, result);
-				} else {
-					getFolderModule().checkAccess((Folder)binder, "addFolder");
-					List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
-					if (result.isEmpty()) {
-						result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
-					}
-					List result2 = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
-					if (result2.isEmpty()) {
-						result2.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
-					}
-					result.addAll(result2);	
-					model.put(WebKeys.CONFIGURATIONS, result);
+				getFolderModule().checkAccess((Folder)binder, "addFolder");
+				List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
+				if (result.isEmpty()) {
+					result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
 				}
+				model.put(WebKeys.CONFIGURATIONS, result);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 				if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
 					getFolderModule().checkAccess((Folder)binder, "addFolder");
@@ -114,11 +100,6 @@ public class AddFolderController extends SAbstractController {
 				if (result.isEmpty()) {
 					result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
 				}
-				List result2 = getAdminModule().getConfigurations(Definition.FILE_FOLDER_VIEW);
-				if (result2.isEmpty()) {
-					result2.add(getAdminModule().createDefaultConfiguration(Definition.FILE_FOLDER_VIEW));
-				}
-				result.addAll(result2);	
 				model.put(WebKeys.CONFIGURATIONS, result);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 				getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");

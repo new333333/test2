@@ -27,6 +27,7 @@ import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
@@ -34,9 +35,11 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
@@ -146,7 +149,26 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    
     protected FilesErrors addEntry_filterFiles(Binder binder, Definition def, 
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	return getFileModule().filterFiles(binder, fileUploadItems);
+    	FilesErrors errors = getFileModule().filterFiles(binder, fileUploadItems);
+		
+		// Make sure the file name is unique if requested		
+    	for (int i=0; i<fileUploadItems.size(); ) {
+    		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
+    		if (fui.isUniqueName()) {
+    			try {
+    				getCoreDao().validateTitle(binder, fui.getOriginalFilename());
+    				++i;
+    			} catch (TitleException te) {
+    				fileUploadItems.remove(i);
+    				errors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
+    					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
+    			}
+    		} else {
+    			++i;
+    		}
+    	}
+    	
+    	return errors;
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
@@ -211,6 +233,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		getCoreDao().save(obj);
         }
         EntryBuilder.buildEntry(entry, entryData);
+        takeCareOfLastModDate(entry, inputData);
+        
     }
 
     protected void addEntry_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
@@ -317,7 +341,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	return getFileModule().filterFiles(binder, fileUploadItems);
+    	FilesErrors errors = getFileModule().filterFiles(binder, fileUploadItems);
+    	
+		// Make sure the file name is unique if requested		
+    	for (int i=0; i<fileUploadItems.size();) {
+    		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
+    		if (fui.isUniqueName()) {
+    			String newTitle = fui.getOriginalFilename();
+    			try {
+    				if (entry.getFileAttachment(fui.getRepositoryName(), newTitle) != null) {
+    					getCoreDao().validateTitle(binder, newTitle);
+    				}
+    				++i;
+    			} catch (TitleException te) {
+    				fileUploadItems.remove(i);
+    				errors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
+    					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
+    			}
+       		} else {
+    			++i;
+    		}
+    	} 
+    	// If we're here, it means either that the user didn't upload a title
+    	// file, or he did but it failed the filtering. Either case, we 
+    	// proceed normally.
+    	return errors;    	
     }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
@@ -328,6 +376,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
     		List<FileAttachment> filesToReindex) {
        	removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
+       	//todo: if file_title element, must update title
+       	
     }
     protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex) {
     	removeFilesIndex(entry, filesToDeindex);
@@ -366,10 +416,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
         
         EntryBuilder.updateEntry(entry, entryData);
+ 	   takeCareOfLastModDate(entry, inputData);
 
     }
 
     protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+ 	   if(!inputData.exists("_renameFileTo"))
+		   return;
+	   
+	   // We have a request for renaming the library file associated with
+	   // the file folder entry.
+	   String toName = inputData.getSingleValue("_renameFileTo");
+	   FileAttachment fa = (FileAttachment) inputData.getSingleObject("_renameFileTo_fa");
+	   
+	   getFileModule().renameFile(binder, entry, fa, toName);
+	   
+	   // If you're still here, the file renaming was successful.
+	   // We can change the title of the entry now. 
+	   //TODO: only if title attribute entry.setTitle(toName);
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
@@ -380,7 +444,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
     }
-
+    protected void takeCareOfLastModDate(Entry entry, InputDataAccessor inputData) {
+ 	   Date lastModDate = (Date) inputData.getSingleObject("_lastModifiedDate");
+ 	   if(lastModDate != null) {
+ 		   // We have a caller-supplied last-modified date.
+ 	        User user = RequestContextHolder.getRequestContext().getUser();
+ 	        entry.setModification(new HistoryStamp(user, lastModDate));
+ 	   }
+    }
     //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Entry entry) {
     	SimpleProfiler sp = new SimpleProfiler(false);

@@ -40,8 +40,6 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public static final int PROFILE_VIEW=6;
 	public static final int PROFILE_ENTRY_VIEW=7;
 	public static final int WORKSPACE_VIEW=8;
-	public static final int FILE_FOLDER_VIEW=9;
-	public static final int FILE_ENTRY_VIEW=10;
 	public static final int PROFILE_GROUP_VIEW=11;
 	public static final int USER_WORKSPACE_VIEW=12;
 	

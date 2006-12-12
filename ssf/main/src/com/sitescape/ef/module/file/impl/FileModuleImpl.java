@@ -1117,6 +1117,10 @@ public class FileModuleImpl implements FileModule {
     	}
     	
 		try {
+			//if we are adding a new version of an existing attachment to 
+			//a uniqueName item, set flag - (will already be set if originally added
+			//through a unique element.  In other works, once unique always unique
+			if (fui.isUniqueName()) fAtt.setUniqueName(true);
 			updateFileAttachment(fAtt, user, versionName, fui.getSize(), fui.getModDate());
 		}
 		catch(IOException e) {
@@ -1244,6 +1248,7 @@ public class FileModuleImpl implements FileModule {
     	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
+    	fAtt.setUniqueName(fui.isUniqueName());
     	FileItem fItem = new FileItem();
     	fItem.setName(relativeFilePath);
     	try {
@@ -1273,7 +1278,7 @@ public class FileModuleImpl implements FileModule {
 		vAtt.setCreation(fAtt.getCreation());
 		vAtt.setModification(fAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
-
+		vAtt.setUniqueName(false);
 		vAtt.setVersionNumber(1);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());

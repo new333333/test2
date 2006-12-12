@@ -62,6 +62,5 @@ public interface FolderDao {
     public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);
     public void moveEntries(Folder folder, List ids);
-    public void validateTitle(Folder folder, String title) throws TitleException;
     	 
 }

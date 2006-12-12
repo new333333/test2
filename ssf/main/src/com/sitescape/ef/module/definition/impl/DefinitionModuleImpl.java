@@ -428,26 +428,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				definitionName="Folder entry";
 				break;
 			}
-			case Definition.FILE_FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (Definition)result.get(0);
-				definitionTitle = "__definition_default_file_folder";				
-				internalId = ObjectKeys.DEFAULT_FILE_FOLDER_DEF;
-				definitionName="File folder";
-				break;
-				
-			}
-			case Definition.FILE_ENTRY_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_ENTRY_DEF, zoneId, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (Definition)result.get(0);
-				internalId = ObjectKeys.DEFAULT_FILE_ENTRY_DEF;
-				definitionTitle = "__definition_default_file_entry";
-				definitionName="File entry";
-				break;
-				
-			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
 						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, zoneId, Integer.valueOf(type)}));
@@ -557,12 +537,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else if (binder instanceof ProfileBinder) {
 			definitionType = Definition.PROFILE_VIEW;
 		} else {
-			if ((binder.getDefinitionType() == null) ||
-					(binder.getDefinitionType().intValue() == Definition.FOLDER_VIEW)) {
 				definitionType = Definition.FOLDER_VIEW;
-			} else {
-				definitionType = Definition.FILE_FOLDER_VIEW;
-			}
 		}
 		Definition def = createDefaultDefinition(definitionType);
 		binder.setEntryDef(def);
@@ -576,13 +551,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (entry instanceof Principal) {
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
 		} else {
-			Binder binder = entry.getParentBinder();
-			if ((binder.getDefinitionType() == null) ||
-					(binder.getDefinitionType().intValue() == Definition.FOLDER_VIEW)) {
-				definitionType = Definition.FOLDER_ENTRY;
-			} else {
-				definitionType = Definition.FILE_ENTRY_VIEW;
-			}
+			definitionType = Definition.FOLDER_ENTRY;
 		}
 		Definition def = createDefaultDefinition(definitionType);
 		entry.setEntryDef(def);
@@ -869,7 +838,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (!name.equals("") && 
 							!name.equals(itemNamePropertyValue) && 
 							uniqueNames.containsKey(name)) {
-						//This name is not unique
+						//This name is not z
 						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
 					} else if (!name.equals("") && !name.equals(itemNamePropertyValue)) {
 						//The name is being changed. Check if this is a workflow state
@@ -1475,7 +1444,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    		fui.setThumbnailDirectlyAccessible(false);
 						    		fui.setIsSquareThumbnail(true);						    		
 						    	}
-						    	
+						    	//get is title property
+						    	//get is uniqueName
+						    	fui.setUniqueName(true);
 						    	fileData.add(fui);
 						    }
 						} else if (itemName.equals("fileEntryTitle")) {
@@ -1507,6 +1478,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 								    	}
 								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+								    	//set is uniqueName
+								    	fui.setUniqueName(false);
 								    	fileData.add(fui);
 									}
 								}

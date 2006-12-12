@@ -23,8 +23,8 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HKey;
@@ -43,7 +43,6 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	private String[] cfAttrs = new String[]{"parentBinder", "HKey.level"};
 	private OrderBy cfOrder = new OrderBy("HKey.sortKey", OrderBy.DESCENDING);
 	private CoreDao coreDao;
-	protected String[] entryTitleAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
 
 	public void setCoreDao(CoreDao coreDao) {
 	   this.coreDao = coreDao;
@@ -590,15 +589,5 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	 );    	
    	
     }
-    public void validateTitle(Folder folder, String title) throws TitleException {
-   		//ensure title is unique
-       	getCoreDao().validateTitle(folder, title);
-       	if (Integer.valueOf(Definition.FILE_FOLDER_VIEW).equals(folder.getDefinitionType())) {
-       		// second check that no entries have the same title - cannot have directory and file with same name in webdav
-       		FilterControls filter = new FilterControls(entryTitleAttrs, new Object[]{folder, new Integer(1), title.toLowerCase()});
-       		if (!getCoreDao().loadObjects(FolderEntry.class, filter).isEmpty()) {
-       			throw new TitleException(title);
-       		}
-       	}
-   }    
+ 
 }

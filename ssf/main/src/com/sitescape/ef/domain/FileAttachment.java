@@ -27,6 +27,7 @@ public class FileAttachment extends Attachment {
     private FileItem fileItem;
     
     private FileLock fileLock;
+    private boolean uniqueName=false;
 
     public FileAttachment() {
         
@@ -194,7 +195,16 @@ public class FileAttachment extends Attachment {
 	public void setRepositoryName(String repositoryName) {
 		this.repositoryName = repositoryName;
 	}
-	
+	/**
+	 * @hibernate.property
+	 * @return
+	 */
+	public boolean isUniqueName() {
+		return uniqueName;
+	}
+	public void setUniqueName(boolean uniqueName) {
+		this.uniqueName = uniqueName;
+	}
     /**
      * @hibernate.component class="com.sitescape.ef.domain.FileLock" prefix="filelock_"
      */

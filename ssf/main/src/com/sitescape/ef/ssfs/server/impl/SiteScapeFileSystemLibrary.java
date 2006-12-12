@@ -796,10 +796,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private boolean isFileFolder(Binder binder) {
 		Integer defType = binder.getDefinitionType();
 		
-		if(defType != null && defType == Definition.FILE_FOLDER_VIEW)
-			return true;
-		else
-			return false;
+		return true;
 	}
 	
 	private Binder getLeafBinder(Map objMap) {
@@ -1080,7 +1077,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private Definition getZoneWideDefaultFileEntryDefinition() {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FILE_ENTRY_VIEW);
+		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
@@ -1101,7 +1098,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private Definition getZoneWideDefaultFileFolderDefinition() {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FILE_FOLDER_VIEW);
+		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else

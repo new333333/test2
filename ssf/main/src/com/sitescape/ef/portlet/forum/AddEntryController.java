@@ -99,8 +99,6 @@ public class AddEntryController extends SAbstractController {
 			//Make sure the requested definition is legal
 			if (folderEntryDefs.containsKey(entryType)) {
 				DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
-			} else if ((folder.getDefinitionType()!=null) && (folder.getDefinitionType().intValue() == Definition.FILE_FOLDER_VIEW)) {
-				DefinitionHelper.getDefinition(null, model, "//item[@name='fileEntryForm']");
 			} else {
 				DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 			}
@@ -140,8 +138,6 @@ public class AddEntryController extends SAbstractController {
 		    	
 			if (replyStyleIsGood) {
 				DefinitionHelper.getDefinition(getDefinitionModule().getDefinition(entryType), model, "//item[@type='form']");
-			} else if ((entry.getDefinitionType()!=null) && (entry.getDefinitionType().intValue() == Definition.FILE_ENTRY_VIEW)) {
-				DefinitionHelper.getDefinition(null, model, "//item[@name='fileEntryForm']");
 			} else {
 				DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 			}

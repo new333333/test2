@@ -25,6 +25,7 @@ import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -218,14 +219,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG;
 				break;
 			}
-			case Definition.FILE_FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(BinderConfig.class, 
-					new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FILE_FOLDER_CONFIG, zoneId, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (BinderConfig)result.get(0);
-				title = "__configuration_default_file_folder";
-				internalId = ObjectKeys.DEFAULT_FILE_FOLDER_CONFIG;
-				break;
-			}
 		default: {
 			throw new InvalidArgumentException("Invalid type:" + type);
 			}
@@ -249,10 +242,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			}
 			case Definition.FOLDER_VIEW: {
 				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY).getId());
-				break;
-			}
-			case Definition.FILE_FOLDER_VIEW: {
-				defs.add(getDefinitionModule().createDefaultDefinition(Definition.FILE_ENTRY_VIEW).getId());
 				break;
 			}
 			default: {
@@ -608,48 +597,40 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		getCoreDao().save(ms);		
 	}
 	public void setZone1(String zoneName) {
-		Map params = new HashMap();
-		params.put("name", zoneName);
-		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and name=:name", params);
-		//has to exist
-		Binder ws = (Binder)result.get(0);
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Binder set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Principal set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.BinderConfig set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Definition set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.security.function.Function set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.security.function.WorkAreaFunctionMembership set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.PostingDef set zoneId=" + ws.getId() + " where zoneId is null");
-		getCoreDao().evict(ws);
+		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FileAttachment set uniqueName='0' where uniqueName is null");	
+		
 	}
 	public void setZone2(String zoneName) {
-		Map params = new HashMap();
-		params.put("name", zoneName);
-		List result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where parentBinder is null and name=:name", params);
-		//has to exist
-		Binder ws = (Binder)result.get(0);
-		ws.setZoneId(ws.getId());
-		if (!ObjectKeys.TOP_WORKSPACE_ID.equals(ws.getInternalId())) ws.setInternalId(ObjectKeys.TOP_WORKSPACE_ID);
-		if (ws.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(ws);
-		params.clear();
-		params.put("name", "_profiles");
-		params.put("zone", ws);
-		result = coreDao.loadObjects("from com.sitescape.ef.domain.Binder where name=:name and parentBinder=:zone", params);
-		ProfileBinder profiles = (ProfileBinder)result.get(0);
-		if (!ObjectKeys.PROFILE_ROOT_ID.equals(profiles.getInternalId())) profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
-		profiles.setPathName(ws.getPathName() + "/" + profiles.getTitle());
-
-		if (profiles.getEntryDef() == null) getDefinitionModule().setDefaultBinderDefinition(profiles);
-		try {
-			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_ID, ws.getId());
-		} catch (com.sitescape.ef.domain.NoGroupByTheNameException ng) {
-			addAllUserGroup(profiles, new HistoryStamp(ws.getCreation().getPrincipal()));
+		Workspace zone = getCoreDao().findTopWorkspace(zoneName);
+		//old file folders
+		Definition fDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
+		Definition eDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY);
+		List<Binder> folders = getCoreDao().loadObjects("from com.sitescape.ef.domain.Folder where definitionType=9", null);
+		for (Binder f: folders) {
+			f.setEntryDef(fDef);
+			f.setDefinitionType(fDef.getType());
+			List ds = f.getDefinitions();
+			ds.clear();
+			ds.add(fDef);
+			ds.add(eDef);
 		}
-		try {
-			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, ws.getId());
-		} catch (com.sitescape.ef.domain.NoUserByTheNameException nu) {
-			addAnnonymous(profiles, new HistoryStamp(ws.getCreation().getPrincipal()));
+		List<com.sitescape.ef.domain.Entry> entries = getCoreDao().loadObjects("from com.sitescape.ef.domain.FolderEntry where definitionType=10", null);
+		for (com.sitescape.ef.domain.Entry e: entries) {
+			e.setEntryDef(eDef);
+			e.setDefinitionType(eDef.getType());
+			CustomAttribute ca = e.getCustomAttribute("_fileEntryTitle");
+			for (Iterator iter = ca.getValueSet().iterator(); iter.hasNext();) {
+				com.sitescape.ef.domain.FileAttachment fa = (com.sitescape.ef.domain.FileAttachment)iter.next();
+				fa.setUniqueName(true);
+			}
 		}
-		
+		List<Definition> defs = getCoreDao().loadDefinitions(zone.getId(), 9);
+		for (Definition def: defs) {
+			getCoreDao().delete(def);
+		}
+		defs = getCoreDao().loadDefinitions(zone.getId(), 10);
+		for (Definition def: defs) {
+			getCoreDao().delete(def);
+		}		
 	}
 }

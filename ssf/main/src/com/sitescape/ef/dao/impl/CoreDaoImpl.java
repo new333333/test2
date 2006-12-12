@@ -310,14 +310,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
 	                  	Query q = session.createQuery(query);
-	            		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
-	            			Map.Entry me = (Map.Entry)iter.next();
-	            			Object val = me.getValue();
-	            			if (val instanceof Collection) {
-	            				q.setParameterList((String)me.getKey(), (Collection)val);
-	            			} else {
-	            				q.setParameter((String)me.getKey(), val);
-	            			}
+	                  	if (values != null) {
+	                  		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
+	                  			Map.Entry me = (Map.Entry)iter.next();
+	                  			Object val = me.getValue();
+	                  			if (val instanceof Collection) {
+	                  				q.setParameterList((String)me.getKey(), (Collection)val);
+	                  			} else {
+	                  				q.setParameter((String)me.getKey(), val);
+	                  			}
+	                  		}
 	            		}
 	            		return q.list();
 		            }
@@ -396,14 +398,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             			q.setParameter(i, filterValues.get(i));
             		}
  	                 List result = q.list();
-                  	 Iterator itr = result.iterator();
-
-                	 if (itr.hasNext()) {
-                	 	Integer count = (Integer)itr.next();
-                	 	return count;
-             		}
-                	
-                	return null;
+ 	                 if (result.isEmpty()) return null;
+               	 	 return result.get(0);
                }
             }
 		);
@@ -465,16 +461,35 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.longValue();	
 	}	
-    public void validateTitle(Binder binder, String title) throws TitleException {
+    public void validateTitle(final Binder binder, final String title) throws TitleException {
     	//ensure title is unique
         if (Validator.isNull(title)) throw new TitleException("");
     	
     	Object[] cfValues = new Object[]{binder, title.toLowerCase()};	
     	FilterControls filter = new FilterControls(binderTitleAttrs, cfValues);
 	
-    	if (!loadObjects(new ObjectControls(Binder.class, new String[]{"id"}), filter).isEmpty()) {
+    	if (countObjects(Binder.class, filter) != 0) {
     		 throw new TitleException(title);
     	}
+    	//see if any attachments which belong to entries in this folder
+		getHibernateTemplate().execute(
+			    new HibernateCallback() {
+			        public Object doInHibernate(Session session) throws HibernateException {
+			        	//check for attachments that belong to entries with the same fileName 
+			        	List result = session.createQuery("select count(x) from com.sitescape.ef.domain.FileAttachment x where x.type='F' and " +
+	                  			"x.owner.owningBinderId=:binderId and x.uniqueName=:unique and lower(x.fileItem.name)=:title")
+                  			.setLong("binderId", binder.getId())
+                  			.setString("title", title.toLowerCase())
+                  			.setBoolean("unique", true)
+                  			.list();
+	 	                 if (result.isEmpty()) return null;
+	               	 	 Integer r = (Integer)result.get(0);
+	               	 	 if (r.intValue() == 0) return null;
+	               	 	 throw new TitleException(title);
+	               }
+	            }
+			);
+    	
     }	
 	public List findCompanies() {
 		return (List)getHibernateTemplate().execute(

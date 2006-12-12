@@ -13,7 +13,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
@@ -40,7 +39,6 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.Pipeline;
-import com.sitescape.ef.pipeline.PipelineException;
 import com.sitescape.ef.pipeline.impl.RAMConduit;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
@@ -132,7 +130,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	entryData.put("title", title);
 	        }
 	        sp.reset("addBinder_validateTitle").begin();
-	        getCoreDao().validateTitle(parent, title);
+	        addBinder_validateTitle(parent, title);
 	        sp.end().print();
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
@@ -186,7 +184,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-         
+    protected void addBinder_validateTitle(Binder binder, String title) {
+    	getCoreDao().validateTitle(binder, title);
+    }
     protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
@@ -276,7 +276,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    	String newTitle = (String)entryData.get("title");
 		    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) { 
 		    		sp.reset("modifyBinder_validateTitle").begin();
-		    		getCoreDao().validateTitle(binder.getParentBinder(), newTitle);
+		    		modifyBinder_validateTitle(binder, newTitle);
 		    		sp.end().print();
 		    	}	
 		    }
@@ -346,7 +346,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    cleanupFiles(fileUploadItems);
 	    }
 	}
-
+    protected void modifyBinder_validateTitle(Binder binder, String title) {
+		getCoreDao().validateTitle(binder.getParentBinder(), title);
+   	
+    }
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
@@ -688,6 +691,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
 
         EntityIndexUtils.addFileExtension(indexDoc, fa.getFileItem().getName());
+        EntityIndexUtils.addFileUnique(indexDoc, fa.isCurrentlyLocked());
              
         return indexDoc;
     }
