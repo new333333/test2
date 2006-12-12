@@ -63,7 +63,7 @@ if (false) {
           operation="entry_previous"
           actionUrl="true"
           />"
-          onClick="ss_getLastEntryId('${ss_history_bar_imageId}');return false;" ><img 
+          onClick="ss_getLastEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
           alt="<ssf:nlt tag="nav.firstEntry" text="First entry"/>" id="ss_first"
           border="0" src="<html:imagesPath/>pics/sym_s_left_end.gif"></a></td>
 <%
@@ -78,7 +78,7 @@ if (false) {
           operation="entry_previous"
           actionUrl="true"
           />"
-          onClick="ss_getNextEntryId('${ss_history_bar_imageId}');return false;" ><img 
+          onClick="ss_getNextEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
           alt="<ssf:nlt tag="nav.prevEntry" text="Previous entry"/>" id="ss_prev"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_down.gif"></a></td>
           
@@ -92,7 +92,7 @@ if (false) {
           operation="entry_next"
           actionUrl="true"
           />"
-          onClick="ss_getPreviousEntryId('${ss_history_bar_imageId}');return false;" ><img 
+          onClick="ss_getPreviousEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
           alt="<ssf:nlt tag="nav.nextEntry" text="Next entry"/>" id="ss_next"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"></a></td>
           
@@ -108,7 +108,7 @@ if (false) {
           operation="entry_next"
           actionUrl="true"
           />"
-          onClick="ss_getFirstEntryId('${ss_history_bar_imageId}');return false;" ><img 
+          onClick="ss_getFirstEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
           alt="<ssf:nlt tag="nav.lastEntry" text="Last entry"/>" id="ss_last"
           border="0" src="<html:imagesPath/>pics/sym_s_right_end.gif"></a></td>
 <%
