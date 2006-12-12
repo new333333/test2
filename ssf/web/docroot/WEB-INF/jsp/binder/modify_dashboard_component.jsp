@@ -23,7 +23,11 @@
 <div style="margin:6px;">
 
 <div class="ss_form">
-<form class="ss_form" method="post">
+<form class="ss_form" method="post" 
+  action="<portlet:actionURL>
+      <portlet:param name="action" value="modify_dashboard"/>
+      <portlet:param name="binderId" value="${ssBinder.id}"/>
+      </portlet:actionURL>">
 
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
@@ -41,6 +45,10 @@
 <c:set var="ss_dashboard_config_form_name" value="${renderResponse.namespace}form1" scope="request"/>
 <form method="post" name="${ss_dashboard_config_form_name}" 
   id="${ss_dashboard_config_form_name}" 
+  action="<portlet:actionURL>
+      <portlet:param name="action" value="modify_dashboard"/>
+      <portlet:param name="binderId" value="${ssBinder.id}"/>
+      </portlet:actionURL>"
   onSubmit="return ss_onSubmit(this);">
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
