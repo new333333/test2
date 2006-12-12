@@ -65,7 +65,7 @@
 			</ssf:url>" >
     </c:when>
  	</c:choose>
-    <img src="<ssf:url 
+    <img border="0" src="<ssf:url 
     webPath="viewFile"
     folderId="${fileEntry._binderId}"
     entryId="${fileEntry._docId}" >

@@ -81,10 +81,10 @@
     	onMouseout="ss_hideObj('ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>');"
       >
       <c:if test="${empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>icons/folder.gif"/>
+        <img border="0" src="<html:imagesPath/>icons/folder.gif"/>
       </c:if>
       <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-        <img src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
+        <img border="0" src="<html:imagesPath/>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
       </c:if>
        <div id="ss_folderName_${hitCount}_${ssComponentId}_<portlet:namespace/>" 
        style="position:absolute; display:none;">${ssDashboard.beans[ssComponentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</div></a>

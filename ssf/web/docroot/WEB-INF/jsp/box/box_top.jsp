@@ -99,7 +99,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  </c:if>
 	  <col width="8"/>
 	  <tr>
-	  <td><img 
+	  <td><img border="0"
 	    src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"></td>
 	  <c:if test="<%= showResizeIcon %>">
 		<td class="ss_title_bar" align="left"><div style="display:inline; width:20px; 
@@ -107,13 +107,13 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
             background-image:url(<html:imagesPath/><%= showResizeGif %>);
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
 		  ><span class="ss_box_small_icon" align="left" 
-		  style="cursor:w-resize; width:20px;"><img src="<html:imagesPath/>pics/1pix.gif" 
+		  style="cursor:w-resize; width:20px;"><img border="0" src="<html:imagesPath/>pics/1pix.gif" 
 		  style="margin:4px 20px;"></span></div></td>
 	  </c:if>
 
 	  <c:if test="<%= showMoveIcon %>">
 	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
-	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
+	    style="margin:0px; cursor:move; padding:0px;"><img border="0" style="height:15px;"
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
@@ -122,20 +122,20 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	
 	  <c:if test="<%= showMoveIcon %>">
 	    <td class="ss_title_bar"><div onMouseDown="<%= showMoveRoutine %>"
-	    style="margin:0px; cursor:move; padding:0px;"><img style="height:15px;"
+	    style="margin:0px; cursor:move; padding:0px;"><img border="0" style="height:15px;"
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
 	  <c:if test="<%= showCloseIcon %>">
 		<td class="ss_title_bar" align="right"><span class="ss_box_small_icon"><a 
-			 href="javascript: <%= showCloseRoutine %>;"><img 
+			 href="javascript: <%= showCloseRoutine %>;"><img border="0"
 			 border="0" height="14" hspace="0" 
 			 name="p_<portlet:namespace/>_close" 
 			 src="<html:imagesPath/>box/close_off.gif" 
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
-	  <td><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></td>
+	  <td><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></td>
 	  </tr>
 	  
 	  <tr>

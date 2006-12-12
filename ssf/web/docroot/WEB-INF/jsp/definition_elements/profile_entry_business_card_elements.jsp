@@ -86,7 +86,7 @@
   <c:forEach var="selection" items="${selections}">
 	<div><a href="#" onClick="ss_showThisImage(this);return false;"
 	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture<portlet:namespace/>'); return false;">
-	<img src="<ssf:url 
+	<img border="0" src="<ssf:url 
 	    webPath="viewFile"
 	    folderId="${ssDefinitionEntry.parentBinder.id}"
 	    entryId="${ssDefinitionEntry.id}" >

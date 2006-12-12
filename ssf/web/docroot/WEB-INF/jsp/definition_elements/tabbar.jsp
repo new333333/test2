@@ -29,7 +29,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 	  <table cellspacing="0" cellpadding="0" style="background:transparent;">
 	  <tbody>
 	  <tr>
-	  <td valign="middle" class="ss_tabs_td_left${active}"><img width="15"
+	  <td valign="middle" class="ss_tabs_td_left${active}"><img border="0" width="15"
 	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
 	  <td valign="middle" class="ss_tabs_td${active}" nowrap="true">
 		<a id="ss_tabbar_td${tab.tabId}" style="position:relative; left:-0px;" 
@@ -85,16 +85,18 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		  </c:if>
 		>
 	<c:if test="${!empty tab.icon}">
-		   <img style="position:relative; left:-6px;" src="<html:imagesPath/>${tab.icon}"/>
+		   <img border="0" style="position:relative; left:-6px;" 
+		     src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 		   <span>${tab.title}</span></a>
 	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
-		  <img style="position:relative; left:8px;" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
+		  <img border="0" style="position:relative; left:8px;" 
+		    src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
 		</a>
 	</c:if>
 	  </td>
-	  <td valign="middle" class="ss_tabs_td_right${active}"><img width="15"
+	  <td valign="middle" class="ss_tabs_td_right${active}"><img border="0" width="15"
 	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
 	  </tr>
 	  </tbody>

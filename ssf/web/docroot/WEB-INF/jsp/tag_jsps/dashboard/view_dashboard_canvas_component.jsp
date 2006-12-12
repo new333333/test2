@@ -33,7 +33,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"><div></td>
+><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"><div></td>
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
@@ -69,32 +69,32 @@ if (displayStyle == null || displayStyle.equals("")) {
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="#"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
-				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
 				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="#"
 				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
-				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${ss_displayStyle == 'accessible'}">
 				<li><a href="#"
 				  onClick="ss_submitDashboardChange(this, '_moveUp');return false;"
-				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/up.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/up.gif" 
 				  alt="<ssf:nlt tag="button.moveUp"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_submitDashboardChange(this, '_moveDown');return false;"
-				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  </c:if>
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
-				  ><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
+				  ><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}'); return false;"
-				><img src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			</ul>
 	</form>
@@ -108,7 +108,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></div></td>
+><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></div></td>
 </tr>
 <tr>
 <c:if test="${hideDashboardControls}">
@@ -179,7 +179,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 </tr>
 </table>
 </div>
-<div style="margin:3px; padding:0px;"><img 
+<div style="margin:3px; padding:0px;"><img border="0"
   src="<html:imagesPath/>pics/1pix.gif"></div>
 <!-- End of component -->
 
