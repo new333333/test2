@@ -609,10 +609,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		for (Binder f: folders) {
 			f.setEntryDef(fDef);
 			f.setDefinitionType(fDef.getType());
-			List ds = f.getDefinitions();
-			ds.clear();
-			ds.add(fDef);
-			ds.add(eDef);
+			if (!f.isDefinitionsInherited()) {
+				List ds = f.getDefinitions();
+				ds.clear();
+				ds.add(fDef);
+				ds.add(eDef);
+			}
 		}
 		List<com.sitescape.ef.domain.Entry> entries = getCoreDao().loadObjects("from com.sitescape.ef.domain.FolderEntry where definitionType=10", null);
 		for (com.sitescape.ef.domain.Entry e: entries) {
