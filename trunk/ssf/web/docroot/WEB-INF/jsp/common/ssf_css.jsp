@@ -242,6 +242,11 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
   }
+.ss_style li, .ss_portlet_style li {
+  list-style-image:none;
+  list-style-position:outside;
+  list-style-type:none;
+}
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
 }
@@ -1251,7 +1256,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 /* global toolbar: */
 .ss_global_toolbar{
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
+	background:${ss_style_background_color} url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
 	height:34px;
 	padding-top:4px;
 <c:if test="<%= isIE %>">
