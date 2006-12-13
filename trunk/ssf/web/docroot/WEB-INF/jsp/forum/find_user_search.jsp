@@ -21,7 +21,7 @@
 	      <div align="right">
 	        <table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
 	          <a href="#" onClick="ss_findUserNextPage();return false;">
-	            <ssf:nlt tag="findUser.more"/>
+	            <ssf:nlt tag="general.more"/>
 	          </a>
 	        </td></tr></table>
 	      </div>

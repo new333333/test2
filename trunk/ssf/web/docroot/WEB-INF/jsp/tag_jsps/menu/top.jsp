@@ -26,6 +26,7 @@ renderRequest.setAttribute("ss_menu_tag_name_count", new Integer(nameCount.intVa
 String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String menuClass = ParamUtil.get(request, "menuClass", "ss_toolbar_menu");
 String menuDivWidth = ParamUtil.get(request, "menuWidth", "");
+if (!menuDivWidth.equals("") && menuDivWidth.indexOf("px") == -1) menuDivWidth = menuDivWidth + "px";
 %>
 <c:set var="menuDivWidth" value="<%= menuDivWidth %>"/>
 <div class="<%= menuClass %>" 

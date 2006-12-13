@@ -38,11 +38,10 @@ function checkFilterForm(obj) {
 </script>
 
 <form name="filterData" id="filterData" method="post" 
-    action="<portlet:actionURL>
-	<portlet:param name="action" value="build_filter"/>
-	<portlet:param name="binderId" value="${ssBinder.id}"/>
-	<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-	</portlet:actionURL>" 
+    action="<portlet:actionURL><portlet:param 
+    name="action" value="build_filter"/><portlet:param 
+    name="binderId" value="${ssBinder.id}"/><portlet:param 
+    name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>" 
 	onSubmit="return(checkFilterForm(this))"
 >
 

@@ -2,18 +2,16 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript">
-var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="ssActionPlaceHolder"/>
-		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
-		<portlet:param name="entryId" value="ssEntryIdPlaceHolder"/>
-		<portlet:param name="operation" value="view_entry"/>
-		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
-		</portlet:renderURL>";
-var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized">
-		<portlet:param name="action" value="ssActionPlaceHolder"/>
-		<portlet:param name="binderId" value="ssBinderIdPlaceHolder"/>
-		<portlet:param name="newTab" value="ssNewTabPlaceHolder"/>
-		</portlet:renderURL>";
+var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
+	name="action" value="ssActionPlaceHolder"/><portlet:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
+	name="operation" value="view_entry"/><portlet:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
+var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
+	name="action" value="ssActionPlaceHolder"/><portlet:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
 </script>
 <div style="margin:0px;">
 <%

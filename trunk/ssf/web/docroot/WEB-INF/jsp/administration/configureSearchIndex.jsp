@@ -21,9 +21,11 @@
 
 <table class="ss_style" width="100%"><tr><td>
 
-<form class="ss_style ss_form" action="<portlet:actionURL>
-			  <portlet:param name="action" value="configure_index"/>
-		      </portlet:actionURL>" method="post" name="<portlet:namespace />fm">
+<form class="ss_style ss_form" 
+	action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_index"/></portlet:actionURL>" 
+	method="post" 
+	name="<portlet:namespace />fm">
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">

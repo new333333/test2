@@ -40,10 +40,9 @@
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
 
-    action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_notify"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-		</portlet:actionURL>">
+    action="<portlet:actionURL><portlet:param 
+    	name="action" value="configure_notify"/><portlet:param 
+    	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 
 <span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>${ssBinder.title}</span>
 

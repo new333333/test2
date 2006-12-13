@@ -181,7 +181,7 @@ ss_createOnLoadObj('ss_positionEntryDiv', ss_positionEntryDiv)
 </div>
 </td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<td>
 </td><td>
-<div id="ss_showentrydiv" style="display:block; margin:2; wwidth:400; height:80%;">
+<div id="ss_showentrydiv" style="display:block; margin:2px; wwidth:400px; height:80%;">
   <ssf:box>
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_show_close_icon" value="true" />

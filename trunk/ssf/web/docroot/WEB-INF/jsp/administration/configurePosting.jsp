@@ -23,9 +23,9 @@
 <c:when test="${!empty ssWsDomTree}">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" 
-    id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
-		<portlet:param name="action" value="configure_posting"/>
-		</portlet:actionURL>">
+    id="<portlet:namespace/>fm" method="post" 
+    action="<portlet:actionURL><portlet:param 
+    	name="action" value="configure_posting"/></portlet:actionURL>">
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
@@ -49,10 +49,10 @@
 <jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Folder" scope="request" />
 
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" 
-    id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
-		<portlet:param name="action" value="configure_posting"/>
-		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		</portlet:actionURL>">
+    id="<portlet:namespace/>fm" method="post" 
+    action="<portlet:actionURL><portlet:param 
+    	name="action" value="configure_posting"/><portlet:param 
+    	name="binderId" value="${ssFolder.id}"/></portlet:actionURL>">
 <script type="text/javascript">
 
 var <portlet:namespace/>_alias_count=0;

@@ -1,6 +1,3 @@
-<c:if test="${empty ssf_support_files_loaded}">
-<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
-
 <%
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
@@ -236,6 +233,4 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 }
 </script>
-
-</c:if>
 

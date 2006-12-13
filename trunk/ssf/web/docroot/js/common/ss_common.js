@@ -894,17 +894,17 @@ function ss_getObjectTopAbs(obj) {
 }
 
 function ss_setObjectWidth(obj, width) {
-	if (parseInt(width) > 0) obj.style.width = parseInt(width) + 'px';
+	if (obj && parseInt(width) > 0) obj.style.width = parseInt(width) + 'px';
 
     //Call the routines that want to be called on layout changes
-    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (obj && obj.style && !obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectHeight(obj, height) {
-    if (parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
+    if (obj && parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
     //Call the routines that want to be called on layout changes
-    if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
+    if (obj && obj.style && !obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectLeft(obj, value) {
@@ -2444,6 +2444,21 @@ function ss_hideDashboardMenu(obj) {
 	ss_hideDiv(formObj.parentNode.id)
 }
 
+function ss_moreDashboardSearchResults(binderId, pageNumber, divId, componentId) {
+	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
+	url += "\&operation=search_more";
+	url += "\&operation2="+componentId;
+	url += "\&divId="+divId;
+	url += "\&pageNumber="+pageNumber;
+	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
+}
+function ss_moreDashboardSearchResultsCallback(s, divId) {
+	var divObj = document.getElementById(divId);
+	divObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
 
 function ss_enableFavoritesList(id) {
 	ss_favoritesListArray[ss_favoritesListCount] = id;
@@ -2883,7 +2898,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     obj = self.document.getElementById(objId)
     if (obj == null) alert('Could not find '+objId)
     m += '<div style="position: relative; background: #666; margin: 4px;">'
-    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1; border: 1px solid #666666; background-color:white">'
+    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
 
     m += '<table class="ss_style ss_graymenu" border="0" cellspacing="0" cellpadding="3">';
     m += '<tr>';

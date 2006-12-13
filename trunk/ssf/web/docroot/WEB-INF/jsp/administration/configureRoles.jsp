@@ -26,9 +26,9 @@
 <p><c:out value="${ssException}"/></p>
 </c:if>
 <ssf:expandableArea title="<%= NLT.get("administration.configure_roles.add") %>">
-<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_roles"/>
-		</portlet:actionURL>">
+<form class="ss_style ss_form" method="post" 
+	action="<portlet:actionURL><portlet:param 
+	name="action" value="configure_roles"/></portlet:actionURL>">
 		
 	<span><b><ssf:nlt tag="administration.configure_roles.name" text="Name"/></b></span>
 	<input type="text" class="ss_text" size="70" name="roleName"><br>
@@ -50,9 +50,9 @@
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.ef.security.function.Function" />
 <ssf:expandableArea title="<%= function.getName() %>">
-<form class="ss_style ss_form" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_roles"/>
-		</portlet:actionURL>">
+<form class="ss_style ss_form" method="post" 
+	action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_roles"/></portlet:actionURL>">
 
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">
 		<c:set var="checked" value=""/>
@@ -80,8 +80,7 @@
 <br/>
 
 <form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 
-	action="<portlet:renderURL windowState="normal" portletMode="view">
-		</portlet:renderURL>">
+	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>">
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>

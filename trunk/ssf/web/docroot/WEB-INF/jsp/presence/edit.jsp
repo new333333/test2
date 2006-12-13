@@ -27,9 +27,8 @@
     text="Buddies"/></legend>
  <form class="ss_style" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure"/>
-		  </portlet:actionURL>">
+  action="<portlet:actionURL><portlet:param 
+  	name="action" value="configure"/></portlet:actionURL>">
 
 <%
 /* Liferay handles this already

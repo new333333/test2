@@ -20,9 +20,9 @@
 <div class="ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>
 
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_ldap"/>
-		</portlet:actionURL>">
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" 
+  action="<portlet:actionURL><portlet:param 
+  name="action" value="configure_ldap"/></portlet:actionURL>">
 <div class="ss_buttonBarRight">
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">

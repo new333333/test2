@@ -202,7 +202,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
   style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;">
 <table cellspacing="0" cellpadding="2" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
-<td class="<%= rowStyle %>" ><div style="position:absolute; left:-9; top:0;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
+<td class="<%= rowStyle %>" ><div style="position:absolute; left:-9px; top:0px;"><a id="drag<%= String.valueOf(iCol + 1) %>" style="text-decoration:none;"
   onMousedown="ss_slidingTableStartDragCol(this, 'col<%= String.valueOf(iCol + 1) %>');"
   ><span class="<%= rowStyle %>" 
   style="cursor:w-resize; cursor:col-resize; color:darkgreen; line-height:15px;

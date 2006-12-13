@@ -62,7 +62,7 @@
 	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
 <div id="ss_folder_table" 
-  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>;
+  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>px;
   margin:2px; border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
 <%

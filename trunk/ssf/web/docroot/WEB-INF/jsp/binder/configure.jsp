@@ -47,11 +47,10 @@
 
 <form name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL>
-		  <portlet:param name="action" value="configure_forum"/>
-		  <portlet:param name="binderId" value="${ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-		  </portlet:actionURL>">
+  action="<portlet:actionURL><portlet:param 
+  		name="action" value="configure_forum"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/><portlet:param 
+  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 <ssf:nlt tag="binder.configure.definitions.inherit"
  text="Inherit definitions :"/>
 <br>
@@ -65,11 +64,10 @@
 </fieldset>
 <br>
 </c:if>
-<form method="post" action="<portlet:actionURL>
-					<portlet:param name="action" value="configure_forum"/>
-					<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
-					<portlet:param name="binderId" value="${ssBinder.id}"/>
-					</portlet:actionURL>" >
+<form method="post" action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_forum"/><portlet:param 
+		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
+		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" >
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">

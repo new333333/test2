@@ -60,10 +60,9 @@ function <portlet:namespace/>_onsub(obj) {
 <c:if test="${!empty ssBinderConfigs}">
 <ssf:expandableArea title='<%= NLT.get("administration.configure_cfg.modify") %>'>
 <c:forEach var="cfg" items="${ssBinderConfigs}">
-<a href="<portlet:renderURL>
-			<portlet:param name="action" value="configure_configuration"/>
-			<portlet:param name="objectId" value="${cfg.id}"/>
-			</portlet:renderURL>"><ssf:nlt tag="${cfg.title}" checkIfTag="true"/></a>
+<a href="<portlet:renderURL><portlet:param 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="objectId" value="${cfg.id}"/></portlet:renderURL>"><ssf:nlt tag="${cfg.title}" checkIfTag="true"/></a>
 <br/>
 </c:forEach>
 </ssf:expandableArea>
@@ -71,8 +70,7 @@ function <portlet:namespace/>_onsub(obj) {
 <br/>
 
 <form class="ss_style ss_form" name="<portlet:namespace/>rolesForm" method="post" 
-	action="<portlet:renderURL windowState="normal" portletMode="view">
-		</portlet:renderURL>">
+	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>">
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -80,10 +78,9 @@ function <portlet:namespace/>_onsub(obj) {
 <c:if test="${!empty ssBinderConfig}">
 <c:set var="disabled" value=""/>
 
-<form method="post" action="<portlet:actionURL>
-			<portlet:param name="action" value="configure_configuration"/>
-			<portlet:param name="objectId" value="${ssBinderConfig.id}"/>
-			</portlet:actionURL>" >
+<form method="post" action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_configuration"/><portlet:param 
+		name="objectId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
