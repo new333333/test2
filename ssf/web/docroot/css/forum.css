@@ -670,7 +670,7 @@ TD.ss_cpDayColumnHeader
 	{
 	text-align:right;
 	border:solid thin #cecece;
-	border-width:0 0 1 0;
+	border-width:0px 0px 1px 0px;
 	}
 .ss_cpCurrentMonthDate,
 .ss_cpOtherMonthDate,
@@ -705,19 +705,19 @@ TD.ss_cpCurrentDate
 	{
 	color:#000000;
 	background-color: #cecece;
-	border-width:1;
+	border-width:1px;
 	border:solid thin #000000;
 	}
 TD.ss_cpCurrentDateDisabled
 	{
-	border-width:1;
+	border-width:1px;
 	border:solid thin #FFAAAA;
 	}
 TD.ss_cpTodayText,
 TD.ss_cpTodayTextDisabled
 	{
 	border:solid thin #6677DD;
-	border-width:1 0 0 0;
+	border-width:1px 0px 0px 0px;
 	}
 A.ss_cpTodayText,
 SPAN.ss_cpTodayTextDisabled
