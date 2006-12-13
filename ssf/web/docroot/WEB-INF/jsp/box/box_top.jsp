@@ -41,7 +41,11 @@ String title = ParamUtil.get(request, "box_title", "");
 int iWidth = (int)ParamUtil.get(request, "box_width", 600);
 String width = Integer.toString(iWidth);
 //If width is set to 0, then use "100% instead
-if (iWidth == 0) width = "100%";
+if (iWidth == 0) {
+	width = "100%";
+} else {
+	width = width + "px";
+}
 
 String boxClass = ParamUtil.get(request, "box_class", "ss_box_top_rounded");
 String boxStyle = ParamUtil.get(request, "box_style", "");

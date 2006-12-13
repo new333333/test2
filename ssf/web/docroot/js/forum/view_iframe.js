@@ -135,6 +135,7 @@ var ss_divDragSavedMouseUp = '';
 var ss_divDragSavedMouseOut = '';
 
 function ss_startDragDiv(type) {
+	ss_debug('start drag')
 	if (ss_draggingDiv) return;
 	ss_divDragMoveType = type;
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(null);
@@ -211,7 +212,7 @@ function ss_divDrag(evt) {
     		dObjTop += parseInt(self.document.body.scrollTop)
     		dObjLeft += parseInt(self.document.body.scrollLeft)
         }
-        //ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
+        ss_debug('left = ' + dObjLeft + ', top = '+dObjTop)
         if (dObjLeft <= 0) dObjLeft = 1;
         if (dObjTop <= 0) dObjTop = 1;
         if (ss_divDragMoveType == 'resize') {

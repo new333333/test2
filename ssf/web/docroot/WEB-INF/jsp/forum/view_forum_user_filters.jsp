@@ -14,7 +14,7 @@
 		renderRequest.setAttribute("ss_searchFilters", searchFilters);
 	}
 %>
-<table class="ss_actions_bar_background">
+<table cellspacing="0" cellpadding="0" class="ss_actions_bar_background">
 <tr>
 <td valign="top"><span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span></td>
 <td valign="top"><form class="ss_compact ss_actions_bar_background" 
