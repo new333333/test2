@@ -53,6 +53,7 @@ import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.util.SPropsUtil;
 
 /**
  * @author Peter Hurley
@@ -128,8 +129,27 @@ public class ListFolderController extends  SAbstractController {
 			String folderSortBy = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_BY, "");
 			String folderSortDescend = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_DESCEND, "");
 			
+			//Saving the Sort Order information in the User Properties
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_BY, folderSortBy);
 			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.SEARCH_SORT_DESCEND, folderSortDescend);
+
+			//Saving the Sort Order information in the Tab - Reason for doing it here is because if the Tab Sort Order has
+			//already been set and if the user changes the sort order, you want the new Sort Order to take precendence over the
+			//sort order set in the tab. So setting the tab sort order here will take care of the correct sort order being chosen 
+			Tabs tabs = new Tabs(request);
+			Map tab = tabs.getTab(tabs.getCurrentTab());
+			tab.put(Tabs.SORTBY, new String(folderSortBy));
+			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
+		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
+			
+			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+			Tabs tabs = new Tabs(request);
+			
+			Binder binder = getBinderModule().getBinder(binderId);
+			Map options = new HashMap();
+			options.put(Tabs.PAGE, new Integer(pageStartIndex));
+			
+			int intTab = tabs.setTab(binder, options);
 		}
 
 		response.setRenderParameters(request.getParameterMap());
@@ -174,34 +194,42 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 
-
 		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		Binder binder = getBinderModule().getBinder(binderId);
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-
+		
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		
+		//What do the newTab values mean?
+		//newTab == 1 means if the Tab already exists use it, if not create another one
+		//newTab == 2 means create a new Tab always
 		if (newTab.equals("1")) {
-			tabs.setCurrentTab(tabs.findTab(binder));
+			boolean blnClearTab = true;
+			tabs.setCurrentTab(tabs.findTab(binder, blnClearTab));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(binder));
 		} else if (tabId != null) {
+			//Do not set the page number to zero
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {
 			//Don't overwrite a search tab
 			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-				tabs.setCurrentTab(tabs.findTab(binder));
+				boolean blnClearTab = true;
+				tabs.setCurrentTab(tabs.findTab(binder, blnClearTab));
+				
 			} else {
-				tabs.setCurrentTab(tabs.setTab(binder));
+				boolean blnClearTab = true;
+				tabs.setCurrentTab(tabs.setTab(binder, blnClearTab));
 			}
 		}
 		model.put(WebKeys.TABS, tabs.getTabs());
-
+		
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -214,36 +242,85 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
 
+		Map options = new HashMap();		
+		
+		//Determine the Search Filter
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;
 		if (searchFilterName != null && !searchFilterName.equals("")) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 			searchFilter = (Document)searchFilters.get(searchFilterName);
 		}
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		
 		//See if the user has selected a specific view to use
         UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
+
+		//Determine the Folder Start Index
+		Map tabOptions = tabs.getTab(tabs.getCurrentTab());		
+		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
+		if (tabPageNumber == null) tabPageNumber = new Integer(0);
+		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		
-		String searchSortBy = (String)userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
-		String searchSortDescend = (String)userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
-		
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		
+		//Determine the Records Per Page		
+		String searchMaxHits = SPropsUtil.getString("folder.records.listed");
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
+
+		//Start - Determine the Sort Order
+		//First Check the Tab Object, see if it has the Sort Order Information
+		//If it is not there, Check the User Folder Properties for the Sort Order Information
+		//Get Sort Informtion from Tab Level
+		String searchSortBy  = (String) tabOptions.get(Tabs.SORTBY);
+		String searchSortDescend  = (String) tabOptions.get(Tabs.SORTDESCEND);
+		//Trying to get Sort Information from the User Folder Properties, since Sort information is not available at Tab Level 
+		if (searchSortBy == null || searchSortBy.equals("")) {
+			searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+			searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+		}
+		//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
+		//If not, go with the Default Sort Properties 
 		if (searchSortBy != null && !searchSortBy.equals("")) {
 			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
 			if (("true").equalsIgnoreCase(searchSortDescend)) {
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-			}
-			else {
+			} else {
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			}
 		}
+		//Checking the Sort Order that has been set. If not using the Default Sort Order
+		String viewType = "";
+		Element elementView = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (elementView != null) {
+			Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+			if (viewElement != null)
+				viewType = viewElement.attributeValue("value", "");
+		}
+		if (viewType.equals("blog")) {
+			//This is a blog view, set the default sort order
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
+				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_DATE_FIELD);
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+
+		} else {
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
+				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		}
+		//Saving the Sort Option in the Tab
+		tabOptions.put(Tabs.SORTBY, (String) options.get(ObjectKeys.SEARCH_SORT_BY));
+		tabOptions.put(Tabs.SORTDESCEND, ((Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND)).toString());
+		//End - Determine the Sort Order
 
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
+		
+		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
+		model.put(WebKeys.URL_TAB_ID, currentTabId);
 			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -280,19 +357,8 @@ public class ListFolderController extends  SAbstractController {
 				viewType = viewElement.attributeValue("value", "");
 		}
 		if (viewType.equals("blog")) {
-			//This is a blog view, set the default sort order
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
-				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_DATE_FIELD);
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
-
 		} else {
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
-				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getEntries(folderId, options);
 		}
 
@@ -303,6 +369,30 @@ public class ListFolderController extends  SAbstractController {
 		
 		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
 		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
+		
+		int totalRecordsFound = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+		//Start Point of the Record
+		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+		int goBackSoManyPages = 3;
+		int goFrontSoManyPages = 3;
+		
+		HashMap pagingInfo = getPagingLinks(totalRecordsFound, searchOffset, searchPageIncrement, 
+				goBackSoManyPages, goFrontSoManyPages);
+		
+		HashMap prevPage = (HashMap) pagingInfo.get(WebKeys.PAGE_PREVIOUS);
+		ArrayList pageNumbers = (ArrayList) pagingInfo.get(WebKeys.PAGE_NUMBERS);
+		HashMap nextPage = (HashMap) pagingInfo.get(WebKeys.PAGE_NEXT);
+		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
+		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
+		
+		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
+		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
+		model.put(WebKeys.PAGE_NEXT, nextPage);
+		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
+		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
+		model.put(WebKeys.PAGE_TOTAL_RECORDS, ""+totalRecordsFound);
 		
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);
@@ -335,6 +425,75 @@ public class ListFolderController extends  SAbstractController {
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp(this);
 	}  
+
+	//This method returns a HashMap with Keys referring to the Previous Page Keys,
+	//Paging Number related Page Keys and the Next Page Keys.
+	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
+			int intSearchPageIncrement, int intGoBackSoManyPages, int intGoFrontSoManyPages) {
+		
+		HashMap<String, Object> hmRet = new HashMap<String, Object>();
+		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
+		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
+
+		//Adding Prev Page Link
+		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
+		HashMap<String, Object> hmRetPrev = new HashMap<String, Object>();
+		hmRetPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "<<");
+		hmRetPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+		if (intSearchOffset == 0) {
+			hmRetPrev.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_PREVIOUS, hmRetPrev);
+
+		//Adding Links before Current Display
+		if (intSearchOffset != 0) {
+			//Code for generating the Numeric Paging Information previous to offset			
+			int startPrevDisplayFrom = currentDisplayValue - intGoBackSoManyPages;
+			
+			int wentBackSoManyPages = intGoBackSoManyPages + 1;
+			for (int i = startPrevDisplayFrom; i < currentDisplayValue; i++) {
+				wentBackSoManyPages--;
+				if (i < 1) continue;
+				prevInternalValue = (intSearchOffset - (intSearchPageIncrement * wentBackSoManyPages));
+				HashMap<String, Object> hmPrev = new HashMap<String, Object>();
+				hmPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "" + i);
+				hmPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+				pagingInfo.add(hmPrev);
+			}
+		}
+		
+		//Adding Links after Current Display
+		for (int i = 0; i < intGoFrontSoManyPages; i++) {
+			int nextInternalValue = intSearchOffset + (intSearchPageIncrement * i);
+			int nextDisplayValue = (nextInternalValue + intSearchPageIncrement) / intSearchPageIncrement;  
+			if ( !(nextInternalValue >= intTotalRecordsFound) ) {
+				HashMap<String, Object> hmNext = new HashMap<String, Object>();
+				hmNext.put(WebKeys.PAGE_DISPLAY_VALUE, "" + nextDisplayValue);
+				hmNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+				if (nextDisplayValue == currentDisplayValue) hmNext.put(WebKeys.PAGE_IS_CURRENT, new Boolean(true));
+				pagingInfo.add(hmNext);
+			}
+			else break;
+		}
+		hmRet.put(WebKeys.PAGE_NUMBERS, pagingInfo);
+		
+		//Adding Next Page Link
+		int nextInternalValue = intSearchOffset + intSearchPageIncrement;
+		HashMap<String, Object> hmRetNext = new HashMap<String, Object>();
+		hmRetNext.put(WebKeys.PAGE_DISPLAY_VALUE, ">>");
+		hmRetNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+		
+		if ( (nextInternalValue >= intTotalRecordsFound) ) {
+			hmRetNext.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
+		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
+		
+		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
+		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
+		
+		return hmRet;
+	}
 	
 	protected void buildFolderToolbars(RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model) {
