@@ -449,6 +449,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         Map retMap = new HashMap();
         retMap.put(WebKeys.FOLDER_ENTRIES,entries);
         retMap.put(WebKeys.ENTRY_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        retMap.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        
     	return retMap; 
 	}	
 	
