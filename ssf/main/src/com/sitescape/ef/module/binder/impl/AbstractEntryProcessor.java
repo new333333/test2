@@ -744,6 +744,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         model.put(ObjectKeys.BINDER, binder);      
         model.put(ObjectKeys.SEARCH_ENTRIES, childEntries);
         model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        //Total number of results found
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        //Total number of results returned
+        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()))
         return model;
    }
  
