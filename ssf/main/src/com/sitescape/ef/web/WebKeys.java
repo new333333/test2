@@ -177,6 +177,11 @@ public class WebKeys {
 	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
+	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
+	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
+	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
+	
+	
 	
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";
@@ -240,6 +245,7 @@ public class WebKeys {
     public static final String ENTRY="ssEntry";
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
+    public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
@@ -375,9 +381,23 @@ public class WebKeys {
     public static final String WORKSPACE_DOM_TREE_BINDER_ID="ssWsDomTreeBinderId";
     public static final String WORKSPACES="ssWorkspaces";
     public static final String ZONE_NAME = "com.sitescape.zonename";
+
     public static final String FOLDER_SORT_BY = "ssFolderSortBy";
     public static final String FOLDER_SORT_DESCEND = "ssFolderSortDescend";
+    public static final String FOLDER_PAGE_INFO = "ssFolderPageInfo";
 
+    public static final String PAGE_START_INDEX = "ssPageStartIndex";
+    public static final String PAGE_END_INDEX = "ssPageEndIndex";
+    public static final String PAGE_TOTAL_RECORDS = "ssTotalRecords";
+    public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
+	public static final String PAGE_INTERNAL_VALUE = "ssPageInternalValue";
+	public static final String PAGE_NO_LINK = "ssPageNoLink";
+	public static final String PAGE_IS_CURRENT = "ssPageIsCurrent";
+	public static final String PAGE_PREVIOUS = "ssPagePrevious";
+	public static final String PAGE_NEXT = "ssPageNext";
+	public static final String PAGE_NUMBERS = "ssPageNumbers";
+
+    
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
