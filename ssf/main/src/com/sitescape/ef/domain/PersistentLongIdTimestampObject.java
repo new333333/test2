@@ -21,7 +21,7 @@ public class PersistentLongIdTimestampObject extends PersistentLongIdObject
     protected HistoryStamp creation;
     protected HistoryStamp modification;
     /**
-     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="creation_" node="creation"
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="creation_" 
      */
     public HistoryStamp getCreation() {
         return this.creation;
@@ -30,7 +30,7 @@ public class PersistentLongIdTimestampObject extends PersistentLongIdObject
         this.creation = stamp;
     }
     /**
-     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="modification_" node="modification"
+     * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="modification_"
      */
     public HistoryStamp getModification() {
         return this.modification;

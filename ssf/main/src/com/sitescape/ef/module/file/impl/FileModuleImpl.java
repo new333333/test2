@@ -32,13 +32,13 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
@@ -418,14 +418,19 @@ public class FileModuleImpl implements FileModule {
     		try {
     			// Unlike deleteFileInternal, writeFileTransactional is transactional.
     			// See the comment in writeFileMetadataTransactional for reason. 
-    			this.writeFileTransactional(binder, entry, fui, errors);
-    			//only advance on success
-    			++i;
+    			if (this.writeFileTransactional(binder, entry, fui, errors)) {
+    				//	only advance on success
+    				++i;
+    			} else {//error handled
+	    			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
+    				fileUploadItems.remove(i);
+    			}
     		} catch (TitleException lx) {
     			//pass up
     			throw lx;
     		}
     		catch(Exception e) {
+    			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
     			logger.error("Error writing file " + fui.getOriginalFilename(), e);
     			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
@@ -479,11 +484,19 @@ public class FileModuleImpl implements FileModule {
 					}
     			}
     			if(errors != null) {
+        			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
     				errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.PROBLEM_FILTERING, e));
     			}
     			else {
+    				//clean all newly registered titles out
+   					for (int j=0; j< fileUploadItems.size(); ++j) {
+   						FileUploadItem fu = (FileUploadItem) fileUploadItems.get(j);
+   		       			if (fu.isRegistered()) { 
+ 	    					getCoreDao().unRegisterLibraryEntry(binder, fu.getOriginalFilename());
+   						}  		       		     	
+    				}
     				throw e;
     			}
     		}
@@ -586,19 +599,6 @@ public class FileModuleImpl implements FileModule {
 		closeExpiredLocksTransactional(binder, entity, true);
 	}
 
-	public FolderEntry findFileFolderEntry(Binder fileFolder, String title) {
-		Object[] cfValues = new Object[]{fileFolder, new Integer(1), title.toLowerCase()};
-		String[] cfAttrs = new String[]{"parentBinder", "HKey.level", "lower(title)"};
-		
-    	FilterControls filter = new FilterControls(cfAttrs, cfValues);
-    	
-	   	List result = getCoreDao().loadObjectsCacheable(FolderEntry.class, filter);
-   		if (!result.isEmpty()) {
-   			return (FolderEntry)result.get(0);
-   		}
-   		
-   		return null;
-	}
 	
 	public void renameFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, String newName) 
@@ -608,6 +608,7 @@ public class FileModuleImpl implements FileModule {
 				fa.getFileItem().getName(), newName);
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
+		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, fa.getFileItem().getName(), newName);
 		fa.getFileItem().setName(newName);
 		
 		for(Iterator i = fa.getFileVersionsUnsorted().iterator(); i.hasNext();) {
@@ -761,7 +762,10 @@ public class FileModuleImpl implements FileModule {
 		}
 
 		// Remove metadata
-		if (deleteAttachment) entry.removeAttachment(fAtt);
+		if (deleteAttachment) {
+			entry.removeAttachment(fAtt);
+			if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().unRegisterLibraryEntry(binder, fAtt.getFileItem().getName());
+		}
 	}
 
 	private void move(Binder binder, FileUploadItem fui) throws IOException {
@@ -791,7 +795,7 @@ public class FileModuleImpl implements FileModule {
 	private void writeFileMetadataTransactional(final Binder binder, final DefinableEntity entry, 
     		final FileUploadItem fui, final FileAttachment fAtt, final boolean isNew) {	
     	
-        getTransactionTemplate().execute(new TransactionCallback() {
+		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		if(isNew) {
             		// Important: Since file attachment is stored into custom 
@@ -803,7 +807,6 @@ public class FileModuleImpl implements FileModule {
         			// transaction to the very end of the operation.  
             		getCoreDao().save(fAtt);    		
             	}
-
             	if (fui.getType() == FileUploadItem.TYPE_FILE) {
         			// Find custom attribute by the attribute name. 
         			Set fAtts = null;
@@ -830,20 +833,6 @@ public class FileModuleImpl implements FileModule {
         			}
         		}  else if (fui.getType() == FileUploadItem.TYPE_TITLE) {
         			String title = fui.getOriginalFilename();
-        			/* The following title validation is commented out. Instead,
-        			 * the checking is performed earlier in the cycle _before_
-        			 * the enclosing entry is created or updated in the database
-        			 * (see *_filterFiles methods in DefaultFileFolderCoreProcessor).
-        			 * This is to prevent the situation where a bogus/broken entry 
-        			 * with empty title is created and remain in the database upon
-        			 * title validation failure. 
-        			// name must be unique
-        			if (!title.equalsIgnoreCase(entry.getTitle())) {
-        				if (binder instanceof Folder) 
-        					getFolderDao().validateTitle((Folder)binder, title);
-        				else
-        					getCoreDao().validateTitle(binder, title);
-        			}*/    			
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
         			if (ca != null) {
         				//exist, move to attachments
@@ -891,7 +880,11 @@ public class FileModuleImpl implements FileModule {
         });
 	}*/
 	 
-    private void writeFileTransactional(Binder binder, DefinableEntity entry, 
+	/**
+	 * return true if primary file successfull written
+	 * return false or throw exception if either primary not written or metadata update failed.
+	 */
+    private boolean writeFileTransactional(Binder binder, DefinableEntity entry, 
     		FileUploadItem fui, FilesErrors errors) {
     	
     	/// Work Flow:
@@ -917,7 +910,15 @@ public class FileModuleImpl implements FileModule {
 		// In other words, regardless of the data elements used for accessing
 		// the file, the files are treated identical globally within a single
 		// Entry instance as long as their file names are identical. 
-    	FileAttachment fAtt = entry.getFileAttachment(repositoryName, relativeFilePath);
+		// flatten repository namespace to reduce confusion
+//    	FileAttachment fAtt = entry.getFileAttachment(repositoryName, relativeFilePath);
+		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
+    	if ((fAtt != null) && !repositoryName.equals(fAtt.getRepositoryName())) {
+			errors.addProblem(new FilesErrors.Problem
+					(fAtt.getRepositoryName(), relativeFilePath, 
+							FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(relativeFilePath)));
+			return false;
+    	}
 
     	boolean isNew = false;
     	
@@ -953,7 +954,7 @@ public class FileModuleImpl implements FileModule {
 	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
-	    			return;
+	    			return false;
 	    		}		
 
 	    		// Scaled file
@@ -1032,7 +1033,7 @@ public class FileModuleImpl implements FileModule {
 	    			errors.addProblem(new FilesErrors.Problem
 	    					(repositoryName, relativeFilePath, 
 	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
-	    			return;
+	    			return false;
 	    		}
 	    	}
     	}
@@ -1053,6 +1054,7 @@ public class FileModuleImpl implements FileModule {
     	// using JTA. But that's not always available, and this version of
     	// the system does not try to address that. 
     	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
+    	return true;
     }
     
     private File getDirectlyAccessibleThumbnailFile(DefinableEntity entry, String primaryFileName) {
@@ -1068,7 +1070,9 @@ public class FileModuleImpl implements FileModule {
 		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
-    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryName(), relativeFilePath);
+		// flatten repository namespace to reduce confusion
+//    	FileAttachment fAtt = entry.getFileAttachment(fui.getRepositoryName(), relativeFilePath);
+    	FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
     	
     	// Before checking the lock, we must make sure that the lock state is
     	// up-to-date.

@@ -20,6 +20,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.InternalException;
+import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -29,6 +30,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -811,14 +813,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
     public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
 	throws AccessControlException {
-    	FolderEntry entry = getFileModule().findFileFolderEntry(fileFolder, title);
-
-    	if(entry == null)
+       	try {
+    		Long id = getCoreDao().findLibraryEntryId(fileFolder.getId(), title);
+    		return getEntry(fileFolder.getId(), id);
+    	} catch (NoObjectByTheIdException no) {
     		return null;
-    	
-        checkAccess(entry, "getEntry");
-
-    	return entry;
+    	}
     }
  
     public Set<String> getSubfoldersTitles(Folder folder) {

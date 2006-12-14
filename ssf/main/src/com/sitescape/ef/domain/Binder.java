@@ -47,6 +47,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     // than the binder's .  This does not apply to sub-binders.
     protected boolean widenRead=false;
     protected boolean widenModify=false;
+    protected boolean library=false;
     protected boolean widenDelete=false;
     
     /**
@@ -57,6 +58,15 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public void setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
+    }
+    /**
+     * @hibernate.property
+     */
+    public boolean isLibrary() {
+    	return library;
+    }
+    public void setLibrary(boolean library) {
+    	this.library = library;
     }
     /**
      * Internal id used to identify default binders.  This id plus
@@ -126,7 +136,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     
     /**
-     * @hibernate.property length="16" insert="false" update="false" node="type"
+     * @hibernate.property length="16" insert="false" update="false"
      *
      */
     public String getType() {
@@ -202,7 +212,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 
     
     /**
-     * hibernate.property node="upgradeVersion"
+     * hibernate.property 
      */
     public Integer getUpgradeVersion() {
         return this.upgradeVersion;
@@ -226,7 +236,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         return this.getParentBinder();
     }
 	/**
-	 * @hibernate.property not-null="true" node="functionMembershipInherited"
+	 * @hibernate.property not-null="true"
 	 * @return
 	 */
     public boolean isFunctionMembershipInherited() {

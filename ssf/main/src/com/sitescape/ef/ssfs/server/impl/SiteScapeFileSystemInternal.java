@@ -682,8 +682,8 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
 			if (itemType.equals(CrossContextConstants.URI_ITEM_TYPE_ATTACH)) {
 				// Use FileAttachment directly
-				FileAttachment fa = entry
-						.getFileAttachment(reposName, filePath);
+//				FileAttachment fa = entry.getFileAttachment(reposName, filePath);
+				FileAttachment fa = entry.getFileAttachment(filePath);
 				if (fa == null)
 					return false; // No matching file
 				else {

@@ -27,7 +27,6 @@ import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
@@ -35,11 +34,9 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
@@ -65,7 +62,6 @@ import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.util.Validator;
 /**
  *
  * Add entries to the binder
@@ -89,11 +85,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-
+       
         try {
-            sp.reset("addEntry_filterFiles").begin();
-        	FilesErrors filesErrors = addEntry_filterFiles(binder, def, entryData, fileUploadItems);
-        	sp.end().print();
         	
         	sp.reset("addEntry_create").begin();
         	final Entry entry = addEntry_create(def, clazz);
@@ -113,7 +106,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	});
         	sp.end().print();
-        
+           	// We must save the entry before processing files because it makes use
+        	// of the persistent id of the entry. 
+            sp.reset("addEntry_filterFiles").begin();
+        	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+        	sp.end().print();
+
         	sp.reset("addEntry_processFiles").begin();
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
@@ -147,28 +145,41 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
    
-    protected FilesErrors addEntry_filterFiles(Binder binder, Definition def, 
-    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	FilesErrors errors = getFileModule().filterFiles(binder, fileUploadItems);
-		
-		// Make sure the file name is unique if requested		
-    	for (int i=0; i<fileUploadItems.size(); ) {
-    		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
-    		if (fui.isUniqueName()) {
+    protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
+    		Map entryData, List fileUploadItems) throws FilterException {
+   		FilesErrors nameErrors = new FilesErrors();
+   		//name must be unique within Entry
+   		for (int i=0; i<fileUploadItems.size(); ++i) {
+			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
+			for (int j=i+1; j<fileUploadItems.size(); ) {
+    			FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
+    			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
+    				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
+    				fileUploadItems.remove(j);
+    				nameErrors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
+       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui1.getOriginalFilename())));
+    			} else ++j;
+			}
+   		}
+    			 
+   		if (binder.isLibrary()) {
+    		// 	Make sure the file name is unique if requested		
+    		for (int i=0; i<fileUploadItems.size(); ) {
+    			FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
     			try {
-    				getCoreDao().validateTitle(binder, fui.getOriginalFilename());
+    				getCoreDao().registerLibraryEntry(binder, entry, fui.getOriginalFilename());
+    				fui.setRegistered(true);
     				++i;
     			} catch (TitleException te) {
     				fileUploadItems.remove(i);
-    				errors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
-    					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
+    				nameErrors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
+       	   					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
     			}
-    		} else {
-    			++i;
     		}
-    	}
-    	
-    	return errors;
+   		}
+   		FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+    	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	return filterErrors;
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
@@ -285,9 +296,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    
 	    try {	    	
-	    	sp.reset("modifyEntry_filterFiles").begin();
-	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
-	    	sp.end().print();
 	    
 	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
@@ -303,7 +311,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		}});
 	    	sp.end().print();
 	    	
-	    	sp.reset("modifyEntry_processFiles").begin();
+	    	sp.reset("modifyEntry_filterFiles").begin();
+	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+	    	sp.end().print();
+
+           	sp.reset("modifyEntry_processFiles").begin();
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
 	    	sp.end().print();
 
@@ -341,31 +353,48 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	FilesErrors errors = getFileModule().filterFiles(binder, fileUploadItems);
-    	
-		// Make sure the file name is unique if requested		
-    	for (int i=0; i<fileUploadItems.size();) {
+   		FilesErrors nameErrors = new FilesErrors();
+   	 	//name must be unique within Entry
+   		for (int i=0; i<fileUploadItems.size(); ++i) {
+			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
+			for (int j=i+1; j<fileUploadItems.size(); ) {
+    			FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
+    			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
+    				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
+    				fileUploadItems.remove(j);
+    				nameErrors.addProblem(new FilesErrors.Problem(fui1.getRepositoryName(), 
+       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui1.getOriginalFilename())));
+    			} else ++j;
+			}
+   		}
+    	// 	Make sure the file name is unique if requested		
+    	for (int i=0; i<fileUploadItems.size(); ) {
     		FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
-    		if (fui.isUniqueName()) {
-    			String newTitle = fui.getOriginalFilename();
-    			try {
-    				if (entry.getFileAttachment(fui.getRepositoryName(), newTitle) != null) {
-    					getCoreDao().validateTitle(binder, newTitle);
-    				}
-    				++i;
-    			} catch (TitleException te) {
-    				fileUploadItems.remove(i);
-    				errors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
-    					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
-    			}
-       		} else {
-    			++i;
+       		String name = fui.getOriginalFilename();
+    		try {
+    			//check if name exists
+    			FileAttachment fa = entry.getFileAttachment(name);
+    			if (fa == null) {
+    		   		if (binder.isLibrary()) {
+    		   			getCoreDao().registerLibraryEntry(binder, entry, fui.getOriginalFilename());
+    		   			fui.setRegistered(true);
+    		   		}
+    		   		++i;
+       			} else if (!fui.getRepositoryName().equals(fa.getRepositoryName())) {
+       	   			fileUploadItems.remove(i);
+       	   			nameErrors.addProblem(new FilesErrors.Problem(fa.getRepositoryName(), 
+       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, new TitleException(fui.getOriginalFilename())));
+       			} else 	++i;      				
+    		} catch (TitleException te) {
+    			fileUploadItems.remove(i);
+    			nameErrors.addProblem(new FilesErrors.Problem(fui.getRepositoryName(), 
+       	  					fui.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS, te));
     		}
-    	} 
-    	// If we're here, it means either that the user didn't upload a title
-    	// file, or he did but it failed the filtering. Either case, we 
-    	// proceed normally.
-    	return errors;    	
+    	}
+   		
+    	FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+    	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	return filterErrors;
     }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 

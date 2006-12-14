@@ -1459,9 +1459,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    		fui.setThumbnailDirectlyAccessible(false);
 						    		fui.setIsSquareThumbnail(true);						    		
 						    	}
-						    	//get is title property
-						    	//get is uniqueName
-						    	fui.setUniqueName(true);
 						    	fileData.add(fui);
 						    }
 						} else if (itemName.equals("fileEntryTitle")) {
@@ -1493,8 +1490,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
 								    	}
 								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-								    	//set is uniqueName
-								    	fui.setUniqueName(false);
 								    	fileData.add(fui);
 									}
 								}

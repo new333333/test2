@@ -22,7 +22,9 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.binder.AccessUtils;
@@ -129,9 +131,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	title = (String)inputData.getSingleValue("title");
 	        	entryData.put("title", title);
 	        }
-	        sp.reset("addBinder_validateTitle").begin();
-	        addBinder_validateTitle(parent, title);
-	        sp.end().print();
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
 	        sp.reset("addBinder_transactionExecute").begin();
@@ -148,6 +147,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                
 	                addBinder_postSave(parent, binder, inputData, entryData);
 	                
+	                getCoreDao().updateLibraryName(binder.getParentBinder(), null, binder.getTitle());
 	                return null;
 	        	}
 	        });
@@ -184,9 +184,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
 
-    protected void addBinder_validateTitle(Binder binder, String title) {
-    	getCoreDao().validateTitle(binder, title);
-    }
     protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }
@@ -272,14 +269,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    List fileUploadItems = (List) entryDataAll.get("fileData");
 
 	    try {
-		    if (entryData.containsKey("title")) {
-		    	String newTitle = (String)entryData.get("title");
-		    	if (!newTitle.equalsIgnoreCase(binder.getTitle())) { 
-		    		sp.reset("modifyBinder_validateTitle").begin();
-		    		modifyBinder_validateTitle(binder, newTitle);
-		    		sp.end().print();
-		    	}	
-		    }
 		    
 	    	sp.reset("modifyBinder_filterFiles").begin();
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
@@ -298,6 +287,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		modifyBinder_postFillIn(binder, inputData, entryData);
 	        		//if title changed, must update path infor for all child folders
 	        		String newTitle = binder.getTitle();
+	        		if (Validator.isNull(newTitle)) throw new TitleException("");
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
 	        			if (binder.getParentBinder() != null) {
@@ -315,6 +305,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        				children.addAll(child.getBinders());
 	        			}
 	        		}
+        			getCoreDao().updateLibraryName(binder.getParentBinder(), oldTitle, newTitle);
 	        		return null;
 	        	}});
 	        sp.end().print();
@@ -346,10 +337,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    cleanupFiles(fileUploadItems);
 	    }
 	}
-    protected void modifyBinder_validateTitle(Binder binder, String title) {
-		getCoreDao().validateTitle(binder.getParentBinder(), title);
-   	
-    }
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems) throws FilterException {
     	return getFileModule().filterFiles(binder, fileUploadItems);
     }

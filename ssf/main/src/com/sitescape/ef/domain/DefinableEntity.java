@@ -297,7 +297,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * @param fileName
      * @return
      */
-    public FileAttachment getFileAttachment(String repositoryName, String fileName) {
+/*To reduce confusion with library folders, don't allow repositorys to store the same file
+ *    public FileAttachment getFileAttachment(String repositoryName, String fileName) {
     	Set atts = getAttachments();
     	Attachment att;
     	FileAttachment fatt;
@@ -306,14 +307,36 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     		if (att instanceof FileAttachment) {
     			fatt = (FileAttachment) att;
     			if(fatt.getRepositoryName().equals(repositoryName) &&
-    					fatt.getFileItem().getName().equals(fileName))
+    					fatt.getFileItem().getName().equalsIgnoreCase(fileName))
+    				return fatt;
+    		}
+    	}
+    	return null;
+    }
+*/   
+    /**
+     * Return FileAttachment corresponding to the specified combination of 
+     * repository service name and file name. In other words, file namespace
+     * is not based on the file name alone. 
+     * 
+     * @param fileName
+     * @return
+     */
+    public FileAttachment getFileAttachment(String fileName) {
+    	Set atts = getAttachments();
+    	Attachment att;
+    	FileAttachment fatt;
+    	for (Iterator iter=atts.iterator(); iter.hasNext();) {
+    		att = (Attachment)iter.next();
+    		if (att instanceof FileAttachment) {
+    			fatt = (FileAttachment) att;
+    			if(fatt.getFileItem().getName().equalsIgnoreCase(fileName))
     				return fatt;
     		}
     	}
     	return null;
     }
     
-
     /**
      * Return list of custom attributes. 
      */

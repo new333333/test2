@@ -90,9 +90,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         try {
-        	// Before doing anything else (especially writing anything to the 
-        	// database), make sure to run the filter on the uploaded files. 
-            FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), def, entryData, fileData);
          	final FolderEntry entry = addReply_create(def);
          	        
         
@@ -109,6 +106,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		return null;
         	}});
         
+           	// Need entry id before filtering 
+            FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData);
         	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
         
         	addReply_startWorkflow(entry);
@@ -150,9 +149,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	
     }
 
-    protected FilesErrors addReply_filterFiles(Binder binder, Definition def, 
+    protected FilesErrors addReply_filterFiles(Binder binder, Entry reply, 
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	return addEntry_filterFiles(binder, def, entryData, fileUploadItems);
+    	return addEntry_filterFiles(binder, reply, entryData, fileUploadItems);
     }
 
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
@@ -200,9 +199,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
    
-    protected void modifyBinder_validateTitle(Binder binder, String title) {
-		getCoreDao().validateTitle((Folder)binder.getParentBinder(), title);  	
-    }
  	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }

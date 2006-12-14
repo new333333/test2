@@ -7,18 +7,12 @@ import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.InternalException;
 
 /**
- * @hibernate.subclass discriminator-value="folder" dynamic-update="true" node="ss_folder"
+ * @hibernate.subclass discriminator-value="folder" dynamic-update="true"
  * 
  * @author Jong Kim
  * 
  */
 public class Folder extends Binder {
-    public static final int DISPLAY_STYLE_DEFAULT = 1;
-    public static final int DISPLAY_STYLE_DISCUSSION = 2;
-    public static final int DISPLAY_STYLE_LIBRARY_FOLDER = 3;
-    public static final int DISPLAY_STYLE_DOCUMENT_LIBRARY = 4;
-    
-    protected int displayStyle = DISPLAY_STYLE_DEFAULT;
     protected Folder parentFolder;
     protected HKey folderHKey;
     protected HKey entryRootHKey;
@@ -35,7 +29,7 @@ public class Folder extends Binder {
     }
  
     /**
-     * @hibernate.many-to-one node="topFolder/@id" embed-xml="false"
+     * @hibernate.many-to-one 
      * @return
      */    
     public Folder getTopFolder() {
@@ -61,8 +55,7 @@ public class Folder extends Binder {
     	if (topFolder != null) return true;
     	return false;
     }
-   
-    /** 
+   /** 
      * @hibernate.property 
      * @return
      */
@@ -82,16 +75,6 @@ public class Folder extends Binder {
     public void setNextFolderNumber(int nextFolderNumber) {
     	this.nextFolderNumber = nextFolderNumber;
     }   
-    /**
-     * @hibernate.property node="displayStyle"
-     * @return
-     */
-    public int getDisplayStyle() {
-        return displayStyle;
-    }
-    public void setDisplayStyle(int displayStyle) {
-        this.displayStyle = displayStyle;
-    }
     /**
      * Overload so we can return parents definition if not set for this folder
      */
@@ -241,6 +224,12 @@ public class Folder extends Binder {
     protected String generateFolderRootSortKey(){
     	return generateEntryRootSortKey() + "00001";
     }
+    /**
+     * Processor type for folders may be different and dependent on
+     * the definition
+     * @param processorKey
+     * @return new key
+     */
     public String getProcessorKey(String processorKey) {
     	if (definitionType != null)
     		return processorKey+"_"+definitionType.toString();

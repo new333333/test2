@@ -18,11 +18,12 @@ import com.sitescape.util.Validator;
  */
 public class BinderConfig extends PersistentTimestampObject implements AclControlled {
 	private String title;
-	private int definitionType;
+	private int definitionType=Definition.FOLDER_ENTRY;
 	private PersistentAclSet aclSet; 
     private String iId;
     private SSBlobSerializable definitions,workflows; //assigned by hibernate access="field"
     private Long zoneId;
+    private boolean library=false;
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
@@ -54,6 +55,15 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     	}
     	return null;
     }   
+    /**
+     * @hibernate.property
+     */
+    public boolean isLibrary() {
+    	return library;
+    }
+    public void setLibrary(boolean library) {
+    	this.library = library;
+    }    
 	/**
      * @hibernate.property not-null="true"
      */

@@ -10,8 +10,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +29,8 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.ef.ErrorCodes;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
@@ -48,6 +48,7 @@ import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
+import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
 import com.sitescape.ef.domain.NoConfigurationByTheIdException;
@@ -60,7 +61,6 @@ import com.sitescape.ef.domain.UserDashboard;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.util.LongIdComparator;
@@ -71,7 +71,6 @@ import com.sitescape.util.Validator;
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	protected Log logger = LogFactory.getLog(getClass());
-    protected String[] binderTitleAttrs = new String[]{"parentBinder", "lower(title)"};
 
 	public boolean isDirty() {
 		return getSession().isDirty();
@@ -174,8 +173,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
 
-//		   			deleteEntityAssociations("ownerId=" + binder.getId() + " and ownerType='" +
-//		   					binder.getEntityIdentifier().getEntityType().name() + "'", Binder.class);
 		   			//free alias for someone else
 	    			PostingDef def = binder.getPosting();
 	    			if (def != null) def.setBinder(null);
@@ -190,42 +187,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				throw new HibernateException(sq);
 		   			}
 		   			session.createQuery("DELETE com.sitescape.ef.domain.UserProperties where binderId=:owner")
-		   				.setLong("owner", binder.getId().longValue())
+		   				.setLong("owner", binder.getId())
+		   				.executeUpdate();
+		   			//delete reserved names for entries/subfolders
+		   			session.createQuery("DELETE com.sitescape.ef.domain.LibraryEntry where binderId=:binderId")
+		   				.setLong("binderId", binder.getId())
+		   				.executeUpdate();
+		   			//delete reserved names for self which is registered in parent space
+		   			if (binder.getParentBinder() != null)
+		   			session.createQuery("DELETE com.sitescape.ef.domain.LibraryEntry where binderId=:binderId")
+		   				.setLong("binderId", binder.getParentBinder().getId())
 		   				.executeUpdate();
 		   			delete((DefinableEntity)binder);
 		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
 		   			session.evict(binder);
 		   			
-
-/* 		   			//delete ratings/visits for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
-     	   				.setLong("entityId", binder.getId())
-		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
-		   				.executeUpdate();
-   		   			
-   		   			//delete subscriptions to  these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId=:entityId and entityType=:entityType")
-     	   				.setLong("entityId", binder.getId())
-		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
-		   				.executeUpdate();
-   		   			
- 		   			//delete tags for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id=:entityId and entity_type=:entityType")
-     	   				.setLong("entityId", binder.getId())
-		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
-		   				.executeUpdate();
-
-		   			//delete tags owned by these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id=:entityId and owner_type=:entityType")
-     	   				.setLong("entityId", binder.getId())
-		   			  	.setParameter("entityType", binder.getEntityIdentifier().getEntityType().getValue())
-		   				.executeUpdate();
- 		   			//will this be a problem if the entry is proxied??
- 		   			session.createQuery("DELETE com.sitescape.ef.domain.Binder where id=" + binder.getId())
-		   				.executeUpdate();
-		   			session.getSessionFactory().evict(Binder.class, binder.getId());
-		   			session.evict(binder);
-*/
 		   			return null;
     	   		}
     	   	}
@@ -239,7 +215,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      * Delete an object.  Delete associations not maintained with foreign-keys.
       * @param entry
      */
-    public void delete(final DefinableEntity entity) {
+    protected void delete(final DefinableEntity entity) {
     	getHibernateTemplate().execute(
     	   	new HibernateCallback() {
     	   		public Object doInHibernate(Session session) throws HibernateException {
@@ -272,7 +248,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
     	   			.setLong("id", id.getEntityId().longValue())
    	   			.executeUpdate();
-	//	   		session.delete(entity);
 		   		session.getSessionFactory().evict(entity.getClass(), id.getEntityId());
        	   		return null;
     	   		}
@@ -461,37 +436,73 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.longValue();	
 	}	
-    public void validateTitle(final Binder binder, final String title) throws TitleException {
-    	//ensure title is unique
-        if (Validator.isNull(title)) throw new TitleException("");
-    	
-    	Object[] cfValues = new Object[]{binder, title.toLowerCase()};	
-    	FilterControls filter = new FilterControls(binderTitleAttrs, cfValues);
-	
-    	if (countObjects(Binder.class, filter) != 0) {
-    		 throw new TitleException(title);
-    	}
-    	//see if any attachments which belong to entries in this folder
-		getHibernateTemplate().execute(
-			    new HibernateCallback() {
-			        public Object doInHibernate(Session session) throws HibernateException {
-			        	//check for attachments that belong to entries with the same fileName 
-			        	List result = session.createQuery("select count(x) from com.sitescape.ef.domain.FileAttachment x where x.type='F' and " +
-	                  			"x.owner.owningBinderId=:binderId and x.uniqueName=:unique and lower(x.fileItem.name)=:title")
-                  			.setLong("binderId", binder.getId())
-                  			.setString("title", title.toLowerCase())
-                  			.setBoolean("unique", true)
-                  			.list();
-	 	                 if (result.isEmpty()) return null;
-	               	 	 Integer r = (Integer)result.get(0);
-	               	 	 if (r.intValue() == 0) return null;
-	               	 	 throw new TitleException(title);
-	               }
-	            }
-			);
-    	
-    }	
-	public List findCompanies() {
+
+    // This code is used to reserve a name.  The binder field is used to check
+	// uniqueness within a binder so it can be viewed by webdav.  The name is either an attachment
+	// name belonging to an entry in the binder, or the title of a sub-folder.  Note, attachments on
+	// the binder itself are not visible hear and not visible through webdav.
+	// the entity field combined with the binder field lets us get the the entry that
+	// owns the attachment.  (also allows cleanup on delete entries)
+	// Create our own session cause failures clear the existing session and don't want to 
+	// necessarily cancel the running transaction.
+	// It assumes the combination of binderId and entityId is enough to identify an entry
+    public void registerLibraryEntry(Binder binder, DefinableEntity entity, String name) throws TitleException {
+        if (Validator.isNull(name)) throw new TitleException("");
+      	SessionFactory sf = getSessionFactory();
+    	Session s = sf.openSession();
+    	try {
+    		LibraryEntry le = new LibraryEntry(binder.getId(), name);
+    		if (entity != null) le.setEntityId(entity.getId());
+    		s.save(le);
+    		s.flush();
+    	} catch (Exception ex) {
+    		throw new TitleException(name, ex);
+    	} finally {
+    		s.close();
+    	}    	
+    }
+    //create our own session cause failures clear the existing session
+    public void unRegisterLibraryEntry(Binder binder, String name) {
+      	SessionFactory sf = getSessionFactory();
+    	Session s = sf.openSession();
+    	try {
+    		LibraryEntry le = new LibraryEntry(binder.getId(), name);
+    		s.save(le);
+    		s.flush();
+    	} catch (Exception ex) {
+				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
+	   	} finally {
+    		s.close();
+    	}    	
+    }
+    //done in the current transaction on a title rename
+    public void updateLibraryName(Binder binder, String oldName, String newName) throws TitleException {
+        if (Validator.isNull(newName)) throw new TitleException("");
+        if (newName.equalsIgnoreCase(oldName)) return;
+        LibraryEntry le=null;
+ 		if (oldName != null) {
+	        le = new LibraryEntry(binder.getId(), oldName);
+			le = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, le);
+			if (le != null) le.setName(newName);
+		}
+		if (le == null) {
+			try {
+				le = new LibraryEntry(binder.getId(), newName);
+				LibraryEntry exist = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, le);
+				if (exist == null) save(le);
+				else throw new TitleException(newName);
+			} catch (Exception ex) {
+				throw new TitleException(newName);
+			}
+		}   	
+    }
+    public  Long findLibraryEntryId(Long binderId, String name) {
+    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, new LibraryEntry(binderId, name));
+    	if (le == null) throw new NoObjectByTheIdException(ErrorCodes.NoLibraryEntryByTheIdException, new Object[]{binderId, name});
+    	return le.getEntityId();
+
+    }
+    public List findCompanies() {
 		return (List)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {

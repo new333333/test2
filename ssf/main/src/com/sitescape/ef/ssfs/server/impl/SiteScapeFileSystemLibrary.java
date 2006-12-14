@@ -55,7 +55,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String PARENT_BINDER 		= "pb";
 	private static final String FILE_ATTACHMENT 	= "fa"; 
 
-	private static final String ITEM_NAME = "fileEntryTitle";
+	private static final String ITEM_NAME = "attachFiles";
 		
 	private AllBusinessServicesInjected bs;
 	private FileTypeMap mimeTypes;
@@ -766,7 +766,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		
 		String repositoryName = getLibraryRepositoryName(definition);
 		
-		return entry.getFileAttachment(repositoryName, entry.getTitle());		
+//		return entry.getFileAttachment(repositoryName, entry.getTitle());		
+		return null;
 	}
 	
 	private FolderEntry getFileFolderEntry(Map objMap) {

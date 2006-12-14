@@ -40,7 +40,7 @@ public class HistoryStamp {
         this.date = date;
     }
     /**
-     * @hibernate.many-to-one class="com.sitescape.ef.domain.Principal" node="Principal" embed-xml="false"
+     * @hibernate.many-to-one class="com.sitescape.ef.domain.Principal"
      * @hibernate.column name="principal"
      * @return
      */
