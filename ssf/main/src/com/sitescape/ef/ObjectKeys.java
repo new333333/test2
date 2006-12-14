@@ -39,6 +39,7 @@ public interface ObjectKeys {
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
     public static final String SEARCH_COUNT_TOTAL="searchCountTotal";
+    public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
@@ -62,7 +63,7 @@ public interface ObjectKeys {
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
     public static final String SEARCH_SORT_BY = "sortBy";
     public static final String SEARCH_SORT_DESCEND = "sortDescend";
-
+    
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
