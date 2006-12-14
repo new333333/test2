@@ -39,6 +39,7 @@ public interface ObjectKeys {
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";
     public static final String SEARCH_COUNT_TOTAL="searchCountTotal";
+    public static final String TOTAL_SEARCH_COUNT="totalSearchCount";
     public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
