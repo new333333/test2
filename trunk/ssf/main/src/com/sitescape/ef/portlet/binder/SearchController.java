@@ -37,7 +37,8 @@ import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
-
+import com.sitescape.ef.module.folder.index.IndexUtils;
+import com.sitescape.ef.util.SPropsUtil;
 
 /**
  * @author Peter Hurley
@@ -46,6 +47,7 @@ import com.sitescape.ef.web.util.Toolbar;
 public class SearchController extends AbstractBinderController {
 	public void handleActionRequestAfterValidation(ActionRequest request, 
 			ActionResponse response) throws Exception {
+
 		Map formData = request.getParameterMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -74,12 +76,35 @@ public class SearchController extends AbstractBinderController {
 				//Reset the column positions to the default
 			   	getProfileModule().setUserProperty(user.getId(), WebKeys.SEARCH_RESULTS_COLUMN_POSITIONS, "");
 			}
+		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_SORT_INFO)) {
+			String folderSortBy = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_BY, "");
+			String folderSortDescend = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_DESCEND, "");
+			
+			Tabs tabs = new Tabs(request);
+			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+			if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+			
+			Map tab = tabs.getTab(tabs.getCurrentTab());
+			tab.put(Tabs.SORTBY, new String(folderSortBy));
+			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
+			
+		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_PAGE_INFO)) {
+			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+		
+			Tabs tabs = new Tabs(request);
+			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		
+			if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+			Map tab = tabs.getTab(tabs.getCurrentTab());
+			
+			tab.put(Tabs.PAGE, new Integer(pageStartIndex));
 		}
 
 		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+	
 		Map model = new HashMap();
 		Map formData = request.getParameterMap();
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -107,7 +132,8 @@ public class SearchController extends AbstractBinderController {
 				options.put(Tabs.TITLE, tabTitle);
 			}
 			//Store the search query in the current tab
-			tabs.setCurrentTab(tabs.setTab(searchQuery, options));
+			boolean blnClearTab = true;
+			tabs.setCurrentTab(tabs.setTab(searchQuery, options, blnClearTab));
 		} else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
@@ -123,9 +149,44 @@ public class SearchController extends AbstractBinderController {
 		Map entryMap = new HashMap();
 		Map peopleMap = new HashMap();
 		
+		UserProperties userProp = getProfileModule().getUserProperties(user.getId());
+
+		Map options = new HashMap();		
+		
+		//Determine the Starting Page Index
+		Map tabInfo = tabs.getTab(tabs.getCurrentTab());
+		Integer tabPageNumber = (Integer) tabInfo.get(Tabs.PAGE);
+		if (tabPageNumber == null) tabPageNumber = new Integer(0);
+		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
+		
+		//Determining how many records to return
+		String searchMaxHits = SPropsUtil.getString("folder.records.listed");
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
+		
+		//Determining the Sorting Order
+		//When the search tab is loaded for the first time, no sorting order is mentioned
+		//When the user chooses a sorting order for the specific search tab, then we will
+		//store the sort order in the tab and maintain it when the user returns to the search
+		//tab by clicking on the search tab link. It will also be maintained if the user pages
+		//through the record.
+		String searchSortBy = (String) tabInfo.get(Tabs.SORTBY);
+		String searchSortDescend = (String) tabInfo.get(Tabs.SORTDESCEND);
+		if (searchSortBy != null && !searchSortBy.equals("")) {
+			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
+			if (("true").equalsIgnoreCase(searchSortDescend)) {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			}
+			else if (("false").equalsIgnoreCase(searchSortDescend)) {
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			}
+		}
+		
+		Integer currentTabId  = (Integer) tabInfo.get(Tabs.TAB_ID);
+		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
-			entryMap = getBinderModule().executeSearchQuery(searchQuery);
+			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
 			entries = (List)entryMap.get(WebKeys.FOLDER_ENTRIES);
 			people = (List)peopleMap.get(WebKeys.PEOPLE_RESULTS);
@@ -135,10 +196,34 @@ public class SearchController extends AbstractBinderController {
 		} else entries = new ArrayList();
 		
 		Integer entrySearchTotalCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_COUNT);
+		Integer entrySearchReturnedCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED);
 		Integer peopleSearchTotalCount = (Integer)peopleMap.get(WebKeys.PEOPLE_RESULTCOUNT);
 		
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		model.put(WebKeys.ENTRY_SEARCH_COUNT, entrySearchTotalCount);
+		model.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, entrySearchReturnedCount);
+		
+		int totalRecordsFound = entrySearchTotalCount;
+		int totalRecordsReturned = entrySearchReturnedCount;
+		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+		int goBackSoManyPages = 3;
+		int goFrontSoManyPages = 3;
+		
+		HashMap pagingInfo = getPagingLinks(totalRecordsFound, searchOffset, searchPageIncrement, 
+				goBackSoManyPages, goFrontSoManyPages);
+
+		HashMap prevPage = (HashMap) pagingInfo.get(WebKeys.PAGE_PREVIOUS);
+		ArrayList pageNumbers = (ArrayList) pagingInfo.get(WebKeys.PAGE_NUMBERS);
+		HashMap nextPage = (HashMap) pagingInfo.get(WebKeys.PAGE_NEXT);
+		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
+		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
+		
+		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
+		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
+		model.put(WebKeys.PAGE_NEXT, nextPage);
+		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
+		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
 		
 		//since the results span multiple folders, we need to get the folder titles
 		Set ids = new HashSet();
@@ -162,6 +247,8 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.FOLDER_ENTRYPLACES, entryPlaces);
 		model.put(WebKeys.PEOPLE_RESULTS, people);
 		model.put(WebKeys.PEOPLE_RESULTCOUNT, peopleSearchTotalCount);
+		model.put(WebKeys.FOLDER_SORT_BY, searchSortBy);		
+		model.put(WebKeys.FOLDER_SORT_DESCEND, searchSortDescend);
 		
 		//Get a default folder definition to satisfy the folder view jsps
 		Definition def = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
@@ -169,6 +256,75 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
 		buildSearchResultsToolbars(request, response, model);
 		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
+	}
+
+	//This method returns a HashMap with Keys referring to the Previous Page Keys,
+	//Paging Number related Page Keys and the Next Page Keys.
+	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
+			int intSearchPageIncrement, int intGoBackSoManyPages, int intGoFrontSoManyPages) {
+		
+		HashMap<String, Object> hmRet = new HashMap<String, Object>();
+		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
+		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
+
+		//Adding Prev Page Link
+		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
+		HashMap<String, Object> hmRetPrev = new HashMap<String, Object>();
+		hmRetPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "<<");
+		hmRetPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+		if (intSearchOffset == 0) {
+			hmRetPrev.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_PREVIOUS, hmRetPrev);
+
+		//Adding Links before Current Display
+		if (intSearchOffset != 0) {
+			//Code for generating the Numeric Paging Information previous to offset			
+			int startPrevDisplayFrom = currentDisplayValue - intGoBackSoManyPages;
+			
+			int wentBackSoManyPages = intGoBackSoManyPages + 1;
+			for (int i = startPrevDisplayFrom; i < currentDisplayValue; i++) {
+				wentBackSoManyPages--;
+				if (i < 1) continue;
+				prevInternalValue = (intSearchOffset - (intSearchPageIncrement * wentBackSoManyPages));
+				HashMap<String, Object> hmPrev = new HashMap<String, Object>();
+				hmPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "" + i);
+				hmPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+				pagingInfo.add(hmPrev);
+			}
+		}
+		
+		//Adding Links after Current Display
+		for (int i = 0; i < intGoFrontSoManyPages; i++) {
+			int nextInternalValue = intSearchOffset + (intSearchPageIncrement * i);
+			int nextDisplayValue = (nextInternalValue + intSearchPageIncrement) / intSearchPageIncrement;  
+			if ( !(nextInternalValue >= intTotalRecordsFound) ) {
+				HashMap<String, Object> hmNext = new HashMap<String, Object>();
+				hmNext.put(WebKeys.PAGE_DISPLAY_VALUE, "" + nextDisplayValue);
+				hmNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+				if (nextDisplayValue == currentDisplayValue) hmNext.put(WebKeys.PAGE_IS_CURRENT, new Boolean(true));
+				pagingInfo.add(hmNext);
+			}
+			else break;
+		}
+		hmRet.put(WebKeys.PAGE_NUMBERS, pagingInfo);
+		
+		//Adding Next Page Link
+		int nextInternalValue = intSearchOffset + intSearchPageIncrement;
+		HashMap<String, Object> hmRetNext = new HashMap<String, Object>();
+		hmRetNext.put(WebKeys.PAGE_DISPLAY_VALUE, ">>");
+		hmRetNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+		
+		if ( (nextInternalValue >= intTotalRecordsFound) ) {
+			hmRetNext.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
+		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
+		
+		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
+		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
+		
+		return hmRet;
 	}
 	
 	// This class is used by the following method as a way to sort
