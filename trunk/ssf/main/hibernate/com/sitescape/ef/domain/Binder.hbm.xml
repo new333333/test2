@@ -10,6 +10,7 @@
     <discriminator type="string" column="type" length="16"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
+	<property name="library"/>
     <many-to-one name="parentBinder"/>
     <many-to-one name="owner"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
@@ -118,7 +119,6 @@
       <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
       <property name="nextEntryNumber"/>
       <property name="nextFolderNumber"/>
-      <property name="displayStyle"/>
       <component name="folderHKey" class="com.sitescape.ef.domain.HKey">
         <property name="level" column="folder_level"/>
         <property name="sortKey" length="512" column="folder_sortKey"/>

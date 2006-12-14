@@ -23,6 +23,7 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.CustomAttribute;
@@ -598,35 +599,59 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	public void setZone1(String zoneName) {
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FileAttachment set uniqueName='0' where uniqueName is null");	
+		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.BinderConfig set library='0' where library is null");	
 		
 	}
 	public void setZone2(String zoneName) {
 		Workspace zone = getCoreDao().findTopWorkspace(zoneName);
-		//old file folders
+		int count = getCoreDao().countObjects(com.sitescape.ef.domain.LibraryEntry.class, new FilterControls("binderId", zone.getId()));
+		if (count == 0) {
+			List<Binder> binders = new ArrayList();
+			binders.addAll(zone.getBinders());
+			while (!binders.isEmpty()) {
+				Binder b = binders.get(0);
+				binders.remove(0);
+				binders.addAll(b.getBinders());
+				try {
+					coreDao.registerLibraryEntry(b.getParentBinder(), null, b.getTitle());
+				} catch (com.sitescape.ef.domain.TitleException te) {
+					logger.error("Cannot register binder name: " + b.getPathName());
+				}
+			}
+		}
 		Definition fDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
 		Definition eDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY);
-		List<Binder> folders = getCoreDao().loadObjects("from com.sitescape.ef.domain.Folder where definitionType=9", null);
-		for (Binder f: folders) {
+		List<com.sitescape.ef.domain.Folder> folders = getCoreDao().loadObjects("from com.sitescape.ef.domain.Folder where definitionType=9", null);
+		//old file folders
+		for (com.sitescape.ef.domain.Folder f: folders) {
 			f.setEntryDef(fDef);
 			f.setDefinitionType(fDef.getType());
+			f.setLibrary(true);
 			if (!f.isDefinitionsInherited()) {
 				List ds = f.getDefinitions();
 				ds.clear();
 				ds.add(fDef);
 				ds.add(eDef);
 			}
+			//get all attachments in this binder
+		   	FilterControls filter = new FilterControls("owner.owningBinderId", f.getId());
+	        List<com.sitescape.ef.domain.FileAttachment> atts = getCoreDao().loadObjects(com.sitescape.ef.domain.FileAttachment.class, filter);
+	 
+			for (com.sitescape.ef.domain.FileAttachment fa: atts) {
+				if (!(fa instanceof com.sitescape.ef.domain.VersionAttachment)) {
+					try {
+						getCoreDao().registerLibraryEntry(f, fa.getOwner().getEntity(), fa.getFileItem().getName());
+					} catch (com.sitescape.ef.domain.TitleException te) {
+						logger.error("Cannot register attachment: " + f.getPathName() + " " + fa.getFileItem().getName());
+					}
+				}
+			}
+			
 		}
 		List<com.sitescape.ef.domain.Entry> entries = getCoreDao().loadObjects("from com.sitescape.ef.domain.FolderEntry where definitionType=10", null);
 		for (com.sitescape.ef.domain.Entry e: entries) {
 			e.setEntryDef(eDef);
 			e.setDefinitionType(eDef.getType());
-			CustomAttribute ca = e.getCustomAttribute("_fileEntryTitle");
-			if(ca != null) {
-				for (Iterator iter = ca.getValueSet().iterator(); iter.hasNext();) {
-					com.sitescape.ef.domain.FileAttachment fa = (com.sitescape.ef.domain.FileAttachment)iter.next();
-					fa.setUniqueName(true);
-				}
-			}
 		}
 		List<Definition> defs = getCoreDao().loadDefinitions(zone.getId(), 9);
 		for (Definition def: defs) {

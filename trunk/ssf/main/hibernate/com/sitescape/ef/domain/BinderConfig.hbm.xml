@@ -26,6 +26,7 @@
     <property name="definitionType"/>
     <property name="internalId" length="32"/>
     <property name="zoneId" not-null="true"/>
+	<property name="library"/>
     <property name="definitions" access="field" type="com.sitescape.ef.dao.util.SSBlobSerializableType"/>
  	<property name="workflows" access="field" type="com.sitescape.ef.dao.util.SSBlobSerializableType"/>
     <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">

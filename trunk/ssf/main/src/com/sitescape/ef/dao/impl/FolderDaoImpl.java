@@ -335,6 +335,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
+ 		   			//delete any reserved names for entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryTag where binderId=:binderId and not entityId is null")
+		   				.setLong("binderId", folder.getId())
+		   				.executeUpdate();
  		   			//remove foreign keys or mysql complains
         	  		session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
         	  			.setEntity("parent", folder)
@@ -386,6 +390,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      	   					.setParameterList("pList", ids)
      	   					.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
      	   					.executeUpdate();
+    		   			//delete any reserved names
+     		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
+    		   				.setParameterList("pList", ids)
+    		   				.setLong("binderId", entry.getParentFolder().getId())
+    		   				.executeUpdate();
      		   			//remove foreign key or mysql complains
     		   			session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
     	   				.setParameterList("pList", ids)

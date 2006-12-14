@@ -31,4 +31,16 @@ public class NoObjectByTheIdException extends UncheckedCodedException {
     public NoObjectByTheIdException(String errorCode, Long objId, Throwable cause) {
         super(errorCode, new Object[] {objId}, cause);
     }
-}
+    public NoObjectByTheIdException(String errorCode, Object[] ids) {
+        super(errorCode, ids);
+    }
+    public NoObjectByTheIdException(String errorCode, Object[] ids, String message) {
+        super(errorCode, ids, message);
+    }
+    public NoObjectByTheIdException(String errorCode, Object[] ids, String message, Throwable cause) {
+        super(errorCode, ids, message, cause);
+    }
+    public NoObjectByTheIdException(String errorCode, Object[] ids, Throwable cause) {
+        super(errorCode, ids, cause);
+    }
+ }

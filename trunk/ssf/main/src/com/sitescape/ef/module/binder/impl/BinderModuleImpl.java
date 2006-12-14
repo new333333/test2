@@ -26,6 +26,9 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
@@ -659,4 +662,5 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		}
    		current.setDistribution(notifyUsers);
     }
+    
 }

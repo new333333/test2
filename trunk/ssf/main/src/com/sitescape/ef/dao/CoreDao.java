@@ -51,7 +51,7 @@ public interface CoreDao {
 	 */
 	public void delete(Object obj);
 	public void delete(Binder binder);
-    public void delete(DefinableEntity entity);
+//    public void delete(DefinableEntity entity);
 	public void delete(Definition def);
 	public void deleteEntityAssociations(String whereClause, Class clazz);
 
@@ -75,8 +75,11 @@ public interface CoreDao {
 	 * @return
 	 */
 	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
-    public void validateTitle(Binder binder, String title) throws TitleException;
-   	public List findCompanies();
+    public void updateLibraryName(Binder binder, String oldName, String newName);
+    public void registerLibraryEntry(Binder binder, DefinableEntity entity, String name);
+    public void unRegisterLibraryEntry(Binder binder, String name);
+    public  Long findLibraryEntryId(Long binderId, String name);
+    public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
 	public float averageColumn(Class clazz, String column, FilterControls filter);
 	public long sumColumn(Class clazz, String column, FilterControls filter);

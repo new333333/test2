@@ -23,8 +23,8 @@ public class FileUploadItem {
 	private static final String HTMLCONVERTED_FILE_PREFIX = "htmlconvert_";
 	
 	private int type;
-	private boolean uniqueName=true;
-	
+	private boolean uniqueName=false;
+	private boolean registered=false;
 	private String name; // This is NOT file name.
 	
 	// Used for generating scaled file - Zero value indicates no need for 
@@ -129,6 +129,12 @@ public class FileUploadItem {
 	}
 	public void setUniqueName(boolean uniqueName) {
 		this.uniqueName = uniqueName;
+	}
+	public boolean isRegistered() {
+		return registered;
+	}
+	public void setRegistered(boolean registered) {
+		this.registered = registered;
 	}
 	/**
 	 * Return the original filename in the client's filesystem. 

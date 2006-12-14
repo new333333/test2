@@ -11,18 +11,14 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import com.sitescape.ef.util.Constants;
 
 /**
- * @author janet
- *
- * TODO To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Style - Code Templates
+ * Base class of objects with a Long id and hibernate version column
  */
 public class PersistentLongIdObject implements PersistentLongId {
     private Long id;
     long lockVersion;
  
 	/**
-	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null" node="@id"
-	 */    
+	 * @hibernate.id generator-class="native" type="long"  unsaved-value="null" 	 */    
     public Long getId() {
         return id;
     }

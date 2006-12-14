@@ -167,7 +167,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  	.setEntity("profile", profiles)
 		   			  	.setParameterList("tList", types)
 		   				.executeUpdate();
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
+ 		   			//delete any reserved names for entries
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryTag where binderId=:binderId and not entityId is null")
+		   				.setLong("binderId", profiles.getId())
+		   				.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where parentBinder=" + profiles.getId())
 	       				.executeUpdate();
 	       			session.getSessionFactory().evict(Principal.class);		
 	       	   		return null;
@@ -264,6 +268,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    						.setParameterList("pList", ids)
    						.setParameterList("tList", types)
    						.executeUpdate();
+   		   			//delete any reserved names
+ 		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
+		   				.setParameterList("pList", ids)
+		   				.setLong("binderId", ((Principal)entries.get(0)).getParentBinder().getId())
+		   				.executeUpdate();
  		   			session.createQuery("Delete com.sitescape.ef.domain.Principal where id in (:pList)")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();

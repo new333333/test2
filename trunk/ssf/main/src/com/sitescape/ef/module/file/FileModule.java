@@ -368,7 +368,6 @@ public interface FileModule {
     public void RefreshLocks(Binder binder, DefinableEntity entity) 
 	throws RepositoryServiceException, UncheckedIOException;
     
-	public FolderEntry findFileFolderEntry(Binder fileFolder, String title);
 	
 	/**
 	 * Rename the file.
