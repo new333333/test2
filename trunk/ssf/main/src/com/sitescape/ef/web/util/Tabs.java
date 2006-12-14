@@ -40,6 +40,8 @@ public class Tabs {
    	public final static String TITLE = "title";
    	public final static String ICON = "icon";
    	public final static String PAGE = "page";
+   	public final static String SORTBY = "sortBy";
+   	public final static String SORTDESCEND = "sortDescend";
    	
    	//Type keys
    	public final static String WORKSPACE = "workspace";
@@ -76,7 +78,16 @@ public class Tabs {
 		Map options = new HashMap();
 		return findTab(binder, options);
 	}
+	public int findTab(Binder binder, boolean blnClearTab) {
+		Map options = new HashMap();
+		return findTab(binder, options, blnClearTab);
+	}
 	public int findTab(Binder binder, Map options) {
+		boolean blnClearTab = false;
+		return findTab(binder, options, blnClearTab);
+	}
+	
+	public int findTab(Binder binder, Map options, boolean blnClearTab) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -92,8 +103,9 @@ public class Tabs {
 			}
 		}
 		if (tabId == -1) tabId = addTab();
+		if (blnClearTab == true) clearTabInfo(tabId);
 		return setTab(tabId, binder, options);
-	}
+	}	
 	
 	//Entry tab
 	public int addTab(Entry entry) {
@@ -156,16 +168,41 @@ public class Tabs {
 		return setTab(tabId, query, options);
 	}
 	
+	public void clearCurrentTabInfo() {
+		clearTabInfo(getCurrentTab());
+	}
+	
+	public void clearTabInfo(int tabId)	{
+		List tabList = getTabList();
+		int tabNumber = findTabNumber(tabId);
+		if (tabNumber > -1) {
+			Map tab = (Map) tabList.get(tabNumber);
+			tab = new HashMap();
+			tab.put(TAB_ID, new Integer(tabId));
+			tabList.set(tabNumber, tab);
+		}
+	}
+	
 	public int setTab(int tabId, Binder binder) {
 		return setTab(tabId, binder, new HashMap());
 	}
 	public int setTab(Binder binder) {
 		return setTab(getCurrentTab(), binder, new HashMap());
 	}
+	public int setTab(Binder binder, boolean blnClearTab) {
+		return setTab(getCurrentTab(), binder, new HashMap(), blnClearTab);
+	}
 	public int setTab(Binder binder, Map options) {
 		return setTab(getCurrentTab(), binder, options);
 	}
+	
 	public int setTab(int tabId, Binder binder, Map options) {
+		boolean blnClearTab = false;
+		return setTab(tabId, binder, options, blnClearTab);
+	}
+	
+	public int setTab(int tabId, Binder binder, Map options, boolean blnClearTab) {
+		if (blnClearTab) clearTabInfo(tabId);
 		List tabList = getTabList();
 		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);
@@ -174,6 +211,12 @@ public class Tabs {
 		Integer page = (Integer) tab.get(PAGE);
 		if (page == null) page = new Integer(0);
 		if (options.containsKey(PAGE)) page = (Integer) options.get(PAGE);
+		String sortBy = (String) tab.get(Tabs.SORTBY);
+		if (options.containsKey(Tabs.SORTBY)) sortBy = (String) options.get(Tabs.SORTBY);
+		if (sortBy != null) tab.put(Tabs.SORTBY, sortBy);
+		String sortDescend = (String) tab.get(Tabs.SORTDESCEND);
+		if (options.containsKey(Tabs.SORTDESCEND)) sortDescend = (String) options.get(Tabs.SORTDESCEND);
+		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);
     	if (binder.getEntityIdentifier().getEntityType().
     			equals(EntityIdentifier.EntityType.workspace)) {
     		tab.put(TYPE, WORKSPACE);
@@ -236,7 +279,15 @@ public class Tabs {
 	public int setTab(Document query, Map options) {
 		return setTab(getCurrentTab(), query, options);
 	}
+	public int setTab(Document query, Map options, boolean blnClearTab) {
+		return setTab(getCurrentTab(), query, options, blnClearTab);
+	}
 	public int setTab(int tabId, Document query, Map options) {
+		boolean blnClearTab = false;
+		return setTab(tabId, query, options, blnClearTab);
+	}
+	public int setTab(int tabId, Document query, Map options, boolean blnClearTab) {
+		if (blnClearTab) clearTabInfo(tabId);
 		List tabList = getTabList();
 		if (checkTabId(tabId) != tabId) tabId = addTab();
 		int tabNumber = findTabNumber(tabId);
@@ -245,6 +296,12 @@ public class Tabs {
 		Integer page = (Integer) tab.get(PAGE);
 		if (page == null) page = new Integer(0);
 		if (options.containsKey(PAGE)) page = (Integer) options.get(PAGE);
+		String sortBy = (String) tab.get(Tabs.SORTBY);
+		if (options.containsKey(Tabs.SORTBY)) sortBy = (String) options.get(Tabs.SORTBY);
+		if (sortBy != null) tab.put(Tabs.SORTBY, sortBy);
+		String sortDescend = (String) tab.get(Tabs.SORTDESCEND);
+		if (options.containsKey(Tabs.SORTDESCEND)) sortDescend = (String) options.get(Tabs.SORTDESCEND);
+		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);
 		tab.put(TYPE, QUERY);
 		tab.put(QUERY_DOC, query);
 		tab.put(PAGE, page);
