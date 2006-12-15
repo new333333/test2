@@ -850,39 +850,47 @@ public class AjaxController  extends SAbstractController {
 		}
 		return new ModelAndView("definition_elements/view_dashboard_component", model);
 	}
+	
 	private ModelAndView ajaxGetDashboardSearchMore(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	Map model = new HashMap();
-	String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-	String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-	String componentId = op2;
-	model.put("ss_divId", PortletRequestUtils.getStringParameter(request, "divId", ""));
-	model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
-	model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
-
-	if (!componentId.equals("")) {
-		try {
-			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			Binder binder = getBinderModule().getBinder(binderId);
-			model.put(WebKeys.BINDER, binder);
-			String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-			if (scope.equals("")) scope = DashboardHelper.Local;
-			User user = RequestContextHolder.getRequestContext().getUser();
-			DashboardHelper.getDashboardMap(binder, 
-				getProfileModule().getUserProperties(user.getId()).getProperties(), 
-				model, scope, componentId);
-		} catch (Exception ex) {
-			String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
-			Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
-			User user = RequestContextHolder.getRequestContext().getUser();
-			DashboardHelper.getDashboardMap(dashboard, 
-				getProfileModule().getUserProperties(user.getId()).getProperties(), 
-				model, componentId);
-			
+		Map model = new HashMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String componentId = op2;
+		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
+		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
+		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
+	
+		if (!componentId.equals("")) {
+			try {
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+				String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+				if (scope.equals("")) scope = DashboardHelper.Local;
+				User user = RequestContextHolder.getRequestContext().getUser();
+				DashboardHelper.getDashboardMap(binder, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, scope, componentId);
+			} catch (Exception ex) {
+				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
+				Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
+				User user = RequestContextHolder.getRequestContext().getUser();
+				DashboardHelper.getDashboardMap(dashboard, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, componentId);
+				
+			}
 		}
+		String view = "dashboard/search_view2";
+		String displayType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DISPLAY_TYPE, "search");
+		if (displayType.equals("search")) view = "dashboard/search_view2";
+		if (displayType.equals("gallery")) view = "dashboard/gallery_view2";
+		if (displayType.equals("blog")) view = "dashboard/blog_view2";
+		if (displayType.equals("comments")) view = "dashboard/comments_view2";
+		return new ModelAndView(view, model);
 	}
-	return new ModelAndView("dashboard/search_view2", model);
-}
+	
 	private ModelAndView ajaxGetBlogReplies(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();

@@ -1,5 +1,5 @@
 <%
-// The dashboard "search" component
+// The dashboard "gallery search" component
 /**
  * Copyright (c) 2006 SiteScape, Inc. All rights reserved.
  *
@@ -15,18 +15,29 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="hitCount" value="0"/>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
+
+<table><tr><td>
+<c:choose>
+<c:when test="${ssDashboard.dashboard.components[componentId].data.galleryImageSize[0] == 'small'}">
+<div class="ss_thumbnail_gallery ss_thumbnail_small"> 
+</c:when>
+<c:otherwise>
+<div class="ss_thumbnail_gallery ss_thumbnail_big"> 
+</c:otherwise>
+</c:choose>
+<c:set var="hitCount" value="0"/>
+<c:set var="resultCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
+  <c:set var="resultCount" value="${resultCount + 1}"/>
+  <c:if test="${not empty fileEntry._fileID}">
+
   <c:set var="hitCount" value="${hitCount + 1}"/>
-<div class="ss_blog_summary_title">
-  <table cellspacing="0" cellpadding="0" width="100%">
-  <tr>
-  <td valign="top"><span class="ss_bold ss_largerprint">
+    <div>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -59,70 +70,19 @@
 			</ssf:url>" >
     </c:when>
  	</c:choose>
-    <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle"/>)</i></span>
-    </c:if>
-    <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
-	</td>
-	
-	<td align="right" nowrap valign="top"><span class="ss_italic ss_smallprint">
-    <c:if test="${fileEntry._entityType == 'folderEntry' || 
-      		fileEntry._entityType == 'reply'}">
-		<ssf:menu titleId="ss_folderName_${hitCount}_${componentId}_<portlet:namespace/>" 
-		    menuClass="ss_actions_bar_submenu">
-		  <ssf:param name="title" useBody="true">
-		      <c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img border="0" src="<html:imagesPath/>icons/folder.gif"/>
-		      </c:if>
-		      <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img border="0" 
-		          src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
-		      </c:if>
-		  </ssf:param>
-		  <ul class="ss_actions_bar_submenu" style="width:250px;">
-		  <li><a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="view_permalink"
-				    binderId="${fileEntry._binderId}">
-				    <ssf:param name="entityType" value="folder" />
-		    	    <ssf:param name="newTab" value="1"/>
-					</ssf:url>" 
-		  >${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
-		  </ul>
-		</ssf:menu>
-     </c:if>
-    &nbsp;&nbsp;
-    <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
-	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
-      value="${fileEntry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="short" /></span>&nbsp;&nbsp;
-	</td>
-	</tr>
-	</table>
-  </div>
-  
-  <div style="padding-bottom:10px;">
-<jsp:useBean id="fileEntry" type="java.util.Map" />
-<%
-	if (fileEntry.containsKey("_desc")) {
-		String[] words = ((String)fileEntry.get("_desc")).split(" ");
-		String summary = "";
-		for (int i = 0; i < words.length; i++) {
-			summary = summary + " " + words[i];
-			//Limit the summary to 30 words
-			if (i >= 30) {
-				if (i < words.length - 1) summary = summary + "...";
-				break;
-			}
-		}
-%>
-    <div class="ss_smallprint ss_indent_medium">  
-      <c:out value="<%= summary %>" escapeXml="false"/>
-    </div>
-<%
-	}
-%>  
-  </div>
+    <img border="0" src="<ssf:url 
+    webPath="viewFile"
+    folderId="${fileEntry._binderId}"
+    entryId="${fileEntry._docId}" >
+    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
+    <ssf:param name="viewType" value="thumbnail"/>
+    </ssf:url>"><br\>
+    <c:out value="${fileEntry.title}"/></a></div>
+ </c:if>
+
 </c:forEach>
+</div>
+</table>
 
 <div>
   <table width="100%">
@@ -146,13 +106,13 @@
 	<td align="right">
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber - 1}', '10', '${ss_divId}', '${componentId}', 'search'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber - 1}', '10', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
-	  <c:if test="${(ss_pageNumber * 10 + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+	  <c:if test="${(ss_pageNumber * 10 + resultCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber + 1}', '10', '${ss_divId}', '${componentId}', 'search'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber + 1}', '10', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>

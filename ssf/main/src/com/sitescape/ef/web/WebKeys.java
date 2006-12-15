@@ -45,6 +45,8 @@ public class WebKeys {
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DEBUG="enableDebug";
+	public static final String URL_DISPLAY_TYPE="displayType";
+    public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
@@ -240,6 +242,7 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
