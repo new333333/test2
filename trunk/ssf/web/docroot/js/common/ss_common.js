@@ -197,6 +197,7 @@ function ss_openUrlInNewTab(url) {
 }
 
 function ss_reloadOpener(fallBackUrl) {
+	alert('Reloading to: '+fallBackUrl+', '+ss_reloadUrl)
 	//Are we at the top window?
 	if (self.window != self.top) {
 		if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
@@ -2444,13 +2445,14 @@ function ss_hideDashboardMenu(obj) {
 	ss_hideDiv(formObj.parentNode.id)
 }
 
-function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, divId, componentId) {
+function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, divId, componentId, displayType) {
 	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
 	url += "\&operation=search_more";
 	url += "\&operation2="+componentId;
 	url += "\&divId="+divId;
 	url += "\&pageNumber="+pageNumber;
 	url += "\&pageSize="+pageSize;
+	url += "\&displayType="+displayType;
 	url += "\&randomNumber="+ss_random++;
 	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
 }
