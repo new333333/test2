@@ -58,6 +58,8 @@ public class WebKeys {
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
+    public static final String URL_PAGE_NUMBER="pageNumber";
+    public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TREE_SELECT = "tree_select";
@@ -301,6 +303,8 @@ public class WebKeys {
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
+    public static final String PAGE_NUMBER="ss_pageNumber";
+    public static final String PAGE_SIZE="ss_pageSize";
     public static final String PEOPLE_RESULTS="ssPeopleResults";
     public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
     public static final String PERMALINK="ssPermalink";

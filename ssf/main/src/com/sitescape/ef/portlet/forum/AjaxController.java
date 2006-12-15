@@ -827,6 +827,7 @@ public class AjaxController  extends SAbstractController {
 				try {
 					Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 					Binder binder = getBinderModule().getBinder(binderId);
+					model.put(WebKeys.BINDER, binder);
 					String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 					if (scope.equals("")) scope = DashboardHelper.Local;
 					User user = RequestContextHolder.getRequestContext().getUser();
@@ -856,12 +857,14 @@ public class AjaxController  extends SAbstractController {
 	String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 	String componentId = op2;
 	model.put("ss_divId", PortletRequestUtils.getStringParameter(request, "divId", ""));
-	model.put("ss_pageNumber", PortletRequestUtils.getStringParameter(request, "pageNumber", "0"));
+	model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
+	model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
 
 	if (!componentId.equals("")) {
 		try {
 			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
 			String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
 			if (scope.equals("")) scope = DashboardHelper.Local;
 			User user = RequestContextHolder.getRequestContext().getUser();

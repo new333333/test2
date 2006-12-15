@@ -640,6 +640,18 @@ public class DashboardHelper {
 			String[] maxHitsStr = (String[])data.get(WebKeys.SEARCH_FORM_MAX_HITS);
 			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr[0]));
 		}
+		int pageSize = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		int pageNumber = 0;
+		if (model.containsKey(WebKeys.PAGE_SIZE)) {
+			pageSize = Integer.valueOf((String)model.get(WebKeys.PAGE_SIZE));
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(pageSize));
+		}
+		if (model.containsKey(WebKeys.PAGE_NUMBER)) {
+			pageNumber = Integer.valueOf((String)model.get(WebKeys.PAGE_NUMBER));
+			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageNumber * pageSize));
+		}
+		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
+		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
 		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery, options);
 		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
