@@ -197,7 +197,6 @@ function ss_openUrlInNewTab(url) {
 }
 
 function ss_reloadOpener(fallBackUrl) {
-	alert('Reloading to: '+fallBackUrl+', '+ss_reloadUrl)
 	//Are we at the top window?
 	if (self.window != self.top) {
 		if (parent.ss_reloadUrl && parent.ss_reloadUrl != "") {
@@ -1507,8 +1506,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData) {
         if (x.status == 200) {
         	callbackRoutine(x.responseText, callbackData)        	
         } else {
-        	alert(x.status)
-        	alert(x.statusText)
+        	alert(x.status + "  \n" + x.statusText)
         	callbackRoutine(x.statusText)
         }
 	}
