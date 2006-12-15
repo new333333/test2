@@ -440,6 +440,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		        try {
 			        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 		        }
+		        catch(Exception e) {}
 		        finally {
 		            luceneSession.close();
 		        }

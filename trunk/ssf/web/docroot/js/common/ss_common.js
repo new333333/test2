@@ -2444,12 +2444,14 @@ function ss_hideDashboardMenu(obj) {
 	ss_hideDiv(formObj.parentNode.id)
 }
 
-function ss_moreDashboardSearchResults(binderId, pageNumber, divId, componentId) {
+function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, divId, componentId) {
 	var url = ss_dashboardAjaxUrl + "\&binderId="+binderId;
 	url += "\&operation=search_more";
 	url += "\&operation2="+componentId;
 	url += "\&divId="+divId;
 	url += "\&pageNumber="+pageNumber;
+	url += "\&pageSize="+pageSize;
+	url += "\&randomNumber="+ss_random++;
 	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
 }
 function ss_moreDashboardSearchResultsCallback(s, divId) {

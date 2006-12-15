@@ -61,6 +61,7 @@ public interface ObjectKeys {
     
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
+    public static final int SEARCH_MAX_HITS_DEFAULT = 10;
     public static final String SEARCH_SEARCH_FILTER = "searchFilter";
     public static final String SEARCH_SORT_BY = "sortBy";
     public static final String SEARCH_SORT_DESCEND = "sortDescend";

@@ -33,7 +33,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"><div></td>
+><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"></div></td>
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
@@ -44,26 +44,26 @@ if (displayStyle == null || displayStyle.equals("")) {
   </c:if>
   >
 
+ <c:if test="${!empty ssBinder}">
     <form 
       method="post" 
- <c:if test="${!empty ssBinder}">
-  	action="<portlet:actionURL>
-      <portlet:param name="action" value="modify_dashboard"/>
-      <portlet:param name="binderId" value="${ssBinder.id}"/>
-      </portlet:actionURL>">
+  	  action="<portlet:actionURL><portlet:param 
+  		name="action" value="modify_dashboard"/><portlet:param 
+  		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
      <c:set var="myId" value="binderId=${ssBinder.id}"/> 
 </c:if>
 <c:if test="${empty ssBinder}">
-  	action="<portlet:actionURL>
-      <portlet:param name="action" value="modify_dashboard_portlet"/>
-      <portlet:param name="dashboardId" value="${ssDashboardId}"/>
-     </portlet:actionURL>">
+    <form 
+      method="post" 
+  	  action="<portlet:actionURL><portlet:param 
+  	  	name="action" value="modify_dashboard_portlet"/><portlet:param 
+  	  	name="dashboardId" value="${ssDashboardId}"/></portlet:actionURL>">
      <c:set var="myId" value="dashboardId=${ssDashboardId}"/> 
 </c:if>
-	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}">
-	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}">
-	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}">
-	  <input type="hidden" name="_operation" value="">
+	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}"/>
+	  <input type="hidden" name="_componentId" value="${ss_dashboard_id}"/>
+	  <input type="hidden" name="_scope" value="${ss_dashboard_scope}"/>
+	  <input type="hidden" name="_operation" value=""/>
 	  <input type="hidden" name="_returnView" value="${ss_dashboard_returnView}"/>
 			<ul class="ss_title_bar_icons">
 			  <c:if test="${ss_dashboard_visible}">

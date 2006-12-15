@@ -146,7 +146,18 @@
 		</attribute>
 	</tag>
 
-		<tag>
+	<tag>
+		<name>debug</name>
+		<tag-class>com.sitescape.ef.taglib.DebugTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+	
+	<tag>
 		<name>displayConfiguration</name>
 		<tag-class>com.sitescape.ef.taglib.DisplayConfiguration</tag-class>
 		<body-content>JSP</body-content>

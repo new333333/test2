@@ -16,7 +16,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="ssNamespace" value="xxx"/>
+<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ssComponentId}">
 <c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
 </c:if>
