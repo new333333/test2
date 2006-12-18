@@ -52,7 +52,7 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
  		text = textObj.value;
 		var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
-		if (liObjs.length == 1) {
+		if (liObjs.length == 2) {
 			ss_findPlacesSelectItem(liObjs[0]);
 			return;
 		}
@@ -133,7 +133,7 @@ function ss_savefindPlacesData_${prefix}() {
 
 function ss_findPlacesNextPage() {
 	ss_findPlaces_pageNumber++;
-	ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);
+	setTimeout("ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);", 100);
 }
 
 function ss_findPlacesPrevPage() {
