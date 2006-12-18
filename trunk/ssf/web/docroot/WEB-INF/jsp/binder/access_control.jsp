@@ -184,14 +184,14 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="users" type="user"/>
+  <ssf:find formName="${renderResponse.namespace}rolesForm" formElement="users" type="user"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="groups" type="group"/>
+  <ssf:find formName="${renderResponse.namespace}rolesForm" formElement="groups" type="group"/>
 </td>
 </tr>
 <tr>
@@ -235,7 +235,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="users" 
+  <ssf:find formName="${renderResponse.namespace}rolesForm" formElement="users" 
     type="user" userList="${function.value.ssUsers}"/>
 </td>
 </tr>
@@ -243,7 +243,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}rolesForm" formElement="groups" 
+  <ssf:find formName="${renderResponse.namespace}rolesForm" formElement="groups" 
     type="group" userList="${function.value.ssGroups}"/>
 </td>
 </tr>

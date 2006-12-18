@@ -136,6 +136,7 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SHOW_COMPONENT="show_component";
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DELETE_TAB="delete_tab";
+	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
@@ -376,6 +377,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE="ss_userGroupType";
     public static final String USER_SEARCH_USER_GROUP_TYPE_GROUP="group";
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";

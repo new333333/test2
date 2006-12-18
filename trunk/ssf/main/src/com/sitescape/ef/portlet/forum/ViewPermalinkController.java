@@ -10,6 +10,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -40,6 +41,10 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
 		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
 		
+		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
+			Binder binder = getBinderModule().getBinder(new Long(binderId));
+			entityType = binder.getEntityIdentifier().getEntityType().name();
+		}
 		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString())) {
 			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {

@@ -77,14 +77,14 @@
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="users" 
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
     type="user" userList="${ssUsers}"/>
 </td>
 </tr>
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${renderResponse.namespace}fm" formElement="groups" 
+  <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>

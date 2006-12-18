@@ -42,11 +42,31 @@ function ss_turnOffDebugMode() {
 			</portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/findUser_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.findUserButton"/>">
-			  <ssf:findUsers formName="ss_findUserForm" 
+			  <ssf:find formName="ss_findUserForm" 
 			    formElement="searchText" 
-			    width="100px" singleUser="true"/> 
+			    type="user"
+			    width="100px" singleItem="true"/> 
 		      <div class="ss_global_toolbar_findUser_text">
 		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
+		      </div>
+		  </ssHelpSpot>
+		</form>
+	</li>
+
+<!-- Find places form -->
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton">
+		<form method="post" id="ss_findPlacesForm" name="ss_findPlacesForm" 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  	name="action" value="findUser"/></portlet:actionURL>">
+		  <ssHelpSpot helpId="personal_toolbar/findPlaces_button" offsetX="40" offsetY="10"
+		    title="<ssf:nlt tag="helpSpot.findPlacesButton"/>">
+			  <ssf:find 
+			    formName="ss_findPlacesForm" 
+			    formElement="searchText" 
+			    type="places"
+			    width="100px" singleItem="true"/> 
+		      <div class="ss_global_toolbar_findUser_text">
+		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findPlace"/></span>
 		      </div>
 		  </ssHelpSpot>
 		</form>

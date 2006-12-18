@@ -61,7 +61,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
 		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		if (!entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
 			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 			if (entryId != null) {
 				User entry = (User)getProfileModule().getEntry(binderId, entryId);

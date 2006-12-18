@@ -37,13 +37,18 @@ public class FilterHelper {
    	public final static String FilterEntryDefId = "filterEntryDefId";
    	public final static String FilterElementName = "filterElementName";
    	public final static String FilterElementValue = "filterElementValue";
+   	public final static String FilterEntityType = "filterEntityType";
    	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeEntry = "entry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
+   	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
+   	
+   	//Attribute names
+   	public final static String FilterAnd = "filterTermsAnd";
    	
    	//formData fields and values
    	private final static String FilterNameField = "filterName";
@@ -307,107 +312,130 @@ public class FilterHelper {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-    	Element qTreeBoolElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	Element andElement = qTreeBoolElement;
+    	Element qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	Element orField = qTreeAndElement;
     	
     	Element sfRootElement = searchFilter.getRootElement();
 
     	//Add the filter terms to the boolean query
-    	List liFilterTerms = sfRootElement.selectNodes(FilterTerms + "/" + FilterTerm);
-		Element orField = qTreeBoolElement;
-		if (liFilterTerms.size() > 1) orField = qTreeBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    	List liFilterTerms = sfRootElement.selectNodes(FilterTerms);
+
     	for (int i = 0; i < liFilterTerms.size(); i++) {
-    		Element filterTerm = (Element) liFilterTerms.get(i);
-    		String filterType = filterTerm.attributeValue(FilterType, "");
-    		if (filterType.equals(FilterTypeSearchText)) {
-    			//Add the search text as a field
-    			Element field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ALL_TEXT_FIELD);
-    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	    	child.setText(filterTerm.getText());
-    		} else if (filterType.equals(FilterTypeEntry)) {
-    			//This is an entry term. Build booleans from the element name and values.
-    			String defId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
-    			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
-    			if (elementName.equals("")) {
-    				//If no element name is specified, search for all entries with this definition id
+    		Element filterTerms = (Element) liFilterTerms.get(i);
+    		//If this set of terms is to be "anded" then start a new or field
+    		if (filterTerms.attributeValue(FilterAnd, "").equals("true")) 
+    			orField = qTreeAndElement.addElement(QueryBuilder.OR_ELEMENT);
+    		
+        	List liFilterTermsTerm = filterTerms.selectNodes("./" + FilterTerm);
+			if (liFilterTermsTerm.size() > 1) orField = qTreeAndElement.addElement(QueryBuilder.OR_ELEMENT);
+        	for (int j = 0; j < liFilterTermsTerm.size(); j++) {
+	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
+	    		String filterType = filterTerm.attributeValue(FilterType, "");
+	    		if (filterType.equals(FilterTypeSearchText)) {
+	    			//Add the search text as a field
+	    			Element field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ALL_TEXT_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText(filterTerm.getText());
+	    		} else if (filterType.equals(FilterTypeEntry)) {
+	    			//This is an entry term. Build booleans from the element name and values.
+	    			String defId = filterTerm.attributeValue(FilterHelper.FilterEntryDefId, "");
+	    			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+	    			if (elementName.equals("")) {
+	    				//If no element name is specified, search for all entries with this definition id
+						Element field;
+						Element child;
+						Element andField = orField;
+		    			if (!defId.equals("")) {
+		    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+	    	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+	    	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	    	child.setText(defId);
+		    			}
+	    			} else {
+	    				Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
+		    			while (itTermValues.hasNext()) {
+		    				String value = ((Element) itTermValues.next()).getText();
+		    				if (!value.equals("")) {
+		    					Element field;
+		    					Element child;
+		    					Element andField = orField;
+		    	    			if (!defId.equals("")) {
+		    	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+		        	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+		        	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		        	    	    	child.setText(defId);
+		    	    			}
+		    	    			
+		    	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
+		    	    			if (value.contains("*"))
+		    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
+		    	    			else
+		    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+		    	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		    	    	    	child.setText(value);
+		    				}
+		    			}
+	    			}
+	    		} else if (filterType.equals(FilterTypeWorkflow)) {
+	    			//This is a workflow state term. Build booleans from the state name.
+	    			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
 					Element field;
 					Element child;
 					Element andField = orField;
 	    			if (!defId.equals("")) {
 	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-    	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
-    	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	    	    	child.setText(defId);
+		    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
+		    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		    	    	child.setText(defId);
 	    			}
-    			} else {
-    				Iterator itTermValues = filterTerm.selectNodes(FilterHelper.FilterElementValue).iterator();
-	    			while (itTermValues.hasNext()) {
-	    				String value = ((Element) itTermValues.next()).getText();
-	    				if (!value.equals("")) {
-	    					Element field;
-	    					Element child;
-	    					Element andField = orField;
-	    	    			if (!defId.equals("")) {
-	    	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-	        	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-	        	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
-	        	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	        	    	    	child.setText(defId);
-	    	    			}
-	    	    			
-	    	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-	    	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
-	    	    			if (value.contains("*"))
-	    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
-	    	    			else
-	    	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-	    	    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	    	child.setText(value);
+	    			
+	    	    	//Add an OR field with all of the desired states
+	    			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+	    			Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();
+	    			while (itTermStates.hasNext()) {
+	    				String stateName = ((Element) itTermStates.next()).getText();
+	    				if (!stateName.equals("")) {
+	    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+	    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+	    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+	    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    					child2.setText(stateName);
 	    				}
 	    			}
-    			}
-    		} else if (filterType.equals(FilterTypeWorkflow)) {
-    			//This is a workflow state term. Build booleans from the state name.
-    			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");
-				Element field;
-				Element child;
-				Element andField = orField;
-    			if (!defId.equals("")) {
-    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
-	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText(defId);
-    			}
-    			
-    	    	//Add an OR field with all of the desired states
-    			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
-    			Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();
-    			while (itTermStates.hasNext()) {
-    				String stateName = ((Element) itTermStates.next()).getText();
-    				if (!stateName.equals("")) {
-    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
-    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    					child2.setText(stateName);
-    				}
-    			}
-    		} else if (filterType.equals(FilterTypeFolders)) {
-    			String folderId = filterTerm.attributeValue(FilterHelper.FilterFolderId, "");
-				Element field;
-				Element child;
-				Element andField = orField;
-    			if (!folderId.equals("")) {
-    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
-	    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
-	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
-	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText(folderId);
-    			}
-    		}
+	    		} else if (filterType.equals(FilterTypeFolders)) {
+	    			String folderId = filterTerm.attributeValue(FilterHelper.FilterFolderId, "");
+					Element field;
+					Element child;
+					Element andField = orField;
+	    			if (!folderId.equals("")) {
+	    				andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+		    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
+		    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		    	    	child.setText(folderId);
+	    			}
+	    		} else if (filterType.equals(FilterTypeEntityTypes)) {
+	    	    	//Add an OR field with all of the desired entity types
+	    			Element andField = orField;
+	    			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+	    			Iterator itTermTypes = filterTerm.selectNodes(FilterEntityType).iterator();
+	    			while (itTermTypes.hasNext()) {
+	    				String entityTypeName = ((Element) itTermTypes.next()).getText();
+	    				if (!entityTypeName.equals("")) {
+	    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+	    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTITY_FIELD);
+	    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+	    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    					child2.setText(entityTypeName);
+	    				}
+	    			}
+	    		}
+        	}
     	}
     	//qTree.asXML();
     	return qTree;
