@@ -93,7 +93,7 @@ public class EntityIndexUtils {
             
             if(title.length() > 0) {
     	        Field allTextField = BasicIndexUtils.allTextField(title);
-    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED); 
+    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.UN_TOKENIZED); 
     	        Field title1Field = new Field(EntityIndexUtils.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.UN_TOKENIZED);
                 doc.add(titleField);
                 doc.add(title1Field);
