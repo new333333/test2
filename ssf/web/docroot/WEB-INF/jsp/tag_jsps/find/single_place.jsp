@@ -57,6 +57,15 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 			return;
 		}
  	}
+
+ 	//Fade the previous selections
+ 	var savedColor = "#000000";
+ 	var divObj = document.getElementById('available_'+elementName+'_${prefix}');
+ 	if (divObj != null && divObj.style && divObj.style.color) {
+ 		savedColor = divObj.style.color;
+ 	}
+ 	if (divObj != null) divObj.style.color = "#cccccc";
+
  	ss_debug("Page number: " + ss_findPlaces_pageNumber + ", //"+text+"//")
  	var url = "<ssf:url 
     	adapter="true" 
@@ -72,11 +81,12 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
-	ajaxRequest.addKeyValue("listDivId", "available_<%= findPlacesElementName %>_${prefix}")
+	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
 	ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindPlacesRequest);
 	ajaxRequest.setPostRequest(ss_postfindPlacesRequest);
 	ajaxRequest.setData("elementName", elementName)
+	ajaxRequest.setData("savedColor", savedColor)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -88,7 +98,11 @@ function ss_postfindPlacesRequest(obj) {
 	}
 	ss_findPlacesSearchInProgress = 0;
 
-	ss_showDiv('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	ss_showDivActivate('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+		
+ 	//Show this at full brightness
+ 	var divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
+ 	if (divObj != null) divObj.style.color = obj.getData('savedColor');
 		
 	//See if there is another search request to be done
 	if (ss_findPlacesSearchWaiting == 1) {
