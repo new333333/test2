@@ -53,7 +53,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
  		text = textObj.value;
 		var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
-		if (liObjs.length == 1) {
+		if (liObjs.length == 2) {
 			ss_findUserSelectItem(liObjs[0]);
 			return;
 		}

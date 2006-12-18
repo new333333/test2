@@ -17,9 +17,9 @@
 		  ><c:out value="${entry.title}"/></li>
 		</c:forEach>
 	    <li>
-	        <div>
+	        <div align="left">
 	          <c:if test="${ss_pageNumber > 0}">
-	            <span style="padding-right:20px;">
+	            <span>
 	            <a href="#" onClick="ss_findPlacesPrevPage();return false;">
 	              <ssf:nlt tag="general.Previous"/>...
 	            </a>
