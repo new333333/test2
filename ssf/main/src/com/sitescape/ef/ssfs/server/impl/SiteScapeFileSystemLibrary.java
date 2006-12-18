@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.activation.FileTypeMap;
 
@@ -18,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FileAttachment;
@@ -26,12 +23,12 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.EmptyInputData;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.security.AccessControlException;
@@ -51,7 +48,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String PARENT_BINDER_PATH 	= "pbp"; // always set
 
 	private static final String LEAF_BINDER 		= "lb";
-	private static final String LEAF_ENTRY 			= "le";
+	private static final String LEAF_FOLDER_ENTRY 	= "lfe";
 	private static final String PARENT_BINDER 		= "pb";
 	private static final String FILE_ATTACHMENT 	= "fa"; 
 
@@ -76,8 +73,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	AlreadyExistsException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
-			throw new TypeMismatchException("A folder with the same name already exists");
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			throw new TypeMismatchException("A directory with the same name already exists");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_FILE))
 			throw new AlreadyExistsException("A file with the same name already eixsts");
 		
@@ -88,8 +85,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	throws NoAccessException, NoSuchObjectException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
-			throw new TypeMismatchException("The name refers to a folder not a file");
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			throw new TypeMismatchException("The name refers to a directory not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
 		
@@ -100,32 +97,32 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	throws NoAccessException, AlreadyExistsException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
-			throw new TypeMismatchException("A folder with the same name already exists");
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			throw new TypeMismatchException("A directory with the same name already exists");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_FILE))
 			throw new AlreadyExistsException("A file with the same name already eixsts");
 		
 		writeResource(uri, objMap, content, true);		
 	}
 
-	public void createFolder(Map uri) throws NoAccessException, 
+	public void createDirectory(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
 		if(info.equals(CrossContextConstants.OBJECT_INFO_FILE))
 			throw new TypeMismatchException("A file with the same name already exists");
-		else if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
-			throw new AlreadyExistsException("A folder with the same name already eixsts");
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			throw new AlreadyExistsException("A directory with the same name already eixsts");
 		
-		createFileFolder(uri, objMap);
+		createLibraryFolder(uri, objMap);
 	}
 
 	public InputStream getResource(Map uri) throws NoAccessException, 
 	NoSuchObjectException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
-			throw new TypeMismatchException("The name refers to a folder not a file");
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			throw new TypeMismatchException("The name refers to a directory not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
 		
@@ -150,13 +147,11 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	public void removeObject(Map uri) throws NoAccessException, NoSuchObjectException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
+		if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
 			throw new NoSuchObjectException("The object does not exist");
-		else if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
-			Binder binder = getLeafBinder(objMap);
-			if(!isFileFolder(binder))
-				throw new NoAccessException("Can not remove binder that is not file folder");
-			removeFolder(uri, objMap);
+		}
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
+			throw new NoAccessException("Directory can not be deleted");
 		}
 		else {
 			removeResource(uri, objMap);
@@ -225,7 +220,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			return null;
 		}
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
-			throw new NoSuchObjectException("The folder does not exist");
+			throw new NoSuchObjectException("The object does not exist");
 		}
 
 		return getChildrenNames(uri, objMap);
@@ -241,7 +236,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		
 		props.put(CrossContextConstants.OBJECT_INFO, info);
 				
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
 			Binder binder = getLeafBinder(objMap);
 			
 			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
@@ -280,12 +275,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	throws NoAccessException, NoSuchObjectException, LockException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
 			throw new TypeMismatchException("The name refers to a folder not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
 
-		FolderEntry entry = getFileFolderEntry(objMap);
+		FolderEntry entry = getFolderEntry(objMap);
 		
 		// Check if the user has right to modify the entry
 		try {
@@ -316,12 +311,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	NoSuchObjectException, TypeMismatchException {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
-		if(info.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
+		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
 			throw new TypeMismatchException("The name refers to a folder not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
 
-		FolderEntry entry = getFileFolderEntry(objMap);
+		FolderEntry entry = getFolderEntry(objMap);
 		
 		// Check if the user has right to modify the entry
 		try {
@@ -344,28 +339,19 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
 			throw new NoSuchObjectException("The source object does not exist");
 		}
-		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
-			if(!isFileFolder(getLeafBinder(sourceMap)))
-				throw new TypeMismatchException("Can not copy binder that is not file folder");
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
+			throw new TypeMismatchException("Directory can not be copied");
 		}
 		
 		Map targetMap = new HashMap();
 		String targetInfo = objectInfo(targetUri, targetMap);
 		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) { // Target exists
-			// Make sure that both the source and the target are same type. 
-			if(!sourceInfo.equals(targetInfo))
+			// Make sure that the target is also a file.
+			if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
 				throw new TypeMismatchException("The source and target types do not match");
 			
-			if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FILE)) {
-				copyFileFolderEntry(getFileFolderEntry(sourceMap), getFileFolderEntry(targetMap));
-			}
-			else {
-				if(!isFileFolder(getLeafBinder(targetMap)))
-					throw new TypeMismatchException("Can not copy into a binder that is not a file folder");
-				
-				copyFileFolder((Folder) getLeafBinder(sourceMap), 
-						(Folder) getLeafBinder(targetMap), recursive);
-			}
+			// Copy the file
+			copyFile(getFolderEntry(sourceMap), getFolderEntry(targetMap), getLastElemName(targetMap));
 		}
 		else { // Target doesn't exist
 			Binder targetParentBinder = getParentBinder(targetMap);
@@ -374,19 +360,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			if(targetParentBinder == null)
 				throw new NoSuchObjectException("The target's parent binder does not exist");
 			
-			if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FILE)) {
-				// If the source is a file folder entry, the target's parent binder
-				// must be a file folder.
-				if(!isFileFolder(targetParentBinder))
-					throw new TypeMismatchException("Can not copy file entry into binder that is not file folder");
-				
-				copyFileFolderEntry(getFileFolderEntry(sourceMap), 
-						(Folder) targetParentBinder, getLastElemName(targetMap));
-			}
-			else {
-				copyFileFolder((Folder) getLeafBinder(sourceMap), targetParentBinder, 
-						getLastElemName(targetMap), recursive);
-			}
+			// The target's parent binder must be a library folder.
+			if(!isLibraryFolder(targetParentBinder))
+				throw new TypeMismatchException("It is not allowed to copy a file into a binder that is not a library folder");
+			
+			copyFile(getFolderEntry(sourceMap), 
+					(Folder) targetParentBinder, getLastElemName(targetMap));
 		}
 	}
 	
@@ -399,15 +378,15 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
 			throw new NoSuchObjectException("The source object does not exist");
 		}
-		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER)) {
-			if(!isFileFolder(getLeafBinder(sourceMap))) {
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
+			if(!isLibraryFolder(getLeafBinder(sourceMap))) {
 				// Important: It is important not to use NoAccessException or 
 				// AlreadyExistsException here. 1) If NoAccessException is thrown
 				// while user is trying to rename a non-file folder binder
 				// through Windows Explorer, the Explorer will try instead to
 				// achieve similar 'rename' effect by creating a new folder
 				// with the new name followed by deleting the old folder.
-				// It that is allowed to proceed, the existing non-file folder
+				// If that is allowed to proceed, the existing non-file folder
 				// binder is deleted from the system, and a new file folder
 				// is created. That kind of indirect deletion is NEVER allowed 
 				// in Aspen. 2) If AlreadyExistsException is thrown, Explorer
@@ -443,176 +422,10 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new AlreadyExistsException("Cannot rename: An object with the name you specified already exists");
 		}
 			
-		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_FOLDER))
+		if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
 			renameFolder(sourceUri, sourceMap, targetUri, targetMap);
 		else
 			renameResource(sourceUri, sourceMap, targetUri, targetMap);
-	}
-
-	/**
-	 * Copy a file folder into the binder creating a new file folder in it. 
-	 * (that is, it is assumed that toParentBinder does not contain a child 
-	 * of any type whose name is equal to the name of the newly created folder).
-	 * 
-	 * @param fromFileFolder source file folder
-	 * @param toParentBinder target binder in which to create a new file folder.
-	 * This binder can be of any type.
-	 * @param toFolderTitle the name of the newly created file folder
-	 * @throws NoAccessException
-	 */
-	private void copyFileFolder(Folder fromFileFolder, Binder toParentBinder, 
-			String toFolderTitle, boolean recursive) throws NoAccessException {
-		Long toFolderId = createFileFolder(toParentBinder, toFolderTitle);
-		
-		Folder toFolder = bs.getFolderModule().getFolder(toFolderId);
-		
-		// Copy sub-entries
-		Set<String> subEntryNames = getChildFileFolderEntryNames(fromFileFolder);
-		FolderEntry subEntry;
-		for(String subEntryName : subEntryNames) {
-			subEntry = bs.getFolderModule().getFileFolderEntryByTitle(fromFileFolder, subEntryName);
-			if(subEntry != null) {
-				try {
-					copyFileFolderEntry(subEntry, toFolder, subEntryName);
-				}
-				catch(Exception e) {
-					// For whatever reason, we failed to copy the particular
-					// sub-entry. Log the error and continue processing with
-					// other sub-entries. 
-					logger.warn("Error while copying file folder entry [" + fromFileFolder.getPathName() + "/" + subEntryName + "]", e);
-					continue;
-				}
-			}
-			else {
-				// Normally this shouldn't happen. But in rare cases, it IS possible
-				// to occur if the particular sub-entry has been deleted by another
-				// user between the time the names of the child entries were requested
-				// and the time the particular child entry object itself was requested.
-				// Another possibility is that the search index and the database are
-				// out of synch of each other.
-				logger.warn("Can not find file folder entry [" + fromFileFolder.getPathName() + "/" + subEntryName + "]");
-				continue;
-			}
-		}
-		
-		if(!recursive)
-			return;
-		
-		// Copy sub-folders
-		Set<Folder> subFolders = getChildFileFolders(fromFileFolder);
-		for(Folder subFolder : subFolders) {
-			try {
-				copyFileFolder(subFolder, toFolder, subFolder.getTitle(), recursive);
-			}
-			catch(Exception e) {
-				// For whatever reason, we failed to copy the particular 
-				// sub-folder (which works recursively). Log the error and
-				// continue processing with other branches.
-				logger.warn("Error while copying file folder [" + subFolder.getPathName() + "]", e);
-				continue;
-			}
-		}
-	}
-	
-	/**
-	 * Copy a file folder to another existing file folder. It means that the 
-	 * children of fromFileFolder are copied into toFileFolder. 
-	 * 
-	 * @param fromFileFolder
-	 * @param toFileFolder
-	 * @param recursive
-	 * @throws NoAccessException
-	 */
-	private void copyFileFolder(Folder fromFileFolder, Folder toFileFolder, 
-			boolean recursive) throws NoAccessException {
-		Set<String> toSubFolderNames = getChildFolderNames(toFileFolder);
-		
-		Set<String> toSubEntryNames = getChildFileFolderEntryNames(toFileFolder);
-		
-		// Copy sub-entries
-		Set<String> fromSubEntryNames = getChildFileFolderEntryNames(fromFileFolder);
-		FolderEntry fromSubEntry;
-		for(String fromSubEntryName : fromSubEntryNames) {
-			fromSubEntry = bs.getFolderModule().getFileFolderEntryByTitle(fromFileFolder, fromSubEntryName);
-			if(fromSubEntry != null) {
-				try {
-					if(toSubFolderNames.contains(fromSubEntryName)) {
-						// The toFolder contains a sub-folder whose name is equal
-						// to the name of this sub-entry of fromFolder. When both
-						// source and target exist, they must be of the same type.
-						logger.warn("Can not copy file folder entry [" + fromFileFolder.getPathName() + "/" + 
-								fromSubEntryName + "] because the target exists and it is file folder type");
-						continue;
-					}
-					else if(toSubEntryNames.contains(fromSubEntryName)) {
-						// The toFolder contains a sub-entry whose name is equal
-						// to the name of this sub-entry of fromFolder.
-						FolderEntry toSubEntry = bs.getFolderModule().getFileFolderEntryByTitle(toFileFolder, fromSubEntryName);
-						copyFileFolderEntry(fromSubEntry, toSubEntry);
-					}
-					else {
-						// The toFolder contains neither a sub-folder nor a sub-entry that
-						// matches the name of this sub-entry of fromFolder. 
-						copyFileFolderEntry(fromSubEntry, toFileFolder, fromSubEntryName);
-					}
-				}
-				catch(Exception e) {
-					// For whatever reason, we failed to copy the particular
-					// sub-entry. Log the error and continue processing with
-					// other sub-entries. 
-					logger.warn("Error while copying file folder entry [" + fromFileFolder.getPathName() + "/" + fromSubEntryName + "]", e);
-					continue;
-				}
-			}
-			else {
-				// Normally this shouldn't happen. But in rare cases, it IS possible
-				// to occur if the particular sub-entry has been deleted by another
-				// user between the time the names of the child entries were requested
-				// and the time the particular child entry object itself was requested.
-				// Another possibility is that the search index and the database are
-				// out of synch of each other.
-				logger.warn("Can not find file folder entry [" + fromFileFolder.getPathName() + "/" + fromSubEntryName + "]");
-				continue;
-			}
-		}
-	
-		if(!recursive)
-			return;
-		
-		// Copy sub-folders
-		
-		Set<Folder> fromSubFolders = getChildFileFolders(fromFileFolder);
-		for(Folder fromSubFolder : fromSubFolders) {
-			try {
-				if(toSubFolderNames.contains(fromSubFolder.getTitle())) {
-					// The toFolder contains a sub-folder whose name is equal
-					// to the name of this sub-folder of fromFolder.
-					Folder toSubFolder = (Folder) bs.getBinderModule().getBinderByPathName
-					(toFileFolder.getPathName() + "/" + fromSubFolder.getTitle());
-					copyFileFolder(fromSubFolder, toSubFolder, recursive);
-				}
-				else if(toSubEntryNames.contains(fromSubFolder.getTitle())) {
-					// The toFolder contains a sub-entry whose name is equal
-					// to the name of this sub-folder of fromFolder. When both
-					// source and target exist, they must be of the same type.
-					logger.warn("Can not copy file folder [" + fromSubFolder.getPathName() + 
-							"] because the target exists and it is file folder entry type");
-					continue;				
-				}
-				else {
-					// The toFolder contains neither a sub-folder nor a sub-entry
-					// that matches the name of this sub-folder of fromFolder. 
-					copyFileFolder(fromSubFolder, toFileFolder, fromSubFolder.getTitle(), recursive);
-				}
-			}
-			catch(Exception e) {
-				// For whatever reason, we failed to copy the particular 
-				// sub-folder (which works recursively). Log the error and
-				// continue processing with other branches.
-				logger.warn("Error while copying file folder [" + fromSubFolder.getPathName() + "]", e);
-			}
-		}
-	
 	}
 	
 	/**
@@ -625,17 +438,16 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	 * 
 	 * @param fromEntry
 	 * @param toParentFolder
-	 * @param toEntryTitle the title of the newly created entry. Also used for
-	 * the file name.
+	 * @param fileName
 	 * @throws NoAccessException
 	 */
-	private void copyFileFolderEntry(FolderEntry fromEntry, Folder toParentFolder,
-			String toEntryTitle) throws NoAccessException {
-		FileAttachment fromFA = getFileAttachment(fromEntry);
+	private void copyFile(FolderEntry fromEntry, Folder toParentFolder,
+			String fileName) throws NoAccessException {
+		FileAttachment fromFA = getFileAttachment(fromEntry, fileName);
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		createFileFolderEntry(toParentFolder, toEntryTitle, fromContent, 
+		createLibraryFolderEntry(toParentFolder, fileName, fromContent, 
 				fromFA.getModification().getDate());
 	}
 	
@@ -649,13 +461,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	 * @param toEntry
 	 * @throws NoAccessException
 	 */
-	private void copyFileFolderEntry(FolderEntry fromEntry, FolderEntry toEntry)
-		throws NoAccessException {
-		FileAttachment fromFA = getFileAttachment(fromEntry);
+	private void copyFile(FolderEntry fromEntry, FolderEntry toEntry,
+			String fileName) throws NoAccessException {
+		FileAttachment fromFA = getFileAttachment(fromEntry, fileName);
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		modifyFileFolderEntry(toEntry, fromContent, fromFA.getModification().getDate());
+		modifyLibraryFolderEntry(toEntry, fromContent, fromFA.getModification().getDate());
 	}
 	
 	private String objectInfo(Map uri, Map objMap) throws NoAccessException {
@@ -665,7 +477,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			if(libpath == null) { // uri ends with zone name
 				objMap.put(LAST_ELEM_NAME, null);
 				objMap.put(PARENT_BINDER_PATH, null);
-				return CrossContextConstants.OBJECT_INFO_FOLDER;
+				return CrossContextConstants.OBJECT_INFO_DIRECTORY;
 			}
 			
 			int index = libpath.lastIndexOf("/");
@@ -679,16 +491,16 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			objMap.put(PARENT_BINDER_PATH, parentBinderPath); // may be null
 			
 			// Check if the library path refers to an existing binder.
-			// Note: This method performs access check.
+			// Note: This method performs access check!
 			Binder binder = bs.getBinderModule().getBinderByPathName(libpath);
 
 			if(binder != null) { // matching binder exists
 				objMap.put(LEAF_BINDER, binder);
-				return CrossContextConstants.OBJECT_INFO_FOLDER;
+				return CrossContextConstants.OBJECT_INFO_DIRECTORY;
 			}
 			else { // No matching binder
 				// One of the three possibilities:
-				// 1. an existing file folder entry (ie file)
+				// 1. an existing file
 				// 2. non-existing binder
 				// 3. non-existing file
 				// In all three cases, it is helpful to locate and cache the binder
@@ -698,17 +510,17 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 					Binder parentBinder = getParentBinder(objMap);
 
 					if(parentBinder != null) { // matching parent binder exists
-						// Check if the parent binder is a file folder
-						if(isFileFolder(parentBinder)) {
-							// Since the parent folder is of file folder type, we can
-							// check to see if the path refers to a file folder entry.
-							// Try locating file folder entry
-							// Note: This method performs access check.
-							FolderEntry fileFolderEntry = 
+						// Check if the parent binder is a library folder
+						if(isLibraryFolder(parentBinder)) {
+							// Since the parent folder is of library folder type, we can
+							// check to see if the path refers to a file.
+							// Try locating library folder entry
+							// Note: This method performs access check!
+							FolderEntry entry = 
 								bs.getFolderModule().getFileFolderEntryByTitle((Folder)parentBinder, lastElemName);
-							if(fileFolderEntry != null) {
+							if(entry != null) {
 								// The path refers to an existing file
-								objMap.put(LEAF_ENTRY, fileFolderEntry);
+								objMap.put(LEAF_FOLDER_ENTRY, entry);
 								return CrossContextConstants.OBJECT_INFO_FILE;
 							}
 							else {
@@ -753,7 +565,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		FileAttachment fa = (FileAttachment) objMap.get(FILE_ATTACHMENT);
 		
 		if(fa == null) {
-			fa = getFileAttachment(getFileFolderEntry(objMap));
+			fa = getFileAttachment(getFolderEntry(objMap), getLastElemName(objMap));
 			
 			objMap.put(FILE_ATTACHMENT, fa); // cache it just in case referenced again
 		}
@@ -761,17 +573,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		return fa;
 	}
 	
-	private FileAttachment getFileAttachment(FolderEntry entry) {
-		Definition definition = entry.getEntryDef();
-		
-		String repositoryName = getLibraryRepositoryName(definition);
-		
-//		return entry.getFileAttachment(repositoryName, entry.getTitle());		
-		return null;
+	private FileAttachment getFileAttachment(FolderEntry entry, String fileName) {
+		return entry.getFileAttachment(fileName);
 	}
 	
-	private FolderEntry getFileFolderEntry(Map objMap) {
-		return (FolderEntry) objMap.get(LEAF_ENTRY);
+	private FolderEntry getFolderEntry(Map objMap) {
+		return (FolderEntry) objMap.get(LEAF_FOLDER_ENTRY);
 	}
 	
 	private String getLastElemName(Map objMap) {
@@ -782,22 +589,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		return (String) objMap.get(PARENT_BINDER_PATH);
 	}
 	
-	private String getLibraryRepositoryName(Definition definition) {
-		Document defDoc = definition.getDefinition();
-		Element root = defDoc.getRootElement();
-		Element item = (Element) root.selectSingleNode("//item[@name='" + ITEM_NAME
-				+ "' and @type='data']");
-		Element storageElem = (Element) item.selectSingleNode("./properties/property[@name='storage']");
-		String value = storageElem.attributeValue("value");
-		if(value == null)
-			value = storageElem.attributeValue("default");
-		return value;
+	private boolean isFolder(Binder binder) {
+		return (binder.getEntityIdentifier().getEntityType() == EntityType.folder);		
 	}
 	
-	private boolean isFileFolder(Binder binder) {
-		Integer defType = binder.getDefinitionType();
-		
-		return true;
+	private boolean isLibraryFolder(Binder binder) {
+		return (isFolder(binder) && binder.isLibrary());
 	}
 	
 	private Binder getLeafBinder(Map objMap) {
@@ -829,12 +626,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 	}
 	
-	private void createFileFolderEntry(Folder folder, String fileName, 
+	private void createLibraryFolderEntry(Folder folder, String fileName, 
 			InputStream content, Date modDate)
 	throws NoAccessException {
-		Definition def = getFileEntryDefinition(folder);
+		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new SiteScapeFileSystemException("There is no file entry definition to use");
+			throw new SiteScapeFileSystemException("There is no folder entry definition to use");
 		
 		String elementName = getLibraryElementName(def);
 		
@@ -866,12 +663,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 	}
 	
-	private void modifyFileFolderEntry(FolderEntry entry, InputStream content, Date modDate) 
+	private void modifyLibraryFolderEntry(FolderEntry entry, InputStream content, Date modDate) 
 	throws NoAccessException {
 		Folder folder = entry.getParentFolder();
-		Definition def = getFileEntryDefinition(folder);
+		Definition def = getFolderEntryDefinition(folder);
 		if(def == null)
-			throw new SiteScapeFileSystemException("There is no file entry definition to use");
+			throw new SiteScapeFileSystemException("There is no folder entry definition to use");
 		
 		String elementName = getLibraryElementName(def);
 		
@@ -913,32 +710,33 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(parentBinder == null) // No parent binder exists
 			throw new NoAccessException("Parent binder does not exist");
 		
-		// We can create resource only in a file folder, not just any type of binder.
-		if(!isFileFolder(parentBinder))
-			throw new NoAccessException("Parent binder is not a file folder");
+		// We can create resource only in a library folder, not just any type of binder.
+		if(!isLibraryFolder(parentBinder))
+			throw new NoAccessException("Parent binder is not a library folder");
 				
 		String fileName = getLastElemName(objMap);		
 		
 		if(isNew) {
-			createFileFolderEntry((Folder) parentBinder, fileName, content, null);
+			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
 		}
 		else {
-			modifyFileFolderEntry(getFileFolderEntry(objMap), content, null);
+			modifyLibraryFolderEntry(getFolderEntry(objMap), content, null);
 		}
 	}
 	
 	/**
-	 * Create a file folder. It is not possible to create a folder of any other type. 
+	 * Create a library folder (which means it should be a folder whose library 
+	 * flag is set). It is not possible to create a binder of any other type. 
 	 * 
 	 * @param uri
 	 * @param objMap
 	 * @throws NoAccessException
 	 */
-	private void createFileFolder(Map uri, Map objMap) throws NoAccessException {
-		// We can create a file folder only if its parent already exists.
+	private void createLibraryFolder(Map uri, Map objMap) throws NoAccessException {
+		// We can create a library folder only if its parent already exists.
 		// More specifically:
 		// 1) We can not create top-level container (ie, workspace)
-		// 2) We can not create any container of type other than file folder.
+		// 2) We can not create any container of type other than folder.
 		// 3) Folder creation takes place at one-level at a time. For example,
 		// we can not create a/b/c, unless a/b already exists. 
 		
@@ -946,16 +744,20 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(parentBinder == null) // No parent binder exists
 			throw new NoAccessException("Parent binder does not exist");
 		
+		EntityType parentType = parentBinder.getEntityIdentifier().getEntityType();
+		if(parentType != EntityType.folder && parentType != EntityType.workspace)
+			throw new NoAccessException("Parent binder is neither folder nor workspace");
+		
 		String folderName = getLastElemName(objMap);
 		
-		createFileFolder(parentBinder, folderName);
+		createLibraryFolder(parentBinder, folderName);
 	}
 	
-	private Long createFileFolder(Binder parentBinder, String folderName)
+	private Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws NoAccessException {
-		Definition def = getFileFolderDefinition(parentBinder);
+		Definition def = getFolderDefinition(parentBinder);
 		if(def == null)
-			throw new SiteScapeFileSystemException("There is no file folder definition to use");
+			throw new SiteScapeFileSystemException("There is no folder definition to use");
 		
 		Map data = new HashMap(); // Input data
 		// Title field, not name, is used as the name of the folder. Weird...
@@ -1001,13 +803,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else {
 			// The binder is a folder. The children can consist of other
-			// folders and entries, but no workspaces. However, we do not
-			// include entries unless the folder is a file folder. A file
-			// folder can only contain file folder entries. 
+			// folders and files, but no workspaces. However, only a library 
+			// folder can expose its contained files through webdav. 
 			titles = getChildFolderNames((Folder)binder);
 			
-			if(isFileFolder(binder)) {
-				Set<String> titles2 = getChildFileFolderEntryNames((Folder)binder);
+			if(isLibraryFolder(binder)) {
+				Set<String> titles2 = getLibraryFolderChildrenFileNames((Folder)binder);
 				titles.addAll(titles2);
 			}
 		}
@@ -1019,65 +820,37 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		return bs.getFolderModule().getSubfoldersTitles(folder);
 	}
 	
-	private Set<Folder> getChildFileFolders(Folder fileFolder) {
-		return bs.getFolderModule().getSubfolders(fileFolder);
+	private Set<String> getLibraryFolderChildrenFileNames(Folder libraryFolder) {
+		return bs.getFileModule().getChildrenFileNames(libraryFolder);
 	}
-	
-	private Set<String> getChildFileFolderEntryNames(Folder fileFolder) {
-		// Get the list of file folder entries in the file folder and
-		// add their titles to the set. This is done by using search index.
-		Set<String> titles = new HashSet<String>();
-		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE);
-		Map folderEntries = bs.getFolderModule().getEntries(fileFolder.getId(), options);
-		List entries = (ArrayList) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-		for (int i = 0; i < entries.size(); i++) {
-			Map ent = (Map) entries.get(i);
-			String titleString = (String) ent
-					.get(EntityIndexUtils.TITLE_FIELD);
-			if (titleString != null)
-				titles.add(titleString);
-		}
-		return titles;
-	}
-	
-	TreeSet<String> titles = new TreeSet<String>();
-
-	
-	/**
-	 * Remove a folder. The folder could be any type.
-	 * 
-	 * @param uri
-	 * @param objMap
-	 * @throws NoAccessException
-	 */
-	private void removeFolder(Map uri, Map objMap) throws NoAccessException {
-		try {
-			bs.getBinderModule().deleteBinder(getLeafBinder(objMap).getId());
-		}
-		catch(AccessControlException e) {
-			throw new NoAccessException(e.getLocalizedMessage());						
-		}
-	}
-	
+		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
+		FileAttachment fa = getFileAttachment(objMap);
+		List faId = new ArrayList();
+		faId.add(fa.getId());
+		
 		try {
-			bs.getFolderModule().deleteEntry(getParentBinder(objMap).getId(), 
-					getFileFolderEntry(objMap).getId());
+			bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId);
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
-		}
+		} 
+		catch (ReservedByAnotherUserException e) {
+			throw new NoAccessException(e.getLocalizedMessage());
+		} 
+		catch (WriteFilesException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		} 
 	}
 	
-	private Definition getFileEntryDefinition(Folder folder) {
+	private Definition getFolderEntryDefinition(Folder folder) {
 		Definition def = folder.getDefaultEntryDef();
 		if(def == null)
-			def = getZoneWideDefaultFileEntryDefinition();
+			def = getZoneWideDefaultFolderEntryDefinition();
 		return def;
 	}
 	
-	private Definition getZoneWideDefaultFileEntryDefinition() {
+	private Definition getZoneWideDefaultFolderEntryDefinition() {
 		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
 		if(defs != null)
 			return (Definition) defs.get(0);
@@ -1085,20 +858,21 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			return null;
 	}
 	
-	private Definition getFileFolderDefinition(Binder binder) {
-		if(isFileFolder(binder)) {
-			// If the parent binder in which to create a new file folder happens
-			// to be a file folder itself, simply re-use the file folder definition
-			// of the parent. That is, make the sub-directory the same type as
-			// its parent. 
-			return binder.getEntryDef();
+	private Definition getFolderDefinition(Binder parentBinder) {
+		if(parentBinder instanceof Folder) {
+			// If the parent binder in which to create a new library folder
+			// happens to be a folder itself, simply re-use the folder
+			// definition of the parent. That is, make the sub-directory
+			// the same type as its parent.
+			return parentBinder.getEntryDef();
 		}
 		else {
-			return getZoneWideDefaultFileFolderDefinition();
+			// The binder must be a workspace.
+			return getZoneWideDefaultFolderDefinition();
 		}
 	}
 	
-	private Definition getZoneWideDefaultFileFolderDefinition() {
+	private Definition getZoneWideDefaultFolderDefinition() {
 		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
@@ -1123,11 +897,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		// So we can safely request the file module for the content of
 		// the file. 
 		return bs.getFileModule().readFile(getParentBinder(objMap), 
-				getFileFolderEntry(objMap), fa);	
-	}
-	
-	private InputStream getResource(FolderEntry entry) {
-		return bs.getFileModule().readFile(entry.getParentFolder(), entry, getFileAttachment(entry));
+				getFolderEntry(objMap), fa);	
 	}
 	
 	private void renameFolder(Map sourceUri, Map sourceMap, Map targetUri, 
@@ -1155,7 +925,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			data.put("_renameFileTo", getLastElemName(targetMap));
 			data.put("_renameFileTo_fa", getFileAttachment(sourceMap));
 			
-			FolderEntry entry = getFileFolderEntry(sourceMap);
+			FolderEntry entry = getFolderEntry(sourceMap);
 			
 			bs.getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
 					entry.getId(), new MapInputData(data), null, null);

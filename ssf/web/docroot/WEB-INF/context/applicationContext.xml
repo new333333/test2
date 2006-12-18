@@ -599,6 +599,8 @@
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>		
 		<property name="folderDao"><ref local="folderDao"/></property>		
+		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="contentFilter">
 			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
 		</property>			

@@ -16,6 +16,10 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.search.Query;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -26,15 +30,13 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
-import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Reservable;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
@@ -42,6 +44,7 @@ import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
+import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.DeleteVersionException;
 import com.sitescape.ef.module.file.FileModule;
@@ -49,17 +52,24 @@ import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
 import com.sitescape.ef.repository.RepositorySessionFactoryUtil;
 import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.LuceneSessionFactory;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
+import com.sitescape.ef.web.util.FilterHelper;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 
@@ -100,6 +110,8 @@ public class FileModuleImpl implements FileModule {
 
 	private CoreDao coreDao;
 	private FolderDao folderDao;
+	private ProfileDao profileDao;
+	protected LuceneSessionFactory luceneSessionFactory;
 	private TransactionTemplate transactionTemplate;
 	private ContentFilter contentFilter;
 	private String failedFilterFile;
@@ -120,6 +132,21 @@ public class FileModuleImpl implements FileModule {
 	public void setFolderDao(FolderDao folderDao) {
 		this.folderDao = folderDao;
 	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
+	
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+	
+	protected LuceneSessionFactory getLuceneSessionFactory() {
+		return luceneSessionFactory;
+	}
+	public void setLuceneSessionFactory(LuceneSessionFactory luceneSessionFactory) {
+		this.luceneSessionFactory = luceneSessionFactory;
+	}
+	
 	protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
 	}
@@ -658,6 +685,79 @@ public class FileModuleImpl implements FileModule {
 		
 		//List<String> afterVersionNames = RepositoryUtil.getVersionNames(va.getRepositoryName(), binder, entity, 
 		//		va.getFileItem().getName());
+	}
+
+	public Set<String> getChildrenFileNames(Binder binder) {
+		// We use search engine to get the list of file names in the specified folder.
+		
+		// create empty search filter
+		org.dom4j.Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
+		sfRoot.addElement(FilterHelper.FilterTerms);
+		
+		/*
+		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.DOC_TYPE_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+		*/
+		
+		org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
+		
+		Element rootElement = qTree.getRootElement();
+		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+		boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+		
+		// look for the specific binder id
+		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(binder.getId().toString());
+
+    	// look only for attachments
+    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	// create Lucene query    	
+    	Query soQuery = so.getQuery();
+    	
+    	// TODO REMOVE $$$
+    	System.out.println("**************************************************");
+    	String qXML = qTree.asXML();
+    	System.out.println(qXML);
+    	System.out.println("**************************************************");
+    	String qStr = soQuery.toString();
+    	System.out.println(qStr);
+    	System.out.println("**************************************************");
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+    	Hits hits = null;
+        try {
+	        hits = luceneSession.search(soQuery, null, 0, Integer.MAX_VALUE);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        Set<String> result = new HashSet<String>();
+        int count = hits.length();
+        Document doc;
+        String fileName;
+        for(int i = 0; i < count; i++) {
+        	doc = hits.doc(count);
+        	fileName = doc.get(EntityIndexUtils.FILENAME_FIELD);
+        	if(fileName != null)
+        		result.add(fileName);
+        }
+        
+        return result;
 	}
 
 	private void triggerUpdateTransaction() {

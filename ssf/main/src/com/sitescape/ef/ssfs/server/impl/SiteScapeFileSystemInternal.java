@@ -97,7 +97,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		writeResourceInternal(uri, objMap, content);
 	}
 	
-	public void createFolder(Map uri) throws NoAccessException, 
+	public void createDirectory(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
 		throw new UnsupportedOperationException();
 	}
@@ -231,7 +231,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			return props;
 		}
 		else { // This is a folder
-			props.put(CrossContextConstants.OBJECT_INFO, CrossContextConstants.OBJECT_INFO_FOLDER);			
+			props.put(CrossContextConstants.OBJECT_INFO, CrossContextConstants.OBJECT_INFO_DIRECTORY);			
 		}
 
 		Entry entry = (Entry) objMap.get(ENTRY);

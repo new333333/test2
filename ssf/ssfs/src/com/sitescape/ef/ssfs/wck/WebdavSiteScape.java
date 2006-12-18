@@ -102,7 +102,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		try {
 			Map m = parseUri(uri);
 		
-			return(objectInfo(uri, m).equals(OBJECT_INFO_FOLDER));
+			return(objectInfo(uri, m).equals(OBJECT_INFO_DIRECTORY));
 		}
 		catch(ZoneMismatchException e) {
 			throw new AccessDeniedException(uri, e.getMessage(), "read");
@@ -819,7 +819,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		if(m == null)
 			return OBJECT_INFO_NON_EXISTING;
 		else if(representsAbstractFolder(m))
-			return OBJECT_INFO_FOLDER;
+			return OBJECT_INFO_DIRECTORY;
 		else
 			return client.objectInfo(uri, m);
 	}
