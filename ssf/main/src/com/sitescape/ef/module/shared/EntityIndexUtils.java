@@ -51,13 +51,15 @@ public class EntityIndexUtils {
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String CREATOR_NAME_FIELD = "_creatorName";
-    public static final String CREATOR_TITLE_FIELD = "_creatorTitle"; 
+    public static final String CREATOR_TITLE_FIELD = "_creatorTitle";
+    public static final String SORT_CREATOR_TITLE_FIELD = "_sortCreatorTitle";
     public static final String MODIFICATIONID_FIELD = "_modificationId";
     public static final String MODIFICATION_NAME_FIELD = "_modificationName";
     public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
     public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
+    public static final String SORT_TITLE_FIELD = "_sortTitle";
     public static final String TITLE1_FIELD = "_title1";
     public static final String NAME_FIELD = "_name";
     public static final String NAME1_FIELD = "_name1";
@@ -93,9 +95,11 @@ public class EntityIndexUtils {
             
             if(title.length() > 0) {
     	        Field allTextField = BasicIndexUtils.allTextField(title);
-    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.UN_TOKENIZED); 
+    	        Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED);
+    	        Field sortTitleField = new Field(EntityIndexUtils.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        Field title1Field = new Field(EntityIndexUtils.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.UN_TOKENIZED);
-                doc.add(titleField);
+    	        doc.add(titleField);
+    	        doc.add(sortTitleField);
                 doc.add(title1Field);
                 doc.add(allTextField);
             }
@@ -236,8 +240,10 @@ public class EntityIndexUtils {
             doc.add(creationIdField);
             Field creationNameField = new Field(CREATOR_NAME_FIELD, entry.getCreation().getPrincipal().getName().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(creationNameField);
-            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            Field creationTitleField = new Field(CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString(), Field.Store.YES, Field.Index.TOKENIZED);
             doc.add(creationTitleField);
+            Field creationSortTitleField = new Field(SORT_CREATOR_TITLE_FIELD, entry.getCreation().getPrincipal().getTitle().toString().toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationSortTitleField);
         }
     }   
 
