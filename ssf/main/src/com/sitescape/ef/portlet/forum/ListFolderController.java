@@ -125,6 +125,7 @@ public class ListFolderController extends  SAbstractController {
 				else getBinderModule().addSubscription(binderId, style.intValue());
 			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {
+			//Saves the folder sort information
 
 			String folderSortBy = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_BY, "");
 			String folderSortDescend = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_DESCEND, "");
@@ -141,6 +142,7 @@ public class ListFolderController extends  SAbstractController {
 			tab.put(Tabs.SORTBY, new String(folderSortBy));
 			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
+			//Saves the folder page informaton when the user clicks on the page link
 			
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
 			Tabs tabs = new Tabs(request);
@@ -150,6 +152,29 @@ public class ListFolderController extends  SAbstractController {
 			options.put(Tabs.PAGE, new Integer(pageStartIndex));
 			
 			int intTab = tabs.setTab(binder, options);
+		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
+			//Saves the folder page informaton when the user enters the page number in the go to page field
+			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
+			
+			Tabs tabs = new Tabs(request);
+			Map tab = tabs.getTab(tabs.getCurrentTab());
+			Integer recordsPerPage = (Integer) tab.get(Tabs.RECORDS_IN_PAGE);
+					
+			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
+			int intRecordsPerPage = recordsPerPage.intValue();
+			int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
+			
+			Binder binder = getBinderModule().getBinder(binderId);
+			Map options = new HashMap();
+			options.put(Tabs.PAGE, new Integer(intPageStartIndex));
+			
+			int intTab = tabs.setTab(binder, options);
+		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
+			//Changes the number or records to be displayed in a page
+			//Getting the new entries per page
+			String newEntriesPerPage = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE, "");
+			//Saving the Sort Order information in the User Properties
+			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 		}
 
 		response.setRenderParameters(request.getParameterMap());
@@ -258,16 +283,57 @@ public class ListFolderController extends  SAbstractController {
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 
+		Map tabOptions = tabs.getTab(tabs.getCurrentTab());	
+		
+		//Determine the Records Per Page
+		//Getting the entries per page from the user properties
+		String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
+		//Getting the number of records per page entry in the tab
+		Integer recordsInPage = (Integer) tabOptions.get(Tabs.RECORDS_IN_PAGE);
+		Integer pageRecordIndex = (Integer) tabOptions.get(Tabs.PAGE);
+
+		//If the entries per page is not present in the user properties, then it means the
+		//number of records per page is obtained from the ssf properties file, so we do not have 
+		//to worry about checking the old and new number or records per page.
+		if (entriesPerPage == null || "".equals(entriesPerPage)) {
+			//This means that the tab does not have the information about the number of records to display in a page
+			//So we need to add this information into the tab
+			if (recordsInPage == null) {
+				String searchMaxHits = SPropsUtil.getString("folder.records.listed");
+				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
+				tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(searchMaxHits));
+			}
+			else {
+				options.put(ObjectKeys.SEARCH_MAX_HITS, recordsInPage);
+			}
+		}
+		else {
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(entriesPerPage));
+			tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(entriesPerPage));
+			if (recordsInPage != null) {
+				int intEntriesPerPage = (new Integer(entriesPerPage)).intValue();
+				int intEntriesPerPageInTab = recordsInPage.intValue();
+				
+				if (intEntriesPerPage != intEntriesPerPageInTab) {
+					//We need to check and see if the page number is set in the tabs. If so, reset it
+					if (pageRecordIndex != null) {
+						int intPageRecordIndex = pageRecordIndex.intValue();
+						int intNewPageNumber = (intPageRecordIndex + 1)/(intEntriesPerPage);
+						int intNewPageStartIndex = (intNewPageNumber) * intEntriesPerPage;
+						tabOptions.put(Tabs.PAGE, new Integer(intNewPageStartIndex));
+					}
+				}
+			}
+			else {
+				tabOptions.put(Tabs.PAGE, new Integer(0));
+			}
+		}
+		
 		//Determine the Folder Start Index
-		Map tabOptions = tabs.getTab(tabs.getCurrentTab());		
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
 		if (tabPageNumber == null) tabPageNumber = new Integer(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		
-		//Determine the Records Per Page		
-		String searchMaxHits = SPropsUtil.getString("folder.records.listed");
-		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
-
 		//Start - Determine the Sort Order
 		//First Check the Tab Object, see if it has the Sort Order Information
 		//If it is not there, Check the User Folder Properties for the Sort Order Information
@@ -321,6 +387,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 			
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
@@ -386,13 +453,17 @@ public class ListFolderController extends  SAbstractController {
 		HashMap nextPage = (HashMap) pagingInfo.get(WebKeys.PAGE_NEXT);
 		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
 		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
-		
+
 		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
 		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
 		model.put(WebKeys.PAGE_NEXT, nextPage);
 		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
 		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
 		model.put(WebKeys.PAGE_TOTAL_RECORDS, ""+totalRecordsFound);
+		
+		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
+		
+		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
 		
 		//Build the beans depending on the operation being done
 		model.put(WebKeys.FOLDER, folder);

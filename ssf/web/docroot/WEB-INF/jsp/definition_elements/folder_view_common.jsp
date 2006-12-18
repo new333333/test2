@@ -2,6 +2,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+
 <%
 	String displayStyle = ssUser.getDisplayStyle();
 	if (displayStyle == null) displayStyle = "";
@@ -45,36 +48,91 @@ var ss_placeholderFileUrl = "<ssf:url
     	entryId="ssEntryIdPlaceHolder" >
     	</ssf:url>";
 var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
+
+//Check the Page Number Before Submission
+function goToPage(obj) {
+	var formObj = ss_getContainingForm(obj);
+	var strGoToPage = formObj.ssGoToPage.value;
+	var pageCount = <c:out value="${ssPageCount}"/>;
+	
+	if (strGoToPage == "") {
+		alert("<ssf:nlt tag="folder.enterPage" />");
+		return;	
+	}
+	if (strGoToPage == "0") {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return;
+	}
+	var blnValueCheck = _isInteger(strGoToPage);
+	if (!blnValueCheck) {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return;
+	}
+	if (strGoToPage > pageCount) {
+		alert("<ssf:nlt tag="folder.enterValidPageCount" />");
+		return;
+	}
+	formObj.operation.value = "save_folder_goto_page_info";
+	formObj.submit();
+}
+//Change the number of entries to be displayed in a page
+function changePageEntriesCount(obj) {
+	var formObj = ss_getContainingForm(obj);
+	var strEntriesPerPage = formObj.ssEntriesPerPage.value;
+	
+	formObj.operation.value = "change_entries_on_page";
+	formObj.submit();
+}
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
 
 <div style="margin:0px;">
-<%
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-<div align="right" style="margin:0px 4px 0px 0px;">
 
-<table width="100%" border="0">
+<div align="right" style="margin:0px 4px 0px 0px;">
+    
+<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 
 	<tr>
-		<td align="left" width="35%">
+	
+	<form name="ss_pageDataForm" id="ss_pageDataForm" method="post" 
+	    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+		name="action" value="${action}"/><portlet:param 
+		name="binderId" value="${ssFolder.id}"/><portlet:param 
+		name="tabId" value="${tabId}"/></portlet:actionURL>">
+	    
+	    <input type="hidden" name="operation" />	
+	
+		<td align="left" width="55%">
 		    <span class="ss_light ss_fineprint">
-			[<ssf:nlt tag="search.results">
+			[<ssf:nlt tag="folder.Results">
 			<ssf:param name="value" value="${ssPageStartIndex}"/>
 			<ssf:param name="value" value="${ssPageEndIndex}"/>
 			<ssf:param name="value" value="${ssTotalRecords}"/>
 			</ssf:nlt>]
-			</span>
+		    </span>
+			&nbsp;&nbsp;
+			<span class="ss_light ss_smallprint">
+		    <select name="ssEntriesPerPage" onChange="changePageEntriesCount(document.ss_pageDataForm); return false;">
+		      <option value="5" <c:if test="${ssEntriesPerPage == '5'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt></option>
+		      <option value="10" <c:if test="${ssEntriesPerPage == '10'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt></option>
+		      <option value="25" <c:if test="${ssEntriesPerPage == '25'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt></option>
+		      <option value="50" <c:if test="${ssEntriesPerPage == '50'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt></option>
+		      <option value="100" <c:if test="${ssEntriesPerPage == '100'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt></option>
+		    </select>
+		    </span>
+		    &nbsp;&nbsp;
+		    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
+		    <input name="ssGoToPage" size="1" type="text" class="form-text" />
+			<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="goToPage(document.ss_pageDataForm); return false;">Go</a>
 		</td>
+	</form>
 		
-		<td align="center" width="30%">
-		
-		<table width="100%" border="0">
-		
+		<td align="center" width="25%">
+
+		<table width="100%" border="0" cellspacing="0px" cellpadding="0px">
 		<tr>
-			<td width="25%">
+			<td width="15%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
 					<img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
@@ -91,7 +149,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 				  </c:otherwise>
 				</c:choose>
 			</td>
-			<td width="50%" align="center">
+			<td width="70%" align="center">
 				<c:forEach var="entryPage" items="${ssPageNumbers}" >
 				<jsp:useBean id="entryPage" type="java.util.HashMap" />
 					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
@@ -113,8 +171,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 					</c:if>
 				</c:forEach>
 			</td>
-			<td width="25%" align="right">
-			
+			<td width="15%" align="right">
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
 					<img src="<html:imagesPath/>pics/sym_s_arrow_right.gif"/>
@@ -133,10 +190,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 			</td>
 		</tr>
 		</table>
-		
+
 		</td>
 
-		<td align="right" width="35%">
+		<td align="right" width="20%">
 		  <a href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
@@ -149,13 +206,9 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
 		</td>
 	</tr>
-
 </table>
 
 </div>
-<%
-	}
-%>
 <div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
@@ -205,17 +258,16 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
     	<ssf:nlt tag="folder.column.Number"/>
+	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+		</c:if>
     <a/>
-
-    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
-	</c:if>
-    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
-	</c:if>
-
     </ssf:slidingTableColumn>
   </c:if>
+
   <c:if test="${!empty ssFolderColumns['title']}">
     <ssf:slidingTableColumn width="28%">
     
@@ -235,17 +287,17 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
+    	<c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'true'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'false'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+		</c:if>
     <a/>
-
-    <c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'true'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
-	</c:if>
-	<c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'false'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
-	</c:if>
       
     </ssf:slidingTableColumn>
   </c:if>
+
   <c:if test="${!empty ssFolderColumns['state']}">
     <ssf:slidingTableColumn width="20%">
 
@@ -265,17 +317,16 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
     	<ssf:nlt tag="folder.column.State"/>
+	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+		</c:if>
     <a/>
-
-    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
-	</c:if>
-	<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
-	</c:if>
-
     </ssf:slidingTableColumn>
   </c:if>
+
   <c:if test="${!empty ssFolderColumns['author']}">
     <ssf:slidingTableColumn width="20%">
 
@@ -295,17 +346,16 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
 		<ssf:nlt tag="folder.column.Author"/>
+	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+		</c:if>
     <a/>
-
-    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
-	</c:if>
-	<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
-	</c:if>
-    
     </ssf:slidingTableColumn>
   </c:if>
+
   <c:if test="${!empty ssFolderColumns['date']}">
     <ssf:slidingTableColumn width="20%">
     
@@ -325,15 +375,13 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="tabId" value="${tabId}"/>
 	</portlet:actionURL>">
 		<ssf:nlt tag="folder.column.Date"/>
+	    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
+			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
+		</c:if>
     <a/>
-
-    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
-	</c:if>
-	<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
-		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
-	</c:if>
-    
     </ssf:slidingTableColumn>
   </c:if>
 </ssf:slidingTableRow>
@@ -416,25 +464,6 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>
-<%
-	if (ssUser.getDisplayStyle() == null || 
-	        !ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-<div align="right">
-  <a href="<ssf:url
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="configure_folder_columns" />
-	<ssf:param name="binderId" value="${ssBinder.id}" />
-	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
-</div>
-<%
-	}
-%>
 </div>
 <div id="ss_emd" class="ss_link_menu">
 <ul id="ss_folderMenuShowFileLink" class="ss_title_menu"><li><a href="#" 

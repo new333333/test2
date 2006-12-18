@@ -1,6 +1,8 @@
 <% // Search results listing of "things" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+
 <script type="text/javascript">
 var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
@@ -12,31 +14,85 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
+//Check the Page Number Before Submission
+function goToPage(obj) {
+	var formObj = ss_getContainingForm(obj);
+	var strGoToPage = formObj.ssGoToPage.value;
+	var pageCount = <c:out value="${ssPageCount}"/>;
+	
+	if (strGoToPage == "") {
+		alert("<ssf:nlt tag="folder.enterPage" />");
+		return;	
+	}
+	if (strGoToPage == "0") {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return;
+	}
+	var blnValueCheck = _isInteger(strGoToPage);
+	if (!blnValueCheck) {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return;
+	}
+	if (strGoToPage > pageCount) {
+		alert("<ssf:nlt tag="folder.enterValidPageCount" />");
+		return;
+	}
+	formObj.operation.value = "save_search_goto_page_info";
+	formObj.submit();
+}
+//Change the number of entries to be displayed in a page
+function changePageEntriesCount(obj) {
+	var formObj = ss_getContainingForm(obj);
+	var strEntriesPerPage = formObj.ssEntriesPerPage.value;
+	
+	formObj.operation.value = "change_entries_on_search_page";
+	formObj.submit();
+}
 </script>
 <div style="margin:0px;">
-<%
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-<div align="right" style="margin:0px 4px 0px 0px;">
-<table width="100%" border="0">
+<div align="right" style="margin:0px 1px 0px 0px;">
+
+<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
-		<td align="left" width="35%">
+
+	<form name="ss_pageDataForm" id="ss_pageDataForm" method="post" 
+	    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+		name="action" value="view_search_results_listing"/><portlet:param 
+		name="tabId" value="${tabId}"/></portlet:actionURL>">
+	    
+	    <input type="hidden" name="operation" />
+
+		<td align="left" width="55%">
 		    <span class="ss_light ss_fineprint">
-			[<ssf:nlt tag="search.results">
+			[<ssf:nlt tag="folder.Results">
 			<ssf:param name="value" value="${ssPageStartIndex}"/>
 			<ssf:param name="value" value="${ssPageEndIndex}"/>
 			<ssf:param name="value" value="${ssEntrySearchCount}"/>
 			</ssf:nlt>]
 			</span>
+			&nbsp;&nbsp;
+			<span class="ss_light ss_smallprint">
+		    <select name="ssEntriesPerPage" onChange="changePageEntriesCount(document.ss_pageDataForm); return false;">
+		      <option value="5" <c:if test="${ssEntriesPerPage == '5'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt></option>
+		      <option value="10" <c:if test="${ssEntriesPerPage == '10'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt></option>
+		      <option value="25" <c:if test="${ssEntriesPerPage == '25'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt></option>
+		      <option value="50" <c:if test="${ssEntriesPerPage == '50'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt></option>
+		      <option value="100" <c:if test="${ssEntriesPerPage == '100'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt></option>
+		    </select>
+		    </span>
+		    &nbsp;&nbsp;
+		    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
+		    <input name="ssGoToPage" size="1" type="text" class="form-text" />
+			<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="goToPage(document.ss_pageDataForm); return false;">Go</a>
 		</td>
+	</form>
 		
-		<td align="center" width="30%">
+		<td align="center" width="25%">
 		
-		<table width="100%" border="0">
+		<table width="100%" border="0" cellspacing="0px" cellpadding="0px">
 		
 		<tr>
-			<td width="25%">
+			<td width="15%">
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
 					<img src="<html:imagesPath/>pics/sym_s_arrow_left.gif"/>
@@ -52,7 +108,7 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 				  </c:otherwise>
 				</c:choose>
 			</td>
-			<td width="50%" align="center">
+			<td width="70%" align="center">
 				<c:forEach var="entryPage" items="${ssPageNumbers}" >
 				<jsp:useBean id="entryPage" type="java.util.HashMap" />
 					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
@@ -73,7 +129,7 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 					</c:if>
 				</c:forEach>
 			</td>
-			<td width="25%" align="right">
+			<td width="15%" align="right">
 			
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
@@ -95,7 +151,7 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 		
 		</td>
 
-		<td align="right" width="35%">
+		<td align="right" width="20%">
 		  <a href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
@@ -111,9 +167,6 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 
 </table>
 </div>
-<%
-	}
-%>
 <div class="ss_folder_border" style="position:relative; top:2; 
   margin:0px 2px 2px 2px; padding:2px;
   border-top:solid #666666 1px; 
@@ -461,25 +514,7 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 </ssf:slidingTableRow>
 </c:forEach>
 </ssf:slidingTable>
-<%
-	if (ssUser.getDisplayStyle() == null || 
-	        !ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-<div align="right">
-  <a href="<ssf:url
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="configure_folder_columns" />
-	<ssf:param name="operation2" value="search" />
-	<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-	</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-    <span class="ss_fineprint ss_light"><ssf:nlt tag="misc.configureColumns"/></span></a>
-</div>
-<%
-	}
-%>
+
 <div id="ss_tmd" class="ss_link_menu">
 <ul class="ss_dropdownmenu">
 <li><a href="#" onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li>
