@@ -180,12 +180,12 @@ AllBusinessServicesInjected {
 			ssfsLib.createAndSetResource(uri, content);
 	}
 	
-	public void createFolder(Map uri) throws NoAccessException, 
+	public void createDirectory(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
 		if(isInternal(uri))
-			ssfsInt.createFolder(uri);
+			ssfsInt.createDirectory(uri);
 		else
-			ssfsLib.createFolder(uri);
+			ssfsLib.createDirectory(uri);
 	}
 	
 	public InputStream getResource(Map uri) throws NoAccessException, 

@@ -179,7 +179,7 @@ public class DispatchServer extends GenericServlet {
 			ssfs.createResource(uri);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_FOLDER)) {
-			ssfs.createFolder(uri);
+			ssfs.createDirectory(uri);
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_SET_RESOURCE)) {
 			InputStream content = (InputStream) req.getAttribute(CrossContextConstants.INPUT_STREAM);

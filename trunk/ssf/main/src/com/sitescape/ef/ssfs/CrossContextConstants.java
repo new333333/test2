@@ -106,7 +106,7 @@ public abstract class CrossContextConstants {
 	// Possible object info values - value of OBJECT_INFO key
 	
 	// The object exists and it is a folder
-	public static final String OBJECT_INFO_FOLDER 		= "fo";
+	public static final String OBJECT_INFO_DIRECTORY 	= "di";
 	// The object exists and it is a file (non-folder)
 	public static final String OBJECT_INFO_FILE			= "fi";
 	// The object does not exist

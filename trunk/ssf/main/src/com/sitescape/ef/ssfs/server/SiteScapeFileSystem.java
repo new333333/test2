@@ -23,7 +23,7 @@ public interface SiteScapeFileSystem {
 	throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException;
 
-	public void createFolder(Map uri) throws  
+	public void createDirectory(Map uri) throws  
 	NoAccessException, AlreadyExistsException, TypeMismatchException;
 	
 	public InputStream getResource(Map uri) throws  

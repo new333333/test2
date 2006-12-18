@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.FileAttachment;
@@ -395,4 +396,12 @@ public interface FileModule {
 	 */
 	public void deleteVersion(Binder binder, DefinableEntity entity,
 			VersionAttachment va) throws DeleteVersionException; 
+	
+	/**
+	 * Returns a set of names of the files contained in the specified binder.
+	 * 
+	 * @param binder
+	 * @return
+	 */
+	public Set<String> getChildrenFileNames(Binder binder);
 }	
