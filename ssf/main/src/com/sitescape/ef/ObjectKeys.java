@@ -118,4 +118,9 @@ public interface ObjectKeys {
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
     
+	//************** Remove these
+    public static final String DEFAULT_FILE_FOLDER_DEF="402883b90cc53079010cc539bf260003";
+	public static final String DEFAULT_FILE_ENTRY_DEF="402883b90cc53079010cc539bf260004";
+	public static final String DEFAULT_FILE_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0003";
+
 }

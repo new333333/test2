@@ -29,7 +29,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
  text="Users"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${ss_dashboard_config_form_name}" formElement="data_users" 
+  <ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_users" 
     type="user" userList="${ssDashboard.beans[ssComponentId].ssUsers}"/>
 </td>
 </tr>
@@ -37,7 +37,7 @@
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
  text="Groups"/></td>
 <td valign="top">
-  <ssf:findUsers formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
+  <ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
     type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}"/>
 </td>
 </tr>

@@ -6,27 +6,35 @@
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
-	<taconite-replace contextNodeID="<c:out value="${listDivId}"/>" parseInBrowser="true">
+	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
 	  <c:set var="count" value="0"/>
-	  <ul id="<c:out value="${listDivId}"/>">
+	  <ul id="<c:out value="${ss_divId}"/>">
 		<c:if test="${!empty ssUsers}">
 		<c:forEach var="entry" items="${ssUsers}">
 		  <c:set var="count" value="${count + 1}"/>
-		  <li id="<c:out value="ss_findUser_id_${entry._docId}"/>" 
-		    onClick="ss_findUserSelectItem(this);" 
-		  ><c:out value="${entry.title}"/></li>
+		  <li>
+		   <a id="<c:out value="ss_findUser_id_${entry._docId}"/>" 
+		    href="#" onClick="ss_findUserSelectItem(this);" 
+		  ><c:out value="${entry.title}"/></a></li>
 		</c:forEach>
-	    <c:if test="${count < ss_searchTotalHits}">
 	    <li>
-	      <div align="right">
-	        <table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
-	          <a href="#" onClick="ss_findUserNextPage();return false;">
-	            <ssf:nlt tag="general.more"/>
-	          </a>
-	        </td></tr></table>
-	      </div>
+	        <div>
+	          <c:if test="${ss_pageNumber > 0}">
+	            <span style="padding-right:20px;">
+	            <a href="#" onClick="ss_findUserPrevPage();return false;">
+	              <ssf:nlt tag="general.Previous"/>
+	            </a>
+	            </span>
+	          </c:if>
+	          <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
+	           <span style="padding-left:40px;">
+	           <a href="#" onClick="ss_findUserNextPage();return false;">
+	             <ssf:nlt tag="general.Next"/>
+	           </a>
+	           </span>
+	          </c:if>
+	        </div>
 	    </li>
-	  </c:if>
 		</c:if>
 		<c:if test="${empty ssUsers}">
 		  <li>

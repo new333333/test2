@@ -249,8 +249,8 @@
 	</tag>
 	
 	<tag>
-		<name>findUsers</name>
-		<tag-class>com.sitescape.ef.taglib.FindUsers</tag-class>
+		<name>find</name>
+		<tag-class>com.sitescape.ef.taglib.Find</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>formName</name>
@@ -264,7 +264,7 @@
 		</attribute>
 		<attribute>
 			<name>type</name>
-			<required>false</required>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
@@ -273,7 +273,7 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>singleUser</name>
+			<name>singleItem</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>

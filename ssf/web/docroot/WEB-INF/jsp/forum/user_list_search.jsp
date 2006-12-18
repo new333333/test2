@@ -6,8 +6,8 @@
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
-	<taconite-replace contextNodeID="<c:out value="${listDivId}"/>" parseInBrowser="true">
-	  <ul id="<c:out value="${listDivId}"/>" class="ss_dragable ss_userlist">
+	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
+	  <ul id="<c:out value="${ss_divId}"/>" class="ss_dragable ss_userlist">
 		<c:forEach var="entry" items="${ssUsers}">
 		  <c:if test="${empty ssUserIdsToSkip[entry._docId]}">
 		    <li id="<c:out value="${entry._docId}"/>" 
