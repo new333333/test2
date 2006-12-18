@@ -42,6 +42,7 @@ public class Tabs {
    	public final static String PAGE = "page";
    	public final static String SORTBY = "sortBy";
    	public final static String SORTDESCEND = "sortDescend";
+   	public final static String RECORDS_IN_PAGE = "recordsInPage";
    	
    	//Type keys
    	public final static String WORKSPACE = "workspace";

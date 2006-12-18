@@ -183,10 +183,13 @@ public class WebKeys {
 	public static final String OPERATION_SUBSCRIBE="subscribe";
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
+	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
+	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
+	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
-	
-	
+	public static final String OPERATION_SAVE_SEARCH_GOTOPAGE_INFO="save_search_goto_page_info";
+	public static final String OPERATION_CHANGE_ENTRIES_ON_SEARCH_PAGE="change_entries_on_search_page";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACTION = "action";
@@ -396,6 +399,7 @@ public class WebKeys {
     public static final String FOLDER_PAGE_INFO = "ssFolderPageInfo";
 
     public static final String PAGE_START_INDEX = "ssPageStartIndex";
+    public static final String PAGE_GOTOPAGE_INDEX = "ssGoToPage";
     public static final String PAGE_END_INDEX = "ssPageEndIndex";
     public static final String PAGE_TOTAL_RECORDS = "ssTotalRecords";
     public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
@@ -405,7 +409,8 @@ public class WebKeys {
 	public static final String PAGE_PREVIOUS = "ssPagePrevious";
 	public static final String PAGE_NEXT = "ssPageNext";
 	public static final String PAGE_NUMBERS = "ssPageNumbers";
-
+	public static final String PAGE_COUNT = "ssPageCount";
+	public static final String PAGE_ENTRIES_PER_PAGE = "ssEntriesPerPage";
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";

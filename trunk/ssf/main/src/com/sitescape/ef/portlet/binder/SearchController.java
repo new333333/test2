@@ -93,13 +93,34 @@ public class SearchController extends AbstractBinderController {
 		
 			Tabs tabs = new Tabs(request);
 			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		
 			if (tabId != null) tabs.setCurrentTab(tabId.intValue());
 			Map tab = tabs.getTab(tabs.getCurrentTab());
-			
 			tab.put(Tabs.PAGE, new Integer(pageStartIndex));
-		}
-
+			
+		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_GOTOPAGE_INFO)) {
+			//Saves the folder page informaton when the user enters the page number in the go to page field
+			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
+			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+			
+			Tabs tabs = new Tabs(request);
+			if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+			
+			Map tab = tabs.getTab(tabs.getCurrentTab());
+			Integer recordsPerPage = (Integer) tab.get(Tabs.RECORDS_IN_PAGE);
+					
+			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
+			int intRecordsPerPage = recordsPerPage.intValue();
+			int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
+			
+			tab.put(Tabs.PAGE, new Integer(intPageStartIndex));
+		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_SEARCH_PAGE)) {
+			//Changes the number or records to be displayed in a page
+			//Getting the new entries per page
+			String newEntriesPerPage = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE, "");
+			//Saving the Sort Order information in the User Properties
+			getProfileModule().setUserProperty(user.getId(), ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
+		}		
+		
 		response.setRenderParameters(formData);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -153,15 +174,59 @@ public class SearchController extends AbstractBinderController {
 
 		Map options = new HashMap();		
 		
-		//Determine the Starting Page Index
+
 		Map tabInfo = tabs.getTab(tabs.getCurrentTab());
+		
+		//Determine the Records Per Page
+		//Getting the entries per page from the user properties
+		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE);
+		//Getting the number of records per page entry in the tab
+		Integer recordsInPage = (Integer) tabInfo.get(Tabs.RECORDS_IN_PAGE);
+		Integer pageRecordIndex = (Integer) tabInfo.get(Tabs.PAGE);
+
+		//If the entries per page is not present in the user properties, then it means the
+		//number of records per page is obtained from the ssf properties file, so we do not have 
+		//to worry about checking the old and new number or records per page.
+		if (entriesPerPage == null || "".equals(entriesPerPage)) {
+			//This means that the tab does not have the information about the number of records to display in a page
+			//So we need to add this information into the tab
+			if (recordsInPage == null) {
+				String searchMaxHits = SPropsUtil.getString("search.records.listed");
+				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
+				tabInfo.put(Tabs.RECORDS_IN_PAGE, new Integer(searchMaxHits));
+			}
+			else {
+				//Not putting the RECORDS_IN_PAGE as the tabInfo already has this information
+				options.put(ObjectKeys.SEARCH_MAX_HITS, recordsInPage);
+			}
+		}
+		else {
+			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(entriesPerPage));
+			tabInfo.put(Tabs.RECORDS_IN_PAGE, new Integer(entriesPerPage));
+			if (recordsInPage != null) {
+				int intEntriesPerPage = (new Integer(entriesPerPage)).intValue();
+				int intEntriesPerPageInTab = recordsInPage.intValue();
+				
+				if (intEntriesPerPage != intEntriesPerPageInTab) {
+					//We need to check and see if the page number is set in the tabs. If so, reset it
+					if (pageRecordIndex != null) {
+						int intPageRecordIndex = pageRecordIndex.intValue();
+						int intNewPageNumber = (intPageRecordIndex + 1)/(intEntriesPerPage);
+						int intNewPageStartIndex = (intNewPageNumber) * intEntriesPerPage;
+						tabInfo.put(Tabs.PAGE, new Integer(intNewPageStartIndex));
+					}
+				}
+			}
+			else {
+				tabInfo.put(Tabs.PAGE, new Integer(0));
+			}
+		}
+		
+		//Determine the Starting Page Index		
 		Integer tabPageNumber = (Integer) tabInfo.get(Tabs.PAGE);
 		if (tabPageNumber == null) tabPageNumber = new Integer(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		
-		//Determining how many records to return
-		String searchMaxHits = SPropsUtil.getString("folder.records.listed");
-		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
 		
 		//Determining the Sorting Order
 		//When the search tab is loaded for the first time, no sorting order is mentioned
@@ -183,6 +248,7 @@ public class SearchController extends AbstractBinderController {
 		
 		Integer currentTabId  = (Integer) tabInfo.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
@@ -224,6 +290,9 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.PAGE_NEXT, nextPage);
 		model.put(WebKeys.PAGE_START_INDEX, pageStartIndex);
 		model.put(WebKeys.PAGE_END_INDEX, pageEndIndex);
+		
+		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
+		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
 		
 		//since the results span multiple folders, we need to get the folder titles
 		Set ids = new HashSet();
