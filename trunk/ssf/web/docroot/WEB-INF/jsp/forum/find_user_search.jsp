@@ -22,14 +22,14 @@
 	          <c:if test="${ss_pageNumber > 0}">
 	            <span style="padding-right:20px;">
 	            <a href="#" onClick="ss_findUserPrevPage();return false;">
-	              <ssf:nlt tag="general.Previous"/>
+	              <ssf:nlt tag="general.Previous"/>...
 	            </a>
 	            </span>
 	          </c:if>
 	          <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
 	           <span style="padding-left:40px;">
 	           <a href="#" onClick="ss_findUserNextPage();return false;">
-	             <ssf:nlt tag="general.Next"/>
+	             <ssf:nlt tag="general.Next"/>...
 	           </a>
 	           </span>
 	          </c:if>

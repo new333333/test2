@@ -1134,9 +1134,19 @@ function ss_ShowHideDivXY(divName, x, y) {
         }
         ss_divBeingShown = divName;
         ss_lastDivBeingShown = divName;
-        ss_positionDiv(ss_divBeingShown, x, y)
+        if (x != null && y != null && x != '' && y != '') ss_positionDiv(ss_divBeingShown, x, y);
         ss_showDiv(ss_divBeingShown)
     }
+}
+
+function ss_showDivActivate(divName) {
+    if (ss_divBeingShown != null) {
+        ss_hideDiv(ss_divBeingShown)
+    }
+    ss_divBeingShown = divName;
+    ss_lastDivBeingShown = divName;
+    ss_showDiv(divName)
+	ss_HideDivOnSecondClick(divName)
 }
 
 //General routine to show a div given its name
@@ -1150,12 +1160,13 @@ function ss_HideDivIfActivated(divName) {
 
 //Routine to make div's be hidden on next click
 function ss_HideDivOnSecondClick(divName) {
-    divToBeHidden[divName] = true;
+    divToBeHidden[divToBeHidden.length] = divName;
+    ss_debug('divToBeHidden length = '+divToBeHidden.length)
 }
 
 //Routine to make div's be hidden on next click
 function ss_NoHideDivOnNextClick(divName) {
-    divToBeDelayHidden[divName] = true;
+    divToBeDelayHidden[divName] = divName;
 }
 
 function ss_showDiv(divName) {
@@ -1176,7 +1187,7 @@ function ss_showDiv(divName) {
 function ss_hideDiv(divName) {
 	if (document.getElementById(divName))
 			document.getElementById(divName).style.visibility = "hidden";
-    divToBeDelayHidden[ss_divBeingShown] = null
+    divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     
 	//Signal that the layout changed
@@ -1250,15 +1261,19 @@ function captureXY(e) {
 
     //See if there is a div to be hidden
     ss_lastDivBeingShown = ss_divBeingShown;
-    if (ss_divBeingShown != null) {
-        if (divToBeHidden[ss_divBeingShown]) {
-            if (divToBeDelayHidden[ss_divBeingShown]) {
-                divToBeDelayHidden[ss_divBeingShown] = null
-            } else {
-                ss_hideDiv(ss_divBeingShown)
-                ss_divBeingShown = null;
-            }
-        }
+    if (divToBeHidden.length > 0) {
+        for (var i = 0; i < divToBeHidden.length; i++) {
+	        if (divToBeHidden[i] != '') {
+	            if (divToBeDelayHidden[divToBeHidden[i]]) {
+	                divToBeDelayHidden[divToBeHidden[i]] = null
+	            } else {
+	                ss_hideDiv(divToBeHidden[i])
+	    			if (divToBeHidden[i] == ss_divBeingShown) ss_divBeingShown = null;
+	                divToBeHidden[i] = '';
+	            }
+	        }
+	    }
+	    divToBeHidden = new Array();
     }
     if (isNSN6 || isMoz5) {
         ss_mousePosX = e.pageX

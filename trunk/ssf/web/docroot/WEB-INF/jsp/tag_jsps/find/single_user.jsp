@@ -58,6 +58,14 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 			return;
 		}
  	}
+ 	//Fade the previous selections
+ 	var savedColor = "#000000";
+ 	var divObj = document.getElementById('available_'+elementName+'_${prefix}');
+ 	if (divObj != null && divObj.style && divObj.style.color) {
+ 		savedColor = divObj.style.color;
+ 	}
+ 	if (divObj != null) divObj.style.color = "#cccccc";
+
  	ss_debug("//"+text+"//")
  	var url = "<ssf:url 
     	adapter="true" 
@@ -78,6 +86,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
 	ajaxRequest.setPostRequest(ss_postFindUserRequest);
 	ajaxRequest.setData("elementName", elementName)
+	ajaxRequest.setData("savedColor", savedColor)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -89,7 +98,11 @@ function ss_postFindUserRequest(obj) {
 	}
 	ss_findUserSearchInProgress = 0;
 
-	ss_showDiv('ss_findUserNavBarDiv_<portlet:namespace/>');
+	ss_showDivActivate('ss_findUserNavBarDiv_<portlet:namespace/>');
+
+ 	//Show this at full brightness
+ 	var divObj = document.getElementById('available_'+obj.getData('elementName')+'_${prefix}');
+ 	if (divObj != null) divObj.style.color = obj.getData('savedColor');
 		
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
