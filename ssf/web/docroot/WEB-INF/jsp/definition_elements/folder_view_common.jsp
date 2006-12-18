@@ -223,9 +223,9 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
 		<portlet:param name="binderId" value="${ssFolder.id}"/>
-		<portlet:param name="ssFolderSortBy" value="_title1"/>
+		<portlet:param name="ssFolderSortBy" value="title"/>
 		<c:choose>
-		  <c:when test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+		  <c:when test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'false'}">
 		  	<portlet:param name="ssFolderSortDescend" value="true"/>
 		  </c:when>
 		  <c:otherwise>
@@ -237,10 +237,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
     <a/>
 
-    <c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
+    <c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'true'}">
 		<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
 	</c:if>
-	<c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+	<c:if test="${ ssFolderSortBy == 'title' && ssFolderSortDescend == 'false'}">
 		<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
 	</c:if>
       

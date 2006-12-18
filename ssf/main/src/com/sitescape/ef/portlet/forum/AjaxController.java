@@ -557,7 +557,7 @@ public class AjaxController  extends SAbstractController {
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
 			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
