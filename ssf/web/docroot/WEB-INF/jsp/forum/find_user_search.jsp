@@ -17,9 +17,12 @@
 			<c:forEach var="entry" items="${ssUsers}">
 			  <c:set var="count" value="${count + 1}"/>
 			  <li>
-			   <a id="<c:out value="ss_findUser_id_${entry._docId}"/>" 
-			    href="#" onClick="ss_findUserSelectItem(this);" 
-			  ><c:out value="${entry.title}"/></a></li>
+			    <table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
+			      <a id="<c:out value="ss_findUser_id_${entry._docId}"/>" 
+			        href="#" onClick="ss_findUserSelectItem(this);" 
+			      ><c:out value="${entry.title}"/></a>
+			    </td></tr></table>
+			  </li>
 			</c:forEach>
 	      </ul>
 	      </td>

@@ -82,7 +82,7 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindPlacesRequest);
 	ajaxRequest.setPostRequest(ss_postfindPlacesRequest);
 	ajaxRequest.setData("elementName", elementName)
