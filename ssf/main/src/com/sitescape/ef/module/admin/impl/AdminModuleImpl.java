@@ -648,18 +648,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			}
 			
 		}
-		List<com.sitescape.ef.domain.Entry> entries = getCoreDao().loadObjects("from com.sitescape.ef.domain.FolderEntry where definitionType=10", null);
-		for (com.sitescape.ef.domain.Entry e: entries) {
-			e.setEntryDef(eDef);
-			e.setDefinitionType(eDef.getType());
-		}
 		List<Definition> defs = getCoreDao().loadDefinitions(zone.getId(), 9);
 		for (Definition def: defs) {
-			getCoreDao().delete(def);
+			getCoreDao().delete((Object)def);
 		}
 		defs = getCoreDao().loadDefinitions(zone.getId(), 10);
+		getCoreDao().flush();
 		for (Definition def: defs) {
-			getCoreDao().delete(def);
+			getCoreDao().executeUpdate("update com.sitescape.ef.domain.FolderEntry set entryDef='" +eDef.getId() + "',definitionType=" +
+					Definition.FOLDER_ENTRY + " where entryDef='" + def.getId() + "'");
+			getCoreDao().flush();
+			getCoreDao().delete((Object)def);
 		}		
 	}
 }
