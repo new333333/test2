@@ -887,7 +887,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				+ "' and @type='data']");
 		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 		String elementName = nameProperty.attributeValue("value");
-		return elementName;
+		
+		if(ITEM_NAME.equals("attachFiles")) {
+			// Since attachment element allows uploading multiple files at the
+			// same (when done through Aspen UI), each file is identified 
+			// uniquely by appending numeric number (1-based) to the element
+			// name. When uploaded through WebDAV, there is always exactly one
+			// file involed. So we use "1".
+			return elementName + "1";
+		}
+		else {		
+			return elementName;
+		}
 	}
 
 	private InputStream getResource(Map uri, Map objMap) {
