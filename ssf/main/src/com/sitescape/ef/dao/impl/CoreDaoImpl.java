@@ -467,7 +467,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	Session s = sf.openSession();
     	try {
     		LibraryEntry le = new LibraryEntry(binder.getId(), name);
-    		s.save(le);
+			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			if (exist != null) delete(le);
     		s.flush();
     	} catch (Exception ex) {
 				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
