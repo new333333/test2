@@ -1,3 +1,5 @@
+<c:if test="${empty ssf_support_files_loaded}">
+<c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 <%
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
@@ -178,6 +180,7 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
+		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 		
 		<c:if test="${!empty ssFooterToolbar.RSS.url}">
 			//Add the rss feed info
@@ -233,4 +236,4 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 }
 </script>
-
+</c:if>
