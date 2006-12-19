@@ -213,7 +213,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 </c:if>
 </div>
-
+<div class="ss_clear"></div>
 
 <!-- Start of favorites pane -->
 <div class="ss_style" id="ss_favorites_pane" 
