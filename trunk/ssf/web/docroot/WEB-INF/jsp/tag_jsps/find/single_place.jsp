@@ -99,9 +99,11 @@ function ss_postfindPlacesRequest(obj) {
 	ss_findPlacesSearchInProgress = 0;
 
 	ss_showDivActivate('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	var divObj = document.getElementById('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	if (divObj != null) divObj.style.zIndex = '500';
 		
  	//Show this at full brightness
- 	var divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
+ 	divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
 		
 	//See if there is another search request to be done
