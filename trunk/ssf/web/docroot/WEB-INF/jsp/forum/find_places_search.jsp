@@ -16,10 +16,12 @@
 	      <ul>
 		    <c:forEach var="entry" items="${ssEntries}">
 		      <c:set var="count" value="${count + 1}"/>
-		        <li><div style="display:inline; white-space:nowrap;">
+		        <li><table cellspacing="0" cellpadding="0"><tr><td nowrap="nowrap">
 		          <a href="#" id="<c:out value="ss_findPlaces_id_${entry._docId}"/>" 
 		            onClick="ss_findPlacesSelectItem(this);" 
-		          ><c:out value="${entry.title}"/></a></div></li>
+		          ><c:out value="${entry.title}"/></a>
+		          </td></tr></table>
+		        </li>
 		    </c:forEach>
 	      </ul>
 	      </td>

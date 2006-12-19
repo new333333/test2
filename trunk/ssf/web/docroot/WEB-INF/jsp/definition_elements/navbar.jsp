@@ -32,7 +32,7 @@ function ss_turnOffDebugMode() {
 
 <!-- Start of global toolbar -->
 <div class="ss_global_toolbar">
-  <ul class="ss_global_toolbar_links ss_font-x-small">
+  <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
 
 <!-- Find user form -->
 	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton">
@@ -90,6 +90,14 @@ function ss_turnOffDebugMode() {
 		  </ssHelpSpot>
 		</form>
 	</li>
+
+<c:if test="${ss_navbar_style == 'portlet'}">
+  </ul>
+</div>
+<br/>
+<div class="ss_global_toolbar">
+  <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
+</c:if>
 
 <!-- Favorites -->
     <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
