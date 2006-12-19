@@ -1472,28 +1472,15 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	fileData.add(fui);
 						    }
 						} else if (itemName.equals("attachFiles")) {
-						    if (fileItems != null) {
-								int number = GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "number"), 1);
-								for (int i=1;i <= number;i++) {
-									String fileEleName = nameValue + Integer.toString(i);
-									if (fileItems.containsKey(fileEleName)) {												
-								    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
-								    	String fileName = myFile.getOriginalFilename();
-								    	if (fileName.equals("")) continue;
-								    	// Different repository can be specified for each file uploaded.
-								    	// If not specified, use the statically selected one.  
-								    	String repositoryName = null;
-								    	if (inputData.exists(nameValue + "_repos" + Integer.toString(i))) 
-								    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(i));
-								    	if (repositoryName == null) {
-									    	repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-									    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-								    	}
-								    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-								    	fileData.add(fui);
-									}
-								}
-						    }
+							if(fileItems != null && fileItems.containsKey(nameValue)) {
+								MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
+								String fileName = myFile.getOriginalFilename();
+								if (fileName.equals("")) continue;
+						    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
+						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+						    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+						    	fileData.add(fui);								
+							}
 						} else {
 							if (inputData.exists(nameValue)) entryData.put(nameValue, inputData.getSingleValue(nameValue));
 						}
