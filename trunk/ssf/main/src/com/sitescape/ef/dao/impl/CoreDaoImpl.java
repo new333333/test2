@@ -482,13 +482,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         LibraryEntry le=null;
  		if (oldName != null) {
 	        le = new LibraryEntry(binder.getId(), oldName);
-			le = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, le);
+			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
 			if (le != null) le.setName(newName);
 		}
 		if (le == null) {
 			try {
 				le = new LibraryEntry(binder.getId(), newName);
-				LibraryEntry exist = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, le);
+				LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
 				if (exist == null) save(le);
 				else throw new TitleException(newName);
 			} catch (Exception ex) {
@@ -497,7 +497,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		}   	
     }
     public  Long findLibraryEntryId(Long binderId, String name) {
-    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().load(LibraryEntry.class, new LibraryEntry(binderId, name));
+    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binderId, name));
     	if (le == null) throw new NoObjectByTheIdException(ErrorCodes.NoLibraryEntryByTheIdException, new Object[]{binderId, name});
     	return le.getEntityId();
 
