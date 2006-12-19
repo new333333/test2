@@ -751,7 +751,7 @@ public class FileModuleImpl implements FileModule {
         Document doc;
         String fileName;
         for(int i = 0; i < count; i++) {
-        	doc = hits.doc(count);
+        	doc = hits.doc(i);
         	fileName = doc.get(EntityIndexUtils.FILENAME_FIELD);
         	if(fileName != null)
         		result.add(fileName);
