@@ -141,6 +141,8 @@ public class ListFolderController extends  SAbstractController {
 			Map tab = tabs.getTab(tabs.getCurrentTab());
 			tab.put(Tabs.SORTBY, new String(folderSortBy));
 			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
+			//When the column is sorted, the page number need not be retained, the user can be taken to page number 1
+			tab.put(Tabs.PAGE, new Integer(0));
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_PAGE_INFO)) {
 			//Saves the folder page informaton when the user clicks on the page link
 			

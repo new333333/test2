@@ -14,54 +14,56 @@ var ss_placeholderBinderUrl = "<portlet:renderURL windowState="maximized"><portl
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
+
 //Check the Page Number Before Submission
-function goToPage(obj) {
+function goToPage_<portlet:namespace/>(obj) {
 	var formObj = ss_getContainingForm(obj);
 	var strGoToPage = formObj.ssGoToPage.value;
 	var pageCount = <c:out value="${ssPageCount}"/>;
 	
 	if (strGoToPage == "") {
 		alert("<ssf:nlt tag="folder.enterPage" />");
-		return;	
+		return false;	
 	}
 	if (strGoToPage == "0") {
 		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return;
+		return false;
 	}
 	var blnValueCheck = _isInteger(strGoToPage);
 	if (!blnValueCheck) {
 		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return;
+		return false;
 	}
 	if (strGoToPage > pageCount) {
-		alert("<ssf:nlt tag="folder.enterValidPageCount" />");
-		return;
+		formObj.ssGoToPage.value = pageCount;
 	}
-	formObj.operation.value = "save_search_goto_page_info";
-	formObj.submit();
+	return true;
 }
+
+function submitPage_<portlet:namespace/>(obj) {
+	return (goToPage_<portlet:namespace/>(obj));
+}
+
+function clickGoToPage_<portlet:namespace/>(obj) {
+	var formObj = ss_getContainingForm(obj);
+	if (goToPage_<portlet:namespace/>(obj)) {
+		formObj.submit();
+	}
+}
+
 //Change the number of entries to be displayed in a page
-function changePageEntriesCount(obj, pageCountValue) {
+function changePageEntriesCount_<portlet:namespace/>(obj, pageCountValue) {
 	var formObj = ss_getContainingForm(obj);
 	formObj.ssEntriesPerPage.value = pageCountValue;
-	formObj.operation.value = "change_entries_on_search_page";
 	formObj.submit();
 }
+
 </script>
 <div style="margin:0px;">
 <div align="right" style="margin:0px 4px 0px 0px;">
 
 <table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
-
-	<form name="ss_pageDataForm" id="ss_pageDataForm" method="post" 
-	    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-		name="action" value="view_search_results_listing"/><portlet:param 
-		name="tabId" value="${tabId}"/></portlet:actionURL>">
-	    
-	    <input type="hidden" name="operation" />
-	    <input type="hidden" name="ssEntriesPerPage" />
-
 		<td align="left" width="55%">
 		
 			<table border="0" cellspacing="0px" cellpadding="0px">
@@ -76,6 +78,14 @@ function changePageEntriesCount(obj, pageCountValue) {
 					</span>
 					&nbsp;&nbsp;
 				</td>
+
+			<form name="ss_recordsPerPage_<portlet:namespace/>" id="ss_recordsPerPage_<portlet:namespace/>" method="post" 
+			    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="view_search_results_listing"/><portlet:param 
+				name="tabId" value="${tabId}"/><portlet:param 
+				name="operation" value="change_entries_on_search_page"/></portlet:actionURL>">
+			    
+			    <input type="hidden" name="ssEntriesPerPage" />
 				
 				<td>
 					<div style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
@@ -84,27 +94,27 @@ function changePageEntriesCount(obj, pageCountValue) {
 						<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu" menuImage="pics/sym_s_down.gif">
 							<ul class="ss_actions_bar_submenu" style="width:250px;">
 							<li>
-								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '5');return false;">
+								<a href="javascript: ;" onClick="changePageEntriesCount_<portlet:namespace/>(document.ss_recordsPerPage_<portlet:namespace/>, '5');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
 								</a>
 							</li>
 							<li>	
-								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '10');return false;">
+								<a href="javascript: ;" onClick="changePageEntriesCount_<portlet:namespace/>(document.ss_recordsPerPage_<portlet:namespace/>, '10');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
 								</a>
 							</li>
 							<li>
-								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '25');return false;">
+								<a href="javascript: ;" onClick="changePageEntriesCount_<portlet:namespace/>(document.ss_recordsPerPage_<portlet:namespace/>, '25');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
 								</a>
 							</li>
 							<li>
-								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '50');return false;">
+								<a href="javascript: ;" onClick="changePageEntriesCount_<portlet:namespace/>(document.ss_recordsPerPage_<portlet:namespace/>, '50');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
 								</a>
 							</li>
 							<li>
-								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '100');return false;">
+								<a href="javascript: ;" onClick="changePageEntriesCount_<portlet:namespace/>(document.ss_recordsPerPage_<portlet:namespace/>, '100');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 								</a>
 							</li>
@@ -114,13 +124,22 @@ function changePageEntriesCount(obj, pageCountValue) {
 					    </span>
 				    </div>
 				</td>
-				
+			
+			</form>
+
+			<form name="ss_goToPageForm_<portlet:namespace/>" id="ss_goToPageForm_<portlet:namespace/>" method="post" 
+			    action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="view_search_results_listing"/><portlet:param 
+				name="tabId" value="${tabId}"/><portlet:param 
+				name="operation" value="save_search_goto_page_info"/></portlet:actionURL>" onSubmit="return(submitPage_<portlet:namespace/>(this))">
+			
 				<td>
 					&nbsp;&nbsp;
 				    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
 				    <input name="ssGoToPage" size="1" type="text" class="form-text" />
-					<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="goToPage(document.ss_pageDataForm); return false;">Go</a>
+					<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="clickGoToPage_<portlet:namespace/>(document.ss_goToPageForm_<portlet:namespace/>); return false;">Go</a>
 				</td>
+			</form>				
 			
 			</tr>
 			</table>
@@ -277,9 +296,9 @@ function changePageEntriesCount(obj, pageCountValue) {
 	    <a href="<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="view_search_results_listing"/>
 			<portlet:param name="operation" value="save_search_sort_info"/>
-			<portlet:param name="ssFolderSortBy" value="_title1"/>
+			<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
 			<c:choose>
-			  <c:when test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+			  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 			  	<portlet:param name="ssFolderSortDescend" value="true"/>
 			  </c:when>
 			  <c:otherwise>
@@ -290,10 +309,10 @@ function changePageEntriesCount(obj, pageCountValue) {
 		</portlet:actionURL>">
 	      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
 
-	    <c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
+	    <c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
-		<c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
+		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
 	    <a/>
