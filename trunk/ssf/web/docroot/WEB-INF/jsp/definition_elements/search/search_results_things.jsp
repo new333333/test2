@@ -41,16 +41,15 @@ function goToPage(obj) {
 	formObj.submit();
 }
 //Change the number of entries to be displayed in a page
-function changePageEntriesCount(obj) {
+function changePageEntriesCount(obj, pageCountValue) {
 	var formObj = ss_getContainingForm(obj);
-	var strEntriesPerPage = formObj.ssEntriesPerPage.value;
-	
+	formObj.ssEntriesPerPage.value = pageCountValue;
 	formObj.operation.value = "change_entries_on_search_page";
 	formObj.submit();
 }
 </script>
 <div style="margin:0px;">
-<div align="right" style="margin:0px 1px 0px 0px;">
+<div align="right" style="margin:0px 4px 0px 0px;">
 
 <table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
@@ -61,30 +60,73 @@ function changePageEntriesCount(obj) {
 		name="tabId" value="${tabId}"/></portlet:actionURL>">
 	    
 	    <input type="hidden" name="operation" />
+	    <input type="hidden" name="ssEntriesPerPage" />
 
 		<td align="left" width="55%">
-		    <span class="ss_light ss_fineprint">
-			[<ssf:nlt tag="folder.Results">
-			<ssf:param name="value" value="${ssPageStartIndex}"/>
-			<ssf:param name="value" value="${ssPageEndIndex}"/>
-			<ssf:param name="value" value="${ssEntrySearchCount}"/>
-			</ssf:nlt>]
-			</span>
-			&nbsp;&nbsp;
-			<span class="ss_light ss_smallprint">
-		    <select name="ssEntriesPerPage" onChange="changePageEntriesCount(document.ss_pageDataForm); return false;">
-		      <option value="5" <c:if test="${ssEntriesPerPage == '5'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt></option>
-		      <option value="10" <c:if test="${ssEntriesPerPage == '10'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt></option>
-		      <option value="25" <c:if test="${ssEntriesPerPage == '25'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt></option>
-		      <option value="50" <c:if test="${ssEntriesPerPage == '50'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt></option>
-		      <option value="100" <c:if test="${ssEntriesPerPage == '100'}">Selected</c:if>><ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt></option>
-		    </select>
-		    </span>
-		    &nbsp;&nbsp;
-		    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
-		    <input name="ssGoToPage" size="1" type="text" class="form-text" />
-			<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="goToPage(document.ss_pageDataForm); return false;">Go</a>
+		
+			<table border="0" cellspacing="0px" cellpadding="0px">
+			<tr>
+				<td>
+				    <span class="ss_light ss_fineprint">
+					[<ssf:nlt tag="folder.Results">
+					<ssf:param name="value" value="${ssPageStartIndex}"/>
+					<ssf:param name="value" value="${ssPageEndIndex}"/>
+					<ssf:param name="value" value="${ssEntrySearchCount}"/>
+					</ssf:nlt>]
+					</span>
+					&nbsp;&nbsp;
+				</td>
+				
+				<td>
+					<div style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
+						<span class="ss_light ss_fineprint">
+			
+						<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu" menuImage="pics/sym_s_down.gif">
+							<ul class="ss_actions_bar_submenu" style="width:250px;">
+							<li>
+								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '5');return false;">
+									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
+								</a>
+							</li>
+							<li>	
+								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '10');return false;">
+									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
+								</a>
+							</li>
+							<li>
+								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '25');return false;">
+									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
+								</a>
+							</li>
+							<li>
+								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '50');return false;">
+									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
+								</a>
+							</li>
+							<li>
+								<a href="javascript: ;" onClick="changePageEntriesCount(document.ss_pageDataForm, '100');return false;">
+									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
+								</a>
+							</li>
+							</ul>
+						</ssf:menu>
+						
+					    </span>
+				    </div>
+				</td>
+				
+				<td>
+					&nbsp;&nbsp;
+				    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
+				    <input name="ssGoToPage" size="1" type="text" class="form-text" />
+					<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="goToPage(document.ss_pageDataForm); return false;">Go</a>
+				</td>
+			
+			</tr>
+			</table>
+			
 		</td>
+		
 	</form>
 		
 		<td align="center" width="25%">

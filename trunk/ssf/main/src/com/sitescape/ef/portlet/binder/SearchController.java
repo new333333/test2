@@ -249,6 +249,7 @@ public class SearchController extends AbstractBinderController {
 		Integer currentTabId  = (Integer) tabInfo.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
 		
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean

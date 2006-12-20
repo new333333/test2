@@ -26,10 +26,14 @@ String openStyle = ParamUtil.get(request, "openStyle", "");
 String anchor = ParamUtil.get(request, "anchor", "");
 String offsetTop = ParamUtil.get(request, "offsetTop", "");
 String offsetLeft = ParamUtil.get(request, "offsetLeft", "");
-
+String menuImage = ParamUtil.get(request, "menuImage", "");
 %>
 <span id="parent_<%= menuTagDivId %><portlet:namespace/>" style="display:inline;"
    ><a class="<%= titleClass %>"
 id="<%= titleId %>" href="javascript: ;" 
 	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
-><%= title %></a></span>
+><%= title %>
+<c:if test="<%= !("".equals(menuImage)) %>">
+	<img src='<html:imagesPath/><%= menuImage %>'/>
+</c:if>
+</a></span>
