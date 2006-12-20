@@ -1266,6 +1266,9 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	margin-bottom:4px;
 </c:if>
 }
+.ss_global_toolbar a span, .ss_global_toolbar div span {
+	background:transparent;
+}
 .ss_global_toolbar_links {
 	float:right;
 	margin-top:0px;
@@ -1315,16 +1318,16 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_findUser .form-text {
 	width:70px;
-	background:#FFF;
 }
 div.ss_global_toolbar_findUser_text {
-    position:relative;
-    top:-1px;
     width:100px;
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
 	margin:0px !important;
+	background:inherit !important;
+}
+div.ss_global_toolbar_findUser_text span {
 	background:inherit !important;
 }
 .ss_global_toolbar_findUser a {
@@ -1341,13 +1344,19 @@ div.ss_global_toolbar_findUser_text {
 	background:#FFF;
 }
 div.ss_global_toolbar_search_text {
-    position:relative;
-    top:-3px;
     width:120px;
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
-	margin:0px !important;
+<c:if test="<%= isIE %>">
+	margin:0px 0px 0px 0px !important;
+</c:if>
+<c:if test="<%= !isIE %>">
+	margin:-2px 0px 0px 0px !important;
+</c:if>
+	background:inherit !important;
+}
+div.ss_global_toolbar_search_text span {
 	background:inherit !important;
 }
 .ss_global_toolbar_search a {
@@ -1609,18 +1618,19 @@ div.ss_actions_bar_submenu {
 div.ss_findUserList {
 	position:absolute;
 	margin:2px;
-	padding:15px;
+	padding:0px 15px;
 	border:solid black 1px; 
 	background:${ss_style_background_color};
 	z-index:500;
 }
-.ss_findUserList ul {
+.ss_findUserList div ul {
 	list-style-type:none;
-	margin:-10px 0px 0px -15px;
-	padding:0px;
+	margin:-6px 0px 0px -6px;
+	padding:6px;
 	text-align:left;
 }
 .ss_findUserList li {
+	padding:1px;
 	float:none;
 }
 

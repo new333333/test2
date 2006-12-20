@@ -11,7 +11,7 @@
 <c:set var="prefix" value="<%= findUserFormName + "_" + findUserElementName %>" />
 <c:if test="${empty ss_find_user_support_stuff_loaded}">
 <script type="text/javascript">
-var ss_findUser_searchText = ""
+var ss_findUser_searchText_<portlet:namespace/> = ""
 var ss_findUser_pageNumber = 0;
 
 var ss_findUserSearchInProgress = 0;
@@ -45,7 +45,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	ss_findUserSearchLastText = text;
 	ss_findUserSearchLastfindPlacesType = findPlacesType;
  	//Save the text in case the user changes the search type
- 	ss_findUser_searchText = text;
+ 	ss_findUser_searchText_<portlet:namespace/> = text;
  	
  	//See if the user ended the string with a CR. If so, then try to launch.
  	if (text.match(/\n/)) {
@@ -130,8 +130,8 @@ function ss_findUserNextPage() {
 
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-    name="ss_findUser_searchText" 
-    id="ss_findUser_searchText"
+    name="ss_findUser_searchText_<portlet:namespace/>" 
+    id="ss_findUser_searchText_<portlet:namespace/>"
     onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findPlacesType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
 <div id="ss_findUserNavBarDiv_<portlet:namespace/>"
