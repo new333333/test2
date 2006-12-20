@@ -29,6 +29,9 @@ import com.sitescape.ef.util.NLT;
 
 public class RssGenerator extends CommonDependencyInjection {
 
+	//TODO MAXITEMS should be set in properties or via that application context file.
+	private final int MAXITEMS = 20;
+	
 	protected Log logger = LogFactory.getLog(getClass());
 	protected ProfileDao profileDao;
 	
@@ -118,6 +121,15 @@ public class RssGenerator extends CommonDependencyInjection {
 		if (rf.exists()) rf.delete();
 	}
 	
+	public void trimItems(Element channelNode) {
+		List items = channelNode.selectNodes("item");
+		if (items.size() > MAXITEMS){
+			int numToRemove = items.size() -MAXITEMS;
+			for (int count=0; count<numToRemove; count++)
+				((Node)items.get(count)).detach();
+		}
+	}
+	
 	public void updateRssFeed(Entry entry, Set ids) {
 		// See if the feed already exists
 		String rssFileName = getRssFileName(entry.getParentBinder());
@@ -131,6 +143,8 @@ public class RssGenerator extends CommonDependencyInjection {
 		channelPubDate.setText(new Date().toString());
 		
 		Element channelNode = (Element)rssRoot.selectSingleNode("/rss/channel");
+		
+		trimItems(channelNode);
 		
 		// see if the current entry is already in the channel, if it is, update it.
 		Node entryNode = channelNode.selectSingleNode("item/guid[.='" + entry.getId() + "']");
