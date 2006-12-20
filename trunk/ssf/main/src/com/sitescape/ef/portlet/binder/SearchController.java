@@ -274,7 +274,7 @@ public class SearchController extends AbstractBinderController {
 		int totalRecordsReturned = entrySearchReturnedCount;
 		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
-		int goBackSoManyPages = 3;
+		int goBackSoManyPages = 2;
 		int goFrontSoManyPages = 3;
 		
 		HashMap pagingInfo = getPagingLinks(totalRecordsFound, searchOffset, searchPageIncrement, 
