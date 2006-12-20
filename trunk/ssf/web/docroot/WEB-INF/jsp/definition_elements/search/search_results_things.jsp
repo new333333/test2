@@ -259,15 +259,15 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>">
 	    	<ssf:nlt tag="folder.column.Number"/>
-	    <a/>
-	
+
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
-    
+	    <a/>
+	
     </ssf:slidingTableColumn>
   </c:if>
   
@@ -289,15 +289,15 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>">
 	      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
-	    <a/>
-	
+
 	    <c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_title1' && ssFolderSortDescend == 'false'}">
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
-
+	    <a/>
+	
     </ssf:slidingTableColumn>
   </c:if>
   
@@ -319,14 +319,14 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>">
 	    	<ssf:nlt tag="folder.column.State"/>
-	    <a/>
-	
+
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
+	    <a/>
     
     </ssf:slidingTableColumn>
   </c:if>
@@ -350,17 +350,15 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>">
 			<ssf:nlt tag="folder.column.Author"/>
-	    <a/>
-	
+
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
-
-    	
-    	
+	    <a/>
+	
     </ssf:slidingTableColumn>
   </c:if>
   
@@ -382,8 +380,7 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<portlet:param name="tabId" value="${tabId}"/>
 		</portlet:actionURL>">
 			<ssf:nlt tag="folder.column.Date"/>
-	    <a/>
-	
+
 	    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
 			<img src="<html:imagesPath/>pics/sym_s_down.gif"/>
 		</c:if>
@@ -391,6 +388,8 @@ function changePageEntriesCount(obj, pageCountValue) {
 			<img src="<html:imagesPath/>pics/sym_s_up.gif"/>
 		</c:if>
     	
+	    <a/>
+	
     </ssf:slidingTableColumn>
   </c:if>
   
