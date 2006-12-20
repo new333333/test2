@@ -3187,6 +3187,7 @@ var ss_linkMenu = new function() {
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+		ss_debug('buildBaseUrl - '+ url);
 		return url;
 	}
 }
