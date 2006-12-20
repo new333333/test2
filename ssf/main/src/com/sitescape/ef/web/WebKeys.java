@@ -411,6 +411,7 @@ public class WebKeys {
 	public static final String PAGE_NUMBERS = "ssPageNumbers";
 	public static final String PAGE_COUNT = "ssPageCount";
 	public static final String PAGE_ENTRIES_PER_PAGE = "ssEntriesPerPage";
+	public static final String PAGE_MENU_CONTROL_TITLE = "ssPageMenuControlTitle";
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";

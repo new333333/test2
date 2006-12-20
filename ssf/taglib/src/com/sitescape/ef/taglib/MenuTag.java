@@ -40,6 +40,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 	private String anchor = "";
 	private String offsetTop = "8";
 	private String offsetLeft = "4";
+	private String menuImage = "";
 	private Map _params;
     
 	public int doStartTag() {
@@ -72,6 +73,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			_params.put("anchor", new String[] {this.anchor});
 			_params.put("offsetTop", new String[] {this.offsetTop});
 			_params.put("offsetLeft", new String[] {this.offsetLeft});
+			_params.put("menuImage", new String [] {this.menuImage});
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq, _params);
@@ -104,6 +106,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 			this.anchor = "";
 			this.offsetTop = "8";
 			this.offsetLeft = "4";
+			this.menuImage = "";
 			if (_params != null) {
 				_params.clear();
 			}
@@ -146,7 +149,7 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 	}
 
 	public void setMenuWidth(String menuWidth) {
-	    this.menuWidth = menuWidth;
+	    this.menuWidth = menuWidth; 
 	}
 
 	public void setTitleClass(String titleClass) {
@@ -167,6 +170,10 @@ public class MenuTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setOffsetLeft(String offsetLeft) {
 	    this.offsetLeft = offsetLeft;
+	}
+	
+	public void setMenuImage(String menuImage) {
+	    this.menuImage = menuImage;
 	}
 
 }
