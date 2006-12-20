@@ -40,7 +40,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="operation" value="subscribe"/></portlet:actionURL>";
 var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="view_folder_entry"/><portlet:param 
-		name="binderId" value="sBinderIdPlaceHolder"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
 		name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
 var ss_placeholderFileUrl = "<ssf:url 
