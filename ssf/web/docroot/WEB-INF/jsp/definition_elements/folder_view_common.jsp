@@ -107,7 +107,6 @@ function changePageEntriesCount(obj, pageCountValue) {
 		<td align="left" width="55%">
 		
 		<table border="0" cellspacing="0px" cellpadding="0px">
-		
 		<tr>
 			<td>
 			    <span class="ss_light ss_fineprint">
@@ -166,12 +165,8 @@ function changePageEntriesCount(obj, pageCountValue) {
 			</td>
 		
 		</tr>
-		
 		</table>
 		
-
-		    
-		    
 		</td>
 	</form>
 		
