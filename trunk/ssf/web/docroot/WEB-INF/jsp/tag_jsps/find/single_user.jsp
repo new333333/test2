@@ -13,6 +13,7 @@
 <script type="text/javascript">
 var ss_findUser_searchText = ""
 var ss_findUser_pageNumber = 0;
+var ss_findUserDivTopOffset = 2;
 
 var ss_findUserSearchInProgress = 0;
 var ss_findUserSearchWaiting = 0;
@@ -98,11 +99,16 @@ function ss_postFindUserRequest(obj) {
 	}
 	ss_findUserSearchInProgress = 0;
 
+	var divObj = document.getElementById('ss_findUserNavBarDiv_<portlet:namespace/>');
+	ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findUser_searchText_bottom_<portlet:namespace/>") + ss_findUserDivTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findUser_searchText_bottom_<portlet:namespace/>")))
 	ss_showDivActivate('ss_findUserNavBarDiv_<portlet:namespace/>');
 
  	//Show this at full brightness
- 	var divObj = document.getElementById('available_'+obj.getData('elementName')+'_${prefix}');
+ 	divObj = document.getElementById('available_'+obj.getData('elementName')+'_${prefix}');
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
+ 	ss_debug(divObj.innerHTML)
 		
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
@@ -149,14 +155,17 @@ function ss_findUserPrevPage() {
 
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-    name="ss_findUser_searchText" 
-    id="ss_findUser_searchText"
+    name="ss_findUser_searchText_<portlet:namespace/>" 
+    id="ss_findUser_searchText_<portlet:namespace/>"
     onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
-<div id="ss_findUserNavBarDiv_<portlet:namespace/>"
+<div id="ss_findUser_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
+<div id="ss_findUserNavBarDiv_<portlet:namespace/>" 
     class="ss_findUserList" style="visibility:hidden;">
-    <ul id="available_<%= findUserElementName %>_${prefix}">
-    </ul>
+    <div id="available_<%= findUserElementName %>_${prefix}">
+      <ul>
+      </ul>
+    </div>
 </div>	
 <input type="hidden" name="<%= findUserElementName %>"/>
   

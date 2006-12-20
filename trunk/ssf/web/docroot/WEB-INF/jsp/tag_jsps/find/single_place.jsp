@@ -150,14 +150,17 @@ function ss_findPlacesPrevPage() {
 
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
-    name="ss_findPlaces_searchText" 
-    id="ss_findPlaces_searchText"
+    name="ss_findPlaces_searchText_<portlet:namespace/>" 
+    id="ss_findPlaces_searchText_<portlet:namespace/>"
     onKeyUp="ss_findPlacesSearch(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findPlacesNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
+<div id="ss_findPlaces_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_<portlet:namespace/>"
     class="ss_findUserList" style="visibility:hidden;">
-    <ul id="available_<%= findPlacesElementName %>_${prefix}">
-    </ul>
+    <div id="available_<%= findPlacesElementName %>_${prefix}">
+      <ul>
+      </ul>
+    </div>
 </div>	
 <input type="hidden" name="<%= findPlacesElementName %>"/>
   

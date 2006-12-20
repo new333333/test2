@@ -22,7 +22,7 @@
   <c:set var="ssNamespace" value="${renderResponse.namespace}_${ssComponentId}"/>
 </c:if>
 
-<div class="ss_portlet_style ss_portlet">
+<div class="ss_portlet_style ss_portlet ss_style">
 <% // Navigation bar %>
 <c:set var="ss_navbar_style" value="portlet" scope="request"/>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />

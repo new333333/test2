@@ -94,7 +94,6 @@ function ss_turnOffDebugMode() {
 <c:if test="${ss_navbar_style == 'portlet'}">
   </ul>
 </div>
-<br/>
 <div class="ss_global_toolbar">
   <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
 </c:if>
