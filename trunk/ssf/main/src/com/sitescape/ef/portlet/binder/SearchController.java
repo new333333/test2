@@ -87,7 +87,8 @@ public class SearchController extends AbstractBinderController {
 			Map tab = tabs.getTab(tabs.getCurrentTab());
 			tab.put(Tabs.SORTBY, new String(folderSortBy));
 			tab.put(Tabs.SORTDESCEND, new String(folderSortDescend));
-			
+			//When the column is sorted, the page number need not be retained, the user can be taken to page number 1
+			tab.put(Tabs.PAGE, new Integer(0));
 		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_PAGE_INFO)) {
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
 		
