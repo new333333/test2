@@ -45,6 +45,7 @@ public class EntityIndexUtils {
     public final static String ENTRY_TYPE_REPLY = "reply";
     public final static String ENTRY_TYPE_USER = "user";
     public final static String ENTRY_TYPE_GROUP = "group";
+    public final static String ENTRY_ANCESTRY = "_entryAncestry";
     public static final String CREATION_DATE_FIELD = "_creationDate";
     public static final String CREATION_DAY_FIELD = "_creationDay";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
@@ -390,4 +391,14 @@ public class EntityIndexUtils {
     	doc.add(uniqueField);     	
     }
 
+    public static void addAncestry(Document doc,  Binder binder) {
+    	
+    	Binder parentBinder = binder;
+    	
+    	while (parentBinder != null) {	
+    		Field ancestry = new Field(ENTRY_ANCESTRY, parentBinder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(ancestry);
+    		parentBinder = ((Binder)parentBinder).getParentBinder();
+    	}
+    }
 }
