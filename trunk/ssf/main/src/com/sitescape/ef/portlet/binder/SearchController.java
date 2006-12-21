@@ -155,7 +155,7 @@ public class SearchController extends AbstractBinderController {
 			}
 			//Store the search query in the current tab
 			boolean blnClearTab = true;
-			tabs.setCurrentTab(tabs.setTab(searchQuery, options, blnClearTab));
+			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
 		} else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
