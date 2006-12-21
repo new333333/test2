@@ -21,7 +21,7 @@ var ss_findPlacesSearchLastText = "";
 var ss_findPlacesSearchLastTextObjId = "";
 var ss_findPlacesSearchLastElement = "";
 var ss_findPlacesSearchLastfindPlacesType = "";
-function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
+function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
 	if (text == '' || text != ss_findPlacesSearchLastText) ss_findPlaces_pageNumber = 0;
@@ -97,6 +97,7 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.setPostRequest(ss_postfindPlacesRequest);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setData("savedColor", savedColor)
+	ajaxRequest.setData("crFound", crFound)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -120,7 +121,23 @@ function ss_postfindPlacesRequest(obj) {
 		
 	//See if there is another search request to be done
 	if (ss_findPlacesSearchWaiting == 1) {
-		setTimeout('ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType)', 100)
+		setTimeout('ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType)', 100)
+	}
+	//See if the user typed a return. If so, see if there is a unique value to go to
+	if (obj.getData('crFound') == 1) {
+		var ulObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}')
+		var liObjs = ulObj.getElementsByTagName('li');
+		if (liObjs.length == 1) {
+			setTimeout("ss_findPlacesSelectItem0_${prefix}();", 100);
+			return;
+		}
+	}
+}
+function ss_findPlacesSelectItem0_${prefix}() {
+	var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}');
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 1) {
+		ss_findPlacesSelectItem(liObjs[0])
 	}
 }
 //Routine called when item is clicked
@@ -146,13 +163,13 @@ function ss_savefindPlacesData_${prefix}() {
 
 function ss_findPlacesNextPage() {
 	ss_findPlaces_pageNumber++;
-	setTimeout("ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);", 100);
+	setTimeout("ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);", 100);
 }
 
 function ss_findPlacesPrevPage() {
 	ss_findPlaces_pageNumber--;
 	if (ss_findPlaces_pageNumber < 0) ss_findPlaces_pageNumber = 0;
-	ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);
+	ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);
 }
 
 </script>
@@ -163,7 +180,7 @@ function ss_findPlacesPrevPage() {
     class="ss_text" style="height:17px; width:<%= findPlacesElementWidth %>; overflow:hidden;" 
     name="ss_findPlaces_searchText_<portlet:namespace/>" 
     id="ss_findPlaces_searchText_<portlet:namespace/>"
-    onKeyUp="ss_findPlacesSearch(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
+    onKeyUp="ss_findPlacesSearch_${prefix}(this.id, '<%= findPlacesElementName %>', '<%= findPlacesType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findPlacesNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
 <div id="ss_findPlaces_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findPlacesNavBarDiv_<portlet:namespace/>"
