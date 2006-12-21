@@ -240,15 +240,17 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	<table id="ss_favorites_table2">
 	<tbody>
 	<tr><td><hr/></td></tr>
-	<tr>
-	<td nowrap="nowrap">
-	<a href="javascript: ;" 
-	 onClick="ss_addForumToFavorites();return false;"
-	><span class="ss_bold"><ssf:nlt tag="favorites.addCurrentPage" 
-		text="Add the current page to the favorites list..."/></span></a>
-	</td>
-	</tr>
-	<tr><td> </td></tr>
+	<c:if test="${!empty ssBinder}">
+		<tr>
+		<td nowrap="nowrap">
+		<a href="javascript: ;" 
+		 onClick="ss_addForumToFavorites();return false;"
+		><span class="ss_bold"><ssf:nlt tag="favorites.addCurrentPage" 
+			text="Add the current page to the favorites list..."/></span></a>
+		</td>
+		</tr>
+		<tr><td> </td></tr>
+	</c:if>
 	<tr>
 	<td nowrap="nowrap">
 	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div');ss_setFavoritesPaneSize();return false;">
