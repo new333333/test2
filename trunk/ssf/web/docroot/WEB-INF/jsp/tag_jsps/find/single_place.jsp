@@ -47,12 +47,22 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
  	ss_findPlaces_searchText = text;
  	
  	//See if the user ended the string with a CR. If so, then try to launch.
- 	if (text.match(/\n/)) {
- 		textObj.value = text.replace(/\n/g, "");
+ 	var newText = "";
+ 	var crFound = 0;
+ 	for (var i = 0; i < text.length; i++) {
+ 		if (text.charCodeAt(i) == 10 || text.charCodeAt(i) == 13) {
+ 			crFound = 1;
+ 			break;
+ 		} else {
+ 			newText += text.charAt(i);
+ 		}
+ 	}
+ 	if (crFound == 1) {
+ 		textObj.value = newText;
  		text = textObj.value;
 		var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
-		if (liObjs.length == 2) {
+		if (liObjs.length == 1) {
 			ss_findPlacesSelectItem(liObjs[0]);
 			return;
 		}

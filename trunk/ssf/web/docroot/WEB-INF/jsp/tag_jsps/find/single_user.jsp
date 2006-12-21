@@ -49,12 +49,22 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
  	ss_findUser_searchText = text;
  	
  	//See if the user ended the string with a CR. If so, then try to launch.
- 	if (text.match(/\n/)) {
- 		textObj.value = text.replace(/\n/g, "");
+ 	var newText = "";
+ 	var crFound = 0;
+ 	for (var i = 0; i < text.length; i++) {
+ 		if (text.charCodeAt(i) == 10 || text.charCodeAt(i) == 13) {
+ 			crFound = 1;
+ 			break;
+ 		} else {
+ 			newText += text.charAt(i);
+ 		}
+ 	}
+ 	if (crFound == 1) {
+ 		textObj.value = newText;
  		text = textObj.value;
 		var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
-		if (liObjs.length == 2) {
+		if (liObjs.length == 1) {
 			ss_findUserSelectItem(liObjs[0]);
 			return;
 		}
@@ -108,7 +118,6 @@ function ss_postFindUserRequest(obj) {
  	//Show this at full brightness
  	divObj = document.getElementById('available_'+obj.getData('elementName')+'_${prefix}');
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
- 	ss_debug(divObj.innerHTML)
 		
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
