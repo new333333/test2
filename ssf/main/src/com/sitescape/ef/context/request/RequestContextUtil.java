@@ -19,7 +19,17 @@ public class RequestContextUtil {
 		
 		return rc;
 	}
-	
+	public static RequestContext setThreadContext(Long zoneId, Long userId) {
+		if(zoneId == null)
+			throw new IllegalArgumentException("User id must be specified");
+		if(userId == null)
+			throw new IllegalArgumentException("Zone id must be specified");
+		
+		RequestContext rc = new RequestContext(zoneId, userId);
+		RequestContextHolder.setRequestContext(rc);
+		
+		return rc;
+	}	
 	
 	public static RequestContext setThreadContext(User user) {
 		RequestContext rc = setThreadContext(user.getParentBinder().getParentBinder().getName(), user.getName());

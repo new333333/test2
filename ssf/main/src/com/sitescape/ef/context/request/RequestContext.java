@@ -19,6 +19,10 @@ public class RequestContext {
     	this.userName = userName;
     }
     
+    public RequestContext(Long zoneId, Long userId) {
+    	this.zoneId = zoneId;
+    	this.userId = userId;
+    }
     public String getZoneName() {
     	return zoneName;
     }
