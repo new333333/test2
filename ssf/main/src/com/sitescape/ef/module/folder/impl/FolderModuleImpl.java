@@ -588,12 +588,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
 	   		tag.setName(newtag);
 	   	}
-	   	//TODO: access
+	   	reindex(binderId,entryId);
+	   	//TODO: what access is needed?
+	   	//checkAccess(entry, "deleteTag");
 	}
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
-		//TODO: can anyone add a tag
+		//TODO: can anyone add a tag?
 	   	Tag tag = new Tag();
 	   	User user = RequestContextHolder.getRequestContext().getUser();
 	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
@@ -601,6 +603,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	    tag.setPublic(community);
 	  	tag.setName(newtag);
 	  	coreDao.save(tag);
+	  	reindex(binderId,entryId);
 	}
 	public void deleteTag(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
@@ -611,9 +614,18 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
 		   	getCoreDao().delete(tag);
 	   	}
+	   	reindex(binderId,entryId);
 	   	//TODO: what access is needed?
 	   	//checkAccess(entry, "deleteTag");
 	}
+	
+	public void reindex(Long folderId, Long entryId) {	
+		Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        processor.reindexEntry(entry);
+	}
+	
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
