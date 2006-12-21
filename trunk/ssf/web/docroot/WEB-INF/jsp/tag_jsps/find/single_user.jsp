@@ -21,7 +21,7 @@ var ss_findUserSearchLastText = "";
 var ss_findUserSearchLastTextObjId = "";
 var ss_findUserSearchLastElement = "";
 var ss_findUserSearchLastfindUserGroupType = "";
-function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
+function ss_findUserSearch_${prefix}(textObjId, elementName, findUserGroupType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
 	if (text == '' || text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
@@ -97,6 +97,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	ajaxRequest.setPostRequest(ss_postFindUserRequest);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setData("savedColor", savedColor)
+	ajaxRequest.setData("crFound", crFound)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -120,7 +121,24 @@ function ss_postFindUserRequest(obj) {
 	
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
-		setTimeout('ss_findUserSearch(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType)', 100)
+		setTimeout('ss_findUserSearch_${prefix}(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType)', 100)
+	}
+
+	//See if the user typed a return. If so, see if there is a unique value to go to
+	if (obj.getData('crFound') == 1) {
+		var ulObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}')
+		var liObjs = ulObj.getElementsByTagName('li');
+		if (liObjs.length == 1) {
+			setTimeout("ss_findUserSelectItem0_${prefix}();", 100);
+			return;
+		}
+	}
+}
+function ss_findUserSelectItem0_${prefix}() {
+	var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}');
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 1) {
+		ss_findUserSelectItem(liObjs[0])
 	}
 }
 //Routine called when item is clicked
@@ -147,13 +165,13 @@ function ss_saveFindUserData_${prefix}() {
 
 function ss_findUserNextPage() {
 	ss_findUser_pageNumber++;
-	ss_findUserSearch(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType);
+	ss_findUserSearch_${prefix}(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType);
 }
 
 function ss_findUserPrevPage() {
 	ss_findUser_pageNumber--;
 	if (ss_findUser_pageNumber < 0) ss_findUser_pageNumber = 0;
-	ss_findUserSearch(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType);
+	ss_findUserSearch_${prefix}(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType);
 }
 
 </script>
@@ -164,7 +182,7 @@ function ss_findUserPrevPage() {
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
     name="ss_findUser_searchText_<portlet:namespace/>" 
     id="ss_findUser_searchText_<portlet:namespace/>"
-    onKeyUp="ss_findUserSearch(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
+    onKeyUp="ss_findUserSearch_${prefix}(this.id, '<%= findUserElementName %>', '<%= findUserGroupType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_<portlet:namespace/>\')', 200);"></textarea></div>
 <div id="ss_findUser_searchText_bottom_<portlet:namespace/>" style="padding:0px; margin:0px;"></div>
 <div id="ss_findUserNavBarDiv_<portlet:namespace/>" 
