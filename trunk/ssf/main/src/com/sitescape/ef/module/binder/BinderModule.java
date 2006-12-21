@@ -71,7 +71,7 @@ public interface BinderModule {
     public void modifyPosting(Long binderId, Map updates);
     public void setPosting(Long binderId, String postingId);
     public void deletePosting(Long binderId);
-
+    public void setLibrary(Long binderId, boolean library);
     public boolean hasBinders(Binder binder);
     
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 

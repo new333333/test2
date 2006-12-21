@@ -296,6 +296,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public void modifyFunction(Long id, Map updates) {
 		checkAccess("modifyFunction");
 		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		ObjectBuilder.updateObject(function, updates);
 		functionManager.updateFunction(function);			
     }
     public void deleteFunction(Long id) {
@@ -402,9 +403,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         User user;
         if ((userId == null) || current.getId().equals(userId)) user = current;
         else user = getProfileDao().loadUser(userId, current.getZoneId());
-        Function function = getFunctionManager().getReservedFunction(RequestContextHolder.getRequestContext().getZoneId(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
-		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
-				RequestContextHolder.getRequestContext().getZoneId(), getProfileDao().getPrincipalIds(user), function.getId());
+		List<WorkAreaFunctionMembership> wfm = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(
+				RequestContextHolder.getRequestContext().getZoneId(), WorkAreaOperation.TEAM_MEMBER, getProfileDao().getPrincipalIds(user));
 	    Set ids = new HashSet();
 	    for (WorkAreaFunctionMembership w: wfm) {
 	    	ids.add(w.getWorkAreaId());
@@ -459,6 +459,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			
 			//generate id for top and profiles
 			getCoreDao().save(profiles);
+			getCoreDao().updateLibraryName(profiles, profiles, null, profiles.getTitle());
 		
 			//build user
 			User user = new User();
@@ -488,7 +489,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			addAdminRole(top, top, user);
 			//all users are visitors
 			addVisitorsRole(top, top, group);
-			addTeamRole(top, top, user);
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(top);
 		
@@ -573,30 +573,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);				
 	}
-	private void addTeamRole(Workspace top, WorkArea workArea, User user) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.team_member", "Team Members"));
-		function.setInternalId(ObjectKeys.TEAM_MEMBER_ROLE_ID);
-
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		function.addOperation(WorkAreaOperation.MODIFY_ENTRIES);
-		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
-		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		
-		//generate functionId
-		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(user.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);		
-	}
 	public void setZone1(String zoneName) {
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FileAttachment set uniqueName='0' where uniqueName is null");	
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.BinderConfig set library='0' where library is null");	
@@ -659,6 +635,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					Definition.FOLDER_ENTRY + " where entryDef='" + def.getId() + "'");
 			getCoreDao().flush();
 			getCoreDao().delete((Object)def);
-		}		
+		}	
+		getCoreDao().executeUpdate("delete from com.sitescape.ef.domain.BinderConfig where definitionType=9");
 	}
 }

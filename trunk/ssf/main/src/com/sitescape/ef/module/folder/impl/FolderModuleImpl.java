@@ -815,7 +815,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
-    		Long id = getCoreDao().findLibraryEntryId(fileFolder.getId(), title);
+    		Long id = getCoreDao().findLibraryEntryId(fileFolder, title);
     		return getEntry(fileFolder.getId(), id);
     	} catch (NoObjectByTheIdException no) {
     		return null;

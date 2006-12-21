@@ -32,8 +32,8 @@ public interface WorkAreaFunctionMembershipManager {
      * @return
      */
     public List findWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea);
-    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
-    public List findWorkAreaFunctionMemberships(Long zoneId, Set membersToLookup, Long functionId);
+    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkArea workArea, WorkAreaOperation workAreaOperation);
+    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkAreaOperation workAreaOperation, Set membersToLookup);
     /**
      * 
      * @param zoneId
@@ -44,14 +44,4 @@ public interface WorkAreaFunctionMembershipManager {
      */
     public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
             WorkAreaOperation workAreaOperation, Set membersToLookup);   
-    /**
-     * Check any membersToLookup id is assigned to a function for a specific workarea
-     * @param zoneId
-     * @param workArea
-     * @param function
-     * @param membersToLookup
-     * @return
-     */
-    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
-    		Long functionId, Set membersToLookup);
- }
+}

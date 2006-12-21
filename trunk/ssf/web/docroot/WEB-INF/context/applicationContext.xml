@@ -344,11 +344,20 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="authenticationManager" class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
-		<property name="profileDao"><ref local="profileDao"/></property>						
-		<property name="coreDao"><ref local="coreDao"/></property>						
-		<property name="adminModule"><ref local="adminModule"/></property>						
-		<property name="profileModule"><ref local="profileModule"/></property>						
+	<bean id="authenticationManager" parent="baseTransactionProxy">
+		<property name="transactionAttributes">
+			<props>
+				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+			</props>
+		</property>
+			<property name="target">
+				<bean class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+					<property name="profileDao"><ref local="profileDao"/></property>						
+					<property name="coreDao"><ref local="coreDao"/></property>						
+					<property name="adminModule"><ref local="adminModule"/></property>						
+					<property name="profileModule"><ref local="profileModule"/></property>						
+				</bean>
+			</property>				
 	</bean>	
 	<!-- ============================ Document Pipeline =========================== -->
 	

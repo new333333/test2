@@ -75,10 +75,11 @@ public interface CoreDao {
 	 * @return
 	 */
 	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
-    public void updateLibraryName(Binder binder, String oldName, String newName);
+    public void updateLibraryName(Binder binder, DefinableEntity entity, String oldName, String newName);
     public void registerLibraryEntry(Binder binder, DefinableEntity entity, String name);
     public void unRegisterLibraryEntry(Binder binder, String name);
-    public  Long findLibraryEntryId(Long binderId, String name);
+    public  Long findLibraryEntryId(Binder binder, String name);
+    public void clearLibraryEntries(Binder binder);
     public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
 	public float averageColumn(Class clazz, String column, FilterControls filter);

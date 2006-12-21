@@ -1,11 +1,14 @@
 package com.sitescape.ef.security.function;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
@@ -101,7 +104,7 @@ public class Function {
             throw new IllegalArgumentException("Operations must not be null");
         
         this.operations = operations;
-        this.operationNames = null;
+        computeOperationNames();
     }
     
     public void addOperation(WorkAreaOperation operation) {
@@ -146,14 +149,22 @@ public class Function {
     }
     
     private void computeOperationNames() {
-        operationNames = new HashSet();
-        
-        if(operations != null) {
+    	//If just replace the set, hibernate does a delete and re-add
+    	// So only change the members that we need to
+    	if (operationNames == null) operationNames = new HashSet();
+        if (operations != null) {
+        	Set newNames = new HashSet();
             for(Iterator it = operations.iterator(); it.hasNext();) {
                 WorkAreaOperation operation = (WorkAreaOperation) it.next();
-                operationNames.add(operation.getName());
+                newNames.add(operation.getName());
             }
+      
+            Set newM = CollectionUtil.differences(newNames, operationNames);
+            Set remM = CollectionUtil.differences(operationNames, newNames);
+            this.operationNames.addAll(newM);
+            this.operationNames.removeAll(remM);
         }
+        
     }
     public boolean equals(Object obj) {
         if(this == obj)

@@ -15,4 +15,5 @@
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 <input type="text" class="ss_text" name="title" <%= width %>
  value="<c:out value="${ssDefinitionEntry.title}"/>" />
+ <c:if test="${property_generated}">&nbsp;(<ssf:nlt tag="entry.titleGenerated"/>)</c:if>
 </div>

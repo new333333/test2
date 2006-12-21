@@ -21,8 +21,6 @@ public interface SecurityDao {
     public void deleteWorkAreaFunctionMemberships(Long zoneId, Long workAreaId, String workAreaType);
     
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException;
-    public Function loadReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException;
-	public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long zoneId, Long id)  throws NoObjectByTheIdException;
     	    	     
     public List findFunctions(Long zoneId);
 
@@ -41,7 +39,6 @@ public interface SecurityDao {
 
     public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId);
 	public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId, String workAreaType);
-	public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId, Set membersToLookup);
 
     /**
      * 
@@ -54,5 +51,10 @@ public interface SecurityDao {
      */
     public boolean checkWorkAreaFunctionMembership(Long zoneId, Long workAreaId, 
             String workAreaType, String workAreaOperationName, Set membersToLookup);
-    
+    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId,
+            Long workAreaId, String workAreaType, 
+            String workAreaOperationName);
+    public List findWorkAreaByOperation( Long zoneId,
+             String workAreaOperationName,  Set membersToLookup);
+
 }

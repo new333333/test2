@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class table="SS_LibraryEntries" name="com.sitescape.ef.domain.LibraryEntry">
+  <class table="SS_LibraryEntries" lazy="false" name="com.sitescape.ef.domain.LibraryEntry">
     <composite-id >
       <key-property name="binderId" />
       <key-property name="name" access="field"/>

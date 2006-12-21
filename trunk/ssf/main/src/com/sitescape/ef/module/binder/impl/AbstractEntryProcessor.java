@@ -460,9 +460,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	   
 	   getFileModule().renameFile(binder, entry, fa, toName);
 	   
-	   // If you're still here, the file renaming was successful.
-	   // We can change the title of the entry now. 
-	   //TODO: only if title attribute entry.setTitle(toName);
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
