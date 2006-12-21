@@ -17,9 +17,8 @@
 	      <ul>
 		    <c:forEach var="entry" items="${ssEntries}">
 		      <c:set var="count" value="${count + 1}"/>
-		      <li><a 
-		          href="#" id="<c:out value="ss_findPlaces_id_${entry._docId}"/>" 
-		          onClick="ss_findPlacesSelectItem(this);" 
+		      <li id="<c:out value="ss_findPlaces_id_${entry._docId}"/>"><a 
+		          href="#" onClick="ss_findPlacesSelectItem(this);" 
 		          ><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
 		    </c:forEach>
 	      </ul>
