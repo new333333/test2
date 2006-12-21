@@ -726,16 +726,7 @@ public class FileModuleImpl implements FileModule {
     	
     	// create Lucene query    	
     	Query soQuery = so.getQuery();
-    	
-    	// TODO REMOVE $$$
-    	System.out.println("**************************************************");
-    	String qXML = qTree.asXML();
-    	System.out.println(qXML);
-    	System.out.println("**************************************************");
-    	String qStr = soQuery.toString();
-    	System.out.println(qStr);
-    	System.out.println("**************************************************");
-    	
+    	    	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
     	Hits hits = null;
