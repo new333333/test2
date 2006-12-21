@@ -45,15 +45,17 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         return getSecurityDao().findWorkAreaFunctionMemberships
         	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }
-    //Find workareas using a specific function.
-    public List findWorkAreaFunctionMemberships(Long zoneId, Long functionId) {
-        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, functionId);
-    }
-    //Find workareas assigning this user to a specific function.  Used to implement
+    //Find workareas assigning this user to a specific operation.  Used to implement
     //what workspaces am I a team member of.
-    public List findWorkAreaFunctionMemberships(Long zoneId, Set membersToLookup, Long functionId) {
-        return getSecurityDao().findWorkAreaFunctionMemberships(zoneId, functionId, membersToLookup);
+    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkAreaOperation workAreaOperation, Set membersToLookup) {
+        return getSecurityDao().findWorkAreaByOperation(zoneId, workAreaOperation.getName(), membersToLookup);
     }
+    //Find memberhsiops for a specific workarea that have a specified operation.
+    // USed to implmenet getteammembers
+    public List findWorkAreaFunctionMembershipsByOperation(Long zoneId, WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    	return getSecurityDao().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), workAreaOperation.getName());
+    }
+
     /*
     public boolean checkWorkAreaFunctionMembership(Long zoneName, WorkArea workArea, 
             Set membersToLookup, List functions) {
@@ -87,17 +89,5 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
         	(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType(), 
         	        workAreaOperation.getName(), membersToLookup);
     }
-    //see if user is a member of a role - don't care about rights given to role
-    //Used to implement am I a member of this team?
-    public boolean checkWorkAreaFunctionMembership(Long zoneId, WorkArea workArea, 
-            Long functionId, Set membersToLookup) {
-        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(zoneId, workArea, functionId);
-        if (wfm == null) return false;
-        Set<Long> ids = wfm.getMemberIds();
-        for (Iterator iter=membersToLookup.iterator(); iter.hasNext();) {
-        	Long id = (Long)iter.next();
-        	if (ids.contains(id)) return true;
-        }
-        return false;
-    }
+
 }

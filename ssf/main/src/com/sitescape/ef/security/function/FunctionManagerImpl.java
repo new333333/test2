@@ -44,9 +44,6 @@ public class FunctionManagerImpl implements FunctionManager {
     public Function getFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
     	return getSecurityDao().loadFunction(zoneId, id);
     }
-    public Function getReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException {
-    	return getSecurityDao().loadReservedFunction(zoneId, id);
-    }
 
     public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation) {
         // This is implemented on top of getFunctions(Long) based on the

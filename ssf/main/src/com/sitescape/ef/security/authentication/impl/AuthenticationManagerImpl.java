@@ -63,9 +63,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			boolean passwordAutoSynch, Map updates) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user=null;
-		boolean closeIt = !SessionUtil.sessionActive();
 		try {
-			if (closeIt) SessionUtil.sessionStartup();
 			user = authenticate(zoneName, userName, password, passwordAutoSynch);
 			
 			boolean userModify = 
@@ -81,46 +79,39 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
  				getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
  			} 
  			else throw nu;
-		} finally {
-			if (closeIt) SessionUtil.sessionStop();
-		}
+		} 
 		return user;
 	}
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
 		User user = null;
-		boolean closeIt = !SessionUtil.sessionActive();
 
 		try {
-			if (closeIt) SessionUtil.sessionStartup();
 			user = getProfileDao().findUserByNameOnlyIfEnabled(username, zoneName);
-			user = checkZone(zoneName, username);
-		}
-    	catch(NoUserByTheNameException e) {
-    		user = checkZone(zoneName, username);
+		} catch (NoBinderByTheNameException e) {
+    		//zone not setup?
+    		user = addZone(zoneName, username);
     		if (user == null) {
-    			if (closeIt) SessionUtil.sessionStop();    	
     			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
      						+ zoneName + "," + username + "]", e);
     		}
+    	} catch (NoUserByTheNameException e) {
+			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
+						+ zoneName + "," + username + "]", e);
     	}
-    	try {
-    		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
-    			// 	Passwords do not match
-    			if(passwordAutoSynch) {
-    				// 	Change the user's password to the value passed in. 
-    				Map updates = new HashMap();
-    				updates.put("password", password);
-    				getProfileModule().modifyUserFromPortal(user, updates);
-    			}
-    			else {
-    				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
-    			}
-    		}
-    	} finally {
-			if (closeIt) SessionUtil.sessionStop();    		
-    	}
+   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
+   			// 	Passwords do not match
+   			if(passwordAutoSynch) {
+   				// 	Change the user's password to the value passed in. 
+   				Map updates = new HashMap();
+   				updates.put("password", password);
+   				getProfileModule().modifyUserFromPortal(user, updates);
+   			}
+   			else {
+   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
+   			}
+   		} 
 		return user;
 	}
 
@@ -140,7 +131,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		}
 		return user;
 	}
-	private User checkZone(String zoneName, String userName) {
+	public void checkZone(String zoneName) {
 		//make sure zone exists
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
@@ -149,6 +140,18 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			//TODO: temporary to fixup zones
 			getAdminModule().setZone1(zoneName);
 			getAdminModule().setZone2(zoneName);
+		} catch (NoWorkspaceByTheNameException nw) {
+			
+		} catch (NoBinderByTheNameException nb) {
+					
+		};
+
+		
+	}
+	private User addZone(String zoneName, String userName) {
+		//make sure zone exists
+		try {
+			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
 		} catch (NoWorkspaceByTheNameException nw) {
 			getAdminModule().addZone(zoneName);
 		} catch (NoBinderByTheNameException nb) {

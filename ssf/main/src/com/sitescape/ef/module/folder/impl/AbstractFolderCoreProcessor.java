@@ -12,50 +12,44 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-//import org.dom4j.Document;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.FolderHierarchyException;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.TitleException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.HKey;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.FolderHierarchyException;
+import com.sitescape.ef.domain.HKey;
+import com.sitescape.ef.domain.TitleException;
+import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderCoreProcessor;
 import com.sitescape.ef.module.folder.index.IndexUtils;
-import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.web.util.FilterHelper;
 /**
  *
  * @author Jong Kim
  */
 public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor 
 	implements FolderCoreProcessor {
-    
-    //***********************************************************************************************************	
+  //***********************************************************************************************************	
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;

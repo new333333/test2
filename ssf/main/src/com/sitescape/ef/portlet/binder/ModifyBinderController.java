@@ -21,6 +21,8 @@ import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -61,6 +63,16 @@ public class ModifyBinderController extends AbstractBinderController {
 					
 				}
 				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap, deleteAtts);
+				String val = PortletRequestUtils.getStringParameter(request, "_library");
+				if (!Validator.isNull(val)) {
+					Binder binder = getBinderModule().getBinder(binderId);
+					boolean isLibrary = GetterUtil.get(val, binder.isLibrary());
+					if (isLibrary != binder.isLibrary()) {
+						getBinderModule().setLibrary(binderId, isLibrary);
+					}
+					
+				}
+				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));

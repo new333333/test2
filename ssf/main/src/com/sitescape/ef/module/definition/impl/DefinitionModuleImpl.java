@@ -727,15 +727,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						}
 						
-						Element newPropertyEle = configProperty.createCopy();
+						Element newPropertyEle = newPropertiesEle.addElement("property");
+						//jsut copy attributes, don't need content
+						newPropertyEle.appendAttributes(configProperty);
 						// (rsordillo) remove Attributes that don't concern definition
 						Attribute attr = newPropertyEle.attribute("caption");
 						if (attr != null)
 							newPropertyEle.remove(attr);
-						
-						//attr = newPropertyEle.attribute("type");
-						//if (attr != null)
-							//newPropertyEle.remove(attr);
 						
 						attr = newPropertyEle.attribute("unique");
 						if (attr != null)
@@ -753,7 +751,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (attr != null)
 							newPropertyEle.remove(attr);
 
-						newPropertiesEle.add(newPropertyEle);
 						if (type.equals("text")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("textarea")) {
@@ -1361,6 +1358,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			if (entryFormItem != null) {
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
+				//see if title is generated and save source
+				Element titleEle = (Element)entryFormItem.selectSingleNode(".//item[@name='title']");
+				boolean titleGenerated = GetterUtil.get(DefinitionUtils.getPropertyValue(titleEle, "generated"), false);
+				String titleSource = null;
+				if (titleGenerated) {
+					titleSource=DefinitionUtils.getPropertyValue(titleEle, "itemSource");
+				}
 				while (itItems.hasNext()) {
 					Element nextItem = (Element) itItems.next();
 					String itemName = (String) nextItem.attributeValue("name", "");
@@ -1440,7 +1444,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	if (fileName.equals("")) continue;
 						    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
 						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-						    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
+						    	FileUploadItem fui;
+						    	if (titleGenerated && nameValue.equals(titleSource) && 
+						    			(itemName.equals("file") || itemName.equals("graphic")))
+						    		fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
+						    	else fui = new FileUploadItem(FileUploadItem.TYPE_FILE, nameValue, myFile, repositoryName);
 							    	//See if there is a scaling request for this graphic file. If yes, pass along the hieght and width
 				    			fui.setMaxWidth(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxWidth"), 0));
 				    			fui.setMaxHeight(GetterUtil.get(DefinitionUtils.getPropertyValue(nextItem, "maxHeight"), 0));
@@ -1459,16 +1467,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    		fui.setThumbnailDirectlyAccessible(false);
 						    		fui.setIsSquareThumbnail(true);						    		
 						    	}
-						    	fileData.add(fui);
-						    }
-						} else if (itemName.equals("fileEntryTitle")) {
-						    if (fileItems != null && fileItems.containsKey(nameValue)) {
-						    	MultipartFile myFile = (MultipartFile)fileItems.get(nameValue);
-						    	String fileName = myFile.getOriginalFilename();
-						    	if (fileName.equals("")) continue;
-						    	String repositoryName = DefinitionUtils.getPropertyValue(nextItem, "storage");
-						    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
-						    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_TITLE, nameValue, myFile, repositoryName);
 						    	fileData.add(fui);
 						    }
 						} else if (itemName.equals("attachFiles")) {

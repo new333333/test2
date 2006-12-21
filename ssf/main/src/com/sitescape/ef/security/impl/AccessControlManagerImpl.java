@@ -146,40 +146,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.getWorkAreaId());
     }
-	public void checkFunction(WorkArea workArea, Function function) 
-		throws AccessControlException {
-		checkFunction(RequestContextHolder.getRequestContext().getUser(),
-				workArea, function);
-	}
-	public void checkFunction(User user, WorkArea workArea, Function function) 
-    	throws AccessControlException {
-        if (!testFunction(user, workArea, function))
-        	throw new FunctionAccessControlException(user.getName(), 
-        			function.toString(), workArea.getWorkAreaId());
-    }
-         
-	public boolean testFunction(WorkArea workArea, Function function) {
-		return testFunction(RequestContextHolder.getRequestContext().getUser(),
-				workArea, function);
-	}
-	public boolean testFunction(User user,
-			WorkArea workArea, Function function) {
-		if (workArea.isFunctionMembershipInherited()) {
-			WorkArea parentWorkArea = workArea.getParentWorkArea();
-			if (parentWorkArea == null)
-				throw new InternalException(
-						"Cannot inherit function membership when it has no parent");
-			else
-				return testFunction(user, parentWorkArea, function);
-		} else {
-			Set membersToLookup = getProfileDao().getPrincipalIds(user);
 
-			return getWorkAreaFunctionMembershipManager()
-					.checkWorkAreaFunctionMembership(user.getParentBinder().getParentBinder().getId(),
-							workArea, function.getId(), membersToLookup);
-		}
-
-	}
 	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {
         checkAcl
         	(RequestContextHolder.getRequestContext().getUser(), parent,

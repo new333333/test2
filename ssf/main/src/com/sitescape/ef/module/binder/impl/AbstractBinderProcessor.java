@@ -147,7 +147,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                
 	                addBinder_postSave(parent, binder, inputData, entryData);
 	                
-	                getCoreDao().updateLibraryName(binder.getParentBinder(), null, binder.getTitle());
+	                getCoreDao().updateLibraryName(binder.getParentBinder(), binder.getParentBinder(), null, binder.getTitle());
 	                return null;
 	        	}
 	        });
@@ -305,7 +305,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        				children.addAll(child.getBinders());
 	        			}
 	        		}
-        			getCoreDao().updateLibraryName(binder.getParentBinder(), oldTitle, newTitle);
+        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder.getParentBinder(), oldTitle, newTitle);
 	        		return null;
 	        	}});
 	        sp.end().print();

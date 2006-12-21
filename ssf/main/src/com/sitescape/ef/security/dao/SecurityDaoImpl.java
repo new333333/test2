@@ -48,27 +48,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         if (zoneId.equals(f.getZoneId())) return f;
         throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
     }
-    public Function loadReservedFunction(final Long zoneId, final String id)  throws NoObjectByTheIdException {
-        return (Function)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        List results = session.createCriteria(Function.class)
-                        	.add(Expression.eq(ZONE_ID, zoneId))
-                        	.add(Expression.eq(RESERVED_ID, id))
-                        	.setCacheable(true)
-                        	.list();
-                        if (results.isEmpty()) throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
-                        return results.get(0); 
-                    }
-                }
-            );
-    }
-    public WorkAreaFunctionMembership loadWorkAreaFunctionMembership(Long zoneId, Long id)  throws NoObjectByTheIdException {
-        WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)getHibernateTemplate().get(WorkAreaFunctionMembership.class, id);
-        if (zoneId.equals(m.getZoneId())) return m;
-        throw new NoObjectByTheIdException(ErrorCodes.NoWorkAreaFunctionMembershipByTheIdException, id);
-           	
-    }
+
     public List findFunctions(final Long zoneId) {
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
@@ -124,20 +104,6 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
                 }
                 	
             );		
-	}
-	public List findWorkAreaFunctionMemberships(final Long zoneId, final Long functionId, final Set membersToLookup) {
-	       return (List)getHibernateTemplate().execute(
-	                new HibernateCallback() {
-	                    public Object doInHibernate(Session session) throws HibernateException {
-	                    	return session.getNamedQuery("get-WorkAreaByFunctionMembership")
-	                    		.setLong(ZONE_ID, zoneId)
-	                    		.setLong(FUNCTION_ID, functionId)
-	                    		.setParameterList(PRINCIPAL_IDS, membersToLookup)
- 	                            .list();
-		                    }
-	                }
-	            );
-		
 	}
 	public List findWorkAreaFunctionMemberships(final Long zoneId,
             final Long workAreaId, final String workAreaType) {
@@ -209,6 +175,50 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
         else
             return false;
     }
-
+    public List findWorkAreaFunctionMembershipsByOperation(final Long zoneId,
+            final Long workAreaId, final String workAreaType, 
+            final String workAreaOperationName) {
+    	List matches = (List) getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        // The following query performs 4 table joins in a single SQL query.
+                        // To increase performance, it only asks for the first matching 
+                        // record. In addition, it actually fetches only the ID (ie, primary
+                        // key) field of the record, which eliminates the need for another 
+                        // SELECT statement that would have been normally required otherwise. 
+                        // So, in summary, this query is as efficient as it can get. 
+                        return session.getNamedQuery("get-WorkAreaFunctionMembershipByOperation")
+                       		.setLong(ZONE_ID, zoneId)
+                            .setLong(WORK_AREA_ID, workAreaId.longValue())
+                        	.setString(WORK_AREA_TYPE, workAreaType)
+                        	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+                         	.setCacheable(true)
+                         	.list();
+                    }
+                }
+            );
+    	return matches;
+    }
     
-}
+    public List findWorkAreaByOperation(final Long zoneId,
+                      final String workAreaOperationName, final Set membersToLookup) {
+    	List matches = (List) getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        // The following query performs 4 table joins in a single SQL query.
+                        // To increase performance, it only asks for the first matching 
+                        // record. In addition, it actually fetches only the ID (ie, primary
+                        // key) field of the record, which eliminates the need for another 
+                        // SELECT statement that would have been normally required otherwise. 
+                        // So, in summary, this query is as efficient as it can get. 
+                        return session.getNamedQuery("get-FunctionMembershipByOperation")
+                       		.setLong(ZONE_ID, zoneId)
+                         	.setString(WORK_AREA_OPERATION_NAME, workAreaOperationName)
+                         	.setParameterList(PRINCIPAL_IDS, membersToLookup)
+                        	.list();
+                    }
+                }
+            );
+    	return matches;
+    }
+ }

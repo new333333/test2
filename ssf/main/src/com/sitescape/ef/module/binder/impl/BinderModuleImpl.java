@@ -18,7 +18,6 @@ import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.ef.ErrorCodes;
-import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -26,9 +25,6 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
@@ -55,7 +51,6 @@ import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -91,6 +86,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("setPosting", WorkAreaOperation.BINDER_ADMINISTRATION);
 		operations.put("setNotificationConfig", WorkAreaOperation.BINDER_ADMINISTRATION);
 		operations.put("modifyNotification", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("setLibrary", WorkAreaOperation.BINDER_ADMINISTRATION);
 	}
  
    protected DefinitionModule getDefinitionModule() {
@@ -194,6 +190,31 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		}
     	}
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
+    }
+    public void setLibrary(Long binderId, boolean library) {
+    	Binder binder = loadBinder(binderId);
+		checkAccess(binder, "setLibrary");
+/*		if (library != binder.isLibrary()) {
+			binder.setLibrary(library);
+			if (library == false) {
+				//remove old reserved names
+				getCoreDao().clearLibraryEntries(binder);
+			} else {
+				getCoreDao().clearLibraryEntries(binder);
+				//add new ones
+				//get all attachments in this binder
+			   	FilterControls filter = new FilterControls("owner.owningBinderId", binder.getId());
+		        List<com.sitescape.ef.domain.FileAttachment> atts = getCoreDao().loadObjects(com.sitescape.ef.domain.FileAttachment.class, filter);
+		 
+				for (com.sitescape.ef.domain.FileAttachment fa: atts) {
+					if (!(fa instanceof com.sitescape.ef.domain.VersionAttachment)) {
+//						getCoreDao().registerLibraryEntry(f, fa.getOwner().getEntity(), fa.getFileItem().getName());
+					}
+				}
+				
+			}
+		}
+*/
     }
     public void setProperty(Long binderId, String property, Object value) {
     	Binder binder = loadBinder(binderId);
@@ -557,30 +578,27 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public List getTeamMembers(Long binderId) {
 		Binder binder = loadBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
-		try {
-			//team membership is implemented by a reserved role
-			Function function = getFunctionManager().getReservedFunction(RequestContextHolder.getRequestContext().getZoneId(), ObjectKeys.TEAM_MEMBER_ROLE_ID);
-			//give access to members of role or binder Admins.
-			if (!getAccessControlManager().testFunction(user, binder, function)) 
-				getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
-			WorkAreaFunctionMembership wfm;
-			if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(RequestContextHolder.getRequestContext().getZoneId(), binder, function.getId());
-		    } else {
-		    	WorkArea source = binder.getParentWorkArea();
-		    	while (source.isFunctionMembershipInherited()) {
-			    	source = source.getParentWorkArea();
-			    }
-		    	wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(RequestContextHolder.getRequestContext().getZoneId(), source, function.getId());
+		//give access to team members  or binder Admins.
+		if (!getAccessControlManager().testOperation(user, binder, WorkAreaOperation.TEAM_MEMBER)) 
+			getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+		List <WorkAreaFunctionMembership> wfms=null;
+		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
+		} else {
+	    	WorkArea source = binder.getParentWorkArea();
+	    	
+	    	while (source.isFunctionMembershipInherited()) {
+		    	source = source.getParentWorkArea();
 		    }
-		    if (wfm == null) return new ArrayList();
-		    Set ids = wfm.getMemberIds();
-		    //do we want to explode groups??
-		    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
-
-		} catch (NoObjectByTheIdException no) {
-			return new ArrayList();
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
+	    }
+		Set ids = new HashSet();
+		for (WorkAreaFunctionMembership fm: wfms) {
+			ids.addAll(fm.getMemberIds());
 		}
+	    //do we want to explode groups??
+	    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
+
 	}
 	public void modifyPosting(Long binderId, Map updates) {
 	   	//posting defs are defined by admin

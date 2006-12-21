@@ -477,31 +477,55 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	}    	
     }
     //done in the current transaction on a title rename
-    public void updateLibraryName(Binder binder, String oldName, String newName) throws TitleException {
+    public void updateLibraryName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
         if (Validator.isNull(newName)) throw new TitleException("");
         if (newName.equalsIgnoreCase(oldName)) return;
         LibraryEntry le=null;
  		if (oldName != null) {
-	        le = new LibraryEntry(binder.getId(), oldName);
-			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-			if (le != null) le.setName(newName);
+	        LibraryEntry newLe = new LibraryEntry(binder.getId(), oldName);
+			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, newLe);
+			if (le != null) {
+				//it exists, is it ours?
+				if (!binder.equals(entity)) {
+					if (entity.getId().equals(le.getEntityId())) {
+						//delete the old one 
+						delete(le);
+					}
+					newLe.setEntityId(entity.getId());
+				} else if (le.getEntityId() == null) {
+					//belongs to this binder
+					delete(le);
+				}
+
+				newLe.setName(newName);
+				save(newLe);
+				return;
+			}
 		}
 		if (le == null) {
 			try {
 				le = new LibraryEntry(binder.getId(), newName);
 				LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-				if (exist == null) save(le);
+				if (exist == null) {
+					if (!binder.equals(entity)) le.setEntityId(entity.getId());
+					save(le);
+				}
 				else throw new TitleException(newName);
 			} catch (Exception ex) {
 				throw new TitleException(newName);
 			}
 		}   	
     }
-    public  Long findLibraryEntryId(Long binderId, String name) {
-    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binderId, name));
-    	if (le == null) throw new NoObjectByTheIdException(ErrorCodes.NoLibraryEntryByTheIdException, new Object[]{binderId, name});
+    public  Long findLibraryEntryId(Binder binder, String name) {
+    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(), name));
+    	if (le == null) throw new NoObjectByTheIdException(ErrorCodes.NoLibraryEntryByTheIdException, new Object[]{binder.getId(), name});
     	return le.getEntityId();
 
+    }
+    public void clearLibraryEntries(Binder binder) {
+    	executeUpdate("delete from com.sitescape.ef.domain.LibraryEntry where binderId=" +
+    			binder.getId() + " and not entityId is null");
+    	
     }
     public List findCompanies() {
 		return (List)getHibernateTemplate().execute(

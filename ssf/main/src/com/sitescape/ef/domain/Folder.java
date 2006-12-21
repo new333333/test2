@@ -23,6 +23,7 @@ public class Folder extends Binder {
     //maintain.
     public Folder() {
     	setType(EntityIdentifier.EntityType.folder.name());
+    	setLibrary(true);
     }
     public EntityIdentifier getEntityIdentifier() {
     	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folder);

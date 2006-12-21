@@ -46,20 +46,6 @@
 			<operation name="addDefinition" item="workspaceViewType" caption="__add_a_new_workspace_view" />
 		</operations>
 	</definition>
-
-	<definition name="fileFolderViewDefinition" definitionType="9" caption="__file_folder_views" canBeDeleted="false">
-		<operations>
-			<operation name="addDefinition" item="fileFolderViewType" caption="__add_a_new_file_folder_view" />
-		</operations>
-	</definition>
-	
-	<definition name="fileEntryTypeDefinition" definitionType="10" 
-		  caption="__file_entry_definitions" canBeDeleted="false">		
-		<operations>
-			<operation name="addDefinition" item="fileEntryType" 
-				caption="__add_a_new_file_entry_definition" />
-		</operations>
-	</definition>
 	
 	<definition name="userWorkspaceViewDefinition" definitionType="12" caption="__user_workspace_view" canBeDeleted="false">
 		<operations>
@@ -222,6 +208,14 @@
 			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="generated" caption="__isTitleGenerated" type="boolean">
+				<help>__help_mark_as_title</help>
+			</property>
+			<property name="itemSource" caption="__file_items_from_the_entry_form_for_title" type="selectbox">
+				<option name="ss_none" caption="__none"/>
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" 
+					optionCaption="__file_items_from_the_entry_form_for_title"/>
 			</property>
 		</properties>
 		<jsps>

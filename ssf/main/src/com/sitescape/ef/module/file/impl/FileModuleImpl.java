@@ -34,6 +34,7 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -44,6 +45,7 @@ import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.DeleteVersionException;
@@ -635,7 +637,11 @@ public class FileModuleImpl implements FileModule {
 				fa.getFileItem().getName(), newName);
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
-		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, fa.getFileItem().getName(), newName);
+		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, entity, fa.getFileItem().getName(), newName);
+        if ((entity.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDef().getDefinition(), fa.getName(), "title")) {
+        	//check title
+        	entity.getEntryDef().setTitle(newName);			   			   
+		}
 		fa.getFileItem().setName(newName);
 		
 		for(Iterator i = fa.getFileVersionsUnsorted().iterator(); i.hasNext();) {
@@ -856,6 +862,11 @@ public class FileModuleImpl implements FileModule {
 		if (deleteAttachment) {
 			entry.removeAttachment(fAtt);
 			if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().unRegisterLibraryEntry(binder, fAtt.getFileItem().getName());
+	        if ((entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), "title")) {
+	        	//check title
+	        	entry.getEntryDef().setTitle("");			   			   
+			}
+			
 		}
 	}
 
@@ -903,7 +914,7 @@ public class FileModuleImpl implements FileModule {
         			Set fAtts = null;
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
         			if(ca != null)
-        				fAtts = (Set) ca.getValue();
+        				fAtts = (Set) ca.getValueSet();
         			else
         				fAtts = new HashSet();
 
@@ -926,7 +937,7 @@ public class FileModuleImpl implements FileModule {
         			String title = fui.getOriginalFilename();
         			CustomAttribute ca = entry.getCustomAttribute(fui.getName());
         			if (ca != null) {
-        				//exist, move to attachments
+        				//exists - only allow 1 file, move to attachments
         				Set fAtts = (Set) ca.getValueSet();
         				for (Iterator iter=fAtts.iterator(); iter.hasNext(); ) {
         					FileAttachment fa = (FileAttachment)iter.next();
@@ -939,11 +950,14 @@ public class FileModuleImpl implements FileModule {
         						}
         					}
         				}
+           				fAtts = new HashSet();
+        				fAtts.add(fAtt); 
+    			    	ca.setValue(fAtts);
+        			} else {
+        				Set fAtts = new HashSet();
+        				fAtts.add(fAtt);
+        				entry.addCustomAttribute(fui.getName(), fAtts);
         			}
-        			if (ca != null)
-        				ca.setValue(fAtt);
-        			else
-        				entry.addCustomAttribute(fui.getName(), fAtt);
         			entry.setTitle(title);
         		}
                 return null;

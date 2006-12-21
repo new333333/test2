@@ -18,8 +18,7 @@ public interface FunctionManager {
     public void updateFunction(Function function);
     
     public Function getFunction(Long zoneId, Long id) throws NoObjectByTheIdException;
-    public Function getReservedFunction(Long zoneId, String id)  throws NoObjectByTheIdException;
-  
+   
     public List findFunctions(Long zoneId);
     
     public List findFunctions(Long zoneId, WorkAreaOperation workAreaOperation);
