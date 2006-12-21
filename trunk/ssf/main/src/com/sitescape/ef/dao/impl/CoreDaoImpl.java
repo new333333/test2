@@ -24,6 +24,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -35,6 +36,7 @@ import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.OrderBy;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
@@ -121,6 +123,23 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
             );
 	}
+     public SFQuery queryObjects(final ObjectControls objs, final FilterControls filter) { 
+        Query query = (Query)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+    	            	StringBuffer query = objs.getSelectAndFrom("x");
+                     	filter.appendFilter("x", query);
+                      	Query q = session.createQuery(query.toString());
+                		List filterValues = filter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+               				q.setParameter(i, filterValues.get(i));
+                		}
+     	                return q;
+    	            }
+                }
+            );  
+       return new SFQuery(query);
+    }	
 	/* 
 	 * Becuse we have relationships within the same table, 
 	 * not all databases handle on-delete correctly.  

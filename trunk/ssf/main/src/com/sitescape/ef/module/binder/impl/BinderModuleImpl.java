@@ -16,15 +16,22 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateSystemException;
+import org.hibernate.NonUniqueObjectException;
 
+import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.NotificationDef;
@@ -194,7 +201,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void setLibrary(Long binderId, boolean library) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setLibrary");
-/*		if (library != binder.isLibrary()) {
+		if (library != binder.isLibrary()) {
 			binder.setLibrary(library);
 			if (library == false) {
 				//remove old reserved names
@@ -203,18 +210,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				getCoreDao().clearLibraryEntries(binder);
 				//add new ones
 				//get all attachments in this binder
-			   	FilterControls filter = new FilterControls("owner.owningBinderId", binder.getId());
-		        List<com.sitescape.ef.domain.FileAttachment> atts = getCoreDao().loadObjects(com.sitescape.ef.domain.FileAttachment.class, filter);
-		 
-				for (com.sitescape.ef.domain.FileAttachment fa: atts) {
-					if (!(fa instanceof com.sitescape.ef.domain.VersionAttachment)) {
-//						getCoreDao().registerLibraryEntry(f, fa.getOwner().getEntity(), fa.getFileItem().getName());
-					}
-				}
+			   	FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
+			   			new Object[] {binder.getId(), "F"});
+			   	ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
+	        	SFQuery query = getCoreDao().queryObjects(objs, filter);
+		        try {
+		        	while (query.hasNext()) {
+		        		Object [] result = (Object[])query.next();
+		        		LibraryEntry le = new LibraryEntry(binder.getId(), (String)result[0]);
+		        		le.setEntityId((Long)result[1]);
+		        		getCoreDao().save(le);
+		        	}
+		        } catch (HibernateSystemException he) {
+		        	if (he.contains(NonUniqueObjectException.class)) {
+		        		throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
+		        	}
+		        	
+		        } finally {
+		        	query.close();
+		        }
 				
 			}
 		}
-*/
+
     }
     public void setProperty(Long binderId, String property, Object value) {
     	Binder binder = loadBinder(binderId);

@@ -9,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
+import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Dashboard;
@@ -19,7 +20,6 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.NoFolderByTheIdException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.UserDashboard;
 import com.sitescape.ef.domain.Workspace;
 
@@ -59,6 +59,7 @@ public interface CoreDao {
 	public Object load(Class className, String id);
 	public Object load(Class className, Long id);
 	public List loadObjects(ObjectControls objs, FilterControls filter);
+    public SFQuery queryObjects(ObjectControls objs, FilterControls filter);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
 	public List loadObjects(Class className, FilterControls filter);
 	public List loadObjectsCacheable(Class className, FilterControls filter);
