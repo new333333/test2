@@ -154,6 +154,10 @@ public class Tabs {
 		return findTab(query, options);
 	}
 	public int findTab(Document query, Map options) {
+		boolean blnClearTab = false;
+		return findTab(query, options, blnClearTab);
+	}
+	public int findTab(Document query, Map options, boolean blnClearTab) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -166,6 +170,7 @@ public class Tabs {
 			}
 		}
 		if (tabId == -1) tabId = addTab();
+		if (blnClearTab == true) clearTabInfo(tabId);
 		return setTab(tabId, query, options);
 	}
 	
