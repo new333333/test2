@@ -1073,6 +1073,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the workflows
         EntityIndexUtils.addWorkflow(indexDoc, entry);
         
+        // Add ancestry 
+        EntityIndexUtils.addAncestry(indexDoc, binder);
+        
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
