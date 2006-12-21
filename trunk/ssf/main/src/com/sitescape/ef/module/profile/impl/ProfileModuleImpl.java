@@ -597,18 +597,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void modifyUserFromPortal(User user, Map updates) {
 		if(updates == null)
 			return; // nothing to update with
-		//add user to this session = when loggin, may not have session
-		getCoreDao().update(user);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
-			RequestContextUtil.setThreadContext(user);
-			try {
-				if (EntryBuilder.updateEntry(user, updates) == true) {
-					ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
-							user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-					processor.reindexEntry(user);
-					//do now, with request context set
-					IndexSynchronizationManager.applyChanges();
-				}
+		RequestContextUtil.setThreadContext(user);
+		try {
+			if (EntryBuilder.updateEntry(user, updates) == true) {
+				ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
+						user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+				processor.reindexEntry(user);
+				//do now, with request context set
+				IndexSynchronizationManager.applyChanges();
+			}
 		} finally {
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);				
