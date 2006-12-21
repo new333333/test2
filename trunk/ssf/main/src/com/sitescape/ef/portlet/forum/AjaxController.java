@@ -243,12 +243,14 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) throws Exception {
 		//Add a binder to the favorites list
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
-		UserProperties userProperties = getProfileModule().getUserProperties(null);
-		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
-		f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
-		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		Long binderId = new Long(PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID));				
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			UserProperties userProperties = getProfileModule().getUserProperties(null);
+			Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
+			f.addFavorite(binder.getTitle(), Favorites.FAVORITE_BINDER, binderId.toString(), PortletRequestUtils.getStringParameter(request, "viewAction", ""), "");
+			getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+		}
 	}
 	
 	private void ajaxAddFavoritesCategory(ActionRequest request, ActionResponse response) throws Exception {

@@ -2587,8 +2587,6 @@ function ss_clickTreeId() {
 
 function ss_addForumToFavorites() {
 	ss_setupStatusMessageDiv()
-	var binderId = '${ssBinder.id}';
-	var action = '${action}';
 	var url = ss_addFavoriteBinderUrl;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	//ajaxRequest.setEchoDebugInfo();
