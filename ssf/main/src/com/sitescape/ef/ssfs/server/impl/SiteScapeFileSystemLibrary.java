@@ -638,24 +638,20 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		SsfsMultipartFile mf = new SsfsMultipartFile(fileName, content, modDate);
 		
-		Map fileItems = new HashMap(); // Map of names to file items	
+		Map fileItems = new HashMap(); // Map of element names to file items	
 		fileItems.put(elementName, mf); // single file item
 		
-		InputDataAccessor inputData;
+		Map data = new HashMap(); // Input data
+		data.put("title", fileName);
 		
 		if(modDate != null) {
 			// We need to tell the system to use this client-supplied mod date
 			// for the newly created entry (instead of current time). 
-			Map data = new HashMap();
 			data.put("_lastModifiedDate", modDate);
-			inputData = new MapInputData(data);
-		}
-		else {
-			inputData = new EmptyInputData(); // No non-file input data
 		}
 		
 		try {
-			bs.getFolderModule().addEntry(folder.getId(), def.getId(), inputData, fileItems);
+			bs.getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
@@ -767,10 +763,10 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		try {
 			if(parentBinder instanceof Workspace)
 				return bs.getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap());
+						new MapInputData(data), new HashMap(), true);
 			else
 				return bs.getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap());
+						new MapInputData(data), new HashMap(), true);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {

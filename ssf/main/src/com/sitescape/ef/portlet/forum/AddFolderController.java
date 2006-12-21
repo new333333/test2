@@ -47,9 +47,9 @@ public class AddFolderController extends SAbstractController {
 			MapInputData inputData = new MapInputData(formData);
 			Long newId=null;
 			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-				newId = getFolderModule().addFolder(binderId, entryType, inputData, fileMap);
+				newId = getFolderModule().addFolder(binderId, entryType, inputData, fileMap, false);
 			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-				newId = getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap);				
+				newId = getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap, false);				
 			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 				newId = getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
 			}
