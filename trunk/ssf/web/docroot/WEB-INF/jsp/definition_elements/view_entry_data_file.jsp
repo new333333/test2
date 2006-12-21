@@ -5,7 +5,7 @@
 <span class="ss_bold"><c:out value="${property_caption}" /></span>
 
 <span>
-<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
+<c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 <c:forEach var="selection" items="${selections}">
 <a target="_blank" 
   href="<ssf:url 
