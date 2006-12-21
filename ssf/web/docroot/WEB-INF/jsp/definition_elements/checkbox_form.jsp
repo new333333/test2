@@ -26,5 +26,5 @@
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div style="display:<%= inline %>;">
-<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></checkbox>
+<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
 </div>

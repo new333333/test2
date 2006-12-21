@@ -33,7 +33,10 @@
 <c:if test="${ssDefinitionEntry.library}" >
 <c:set var="cb_checked" value="checked"/>
 </c:if>
-<input type="checkbox" name="_library" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></checkbox>
+<div style="display:block">
+<input type="checkbox" name="ss_library" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}._library.value='true'; else document.${formName}._library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></input>
+</div>
+<input type="hidden" name="_library" value="${ssDefinitionEntry.library}"/>
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 
