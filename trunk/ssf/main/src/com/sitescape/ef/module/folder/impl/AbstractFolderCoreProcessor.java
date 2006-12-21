@@ -200,6 +200,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
    
  	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+ 		super.modifyEntry_postFillIn(binder, entry, inputData, entryData);
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 

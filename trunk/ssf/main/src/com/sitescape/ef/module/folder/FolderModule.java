@@ -35,7 +35,7 @@ public interface FolderModule {
     public Folder getFolder(Long folderId);
 	public Collection getFolders(List folderIds);
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
+       		Map fileItems, boolean library) throws AccessControlException, WriteFilesException;
 
    /**
      * Create an entry object from the input data and add it to the specified

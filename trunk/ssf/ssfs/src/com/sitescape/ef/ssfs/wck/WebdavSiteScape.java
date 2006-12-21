@@ -19,6 +19,7 @@ import org.apache.slide.simple.store.BasicWebdavStore;
 import org.apache.slide.simple.store.WebdavStoreBulkPropertyExtension;
 import org.apache.slide.simple.store.WebdavStoreLockExtension;
 import org.apache.slide.simple.store.WebdavStoreMacroCopyExtension;
+import org.apache.slide.simple.store.WebdavStoreMacroDeleteExtension;
 import org.apache.slide.simple.store.WebdavStoreMacroMoveExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
@@ -33,7 +34,8 @@ import static com.sitescape.ef.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore, 
 	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension,
-	WebdavStoreMacroCopyExtension, WebdavStoreMacroMoveExtension{
+	WebdavStoreMacroCopyExtension, WebdavStoreMacroMoveExtension,
+	WebdavStoreMacroDeleteExtension {
 	
 	private static final String URI_SYNTACTIC_TYPE = "synType";
 	// Syntactically the URI refers to a folder
@@ -600,6 +602,29 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		catch(TypeMismatchException e) {
 			// The object is not a file but a folder. return null. 
 			return null;
+		}
+	}
+
+
+	public void macroDelete(String targetUri) throws ServiceAccessException, 
+	AccessDeniedException, ObjectNotFoundException, ObjectLockedException {
+		Map tm = null;
+		
+		try {
+			tm = parseUri(targetUri);
+		}
+		catch(ZoneMismatchException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}
+		
+		try {
+			client.removeObject(targetUri, tm);
+		}
+		catch(NoAccessException e) {
+			throw new AccessDeniedException(targetUri, e.getMessage(), "/actions/write");
+		}
+		catch(NoSuchObjectException e) {
+			throw new ObjectNotFoundException(targetUri);		
 		}
 	}
 

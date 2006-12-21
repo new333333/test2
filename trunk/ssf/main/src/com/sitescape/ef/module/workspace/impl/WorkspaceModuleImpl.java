@@ -238,7 +238,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
  
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, boolean library) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
         checkAccess(parentWorkspace, "addFolder");
         Definition def = null;
@@ -248,8 +248,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 //        	def = parentWorkspace.getFolderDef();
         }
         
-        return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems).getId();
-
+        Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
+        binder.setLibrary(library);
+        return binder.getId();
     }
  
      public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
