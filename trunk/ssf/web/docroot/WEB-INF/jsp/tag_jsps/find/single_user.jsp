@@ -25,9 +25,8 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
 	if (text == '' || text != ss_findUserSearchLastText) ss_findUser_pageNumber = 0;
-	ss_debug('ss_findUserSearch: '+text+', '+elementName+', '+findUserGroupType+', '+ss_findUser_pageNumber)
 	ss_setupStatusMessageDiv()
-	//ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
+	ss_moveDivToBody('ss_findUserNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?
 	if (ss_findUserSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -62,7 +61,7 @@ function ss_findUserSearch(textObjId, elementName, findUserGroupType) {
  	if (crFound == 1) {
  		textObj.value = newText;
  		text = textObj.value;
-		var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
+		var ulObj = document.getElementById('available_'+elementName+'_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
 			ss_findUserSelectItem(liObjs[0]);
@@ -118,10 +117,9 @@ function ss_postFindUserRequest(obj) {
  	//Show this at full brightness
  	divObj = document.getElementById('available_'+obj.getData('elementName')+'_${prefix}');
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
-		
+	
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting == 1) {
-		document.getElementById('available_'+obj.getData('elementName')+'_${prefix}').innerHTML = "";
 		setTimeout('ss_findUserSearch(ss_findUserSearchLastTextObjId, ss_findUserSearchLastElement, ss_findUserSearchLastfindUserGroupType)', 100)
 	}
 }

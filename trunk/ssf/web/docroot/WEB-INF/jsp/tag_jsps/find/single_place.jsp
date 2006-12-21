@@ -13,6 +13,7 @@
 <script type="text/javascript">
 var ss_findPlaces_searchText = ""
 var ss_findPlaces_pageNumber = 0;
+var ss_findPlacesDivTopOffset = 2;
 
 var ss_findPlacesSearchInProgress = 0;
 var ss_findPlacesSearchWaiting = 0;
@@ -24,8 +25,8 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
 	if (text == '' || text != ss_findPlacesSearchLastText) ss_findPlaces_pageNumber = 0;
-	ss_debug('ss_findPlacesSearch: '+text+', '+elementName+', '+findPlacesType+', '+ss_findPlaces_pageNumber)
 	ss_setupStatusMessageDiv()
+	ss_moveDivToBody('ss_findPlacesNavBarDiv_<portlet:namespace/>');
 	//Are we already doing a search?
 	if (ss_findPlacesSearchInProgress == 1) {
 		//Yes, hold this request until the current one finishes
@@ -67,7 +68,6 @@ function ss_findPlacesSearch(textObjId, elementName, findPlacesType) {
 			return;
 		}
  	}
-
  	//Fade the previous selections
  	var savedColor = "#000000";
  	var divObj = document.getElementById('available_'+elementName+'_${prefix}');
@@ -108,9 +108,11 @@ function ss_postfindPlacesRequest(obj) {
 	}
 	ss_findPlacesSearchInProgress = 0;
 
-	ss_showDivActivate('ss_findPlacesNavBarDiv_<portlet:namespace/>');
 	var divObj = document.getElementById('ss_findPlacesNavBarDiv_<portlet:namespace/>');
-	if (divObj != null) divObj.style.zIndex = '500';
+	ss_moveDivToBody('ss_findPlacesNavBarDiv_<portlet:namespace/>');
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findPlaces_searchText_bottom_<portlet:namespace/>") + ss_findPlacesDivTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findPlaces_searchText_bottom_<portlet:namespace/>")))
+	ss_showDivActivate('ss_findPlacesNavBarDiv_<portlet:namespace/>');
 		
  	//Show this at full brightness
  	divObj = document.getElementById('available_' + obj.getData('elementName') + '_${prefix}');
@@ -118,7 +120,6 @@ function ss_postfindPlacesRequest(obj) {
 		
 	//See if there is another search request to be done
 	if (ss_findPlacesSearchWaiting == 1) {
-		document.getElementById('available_'+obj.getData('elementName')+'_${prefix}').innerHTML = "";
 		setTimeout('ss_findPlacesSearch(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType)', 100)
 	}
 }
