@@ -584,8 +584,9 @@ public class ListFolderController extends  SAbstractController {
 				int count = 1;
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
 				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-				qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+				//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
 					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);

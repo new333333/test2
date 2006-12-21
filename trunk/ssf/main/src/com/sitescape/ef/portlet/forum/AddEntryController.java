@@ -47,35 +47,31 @@ public class AddEntryController extends SAbstractController {
 			MapInputData inputData = new MapInputData(formData);
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
-				setupViewEntry(response, folderId, entryId);
+				setupReloadOpener(response, folderId, entryId);
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 				//Show the parent entry when this operation finishes
-				setupViewEntry(response, folderId, id);
+				setupReloadOpener(response, folderId, id);
 			}
 			//flag reload of folder listing
-			response.setRenderParameter("ssReloadUrl", "");
+			//response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
-			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());				
-				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
-				entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				setupViewEntry(response, folderId, entryId);
-			}
+			setupCloseWindow(response);
 		} else {
 			response.setRenderParameters(formData);
 		}
 			
 	}
-	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
+	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-		
+	}
+	private void setupCloseWindow(ActionResponse response) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {

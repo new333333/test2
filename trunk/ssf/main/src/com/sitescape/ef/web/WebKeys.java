@@ -109,6 +109,7 @@ public class WebKeys {
 	public static final String ACTION_NOTIFY_CONFIGURE="configure_notify";
 	public static final String ACTION_POSTING_CONFIGURE="configure_posting";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
+	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
