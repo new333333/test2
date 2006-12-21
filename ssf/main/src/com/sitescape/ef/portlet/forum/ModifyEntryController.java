@@ -58,9 +58,9 @@ public class ModifyEntryController extends SAbstractController {
 				}
 			
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
-				setupViewEntry(response, folderId, entryId);
+				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
-				response.setRenderParameter("ssReloadUrl", "");
+				//response.setRenderParameter("ssReloadUrl", "");
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
@@ -69,12 +69,22 @@ public class ModifyEntryController extends SAbstractController {
 			}
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewEntry(response, folderId, entryId);
+			setupCloseWindow(response);
 		} else {
 			response.setRenderParameters(formData);		
 		}
 	}
 
+	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+	}
+	private void setupCloseWindow(ActionResponse response) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
+	}
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		

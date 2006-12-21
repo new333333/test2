@@ -207,12 +207,14 @@ public class ViewEntryController extends  SAbstractController {
 		try {
 			getFolderModule().checkAccess(entry, "modifyEntry");
 			//The "Modify" menu
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url, qualifiers);
 			//The "Move" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);

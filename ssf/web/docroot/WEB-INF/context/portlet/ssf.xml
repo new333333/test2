@@ -6,6 +6,7 @@
 
 	<bean id="viewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
 	<bean id="closeWindowController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.CloseWindowController" />
+	<bean id="reloadOpenerController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ReloadOpenerController" />
 	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
 
 	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
@@ -51,6 +52,7 @@
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
 						<entry key="modify_dashboard_portlet"><ref bean="dashboardPortletModifyController"/></entry>
+						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
 						<entry key="search"><ref bean="searchController"/></entry>
 
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
