@@ -373,6 +373,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "modifyTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	tag.setName(newTag);
+	   	reindex(binderId);
 	}
 	/**
 	 * Add a new tag, owned by this binder
@@ -386,7 +387,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	tag.setEntityIdentifier(binder.getEntityIdentifier());
 	   	tag.setPublic(community);
 	  	tag.setName(newTag);
-	  	coreDao.save(tag);   	
+	  	coreDao.save(tag);
+	  	reindex(binderId);   	
 	}
 	/**
 	 * Delete a tag owned by this binder
@@ -396,6 +398,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "deleteTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
+	   	reindex(binderId);
+	}
+	
+	// this should just reindex the binder, and not the entries associated with it.
+	public void reindex(Long binderId) {	
+		Binder binder = loadBinder(binderId);
+        BinderProcessor processor = loadBinderProcessor(binder);
+        processor.indexBinder(binder);
 	}
 
     public void addSubscription(Long binderId, int style) {
