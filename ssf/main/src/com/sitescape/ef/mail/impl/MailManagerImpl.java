@@ -43,7 +43,6 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.jobs.FailedEmail;
-import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.jobs.SendEmail;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.JavaMailSender;

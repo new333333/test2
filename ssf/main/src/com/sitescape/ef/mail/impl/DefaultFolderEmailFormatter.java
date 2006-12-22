@@ -64,6 +64,7 @@ import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.mail.FolderEmailFormatter;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.binder.AccessUtils;
+import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -83,6 +84,7 @@ import com.sitescape.util.Validator;
 public class DefaultFolderEmailFormatter extends CommonDependencyInjection implements FolderEmailFormatter {
 	private Log logger = LogFactory.getLog(getClass());
     private FolderModule folderModule;
+    private BinderModule binderModule;
     protected DefinitionModule definitionModule;
     protected MailManager mailManager;
 	private TransformerFactory transFactory = TransformerFactory.newInstance();
@@ -95,6 +97,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
     }
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
+    }
+    public void setBinderModule(BinderModule binderModule) {
+    	this.binderModule = binderModule;
     }
  	public void setMailManager(MailManager mailManager) {
 		this.mailManager = mailManager;
@@ -176,8 +181,14 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				userIds.add(p.getId());
 		}
 		if (folder.getNotificationDef().isTeamOn()) {
-			//TODO: fix when we figure out what a team members is
-//			List team = getAccessControlManager().
+			List team = binderModule.getTeamMembers(folder);
+			for (Iterator iter=team.iterator(); iter.hasNext();) {
+				Principal p = (Principal)iter.next();
+				if (p.getEntityIdentifier().getEntityType().equals(EntityType.group))
+					groupIds.add(p.getId());
+				else
+					userIds.add(p.getId());
+			}
 			
 		}
 		userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));

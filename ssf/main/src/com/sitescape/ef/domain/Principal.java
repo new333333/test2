@@ -18,7 +18,7 @@ import com.sitescape.ef.NotSupportedException;
 
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"
-* @hibernate.discriminator type="string" length="1" column="type"
+* @hibernate.discriminator type="string" length="16" column="type"
 * @hibernate.mapping auto-import="false"
 * @hibernate.cache usage="read-write"
 * need auto-import = false so names don't collide with jbpm
@@ -35,8 +35,22 @@ public abstract class Principal extends Entry  {
     protected Long workspaceId, calendarId;
     protected List iMemberOf;
     protected String internalId;
+    protected String type;
     
-
+    public EntityIdentifier getEntityIdentifier() {
+    	//this assumes the type and EntityType strings are the same for user/group
+    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.valueOf(getType()));
+    }
+    /**
+     * @hibernate.property insert="false" update="false"
+     *
+     */
+    protected String getType() {
+    	return type;
+    }
+    protected void setType(String type) {
+    	this.type = type;
+    }
     /**
      * Internal id used to identify default principals.  This id plus
      * the zoneId are used to locate default principals.  If we just used the primary key id

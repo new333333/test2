@@ -22,6 +22,7 @@
       <key column="principal" on-delete="cascade"/>
       <one-to-many class="com.sitescape.ef.domain.Event"/>
     </set>
+    <property name="type" update="false" insert="false"/> 
     <property name="workspaceId"/>
     <property name="internalId" length="32"/>
     <property name="calendarId"/>

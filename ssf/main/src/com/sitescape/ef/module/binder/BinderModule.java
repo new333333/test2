@@ -97,6 +97,13 @@ public interface BinderModule {
  
     
 	public List getTeamMembers(Long binderId);
+	/**
+	 * Same as <code>getTeamMembers</code> except to access checks
+	 * @param binder
+	 * @return
+	 */
+	public List getTeamMembers(Binder binder);
+
 	public void checkAccess(Binder binder, String operation) throws AccessControlException;
 	
 }
