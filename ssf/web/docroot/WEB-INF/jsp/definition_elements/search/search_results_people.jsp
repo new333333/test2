@@ -8,15 +8,15 @@
 }
 .secondRating {
 	opacity: .8;
-	filter: alpha(opacity=90);
+	filter: alpha(opacity=80);
 }
 .thirdRating {
 	opacity: .7;
-	filter: alpha(opacity=80);
+	filter: alpha(opacity=70);
 }
 .fourthRating {
 	opacity: .6;
-	filter: alpha(opacity=70);
+	filter: alpha(opacity=60);
 }
 .fifthRating {
 	opacity: .4;
