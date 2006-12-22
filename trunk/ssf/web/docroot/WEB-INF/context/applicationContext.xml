@@ -535,6 +535,7 @@
 				<prop key="modifySubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deletePosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyNotification">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -577,6 +578,7 @@
 	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
+		<property name="binderModule"><ref local="binderModule"/></property>
 		<property name="mailManager"><ref local="mailManager"/></property>
 	</bean>
 	

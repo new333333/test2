@@ -9,10 +9,8 @@
     </id>
     <discriminator type="char" column="type"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <property name="type" update="false" insert="false">
-       	<column name="type" index="ssuniquefile"/>
-    </property>
-    
+    <property name="type" update="false" insert="false"/>
+     
     <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
       <many-to-one name="folderEntry"/>
       <many-to-one name="principal"/>
@@ -30,9 +28,7 @@
       <property name="ownerType" update="false" insert="false"/>
       <property name="ownerId" update="false" insert="false"/>
       <property name="owningFolderSortKey" length="512"/>
-      <property name="owningBinderId">
-      	<column name="owningBinderId" index="ssuniquefile"/>
-      </property>
+      <property name="owningBinderId"/>
     </component>
     <property name="name" length="64"/>
     <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
@@ -50,14 +46,12 @@
     <subclass name="com.sitescape.ef.domain.FileAttachment" discriminator-value="F" dynamic-update="true">
       <component name="fileItem">
         <property name="name" length="256">
-          	<column name="fileName" index="ssuniquefile"/>
+          	<column name="fileName"/>
        </property>
         <property name="length" column="fileLength"/>
       </component>
       <property name="lastVersion"/>
-	  <property name="uniqueName" >
-	      	<column name="uniqueName" index="ssuniquefile"/>
-      </property>
+	  <property name="uniqueName"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <key column="parentAttachment" />

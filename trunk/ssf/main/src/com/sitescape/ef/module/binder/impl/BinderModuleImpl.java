@@ -609,6 +609,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		//give access to team members  or binder Admins.
 		if (!getAccessControlManager().testOperation(user, binder, WorkAreaOperation.TEAM_MEMBER)) 
 			getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+		return getTeamMembers(binder);
+	}
+	public List getTeamMembers(Binder binder) {
 		List <WorkAreaFunctionMembership> wfms=null;
 		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
 	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
@@ -624,9 +627,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		for (WorkAreaFunctionMembership fm: wfms) {
 			ids.addAll(fm.getMemberIds());
 		}
-	    //do we want to explode groups??
+	    //don't explode groups
 	    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
-
+		
 	}
 	public void modifyPosting(Long binderId, Map updates) {
 	   	//posting defs are defined by admin
