@@ -17,6 +17,7 @@ var ss_findUserDivTopOffset = 2;
 
 var ss_findUserSearchInProgress = 0;
 var ss_findUserSearchWaiting = 0;
+var ss_findUserSearchStartMs = 0;
 var ss_findUserSearchLastText = "";
 var ss_findUserSearchLastTextObjId = "";
 var ss_findUserSearchLastElement = "";
@@ -35,8 +36,16 @@ function ss_findUserSearch_${prefix}(textObjId, elementName, findUserGroupType) 
 		ss_findUserSearchLastElement = elementName;
 		ss_findUserSearchLastfindUserGroupType = findUserGroupType;
 		ss_findUserSearchWaiting = 1;
-		ss_debug('  hold search request...')
-		return;
+		var d = new Date();
+		var curr_msec = d.getTime();
+		if (ss_findUserSearchStartMs == 0 || curr_msec < parseInt(ss_findUserSearchStartMs + 1000)) {
+			ss_debug('  hold search request...')
+			if (ss_findUserSearchStartMs == 0) ss_findUserSearchStartMs = curr_msec;
+			return;
+		}
+		//The user waited for over a second, let this request go through
+		ss_findUserSearchStartMs = 0;
+		ss_debug('   Stopped waiting')
 	}
 	ss_findUserSearchInProgress = 1;
 	ss_findUserSearchWaiting = 0;

@@ -17,6 +17,7 @@ var ss_findPlacesDivTopOffset = 2;
 
 var ss_findPlacesSearchInProgress = 0;
 var ss_findPlacesSearchWaiting = 0;
+var ss_findPlacesSearchStartMs = 0;
 var ss_findPlacesSearchLastText = "";
 var ss_findPlacesSearchLastTextObjId = "";
 var ss_findPlacesSearchLastElement = "";
@@ -35,8 +36,16 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 		ss_findPlacesSearchLastElement = elementName;
 		ss_findPlacesSearchLastfindPlacesType = findPlacesType;
 		ss_findPlacesSearchWaiting = 1;
-		ss_debug('  hold search request...')
-		return;
+		var d = new Date();
+		var curr_msec = d.getTime();
+		if (ss_findPlacesSearchStartMs == 0 || curr_msec < ss_findPlacesSearchStartMs + 1000) {
+			ss_debug('  hold search request...')
+			if (ss_findPlacesSearchStartMs == 0) ss_findPlacesSearchStartMs = curr_msec;
+			return;
+		}
+		//The user waited for over a second, let this request go through
+		ss_findPlacesSearchStartMs = 0;
+		ss_debug('   Stopped waiting')
 	}
 	ss_findPlacesSearchInProgress = 1;
 	ss_findPlacesSearchWaiting = 0;

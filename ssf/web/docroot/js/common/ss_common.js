@@ -245,7 +245,7 @@ function ss_moveObjectToBody(obj) {
 }
 
 var ss_originalSSParentNodes = new Array();
-var ss_originalSSChildNodeNumbers = new Array();
+var ss_originalSSChildNodeNumber = new Array();
 function ss_moveDivToTopOfBody(divId) {
 	var obj = document.getElementById(divId);
 	if (obj == null) return;
@@ -255,10 +255,10 @@ function ss_moveDivToTopOfBody(divId) {
     	var startLeft = ss_getObjAbsX(obj)
     	var startTop = ss_getObjAbsY(obj)
     	ss_originalSSParentNodes[divId] = obj.parentNode;
-		ss_originalSSChildNodeNumbers[divId] = 0;
+		ss_originalSSChildNodeNumber[divId] = 0;
 		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
-			// ??? ss_originalSSChildNodeNumbers[divId] = i;
 			if (obj.parentNode.childNodes.item(i) == obj) break;
+			ss_originalSSChildNodeNumber[divId]++;
 		}
 		obj.parentNode.removeChild(obj);
 		obj.style.top = startTop;
@@ -268,8 +268,13 @@ function ss_moveDivToTopOfBody(divId) {
 		dojo.lfx.html.slideTo(divId, {top: 0, left:0}, 300, null, ssf_onLayoutChange).play();
     } else {
 		if (ss_originalSSParentNodes[divId] != null) {
+		
 			bodyObj.removeChild(obj);
-			ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(ss_originalSSChildNodeNumbers[divId]))
+			if (ss_originalSSParentNodes[divId].childNodes.length <= ss_originalSSChildNodeNumber[divId]) {
+				ss_originalSSParentNodes[divId].appendChild(obj);
+			} else {
+				ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(parseInt(ss_originalSSChildNodeNumber[divId] + 1)))
+			}
 	    	var startLeft = parseInt(0 - parseInt(ss_getObjAbsX(obj)))
 	    	var startTop = parseInt(0 - parseInt(ss_getObjAbsY(obj)))
 	    	var endLeft = ss_getObjectLeft(obj)
