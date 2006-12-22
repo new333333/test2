@@ -165,6 +165,7 @@ public class SearchController extends AbstractBinderController {
 		}
 		
 		List<Map>entries;
+		List<Map>newEntries;
 		List people = new ArrayList();
 		List entryPeople = new ArrayList();
 		List entryPlaces = new ArrayList();
@@ -223,11 +224,20 @@ public class SearchController extends AbstractBinderController {
 			}
 		}
 		
-		//Determine the Starting Page Index		
+		//Determine the Starting Page Index - To be displayed in the screen
 		Integer tabPageNumber = (Integer) tabInfo.get(Tabs.PAGE);
 		if (tabPageNumber == null) tabPageNumber = new Integer(0);
-		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
+		//options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		
+		//Internally we will always start the search from the first record
+		options.put(ObjectKeys.SEARCH_OFFSET, new Integer(0));
+		
+		//actual number of records to be displayed
+		Integer recordsToBeDisplayed = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+		
+		//actual number of records to be fetched
+		int intInternalNumberOfRecordsToBeFetched = tabPageNumber.intValue() + recordsToBeDisplayed.intValue() + 200;
+		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(intInternalNumberOfRecordsToBeFetched));
 		
 		//Determining the Sorting Order
 		//When the search tab is loaded for the first time, no sorting order is mentioned
@@ -249,32 +259,49 @@ public class SearchController extends AbstractBinderController {
 		
 		Integer currentTabId  = (Integer) tabInfo.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
-		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
-		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, recordsToBeDisplayed);
+		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{recordsToBeDisplayed}));
 		
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
-			entries = (List)entryMap.get(WebKeys.FOLDER_ENTRIES);
-			people = (List)peopleMap.get(WebKeys.PEOPLE_RESULTS);
+			entries = (List) entryMap.get(WebKeys.FOLDER_ENTRIES);
+			people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
+			
+			int intEntriesLength = entries.size();
+			int intStartIndex = tabPageNumber.intValue();
+			int intEndIndex = intStartIndex + recordsToBeDisplayed;   
+			if (intEndIndex > intEntriesLength) {
+				intEndIndex = intEntriesLength;				
+			}
+			newEntries = entries.subList(intStartIndex, intEndIndex);
+			//entries = newEntries;
+			
 			entryPeople = sortPeopleInEntriesSearchResults(entries);
+			entryPeople = ratePeople(entryPeople);
+			
 			entryPlaces = sortPlacesInEntriesSearchResults(entries);
-
-		} else entries = new ArrayList();
+			entryPlaces = ratePlaces(entryPlaces);
+		} 
+		else {
+			entries = new ArrayList();
+			newEntries = new ArrayList();
+		}
 		
 		Integer entrySearchTotalCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_COUNT);
 		Integer entrySearchReturnedCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED);
 		Integer peopleSearchTotalCount = (Integer)peopleMap.get(WebKeys.PEOPLE_RESULTCOUNT);
 		
-		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		model.put(WebKeys.FOLDER_ENTRIES, newEntries);
 		model.put(WebKeys.ENTRY_SEARCH_COUNT, entrySearchTotalCount);
 		model.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, entrySearchReturnedCount);
 		
 		int totalRecordsFound = entrySearchTotalCount;
 		int totalRecordsReturned = entrySearchReturnedCount;
-		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+		//int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+		int searchOffset = tabPageNumber.intValue();
+		int searchPageIncrement = recordsToBeDisplayed;
 		int goBackSoManyPages = 2;
 		int goFrontSoManyPages = 3;
 		
@@ -457,10 +484,21 @@ public class SearchController extends AbstractBinderController {
 		Arrays.sort(array);
 		
 		for (int j = 0; j < array.length; j++) {
-			userList.add(((Person)array[j]).getUser());
+			HashMap person = new HashMap();
+			Principal user = (Principal) ((Person)array[j]).getUser();
+			int intUserCount = ((Person)array[j]).getCount();
+			person.put(WebKeys.USER_PRINCIPAL, user);
+			person.put(WebKeys.SEARCH_RESULTS_COUNT, new Integer(intUserCount));
+			userList.add(person);
 		}
 		return userList;
 	}
+	
+	public List ratePeople(List entries) {
+		//The same logic and naming has been followed for both people and placess
+		return ratePlaces(entries);
+	}
+	
 	// This class is used by the following method as a way to sort
 	// the values in a hashmap
 	public class Place implements Comparable {
@@ -529,6 +567,43 @@ public class SearchController extends AbstractBinderController {
 		return placeList;
 	}
 
+	public List ratePlaces(List entries) {
+		ArrayList ratedList = new ArrayList();
+		int intMaxHitsPerFolder = 0;
+		for (int i = 0; i < entries.size(); i++) {
+			Map place = (Map) entries.get(i);
+			Integer resultCount = (Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT);
+			if (i == 0) {
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(100));
+				place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+				intMaxHitsPerFolder = resultCount;
+			}
+			else {
+				int intResultCount = resultCount.intValue();
+				Double DblRatingForFolder = ((double)intResultCount/intMaxHitsPerFolder) * 100;
+				int intRatingForFolder = DblRatingForFolder.intValue();
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
+				if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+				}
+				else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "secondRating");
+				}
+				else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "thirdRating");
+				}
+				else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fourthRating");
+				}
+				else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fifthRating");
+				}
+			}
+			ratedList.add(place);
+		}
+		return ratedList;
+	}
+	
 	protected void buildSearchResultsToolbars(RenderRequest request, 
 			RenderResponse response, Map model) {
 		//Build the toolbar arrays

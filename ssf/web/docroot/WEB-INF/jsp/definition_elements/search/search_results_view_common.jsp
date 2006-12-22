@@ -40,6 +40,9 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
     <li class="ss_search_results_selection_inactive" id="ss_search_results_places_tab"><a href="#" 
       onClick="ss_showSearchResults('places');return false;"
       ><ssf:nlt tag="search.Places"/></a></li>
+    <li class="ss_search_results_selection_inactive" id="ss_search_results_tags_tab"><a href="#" 
+      onClick="ss_showSearchResults('tags');return false;"
+      ><ssf:nlt tag="search.Tags"/></a></li>
     <li class="ss_search_results_selection_active" id="ss_search_results_things_tab"><a href="#" 
       onClick="ss_showSearchResults('things');return false;"
       ><ssf:nlt tag="search.Things"/></a></li>
@@ -58,6 +61,10 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 
 <div id="ss_search_results_places_div" style="display:none;">  
 <%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_places.jsp" %>
+</div>
+
+<div id="ss_search_results_tags_div" style="display:none;">  
+<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_tags.jsp" %>
 </div>
 
 <script type="text/javascript">

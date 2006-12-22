@@ -295,6 +295,7 @@ function ss_getLastEntryId(imageId) {
 }
 
 function ss_showSearchResults(type) {
+
 	if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo();
 	
 	var divId = 'ss_search_results_things_div'
@@ -312,7 +313,12 @@ function ss_showSearchResults(type) {
 		divId = 'ss_search_results_places_div'
 		tabId = 'ss_search_results_places_tab';
 		folderTableId = 'ss_places_table';
+	} else if (type == 'tags') {
+		divId = 'ss_search_results_tags_div'
+		tabId = 'ss_search_results_tags_tab';
+		folderTableId = 'ss_tags_table';
 	}
+	
 	if (ss_currentSearchResultsDiv != null) {
 		var obj = document.getElementById(ss_currentSearchResultsDiv);
 		obj.style.display = "none"
