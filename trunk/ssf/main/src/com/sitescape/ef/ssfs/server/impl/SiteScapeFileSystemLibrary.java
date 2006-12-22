@@ -382,12 +382,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			if(!isLibraryFolder(getLeafBinder(sourceMap))) {
 				// Important: It is important not to use NoAccessException or 
 				// AlreadyExistsException here. 1) If NoAccessException is thrown
-				// while user is trying to rename a non-file folder binder
+				// while user is trying to rename a non-library folder binder
 				// through Windows Explorer, the Explorer will try instead to
 				// achieve similar 'rename' effect by creating a new folder
 				// with the new name followed by deleting the old folder.
-				// If that is allowed to proceed, the existing non-file folder
-				// binder is deleted from the system, and a new file folder
+				// If that is allowed to proceed, the existing non-library folder
+				// binder is deleted from the system, and a new library folder
 				// is created. That kind of indirect deletion is NEVER allowed 
 				// in Aspen. 2) If AlreadyExistsException is thrown, Explorer
 				// will display an error message like the following - "Can not
@@ -395,7 +395,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// exists. Specify a different filename." This error message
 				// is mis-leading, so should be avoided. 
 				
-				throw new SiteScapeFileSystemException("Can not move or rename binder that is not file folder", true);
+				throw new SiteScapeFileSystemException("Can not move or rename binder that is not library folder", true);
 				
 				// throw new AlreadyExistsException("Can not move or rename binder that is not file folder");
 				//throw new NoAccessException("Can not move or rename binder that is not file folder");
@@ -429,12 +429,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	/**
-	 * Copy a file folder entry into the file folder creating a new file folder
-	 * entry in it (that is, it is assumed that toParentFolder does not 
-	 * contain a child of any type whose name is equal to the name of the newly
-	 * created entry). The top version of fromEntry is copied to the newly created
-	 * entry, and its modification time is set to the modification time of the
-	 * top version of fromEntry.
+	 * Copy a library folder file into the library folder creating a new file
+	 * (along with the enclosing entry) in it (that is, it is assumed that 
+	 * toParentFolder does not contain a child of any type whose name is equal
+	 * to the name of the newly created entry). The top version of fromEntry 
+	 * is copied to the newly created entry, and its modification time is set 
+	 * to the modification time of the top version of fromEntry.
 	 * 
 	 * @param fromEntry
 	 * @param toParentFolder
@@ -452,7 +452,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	/**
-	 * Copy a file folder entry to antoher existing entry. Only the top 
+	 * Copy a library folder file from an entry into another. Only the top 
 	 * version of fromEntry is copied to toEntry. The modification time 
 	 * (but not creation time) of the top version of fromEntry is carried 
 	 * over to the new version created for toEntry.
@@ -524,15 +524,15 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 								return CrossContextConstants.OBJECT_INFO_FILE;
 							}
 							else {
-								// No file folder entry corresponding to the path. In this case, 
-								// the path can subsequently be used for either a new file folder 
+								// No library folder entry corresponding to the path. In this case, 
+								// the path can subsequently be used for either a new library folder 
 								// or a new file entry within the parent folder.
 								return CrossContextConstants.OBJECT_INFO_NON_EXISTING;
 							}
 						}
 						else {
-							// The parent folder is not a file folder. A file entry can only
-							// be located inside a file folder, and all other types of entries
+							// The parent folder is not a library folder. A file entry can only
+							// be located inside a library folder, and all other types of entries
 							// (and the files within them) are NOT addressable through WebDAV
 							// library URIs. Therefore, as far as WebDAV is concerned, this 
 							// resource does not exist. 
@@ -927,7 +927,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			Map targetMap) throws NoAccessException {
 		try {
 			Map data = new HashMap();
-			// To request file name change for file folder entry, we use a
+			// To request file name change for library folder file, we use a
 			// special key/value pair. Sort of a hack. 
 			data.put("_renameFileTo", getLastElemName(targetMap));
 			data.put("_renameFileTo_fa", getFileAttachment(sourceMap));
