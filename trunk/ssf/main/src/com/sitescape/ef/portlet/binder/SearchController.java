@@ -12,13 +12,11 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.StringTokenizer;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -38,7 +36,6 @@ import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.util.SPropsUtil;
 
 /**
@@ -307,7 +304,6 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, entrySearchReturnedCount);
 		
 		int totalRecordsFound = entrySearchTotalCount;
-		int totalRecordsReturned = entrySearchReturnedCount;
 		//int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		int searchOffset = tabPageNumber.intValue();
 		int searchPageIncrement = recordsToBeDisplayed;
@@ -403,7 +399,6 @@ public class SearchController extends AbstractBinderController {
 	// and places them into an array that is ordered by the number of times
 	// they show up in the results list.
 	protected List sortPeopleInEntriesSearchResults(List entries) {
-		List results = new ArrayList();
 		HashMap userMap = new HashMap();
 		ArrayList userList = new ArrayList();
 		// first go thru the original search results and 
