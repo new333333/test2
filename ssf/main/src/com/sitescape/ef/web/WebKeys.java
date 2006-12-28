@@ -32,6 +32,8 @@ public class WebKeys {
     public static final String EVENT = "event";
     public static final String PRINCIPAL = "_principal";
     public static final String SEARCH_BINDER_ID = "_binderId";
+    public static final String SEARCH_TAG_ID = "_tagField";
+    public static final String SEARCH_ACL_TAG_ID = "_aclTagField";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
@@ -288,6 +290,8 @@ public class WebKeys {
     public static final String FOLDER_ENTRIES="ssFolderEntries";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";
+    public static final String FOLDER_ENTRYTAGS="ssFolderEntryCommunityTags";
+    public static final String FOLDER_ENTRYPERSONALTAGS="ssFolderEntryPersonalTags";
     public static final String FOLDER_ENTRY_DESCENDANTS="ssFolderEntryDescendants";
     public static final String FOLDER_ENTRY_ANCESTORS="ssFolderEntryAncestors";
     public static final String FOLDER_ENTRY_TOOLBAR="ssFolderEntryToolbar";
@@ -377,6 +381,7 @@ public class WebKeys {
     public static final String USER_IDS_TO_SKIP="ssUserIdsToSkip";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "ssUser";
+	public static final String TAG_NAME = "ssTag";
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";

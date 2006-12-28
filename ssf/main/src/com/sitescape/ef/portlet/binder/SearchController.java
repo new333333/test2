@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.StringTokenizer;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -169,6 +170,8 @@ public class SearchController extends AbstractBinderController {
 		List people = new ArrayList();
 		List entryPeople = new ArrayList();
 		List entryPlaces = new ArrayList();
+		List entryCommunityTags = new ArrayList();
+		List entryPersonalTags = new ArrayList();
 		Map entryMap = new HashMap();
 		Map peopleMap = new HashMap();
 		
@@ -283,7 +286,13 @@ public class SearchController extends AbstractBinderController {
 			
 			entryPlaces = sortPlacesInEntriesSearchResults(entries);
 			entryPlaces = ratePlaces(entryPlaces);
-		} 
+			
+			entryCommunityTags = sortCommunityTags(entries);
+			entryCommunityTags = rateCommunityTags(entryCommunityTags);
+			
+			entryPersonalTags = sortPersonalTags(entries);
+			entryPersonalTags = ratePersonalTags(entryPersonalTags);
+		}
 		else {
 			entries = new ArrayList();
 			newEntries = new ArrayList();
@@ -342,9 +351,11 @@ public class SearchController extends AbstractBinderController {
 		UserProperties userFolderProperties = null;
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, entryPeople);
-		model.put(WebKeys.FOLDER_ENTRYPLACES, entryPlaces);
 		model.put(WebKeys.PEOPLE_RESULTS, people);
 		model.put(WebKeys.PEOPLE_RESULTCOUNT, peopleSearchTotalCount);
+		model.put(WebKeys.FOLDER_ENTRYPLACES, entryPlaces);
+		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
+		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 		model.put(WebKeys.FOLDER_SORT_BY, searchSortBy);		
 		model.put(WebKeys.FOLDER_SORT_DESCEND, searchSortDescend);
 		
@@ -356,75 +367,6 @@ public class SearchController extends AbstractBinderController {
 		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}
 
-	//This method returns a HashMap with Keys referring to the Previous Page Keys,
-	//Paging Number related Page Keys and the Next Page Keys.
-	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
-			int intSearchPageIncrement, int intGoBackSoManyPages, int intGoFrontSoManyPages) {
-		
-		HashMap<String, Object> hmRet = new HashMap<String, Object>();
-		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
-		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
-
-		//Adding Prev Page Link
-		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
-		HashMap<String, Object> hmRetPrev = new HashMap<String, Object>();
-		hmRetPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "<<");
-		hmRetPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
-		if (intSearchOffset == 0) {
-			hmRetPrev.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
-		}
-		hmRet.put(WebKeys.PAGE_PREVIOUS, hmRetPrev);
-
-		//Adding Links before Current Display
-		if (intSearchOffset != 0) {
-			//Code for generating the Numeric Paging Information previous to offset			
-			int startPrevDisplayFrom = currentDisplayValue - intGoBackSoManyPages;
-			
-			int wentBackSoManyPages = intGoBackSoManyPages + 1;
-			for (int i = startPrevDisplayFrom; i < currentDisplayValue; i++) {
-				wentBackSoManyPages--;
-				if (i < 1) continue;
-				prevInternalValue = (intSearchOffset - (intSearchPageIncrement * wentBackSoManyPages));
-				HashMap<String, Object> hmPrev = new HashMap<String, Object>();
-				hmPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "" + i);
-				hmPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
-				pagingInfo.add(hmPrev);
-			}
-		}
-		
-		//Adding Links after Current Display
-		for (int i = 0; i < intGoFrontSoManyPages; i++) {
-			int nextInternalValue = intSearchOffset + (intSearchPageIncrement * i);
-			int nextDisplayValue = (nextInternalValue + intSearchPageIncrement) / intSearchPageIncrement;  
-			if ( !(nextInternalValue >= intTotalRecordsFound) ) {
-				HashMap<String, Object> hmNext = new HashMap<String, Object>();
-				hmNext.put(WebKeys.PAGE_DISPLAY_VALUE, "" + nextDisplayValue);
-				hmNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
-				if (nextDisplayValue == currentDisplayValue) hmNext.put(WebKeys.PAGE_IS_CURRENT, new Boolean(true));
-				pagingInfo.add(hmNext);
-			}
-			else break;
-		}
-		hmRet.put(WebKeys.PAGE_NUMBERS, pagingInfo);
-		
-		//Adding Next Page Link
-		int nextInternalValue = intSearchOffset + intSearchPageIncrement;
-		HashMap<String, Object> hmRetNext = new HashMap<String, Object>();
-		hmRetNext.put(WebKeys.PAGE_DISPLAY_VALUE, ">>");
-		hmRetNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
-		
-		if ( (nextInternalValue >= intTotalRecordsFound) ) {
-			hmRetNext.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
-		}
-		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
-		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
-		
-		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
-		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
-		
-		return hmRet;
-	}
-	
 	// This class is used by the following method as a way to sort
 	// the values in a hashmap
 	public class Person implements Comparable {
@@ -494,6 +436,7 @@ public class SearchController extends AbstractBinderController {
 		return userList;
 	}
 	
+	//This method rates the people
 	public List ratePeople(List entries) {
 		//The same logic and naming has been followed for both people and placess
 		return ratePlaces(entries);
@@ -567,6 +510,7 @@ public class SearchController extends AbstractBinderController {
 		return placeList;
 	}
 
+	//This method rates the places
 	public List ratePlaces(List entries) {
 		ArrayList ratedList = new ArrayList();
 		int intMaxHitsPerFolder = 0;
@@ -602,6 +546,237 @@ public class SearchController extends AbstractBinderController {
 			ratedList.add(place);
 		}
 		return ratedList;
+	}
+	
+	// This method reads thru the results from a search, finds the tags, 
+	// and places them into an array in a alphabetic order.
+	protected List sortCommunityTags(List entries) {
+		HashMap tagMap = new HashMap();
+		ArrayList tagList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique principals.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			String strTags = (String)entry.get(WebKeys.SEARCH_TAG_ID);
+			if (strTags == null || "".equals(strTags)) continue;
+			
+		    String [] strTagArray = strTags.split("\\s");
+		    for (int j = 0; j < strTagArray.length; j++) {
+		    	String strTag = strTagArray[j];
+
+		    	if (strTag.equals("")) continue;
+		    	
+		    	Integer tagCount = (Integer) tagMap.get(strTag);
+		    	if (tagCount == null) {
+		    		tagMap.put(strTag, new Integer(1));
+		    	}
+		    	else {
+		    		int intTagCount = tagCount.intValue();
+		    		tagMap.put(strTag, new Integer(intTagCount+1));
+		    	}
+		    }
+		}
+		
+		//sort the tags string
+		Collection collection = tagMap.keySet();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			HashMap tags = new HashMap();
+			String strTag = (String) array[j];
+			tags.put(WebKeys.TAG_NAME, strTag);
+			tags.put(WebKeys.SEARCH_RESULTS_COUNT, (Integer) tagMap.get(strTag));
+			tagList.add(tags);
+		}
+		return tagList;
+	}
+	
+	//This method rates the community tags
+	public List rateCommunityTags(List entries) {
+		//Same rating algorithm is used for both community and personal tags
+		return rateTags(entries);
+	}
+
+	// This method reads thru the results from a search, finds the personal tags, 
+	// and places them into an array in a alphabetic order.
+	protected List sortPersonalTags(List entries) {
+		HashMap tagMap = new HashMap();
+		ArrayList tagList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique principals.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			String strTags = (String)entry.get(WebKeys.SEARCH_ACL_TAG_ID);
+			if (strTags == null || "".equals(strTags)) continue;
+			
+		    String [] strTagArray = strTags.split("ACL");
+		    for (int j = 0; j < strTagArray.length; j++) {
+		    	String strTag = strTagArray[j].trim();
+		    	if (strTag.equals("")) continue;
+		    	
+		    	String strFirstSixChars = strTag.substring(0, 6);
+		    	//Ignore these entries as they refer to community entries.
+		    	if (strFirstSixChars.equals("allTAG")) continue;
+
+		    	User user = RequestContextHolder.getRequestContext().getUser();
+		    	long userId = user.getId();
+		    	
+		    	String strUserIdTag = userId + "TAG";
+		    	String strValueToCompare = strTag.substring(0, strUserIdTag.length());
+		    	
+		    	//We are going to get only the personal tags relating to the user
+		    	if (strValueToCompare.equals(strUserIdTag)) {
+		    		String strTagValues = strTag.substring(strUserIdTag.length());
+				    String [] strIntTagArray = strTagValues.split("\\s");
+				    for (int k = 0; k < strIntTagArray.length; k++) {
+				    	String strIntTag = strIntTagArray[k].trim();
+				    	if (strIntTag.equals("")) continue;
+				    	
+				    	Integer tagCount = (Integer) tagMap.get(strIntTag);
+				    	if (tagCount == null) {
+				    		tagMap.put(strIntTag, new Integer(1));
+				    	}
+				    	else {
+				    		int intTagCount = tagCount.intValue();
+				    		tagMap.put(strIntTag, new Integer(intTagCount+1));
+				    	}
+				    }
+		    	}
+		    	else continue;
+		    }
+		}
+
+		//sort the tags string
+		Collection collection = tagMap.keySet();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			HashMap tags = new HashMap();
+			String strTag = (String) array[j];
+			tags.put(WebKeys.TAG_NAME, strTag);
+			tags.put(WebKeys.SEARCH_RESULTS_COUNT, (Integer) tagMap.get(strTag));
+			tagList.add(tags);
+		}
+		return tagList;
+	}
+
+	//This method rates the personal tags
+	public List ratePersonalTags(List entries) {
+		//Same rating algorithm is used for both community and personal tags
+		return rateTags(entries);
+	}	
+
+	//This method provides ratings for the tags
+	protected List rateTags(List entries) {
+		ArrayList ratedList = new ArrayList();
+		int intMaxHitsPerFolder = 0;
+		for (int i = 0; i < entries.size(); i++) {
+			Map tag = (Map) entries.get(i);
+			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
+			if (resultCount.intValue() > intMaxHitsPerFolder) {
+				intMaxHitsPerFolder = resultCount.intValue();
+			}
+		}
+
+		for (int i = 0; i < entries.size(); i++) {
+			Map tag = (Map) entries.get(i);
+			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
+			int intResultCount = resultCount.intValue();
+			Double DblRatingForFolder = ((double)intResultCount/intMaxHitsPerFolder) * 100;
+			int intRatingForFolder = DblRatingForFolder.intValue();
+			tag.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
+			if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+			}
+			else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "secondRating");
+			}
+			else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "thirdRating");
+			}
+			else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fourthRating");
+			}
+			else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fifthRating");
+			}
+			ratedList.add(tag);
+		}
+	
+		return ratedList;		
+	}	
+	
+	//This method returns a HashMap with Keys referring to the Previous Page Keys,
+	//Paging Number related Page Keys and the Next Page Keys.
+	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
+			int intSearchPageIncrement, int intGoBackSoManyPages, int intGoFrontSoManyPages) {
+		
+		HashMap<String, Object> hmRet = new HashMap<String, Object>();
+		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
+		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
+
+		//Adding Prev Page Link
+		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
+		HashMap<String, Object> hmRetPrev = new HashMap<String, Object>();
+		hmRetPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "<<");
+		hmRetPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+		if (intSearchOffset == 0) {
+			hmRetPrev.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_PREVIOUS, hmRetPrev);
+
+		//Adding Links before Current Display
+		if (intSearchOffset != 0) {
+			//Code for generating the Numeric Paging Information previous to offset			
+			int startPrevDisplayFrom = currentDisplayValue - intGoBackSoManyPages;
+			
+			int wentBackSoManyPages = intGoBackSoManyPages + 1;
+			for (int i = startPrevDisplayFrom; i < currentDisplayValue; i++) {
+				wentBackSoManyPages--;
+				if (i < 1) continue;
+				prevInternalValue = (intSearchOffset - (intSearchPageIncrement * wentBackSoManyPages));
+				HashMap<String, Object> hmPrev = new HashMap<String, Object>();
+				hmPrev.put(WebKeys.PAGE_DISPLAY_VALUE, "" + i);
+				hmPrev.put(WebKeys.PAGE_INTERNAL_VALUE, "" + prevInternalValue);
+				pagingInfo.add(hmPrev);
+			}
+		}
+		
+		//Adding Links after Current Display
+		for (int i = 0; i < intGoFrontSoManyPages; i++) {
+			int nextInternalValue = intSearchOffset + (intSearchPageIncrement * i);
+			int nextDisplayValue = (nextInternalValue + intSearchPageIncrement) / intSearchPageIncrement;  
+			if ( !(nextInternalValue >= intTotalRecordsFound) ) {
+				HashMap<String, Object> hmNext = new HashMap<String, Object>();
+				hmNext.put(WebKeys.PAGE_DISPLAY_VALUE, "" + nextDisplayValue);
+				hmNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+				if (nextDisplayValue == currentDisplayValue) hmNext.put(WebKeys.PAGE_IS_CURRENT, new Boolean(true));
+				pagingInfo.add(hmNext);
+			}
+			else break;
+		}
+		hmRet.put(WebKeys.PAGE_NUMBERS, pagingInfo);
+		
+		//Adding Next Page Link
+		int nextInternalValue = intSearchOffset + intSearchPageIncrement;
+		HashMap<String, Object> hmRetNext = new HashMap<String, Object>();
+		hmRetNext.put(WebKeys.PAGE_DISPLAY_VALUE, ">>");
+		hmRetNext.put(WebKeys.PAGE_INTERNAL_VALUE, "" + nextInternalValue);
+		
+		if ( (nextInternalValue >= intTotalRecordsFound) ) {
+			hmRetNext.put(WebKeys.PAGE_NO_LINK, "" + new Boolean(true));
+		}
+		hmRet.put(WebKeys.PAGE_NEXT, hmRetNext);
+		hmRet.put(WebKeys.PAGE_START_INDEX, "" + (intSearchOffset + 1));
+		
+		if (nextInternalValue >= intTotalRecordsFound) hmRet.put(WebKeys.PAGE_END_INDEX, "" + intTotalRecordsFound);
+		else hmRet.put(WebKeys.PAGE_END_INDEX, "" + nextInternalValue);
+		
+		return hmRet;
 	}
 	
 	protected void buildSearchResultsToolbars(RenderRequest request, 
