@@ -507,13 +507,15 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 				//it exists, is it ours?
 				if (!binder.equals(entity)) {
 					if (entity.getId().equals(le.getEntityId())) {
-						//delete the old one 
+						//delete the old one; delete cause changing primary key
 						delete(le);
+						flush();
 					}
 					newLe.setEntityId(entity.getId());
 				} else if (le.getEntityId() == null) {
-					//belongs to this binder
+					//belongs to this binder; delete cause changing primary key
 					delete(le);
+					flush();
 				}
 
 				newLe.setName(newName);
