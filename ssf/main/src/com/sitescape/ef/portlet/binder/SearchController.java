@@ -286,11 +286,18 @@ public class SearchController extends AbstractBinderController {
 			entryPlaces = ratePlaces(entryPlaces);
 			
 			entryCommunityTags = sortCommunityTags(entries);
-			entryCommunityTags = rateCommunityTags(entryCommunityTags);
-			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabTitle);
-			
 			entryPersonalTags = sortPersonalTags(entries);
-			entryPersonalTags = ratePersonalTags(entryPersonalTags);
+			
+			int intMaxHitsForCommunityTags = getMaxHitsPerTag(entryCommunityTags);
+			int intMaxHitsForPersonalTags = getMaxHitsPerTag(entryPersonalTags);
+			
+			int intMaxHits = intMaxHitsForCommunityTags;
+			if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
+			
+			entryCommunityTags = rateCommunityTags(entryCommunityTags, intMaxHits);
+			entryPersonalTags = ratePersonalTags(entryPersonalTags, intMaxHits);
+
+			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabTitle);
 			entryPersonalTags = determineSignBeforeTag(entryPersonalTags, strTabTitle);
 		}
 		else {
@@ -518,7 +525,7 @@ public class SearchController extends AbstractBinderController {
 			Integer resultCount = (Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT);
 			if (i == 0) {
 				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(100));
-				place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+				place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
 				intMaxHitsPerFolder = resultCount;
 			}
 			else {
@@ -527,19 +534,19 @@ public class SearchController extends AbstractBinderController {
 				int intRatingForFolder = DblRatingForFolder.intValue();
 				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
 				if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
-					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
 				}
 				else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
-					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "secondRating");
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brighter");
 				}
 				else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
-					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "thirdRating");
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_bright");
 				}
 				else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
-					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fourthRating");
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_dim");
 				}
 				else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
-					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fifthRating");
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_very_dim");
 				}
 			}
 			ratedList.add(place);
@@ -593,9 +600,9 @@ public class SearchController extends AbstractBinderController {
 	}
 	
 	//This method rates the community tags
-	public List rateCommunityTags(List entries) {
+	public List rateCommunityTags(List entries, int intMaxHits) {
 		//Same rating algorithm is used for both community and personal tags
-		return rateTags(entries);
+		return rateTags(entries, intMaxHits);
 	}
 	
 	//This method identifies if we need a + or - sign infront of the
@@ -666,9 +673,6 @@ public class SearchController extends AbstractBinderController {
 	protected List sortPersonalTags(List entries) {
 		HashMap tagMap = new HashMap();
 		ArrayList tagList = new ArrayList();
-		// first go thru the original search results and 
-		// find all the unique principals.  Keep a count to see
-		// if any are more active than others.
 		for (int i = 0; i < entries.size(); i++) {
 			Map entry = (Map)entries.get(i);
 			String strTags = (String)entry.get(WebKeys.SEARCH_ACL_TAG_ID);
@@ -727,15 +731,16 @@ public class SearchController extends AbstractBinderController {
 	}
 
 	//This method rates the personal tags
-	public List ratePersonalTags(List entries) {
+	public List ratePersonalTags(List entries, int intMaxHits) {
 		//Same rating algorithm is used for both community and personal tags
-		return rateTags(entries);
+		return rateTags(entries, intMaxHits);
 	}	
 
 	//This method provides ratings for the tags
-	protected List rateTags(List entries) {
+	protected List rateTags(List entries, int intMaxHits) {
 		ArrayList ratedList = new ArrayList();
-		int intMaxHitsPerFolder = 0;
+		int intMaxHitsPerFolder = intMaxHits;
+		/*
 		for (int i = 0; i < entries.size(); i++) {
 			Map tag = (Map) entries.get(i);
 			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
@@ -743,7 +748,7 @@ public class SearchController extends AbstractBinderController {
 				intMaxHitsPerFolder = resultCount.intValue();
 			}
 		}
-
+		*/
 		for (int i = 0; i < entries.size(); i++) {
 			Map tag = (Map) entries.get(i);
 			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
@@ -752,25 +757,37 @@ public class SearchController extends AbstractBinderController {
 			int intRatingForFolder = DblRatingForFolder.intValue();
 			tag.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
 			if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "firstRating");
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_largerprint");
 			}
 			else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "secondRating");
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_largeprint");
 			}
 			else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "thirdRating");
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_normalprint");
 			}
 			else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fourthRating");
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_smallprint");
 			}
 			else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "fifthRating");
+				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_fineprint");
 			}
 			ratedList.add(tag);
 		}
 	
 		return ratedList;		
-	}	
+	}
+	
+	public int getMaxHitsPerTag(List entries) {
+		int intMaxHitsPerFolder = 0;
+		for (int i = 0; i < entries.size(); i++) {
+			Map tag = (Map) entries.get(i);
+			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
+			if (resultCount.intValue() > intMaxHitsPerFolder) {
+				intMaxHitsPerFolder = resultCount.intValue();
+			}
+		}
+		return intMaxHitsPerFolder;
+	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,
 	//Paging Number related Page Keys and the Next Page Keys.
