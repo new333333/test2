@@ -9,10 +9,13 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.PresenceServiceUtils;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -45,11 +48,21 @@ public class PresenceInfo extends BodyTagSupport {
 
 			if (this.componentId == null) this.componentId = "";
 			if (this.showOptionsInline == null) this.showOptionsInline = false;
+			
+			//Get a user object from the principal
+			User user1 = null;
+			if (user != null) {
+				ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+				try {
+					user1 = profileDao.loadUser(user.getId(), user.getZoneId());
+				}
+				catch(Exception e) {}
+			}
 
 			if (zonName != null) {
 				userStatus = PresenceServiceUtils.getPresence(zonName);
-			} else if (user != null && user instanceof User) {
-				userStatus = PresenceServiceUtils.getPresence((User) user);
+			} else if (user != null && user1 != null) {
+				userStatus = PresenceServiceUtils.getPresence(user1);
 			} else {
 				userStatus = -99;
 			}
@@ -70,7 +83,7 @@ public class PresenceInfo extends BodyTagSupport {
 				}
 				
 				//Pass the user status to the jsp
-				httpReq.setAttribute(WebKeys.PRESENCE_USER, user);
+				httpReq.setAttribute(WebKeys.PRESENCE_USER, user1);
 				httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
 				httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
 				// TODO get date in the user's local time zone
