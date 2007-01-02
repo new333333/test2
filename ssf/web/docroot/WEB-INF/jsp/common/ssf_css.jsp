@@ -33,6 +33,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
 <c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
 
+<c:set var="ss_style_brightest" value="1.0" scope="request"/>
+<c:set var="ss_style_brighter" value="0.8" scope="request"/>
+<c:set var="ss_style_bright" value="0.7" scope="request"/>
+<c:set var="ss_style_dim" value="0.6" scope="request"/>
+<c:set var="ss_style_very_dim" value="0.4" scope="request"/>
+
 <c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
@@ -136,6 +142,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_font_largerprint" value="1.2em" scope="request"/>
 	<c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
 	<c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
+
+	<c:set var="ss_style_brightest" value="1.0" scope="request"/>
+	<c:set var="ss_style_brighter" value="0.8" scope="request"/>
+	<c:set var="ss_style_bright" value="0.7" scope="request"/>
+	<c:set var="ss_style_dim" value="0.6" scope="request"/>
+	<c:set var="ss_style_very_dim" value="0.4" scope="request"/>
 	
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
@@ -288,7 +300,26 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 .ss_finestprint {
   font-size: ${ss_style_font_finestprint} !important; 
 }
-
+.ss_brightest {
+ opacity: ${ss_style_brightest};
+ filter: alpha(opacity=${(ss_style_brightest*100)});
+}
+.ss_brighter {
+ opacity: ${ss_style_brighter};
+ filter: alpha(opacity=${(ss_style_brighter*100)});
+}
+.ss_bright {
+ opacity: ${ss_style_bright};
+ filter: alpha(opacity=${(ss_style_bright*100)});
+}
+.ss_dim {
+ opacity: ${ss_style_dim};
+ filter: alpha(opacity=${(ss_style_dim*100)});
+}
+.ss_very_dim {
+ opacity: ${ss_style_very_dim};
+ filter: alpha(opacity=${(ss_style_very_dim*100)});
+}
 
 .ss_gray {
   color: ${ss_style_gray_color};   
