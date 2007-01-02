@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.PresenceServiceUtils;
 import com.sitescape.ef.util.NLT;
@@ -21,7 +22,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  *
  */
 public class PresenceInfo extends BodyTagSupport {
-    private User user = null;
+    private Principal user = null;
     private Boolean showTitle = false;
     private String zonName=null;
     private String componentId;
@@ -47,8 +48,8 @@ public class PresenceInfo extends BodyTagSupport {
 
 			if (zonName != null) {
 				userStatus = PresenceServiceUtils.getPresence(zonName);
-			} else if (user != null) {
-				userStatus = PresenceServiceUtils.getPresence(user);
+			} else if (user != null && user instanceof User) {
+				userStatus = PresenceServiceUtils.getPresence((User) user);
 			} else {
 				userStatus = -99;
 			}
