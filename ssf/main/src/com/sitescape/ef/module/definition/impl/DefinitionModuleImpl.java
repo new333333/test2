@@ -1359,11 +1359,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				//While going through the entry's elements, keep track of the current form name (needed to process date elements)
 				Iterator itItems = entryFormItem.selectNodes(".//item").listIterator();
 				//see if title is generated and save source
-				Element titleEle = (Element)entryFormItem.selectSingleNode(".//item[@name='title']");
-				boolean titleGenerated = GetterUtil.get(DefinitionUtils.getPropertyValue(titleEle, "generated"), false);
+				boolean titleGenerated = false;
 				String titleSource = null;
-				if (titleGenerated) {
-					titleSource=DefinitionUtils.getPropertyValue(titleEle, "itemSource");
+				Element titleEle = (Element)entryFormItem.selectSingleNode(".//item[@name='title']");
+				if (titleEle != null) {
+					titleGenerated = GetterUtil.get(DefinitionUtils.getPropertyValue(titleEle, "generated"), false);
+					if (titleGenerated) {
+						titleSource=DefinitionUtils.getPropertyValue(titleEle, "itemSource");
+					}
 				}
 				while (itItems.hasNext()) {
 					Element nextItem = (Element) itItems.next();

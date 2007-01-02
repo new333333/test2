@@ -18,7 +18,7 @@ if (com.sitescape.ef.context.request.RequestContextHolder.getRequestContext() !=
 <ssf:ifadapter>
 <c:if test="${empty ssf_support_files_loaded}">
   <c:if test="${empty ssf_snippet}">
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"> 
+    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/1999/REC-html401-19991224/loose.dtd">
 	<html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
 	<head>
   </c:if>
