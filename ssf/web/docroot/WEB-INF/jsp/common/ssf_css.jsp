@@ -49,10 +49,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 <c:set var="ss_style_light_color" value="#999999" scope="request"/>
 <c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
+<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
+<c:set var="ss_entry_description_background_color" value="#EEEEEE" scope="request"/>
+<c:set var="ss_entry_description_border_color" value="#E2E2E2" scope="request"/>
 <c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 <c:set var="edit_text_color" value="#3333FF" scope="request"/>
@@ -116,6 +119,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
 <c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
 
+<c:set var="ss_tag_color" value="blue" scope="request"/>
+<c:set var="ss_tag_pane_background_color" value="#cecece" scope="request"/>
+
 <%
 //Color theme: "black and white"
 %>
@@ -147,10 +153,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
+	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_entry_description_background_color" value="#EEEEEE" scope="request"/>
+	<c:set var="ss_entry_description_border_color" value="#DEDEDE" scope="request"/>
 	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
@@ -213,6 +222,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_gallery_image_background_color" value="#707070" scope="request"/>
 	<c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
 	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
+
+	<c:set var="ss_tag_color" value="blue" scope="request"/>
+	<c:set var="ss_tag_pane_background_color" value="#cecece" scope="request"/>
 </c:if>
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
@@ -249,9 +261,11 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 }
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
+  text-decoration:none;
 }
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
+  text-decoration:underline;
 }
 .ss_largestprint {
   font-size: ${ss_style_font_largestprint} !important; 
@@ -305,12 +319,13 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   background-color: ${ss_form_background_color};
   }
     
-.ss_replies, .ss_replies table * {
+.ss_replies {
   color: ${ss_replies_text_color};
   background-color: ${ss_replies_background_color};
+  padding:0px 6px 2px 6px;
   }
-div.ss_replies {
-  margin:10px;
+.ss_replies_background {
+  background-color: ${ss_replies_background_color} !important;
   }
       
 .ss_style_color, .ss_style_color table, .ss_style form {
@@ -350,9 +365,34 @@ div.ss_replies {
 .ss_form input.ss_submit:hover {}
 
 .ss_text_field {
+  border:1px solid ${ss_style_text_field_border_color} !important;
   background-color: ${ss_style_text_field_background_color};
-}
-  
+  }
+
+/* entry styles: common to entry views and entry forms */
+.ss_entryTitle {
+  font-weight: bold;
+  font-size: ${ss_style_font_largerprint};
+  margin-bottom: 4px;
+  margin-top: 4px;
+  }
+/* container for entry content: description, signature, attachments, data gathered from entry form */
+.ss_entryContent {
+  margin: 0px;
+  padding: 2px;
+  background:inherit;
+  }
+.ss_entryContent table {
+  background:inherit;
+  }
+.ss_entrySignature {
+  font-size: ${ss_style_font_smallprint};
+  }
+.ss_entryDescription {
+  border:1px solid ${ss_entry_description_border_color};
+  background-color: ${ss_entry_description_background_color};
+  }
+    
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   color: ${ss_linkbutton_text_color};
@@ -717,6 +757,30 @@ table.ss_mouseOverInfo {
   color: ${ss_style_link_hover_color};
 }
 
+.ss_tags {
+  color:${ss_tag_color};
+  font-weight:bold;
+}
+.ss_tag_pane {
+  position:absolute; 
+  display:none; 
+  visibility:hidden; 
+  margin:0px;
+  padding:2px;
+  border: 1px ${ss_style_border_color} solid;
+  background-color: ${ss_tag_pane_background_color}; 
+}
+.ss_tag_pane_color {
+  background-color: ${ss_tag_pane_background_color} !important; 
+}
+.ss_tag_pane_ok_cover {
+  position:relative; 
+  top:-14px; 
+  height:20px; 
+  width:20px; 
+  background-color:${ss_tag_pane_background_color};
+}
+
 .ss_link_menu {
   position:absolute;
   visibility:hidden; 
@@ -936,6 +1000,9 @@ div.ss_dashboardProtoDropTarget {
 .ss_twDiv {
   }
 .ss_twSpan, ss_twA {
+  position:relative;
+  top:-6px;
+  line-height:10px;
   margin:0px;
   padding:0px;
   }
@@ -1154,7 +1221,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
     background-color: ${ss_style_background_color};
 }
 .ss_content_window {
-	padding:2px 5px;;
+	padding:2px 5px;
 }
 .ss_content_window_compact {
 	padding:0px;
@@ -1679,7 +1746,6 @@ div.ss_bottomlinks {
 
 .ss_bottomlinks *, span.ss_bottomlinks {
 	color:#8E8FA7 !important;
-	font-size:${ss_style_font_fineprint};
 }
 
 .ss_utils{
@@ -1843,6 +1909,12 @@ div.ss_thumbnail_gallery a:hover {
 }
 div.ss_end_thumbnail_gallery {
     clear: both;
+}
+
+/* Accessible mode styles */
+.ss_treeIframeDiv {
+	position:absolute;
+	background-color:${ss_style_background_color};
 }
 
 </c:if>
