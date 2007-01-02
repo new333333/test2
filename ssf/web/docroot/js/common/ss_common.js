@@ -918,7 +918,7 @@ function ss_setObjectLeft(obj, value) {
     } else if (isNSN) {
         obj.style.left = value;
     } else {
-        obj.style.pixelLeft = value;
+        obj.style.left = value;
     }
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
@@ -930,7 +930,7 @@ function ss_setObjectTop(obj, value) {
     } else if (isNSN) {
         obj.style.top = value;
     } else {
-        obj.style.pixelTop = value;
+        obj.style.top = value;
     }
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
