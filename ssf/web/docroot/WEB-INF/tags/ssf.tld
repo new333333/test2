@@ -438,7 +438,7 @@
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.User</type>
+			<type>com.sitescape.ef.domain.Principal</type>
 		</attribute>		
 		<attribute>
 			<name>showTitle</name>
