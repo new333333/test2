@@ -376,7 +376,6 @@ public class WebKeys {
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
     public static final String TAB_TITLE="ss_tab_title";
-    public static final String TAG_NAMESPACE="ss_tagViewNamespace";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
