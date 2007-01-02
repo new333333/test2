@@ -8,12 +8,12 @@ function ss_showTags<portlet:namespace/>() {
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
 	var anchorObj = document.getElementById('ss_tags_anchor<portlet:namespace/>');
-	ss_setObjectTop(divObj, ss_getDivTop('ss_tags_anchor<portlet:namespace/>'));
+	ss_setObjectTop(divObj, ss_getDivTop('ss_tags_anchor<portlet:namespace/>') + "px");
 	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<portlet:namespace/>'));
 	var leftEdge = parseInt(rightEdge - ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
-	//self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<portlet:namespace/>') + ", left = " +leftEdge)
-	ss_setObjectLeft(divObj, leftEdge)
+	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<portlet:namespace/>') + ", left = " +leftEdge)
+	ss_setObjectLeft(divObj, leftEdge + "px")
 	ss_showDiv(divId);
 }
 function ss_hideTags<portlet:namespace/>() {
