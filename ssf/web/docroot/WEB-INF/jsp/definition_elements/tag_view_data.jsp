@@ -17,6 +17,8 @@
 <tr>
   <td style="padding-left:10px;">
     <span class="ss_tags" style="padding-right:10px;"><c:out value="${ptag.name}"/></span>
+  </td>
+  <td>
     <a class="ss_fineprint ss_linkButton" href="#"
       onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}');return false;"
     ><ssf:nlt tag="button.delete"/></a>
