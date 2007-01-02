@@ -459,7 +459,7 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
 		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
-		model.put(WebKeys.TAG_NAMESPACE, namespace);
+		model.put(WebKeys.NAMESPACE, namespace);
 		response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/tag_view_ajax", model);
 	}
