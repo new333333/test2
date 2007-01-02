@@ -375,6 +375,7 @@ public class WebKeys {
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
+    public static final String TAB_TITLE="ss_tab_title";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
@@ -385,6 +386,8 @@ public class WebKeys {
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "ssUser";
 	public static final String TAG_NAME = "ssTag";
+	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
+    public static final String TAG_SIGN="ssTagSign";
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
