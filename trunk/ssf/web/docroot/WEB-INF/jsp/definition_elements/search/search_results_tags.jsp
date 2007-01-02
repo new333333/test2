@@ -37,7 +37,17 @@
  <tr>
   <td>
    <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-   	<a href="#" class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+   
+   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="search"/><portlet:param 
+				name="searchText" value="${tag.ssTagSearchText}"/><portlet:param 
+				name="searchBtn" value="searchBtn"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">${tag.ssTagSign}</a>
+   
+   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="search"/><portlet:param 
+				name="searchText" value="${tag.ssTag}"/><portlet:param 
+				name="searchBtn" value="searchBtn"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+   	
    </c:forEach>
   </td>
  </tr>   
@@ -57,11 +67,20 @@
  <tr>
   <td>
    <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-   	<a href="#" class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+
+   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="search"/><portlet:param 
+				name="searchText" value="${tag.ssTagSearchText}"/><portlet:param 
+				name="searchBtn" value="searchBtn"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">+</a>   
+   
+   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="search"/><portlet:param 
+				name="searchText" value="${tag.ssTag}"/><portlet:param 
+				name="searchBtn" value="searchBtn"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+				
    </c:forEach>
   </td>
  </tr>   
 
 </table>
 </div>
-

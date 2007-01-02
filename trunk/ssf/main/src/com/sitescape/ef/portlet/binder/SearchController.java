@@ -185,6 +185,7 @@ public class SearchController extends AbstractBinderController {
 		//Getting the number of records per page entry in the tab
 		Integer recordsInPage = (Integer) tabInfo.get(Tabs.RECORDS_IN_PAGE);
 		Integer pageRecordIndex = (Integer) tabInfo.get(Tabs.PAGE);
+		String strTabTitle = (String) tabInfo.get(Tabs.TITLE);
 
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
@@ -286,9 +287,11 @@ public class SearchController extends AbstractBinderController {
 			
 			entryCommunityTags = sortCommunityTags(entries);
 			entryCommunityTags = rateCommunityTags(entryCommunityTags);
+			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabTitle);
 			
 			entryPersonalTags = sortPersonalTags(entries);
 			entryPersonalTags = ratePersonalTags(entryPersonalTags);
+			entryPersonalTags = determineSignBeforeTag(entryPersonalTags, strTabTitle);
 		}
 		else {
 			entries = new ArrayList();
@@ -319,6 +322,7 @@ public class SearchController extends AbstractBinderController {
 		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
 		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
 		
+		model.put(WebKeys.TAB_TITLE, strTabTitle);
 		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
 		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
 		model.put(WebKeys.PAGE_NEXT, nextPage);
@@ -592,6 +596,69 @@ public class SearchController extends AbstractBinderController {
 	public List rateCommunityTags(List entries) {
 		//Same rating algorithm is used for both community and personal tags
 		return rateTags(entries);
+	}
+	
+	//This method identifies if we need a + or - sign infront of the
+	//tags being displayed in the tags tab in the search tab
+	protected List determineSignBeforeTag(List entries, String tabTitle) {
+		ArrayList tagList = new ArrayList();
+		for (int i = 0; i < entries.size(); i++) {
+			String strTabTitle = tabTitle;
+			Map tag = (Map) entries.get(i);
+			String strTagName = (String) tag.get(WebKeys.TAG_NAME);
+			if (strTabTitle != null && !strTabTitle.equals("")) {
+				if ( (strTabTitle.indexOf(strTagName+ " ") != -1) || (strTabTitle.indexOf(" " + strTagName) != -1) ) {
+					tag.put(WebKeys.TAG_SIGN, "-");
+					
+					int intFirstIndex = strTabTitle.indexOf(strTagName+ " ");
+					int intFirstLength = (strTagName+ " ").length();
+					
+					if (intFirstIndex != -1) {
+						String strFirstPart = "";
+						String strLastPart = "";
+						
+						if (intFirstIndex != 0) {
+							strFirstPart = strTabTitle.substring(0, (intFirstIndex));
+						}
+						if ( strTabTitle.length() !=  (intFirstIndex+1+intFirstLength) ) {
+							strLastPart = strTabTitle.substring(intFirstIndex+intFirstLength, strTabTitle.length());
+						}
+						strTabTitle = strFirstPart + strLastPart;
+					}
+					
+					int intLastIndex = strTabTitle.indexOf(" " + strTagName);
+					int intLastLength = (" " + strTagName).length();
+
+					if (intLastIndex != -1) {
+						String strFirstPart = "";
+						String strLastPart = "";
+						
+						if (intLastIndex != 0) {
+							strFirstPart = strTabTitle.substring(0, (intLastIndex));
+						}
+						if ( strTabTitle.length() !=  (intLastIndex+intLastLength) ) {
+							strLastPart = strTabTitle.substring(intLastIndex+intLastLength, strTabTitle.length());
+						}
+						strTabTitle = strFirstPart + strLastPart;
+					}
+					tag.put(WebKeys.TAG_SEARCH_TEXT, strTabTitle);					
+				}
+				else if (strTabTitle.equals(strTagName)) {
+					tag.put(WebKeys.TAG_SIGN, "-");
+					tag.put(WebKeys.TAG_SEARCH_TEXT, strTagName);
+				}
+				else {
+					tag.put(WebKeys.TAG_SIGN, "+");
+					tag.put(WebKeys.TAG_SEARCH_TEXT, strTabTitle + " " + strTagName);
+				}
+			}
+			else {
+				tag.put(WebKeys.TAG_SIGN, "+");
+				tag.put(WebKeys.TAG_SEARCH_TEXT, strTagName);
+			}
+			tagList.add(tag);
+		}
+		return tagList;
 	}
 
 	// This method reads thru the results from a search, finds the personal tags, 
