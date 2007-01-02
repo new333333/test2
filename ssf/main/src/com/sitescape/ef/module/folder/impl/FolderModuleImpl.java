@@ -605,12 +605,17 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	  	coreDao.save(tag);
 	  	reindex(binderId,entryId);
 	}
-	public void deleteTag(Long binderId, Long entryId, String tagId) {
+	public void setTagDelete(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
-	   	Tag tag = coreDao.loadTagById(tagId);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
+   		Tag tag = null;
+   		try {
+	   		tag = coreDao.loadTagById(tagId);
+	   	} catch(Exception e) {
+	   		return;
+	   	}
 	   	//if created tag for this entry, by this user- can delete it
-	   	if (tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
+	   	if (tag != null && tag.getOwnerIdentifier().equals(user.getEntityIdentifier()) &&
 	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
 		   	getCoreDao().delete(tag);
 	   	}

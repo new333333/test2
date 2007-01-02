@@ -1,6 +1,9 @@
 //Routines to display an expandable/contractable tree
 //
 function ss_treeToggle(treeName, id, parentId, bottom, type) {
+	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
+		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type);
+	}
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
@@ -84,6 +87,82 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
 	}
 }
 
+function ss_treeToggleAccessible(treeName, id, parentId, bottom, type) {
+    var tempObj = self.document.getElementById(treeName + "temp" + id);
+    var tempObjParent = self.parent.document.getElementById(treeName + "temp" + id);
+    var iframeDivObj = self.document.getElementById("ss_treeIframeDiv");
+    var iframeObj = self.document.getElementById("ss_treeIframe");
+    var iframeDivObjParent = self.parent.document.getElementById("ss_treeIframeDiv");
+    var iframeObjParent = self.parent.document.getElementById("ss_treeIframe");
+    var jObj = self.document.getElementById(treeName + "join" + id);
+    var iObj = self.document.getElementById(treeName + "icon" + id);
+    eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
+    if (iframeDivObjParent == null && iframeDivObj == null) {
+	    iframeDivObj = self.document.createElement("div");
+	    iframeDivObjParent = iframeDivObj;
+        iframeDivObj.setAttribute("id", "ss_treeIframeDiv");
+		iframeDivObj.className = "ss_treeIframeDiv";
+        iframeObj = self.document.createElement("iframe");
+        iframeObj.setAttribute("id", "ss_treeIframe");
+        iframeObj.style.width = "400px"
+        iframeObj.style.height = "250px"
+		iframeDivObj.appendChild(iframeObj);
+	    var closeDivObj = self.document.createElement("div");
+	    closeDivObj.style.border = "2px solid gray";
+	    closeDivObj.style.marginTop = "1px";
+	    closeDivObj.style.padding = "6px";
+	    iframeDivObj.appendChild(closeDivObj);
+	    var aObj = self.document.createElement("a");
+	    aObj.setAttribute("href", "javascript: ss_hideDiv('ss_treeIframeDiv');");
+	    aObj.style.border = "2px outset black";
+	    aObj.style.padding = "2px";
+	    aObj.appendChild(document.createTextNode(ss_treeButtonClose));
+	    closeDivObj.appendChild(aObj);
+		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+    }
+    if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
+    if (iframeObj == null) iframeObj = iframeObjParent;
+    if (self.parent == self) {
+    	var x = dojo.html.getAbsolutePosition(tempObj, true).x
+    	var y = dojo.html.getAbsolutePosition(tempObj, true).y
+	    ss_setObjectTop(iframeDivObj, y + "px");
+	    ss_setObjectLeft(iframeDivObj, x + "px");
+	}
+	ss_showDiv("ss_treeIframeDiv");
+	eval("var url = ss_treeAjaxUrl_" + treeName);
+	url = ss_replaceSubStrAll(url, "&amp;", "&");
+	url += "&binderId=" + id;
+	url += "&treeName=" + treeName;
+	if (showTreeIdRoutine != '') url += "&showIdRoutine=" + showTreeIdRoutine;
+	url += "&parentId=" + parentId;
+	url += "&bottom=" + bottom;
+	url += "&type=" + type;
+    if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
+		self.location.href = url;
+	} else {
+		iframeObj.src = url;
+	}
+}
+
+function ss_createTreeCheckbox(treeName, prefix, id) {
+	alert(treeName)
+	var divObj = document.getElementById("ss_hiddenTreeDiv"+treeName);
+	var cbObj = document.getElementById("ss_tree_checkbox" + treeName + prefix + id)
+	if (cbObj == null) {
+		alert("null: ss_tree_checkbox" + treeName + prefix + id)
+	} else {
+		alert("Not null: ss_tree_checkbox" + treeName + prefix + id)
+	}
+}
+
+function ss_positionAccessibleIframe(treeName, id) {
+	ss_debug('position: '+ parent.ss_getDivTop(treeName + "temp" + id))
+    var iframeDivObj = self.document.getElementById("ss_treeIframeDiv");
+	ss_setObjectTop(iframeDivObj, ss_getDivTop(treeName + "temp" + id));
+	ss_setObjectLeft(iframeDivObj, ss_getDivLeft(treeName + "temp" + id));
+	ss_showDiv(iframeDivObj);
+}
+
 function ss_postTreeDivRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
@@ -107,23 +186,25 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
     } else {
         tObj.style.display = "block";
         tObj.style.visibility = 'visible';
-		if (bottom == '0') {
-			if (parentId == "") {
-				jObj.className = "ss_twMinusTop";	     // minus_top.gif
+		if (jObj != null) {
+			if (bottom == '0') {
+				if (parentId == "") {
+					jObj.className = "ss_twMinusTop";	     // minus_top.gif
+				} else {
+					jObj.className = "ss_twMinus";	         // minus.gif
+				}
+			} else if (bottom == '1') {
+				if (parentId == "") {
+					jObj.className = "ss_twMinusTopBottom";	 // minus_top_bottom.gif
+				} else {
+					jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
+				}
 			} else {
-				jObj.className = "ss_twMinus";	         // minus.gif
-			}
-		} else if (bottom == '1') {
-			if (parentId == "") {
-				jObj.className = "ss_twMinusTopBottom";	 // minus_top_bottom.gif
-			} else {
-				jObj.className = "ss_twMinusBottom";	 // minus_bottom.gif
-			}
-		} else {
-			if (parentId == "") {
-				jObj.className = "ss_minus_top";         // minus_top.gif (no join lines)
-			} else {
-				jObj.className = "ss_minus";             // minus.gif (no join lines)
+				if (parentId == "") {
+					jObj.className = "ss_minus_top";         // minus_top.gif (no join lines)
+				} else {
+					jObj.className = "ss_minus";             // minus.gif (no join lines)
+				}
 			}
 		}
 		if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];

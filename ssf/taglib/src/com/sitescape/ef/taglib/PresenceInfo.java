@@ -22,6 +22,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class PresenceInfo extends BodyTagSupport {
     private User user = null;
+    private Boolean showTitle = false;
     private String zonName=null;
     private String componentId;
     private int userStatus=-1;
@@ -69,6 +70,7 @@ public class PresenceInfo extends BodyTagSupport {
 				
 				//Pass the user status to the jsp
 				httpReq.setAttribute(WebKeys.PRESENCE_USER, user);
+				httpReq.setAttribute(WebKeys.PRESENCE_SHOW_TITLE, this.showTitle);
 				httpReq.setAttribute(WebKeys.PRESENCE_STATUS, new Integer(userStatus));
 				// TODO get date in the user's local time zone
 				httpReq.setAttribute(WebKeys.PRESENCE_SWEEP_TIME, new Date());
@@ -93,6 +95,7 @@ public class PresenceInfo extends BodyTagSupport {
 	    }
 		finally {
 			userStatus = -1;
+			showTitle = false;
 			componentId = "";
 			user = null;
 			zonName = null;
@@ -107,6 +110,9 @@ public class PresenceInfo extends BodyTagSupport {
 
 	public void setUser(User user) {
 	    this.user = user;
+	}
+	public void setShowTitle(Boolean showTitle) {
+		this.showTitle = showTitle;
 	}
 	public void setZonName(String zonName) {
 	    this.zonName = zonName;

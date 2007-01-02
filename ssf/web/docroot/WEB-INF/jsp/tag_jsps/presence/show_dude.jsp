@@ -47,7 +47,14 @@
 <c:if test="${!ss_presence_show_options_inline}">
 <a href="javascript: ;"
  style="background:url(<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>) no-repeat left;
- padding-left:10px; text-decoration:none;"
+ padding-left:10px; 
+ <c:if test="${ss_presence_show_title}">
+   padding-right:2px; 
+ </c:if>
+ <c:if test="${!ss_presence_show_title}">
+   padding-right:10px; 
+ </c:if>
+ text-decoration:none;"
  onClick="ss_popupPresenceMenu(this, 
     '${ss_presence_user.id}', 
     '<%= presenceUserTitle %>', 
@@ -57,7 +64,29 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img border="0" style="width:12px;height:12px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
+></a>
+  <c:if test="${ss_presence_show_title}">
+	<ssf:ifadapter>
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	    action="view_permalink"
+	    binderId="${ss_presence_user.parentBinder.id}"
+	    entryId="${ss_presence_user.id}">
+	    <ssf:param name="entityType" value="workspace" />
+	    <ssf:param name="newTab" value="1" />
+		</ssf:url>"
+		onClick="self.parent.location.href = this.href;return false;"
+	  ><c:out value="${ss_presence_user.title}"/></a>
+	</ssf:ifadapter>
+	<ssf:ifnotadapter>
+	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+	  	name="action" value="view_ws_listing"/><portlet:param 
+	  	name="binderId" value="${ss_presence_user.parentBinder.id}"/><portlet:param 
+	  	name="entryId" value="${ss_presence_user.id}"/><portlet:param 
+	  	name="newTab" value="1"/></portlet:renderURL>"
+	  ><c:out value="${ss_presence_user.title}"/></a>
+	</ssf:ifnotadapter>
+ 
+  </c:if>
 </c:if>
 <c:if test="${ss_presence_show_options_inline}">
 <script type="text/javascript">

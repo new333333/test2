@@ -68,7 +68,11 @@ public class DashboardTag extends BodyTagSupport {
 						} else if (_type.equals("viewComponent")) {
 							jsp = "/WEB-INF/jsp/tag_jsps/dashboard/view_dashboard_canvas_component.jsp";
 						} else if (_type.equals("viewData")) {
-							jsp = SPropsUtil.getString("dashboard.viewJsp." + name, "");
+							if (this._initOnly) {
+								jsp = SPropsUtil.getString("dashboard.viewInitJsp." + name, "");
+							} else {
+								jsp = SPropsUtil.getString("dashboard.viewJsp." + name, "");
+							}
 						}
 						if (_type.equals("title")) {
 							//Output just the title
@@ -111,6 +115,10 @@ public class DashboardTag extends BodyTagSupport {
 		_type = type;
 	}
 
+	public void setInitOnly(boolean initOnly) {
+		_initOnly = initOnly;
+	}
+
 	public void setConfiguration(Map configuration) {
 		_configuration = configuration;
 	}
@@ -118,6 +126,7 @@ public class DashboardTag extends BodyTagSupport {
 	private String _name;
 	private String _id;
 	private String _type;
+	private boolean _initOnly;
 	private Map _configuration;
 	private Map savedDashboard;
 	private String _bodyContent;

@@ -80,6 +80,7 @@ public interface FolderModule {
 	public void setUserRating(Long folderId, long value);
 	public void setUserVisit(FolderEntry entry);
     public void setTag(Long binderId, Long entryId, String tag, boolean community);
+    public void setTagDelete(Long binderId, Long entryId, String tagId);
     
     public void addSubscription(Long folderId, Long entryId, int style); 
     public void deleteSubscription(Long folderId, Long entryId);

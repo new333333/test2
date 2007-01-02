@@ -144,6 +144,9 @@ if (displayStyle == null || displayStyle.equals("")) {
 		    </c:if>
 		    padding:2px;">
 			<c:set var="ss_component_count" value="${ss_component_count + 1}" scope="request"/>
+			<ssf:dashboard id="${ss_dashboard_id}"
+			   type="viewData" configuration="${ssDashboard}"
+			   initOnly="true" />
 			<c:if test="${ss_dashboard_visible}">
 			  <ssf:dashboard id="${ss_dashboard_id}"
 			     type="viewData" configuration="${ssDashboard}"/>

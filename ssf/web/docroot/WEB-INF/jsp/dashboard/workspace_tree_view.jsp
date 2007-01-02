@@ -17,17 +17,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${ssDashboard.dashboard.components[ssComponentId].data.start[0] == 'this'}">
-<script type="text/javascript">
-function wsTreeComponent${ssComponentId}_showId(id, obj, action) {
-	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder" binderId="ssBinderIdPlaceHolder"/>";
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-
-</script>
 
 <c:set var="rootOpen" value="true"/>
 <c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.rootOpen[0]}">
@@ -42,9 +31,12 @@ function wsTreeComponent${ssComponentId}_showId(id, obj, action) {
 </c:if>
 
 <c:if test="${!empty ssDashboard.beans[ssComponentId].workspaceTree}">
-<ssf:tree treeName="wsTreeComponent${ssComponentId}" treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}" 
-  topId="${ssDashboard.beans[ssComponentId].topId}" highlightNode="${ssDashboard.beans[ssComponentId].topId}" 
-  rootOpen="${rootOpen}" />
+<ssf:tree treeName="wsTreeComponent${ssComponentId}" 
+  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}" 
+  topId="${ssDashboard.beans[ssComponentId].topId}" 
+  highlightNode="${ssDashboard.beans[ssComponentId].topId}" 
+  rootOpen="${rootOpen}" 
+  noInit="true" />
 </c:if>
 </c:if>
 

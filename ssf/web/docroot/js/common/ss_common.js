@@ -3228,11 +3228,12 @@ function ss_getActionFromDefinitionType(definitionType) {
 function ss_launchUrlInNewWindow(obj, fileName) {
 	var pattern = /\.([^/\.]*)$/
 	var results = pattern.exec(fileName)
-	if (results != null) {
+	if (!isIE && results != null) {
+		//IE doesn't work on the second attempt to open the same file.
 		var docList = ss_files_that_do_not_pop_up.split(" ")
 		for (var i = 0; i < docList.length; i++) {
 			if (results[0] == docList[i] || results[0] == "."+docList[i]) {
-				return true
+				return true;
 			}
 		}
 	}

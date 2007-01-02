@@ -1,4 +1,7 @@
 package com.sitescape.ef.portlet.administration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
@@ -12,6 +15,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.NLT;
@@ -247,6 +251,9 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 */
-		return new ModelAndView("administration/view", WebKeys.ADMIN_TREE, adminTree);
+		Map model = new HashMap();
+		model.put(WebKeys.ADMIN_TREE, adminTree);
+		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+		return new ModelAndView("administration/view", model);
 	}
 }

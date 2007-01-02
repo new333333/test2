@@ -815,7 +815,7 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), adapterUrl.toString());
 		
 		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);

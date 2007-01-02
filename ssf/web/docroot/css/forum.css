@@ -96,14 +96,6 @@ ul.ss_square li {
 } 
 
 /* ------------------------------------------------------------------------ */
-/* entry styles: common to entry views and entry forms */
-
-.ss_entryTitle {
-  font-weight: bold;
-  font-size: 16px;
-  margin-bottom: .5em;
-  margin-top: .5em;
-  }
  
 /* spacer between form/view elements */
 div.ss_divider {
@@ -114,12 +106,6 @@ div.ss_formBreak {
   margin-top: 8px;
   }
 
-/* container for entry content: description, signature, attachments, data gathered from entry form */
-/* also form elements */
-.ss_entryContent {
-  margin: 0px;
-  padding: 2px;
-}
 
 /* styles for labels: required for forms; optional for views */
 .ss_labelAbove {
@@ -360,6 +346,10 @@ div.ss_widgetContent {
 div.ss_workflow { 
   border: 1px #666666 solid;
   padding: 2px;
+  background:inherit !important;
+  }
+.ss_workflow table { 
+  background:inherit !important;
   }
 
 .ss_dragable, .ss_dragableLink {
@@ -737,3 +727,4 @@ SPAN.ss_cpTodayTextDisabled
 	{
 	border:solid thin #808080;
 	}
+

@@ -3,6 +3,7 @@
 <%
 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 %>
+
 <script type="text/javascript">
 // Dojo configuration
 djConfig = { 
@@ -34,6 +35,7 @@ var ss_addTabUrl;
 var ss_not_logged_in;
 var ss_nlt_navigation_normal;
 var ss_nlt_navigation_maximize;
+
 
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
@@ -196,7 +198,16 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 var ss_js_files_loaded = 1;
 </script>
 
+<c:if test="${!empty ss_servlet && ss_servlet == 'true'}">
+<link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
+<link href="<ssf:url
+	    webPath="viewCss">
+	    <ssf:param name="theme" value=""/>
+	    </ssf:url>" rel="stylesheet" type="text/css" />
+</c:if>
+
 <script type="text/javascript">
+<c:if test="${empty ss_servlet || ss_servlet != 'true'}">
 if (!ss_css_files_loaded || ss_css_files_loaded == undefined || ss_css_files_loaded == "undefined" ) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		if (document.createStyleSheet) {
@@ -209,6 +220,7 @@ if (!ss_css_files_loaded || ss_css_files_loaded == undefined || ss_css_files_loa
 	}
 }
 var ss_css_files_loaded = 1;
+</c:if>
 
 <c:set var="ss_loadCssStylesInline" value="true" scope="request"/>
 <c:set var="ss_skipCssStyles" value="true" scope="request"/>

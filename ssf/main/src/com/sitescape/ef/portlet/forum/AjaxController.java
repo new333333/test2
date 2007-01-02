@@ -63,6 +63,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxAddFavoriteBinder(request, response);
 			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY)) {
 				ajaxAddFavoritesCategory(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
+				ajaxModifyTags(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				ajaxSaveFavorites(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
@@ -166,6 +168,9 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
 			return ajaxSaveEntryHeight(request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
+			return ajaxShowTags(request, response);
+
 		} else if (op.equals(WebKeys.OPERATION_USER_LIST_SEARCH)) {
 			return ajaxUserListSearch(request, response);
 
@@ -260,6 +265,22 @@ public class AjaxController  extends SAbstractController {
 		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
 		f.addCategory(category, "");
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
+	}
+	
+	private void ajaxModifyTags(ActionRequest request, ActionResponse response) throws Exception {
+		//Add or delete tags
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
+		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
+		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
+		if (operation2.equals("delete")) {
+			getFolderModule().setTagDelete(binderId, entryId, tagToDelete);
+		} else if (operation2.equals("add")) {
+			if (!communityTag.equals("")) getFolderModule().setTag(binderId, entryId, communityTag, true);
+			if (!personalTag.equals("")) getFolderModule().setTag(binderId, entryId, personalTag, false);
+		}
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
@@ -408,7 +429,7 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
-				RenderResponse response) throws Exception {
+			RenderResponse response) throws Exception {
 		Long binderId = null;
 		try {
 			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
@@ -427,7 +448,22 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/save_entry_height_return", model);
 	}
+
+	private ModelAndView ajaxShowTags(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String type = PortletRequestUtils.getStringParameter(request, "type", "personalTag");
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "personalTag");
 	
+		Map model = new HashMap();
+		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
+		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+		model.put(WebKeys.NAMESPACE, namespace);
+		response.setContentType("text/xml");
+		return new ModelAndView("definition_elements/tag_view_ajax", model);
+	}
+
 	private ModelAndView ajaxUserListSearch(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();;
@@ -772,6 +808,9 @@ public class AjaxController  extends SAbstractController {
 		if (binderId != null) {
 			model.put("ss_tree_treeName", PortletRequestUtils.getStringParameter(request, "treeName", ""));
 			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
+			model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));
+			model.put("ss_tree_bottom", PortletRequestUtils.getStringParameter(request, "bottom", ""));
+			model.put("ss_tree_type", PortletRequestUtils.getStringParameter(request, "type", ""));
 			model.put("ss_tree_binderId", binderId.toString());
 			model.put("ss_tree_topId", op2);
 			model.put("ss_tree_select", null);
@@ -813,8 +852,15 @@ public class AjaxController  extends SAbstractController {
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 		}
-		response.setContentType("text/xml");
-		return new ModelAndView("tag_jsps/tree/get_tree_div", model);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String view = "tag_jsps/tree/get_tree_div";
+		if (user.getDisplayStyle() != null && 
+				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			view = "tag_jsps/tree/get_tree_div_accessible";
+		} else {
+			response.setContentType("text/xml");
+		}
+		return new ModelAndView(view, model);
 	}
 	
 	private void ajaxChangeDashboardComponent(ActionRequest request, 

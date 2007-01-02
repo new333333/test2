@@ -402,7 +402,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityIdentifier().getEntityType().toString());
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.permalink"), adapterUrl.toString());
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
 		
 		
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());

@@ -3,7 +3,7 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.context.request.RequestContextHolder" %>
 <c:if test="${!empty ssFooterToolbar}">
-<div align="center">
+<div align="center" class="ss_footer_toolbar">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ssFooterToolbar}">
     <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">

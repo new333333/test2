@@ -11,6 +11,11 @@
 		<tag-class>com.sitescape.ef.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>top</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -78,6 +83,12 @@
 			<name>type</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>initOnly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
 		</attribute>		
 		<attribute>
 			<name>configuration</name>
@@ -430,6 +441,12 @@
 			<type>com.sitescape.ef.domain.User</type>
 		</attribute>		
 		<attribute>
+			<name>showTitle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
 			<name>zonName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -750,6 +767,12 @@
 		</attribute>		
 		<attribute>
 			<name>dynamic</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>flat</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>

@@ -30,6 +30,7 @@ import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
@@ -65,7 +66,7 @@ public class ViewEntryController extends  SAbstractController {
 			long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
 			getFolderModule().setUserRating(folderId, replyId, rating);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		}else if (formData.containsKey("changeTags")) {
+		} else if (formData.containsKey("changeTags")) {
 			boolean community = true;
 			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 			if (replyId == null) replyId = entryId;
@@ -74,7 +75,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (scope.equalsIgnoreCase("Personal")) community = false;
 			getFolderModule().setTag(folderId, replyId, tag, community);
 			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		}else if (formData.containsKey("respondBtn")) {
+		} else if (formData.containsKey("respondBtn")) {
 			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
 			if (replyId == null) replyId = entryId;
 	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
@@ -155,7 +156,8 @@ public class ViewEntryController extends  SAbstractController {
 		return new ModelAndView(viewPath, model);
 	} 
 
-	protected Toolbar buildEntryToolbar(RenderResponse response, Map model, String folderId, String entryId) {
+	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, Map model, 
+			String folderId, String entryId) {
 		Element entryViewElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		Document entryView = entryViewElement.getDocument();
 		Definition def = (Definition)model.get(WebKeys.ENTRY_DEFINITION);
@@ -175,27 +177,32 @@ public class ViewEntryController extends  SAbstractController {
 					//There is only one reply style, so show it not as a drop down menu
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
 					if (!replyStyleId.equals("")) {
-						Map params = new HashMap();
-						params.put(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
-						params.put(WebKeys.URL_BINDER_ID, folderId);
-						params.put(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-						params.put(WebKeys.URL_ENTRY_ID, entryId);
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+
 						Map qualifiers = new HashMap();
 						qualifiers.put("popup", new Boolean(true));
-						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), params, qualifiers);
+						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), 
+								adapterUrl.toString(), qualifiers);
 					}
 				} else {
 					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+					Map qualifiers = new HashMap();
+					qualifiers.put("popup", new Boolean(true));
 					for (int i = 0; i < replyStyles.size(); i++) {
 						String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
 						try {
 							Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
-							url = response.createActionURL();
-							url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
-							url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-							url.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-							url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-							toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), url);
+							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
+							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+							adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+							toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), 
+									adapterUrl.toString(), qualifiers);
 						} catch (NoDefinitionByTheIdException e) {
 							continue;
 						}
@@ -209,12 +216,12 @@ public class ViewEntryController extends  SAbstractController {
 			//The "Modify" menu
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url, qualifiers);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
 			//The "Move" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
@@ -239,6 +246,27 @@ public class ViewEntryController extends  SAbstractController {
 			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
 		} catch (AccessControlException ac) {};
 	    
+		//The "Footer" menu
+		Toolbar footerToolbar = new Toolbar();
+		Map qualifiers = new HashMap();
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityIdentifier().getEntityType().toString());
+		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
+			//If this is being shown in an adaptor, open link in parent
+			qualifiers.put("onClick", "self.parent.location.href = this.href;return false;");
+			adapterUrl.setParameter(WebKeys.URL_NEW_TAB, "1");
+		}
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");
+		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), "#", qualifiers);
+
+		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
+		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+
 		return toolbar;
 	}
 
@@ -277,7 +305,7 @@ public class ViewEntryController extends  SAbstractController {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		}
 		if (!entryId.equals("")) {
-			model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, buildEntryToolbar(response, model, folderId.toString(), entryId).getToolbar());
+			buildEntryToolbar(req, response, model, folderId.toString(), entryId);
 		}
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
