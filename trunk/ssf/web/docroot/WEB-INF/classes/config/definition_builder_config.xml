@@ -95,8 +95,9 @@
 
 		<options optionCaption="__standard_entry_options">
 			<option name="titleView" caption="__title" initial="true" />
-			<option name="entryCreatorView" caption="__entry_creator" initial="true" />
-			<option name="entryDateView" caption="__entry_date" initial="true" />
+			<option name="entrySignatureView" caption="__entry_signature" initial="true" />
+			<option name="entryCreatorView" caption="__entry_creator" />
+			<option name="entryDateView" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" initial="true" />
 			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
 			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
@@ -287,6 +288,15 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
+	<item name="entrySignatureView" caption="__entry_signature">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value=""/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="entryCreatorView" caption="__entry_creator">
@@ -725,6 +735,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />
@@ -755,6 +766,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />
@@ -809,6 +821,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />
@@ -839,6 +852,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />
@@ -868,6 +882,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />
@@ -895,6 +910,7 @@
 		</properties>
 		<options>
 			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
 			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
 			<option name="entryDateView" definitionType="1" caption="__entry_date" />
 			<option name="descriptionView" caption="__description" />

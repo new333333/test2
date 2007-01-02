@@ -46,10 +46,21 @@
 <br>
 <script type="text/javascript">
 function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
+	ss_createTreeCheckbox("t_<portlet:namespace />_wsTree", "id_", forum);
 	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=false
+		self.document.<portlet:namespace />fm["id_"+forum].checked=false;
+		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
+			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
+			cbObj.checked = false;
+		}
 	} else {
 		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+		alert(self.parent.frames['ss_treeIframeDiv'])
+		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
+			alert("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
+			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
+			cbObj.checked = true;
+		}
 	}
 	return false
 }

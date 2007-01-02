@@ -49,10 +49,20 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="<%= wsTreeName %>" topId="${ssWsDomTreeBinderId}" treeDocument="<%= ssWsDomTree %>"  rootOpen="false" />
+				<ssf:tree treeName="<%= wsTreeName %>" 
+				  topId="${ssWsDomTreeBinderId}" 
+				  treeDocument="<%= ssWsDomTree %>"  
+				  rootOpen="false"
+				  showIdRoutine="<%= wsTreeName + "_showId" %>"
+				  dynamic="true" />
 			</c:when>
 			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="<%= wsTreeName %>" topId="${ssWsDomTreeBinderId}" treeDocument="<%= ssWsDomTree %>"  rootOpen="true" />
+				<ssf:tree treeName="<%= wsTreeName %>" 
+				  topId="${ssWsDomTreeBinderId}" 
+				  treeDocument="<%= ssWsDomTree %>"  
+				  rootOpen="true"
+				  showIdRoutine="<%= wsTreeName + "_showId" %>"
+				  dynamic="true" />
 			</c:when>
 			</c:choose>			
 

@@ -133,6 +133,7 @@ public class WebKeys {
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
       
     public static final String OPERATION_ADD_TAB="add_tab";
+    public static final String OPERATION_MODIFY_TAGS="modify_tags";
     public static final String OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
     public static final String OPERATION_DASHBOARD_DELETE_COMPONENT="delete_component";
     public static final String OPERATION_DASHBOARD_HIDE_COMPONENT="hide_component";
@@ -311,6 +312,7 @@ public class WebKeys {
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
+    public static final String NAMESPACE="ss_namespace";
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
     public static final String NLT_VALUE="value";
@@ -327,6 +329,7 @@ public class WebKeys {
     public static final String PRESENCE_DUDE="ss_presence_dude";
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
+    public static final String PRESENCE_SHOW_TITLE="ss_presence_show_title";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";

@@ -1,4 +1,5 @@
 <% // The main forum view - for viewing folder listings and for viewing entries %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getDisplayStyle();
@@ -154,6 +155,10 @@ function ss_loadEntryUrl(url,id) {
 	ss_reloadOpener('<c:out value="${ssReloadUrl}" escapeXml="false"/>')
 </script>
 </c:if>
+
+
+<% // View the entry  %>
+
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <script type="text/javascript">
@@ -170,7 +175,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 </script>
 
 <ssf:ifnotadapter>
-<div class="ss_style ss_portlet">
+<div id="ss_portlet_content" class="ss_style ss_portlet">
 <% // Navigation bar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
@@ -186,8 +191,6 @@ if (self.parent && self.parent.ss_highlightLineById) {
 			<div class="ss_rounden-content">
 			    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 
-<% // Navigation links %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </ssf:ifnotadapter>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -202,10 +205,33 @@ if (self.parent && self.parent.ss_highlightLineById) {
 		</div>
 	</div>
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+</ssf:ifnotadapter>
+
+<div align="left" name="ss_subscription_entry" id="ss_subscription_entry" 
+  style="display:none; visibility:hidden; padding:4px;" class="ss_popupMenu ss_indent_medium">
+<form class="ss_style ss_form" method="post" action="" style="display:inline;">
+  <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
+  <input type="radio" name="notifyType" value="2"
+  <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
+  /><ssf:nlt tag="subscribe.message"/><br/>
+  <input type="radio" name="notifyType" value="3"
+  <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
+  /><ssf:nlt tag="subscribe.noattachments"/><br/>
+<c:if test="${!empty ssSubscription}">
+  <input type="radio" name="notifyType" value="-1"/><ssf:nlt tag="subscribe.delete"/><br/>
+</c:if>
+  <br/>
+  <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
+ &nbsp;&nbsp;&nbsp;
+  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+  onClick="ss_cancelPopupDiv('ss_subscription_entry');return false;">
+</form>
+</div>	
 
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
+<ssf:ifnotadapter>
 </div>
 </div>
 </div>

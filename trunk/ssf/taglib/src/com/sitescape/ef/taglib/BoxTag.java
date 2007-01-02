@@ -62,6 +62,8 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 			// Top
 			String jsp = _top;
 			if (jsp == null || jsp.equals("")) jsp = "/WEB-INF/jsp/box/box_top.jsp";
+			if (_style != null && _style.equals("rounded")) jsp = "/WEB-INF/jsp/box/rounded_box_top.jsp";
+			
 			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 
 			ServletRequest req = null;
@@ -86,6 +88,8 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 
 			jsp = _bottom;
 			if (jsp == null || jsp.equals("")) jsp = "/WEB-INF/jsp/box/box_bottom.jsp";
+			if (_style != null && _style.equals("rounded")) jsp = "/WEB-INF/jsp/box/rounded_box_bottom.jsp";
+
 			rd = httpReq.getRequestDispatcher(jsp);
 
 			res = new StringServletResponse(httpRes);
@@ -105,7 +109,12 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 			_top = "";
 			_bottom = "";
+			_style="";
 		}
+	}
+
+	public void setStyle(String style) {
+		_style = style;
 	}
 
 	public void setTop(String top) {
@@ -141,6 +150,7 @@ public class BoxTag extends BodyTagSupport implements ParamAncestorTag {
 
 	private String _top;
 	private String _bottom;
+	private String _style;
 	private String _bodyContent;
 	private Map _params;
 

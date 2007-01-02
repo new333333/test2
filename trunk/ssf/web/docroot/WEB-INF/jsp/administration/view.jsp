@@ -16,6 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="org.dom4j.Document" %>
+
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
   <div class="ss_portlet_style ss_portlet">
 	<table border="0" width="100%">
@@ -33,7 +34,17 @@
 			<tr>
 				<td>
 					<div>
-						<ssf:tree treeName="${adminTreeName}" treeDocument="${ssAdminDomTree}" rootOpen="true" />
+						<c:if test="${ssUser.displayStyle != 'accessible'}" >
+						  <ssf:tree treeName="${adminTreeName}" 
+						    treeDocument="${ssAdminDomTree}" 
+						    rootOpen="true" />
+						</c:if>
+						<c:if test="${ssUser.displayStyle == 'accessible'}" >
+						<ssf:tree treeName="${adminTreeName}" 
+						  treeDocument="${ssAdminDomTree}" 
+						  flat="true"
+						  rootOpen="true" />
+						</c:if>
 					</div>
 				</td>
 			</tr>

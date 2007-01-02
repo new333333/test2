@@ -153,6 +153,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
 </script>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%
 	//Iframe view
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {

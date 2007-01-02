@@ -63,6 +63,7 @@ public class TreeTag extends TagSupport {
 	private boolean startingIdSeen = false;
 	private boolean initOnly = false;
 	private boolean noInit = false;
+	private boolean flat = false;
 	private boolean finished = false;
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
@@ -80,6 +81,7 @@ public class TreeTag extends TagSupport {
 	    if (this.topId == null) this.topId = "";
 	    if (this.displayStyle == null) this.displayStyle = "";
 	    if (this.multiSelectPrefix == null) this.multiSelectPrefix = "";
+	    if (this.showIdRoutine.equals("")) this.showIdRoutine = this.treeName + "_showId";
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
@@ -110,7 +112,12 @@ public class TreeTag extends TagSupport {
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
 				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
 				sb.append("var ss_treeShowIdRoutine_"+this.treeName+" = '" + this.showIdRoutine + "';\n");
+				String displayStyle = user.getDisplayStyle();
+				if (displayStyle == null) displayStyle = "";
+				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
+				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close") + "';\n");
 				sb.append("</script>\n\n\n");
+				sb.append("<div id=\"ss_hiddenTreeDiv"+treeName+"\" style=\"visibility:hidden;\"></div>\n");
 			}
 
 			if (this.initOnly) {
@@ -197,7 +204,7 @@ public class TreeTag extends TagSupport {
 				if (this.startingId == null || this.startingId.equals("")) {
 					sb.append("<div class=\"ss_treeWidget\">\n");
 				}
-				if (userDisplayStyle != null && userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				if (this.flat) {
 					//This user is in accessibility mode, output a flat version of the tree
 					outputTreeNodesFlat(treeRoot, recursedNodes);
 					
@@ -234,6 +241,7 @@ public class TreeTag extends TagSupport {
 	    	showIdRoutine="";
 	    	initOnly=false;
 	    	noInit=false;
+	    	flat=false;
 	    }
 	    
 		return SKIP_BODY;
@@ -245,7 +253,6 @@ public class TreeTag extends TagSupport {
 		
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
-
 			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
 
 			//Output the element divs
@@ -343,7 +350,7 @@ public class TreeTag extends TagSupport {
 						jspOut.print("onDblClick=\"");
 						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"');\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
-						jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+						jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
 						if (ino) {
 							jspOut.print("ss_minus");	// minus.gif
@@ -390,6 +397,7 @@ public class TreeTag extends TagSupport {
 				if (hcn && !dynamic) {
 					boolean divHasBeenOutput = false;
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
 						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
 			
 						if (!ino) {
@@ -438,7 +446,9 @@ public class TreeTag extends TagSupport {
 							if (this.multiSelect.contains(s_id)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
-							jspOut.print(this.multiSelectPrefix + s_id + "\" " + checked + "/>");
+							jspOut.print(this.multiSelectPrefix + s_id + "\" id=\"");
+							jspOut.print("ss_tree_checkbox" + treeName + this.multiSelectPrefix + s_id + "\" ");
+							jspOut.print(checked + "/>");
 							if (this.startingId != null && !this.startingId.equals("")) {
 								jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
 								//recursedNodes.add(0, "1");
@@ -486,7 +496,7 @@ public class TreeTag extends TagSupport {
 							jspOut.print("onDblClick=\"");
 							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"');\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
-							jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
 							if (ino) {
 								if (s_parentId.equals("")) {
@@ -513,7 +523,7 @@ public class TreeTag extends TagSupport {
 							jspOut.print("onDblClick=\"");
 							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"');\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
-							jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
 							if (ino) {
 								jspOut.print("ss_twMinus");	// minus.gif
@@ -586,6 +596,7 @@ public class TreeTag extends TagSupport {
 				if (hcn && !dynamic) {
 					boolean divHasBeenOutput = false;
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
 						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
 			
 						if (!ino) {
@@ -625,6 +636,9 @@ public class TreeTag extends TagSupport {
 	}
 
 	private void outputTreeNodesFlat(Element e, List recursedNodes) throws JspException {
+		//If processing is finished, just exit.
+		if (this.finished) return;
+
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 			RenderResponse renderResponse = (RenderResponse) req.getAttribute("javax.portlet.response");
@@ -657,9 +671,10 @@ public class TreeTag extends TagSupport {
 			boolean displayOnly = GetterUtil.getBoolean((String)e.attributeValue("displayOnly"));
 			String s_showIdRoutine = showIdRoutine;
 			
-			//Url = null value means 
+			//Url (if any)
 			String s_url = (String) e.attributeValue("url");
 			if (s_url == null) {
+				//Look to see if there are url attributes to build the url
 				Element url = e.element("url");
 				s_url = "";
 				if (url != null && url.attributes().size() > 0) {
@@ -782,6 +797,7 @@ public class TreeTag extends TagSupport {
 			// Recurse if node has children
 	
 			if (hcn) {
+				jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\" class=\"ss_twDiv\"></div>\n");
 				jspOut.print("\n<div id=\"" + this.treeName + "div" + s_id + "\" class=\"ss_twDiv\">\n");
 	
 				ListIterator it2 = e.elements("child").listIterator();
@@ -835,6 +851,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setDynamic(boolean dynamic) {
 	    this.dynamic = dynamic;
+	}
+	
+	public void setFlat(boolean flat) {
+	    this.flat = flat;
 	}
 	
 	public void setNodeOpen(String nodeOpen) {

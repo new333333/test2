@@ -6,6 +6,7 @@
 <html xmlns:svg="http://www.w3.org/2000/svg-20000303-stylable">
 <head>
 
+<c:set var="ss_servlet" value="true" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/view_css.jsp" %>
 
 </head>
