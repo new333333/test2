@@ -109,7 +109,7 @@ public class PresenceInfo extends BodyTagSupport {
 	    this.componentId = componentId;
 	}
 
-	public void setUser(User user) {
+	public void setUser(Principal user) {
 	    this.user = user;
 	}
 	public void setShowTitle(Boolean showTitle) {
