@@ -18,7 +18,7 @@
 		    <c:forEach var="entry" items="${ssEntries}">
 		      <c:set var="count" value="${count + 1}"/>
 		      <li id="<c:out value="ss_findPlaces_id_${entry._docId}"/>"><a 
-		          href="#" onClick="ss_findPlacesSelectItem(this.parentNode);" 
+		          href="#" onClick="ss_findPlacesSelectItem${ss_namespace}(this.parentNode);" 
 		          ><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
 		    </c:forEach>
 	      </ul>
@@ -28,13 +28,13 @@
 	      <tr>
 	      <td width="150" nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${ss_pageNumber > 0}">
-              <a href="#" onClick="ss_findPlacesPrevPage();return false;"
+              <a href="#" onClick="ss_findPlacesPrevPage${ss_namespace}();return false;"
               ><ssf:nlt tag="general.Previous"/>...</a>
             </c:if>
             </td>
            <td nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="#" onClick="ss_findPlacesNextPage();return false;"
+              <a href="#" onClick="ss_findPlacesNextPage${ss_namespace}();return false;"
               ><ssf:nlt tag="general.Next"/>...</a>
             </c:if>
            </td>

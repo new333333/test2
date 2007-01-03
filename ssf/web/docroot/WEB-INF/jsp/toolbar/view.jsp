@@ -15,7 +15,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:set var="ssf_support_files_loaded" value="" scope="request"/>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ssComponentId}">
