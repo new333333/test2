@@ -36,7 +36,6 @@ public class FileUploadItem {
 	// used to indicate whether to generate thumbnail or not.
 	private boolean generateThumbnail = false;
 	private boolean isSquareThumbnail = false;
-	private boolean thumbnailDirectlyAccessible = true;
 	private int thumbnailMaxWidth = SPropsUtil.getInt("thumbnail.max.width", THUMBNAIL_MAX_WIDTH_DEFAULT);
 	private int thumbnailMaxHeight = SPropsUtil.getInt("thumbnail.max.height", THUMBNAIL_MAX_HEIGHT_DEFAULT);
 	
@@ -71,14 +70,6 @@ public class FileUploadItem {
 
 	public void setIsSquareThumbnail(boolean isSquareThumbnail) {
 		this.isSquareThumbnail = isSquareThumbnail;
-	}
-
-	public boolean isThumbnailDirectlyAccessible() {
-		return thumbnailDirectlyAccessible;
-	}
-
-	public void setThumbnailDirectlyAccessible(boolean thumbnailDirectlyAccessible) {
-		this.thumbnailDirectlyAccessible = thumbnailDirectlyAccessible;
 	}
 
 	public void setMaxHeight(int maxHeight) {

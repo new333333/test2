@@ -1460,14 +1460,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						    	// thumbnails for all graphic-type file uploads. Or do we? 
 						    	if (itemName.equals("graphic")) {
 						    		fui.setGenerateThumbnail(true);
-						    		fui.setThumbnailDirectlyAccessible(false);
 						    		fui.setIsSquareThumbnail(true);
 						    	} else if (itemName.equals("profileEntryPicture")) {
 						    		fui.setGenerateThumbnail(true);
-						    		fui.setThumbnailDirectlyAccessible(true);
 						    	} else if (fileName.endsWith(".jpg")) {
 						    		fui.setGenerateThumbnail(true);
-						    		fui.setThumbnailDirectlyAccessible(false);
 						    		fui.setIsSquareThumbnail(true);						    		
 						    	}
 						    	fileData.add(fui);

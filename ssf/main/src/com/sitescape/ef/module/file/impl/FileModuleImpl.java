@@ -3,8 +3,6 @@ package com.sitescape.ef.module.file.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -34,7 +32,6 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.FileItem;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -65,12 +62,13 @@ import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
-import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileHelper;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
+import com.sitescape.ef.util.file.FilePathUtil;
+import com.sitescape.ef.util.file.FileStore;
 import com.sitescape.ef.web.util.FilterHelper;
 
 /**
@@ -101,13 +99,14 @@ public class FileModuleImpl implements FileModule {
 	private static final String FAILED_FILTER_TRANSACTION_ABORT 	= "ABORT";
 	private static final String FAILED_FILTER_TRANSACTION_DEFAULT	= FAILED_FILTER_TRANSACTION_ABORT;
 
+	// TODO To be removed once fixup is no longer necessary
 	private static final String SCALED_FILE_SUFFIX = "__ssfscaled_";
 	private static final String THUMBNAIL_FILE_SUFFIX = "__ssfthumbnail_";
 	
-	private static final String NON_WEBDAV_LOCK_ID = "";
-	
-	private static final Date MAX_DATE = new Date(Long.MAX_VALUE);
-	
+	private static final String SCALED_SUBDIR = "scaled";
+	private static final String THUMB_SUBDIR = "thumb";
+	private static final String HTML_SUBDIR = "html";
+		
 	protected Log logger = LogFactory.getLog(getClass());
 
 	private CoreDao coreDao;
@@ -119,6 +118,7 @@ public class FileModuleImpl implements FileModule {
 	private String failedFilterFile;
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
+	private FileStore cacheFileStore;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -175,6 +175,13 @@ public class FileModuleImpl implements FileModule {
 	
 	protected int getLockExpirationAllowanceMilliseconds() {
 		return this.lockExpirationAllowance * 1000;
+	}
+	
+	public void setCacheFileStore(FileStore cacheFileStore) {
+		this.cacheFileStore = cacheFileStore;
+	}
+	protected FileStore getCacheFileStore() {
+		return cacheFileStore;
 	}
 	
 	public void setFailedFilterFile(String failedFilterFile) {
@@ -288,8 +295,20 @@ public class FileModuleImpl implements FileModule {
 	
 	public boolean scaledFileExists(Binder binder, 
 			DefinableEntity entry, FileAttachment fAtt) {
+		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fAtt.getFileItem().getName());
+		if(cacheFileStore.fileExists(filePath)) {
+			return true;
+		}
+		else {
+			// TODO temporary fixup code - to be removed
+			return scaledFileExistsInRepository(binder, entry, fAtt);
+		}
+	}
+
+	private boolean scaledFileExistsInRepository(Binder binder, 
+			DefinableEntity entry, FileAttachment fAtt) {
 		int fileInfo = RepositoryUtil.fileInfo(fAtt.getRepositoryName(), 
-				binder, entry, makeScaledFileName(fAtt.getFileItem().getName()));
+				binder, entry, makeScaledFileNameInRepository(fAtt.getFileItem().getName()));
 		
 		if(fileInfo == RepositorySession.UNVERSIONED_FILE)
 			return true;
@@ -307,83 +326,74 @@ public class FileModuleImpl implements FileModule {
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out) {
-		RepositoryUtil.read(fa.getRepositoryName(), binder, 
-				entry, makeScaledFileName(fa.getFileItem().getName()), out);
+		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fa.getFileItem().getName());
+		if(cacheFileStore.fileExists(filePath)) {
+			try {
+				cacheFileStore.readFile(filePath, out);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		else {
+			// TODO temporary fixup code - to be removed
+			RepositoryUtil.read(fa.getRepositoryName(), binder, 
+					entry, makeScaledFileNameInRepository(fa.getFileItem().getName()), out);
+
+		}
 	}
 	
-	public void readIndirectlyAccessibleThumbnailFile(
+	public void readThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 
-		String repositoryName = fa.getRepositoryName();
-		String relativeFilePath = fa.getFileItem().getName();
+		String fileName = fa.getFileItem().getName();
 		
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
-
-		
-		// Dynamically generate a thumbnail file if there isn't one.
-		String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
-		if (session.fileInfo(binder, entry, thumbnailFileName) 
-				== RepositorySession.NON_EXISTING_FILE) {
-			if (relativeFilePath.endsWith(".jpg")) {
-				generateThumbnailFile(binder, entry, fa, 150, 0, false);
-			}
+		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fileName);
+		if(!cacheFileStore.fileExists(filePath)) {
+			if (fileName.endsWith(".jpg")) {
+				generateThumbnailFile(binder, entry, fa, 150, 0);
+			}			
 		}
-		
-		
-		RepositoryUtil.read(fa.getRepositoryName(), binder, 
-				entry, makeThumbnailFileName(fa.getFileItem().getName()), out);	
+
+		try {
+			cacheFileStore.readFile(filePath, out);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 	
+	public void readHtmlViewFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, OutputStream out) throws  
+			UncheckedIOException, RepositoryServiceException {
+		// TODO - To be written
+	}
+
 	public void generateScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, int maxWidth, int maxHeight) {
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
 		
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
-		
-		try {
-			// Read the input file from the repository into a byte array. 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
-			session.read(binder, entry, relativeFilePath, baos);
-	
-			generateAndStoreScaledFile(session, binder, entry, 
-					relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
-		}
-		finally {
-			session.close();
-		}	
+		generateAndStoreScaledFile(binder, entry, relativeFilePath, 
+				baos.toByteArray(), maxWidth, maxHeight);
 	}
 	
 	public void generateThumbnailFile(Binder binder, 
 			DefinableEntity entry, FileAttachment fa, int maxWidth, 
-			int maxHeight, boolean thumbnailDirectlyAccessible) {
+			int maxHeight) {
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
-
-		try {
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
-
-			try {
-				// Read the input file from the repository into a byte array. 
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
-				session.read(binder, entry, relativeFilePath, baos);
-		
-				generateAndStoreThumbnailFile(session, binder, entry, 
-						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, thumbnailDirectlyAccessible);
-			}
-			finally {
-				session.close();
-			}
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}	
+		// Read the input file from the repository into a byte array. 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
+
+		generateAndStoreThumbnailFile(binder, entry, relativeFilePath, 
+				baos.toByteArray(), maxWidth, maxHeight);
 	}
 	
 	/**
@@ -394,39 +404,22 @@ public class FileModuleImpl implements FileModule {
 	 */
 	public void generateFiles(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, int maxWidth, int maxHeight, 
-			int thumbnailMaxWidth, int thumbnailMaxHeight, 
-			boolean thumbnailDirectlyAccessible) {
+			int thumbnailMaxWidth, int thumbnailMaxHeight) {
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 
-		try {
-			RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		// Read the input file from the repository into a byte array. 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-			try {
-				// Read the input file from the repository into a byte array. 
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
+
+		// Generate and store scaled file.
+		generateAndStoreScaledFile(binder, entry, 
+				relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
 		
-				session.read(binder, entry, relativeFilePath, baos);
-		
-				// Generate and store scaled file.
-				generateAndStoreScaledFile(session, binder, entry, 
-						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
-				
-				// Generate and store thumbnail file.
-				generateAndStoreThumbnailFile(session, binder, entry, 
-						relativeFilePath, baos.toByteArray(), maxWidth, maxHeight, 
-						thumbnailDirectlyAccessible);
-			}
-			finally {
-				session.close();
-			}
-		}
-		catch(FileNotFoundException e) {
-			throw new UncheckedIOException(e);
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		// Generate and store thumbnail file.
+		generateAndStoreThumbnailFile(binder, entry, 
+				relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -814,7 +807,25 @@ public class FileModuleImpl implements FileModule {
 			
 			// Try deleting scaled file if exists
 			try {
-				String scaledFileName = makeScaledFileName(relativeFilePath);
+				String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fAtt.getFileItem().getName());
+				if(cacheFileStore.fileExists(filePath)) {
+					cacheFileStore.deleteFile(filePath);
+				}
+			}
+			catch(Exception e) {
+				logger.error("Error deleting scaled copy of " + relativeFilePath, e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_DELETING_SCALED_FILE, e));
+				// Since we successfully deleted the primary file above (which
+				// indicates that at least the repository seems up and running),
+				// let's not the failure to delete generated file to abort the
+				// entire operation. So we proceed. 
+			}
+			// Try deleting scaled file if exists in the repository
+			// TODO - This code exists only for temporary fixup - to be removed
+			try {
+				String scaledFileName = makeScaledFileNameInRepository(relativeFilePath);
 				if (session.fileInfo(binder, entry, scaledFileName) 
 						!= RepositorySession.NON_EXISTING_FILE) {
 					session.delete(binder, entry, scaledFileName);
@@ -832,15 +843,23 @@ public class FileModuleImpl implements FileModule {
 			}
 
 			// Try deleting thumbnail file if exists
-
 			try {
-				// Directly-accessible thumbnail file?
-				File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(
-						entry, relativeFilePath);
-				// Delete it if exists
-				FileHelper.delete(directlyAccessibleThumbnailFile);
-	
-				// thumbnail file stored in repository?
+				String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fAtt.getFileItem().getName());
+				if(cacheFileStore.fileExists(filePath)) {
+					cacheFileStore.deleteFile(filePath);
+				}
+			}
+			catch(Exception e) {
+				logger.error("Error deleting thumbnail copy of " + relativeFilePath, e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryName, relativeFilePath, 
+								FilesErrors.Problem.PROBLEM_DELETING_THUMBNAIL_FILE, e));
+				// We proceed and update metadata.
+			}
+
+			// Try deleting thumbnail file if exists in the repository
+			// TODO - This code exists only for temporary fixup - to be removed
+			try {
 				String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
 				if (session.fileInfo(binder, entry, thumbnailFileName) 
 						!= RepositorySession.NON_EXISTING_FILE) {
@@ -1067,7 +1086,7 @@ public class FileModuleImpl implements FileModule {
 	            	// Generate scaled file which goes into the same repository as
 	        		// the primary file except that the generated file is not versioned.
 	        		try {
-	        			generateAndStoreScaledFile(session, binder, entry, relativeFilePath,
+	        			generateAndStoreScaledFile(binder, entry, relativeFilePath,
 	        				primaryContent, fui.getMaxWidth(),fui.getMaxWidth());
 	        		}
 	        		catch(ThumbnailException e) {
@@ -1091,9 +1110,9 @@ public class FileModuleImpl implements FileModule {
 	        	// Thumbnail file
 	        	if(fui.getGenerateThumbnail()) {
 	        		try {
-	        			generateAndStoreThumbnailFile(session, binder, entry,
+	        			generateAndStoreThumbnailFile(binder, entry,
 	        				relativeFilePath, primaryContent, fui.getThumbnailMaxWidth(), 
-	        				fui.getThumbnailMaxHeight(), fui.isThumbnailDirectlyAccessible());
+	        				fui.getThumbnailMaxHeight());
 	        		}
 	        		catch(ThumbnailException e) {
 	        			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
@@ -1160,14 +1179,6 @@ public class FileModuleImpl implements FileModule {
     	// the system does not try to address that. 
     	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
     	return true;
-    }
-    
-    private File getDirectlyAccessibleThumbnailFile(DefinableEntity entry, String primaryFileName) {
-    	return new File(directlyAccessibleThumbnailFilePath(entry, primaryFileName));
-    }
-    
-    private String directlyAccessibleThumbnailFilePath(DefinableEntity entry, String primaryFileName) {
-    	return DirPath.getThumbnailDirPath() + File.separator + entry.getTypedId() + "_" + primaryFileName;
     }
 
     private void writeExistingFile(RepositorySession session,
@@ -1394,7 +1405,8 @@ public class FileModuleImpl implements FileModule {
 		fAtt.addFileVersion(vAtt);
 	}
 	
-	private String makeScaledFileName(String primaryFileName) {
+	// TODO - This method is obsolete. Used only for temporary fixup code. To be removed.
+	private String makeScaledFileNameInRepository(String primaryFileName) {
 		int index = primaryFileName.lastIndexOf(".");
 		String scaledFileName = null;
 		if(index == -1) {
@@ -1408,6 +1420,7 @@ public class FileModuleImpl implements FileModule {
 		return scaledFileName;
 	}
 	
+	// TODO - This method is obsolete. Used only for temporary fixup code. To be removed.
 	private String makeThumbnailFileName(String primaryFileName) {
 		int index = primaryFileName.lastIndexOf(".");
 		String thumbnailFileName = null;
@@ -1422,141 +1435,53 @@ public class FileModuleImpl implements FileModule {
 		return thumbnailFileName;
 	}
 	
-	private void generateAndStoreScaledFile(RepositorySession session, 
+	private void generateAndStoreScaledFile( 
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight) 
-		throws ThumbnailException, RepositoryServiceException {
-		String scaledFileName = makeScaledFileName(relativeFilePath);
-		
+		throws ThumbnailException, UncheckedIOException {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		
 		Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 
-		int fileInfo = session.fileInfo(binder, entry, scaledFileName);
-		
-		if(fileInfo == RepositorySession.UNVERSIONED_FILE) {
-			session.update(binder, entry, scaledFileName,
-					new ByteArrayInputStream(baos.toByteArray()));									
-		}
-		else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
-			session.createUnversioned(binder, entry, scaledFileName,
-					new ByteArrayInputStream(baos.toByteArray()));						
-		}
-		else {
-			throw new InternalException();
+		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+
+		try {
+			cacheFileStore.writeFile(filePath, baos.toByteArray());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
 		}
 	}
 	
-	/**
-	 * 
-	 * @param session
-	 * @param binder
-	 * @param entry
-	 * @param relativeFilePath
-	 * @param inputData
-	 * @param maxWidth
-	 * @param maxHeight
-	 * @param directlyAccessible
-	 * @throws ThumbnailException if thumbnail generation procedure itself fails; 
-	 * typically indicates that the data format is not supported.
-	 * @throws RepositoryServiceException error in repository operation; can occur
-	 * when thumbnail is stored by repository service
-	 * @throws FileNotFoundException error in file operation; can occur when thumbnail
-	 * is stored in a client-visible directory on file system
-	 * @throws IOException error in file operation; can occur when thumbnail
-	 * is stored in a client-visible directory on file system
-	 */
-	private void generateAndStoreThumbnailFile(RepositorySession session, 
-			Binder binder, DefinableEntity entry, String relativeFilePath, 
-			byte[] inputData, int maxWidth, int maxHeight, boolean directlyAccessible) 
-		throws ThumbnailException, RepositoryServiceException, FileNotFoundException,
-		IOException {
+	private void generateAndStoreThumbnailFile(Binder binder, 
+			DefinableEntity entry, String relativeFilePath, 
+			byte[] inputData, int maxWidth, int maxHeight) 
+		throws ThumbnailException, RepositoryServiceException, UncheckedIOException {
 
-		if(directlyAccessible) {
-			// The thumbnail is to be stored in a directory where 
-			// the client can access it directly without going
-			// through the repository service layer.
-			File directlyAccessibleThumbnailFile = getDirectlyAccessibleThumbnailFile(entry, relativeFilePath);
-			
-			// Make sure that the directory exists before opening a file in it.
-			FileHelper.mkdirsIfNecessary(directlyAccessibleThumbnailFile.getParentFile());
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
-			FileOutputStream fos = new FileOutputStream(directlyAccessibleThumbnailFile);
-			
-			// Generate thumbnail.
-			ThumbnailException te = null;
-			try {
-				// maxHeight is 0 if square thumbnail
-				if (maxHeight == 0) {
-					Thumbnail.createThumbnail(inputData, fos, maxWidth);
-				} else {
-					Thumbnail.createThumbnail(inputData, fos, maxWidth, maxHeight);
-				}
-			}
-			catch(ThumbnailException e) {
-				te = e;
-			}
-			finally {
-				try {
-					fos.close();
-				} catch (IOException e) {
-					// Ignore this.
-				}
-			}
-			
-			if(te != null) {
-				// An error occured during thumbnail generation, which may have
-				// left an empty or corrupt file. Probably we should remove it.
-				try {
-					FileHelper.delete(directlyAccessibleThumbnailFile);
-				}
-				catch(IOException e) {
-					// Log the error but do not propogate this exception.
-					logger.warn(e);
-				}
-				throw te; // Rethrow it. 
-			}
+		// Generate thumbnail
+		// maxHeight is 0 if square thumbnail
+		if (maxHeight == 0) {
+			Thumbnail.createThumbnail(inputData, baos, maxWidth);
+		} else {
+			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 		}
-		else {
-			// The thumbnail is to be stored in the same repository
-			// as the primary file. 
-			String thumbnailFileName = makeThumbnailFileName(relativeFilePath);
-			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			
-			// Generate thumbnail
-			// maxHeight is 0 if square thumbnail
-			if (maxHeight == 0) {
-				Thumbnail.createThumbnail(inputData, baos, maxWidth);
-			} else {
-				Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
-			}
-			
-			// Store the thumbnail into the repository.
-			
-			int fileInfo = session.fileInfo(binder, entry, thumbnailFileName);
-			
-			if(fileInfo == RepositorySession.UNVERSIONED_FILE) {
-				session.update(binder, entry, thumbnailFileName, 
-	    				new ByteArrayInputStream(((ByteArrayOutputStream) baos).toByteArray()));				
-			}
-			else if(fileInfo == RepositorySession.NON_EXISTING_FILE) { 
-				session.createUnversioned(binder, entry, thumbnailFileName, 
-    				new ByteArrayInputStream(((ByteArrayOutputStream) baos).toByteArray()));
-			}
-			else {
-				throw new InternalException();
-			}
-		}		
+
+		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+
+		try {
+			cacheFileStore.writeFile(filePath, baos.toByteArray());
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}       
     
 	/*
-    private void closeLocksTransactional(Binder binder, DefinableEntity entity,
-    		boolean commit) throws RepositoryServiceException,
-    		UncheckedIOException {
-    	if(closeLocks(binder, entity, commit))
-    		triggerUpdateTransaction();   	
-    }*/
+	 * private void closeLocksTransactional(Binder binder, DefinableEntity
+	 * entity, boolean commit) throws RepositoryServiceException,
+	 * UncheckedIOException { if(closeLocks(binder, entity, commit))
+	 * triggerUpdateTransaction(); }
+	 */
     
 	/*
     private boolean closeLocks(Binder binder, DefinableEntity entity,
@@ -1772,4 +1697,5 @@ public class FileModuleImpl implements FileModule {
     	return (lock.getExpirationDate().getTime() + 
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
+    
 }

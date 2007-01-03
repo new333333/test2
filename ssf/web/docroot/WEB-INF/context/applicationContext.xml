@@ -619,6 +619,7 @@
 		<property name="failedFilterFile"><value>DELETE</value></property>
 		<!-- valid values are CONTINUE and ABORT -->
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
+		<property name="cacheFileStore"><ref local="cacheFileStore"/></property>
 	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper">
@@ -712,6 +713,10 @@
 	</bean>
 
 	<!-- ======================== File & Repository Services ====================== -->
+	
+	<bean id="cacheFileStore" class="com.sitescape.ef.util.file.FileStore">
+		<property name="rootPath"><value>${data.root.dir}/cachefilestore</value></property>
+	</bean>
 	
 	<bean id="simpleFileRepository" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">

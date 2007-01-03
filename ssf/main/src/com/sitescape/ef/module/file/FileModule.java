@@ -10,7 +10,6 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.repository.RepositoryServiceException;
@@ -140,21 +139,36 @@ public interface FileModule {
 	    
     /**
      * Reads the specified scaled file into the output stream.
-     * If the thumbnail was originally stored as "directly accessible" file,
-     * the caller must not use this method (In other words, it is the
-     * caller's responsibility to keep track of whether a thumbnail
-     * file is directly accessible or not. The file module does not
-     * maintain that information.).
+     * If the thumbnail was originally stored as "directly accessible" file
+     * in a directory visible to the web client without requiring any access
+     * control or assistance from the server-side service, the caller must not 
+     * use this method (In other words, it is the caller's responsibility to 
+     * keep track of whether a thumbnail file is directly accessible or not. 
+     * The file module does not maintain that information.).
      * 
      * @param fa
      * @param binder
      * @param entity
      * @param out
      */
-	public void readIndirectlyAccessibleThumbnailFile(
+	public void readThumbnailFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
 		throws UncheckedIOException, RepositoryServiceException;
 	
+    /**
+     * Reads the specified html view file into the output stream.
+     * 
+     * @param fa
+     * @param binder
+     * @param entity
+     * @param out
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+     */
+	public void readHtmlViewFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, OutputStream out) throws  
+			UncheckedIOException, RepositoryServiceException;
+
 	/**
 	 * (Re)generate scaled file from the specified primary file.
 	 * Scaled file is not versioned, thus newly generated file replaces 
@@ -187,8 +201,7 @@ public interface FileModule {
 	 */
 	public void generateThumbnailFile(Binder binder, 
     		DefinableEntity entity, FileAttachment fa, 
-    		int maxWidth, int maxHeight, 
-    		boolean thumbnailDirectlyAccessible) 
+    		int maxWidth, int maxHeight) 
 		throws UncheckedIOException, RepositoryServiceException;
 
 	/**
@@ -206,8 +219,7 @@ public interface FileModule {
 	public void generateFiles(Binder binder, 
     		DefinableEntity entity, FileAttachment fa, 
     		int maxWidth, int maxHeight,
-    		int thumbnailMaxWidth, int thumbnailMaxHeight, 
-    		boolean thumbnailDirectlyAccessible) 
+    		int thumbnailMaxWidth, int thumbnailMaxHeight) 
 		throws UncheckedIOException, RepositoryServiceException;
 		
 	/**
@@ -223,7 +235,7 @@ public interface FileModule {
 	public boolean scaledFileExists(Binder binder, DefinableEntity entity, 
 			FileAttachment fAtt) 
 		throws UncheckedIOException, RepositoryServiceException;
-			
+	
 	/**
 	 * Write multiple files for the specified entity. If the entity is
 	 * currently reserved by another user, it throws 

@@ -96,7 +96,7 @@ public class ViewFileController extends SAbstractController {
 				}
 			} else if (viewType.equals("thumbnail")) {
 				try {
-					getFileModule().readIndirectlyAccessibleThumbnailFile(parent, entity, fa, response.getOutputStream());
+					getFileModule().readThumbnailFile(parent, entity, fa, response.getOutputStream());
 				}
 				catch(Exception e) {
 					response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
