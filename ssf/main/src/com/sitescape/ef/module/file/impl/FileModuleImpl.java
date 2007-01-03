@@ -346,11 +346,11 @@ public class FileModuleImpl implements FileModule {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 
-		String fileName = fa.getFileItem().getName();
+		String relativeFilePath = fa.getFileItem().getName();
 		
-		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fileName);
+		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath)) {
-			if (fileName.endsWith(".jpg")) {
+			if (relativeFilePath.endsWith(".jpg")) {
 				generateThumbnailFile(binder, entry, fa, 150, 0);
 			}			
 		}
