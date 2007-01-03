@@ -7,23 +7,31 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 
 public class FilePathUtil {
-
-	/*
-	public static String getFilePath(Binder binder, DefinableEntity entity,
-			FileAttachment fAtt) {
-		return getFilePathInternal(binder, entity, fAtt.getFileItem().getName()).toString();
-	}
 	
-	public static String getFilePath(Binder binder, DefinableEntity entity,
-			String subdirName, FileAttachment fAtt) {
-		return getFilePathInternal(binder, entity, subdirName, fAtt.getFileItem().getName()).toString();
-	}*/
-	
+	/**
+	 * Returns relative file system path representing the specified file.
+	 * For example, liferay.com/294/folderEntry_654/report.doc
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param fileName
+	 * @return
+	 */
 	public static String getFilePath(Binder binder, DefinableEntity entity,
 			String fileName) {
 		return getFilePathInternal(binder, entity, fileName).toString();
 	}
 	
+	/**
+	 * Returns relative file system path representing the specified file.
+	 * For example, liferay.com/294/folderEntry_654/thumb/report.doc
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param subdirName
+	 * @param fileName
+	 * @return
+	 */
 	public static String getFilePath(Binder binder, DefinableEntity entity,
 			String subdirName, String fileName) {
 		return getFilePathInternal(binder, entity, subdirName, fileName).toString();
@@ -31,8 +39,9 @@ public class FilePathUtil {
 	
 	/**
 	 * Returns relative file system path representing the specified entity.
-	 * The returned path does not begin with a file separator character, but 
-	 * ends with a file separator. (eg. liferay.com/294/folderEntry_654/)
+	 * The returned directory path does not begin with a file separator 
+	 * character, but ends with a file separator. 
+	 * (eg. liferay.com/294/folderEntry_654/)
 	 * 
 	 * @param binder
 	 * @param entity
@@ -45,8 +54,8 @@ public class FilePathUtil {
 	/**
 	 * Returns relative file system path representing a subdirectory under the
 	 * specified entity. 
-	 * The returned path does not begin with a file separator character, but 
-	 * ends with a file separator. (eg. liferay.com/294/folderEntry_654/thumb/)
+	 * The returned directory path does not begin with a file separator character, 
+	 * but ends with a file separator. (eg. liferay.com/294/folderEntry_654/thumb/)
 	 * 
 	 * @param binder
 	 * @param entity
@@ -57,7 +66,6 @@ public class FilePathUtil {
 			String subdirName) {
 		return getEntitySubdirPathInternal(binder, entity, subdirName).toString();
 	}
-	
 	
 	private static StringBuffer getEntitySubdirPathInternal(Binder binder, 
 			DefinableEntity entity, String subdirName) {
