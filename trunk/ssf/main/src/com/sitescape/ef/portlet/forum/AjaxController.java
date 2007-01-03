@@ -333,6 +333,7 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Object obj = userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES);
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		Favorites f;
 		if (obj instanceof Document) {
 			f = new Favorites((Document)obj);
@@ -345,6 +346,7 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.FAVORITES_TREE, favTree);
 		Document favTreeDelete = f.getFavoritesTreeDelete();
 		model.put(WebKeys.FAVORITES_TREE_DELETE, favTreeDelete);
+		model.put(WebKeys.NAMESPACE, namespace);
 
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/favorites_tree", model);
@@ -535,6 +537,7 @@ public class AjaxController  extends SAbstractController {
 		String listDivId = PortletRequestUtils.getStringParameter(request, "listDivId", "");
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
 		
 		//Build the search query
@@ -617,6 +620,7 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put(WebKeys.DIV_ID, listDivId);
+		model.put(WebKeys.NAMESPACE, namespace);
 		response.setContentType("text/xml");
 		return new ModelAndView(view, model);
 	}

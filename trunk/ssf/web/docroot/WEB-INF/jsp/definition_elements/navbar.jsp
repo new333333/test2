@@ -17,13 +17,14 @@ function ss_turnOffDebugMode() {
 	var url = self.location.href + "&enableDebug=off"
 	self.location.href = url;
 }
+var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 </script>
     </td>
     </tr>
     </table>
   </div>
   <div>
-  <textarea id="debugTextarea" style="width:100%;" rows="6"></textarea>
+  <textarea id="debugTextarea<portlet:namespace/>" style="width:100%;" rows="6"></textarea>
   </div>
   </div>
   <br/>
@@ -35,14 +36,14 @@ function ss_turnOffDebugMode() {
   <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
 
 <!-- Find user form -->
-	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton">
-		<form method="post" id="ss_findUserForm" name="ss_findUserForm" 
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>">
+		<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="findUser"/>
 			</portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/findUser_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.findUserButton"/>">
-			  <ssf:find formName="ss_findUserForm" 
+			  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="user"
 			    width="100px" singleItem="true"/> 
@@ -54,14 +55,14 @@ function ss_turnOffDebugMode() {
 	</li>
 
 <!-- Find places form -->
-	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton">
-		<form method="post" id="ss_findPlacesForm" name="ss_findPlacesForm" 
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>">
+		<form method="post" id="ss_findPlacesForm<portlet:namespace/>" name="ss_findPlacesForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/findPlaces_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.findPlacesButton"/>">
 			  <ssf:find 
-			    formName="ss_findPlacesForm" 
+			    formName="ss_findPlacesForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="places"
 			    width="100px" singleItem="true"/> 
@@ -73,8 +74,9 @@ function ss_turnOffDebugMode() {
 	</li>
 
 <!-- Search form -->
-	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton">
-		<form method="post" id="ss_simpleSearchForm" name="ss_simpleSearchForm" 
+	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>">
+		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
+		  name="ss_simpleSearchForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="search"/>
 			</portlet:actionURL>">
@@ -82,7 +84,8 @@ function ss_turnOffDebugMode() {
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			  <input name="searchText" type="text" class="form-text" /> 
 			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-			    onClick="document.ss_simpleSearchForm.submit();return false;"><ssf:nlt tag="button.go"/></a>
+			    onClick="document.ss_simpleSearchForm<portlet:namespace/>.submit();return false;"
+			  ><ssf:nlt tag="button.go"/></a>
 			    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		      <div class="ss_global_toolbar_search_text">
 		        <span class="ss_fineprint"><ssf:nlt tag="navigation.search"/></span>
@@ -99,13 +102,13 @@ function ss_turnOffDebugMode() {
 </c:if>
 
 <!-- Favorites -->
-    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane();">
+    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');">
       <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	    <div id="ss_navbarFavoritesButton">
+	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
-	    <div id="ss_navbar_favorites" style="visibility:hidden;margin:0px;padding:0px;"
+	    <div id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;"
 	    ><img border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </ssHelpSpot>
 	</li>
@@ -208,43 +211,52 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 </script>
 
-<div id="ss_navbar_bottom"></div>
+<div id="ss_navbar_bottom<portlet:namespace/>"></div>
 
 </c:if>
 </div>
 <div class="ss_clear"></div>
 
 <!-- Start of favorites pane -->
-<div class="ss_style" id="ss_favorites_pane" 
+<div class="ss_style" id="ss_favorites_pane<portlet:namespace/>" 
   style="position:absolute; visibility:hidden;
   border:solid 1px black; height:200px;">
   <div>
-  <div class="ss_style" id="ss_favorites" align="left">
-	<table id="ss_favorites_table" cellspacing="0" cellpadding="0">
+  <div class="ss_style" id="ss_favorites<portlet:namespace/>" align="left">
+	<table id="ss_favorites_table<portlet:namespace/>" cellspacing="0" cellpadding="0">
 	<tbody>
 	<tr>
 	  <td align="left" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-	  <td align="right"><a onClick="ss_hideFavoritesPane();return false;"
+	  <td align="right"><a onClick="ss_hideFavoritesPane('<portlet:namespace/>');return false;"
         ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 	</tr>
 	<tr><td colspan="2"></td></tr>
 	<tr>
 	  <td colspan="2"><ssf:nlt tag="Loading"/></td>
 	</tr>
+	<tr>
+	  <td colspan="2">
+	  <c:set var="namespace" value="${renderResponse.namespace}"/>
+	  <ssf:tree treeName="favTree${namespace}" treeDocument="${ss_favoritesTree}"
+  		rootOpen="true" displayStyle="sortable" nowrap="true" showIdRoutine="ss_treeShowId"
+  		initOnly="true" />
+	  
+	  </td>
+	</tr>
 
 	</tbody>
 	</table>
   </div>
   
-  <div id="ss_favorites2">
-	<table id="ss_favorites_table2">
+  <div id="ss_favorites2<portlet:namespace/>">
+	<table id="ss_favorites_table2<portlet:namespace/>">
 	<tbody>
 	<tr><td><hr/></td></tr>
 	<c:if test="${!empty ssBinder}">
 		<tr>
 		<td nowrap="nowrap">
 		<a href="javascript: ;" 
-		 onClick="ss_addForumToFavorites();return false;"
+		 onClick="ss_addForumToFavorites('<portlet:namespace/>');return false;"
 		><span class="ss_bold"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
 		</td>
@@ -253,20 +265,20 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	</c:if>
 	<tr>
 	<td nowrap="nowrap">
-	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div');ss_setFavoritesPaneSize();return false;">
+	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div<portlet:namespace/>');ss_setFavoritesPaneSize('<portlet:namespace/>');return false;">
 	    <span class="ss_bold"><ssf:nlt tag="favorites.addCategory" 
 		  	text="Add a new favorites category..."/></span>
 	  </a>
 	  <br />
-	  <div id="ss_favorites_form_div" style="visibility:hidden; display:none; margin:4px;">
-		<form class="ss_style ss_style_color" id="ss_favorites_form" 
+	  <div id="ss_favorites_form_div<portlet:namespace/>" style="visibility:hidden; display:none; margin:4px;">
+		<form class="ss_style ss_style_color" id="ss_favorites_form<portlet:namespace/>" 
 		  method="post" onSubmit="return false;" >
 		  <span class="ss_style_color ss_labelAbove"><ssf:nlt tag="favorites.categoryName" 
 		  	text="Category name:"/></span>
 		  <input class="ss_style_color" type="text" size="20" name="new_favorites_category" />
 		  <input class="ss_style_color" type="submit" name="add_favorites_category" 
 		   value="<ssf:nlt tag="button.ok" text="OK"/>" 
-		   onClick="ss_addFavoriteCategory();return false;" />
+		   onClick="ss_addFavoriteCategory('<portlet:namespace/>');return false;" />
 		</form>
 	  </div>
 	</td>

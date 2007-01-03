@@ -73,7 +73,7 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 		var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			ss_findPlacesSelectItem(liObjs[0]);
+			ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
 			return;
 		}
  	}
@@ -101,17 +101,18 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
+	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindPlacesRequest);
-	ajaxRequest.setPostRequest(ss_postfindPlacesRequest);
+	ajaxRequest.setPostRequest(ss_postfindPlacesRequest<portlet:namespace/>);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setData("savedColor", savedColor)
 	ajaxRequest.setData("crFound", crFound)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postfindPlacesRequest(obj) {
-	ss_debug('ss_postfindPlacesRequest')
+function ss_postfindPlacesRequest<portlet:namespace/>(obj) {
+	ss_debug('ss_postfindPlacesRequest<portlet:namespace/>')
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
@@ -146,11 +147,11 @@ function ss_findPlacesSelectItem0_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}');
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findPlacesSelectItem(liObjs[0])
+		ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0])
 	}
 }
 //Routine called when item is clicked
-function ss_findPlacesSelectItem(obj) {
+function ss_findPlacesSelectItem<portlet:namespace/>(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="view_permalink"/><portlet:param name="binderId" 
@@ -165,17 +166,17 @@ function ss_savefindPlacesData_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findPlacesElementName %>_${prefix}')
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findPlacesSelectItem(liObjs[0]);
+		ss_findPlacesSelectItem<portlet:namespace/>(liObjs[0]);
 	}
 	return false;
 }
 
-function ss_findPlacesNextPage() {
+function ss_findPlacesNextPage<portlet:namespace/>() {
 	ss_findPlaces_pageNumber++;
 	setTimeout("ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);", 100);
 }
 
-function ss_findPlacesPrevPage() {
+function ss_findPlacesPrevPage<portlet:namespace/>() {
 	ss_findPlaces_pageNumber--;
 	if (ss_findPlaces_pageNumber < 0) ss_findPlaces_pageNumber = 0;
 	ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);

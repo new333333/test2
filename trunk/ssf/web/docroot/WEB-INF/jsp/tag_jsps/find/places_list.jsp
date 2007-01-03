@@ -54,7 +54,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 		var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			ss_findUserSelectItem(liObjs[0]);
+			ss_findUserSelectItem<portlet:namespace/>(liObjs[0]);
 			return;
 		}
  	}
@@ -74,15 +74,16 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber)
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
+	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>");
 	ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
-	ajaxRequest.setPostRequest(ss_postFindUserRequest);
+	ajaxRequest.setPostRequest(ss_postFindUserRequest<portlet:namespace/>);
 	ajaxRequest.setData("elementName", elementName)
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postFindUserRequest(obj) {
-	ss_debug('ss_postFindUserRequest')
+function ss_postFindUserRequest<portlet:namespace/>(obj) {
+	ss_debug('ss_postFindUserRequest<portlet:namespace/>')
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
@@ -98,7 +99,7 @@ function ss_postFindUserRequest(obj) {
 	}
 }
 //Routine called when item is clicked
-function ss_findUserSelectItem(obj) {
+function ss_findUserSelectItem<portlet:namespace/>(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="view_ws_listing"/><portlet:param name="binderId" 
@@ -114,7 +115,7 @@ function ss_saveFindUserData_${prefix}() {
 	var ulObj = document.getElementById('available_<%= findUserElementName %>_${prefix}')
 	var liObjs = ulObj.getElementsByTagName('li');
 	if (liObjs.length == 1) {
-		ss_findUserSelectItem(liObjs[0]);
+		ss_findUserSelectItem<portlet:namespace/>(liObjs[0]);
 	}
 	return false;
 }
