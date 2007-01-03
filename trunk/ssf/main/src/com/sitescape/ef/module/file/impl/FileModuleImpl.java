@@ -63,12 +63,12 @@ import com.sitescape.ef.search.LuceneSessionFactory;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.util.FileHelper;
+import com.sitescape.ef.util.FilePathUtil;
+import com.sitescape.ef.util.FileStore;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
-import com.sitescape.ef.util.file.FilePathUtil;
-import com.sitescape.ef.util.file.FileStore;
 import com.sitescape.ef.web.util.FilterHelper;
 
 /**

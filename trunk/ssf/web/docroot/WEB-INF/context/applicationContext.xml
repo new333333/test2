@@ -714,7 +714,7 @@
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="cacheFileStore" class="com.sitescape.ef.util.file.FileStore">
+	<bean id="cacheFileStore" class="com.sitescape.ef.util.FileStore">
 		<property name="rootPath"><value>${data.root.dir}/cachefilestore</value></property>
 	</bean>
 	
