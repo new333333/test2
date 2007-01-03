@@ -1,4 +1,4 @@
-package com.sitescape.ef.util.file;
+package com.sitescape.ef.util;
 
 import java.io.File;
 

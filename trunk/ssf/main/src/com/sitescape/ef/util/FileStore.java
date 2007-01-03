@@ -1,4 +1,4 @@
-package com.sitescape.ef.util.file;
+package com.sitescape.ef.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -12,7 +12,6 @@ import java.io.OutputStream;
 
 import org.springframework.util.FileCopyUtils;
 
-import com.sitescape.ef.util.FileHelper;
 
 public class FileStore {
 
