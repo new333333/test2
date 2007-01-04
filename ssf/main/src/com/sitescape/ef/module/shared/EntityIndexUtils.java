@@ -48,8 +48,12 @@ public class EntityIndexUtils {
     public final static String ENTRY_ANCESTRY = "_entryAncestry";
     public static final String CREATION_DATE_FIELD = "_creationDate";
     public static final String CREATION_DAY_FIELD = "_creationDay";
+    public static final String CREATION_YEAR_MONTH_FIELD = "_creationYearMonth";
+    public static final String CREATION_YEAR_FIELD = "_creationYear";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
+    public static final String MODIFICATION_YEAR_MONTH_FIELD = "_modificationYearMonth";
+    public static final String MODIFICATION_YEAR_FIELD = "_modificationYear";
     public static final String CREATORID_FIELD = "_creatorId";
     public static final String CREATOR_NAME_FIELD = "_creatorName";
     public static final String CREATOR_TITLE_FIELD = "_creatorTitle";
@@ -149,8 +153,18 @@ public class EntityIndexUtils {
     		Date creationDate = entry.getCreation().getDate();
             Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(creationDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(creationDateField);
-            Field creationDayField = new Field(CREATION_DAY_FIELD, formatDayString(creationDate), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            // index the YYYYMMDD string
+            String dayString = formatDayString(creationDate);
+            Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(creationDayField);
+            // index the YYYYMM string
+            String yearMonthString = dayString.substring(0,6);
+            Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationYearMonthField);
+            // index the YYYY string
+            String yearString = dayString.substring(0,4);
+            Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(creationYearField);
     	}
         
     }
@@ -161,9 +175,18 @@ public class EntityIndexUtils {
     		Date modDate = entry.getModification().getDate();
         	Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(modificationDateField);        
-        	Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, formatDayString(modDate), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            // index the YYYYMMDD string
+            String dayString = formatDayString(modDate);
+            Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
             doc.add(modificationDayField);
-    	}
+            // index the YYYYMM string
+            String yearMonthString = dayString.substring(0,6);
+            Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(modificationYearMonthField);
+            // index the YYYY string
+            String yearString = dayString.substring(0,4);
+            Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            doc.add(modificationYearField);   	}
     }
 
     public static void addWorkflow(Document doc, DefinableEntity entry) {
@@ -282,6 +305,7 @@ public class EntityIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
+    
     public static void addReadAcls(Document doc, Set ids) {
     	if (ids == null) return;
     	// Add ACL field. We only need to index ACLs for read access. 
