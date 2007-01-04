@@ -302,23 +302,33 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 }
 .ss_brightest {
  opacity: ${ss_style_brightest};
- filter: alpha(opacity=${(ss_style_brightest*100)});
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=${(ss_style_brightest*100)});
+ </c:if>
 }
 .ss_brighter {
  opacity: ${ss_style_brighter};
- filter: alpha(opacity=${(ss_style_brighter*100)});
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=${(ss_style_brighter*100)});
+ </c:if>
 }
 .ss_bright {
  opacity: ${ss_style_bright};
- filter: alpha(opacity=${(ss_style_bright*100)});
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=${(ss_style_bright*100)});
+ </c:if>
 }
 .ss_dim {
  opacity: ${ss_style_dim};
- filter: alpha(opacity=${(ss_style_dim*100)});
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=${(ss_style_dim*100)});
+ </c:if>
 }
 .ss_very_dim {
  opacity: ${ss_style_very_dim};
- filter: alpha(opacity=${(ss_style_very_dim*100)});
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=${(ss_style_very_dim*100)});
+ </c:if> 
 }
 
 .ss_gray {
