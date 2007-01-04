@@ -316,8 +316,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE, currentDate);
 			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED, currentDate);
 			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_LENGTH, new Long(helpFileContentInUTF8.length));
-			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_TYPE,
-					getMimeTypes().getContentType(helpFileName));
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_TYPE, "text/plain");
 		}
 
 		return props;
