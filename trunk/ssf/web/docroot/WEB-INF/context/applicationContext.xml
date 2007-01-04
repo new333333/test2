@@ -631,7 +631,7 @@
 		<property name="workspaceModule"><ref local="workspaceModule"/></property>
 	</bean>	
 		
-	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean">
+	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
 			<bean class="com.sitescape.ef.ssfs.server.impl.SiteScapeFileSystemImpl" parent="controllerDependencyTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>

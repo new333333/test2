@@ -106,11 +106,13 @@ public abstract class CrossContextConstants {
 	// Possible object info values - value of OBJECT_INFO key
 	
 	// The object exists and it is a folder
-	public static final String OBJECT_INFO_DIRECTORY 	= "di";
+	public static final String OBJECT_INFO_DIRECTORY 			= "di";
 	// The object exists and it is a file (non-folder)
-	public static final String OBJECT_INFO_FILE			= "fi";
+	public static final String OBJECT_INFO_FILE					= "fi";
 	// The object does not exist
-	public static final String OBJECT_INFO_NON_EXISTING = "ne";
+	public static final String OBJECT_INFO_NON_EXISTING 		= "ne";
+	// The object refers to virtual help file
+	public static final String OBJECT_INFO_VIRTUAL_HELP_FILE 	= "vh";
 	
 	// Key name used for return value.
 	public static final String RETURN = "return"; // value = Object

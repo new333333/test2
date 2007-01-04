@@ -2,6 +2,7 @@ package com.sitescape.ef.ssfs.server.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,6 +42,8 @@ import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.SPropsUtil;
 
 public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 
@@ -58,9 +61,36 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private FileTypeMap mimeTypes;
 	
 	protected final Log logger = LogFactory.getLog(getClass());
+	
+	private static final String NONLIBRARY_VIRTUAL_HELP_FILE = "ssfs.nonlibrary.virtual.help.file";
+	private static final String NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_CODE = "ssfs.nonlibrary.virtual.help.content"; 
+	private static final String NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_DEFAULT = 
+		"This directory does not represent a library folder in Aspen.\nOnly files in library folder are exposed through WebDAV.";
+	
+	private String helpFileName;
+	private byte[] helpFileContentInUTF8;
+	private Date currentDate;
 
 	SiteScapeFileSystemLibrary(AllBusinessServicesInjected bs) {
 		this.bs = bs;
+		
+		this.helpFileName = SPropsUtil.getString(NONLIBRARY_VIRTUAL_HELP_FILE, "").trim();
+		if(helpFileName.length() == 0) {
+			helpFileName = null;
+			helpFileContentInUTF8 = null;
+		}
+		else {
+			String helpFileContent = NLT.get(NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_CODE,
+					NONLIBRARY_VIRTUAL_HELP_FILE_CONTENT_DEFAULT);
+			try {
+				helpFileContentInUTF8 = helpFileContent.getBytes("UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// This never happens
+				helpFileContentInUTF8 = new byte[0];
+			}
+		}
+		
+		currentDate = new Date();
 	}
 	protected FileTypeMap getMimeTypes() {
 		return this.mimeTypes;
@@ -125,8 +155,10 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new TypeMismatchException("The name refers to a directory not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
-		
-		return getResource(uri, objMap);
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE))
+			return getHelpFile();
+		else 
+			return getResource(uri, objMap);
 	}
 	
 	/*
@@ -152,6 +184,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
 			throw new NoAccessException("Directory can not be deleted");
+		}
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+			throw new NoAccessException("Virtual help file can not be deleted");
 		}
 		else {
 			removeResource(uri, objMap);
@@ -222,8 +257,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) {
 			throw new NoSuchObjectException("The object does not exist");
 		}
-
-		return getChildrenNames(uri, objMap);
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+			return null;
+		}
+		else {
+			return getChildrenNames(uri, objMap);
+		}
 	}
 
 	public Map getProperties(Map uri) throws NoAccessException, NoSuchObjectException {
@@ -234,9 +273,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		
 		Map<String,Object> props = new HashMap<String,Object>();
 		
-		props.put(CrossContextConstants.OBJECT_INFO, info);
-				
 		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
+			props.put(CrossContextConstants.OBJECT_INFO, info);
+			
 			Binder binder = getLeafBinder(objMap);
 			
 			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE,
@@ -244,7 +283,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED,
 					binder.getModification().getDate());
 		}
-		else { // file
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_FILE)) { // file
+			props.put(CrossContextConstants.OBJECT_INFO, info);
+			
 			FileAttachment fa = getFileAttachment(objMap);
 			
 			// Get DAV properties
@@ -266,6 +307,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				props.put(CrossContextConstants.LOCK_PROPERTIES_OWNER_INFO, lock.getOwnerInfo());
 			}			
 		}
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+			// Do NOT put the info value. Instead, we put OBJECT_INFO_FILE.
+			// The client side need not treat the virtual help file any differently
+			// from the regular files.
+			props.put(CrossContextConstants.OBJECT_INFO, CrossContextConstants.OBJECT_INFO_FILE);
+			
+			props.put(CrossContextConstants.DAV_PROPERTIES_CREATION_DATE, currentDate);
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_LAST_MODIFIED, currentDate);
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_LENGTH, new Long(helpFileContentInUTF8.length));
+			props.put(CrossContextConstants.DAV_PROPERTIES_GET_CONTENT_TYPE,
+					getMimeTypes().getContentType(helpFileName));
+		}
 
 		return props;
 	}
@@ -276,9 +329,11 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Map objMap = new HashMap();
 		String info = objectInfo(uri, objMap);
 		if(info.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
-			throw new TypeMismatchException("The name refers to a folder not a file");
+			throw new TypeMismatchException("The name refers to a directory not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE))
+			throw new TypeMismatchException("Virtual help file does not support locking");
 
 		FolderEntry entry = getFolderEntry(objMap);
 		
@@ -315,6 +370,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			throw new TypeMismatchException("The name refers to a folder not a file");
 		else if(info.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING))
 			throw new NoSuchObjectException("The resource does not exist");
+		else if(info.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE))
+			throw new TypeMismatchException("Virtual help file does not support locking");
 
 		FolderEntry entry = getFolderEntry(objMap);
 		
@@ -342,16 +399,26 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
 			throw new TypeMismatchException("Directory can not be copied");
 		}
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+			throw new TypeMismatchException("Virtual help file can not be copied");
+		}
 		
 		Map targetMap = new HashMap();
 		String targetInfo = objectInfo(targetUri, targetMap);
 		if(!targetInfo.equals(CrossContextConstants.OBJECT_INFO_NON_EXISTING)) { // Target exists
-			// Make sure that the target is also a file.
-			if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY))
+			if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_DIRECTORY)) {
 				throw new TypeMismatchException("The source and target types do not match");
-			
-			// Copy the file
-			copyFile(getFolderEntry(sourceMap), getFolderEntry(targetMap), getLastElemName(targetMap));
+			}
+			else if(targetInfo.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+				// The target is a virtual help file. This means that its parent 
+				// directory is not a library folder. We don't allow copying a file
+				// into a non-library folder.
+				throw new TypeMismatchException("Can not copy a file into a binder that is not a library folder");
+			}
+			else {
+				// The target is also a file. Copy the file.
+				copyFile(getFolderEntry(sourceMap), getFolderEntry(targetMap), getLastElemName(targetMap));
+			}
 		}
 		else { // Target doesn't exist
 			Binder targetParentBinder = getParentBinder(targetMap);
@@ -400,6 +467,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				// throw new AlreadyExistsException("Can not move or rename binder that is not file folder");
 				//throw new NoAccessException("Can not move or rename binder that is not file folder");
 			}
+		}
+		else if(sourceInfo.equals(CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE)) {
+			throw new SiteScapeFileSystemException("Can not move or rename virtual help file", true);
 		}
 		
 		Map targetMap = new HashMap();
@@ -499,11 +569,12 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				return CrossContextConstants.OBJECT_INFO_DIRECTORY;
 			}
 			else { // No matching binder
-				// One of the three possibilities:
+				// One of the four possibilities:
 				// 1. an existing file
 				// 2. non-existing binder
 				// 3. non-existing file
-				// In all three cases, it is helpful to locate and cache the binder
+				// 4. a virtual help file
+				// In all four cases, it is helpful to locate and cache the binder
 				// that corresponds to the immediate parent element in the path.
 	
 				if(parentBinderPath != null) {
@@ -531,13 +602,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 							}
 						}
 						else {
-							// The parent folder is not a library folder. A file entry can only
-							// be located inside a library folder, and all other types of entries
-							// (and the files within them) are NOT addressable through WebDAV
-							// library URIs. Therefore, as far as WebDAV is concerned, this 
-							// resource does not exist. 
-							return CrossContextConstants.OBJECT_INFO_NON_EXISTING;
-							 
+							// The parent folder is not a library folder. 
+							if(helpFileName != null && helpFileName.equalsIgnoreCase(lastElemName)) {
+								// The URI refers to the virtual help file.
+								return CrossContextConstants.OBJECT_INFO_VIRTUAL_HELP_FILE;
+							}
+							else {
+								// A file entry can only be located inside a library folder, 
+								// and all other types of entries (and the files within them) 
+								// are NOT addressable through WebDAV library URIs. Therefore, 
+								// as far as WebDAV is concerned, this resource does not exist. 
+								return CrossContextConstants.OBJECT_INFO_NON_EXISTING;
+							}
 						}
 					}
 					else {
@@ -796,6 +872,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// The binder is workspace. The children can consist only of other
 			// workspaces and/or folders, but no entries. 
 			titles = bs.getWorkspaceModule().getChildrenTitles((Workspace) binder);
+			addHelpFile(titles);
 		}
 		else {
 			// The binder is a folder. The children can consist of other
@@ -807,11 +884,20 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				Set<String> titles2 = getLibraryFolderChildrenFileNames((Folder)binder);
 				titles.addAll(titles2);
 			}
+			else {
+				addHelpFile(titles);
+			}
 		}
 		
 		return titles.toArray(new String[titles.size()]);
 	}
 
+	private void addHelpFile(Set<String> titles) {
+		if(helpFileName != null) { // help file feature enabled
+			titles.add(helpFileName);
+		}
+	}
+	
 	private Set<String> getChildFolderNames(Folder folder) {
 		return bs.getFolderModule().getSubfoldersTitles(folder);
 	}
@@ -943,5 +1029,9 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		catch (WriteFilesException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
 		}
+	}
+	
+	private InputStream getHelpFile() {
+		return new ByteArrayInputStream(helpFileContentInUTF8);
 	}
 }
