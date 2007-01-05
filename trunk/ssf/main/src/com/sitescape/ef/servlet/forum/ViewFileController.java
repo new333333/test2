@@ -64,6 +64,53 @@ public class ViewFileController extends SAbstractController {
 				fa = topAtt.findFileVersionById(versionId);
 			}
 		}
+		
+		if (viewType.equals("html"))
+		{
+			/**
+			 * Convert specified file (XLS, PDF, DOC, etc) to HTML format and display to browser. Part of "View as HTML" functionality.
+			 */
+			try {
+				response.setContentType("text/html");
+				getFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
+				//getFileModule().readHtmlViewFile(parent, entity, fa, response.getOutputStream());
+				return null;
+			}
+			catch(Exception e) {
+				response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+			}
+			
+			response.getOutputStream().flush();
+		}
+		else
+		if (viewType.equals("image")
+		|| viewType.equals("url"))
+		{
+			/**
+			 * There is a <IMG> or <A> in an HTML file that points to a file within the SS file repository
+			 * We must fetch that file from disk an stream into the browser. The file location could be anywhere
+			 * on the server machine. Part of "View as HTML" functionality.
+			 */
+			try {
+				String fileName = RequestUtils.getStringParameter(request, "filename", ""); 
+				if (viewType.equals("url"))
+				{
+					response.setContentType("text/html");
+					getFileModule().readCacheUrlReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
+				}
+				else
+				{
+					response.setContentType("image/jpeg");
+					getFileModule().readCacheImageReferenceFile(parent, entity, fa, response.getOutputStream(), fileName);
+				}
+			}
+			catch(Exception e) {
+				response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+			}
+			
+			response.getOutputStream().flush();
+		}
+		else
 		if (fa != null) {
 			String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 			FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
