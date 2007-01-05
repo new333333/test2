@@ -30,6 +30,7 @@ import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
@@ -379,17 +380,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * Add a new tag, owned by this binder
 	 */
 	public void setTag(Long binderId, String newTag, boolean community) {
+		if ("".equals(newTag)) return;
+		newTag = newTag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
+		String[] newTags = newTag.split(" ");
+		if (newTags.length == 0) return;
+		List tags = new ArrayList();
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setTag"); 
-	   	Tag tag = new Tag();
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
-	   	tag.setEntityIdentifier(binder.getEntityIdentifier());
-	   	tag.setPublic(community);
-	  	tag.setName(newTag);
-	  	coreDao.save(tag);
-	  	reindex(binderId);   	
+		User user = RequestContextHolder.getRequestContext().getUser();
+	   	EntityIdentifier uei = user.getEntityIdentifier();
+	   	EntityIdentifier bei = binder.getEntityIdentifier();
+	   	for (int i = 0; i < newTags.length; i++) {
+			Tag tag = new Tag();
+		   	tag.setOwnerIdentifier(uei);
+		   	tag.setEntityIdentifier(bei);
+		   	tag.setPublic(community);
+	   		tag.setName(newTags[i]);
+	   		tags.add(tag);
+	   	}
+	   	coreDao.save(tags);
+	   	reindex(binderId);   	
 	}
+	
 	/**
 	 * Delete a tag owned by this binder
 	 */
