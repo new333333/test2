@@ -702,7 +702,7 @@ public class FileRepositorySession implements RepositorySession {
 		return file.getParentFile();
 	}
 	
-	public String getEntityDirPath(Binder binder, DefinableEntity entry) {
+	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		return repositoryRootDir + RepositoryUtil.getEntityPath(binder, entry, File.separator);
 	}
 	
