@@ -261,7 +261,7 @@ public class FileRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}	
 	}
-
+	
 	public void readVersion(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -702,7 +702,7 @@ public class FileRepositorySession implements RepositorySession {
 		return file.getParentFile();
 	}
 	
-	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
+	public String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		return repositoryRootDir + RepositoryUtil.getEntityPath(binder, entry, File.separator);
 	}
 	
