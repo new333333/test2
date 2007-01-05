@@ -215,7 +215,7 @@ public interface RepositorySession {
 	public InputStream read(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
-	
+
 	public void readVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName, OutputStream out) 
 		throws RepositoryServiceException, UncheckedIOException;
@@ -390,6 +390,8 @@ public interface RepositorySession {
 	public long getContentLength(Binder binder, 
 			DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
+	
+	public String getEntityDirPath(Binder binder, DefinableEntity entry);
 	
 	/**
 	 * Returns the length (in byte) of the content of the specific version
