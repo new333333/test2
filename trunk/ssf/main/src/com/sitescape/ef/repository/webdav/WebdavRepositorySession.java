@@ -646,7 +646,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		// The exception object associated with the error will be logged higher up.		
 	}
 
-	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
+	public String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		return docRootPath + RepositoryUtil.getEntityPath(binder, entry, Constants.SLASH);
 	}
 	
