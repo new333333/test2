@@ -310,8 +310,29 @@
         <property name="configFileName"><value>config/docconverter.cfg</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
     </bean>
+    
+	<!--  OpenOffice converter for 'view file as HTML' functionality
+			% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
+	 -->
+    <bean id="htmlOpenOfficeConverter" class="com.sitescape.ef.docconverter.HtmlOpenOfficeConverter">
+        <property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+    </bean>
+    
+    <!--  Stellent converter for 'view file as HTML' functionality -->
+    <bean id="htmlStellentConverter" class="com.sitescape.ef.docconverter.HtmlStellentConverter">
+        <property name="configFileName"><value>config/htmlconverter.cfg</value></property>
+    </bean>
 
-	<!-- ============================== RSS Generator ============================ -->
+	<!-- View file as HTML manager implementation -->
+    <bean id="htmlConverterMgr" class="com.sitescape.ef.docconverter.HtmlConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>2</value></property>
+    	<property name="openOfficeConverter"><ref local="htmlOpenOfficeConverter"/></property>
+        <property name="stellentConverter"><ref local="htmlStellentConverter"/></property>
+    </bean>
+    
+    <!-- ============================== RSS Generator ============================ -->
 	
     <bean id="rssGenerator" class="com.sitescape.ef.rss.RssGenerator">
     	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
