@@ -391,8 +391,6 @@ public interface RepositorySession {
 			DefinableEntity entity, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException;
 	
-	public String getEntityDirPath(Binder binder, DefinableEntity entry);
-	
 	/**
 	 * Returns the length (in byte) of the content of the specific version
 	 * of the file resource. 
