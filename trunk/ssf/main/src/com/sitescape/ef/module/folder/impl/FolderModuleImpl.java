@@ -592,19 +592,31 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   	//TODO: what access is needed?
 	   	//checkAccess(entry, "deleteTag");
 	}
+	
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
+		if ("".equals(newtag)) return;
+		newtag = newtag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
+		String[] newTags = newtag.split(" ");
+		if (newTags.length == 0) return;
+		List tags = new ArrayList();
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
 		//TODO: can anyone add a tag?
-	   	Tag tag = new Tag();
-	   	User user = RequestContextHolder.getRequestContext().getUser();
-	   	tag.setOwnerIdentifier(user.getEntityIdentifier());
-	   	tag.setEntityIdentifier(entry.getEntityIdentifier());
-	    tag.setPublic(community);
-	  	tag.setName(newtag);
-	  	coreDao.save(tag);
-	  	reindex(binderId,entryId);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		EntityIdentifier uei = user.getEntityIdentifier();
+		EntityIdentifier eei = entry.getEntityIdentifier();
+		for (int i = 0; i < newTags.length; i++) {
+			Tag tag = new Tag();
+		   	tag.setOwnerIdentifier(uei);
+		   	tag.setEntityIdentifier(eei);
+		    tag.setPublic(community);
+		   	tag.setName(newTags[i]);
+		   	tags.add(tag);
+	   	}
+		coreDao.save(tags);
+		reindex(binderId,entryId);
 	}
+	
 	public void setTagDelete(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
