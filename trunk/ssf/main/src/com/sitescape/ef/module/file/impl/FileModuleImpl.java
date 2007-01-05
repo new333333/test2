@@ -3,25 +3,34 @@ package com.sitescape.ef.module.file.impl;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import javax.imageio.stream.FileImageInputStream;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.search.Query;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.search.Query;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContext;
@@ -67,8 +76,11 @@ import com.sitescape.ef.util.FilePathUtil;
 import com.sitescape.ef.util.FileStore;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
+import com.sitescape.ef.docconverter.HtmlConverter;
+import com.sitescape.ef.docconverter.IHtmlConverterManager;
 import com.sitescape.ef.web.util.FilterHelper;
 
 /**
@@ -102,6 +114,7 @@ public class FileModuleImpl implements FileModule {
 	// TODO To be removed once fixup is no longer necessary
 	private static final String SCALED_FILE_SUFFIX = "__ssfscaled_";
 	private static final String THUMBNAIL_FILE_SUFFIX = "__ssfthumbnail_";
+	private static final String HTML_FILE_SUFFIX = ".html";
 	
 	private static final String SCALED_SUBDIR = "scaled";
 	private static final String THUMB_SUBDIR = "thumb";
@@ -361,6 +374,203 @@ public class FileModuleImpl implements FileModule {
 			throw new UncheckedIOException(e);
 		}
 	}
+
+	/**
+	 * Read cached HTML conversion file. If this file does not exist we must create it by going into the file
+	 * respository fetching the non-HTML file an running conversion program to generate HTML file.
+	 * 
+	 *	@param	url		If images or URL tags exist we need the url to insert a valid HTML reference to items
+	 *	@param	binder	File location information
+	 *	@param	entry	File location information
+	 *	@param	fa		File attachment information
+	 *	@param	out		Output Stream that we will feed HTML file too
+	 *
+	 */
+	public void readCacheHtmlFile(String url, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
+	{
+		InputStream is = null;
+		FileOutputStream fos = null;
+		RepositorySession session = null;
+		File reposFile = null,
+		 	 htmlFile = null;
+		String filePath = "",
+			   reposFilename = "";
+
+		try
+		{
+			// Open session to repository that holds the attachment file we want to convert to
+			// an HTML file type
+			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
+			
+			// We need to find the most recent revision of file to get correct name
+			reposFilename = fa.getFileItem().getName();
+			
+			// See if we already have a cached version of file.
+			// The cached version of the file will have an HTML extension as opposed to the original file extension
+			// such as (DOC, PPT, etc). We need to change the filename to reflect this.
+			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
+			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
+			htmlFile = cacheFileStore.getFile(filePath);
+			if (htmlFile != null && htmlFile.exists())
+			{
+				// Process Character file
+				is = new FileInputStream(htmlFile);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				out.write(bbuf);
+				
+				return;
+			}
+			
+			reposFile = new File(FilePathUtil.getEntityDirPath(binder, entry) + reposFilename);
+			if (reposFile == null || !reposFile.exists())
+			{
+				try
+				{
+					is = session.read(binder, entry, reposFilename);
+					byte[] bbuf = new byte[is.available()];
+					is.read(bbuf);
+					
+					fos = new FileOutputStream(reposFile);
+					fos.write(bbuf);
+				}
+				finally
+				{
+					if (is != null)
+						is.close();
+					
+					if (fos != null)
+						fos.close();
+				}
+			}
+			
+			FileHelper.mkdirsIfNecessary(filePath.substring(0, filePath.lastIndexOf(File.separator)));
+			// If incoming file is newer than cached file we will regenerated cached file
+			if (!htmlFile.exists() || htmlFile.lastModified() < reposFile.lastModified())
+				generateHtmlFile(url, binder, entry, fa);
+			
+			// Process Character file
+			is = new FileInputStream(htmlFile);
+			byte[] bbuf = new byte[is.available()];
+			is.read(bbuf);
+			out.write(bbuf);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}	
+		finally {
+			if (is != null)
+			{
+				try
+				{
+					is.close();
+				} catch (Exception e) {}
+			}
+			
+			if (session != null)
+				session.close();
+		}
+		
+	}
+	
+	/**
+	 * Read cached URL referenced file from cache repository.
+	 * 
+	 *	@param	binder			File location information
+	 *	@param	entry			File location information
+	 *	@param	fa				File attachment information
+	 *	@param	out				Output Stream that we will feed HTML file too
+	 *	@param	urlFileName		Name of url file we will process
+	 *
+	 */
+	public void readCacheUrlReferenceFile(
+			Binder binder, DefinableEntity entry, FileAttachment fa, 
+			OutputStream out, String urlFileName)
+	{
+		byte[] bbuf = null;
+		File urlFile = null;
+		InputStream is = null;
+		String filePath = "";
+		
+		try
+		{
+			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + urlFileName);
+			urlFile = cacheFileStore.getFile(filePath);
+						
+			is = new FileInputStream(urlFile);
+			bbuf = new byte[is.available()];
+			is.read(bbuf);
+			out.write(bbuf);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}	
+		finally {
+			if (is != null)
+			{
+				try
+				{
+					is.close();
+				}
+				catch (IOException io) {}
+			}
+		}
+	}
+	
+	/**
+	 * Read cached image file from cache repository.
+	 * 
+	 *	@param	binder			File location information
+	 *	@param	entry			File location information
+	 *	@param	fa				File attachment information
+	 *	@param	out				Output Stream that we will feed HTML file too
+	 *	@param	imageFileName	Name of image file we will process
+	 *
+	 */
+	public void readCacheImageReferenceFile(
+			Binder binder, DefinableEntity entry, FileAttachment fa, 
+			OutputStream out, String imageFileName)
+	{
+		String filePath = "";
+		byte[] bbuf = null;
+		File imageFile = null;
+		FileImageInputStream fis = null;
+		
+		try
+		{
+			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + imageFileName);
+			imageFile = cacheFileStore.getFile(filePath);
+
+			// Process Image file
+			fis = new FileImageInputStream(imageFile);
+			bbuf = new byte[(int)fis.length()];
+			
+			fis.readFully(bbuf, 0, (int)fis.length());			
+			out.write(bbuf);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}	
+		finally {
+			if (fis != null)
+			{
+				try
+				{
+					fis.close();
+				}
+				catch (IOException io) {}
+			}
+		}		
+	}
 	
 	public void readHtmlViewFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, OutputStream out) throws  
@@ -394,6 +604,50 @@ public class FileModuleImpl implements FileModule {
 
 		generateAndStoreThumbnailFile(binder, entry, relativeFilePath, 
 				baos.toByteArray(), maxWidth, maxHeight);
+	}
+
+	/**
+	 * Generate HTML file based on an attachment file held in repository. This functionality is used for
+	 * 'view as html' functionality. We need to convert a non-HTML file type into a HTML file type.
+	 * 
+	 * @param url		Url that will be inserted into image an url sources to make them valid
+	 * @param binder	SiteScape Binder Object - holds path information in repository
+	 * @param entry		SiteScape DefinableEntity Object - holds path information in repository
+	 * @param fa		SiteScape FileAttachment Object - represents file in respository
+	 *
+	 */
+	public void generateHtmlFile(String url, Binder binder, 
+			 DefinableEntity entry, FileAttachment fa)
+	{
+		File htmlfile = null;
+		RepositorySession session = null;
+		ByteArrayOutputStream baos = null;
+		String filePath = "",
+			   outFile = "",
+			   relativeFilePath = "";
+
+		try 
+		{
+			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
+			relativeFilePath = fa.getFileItem().getName();
+			
+			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
+			htmlfile = cacheFileStore.getFile(filePath);
+			outFile = htmlfile.getAbsolutePath();
+			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
+			generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), FilePathUtil.getEntityDirPath(binder, entry) + relativeFilePath, outFile);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		finally
+		{
+			if (session != null)
+				session.close();
+		}
 	}
 	
 	/**
@@ -738,7 +992,7 @@ public class FileModuleImpl implements FileModule {
     	
         Set<String> result = new HashSet<String>();
         int count = hits.length();
-        Document doc;
+        org.apache.lucene.document.Document doc;
         String fileName;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
@@ -1180,7 +1434,7 @@ public class FileModuleImpl implements FileModule {
     	writeFileMetadataTransactional(binder, entry, fui, fAtt, isNew);
     	return true;
     }
-
+    
     private void writeExistingFile(RepositorySession session,
     		Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData)
 		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
@@ -1434,8 +1688,8 @@ public class FileModuleImpl implements FileModule {
 		}
 		return thumbnailFileName;
 	}
-	
-	private void generateAndStoreScaledFile( 
+
+	private void generateAndStoreScaledFile(
 			Binder binder, DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight) 
 		throws ThumbnailException, UncheckedIOException {
@@ -1474,7 +1728,53 @@ public class FileModuleImpl implements FileModule {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
-	}       
+	}
+	
+	private void generateAndStoreHtmlFile(String url, Long binderId, Long entryId, String fileId, String inFile, String outFile) 
+		throws RepositoryServiceException, FileNotFoundException,
+		IOException
+	{
+		int length = 2048;
+		char[] cbuf = new char[length];
+		HtmlConverter converter = null;
+		IHtmlConverterManager htmlConverter = null;
+		StringBuffer buffer = null,
+					 bufferAlter = null;
+			
+			try
+			{
+				//Document document = null;
+				//Element image = null;
+				String src = "";
+				buffer = new StringBuffer();
+			
+				int j = outFile.lastIndexOf(File.separator);
+				//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
+				
+				htmlConverter = (IHtmlConverterManager)SpringContextUtil.getBean("htmlConverterMgr");
+				converter = htmlConverter.getConverter();
+				
+				converter.convert(inFile, outFile, 5000);
+				// When generating the HMTL equivalent file.
+				// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
+				// Every HTML file in directory should be related to converter process
+				File outputDir = new File(outFile.substring(0, j+1));
+				if (outputDir.isDirectory())
+				{
+					src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&fileId=" + fileId + "&viewType=XXXX&filename=";
+					File[] files = outputDir.listFiles();
+					for (int x=0; x < files.length; x++)
+					{
+						if (files[x].isFile() && files[x].getName().endsWith(".html"))
+							parseHtml(files[x], files[x], src);
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+	}
     
 	/*
 	 * private void closeLocksTransactional(Binder binder, DefinableEntity
@@ -1698,4 +1998,127 @@ public class FileModuleImpl implements FileModule {
     			this.getLockExpirationAllowanceMilliseconds() <= System.currentTimeMillis());
     }
     
+    /**
+     * Alter tag data held in HTML file. We need to alter Image and Url file path information to reflect were
+     * the image or files actually reside on the server. After converted a file into an HTML file the Image an
+     * Url file paths are specified to be relative to HTML file just generated. We must change these entries so
+     * we can recall these items and stream items into browser.
+     * 
+     * @param indata		Data to check for alterations
+     * @param tag			What tag item are we going to look to change
+     * @param attrtag		What attribute on 'tag' are we going to change
+     * @param newdata		New data to insert into attribute we are changing
+     * 
+     * @return				Altered 'indata'
+     */
+    private StringBuffer alterTagData(String indata, String tag, String attrtag, String newdata)
+	{
+		String[] splits = null;
+		StringBuffer buffer = null;
+		String s = "",
+			   src = "",
+			   data = "",
+			   altdata = "",
+			   predata = "",
+			   imageurl = "";
+		
+		buffer = new StringBuffer();
+		splits = indata.split(tag);
+        for (int x=0; x < splits.length; x++)
+        {
+        	s = splits[x];
+        	int i = s.indexOf(attrtag);
+        	if (i > -1)
+        	{
+        		predata = s.substring(0, i);
+        		data = s.substring(i + attrtag.length());
+        		imageurl = data.substring(0, data.indexOf("\""));
+        		if (imageurl.startsWith("#")
+        		|| imageurl.startsWith("http:")
+        		|| imageurl.startsWith("https:"))
+        			src = imageurl;
+        		else
+        			src = newdata + imageurl;
+        		
+        		altdata = tag + predata;
+        		altdata += attrtag + (src + "\"" + data.substring(data.indexOf("\"")+1));
+        		buffer.append(altdata);
+        	}
+        	else
+        	// we could have a file like (ex) this is a test <a name='rsordillo' /> for testing
+        	// we would not want to add 'tag' to beginning of file
+        	if (x == 0)
+        		buffer.append(s);
+        	else
+        		buffer.append(tag + s);
+        }
+        
+        return buffer;
+	}
+	
+    /**
+     * Parse HTML file replacing URL an IMAGE paths to conform with were the actual Images or Url files exist
+     * on the system.
+     * 
+     * @param fin			Input file to be adjusted
+     * @param fout			Output file after adjustments have been made
+     * @param attrdata		What attribute data to change if required
+     * 
+     * @throws Exception	Something goes wrong with parsing/changing input file
+     * 
+     */
+	public void parseHtml(File fin, File fout, String attrdata)
+		throws Exception
+	{
+		int length = 2048;
+		FileReader fr = null;
+		FileWriter fw = null;
+		char[] cbuf = new char[length];
+		StringBuffer buffer = null;
+		String fileData = "";
+		
+		try
+		{
+			buffer = new StringBuffer();
+			
+			fr = new FileReader(fin);			
+			while (fr.read(cbuf, 0, length) > -1)
+			{
+				buffer.append(cbuf);
+				// clear buffer
+				for (int x=0; x < cbuf.length; x++)
+					cbuf[x] = '\0';
+			}
+			fileData = buffer.toString().trim();
+			fr.close();
+	
+			buffer = alterTagData(fileData, "<img ", "src=\"", attrdata.replaceAll("XXXX", "image"));
+			buffer = alterTagData(buffer.toString(), "<IMG ", "SRC=\"", attrdata.replaceAll("XXXX", "image"));
+			buffer = alterTagData(buffer.toString(), "<a ", "href=\"", attrdata.replaceAll("XXXX", "url"));
+			buffer = alterTagData(buffer.toString(), "<A ", "HREF=\"", attrdata.replaceAll("XXXX", "url"));
+			
+			fw = new FileWriter(fout);
+	        fw.write(buffer.toString());
+		}
+		finally
+		{
+			try
+			{
+				if (fr != null)
+					fr.close();
+			} catch (Exception e) {}
+			
+			try
+			{
+				if (fw != null)
+				{
+					fw.flush();
+					fw.close();
+				}
+			}
+			catch (Exception e) {}
+		}
+        
+        return;
+	}
 }
