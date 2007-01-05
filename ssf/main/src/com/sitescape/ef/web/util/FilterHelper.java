@@ -12,6 +12,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -309,6 +310,10 @@ public class FilterHelper {
 
 	//Routine to convert a search filter into the form that Lucene wants 
    	static public Document convertSearchFilterToSearchBoolean(Document searchFilter) {
+   		Map options = new HashMap();
+   		return convertSearchFilterToSearchBoolean(searchFilter, options);
+   	}
+   	static public Document convertSearchFilterToSearchBoolean(Document searchFilter, Map options) {
 		//Build the search query
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
@@ -436,6 +441,12 @@ public class FilterHelper {
 	    			}
 	    		}
         	}
+    	}
+    	//Add in any additional fields from the options map
+    	if (options.containsKey(ObjectKeys.SEARCH_FILTER_AND)) {
+    		Document filter = (Document) options.get(ObjectKeys.SEARCH_FILTER_AND);
+    		Element filterRoot = filter.getRootElement();
+    		qTreeAndElement.add((Element)filterRoot.clone());
     	}
     	//qTree.asXML();
     	return qTree;

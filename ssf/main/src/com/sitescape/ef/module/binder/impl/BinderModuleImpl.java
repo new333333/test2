@@ -465,7 +465,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         Hits hits = new Hits(0);
         
         if (searchQuery != null) {
-        	Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchQuery);
+        	Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchQuery, options);
         	Element rootElement = qTree.getRootElement();
         	if (rootElement != null) {
 	        	//Find the first "and" element and add to it

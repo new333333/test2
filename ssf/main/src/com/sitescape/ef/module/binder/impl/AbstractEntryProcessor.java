@@ -1,7 +1,9 @@
 package com.sitescape.ef.module.binder.impl;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
@@ -862,7 +864,31 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
     	}
        	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
-    	//Create the Lucene query
+
+       	//See if there is an end date
+       	if (options.containsKey(ObjectKeys.SEARCH_END_DATE)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element range = boolElement.addElement(QueryBuilder.RANGE_ELEMENT);
+        			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DAY_FIELD);
+        			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
+        			Element start = range.addElement(QueryBuilder.RANGE_START);
+        	        Calendar cal = Calendar.getInstance();
+        	        cal.set(1970, 0, 1);
+        	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        	        String s = formatter.format(cal.getTime());
+        			start.addText((String) s);
+        			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+        			finish.addText((String) options.get(ObjectKeys.SEARCH_END_DATE));
+        		}
+        	}
+
+       	}
+       	//queryTree.asXML();
+       	
+       	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(queryTree);
     	

@@ -19,6 +19,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -39,6 +40,7 @@ import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.util.SsfsUtil;
 import com.sitescape.ef.util.NLT;
@@ -48,12 +50,14 @@ import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
+import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.util.cal.CalendarUtil;
 
 /**
  * @author Peter Hurley
@@ -304,12 +308,10 @@ public class ListFolderController extends  SAbstractController {
 				String searchMaxHits = SPropsUtil.getString("folder.records.listed");
 				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
 				tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(searchMaxHits));
-			}
-			else {
+			} else {
 				options.put(ObjectKeys.SEARCH_MAX_HITS, recordsInPage);
 			}
-		}
-		else {
+		} else {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(entriesPerPage));
 			tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(entriesPerPage));
 			if (recordsInPage != null) {
@@ -325,8 +327,7 @@ public class ListFolderController extends  SAbstractController {
 						tabOptions.put(Tabs.PAGE, new Integer(intNewPageStartIndex));
 					}
 				}
-			}
-			else {
+			} else {
 				tabOptions.put(Tabs.PAGE, new Integer(0));
 			}
 		}
@@ -384,6 +385,17 @@ public class ListFolderController extends  SAbstractController {
 		tabOptions.put(Tabs.SORTDESCEND, ((Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND)).toString());
 		//End - Determine the Sort Order
 
+		//See if the url contains an ending date
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(user.getTimeZone());
+		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
+		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
+		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
+		String year = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_YEAR, "");
+		if (!day.equals("") || !month.equals("") || !year.equals("")) {
+			options.put(ObjectKeys.SEARCH_END_DATE, DateHelper.getDateStringFromDMY(day, month, year));
+			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
+		}
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
 		
@@ -427,7 +439,10 @@ public class ListFolderController extends  SAbstractController {
 				viewType = viewElement.attributeValue("value", "");
 		}
 		if (viewType.equals("blog")) {
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
+			//Get the list of all entries to build the archive list
+			buildBlogBeans(response, folder, options, model);
 		} else {
 			folderEntries = getFolderModule().getEntries(folderId, options);
 		}
@@ -499,6 +514,77 @@ public class ListFolderController extends  SAbstractController {
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp(this);
 	}  
+	
+	//Routine to build the beans for the blog archives list
+	public void buildBlogBeans(RenderResponse response, Folder folder, Map options, Map model) {
+		Document searchFilter = (Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+		if (searchFilter == null) {
+			searchFilter = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
+        	rootElement.addElement(FilterHelper.FilterTerms);
+    		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
+		}
+		Map options2 = new HashMap();
+		options2.put(ObjectKeys.SEARCH_MAX_HITS, 2000);
+		Map entriesMap = getBinderModule().executeSearchQuery(folder, searchFilter, options2);
+		List entries = (List) entriesMap.get(WebKeys.FOLDER_ENTRIES);
+		Map monthHits = new TreeMap();
+		Map monthTitles = new HashMap();
+		Map monthUrls = new HashMap();
+		String[] monthNames = { 
+				NLT.get("calendar.january"),
+				NLT.get("calendar.february"),
+				NLT.get("calendar.march"),
+				NLT.get("calendar.april"),
+				NLT.get("calendar.may"),
+				NLT.get("calendar.june"),
+				NLT.get("calendar.july"),
+				NLT.get("calendar.august"),
+				NLT.get("calendar.september"),
+				NLT.get("calendar.october"),
+				NLT.get("calendar.november"),
+				NLT.get("calendar.december")
+			};
+		Iterator itEntries = entries.iterator();
+		while (itEntries.hasNext()) {
+			Map entry = (Map)itEntries.next();
+			if (entry.containsKey(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD)) {
+				String yearMonth = (String) entry.get(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+				if (!monthHits.containsKey(yearMonth)) {
+					monthHits.put(yearMonth, new Integer(0));
+					String monthNumber = yearMonth.substring(4,6);
+					int m = Integer.valueOf(monthNumber).intValue() - 1;
+					monthTitles.put(yearMonth, monthNames[m%11]);
+					PortletURL url = response.createRenderURL();
+					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+					url.setParameter(WebKeys.URL_YEAR_MONTH, yearMonth);
+					monthUrls.put(yearMonth, url.toString());
+				}
+				int hitCount = (Integer) monthHits.get(yearMonth);
+				monthHits.put(yearMonth, new Integer(++hitCount));
+			}
+		}
+		model.put(WebKeys.BLOG_MONTH_HITS, monthHits);
+		model.put(WebKeys.BLOG_MONTH_TITLES, monthTitles);
+		model.put(WebKeys.BLOG_MONTH_URLS, monthUrls);
+
+		/*
+		options2.put(ObjectKeys.SEARCH_MAX_HITS, 1);
+		Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.AND_ELEMENT);
+		Element andField = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText("200701");
+    	options2.put(ObjectKeys.SEARCH_FILTER_AND, qTree);
+		Map monthEntries = getBinderModule().executeSearchQuery(folder, searchFilter, options2);
+		int c = 0;
+		if (monthEntries.containsKey(WebKeys.ENTRY_SEARCH_COUNT)) 
+			c = (Integer) monthEntries.get(WebKeys.ENTRY_SEARCH_COUNT);
+		*/
+	}
 
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,
 	//Paging Number related Page Keys and the Next Page Keys.

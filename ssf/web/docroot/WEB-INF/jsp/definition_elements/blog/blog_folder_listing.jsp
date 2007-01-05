@@ -27,7 +27,7 @@
 		  <ssf:datepicker id="ss_blog_sidebar_date" 
             calendarDivId="ss_blog_sidebar_date_popup"
             formName="ss_blog_sidebar_date_form"
-            immediateMode="true" initDate="<%= new Date() %>"
+            immediateMode="true" initDate="${ssFolderEndDate}"
 			callbackRoutine="ss_blog_sidebar_date_callback" />
         </form>
         <br>

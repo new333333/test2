@@ -10,6 +10,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.util.NLT;
 
 import java.util.Date;
@@ -63,8 +65,10 @@ public class Datepicker extends TagSupport {
 	    //If showing the calendar inline, don't also allow the popup div
 	    if (!this.calendarDivId.equals("")) this.popupDivId = "";
 	    
+	    User user = RequestContextHolder.getRequestContext().getUser();
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(initDate);
+	    cal.setTimeZone(user.getTimeZone());
 	    
 	    try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
@@ -310,7 +314,7 @@ public class Datepicker extends TagSupport {
 						  immediateMode.booleanValue()) {
 				    sb.append("<input type=\"hidden\"")
 				      .append(" name=\"").append(prefix).append("_date\"")
-				      .append(" value=\"").append(cal.get(Calendar.DATE)).append("\" />\n");
+				      .append(" value=\"").append(cal.get(Calendar.DAY_OF_MONTH)).append("\" />\n");
 				  } else {
 				    sb.append("<select name=\"").append(prefix).append("_date\">\n");
 				    if (!initDateProvided) {
