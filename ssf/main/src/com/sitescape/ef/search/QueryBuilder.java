@@ -274,7 +274,6 @@ public class QueryBuilder {
 
 	private String processPERSONALTAGS(Element element) {
 		String ptagString = "";
-		//Always check for aclreaddef
 
 		List children = element.elements();
 		int kidCount = children.size();
@@ -288,14 +287,17 @@ public class QueryBuilder {
 				// Always check for aclreaddef
 				if (i > 0)
 					ptagString += " OR ";
-				ptagString += " " + BasicIndexUtils.ACL_TAG_FIELD + ":"
-						+ BasicIndexUtils.buildAclTag(tagName,
-								BasicIndexUtils.READ_ACL_ALL) + " ";
-				for (Iterator iter = principalIds.iterator(); iter.hasNext();) {
-					ptagString += " OR " + BasicIndexUtils.ACL_TAG_FIELD + ":" 
-							+ BasicIndexUtils.buildAclTag(tagName,
-									((Long) iter.next()).toString()) + " ";
-				}
+				/*
+				 * ptagString += " " + BasicIndexUtils.ACL_TAG_FIELD + ":" +
+				 * BasicIndexUtils.buildAclTag(tagName,
+				 * BasicIndexUtils.READ_ACL_ALL) + " ";
+				 */
+				User user = RequestContextHolder.getRequestContext().getUser();
+				ptagString += " OR "
+						+ BasicIndexUtils.ACL_TAG_FIELD
+						+ ":"
+						+ BasicIndexUtils.buildAclTag(tagName, user.getId()
+								.toString()) + " ";
 			}
 		}
 		return ptagString;
