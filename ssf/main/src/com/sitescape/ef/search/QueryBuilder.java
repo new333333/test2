@@ -293,8 +293,7 @@ public class QueryBuilder {
 				 * BasicIndexUtils.READ_ACL_ALL) + " ";
 				 */
 				User user = RequestContextHolder.getRequestContext().getUser();
-				ptagString += " OR "
-						+ BasicIndexUtils.ACL_TAG_FIELD
+				ptagString += BasicIndexUtils.ACL_TAG_FIELD
 						+ ":"
 						+ BasicIndexUtils.buildAclTag(tagName, user.getId()
 								.toString()) + " ";
