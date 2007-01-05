@@ -11,10 +11,8 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
@@ -166,7 +164,7 @@ public class RepositoryUtil {
 				session.close();
 		}
 	}
-
+	
 	public static InputStream readVersion(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName)
 			throws RepositoryServiceException, UncheckedIOException {
