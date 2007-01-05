@@ -12,8 +12,18 @@ import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
 public class XmlFileUtil {
-	public static final String FILE_ENCODING="UTF-8";
+	public static String FILE_ENCODING="UTF-8";
 	protected static Log logger = LogFactory.getLog(XmlFileUtil.class);
+	
+	public static void setFileEncoding(String encoding)
+	{
+		FILE_ENCODING = encoding;
+	}
+	
+	public static String getEncoding()
+	{
+		return FILE_ENCODING;
+	}
 	
 	public static Document readFile(String path) 
 		throws Exception {
@@ -21,7 +31,10 @@ public class XmlFileUtil {
         SAXReader reader = new SAXReader();
         InputStreamReader fIn=null;
         try {
-        	fIn = new InputStreamReader(new FileInputStream(path), FILE_ENCODING);
+        	if (FILE_ENCODING.equals(""))
+        		fIn = new InputStreamReader(new FileInputStream(path));
+        	else
+        		fIn = new InputStreamReader(new FileInputStream(path), FILE_ENCODING);
         	document = reader.read(fIn);
         } catch (Exception ex) {
         	logger.error("Cannot read XML fiel " + path + ":error is: " + ex.getLocalizedMessage());
@@ -44,7 +57,8 @@ public class XmlFileUtil {
 			//cannot guarentee default will be set to UTF-8
 			fOut = new FileOutputStream(path);
 			OutputFormat fmt = OutputFormat.createPrettyPrint();
-			fmt.setEncoding(FILE_ENCODING);
+			if (!FILE_ENCODING.equals(""))
+				fmt.setEncoding(FILE_ENCODING);
     		xOut = new XMLWriter(fOut, fmt);
     		xOut.write(doc);
     		xOut.flush();
