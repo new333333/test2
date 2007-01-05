@@ -1,7 +1,3 @@
-<c:if test="${!empty ss_portletInitialization}">
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-</c:if>
-<c:if test="${empty ss_portletInitialization}">
 <c:if test="${empty ssf_support_files_loaded}">
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 <%
@@ -252,5 +248,4 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_createOnLoadObj('ss_defineColorValues', ss_defineColorValues);
 }
 </script>
-</c:if>
 </c:if>
