@@ -155,6 +155,18 @@ public interface FileModule {
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
 		throws UncheckedIOException, RepositoryServiceException;
 	
+	public void readCacheHtmlFile(
+			String url, Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
+	public void readCacheImageReferenceFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String imageFileName) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
+	public void readCacheUrlReferenceFile(
+			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String urlFileName) 
+		throws UncheckedIOException, RepositoryServiceException;
+	
     /**
      * Reads the specified html view file into the output stream.
      * 
