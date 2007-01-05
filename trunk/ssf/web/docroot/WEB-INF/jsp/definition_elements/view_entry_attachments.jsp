@@ -31,7 +31,17 @@
 <td class="ss_compact20"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${selection.modification.date}" type="both" 
 	 timeStyle="short" dateStyle="short" /></td>
-<td class="ss_compact20"><span class="ss_smallprint">(${selection.fileItem.lengthKB}KB)</span></td>
+<td class="ss_compact20"><span class="ss_smallprint">(${selection.fileItem.lengthKB}KB)
+
+<a target="_blank" style="text-decoration: none;" href="<ssf:url 
+    webPath="viewFile"
+    folderId="${ssDefinitionEntry.parentBinder.id}"
+    entryId="${ssDefinitionEntry.id}" >
+    <ssf:param name="fileId" value="${selection.id}"/>
+    <ssf:param name="viewType" value="html"/>
+    </ssf:url>" >[HTML]</a>
+</span>
+</td>
 </tr>
 </table>
 </div>
@@ -60,7 +70,17 @@
 <td class="ss_compact20"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${fileVersion.modification.date}" type="both" 
 	 timeStyle="short" dateStyle="short" /></td>
-<td class="ss_compact20"><span class="ss_smallprint">(${fileVersion.fileItem.lengthKB}KB)</span></td>
+<td class="ss_compact20"><span class="ss_smallprint">(${fileVersion.fileItem.lengthKB}KB)
+
+<a style="text-decoration: none;" href="<ssf:url 
+    webPath="viewFile"
+    folderId="${ssDefinitionEntry.parentBinder.id}"
+    entryId="${ssDefinitionEntry.id}" >
+    <ssf:param name="fileId" value="${selection.id}"/>
+    <ssf:param name="viewType" value="html"/>
+    </ssf:url>" >[HTML]</a>
+
+</span></td>
 </tr>
 </c:if>
 <c:set var="versionCount" value="${versionCount + 1}"/>
