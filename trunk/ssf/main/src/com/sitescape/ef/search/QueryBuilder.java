@@ -288,13 +288,13 @@ public class QueryBuilder {
 				// Always check for aclreaddef
 				if (i > 0)
 					ptagString += " OR ";
-				ptagString += " "
+				ptagString += " " + BasicIndexUtils.ACL_TAG_FIELD + ":"
 						+ BasicIndexUtils.buildAclTag(tagName,
 								BasicIndexUtils.READ_ACL_ALL) + " ";
 				for (Iterator iter = principalIds.iterator(); iter.hasNext();) {
-					ptagString += " OR "
+					ptagString += " OR " + BasicIndexUtils.ACL_TAG_FIELD + ":" 
 							+ BasicIndexUtils.buildAclTag(tagName,
-									((String) iter.next()).toString()) + " ";
+									((Long) iter.next()).toString()) + " ";
 				}
 			}
 		}
