@@ -46,6 +46,9 @@ public class WebKeys {
     public static final String URL_BINDER_TYPE="binderType";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
+	public static final String URL_DATE_DAY="day";
+	public static final String URL_DATE_MONTH="month";
+	public static final String URL_DATE_YEAR="year";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
@@ -71,16 +74,20 @@ public class WebKeys {
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
+	public static final String URL_YEAR_MONTH="yearMonth";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
 	public static final String PRESENCE_PREF_GROUP_LIST = "com.sitescape.portlet.presence.group.list";
+	public static final String PORTLET_PREF_INITIALIZED = "com.sitescape.portlet.ss_initialized";
 	public static final String PORTLET_PREF_TITLE = "com.sitescape.portlet.title";
 	public static final String PORTLET_PREF_TYPE = "com.sitescape.portlet.type";
 	public static final String WORKSPACE_PREF_ID = "com.sitescape.portlet.workspace.id";
 	public static final String PORTLET_PREF_DASHBOARD="com.sitescape.portlet.dashboard.id";
-	
+
+	public static final String PORTLET_INITIALIZATION = "ss_portletInitialization";
+
 	//session attributes
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
     //actions
@@ -207,6 +214,9 @@ public class WebKeys {
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
+	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
+	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
+	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONFIGURATIONS="ssConfigurations";
 	public static final String CONFIGURATION="ssConfiguration";
@@ -288,6 +298,7 @@ public class WebKeys {
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
+    public static final String FOLDER_END_DATE="ssFolderEndDate";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";

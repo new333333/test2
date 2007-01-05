@@ -4,9 +4,14 @@
  */
 package com.sitescape.ef.web.util;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.ConfigurationException;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
@@ -103,6 +108,75 @@ public class DateHelper {
         return d;
     }
     
+    static public String getDateStringFromDMY (String day, String month, String year) 
+			throws ConfigurationException {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(user.getTimeZone());
+		
+		int iDay, iMonth, iYear;
+		
+		// If the year isn't present, assume this year
+		if (year.equals("")) {
+		    iYear = cal.get(Calendar.YEAR);
+		} else {
+			iYear = Integer.parseInt(year);
+		}
+		// If the month isn't present, assume January
+		if (month.equals("")) {
+		    iMonth = 0;
+		} else {
+			iMonth = Integer.parseInt(month)-1;
+		}
+		// If the day isn't present, assume 1
+		if (year.equals("")) {
+		    iDay = 1;
+		} else {
+			iDay = Integer.parseInt(day);
+		}
+		cal.set(Calendar.YEAR, iYear);
+		cal.set(Calendar.MONTH, iMonth);
+		cal.set(Calendar.DAY_OF_MONTH, iDay);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		String s = formatter.format(cal.getTime());
+		return s;
+	}
+
+    static public Date getDateFromDMY (String day, String month, String year) 
+			throws ConfigurationException {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Calendar cal = Calendar.getInstance();
+		cal.setTimeZone(user.getTimeZone());
+		
+		int iDay, iMonth, iYear;
+		
+		// If the year isn't present, assume this year
+		if (year.equals("")) {
+		    iYear = cal.get(Calendar.YEAR);
+		} else {
+			iYear = Integer.parseInt(year);
+		}
+		// If the month isn't present, assume January
+		if (month.equals("")) {
+		    iMonth = 0;
+		} else {
+			iMonth = Integer.parseInt(month)-1;
+		}
+		// If the day isn't present, assume 1
+		if (year.equals("")) {
+		    iDay = 1;
+		} else {
+			iDay = Integer.parseInt(day);
+		}
+		cal.set(Calendar.YEAR, iYear);
+		cal.set(Calendar.MONTH, iMonth);
+		cal.set(Calendar.DAY_OF_MONTH, iDay);
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		Date d = cal.getTime();
+		return d;
+	}
+
     // map day of week numbers into strings representing full day name
     static public String getDayNameString (int dayNum) {
     	switch (dayNum) {
