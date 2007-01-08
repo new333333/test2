@@ -69,6 +69,8 @@ public class WebKeys {
     public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
 	public static final String URL_TAB_ID = "tabId";
+	public static final String URL_TAG_COMMUNITY = "cTag";
+	public static final String URL_TAG_PERSONAL = "pTag";
 	public static final String URL_TREE_SELECT = "tree_select";
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_VALUE = "value";
@@ -87,6 +89,7 @@ public class WebKeys {
 	public static final String PORTLET_PREF_DASHBOARD="com.sitescape.portlet.dashboard.id";
 
 	public static final String PORTLET_INITIALIZATION = "ss_portletInitialization";
+	public static final String PORTLET_INITIALIZATION_URL = "ss_portletInitializationUrl";
 
 	//session attributes
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
@@ -214,6 +217,8 @@ public class WebKeys {
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
+	public static final String BLOG_FOLDER_COMMUNITY_TAGS="ssBlogFolderCommunityTags"; 
+	public static final String BLOG_FOLDER_PERSONAL_TAGS="ssBlogFolderPersonalTags"; 
 	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
@@ -266,6 +271,7 @@ public class WebKeys {
     public static final String EXCEPTION="ssException";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
+    public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
@@ -387,6 +393,7 @@ public class WebKeys {
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
     public static final String TAB_TITLE="ss_tab_title";
+    public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";

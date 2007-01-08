@@ -70,6 +70,9 @@ public interface ObjectKeys {
     public static final String SEARCH_FILTER_OR = "searchFilterOr";
     public static final String PAGE_ENTRIES_PER_PAGE = "entriesPerPage";
     public static final String SEARCH_PAGE_ENTRIES_PER_PAGE = "entriesPerSearchPage";
+    public static final String SEARCH_YEAR_MONTH = "yearMonth";
+    public static final String SEARCH_COMMUNITY_TAG = "searchCommunityTag";
+    public static final String SEARCH_PERSONAL_TAG = "searchPersonalTag";
     
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";

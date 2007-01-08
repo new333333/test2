@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <%@ page import="org.dom4j.Document" %>
 
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
@@ -59,3 +60,4 @@
 	</table>
   </div>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+</c:if>

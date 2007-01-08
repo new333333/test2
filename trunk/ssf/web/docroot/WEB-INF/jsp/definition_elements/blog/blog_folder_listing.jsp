@@ -30,9 +30,47 @@
             immediateMode="true" initDate="${ssFolderEndDate}"
 			callbackRoutine="ss_blog_sidebar_date_callback" />
         </form>
+        
         <br>
         <br>
-		<span class="ss_bold"><ssf:nlt tag="blog.archives"/></span>
+		<span class="ss_bold ss_underline"><ssf:nlt tag="blog.archives"/></span>
+		<br/>
+		<table>
+		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
+		  <tr>
+		  <td><a href="${ssBlogMonthUrls[monthYear.key]}"><c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
+		  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
+		  </tr>
+		</c:forEach>
+		</table>
+		
+        <br>
+        <br>
+		<span class="ss_bold ss_underline"><ssf:nlt tag="tags.community"/></span>
+		<br/>
+		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
+		   
+		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="view_folder_listing"/><portlet:param 
+				name="binderId" value="${ssBinder.id}"/><portlet:param 
+				name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+				class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+		   	
+		   </c:forEach>
+		
+        <br>
+        <br>
+		<span class="ss_bold ss_underline"><ssf:nlt tag="tags.personal"/></span>
+		<br/>
+		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
+		
+		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				name="action" value="view_folder_listing"/><portlet:param 
+				name="binderId" value="${ssBinder.id}"/><portlet:param 
+				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+				class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+						
+		   </c:forEach>
 	  </td>
     </tr>
   </table>

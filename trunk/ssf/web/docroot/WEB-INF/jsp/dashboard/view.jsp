@@ -1,5 +1,6 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <div class="ss_portlet_style ss_portlet">
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 
@@ -84,3 +85,5 @@
 </c:if>
 </div>
 </div>
+</c:if>
+

@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <div class="ss_portlet_style ss_portlet">
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
 
@@ -28,3 +29,4 @@
 <c:out value="${ssUser.title}"/></a></td></tr>
 </table>
 </div>
+</c:if>

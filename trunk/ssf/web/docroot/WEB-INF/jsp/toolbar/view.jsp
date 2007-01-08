@@ -16,6 +16,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ssComponentId}">
   <c:set var="ssNamespace" value="${renderResponse.namespace}_${ssComponentId}"/>
@@ -26,3 +27,4 @@
 <c:set var="ss_navbar_style" value="portlet" scope="request"/>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 </div>
+</c:if>

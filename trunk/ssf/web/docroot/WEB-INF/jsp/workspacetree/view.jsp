@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <div class="ss_portlet_style ss_portlet">
 
 <%
@@ -77,3 +78,5 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </table>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 </div>
+</c:if>
+
