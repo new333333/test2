@@ -250,10 +250,10 @@ public class BinderHelper {
 	
 	//This method identifies if we need a + or - sign infront of the
 	//tags being displayed in the tags tab in the search tab
-	public static List determineSignBeforeTag(List entries, String tabTitle) {
+	public static List determineSignBeforeTag(List entries, String tabTagTitle) {
 		ArrayList tagList = new ArrayList();
 		for (int i = 0; i < entries.size(); i++) {
-			String strTabTitle = tabTitle;
+			String strTabTitle = tabTagTitle;
 			Map tag = (Map) entries.get(i);
 			String strTagName = (String) tag.get(WebKeys.TAG_NAME);
 			if (strTabTitle != null && !strTabTitle.equals("")) {
@@ -295,7 +295,7 @@ public class BinderHelper {
 				}
 				else if (strTabTitle.equals(strTagName)) {
 					tag.put(WebKeys.TAG_SIGN, "-");
-					tag.put(WebKeys.TAG_SEARCH_TEXT, strTagName);
+					tag.put(WebKeys.TAG_SEARCH_TEXT, "");
 				}
 				else {
 					tag.put(WebKeys.TAG_SIGN, "+");

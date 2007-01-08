@@ -156,7 +156,7 @@ public class SearchController extends AbstractBinderController {
 			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
 		} 
 		//Search For Text and  Tag Search
-		else if (formData.containsKey("searchTextAndTags")) {
+		else if (formData.containsKey("searchTags")) {
 			//Parse the search filter
 			searchQuery = FilterHelper.getSearchTabQuery(request);
 			Map options = new HashMap();
@@ -173,32 +173,6 @@ public class SearchController extends AbstractBinderController {
 				
 				options.put(Tabs.TITLE,  strTabTitle);
 				options.put(Tabs.TAB_SEARCH_TEXT, searchText);
-				options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
-				options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
-			}
-			//Store the search query in the current tab
-			boolean blnClearTab = true;
-			if (tabId != null) 
-				tabs.setTab(tabId.intValue(), searchQuery, options, blnClearTab);
-			else 
-				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
-		}
-		//Search For Tag Search Alone
-		else if (formData.containsKey("searchTags")) {
-			//Parse the search filter
-			searchQuery = FilterHelper.getSearchTabQuery(request);
-			Map options = new HashMap();
-			//Get the search text to use it for the tab title 
-			String searchCommunityTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
-			String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags, "");
-			
-			if (!searchCommunityTags.equals("") || !searchPersonalTags.equals("")) {
-				String strTabTitle = "";
-				if (!searchCommunityTags.equals("")) strTabTitle = strTabTitle + " + " + searchCommunityTags;
-				if (!searchPersonalTags.equals("")) strTabTitle = strTabTitle + " + " + searchPersonalTags;
-				
-				options.put(Tabs.TITLE,  strTabTitle);
-				options.put(Tabs.TAB_SEARCH_TEXT, "");
 				options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
 				options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
 			}
@@ -342,20 +316,20 @@ public class SearchController extends AbstractBinderController {
 			entryPlaces = sortPlacesInEntriesSearchResults(entries);
 			entryPlaces = ratePlaces(entryPlaces);
 			
-			entryCommunityTags = sortCommunityTags(entries);
-			entryPersonalTags = sortPersonalTags(entries);
+			entryCommunityTags = BinderHelper.sortCommunityTags(entries);
+			entryPersonalTags = BinderHelper.sortPersonalTags(entries);
 			
-			int intMaxHitsForCommunityTags = getMaxHitsPerTag(entryCommunityTags);
-			int intMaxHitsForPersonalTags = getMaxHitsPerTag(entryPersonalTags);
+			int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
+			int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
 			
 			int intMaxHits = intMaxHitsForCommunityTags;
 			if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
 			
-			entryCommunityTags = rateCommunityTags(entryCommunityTags, intMaxHits);
-			entryPersonalTags = ratePersonalTags(entryPersonalTags, intMaxHits);
+			entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
+			entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
 
-			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabCommunityTagSearchText);
-			entryPersonalTags = determineSignBeforeTag(entryPersonalTags, strTabPersonalTagSearchText);
+			entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, strTabCommunityTagSearchText);
+			entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, strTabPersonalTagSearchText);
 		}
 		else {
 			entries = new ArrayList();
@@ -613,242 +587,7 @@ public class SearchController extends AbstractBinderController {
 		}
 		return ratedList;
 	}
-	
-	// This method reads thru the results from a search, finds the tags, 
-	// and places them into an array in a alphabetic order.
-	protected List sortCommunityTags(List entries) {
-		HashMap tagMap = new HashMap();
-		ArrayList tagList = new ArrayList();
-		// first go thru the original search results and 
-		// find all the unique principals.  Keep a count to see
-		// if any are more active than others.
-		for (int i = 0; i < entries.size(); i++) {
-			Map entry = (Map)entries.get(i);
-			String strTags = (String)entry.get(WebKeys.SEARCH_TAG_ID);
-			if (strTags == null || "".equals(strTags)) continue;
-			
-		    String [] strTagArray = strTags.split("\\s");
-		    for (int j = 0; j < strTagArray.length; j++) {
-		    	String strTag = strTagArray[j];
 
-		    	if (strTag.equals("")) continue;
-		    	
-		    	Integer tagCount = (Integer) tagMap.get(strTag);
-		    	if (tagCount == null) {
-		    		tagMap.put(strTag, new Integer(1));
-		    	}
-		    	else {
-		    		int intTagCount = tagCount.intValue();
-		    		tagMap.put(strTag, new Integer(intTagCount+1));
-		    	}
-		    }
-		}
-		
-		//sort the tags string
-		Collection collection = tagMap.keySet();
-		Object[] array = collection.toArray();
-		Arrays.sort(array);
-		
-		for (int j = 0; j < array.length; j++) {
-			HashMap tags = new HashMap();
-			String strTag = (String) array[j];
-			tags.put(WebKeys.TAG_NAME, strTag);
-			tags.put(WebKeys.SEARCH_RESULTS_COUNT, (Integer) tagMap.get(strTag));
-			tagList.add(tags);
-		}
-		return tagList;
-	}
-	
-	//This method rates the community tags
-	public List rateCommunityTags(List entries, int intMaxHits) {
-		//Same rating algorithm is used for both community and personal tags
-		return rateTags(entries, intMaxHits);
-	}
-	
-	//This method identifies if we need a + or - sign infront of the
-	//tags being displayed in the tags tab in the search tab
-	protected List determineSignBeforeTag(List entries, String tabTagTitle) {
-		ArrayList tagList = new ArrayList();
-		for (int i = 0; i < entries.size(); i++) {
-			String strTabTitle = tabTagTitle;
-			Map tag = (Map) entries.get(i);
-			String strTagName = (String) tag.get(WebKeys.TAG_NAME);
-			if (strTabTitle != null && !strTabTitle.equals("")) {
-				if ( (strTabTitle.indexOf(strTagName+ " ") != -1) || (strTabTitle.indexOf(" " + strTagName) != -1) ) {
-					tag.put(WebKeys.TAG_SIGN, "-");
-					
-					int intFirstIndex = strTabTitle.indexOf(strTagName+ " ");
-					int intFirstLength = (strTagName+ " ").length();
-					
-					if (intFirstIndex != -1) {
-						String strFirstPart = "";
-						String strLastPart = "";
-						
-						if (intFirstIndex != 0) {
-							strFirstPart = strTabTitle.substring(0, (intFirstIndex));
-						}
-						if ( strTabTitle.length() !=  (intFirstIndex+1+intFirstLength) ) {
-							strLastPart = strTabTitle.substring(intFirstIndex+intFirstLength, strTabTitle.length());
-						}
-						strTabTitle = strFirstPart + strLastPart;
-					}
-					
-					int intLastIndex = strTabTitle.indexOf(" " + strTagName);
-					int intLastLength = (" " + strTagName).length();
-
-					if (intLastIndex != -1) {
-						String strFirstPart = "";
-						String strLastPart = "";
-						
-						if (intLastIndex != 0) {
-							strFirstPart = strTabTitle.substring(0, (intLastIndex));
-						}
-						if ( strTabTitle.length() !=  (intLastIndex+intLastLength) ) {
-							strLastPart = strTabTitle.substring(intLastIndex+intLastLength, strTabTitle.length());
-						}
-						strTabTitle = strFirstPart + strLastPart;
-					}
-					tag.put(WebKeys.TAG_SEARCH_TEXT, strTabTitle);					
-				}
-				else if (strTabTitle.equals(strTagName)) {
-					tag.put(WebKeys.TAG_SIGN, "-");
-					tag.put(WebKeys.TAG_SEARCH_TEXT, "");
-				}
-				else {
-					tag.put(WebKeys.TAG_SIGN, "+");
-					tag.put(WebKeys.TAG_SEARCH_TEXT, strTabTitle + " " + strTagName);
-				}
-			}
-			else {
-				tag.put(WebKeys.TAG_SIGN, "+");
-				tag.put(WebKeys.TAG_SEARCH_TEXT, strTagName);
-			}
-			tagList.add(tag);
-		}
-		return tagList;
-	}
-
-	// This method reads thru the results from a search, finds the personal tags, 
-	// and places them into an array in a alphabetic order.
-	protected List sortPersonalTags(List entries) {
-		HashMap tagMap = new HashMap();
-		ArrayList tagList = new ArrayList();
-		for (int i = 0; i < entries.size(); i++) {
-			Map entry = (Map)entries.get(i);
-			String strTags = (String)entry.get(WebKeys.SEARCH_ACL_TAG_ID);
-			if (strTags == null || "".equals(strTags)) continue;
-			
-		    String [] strTagArray = strTags.split("ACL");
-		    for (int j = 0; j < strTagArray.length; j++) {
-		    	String strTag = strTagArray[j].trim();
-		    	if (strTag.equals("")) continue;
-		    	
-		    	String strFirstSixChars = strTag.substring(0, 6);
-		    	//Ignore these entries as they refer to community entries.
-		    	if (strFirstSixChars.equals("allTAG")) continue;
-
-		    	User user = RequestContextHolder.getRequestContext().getUser();
-		    	long userId = user.getId();
-		    	
-		    	String strUserIdTag = userId + "TAG";
-		    	String strValueToCompare = strTag.substring(0, strUserIdTag.length());
-		    	
-		    	//We are going to get only the personal tags relating to the user
-		    	if (strValueToCompare.equals(strUserIdTag)) {
-		    		String strTagValues = strTag.substring(strUserIdTag.length());
-				    String [] strIntTagArray = strTagValues.split("\\s");
-				    for (int k = 0; k < strIntTagArray.length; k++) {
-				    	String strIntTag = strIntTagArray[k].trim();
-				    	if (strIntTag.equals("")) continue;
-				    	
-				    	Integer tagCount = (Integer) tagMap.get(strIntTag);
-				    	if (tagCount == null) {
-				    		tagMap.put(strIntTag, new Integer(1));
-				    	}
-				    	else {
-				    		int intTagCount = tagCount.intValue();
-				    		tagMap.put(strIntTag, new Integer(intTagCount+1));
-				    	}
-				    }
-		    	}
-		    	else continue;
-		    }
-		}
-
-		//sort the tags string
-		Collection collection = tagMap.keySet();
-		Object[] array = collection.toArray();
-		Arrays.sort(array);
-		
-		for (int j = 0; j < array.length; j++) {
-			HashMap tags = new HashMap();
-			String strTag = (String) array[j];
-			tags.put(WebKeys.TAG_NAME, strTag);
-			tags.put(WebKeys.SEARCH_RESULTS_COUNT, (Integer) tagMap.get(strTag));
-			tagList.add(tags);
-		}
-		return tagList;
-	}
-
-	//This method rates the personal tags
-	public List ratePersonalTags(List entries, int intMaxHits) {
-		//Same rating algorithm is used for both community and personal tags
-		return rateTags(entries, intMaxHits);
-	}	
-
-	//This method provides ratings for the tags
-	protected List rateTags(List entries, int intMaxHits) {
-		ArrayList ratedList = new ArrayList();
-		int intMaxHitsPerFolder = intMaxHits;
-		/*
-		for (int i = 0; i < entries.size(); i++) {
-			Map tag = (Map) entries.get(i);
-			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
-			if (resultCount.intValue() > intMaxHitsPerFolder) {
-				intMaxHitsPerFolder = resultCount.intValue();
-			}
-		}
-		*/
-		for (int i = 0; i < entries.size(); i++) {
-			Map tag = (Map) entries.get(i);
-			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
-			int intResultCount = resultCount.intValue();
-			Double DblRatingForFolder = ((double)intResultCount/intMaxHitsPerFolder) * 100;
-			int intRatingForFolder = DblRatingForFolder.intValue();
-			tag.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
-			if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_largerprint");
-			}
-			else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_largeprint");
-			}
-			else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_normalprint");
-			}
-			else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_smallprint");
-			}
-			else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
-				tag.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_fineprint");
-			}
-			ratedList.add(tag);
-		}
-	
-		return ratedList;		
-	}
-	
-	public int getMaxHitsPerTag(List entries) {
-		int intMaxHitsPerFolder = 0;
-		for (int i = 0; i < entries.size(); i++) {
-			Map tag = (Map) entries.get(i);
-			Integer resultCount = (Integer) tag.get(WebKeys.SEARCH_RESULTS_COUNT);
-			if (resultCount.intValue() > intMaxHitsPerFolder) {
-				intMaxHitsPerFolder = resultCount.intValue();
-			}
-		}
-		return intMaxHitsPerFolder;
-	}
-	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,
 	//Paging Number related Page Keys and the Next Page Keys.
 	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
