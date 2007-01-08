@@ -37,6 +37,8 @@
 <c:out value="${ssDefinitionEntry.title}"/></a>
 </span>
 </div>
+
+<c:if test="${empty ssDefinitionEntry.parentEntry}">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top"><%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %></td>
@@ -47,6 +49,7 @@
 </td>
 </tr>
 </table>
+</c:if>
 <span class="ss_italic ss_smallprint">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
