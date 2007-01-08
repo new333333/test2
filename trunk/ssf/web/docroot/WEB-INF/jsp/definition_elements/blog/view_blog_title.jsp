@@ -24,10 +24,14 @@
 
 <div class="ss_blog_title">
 <span class="ss_bold <%= fontSize %>">
- <a style="text-decoration: none;" href="<ssf:url 
-    folderId="${ssDefinitionEntry.parentFolder.id}" 
-    action="view_folder_entry"
-    entryId="${ssDefinitionEntry.id}"/>">
+ <a style="text-decoration: none;" 
+   href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${ssDefinitionEntry.parentFolder.id}"
+		    entryId="${ssDefinitionEntry.id}">
+		    <ssf:param name="entityType" value="${ssDefinitionEntry.entityIdentifier.entityType}" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>">
 <%= docNumber %>
 <c:if test="${empty ssDefinitionEntry.title}">
   <span class="ss_light">

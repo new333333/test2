@@ -90,6 +90,7 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 </div>
 </div>
 
+<c:if test="${ss_folderViewStyle != 'blog'}">
 <div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden;
   width:600px; height:80%; display:none;">
@@ -117,6 +118,7 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
+</c:if>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 <input type="hidden" name="entry_width">

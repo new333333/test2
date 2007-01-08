@@ -68,6 +68,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <c:if test="${ss_showSearchResults}">
 <%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
 </c:if>
+<c:if test="${ss_folderViewStyle != 'blog'}">
 <div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
   onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
   style="position:relative; margin:0px 2px 0px 2px; padding:0px; 
@@ -105,6 +106,7 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
   </ssf:box>
 </div>
+</c:if>
 </div>
 
 <form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >
