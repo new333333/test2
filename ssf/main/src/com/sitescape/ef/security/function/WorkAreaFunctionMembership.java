@@ -2,6 +2,13 @@ package com.sitescape.ef.security.function;
 
 import java.util.Set;
 
+import org.dom4j.Element;
+
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.util.Validator;
+import com.sitescape.ef.util.CollectionUtil;
+
 /**
  * @hibernate.class table="SS_WorkAreaFunctionMemberships" lazy="false" dynamic-update="true"
  * @hibernate.cache usage="nonstrict-read-write"
@@ -14,9 +21,7 @@ import java.util.Set;
  * @author Jong Kim
  */
 public class WorkAreaFunctionMembership {
-    
-    private static final String SPLIT_CHAR = ",";
-    
+       
     private Long id;
     private Long zoneId;
     private Long workAreaId;
@@ -130,5 +135,14 @@ public class WorkAreaFunctionMembership {
     	hash = 31*hash + workAreaType.hashCode();
     	hash = 31*hash + functionId.hashCode();
     	return hash;
+    }
+    public Element addChangeLog(Element parent) {
+		Element element = parent.addElement("workAreaFunctionMembership");
+		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
+		
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WA_FUNCTION, getFunctionId());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WA_MEMBERS, CollectionUtil.toCommaIds(getMemberIds()));
+		return element;
+    	
     }
 }

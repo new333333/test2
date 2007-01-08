@@ -11,6 +11,7 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
 	<property name="library"/>
+	<property name="logVersion"/>
     <many-to-one name="parentBinder"/>
     <many-to-one name="owner"/>
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">

@@ -139,7 +139,7 @@ public class GenerateLdapList {
 			}
 			Element user = userRoot.addElement("user");
 			getUpdates(user, userAttributeNames, userAttributes, lAttrs);
-			Element prop=user.addElement("attribute");
+			Element prop=user.addElement("property");
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
 		}
@@ -187,11 +187,9 @@ public class GenerateLdapList {
 			}
 			Element group = groupRoot.addElement("group");
 			getUpdates(group, groupAttributeNames, groupAttributes, lAttrs);
-			Element prop=group.addElement("attribute");
+			Element prop=group.addElement("property");
 			prop.addAttribute("name", "foreignName");
 			prop.addText(dn);
-			Element members=group.addElement("attribute-set");
-			members.addAttribute("name", "members");
 			for (int i=0; i<memberAttributes.size(); i++) {
 				Attribute att = lAttrs.get((String)memberAttributes.get(i));
 				if (att == null) continue;
@@ -204,7 +202,8 @@ public class GenerateLdapList {
 					//build new membership
 					for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
 						String mDn = ((String)valEnum.nextElement()).trim();
-						prop = members.addElement("attribute");
+						prop = group.addElement("property");
+						prop.addAttribute("name", "memberName");
 						prop.addText(mDn);
 					}
 				}
@@ -226,12 +225,15 @@ public class GenerateLdapList {
 			} else if (att.size() == 1) {
 				prop = node.addElement("attribute");
 				prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
+				prop.addAttribute("type", "string");
 				prop.addText(val.toString());
 			} else {
 				prop = node.addElement("attribute-set");
 				prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
 				for (NamingEnumeration valEnum=att.getAll(); valEnum.hasMoreElements();) {
 					Element prop1 = prop.addElement("attribute");
+					prop.addAttribute("name", (String)mapping.get(ldapAttrNames[i]));
+					prop1.addAttribute("type", "string");
 					prop1.addText(valEnum.nextElement().toString());
 			
 				}

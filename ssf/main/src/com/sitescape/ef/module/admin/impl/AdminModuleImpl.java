@@ -8,7 +8,6 @@ package com.sitescape.ef.module.admin.impl;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -23,10 +22,10 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.SFQuery;
+import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
-import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -49,18 +48,19 @@ import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembershipExistsException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
+
+import com.sitescape.util.Validator;
 
 /**
  * @author Janet McCann
  *
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
-	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneId", "definitionType"};
+	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ZONE, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
     protected DefinitionModule definitionModule;
 	protected MailManager mailManager;
@@ -86,9 +86,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 
 	public void checkAccess(WorkArea workArea, String operation) {
-		if (operation.startsWith("addWorkAreaFunctionMembership")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("modifyWorkAreaFunctionMembership")) {
+		if (operation.startsWith("setWorkAreaFunctionMembership")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		} else if (operation.startsWith("deleteWorkAreaFunctionMembership")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
@@ -281,9 +279,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//TODO: is there access
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
-	public void addFunction(Function function) {
+	public void addFunction(String name, Set operations) {
 		checkAccess("addFunction");
+		Function function = new Function();
+		function.setName(name);
 		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		function.setOperations(operations);
 		
 		List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
 		if (zoneFunctions.contains(function)) {
@@ -308,63 +309,59 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//TODO: any access?			
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
-    
-	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
-		checkAccess(workArea, "addWorkAreaFunctionMembership");
-      	Workspace zone = RequestContextHolder.getRequestContext().getZone();
-       	getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
-   		(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
-       	
-       	WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-		membership.setZoneId(zone.getId());
-		membership.setWorkAreaId(workArea.getWorkAreaId());
-		membership.setWorkAreaType(workArea.getWorkAreaType());
-		membership.setFunctionId(functionId);
-		membership.setMemberIds(memberIds);
-
-        //Check that this user is allowed to do this operation; 
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		
-		List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zone.getId(), workArea);
-		if (memberships.contains(membership)) {
-			throw new WorkAreaFunctionMembershipExistsException(membership);
-		}
-        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-	}
 	
-	public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership) {
-		checkAccess(workArea, "modifyWorkAreaFunctionMembership");
-		 		
-        //Check that this user is allowed to do this operation; 
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);   
-        getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
+	public void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
+		checkAccess(workArea, "setWorkAreaFunctionMembership");
+      	Workspace zone = RequestContextHolder.getRequestContext().getZone();
+      	WorkAreaFunctionMembership membership =
+      		getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership(zone.getId(), workArea, functionId);
+		if (membership == null) { 
+	       	membership = new WorkAreaFunctionMembership();
+	       	membership.setZoneId(zone.getId());
+	       	membership.setWorkAreaId(workArea.getWorkAreaId());
+	       	membership.setWorkAreaType(workArea.getWorkAreaType());
+	       	membership.setFunctionId(functionId);
+	       	membership.setMemberIds(memberIds);
+	        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+	        processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+		} else {
+			Set mems = membership.getMemberIds();
+			mems.clear();
+			mems.addAll(memberIds);
+			membership.setMemberIds(mems);
+			getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
+    	    processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+		}
 	}
 	
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		checkAccess(workArea, "deleteWorkAreaFunctionMembership");
 
-        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembership(workArea, functionId);
+        WorkAreaFunctionMembership wfm = getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
+   				(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
         if (wfm != null) {
 	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+	        processAccessChangeLog(workArea, ChangeLog.ACCESSDELETE);
+
         }
     }
     
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-        accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
+		checkAccess(workArea, "getWorkAreaFunctionMembership");
 
         return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
        		(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
     }
     
 	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
-		accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
+		checkAccess(workArea, "getWorkAreaFunctionMemberships");
 
         return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
         		RequestContextHolder.getRequestContext().getZoneId(), workArea);
 	}
 
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
-		accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
+		checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
 	    WorkArea source = workArea;
 	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
 	    while (source.isFunctionMembershipInherited()) {
@@ -388,13 +385,33 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	} else if (workArea.isFunctionMembershipInherited() && !inherit) {
     		//copy parent values as beginning values
     		List current = getWorkAreaFunctionMembershipsInherited(workArea);
-    		for (int i=0; i<current.size(); ++i) {
+           	for (int i=0; i<current.size(); ++i) {
     			WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
-    			addWorkAreaFunctionMembership(workArea, wf.getFunctionId(), new HashSet(wf.getMemberIds()));
-    		}
+    			WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+    			membership.setZoneId(wf.getZoneId());
+    			membership.setWorkAreaId(workArea.getWorkAreaId());
+    			membership.setWorkAreaType(workArea.getWorkAreaType());
+    			membership.setFunctionId(wf.getFunctionId());
+    			membership.setMemberIds(new HashSet(wf.getMemberIds()));    		
+    	        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+     		}
     	}
-    	workArea.setFunctionMembershipInherited(inherit);
+    	if (workArea.isFunctionMembershipInherited()  != inherit) {
+    		workArea.setFunctionMembershipInherited(inherit);
+    		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
+    	}
     } 
+	private void processAccessChangeLog(WorkArea workArea, String operation) {
+        if (workArea instanceof Binder) {
+        	Binder binder = (Binder)workArea;
+        	User user = RequestContextHolder.getRequestContext().getUser();
+        	binder.incrLogVersion();
+        	binder.setModification(new HistoryStamp(user));
+        	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+        	processor.processChangeLog(binder, operation);
+       	}
+		
+	}
 	//return binders this user is a team_member of
 	public List getTeamMemberships(Long userId) {
 		//team membership is implemented by a reserved role
@@ -576,6 +593,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void setZone1(String zoneName) {
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FileAttachment set uniqueName='0' where uniqueName is null");	
 		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.BinderConfig set library='0' where library is null");	
+		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Principal set logVersion=0 where logVersion is null");	
+		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FolderEntry set logVersion=0 where logVersion is null");	
+		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Binder set logVersion=0 where logVersion is null");	
 		
 	}
 	public void setZone2(String zoneName) {
@@ -638,4 +658,32 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}	
 		getCoreDao().executeUpdate("delete from com.sitescape.ef.domain.BinderConfig where definitionType=9");
 	}
+   public List getChanges(Long binderId, String operation) {
+	   FilterControls filter = new FilterControls();
+	   filter.add("binderId", binderId);
+	   if (!Validator.isNull(operation)) {
+		   filter.add("operation", operation);
+	   }
+	   OrderBy order = new OrderBy();
+	   order.addColumn("entityId");
+	   order.addColumn("operationDate");	   
+	   filter.setOrderBy(order);
+	   
+	   return getCoreDao().loadObjects(ChangeLog.class, filter); 
+   }
+   public List getChanges(Long entityId, String entityType, String operation) {
+	   FilterControls filter = new FilterControls();
+	   filter.add("entityId", entityId);
+	   filter.add("entityType", entityType);
+	   if (!Validator.isNull(operation)) {
+		   filter.add("operation", operation);
+	   }
+	   OrderBy order = new OrderBy();
+	   order.addColumn("operationDate");	   
+	   filter.setOrderBy(order);
+	   
+	   return getCoreDao().loadObjects(ChangeLog.class, filter); 
+   	
+   }
+
 }

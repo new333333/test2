@@ -8,6 +8,10 @@ package com.sitescape.ef.domain;
 
 import java.util.Date;
 
+import org.dom4j.Element;
+
+import com.sitescape.ef.ObjectKeys;
+
 
 /**
  * Component class
@@ -50,5 +54,17 @@ public class HistoryStamp {
     public void setPrincipal(Principal principal) {
         this.principal = principal;
     }
-  
+    
+	public Element addChangeLog(Element parent, String name) {
+		Element element = addChangeLog(parent);
+		element.addAttribute(ObjectKeys.XTAG_NAME, name);
+		return element;
+	}
+	public Element addChangeLog(Element parent) {
+		Element element = parent.addElement("historyStamp");
+		element.addAttribute(ObjectKeys.XTAG_HISTORY_BY, getPrincipal().getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_HISTORY_WHEN, getDate().toString());
+		return element;
+		
+	}
 }

@@ -37,7 +37,7 @@ public class SSBlobSerializableType extends AbstractLobType {
 	 * the byte array used by the output stream will be doubled each time the
 	 * limit is reached.
 	 */
-    	private static final int OUTPUT_BYTE_ARRAY_INITIAL_SIZE = 1024;
+    	public static final int OUTPUT_BYTE_ARRAY_INITIAL_SIZE = 1024;
 	 
 		public SSBlobSerializableType() {
 			super();

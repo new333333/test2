@@ -9,20 +9,23 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.lucene.index.Term;
+import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.LibraryEntry;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
@@ -35,6 +38,7 @@ import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -46,6 +50,7 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.util.Validator;
@@ -222,6 +227,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setZoneId(parent.getZoneId());
         binder.setCreation(new HistoryStamp(user));
         binder.setModification(binder.getCreation());
+        binder.setLogVersion(Long.valueOf(1));
     	//Since parent collection is a list we can add the binder without an id
     	getCoreDao().refresh(parent);
       	parent.addBinder(binder);
@@ -245,6 +251,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
+    	//create history - using timestamp and version from fillIn
+    	processChangeLog(binder, ChangeLog.ADDBINDER);
+    	
     }
 
     protected void addBinder_indexAdd(Binder parent, Binder binder, 
@@ -274,16 +283,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		    FilesErrors filesErrors = modifyBinder_filterFiles(binder, fileUploadItems);
 		    sp.end().print();
 	
-	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
-	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
-
 	    	sp.reset("modifyBinder_transactionExecute").begin();
 	    	// The following part requires update database transaction.
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
 	        		modifyBinder_fillIn(binder, inputData, entryData);
-		            modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex);    
 	        		modifyBinder_postFillIn(binder, inputData, entryData);
 	        		//if title changed, must update path infor for all child folders
 	        		String newTitle = binder.getTitle();
@@ -308,6 +313,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			getCoreDao().updateLibraryName(binder.getParentBinder(), binder.getParentBinder(), oldTitle, newTitle);
 	        		return null;
 	        	}});
+	        sp.end().print();
+	        
+	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
+	        sp.reset("modifyBinder_removeAttachments").begin();
+	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
+	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
+	        modifyBinder_removeAttachments(binder, deleteAttachments, filesToDeindex, filesToReindex);    
 	        sp.end().print();
 	        
 	        sp.reset("modifyBinder_processFiles").begin();
@@ -357,6 +369,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void modifyBinder_fillIn(Binder binder, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
+        binder.incrLogVersion();
         for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
         	Map.Entry mEntry = (Map.Entry)iter.next();
         	//need to generate id for the event so its id can be saved in customAttr
@@ -376,6 +389,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
+    	//create history - using timestamp and version from fillIn
+    	ChangeLog changes = new ChangeLog(binder, ChangeLog.MODIFYBINDER);
+    	processChangeLog(binder, ChangeLog.MODIFYBINDER);
+    	getCoreDao().save(changes);
     }
     
     protected void modifyBinder_indexAdd(Binder binder, 
@@ -386,6 +403,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex) {
     	removeFilesIndex(binder, filesToDeindex);
     }
+    //***********************************************************************************************************
  
     protected void removeFilesIndex(DefinableEntity entity, Collection<FileAttachment> filesToDeindex) {
 		//remove index entry
@@ -453,6 +471,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected Object deleteBinder_preDelete(Binder binder) { 
+     	//create history - using timestamp and version from fillIn
+        User user = RequestContextHolder.getRequestContext().getUser();
+        binder.setModification(new HistoryStamp(user));
+        binder.incrLogVersion();
+    	ChangeLog changes = new ChangeLog(binder, ChangeLog.DELETEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
     	if ((binder.getDefinitionType() != null) &&
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
@@ -493,8 +518,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void moveBinder(Binder source, Binder destination) {
     	source.getParentBinder().removeBinder(source);
     	destination.addBinder(source);
- 		// The path changes since its parent changed.
+ 		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
+     	//create history - using timestamp and version from fillIn
+        User user = RequestContextHolder.getRequestContext().getUser();
+        source.setModification(new HistoryStamp(user));
+        source.incrLogVersion();
+    	ChangeLog changes = new ChangeLog(source, ChangeLog.MOVEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
+
     }
 
     
@@ -684,6 +717,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
+    	//if pathname or parentBinder are index, need to reindex after moveBinder operation
     	EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder));
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
@@ -781,4 +815,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		}
 		return null;
 	}
+	public ChangeLog processChangeLog(Binder binder, String operation) {
+		ChangeLog changes = new ChangeLog(binder, operation);
+		Element element = ChangeLogUtils.buildLog(changes, binder);
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_INHERITMEMBERSHIP, binder.isFunctionMembershipInherited());
+		//TODO: do we need config info?
+		if (!binder.isFunctionMembershipInherited()) {
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
+			List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
+					binder.getZoneId(), binder);
+			for (WorkAreaFunctionMembership wfm: wfms) {
+				wfm.addChangeLog(element);
+			}
+		}
+		getCoreDao().save(changes);
+		return changes;
+	}
+
 }

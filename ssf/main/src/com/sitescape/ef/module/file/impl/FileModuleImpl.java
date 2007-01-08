@@ -33,12 +33,14 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
@@ -60,6 +62,7 @@ import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.LockIdMismatchException;
 import com.sitescape.ef.module.file.LockedByAnotherUserException;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
@@ -235,17 +238,18 @@ public class FileModuleImpl implements FileModule {
 	}
 	// optimization : don't delete attachments, only delete the actual file
 	//this allows bulk deletes of attachments
-	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
+	public FilesErrors deleteFiles(final Binder binder, final DefinableEntity entry,
 			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
 		List fAtts = entry.getFileAttachments();
 		for(int i = 0; i < fAtts.size(); i++) {
-			FileAttachment fAtt = (FileAttachment) fAtts.get(i);
+			final FileAttachment fAtt = (FileAttachment) fAtts.get(i);
 
 			try {
 				deleteFileInternal(binder, entry, fAtt, errors, deleteAttachment);
+
 			}
 			catch(Exception e) {
 				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -258,7 +262,7 @@ public class FileModuleImpl implements FileModule {
 		// Even in the situation where the operation was not entirely successful,
 		// we need to reflect the corresponding metadata changes back to the
 		// database. 
-		triggerUpdateTransaction();
+		if (!errors.getProblems().isEmpty()) triggerUpdateTransaction();
 		
 		return errors;
 	}
@@ -276,13 +280,13 @@ public class FileModuleImpl implements FileModule {
 			errors.addProblem(new FilesErrors.Problem
 					(fAtt.getRepositoryName(),  fAtt.getFileItem().getName(), 
 							FilesErrors.Problem.OTHER_PROBLEM, e));
+			//make sure any updates that happened get recored
+			triggerUpdateTransaction();
 		}
 				
-		triggerUpdateTransaction();
 		
 		return errors;
 	}
-	
 	public void readFile(Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 		if(fa instanceof VersionAttachment) {
@@ -895,6 +899,10 @@ public class FileModuleImpl implements FileModule {
 			VersionAttachment v = (VersionAttachment) i.next();
 			v.getFileItem().setName(newName);
 		}
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
+		ChangeLogUtils.buildLog(changes, fa);
+		getCoreDao().save(changes);
+		
 	}
 	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
@@ -924,7 +932,10 @@ public class FileModuleImpl implements FileModule {
 		}
 
 		// Update the metadata
-		
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEVERSIONDELETE);
+		ChangeLogUtils.buildLog(changes, va);
+		getCoreDao().save(changes);
+
 		fa.removeFileVersion(va);
 		
 		// Get the highest previous version
@@ -1130,17 +1141,26 @@ public class FileModuleImpl implements FileModule {
 		} finally {
 			session.close();
 		}
+		if (deleteAttachment) writeDeleteMetaDataTransactional(binder, entry, fAtt);
+	}
+	private void writeDeleteMetaDataTransactional(final Binder binder, final DefinableEntity entry, final FileAttachment fAtt)  {
+		// Remove metadata and log change
+	       getTransactionTemplate().execute(new TransactionCallback() {
+	       	public Object doInTransaction(TransactionStatus status) {  
+	       		ChangeLog changes = new ChangeLog(entry, ChangeLog.FILEDELETE);
+	       		ChangeLogUtils.buildLog(changes, fAtt);
+	       		getCoreDao().save(changes);
 
-		// Remove metadata
-		if (deleteAttachment) {
-			entry.removeAttachment(fAtt);
-			if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().unRegisterLibraryEntry(binder, fAtt.getFileItem().getName());
-	        if ((entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), "title")) {
-	        	//check title
-	        	entry.getEntryDef().setTitle("");			   			   
-			}
-			
-		}
+				entry.removeAttachment(fAtt);
+				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().unRegisterLibraryEntry(binder, fAtt.getFileItem().getName());
+		        if (!binder.equals(entry) && (entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), ObjectKeys.FIELD_ENTITY_TITLE)) {
+		        	//check title for entries
+		        	entry.getEntryDef().setTitle("");			   			   
+				}
+			        
+	            return null;
+	       	}
+	     });	
 	}
 
 	private void move(Binder binder, FileUploadItem fui) throws IOException {
@@ -1233,6 +1253,14 @@ public class FileModuleImpl implements FileModule {
         			}
         			entry.setTitle(title);
         		}
+        		ChangeLog changes;
+            	if (isNew)
+            		changes = new ChangeLog(entry, ChangeLog.FILEADD);
+            	else
+            		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
+        		ChangeLogUtils.buildLog(changes, fAtt);
+        		getCoreDao().save(changes);
+
                 return null;
         	}
         });

@@ -53,6 +53,7 @@ public class WebKeys {
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
+	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
@@ -111,6 +112,7 @@ public class WebKeys {
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
 	public static final String ACTION_UNLOCK_FOLDER_ENTRY = "unlock_folder_entry";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
+	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
 	public static final String ACTION_VIEW_SEARCH_RESULTS_LISTING = "view_search_results_listing";
@@ -457,6 +459,8 @@ public class WebKeys {
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
+    public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
+    public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
     public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";

@@ -5,7 +5,9 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -34,6 +36,8 @@ public interface EntryProcessor extends BinderProcessor {
 	public void reindexEntry(Entry entry); 
   	public void reindexEntries(Collection entries);
     public void moveEntry(Binder binder, Entry entry, Binder destination);
+	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
+    public void processStateChange(Entry entry, String operation, boolean reIndex);
 
 
 }

@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
+import com.sitescape.ef.domain.PersistentLongId;
+import com.sitescape.ef.domain.PersistentStringId;
+import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann
  *
@@ -56,5 +59,22 @@ public class CollectionUtil {
     	}
     	return coll;
 		
+	}
+	public static String toCommaIds(Collection values) {
+		if ((values == null) || values.isEmpty()) return null;
+		String[] buf = new String[values.size()];
+		int i=0;
+		for (Iterator iter = values.iterator(); iter.hasNext();) {
+			Object val = iter.next();
+			if (val instanceof PersistentLongId) {
+				buf[i] = ((PersistentLongId)val).getId().toString();
+			} else if (val instanceof PersistentStringId) {
+				buf[i] = ((PersistentStringId)val).getId();		
+			} else {
+				buf[i] = val.toString();
+			}
+			++i;
+		}
+        return StringUtil.merge(buf);
 	}
 }

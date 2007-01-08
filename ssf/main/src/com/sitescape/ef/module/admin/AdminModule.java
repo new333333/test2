@@ -29,7 +29,7 @@ public interface AdminModule {
 	public void setZone1(String zoneName);
 	public void setZone2(String zoneName);
 
-	public void addFunction(Function function);
+	public void addFunction(String name, Set operations);
     public void modifyFunction(Long functionId, Map updates);
     public void deleteFunction(Long functionId);
     public List getFunctions();
@@ -50,13 +50,15 @@ public interface AdminModule {
 	public List getConfigurations();
 	public List getConfigurations(int type);
 
-	public void addWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds);
-    public void modifyWorkAreaFunctionMembership(WorkArea workArea, WorkAreaFunctionMembership membership);
+	public void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
     public List getTeamMemberships(Long id);
+    
+    public List getChanges(Long binderId, String operation);
+    public List getChanges(Long entityId, String entityType, String operation);
 
 }

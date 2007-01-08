@@ -2,10 +2,13 @@
 package com.sitescape.ef.domain;
 
 import java.sql.Blob;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import com.sitescape.ef.dao.util.SSBlobSerializableType;
 /**
  * @author Janet McCann
  * This is an immutable object.  Its value cannot be changed.  This allows
@@ -52,5 +55,29 @@ public class SSBlobSerializable implements Serializable {
     		return val.toString();
     	else
     		return "";
+    }
+    public String toBase64String() {
+    	Object val = getValue();
+		if (val != null) {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(SSBlobSerializableType.OUTPUT_BYTE_ARRAY_INITIAL_SIZE);
+			ObjectOutputStream oos=null;
+			try {
+				oos = new ObjectOutputStream(baos);
+				oos.writeObject(val);
+				oos.flush();
+				return baos.toString("utf-8");
+			} catch (IOException ex) {
+				return "";
+			} finally {
+				if (oos != null) 
+					try {
+						oos.close();
+					} catch (Exception ex) {};
+			}
+		}
+		else {
+			return "";
+		}
+
     }
 }

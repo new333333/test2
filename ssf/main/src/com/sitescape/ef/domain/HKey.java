@@ -30,9 +30,9 @@ public class HKey {
             level=1;
         } else {
             level = (length-20)/4;
+            ++level;
         }
         this.sortKey = sortKey;
-        position = B36To10(sortKey); 
         
     }
     

@@ -568,8 +568,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					//need to setup user context for request
 					RequestContextUtil.setThreadContext(fromUser);
 					
-					inputData.put(ObjectKeys.FIELD_POSTING_FROM, from.toString()); 
-					inputData.put(ObjectKeys.FIELD_ENTRY_TITLE, title);
+					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
+					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 					type=msgs[i].getContentType().trim();
 					content = msgs[i].getContent();
 					if (type.startsWith("text/plain")) {
@@ -641,15 +641,15 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	private void processText(Object content, Map inputData) {
-		if (inputData.containsKey(ObjectKeys.FIELD_ENTRY_DESCRIPTION)) return;
+		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;
 		String[] val = new String[1];
 		val[0] = (String)content;
-		inputData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, val);			
+		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
 	}
 	private void processHTML(Object content, Map inputData) {
 		String[] val = new String[1];
 		val[0] = (String)content;
-		inputData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, val);			
+		inputData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, val);			
 	}	
 	private void processMime(MimeMultipart content, Map inputData, Map fileItems) throws MessagingException, IOException {
 		int count = content.getCount();
@@ -657,7 +657,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			BodyPart part = content.getBodyPart(i);
 			String disposition = part.getDisposition();
 			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0))
-				fileItems.put(ObjectKeys.FIELD_ENTRY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 			else if (part.isMimeType("text/html"))
 				processHTML(part.getContent(), inputData);
 			else if (part.isMimeType("text/plain"))

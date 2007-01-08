@@ -339,7 +339,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   allGroups.addAll(addEntries(groupList, Group.class, binder, groupDef));
     	   
     	}
-       updateMembership(root, binder.getZoneId(), allGroups);
     }
     private List addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);
@@ -349,7 +348,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		   newEntries.clear();
    		   for (int k=j; k < elements.size() && k-j<100; ++k) {
 				ElementInputData e = new ElementInputData((Element)elements.get(k)); 
-				String n = e.getSingleValue("name");
+				String n = e.getSingleValue(ObjectKeys.XTAG_PRINCIPAL_NAME);
 				if (Validator.isNull(n)) {
 					logger.error("Name attribute missing: " + e.toString());
 					continue;
@@ -377,40 +376,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    	   return allEntries;
   
     }
-    private void updateMembership(final Element root, final Long zoneId, final List newGroups) {
-       // check for memberships to add
-       // The following part requires update database transaction.
-       getTransactionTemplate().execute(new TransactionCallback() {
-    	   public Object doInTransaction(TransactionStatus status) {
-    		   Set memberships = new HashSet();
-    		   for (int i=0; i<newGroups.size(); ++i) {
-    			   memberships.clear();
-    			   //get groups of groups
-    			   Group group = (Group)newGroups.get(i);
-    			   Element e = (Element)root.selectSingleNode("/profiles/groups/group/attribute[@name='foreignName' and .='" + group.getForeignName() + "']");		
-    			   if (e == null) continue;
-    			   List<Element> members = e.selectNodes("../attribute-set[@name='members']/attribute");
-    			   Set<String>names = new HashSet();
-    			   for (int j=0; j<members.size(); ++j) {
-    				   String fName = members.get(j).getTextTrim();
-    				   if (Validator.isNull(fName)) continue;
-    				   names.add(fName);
-    			   }
-    			   //see if they exist
-    			   Map params = new HashMap();
-    			   params.put("plist", names);
-    			   params.put("zoneId", zoneId);
-    			   List exists = getCoreDao().loadObjects("from com.sitescape.ef.domain.Principal where zoneId=:zoneId and foreignName in (:plist)", params);
-    			   for (int x=0;x<exists.size(); ++x) {
-    				   Principal p = (Principal)exists.get(x);
-    				   memberships.add(new Membership(group.getId(), p.getId()));
-    			   }
-    			   getCoreDao().save(memberships);   	   
-    		   }
-    		   return null;
-    	}});
-       
-    }
+
     public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
@@ -513,29 +479,23 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			this.source = source;
 		}
 		public String getSingleValue(String key) {
-			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "']");
-			if (result == null)
-				return null;
+			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
+			if (result == null) return null;
 			else return result.getTextTrim();
 		}
 
 		public String[] getValues(String key) {
-			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./attribute-set[@name='" + key + "']");
-			if (result == null)
-				return null;
-			if (result.getName().equals("attribute")) {
-				return new String[] {result.getTextTrim()};
-			}
-			List<Element> vals = result.selectNodes("./attribute");
-			String [] resultVals = new String[vals.size()];
+			List<Element> result = source.selectNodes("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
+			if ((result == null) || result.isEmpty()) return null;
+			String [] resultVals = new String[result.size()];
 			for (int i=0; i<resultVals.length; ++i) {
-				resultVals[i] = vals.get(i).getTextTrim();
+				resultVals[i] = result.get(i).getTextTrim();
 			}
 			return resultVals;
 		}
 
 		public boolean exists(String key) {
-			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./attribute-set[@name='" + key + "']");
+			Element result = (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
 			if (result == null) return false;
 			return true;
 		}

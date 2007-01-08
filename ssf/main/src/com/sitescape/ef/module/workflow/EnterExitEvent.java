@@ -54,6 +54,7 @@ public class EnterExitEvent extends AbstractActionHandler {
 				//	record when we enter the state
 				ws.setWorkflowChange(stamp);
 				ws.setState(state);
+				entry.setStateChange(ws);
 				if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
 				items  = WorkflowUtils.getOnEntry(ws.getDefinition(), state);
 			} else {

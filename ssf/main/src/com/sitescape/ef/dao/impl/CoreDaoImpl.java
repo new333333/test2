@@ -310,6 +310,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                  			Object val = me.getValue();
 	                  			if (val instanceof Collection) {
 	                  				q.setParameterList((String)me.getKey(), (Collection)val);
+	                  			} else if (val instanceof Object[]) {
+	                  				q.setParameterList((String)me.getKey(), (Object[])val);
 	                  			} else {
 	                  				q.setParameter((String)me.getKey(), val);
 	                  			}

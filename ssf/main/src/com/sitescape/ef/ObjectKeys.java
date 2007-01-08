@@ -101,20 +101,21 @@ public interface ObjectKeys {
     public static final String WORKFLOW_PARALLEL_THREAD_START_STATE = "startState";
     public static final String WORKFLOW_PARALLEL_THREAD_END_TRANSITION = "transitionState";
     
+    //reserved input tags
+    public static final String INPUT_FIELD_POSTING_FROM="__poster";
+    public static final String INPUT_FIELD_ENTITY_ATTACHMENTS="ss_attachFile";
+    public static final String INPUT_FIELD_GROUP_MEMBERNAME="memberName";
+
     //Reserved data field names
-    public static final String FIELD_POSTING_FROM="__poster";
-    public static final String FIELD_ENTRY_TITLE="title";
-    public static final String FIELD_ENTRY_DESCRIPTION="description";
-    public static final String FIELD_ENTRY_ID="id";
-    public static final String FIELD_PARENT_BINDER="parentBinder";
-    public static final String FIELD_ENTRY_ATTACHMENTS="ss_attachFile";
-    
-    public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
-    public static final String FIELD_PRINCIPAL_NAME="name";
-    public static final String FIELD_PRINCIPAL_ZONEID="zoneId";
-    public static final String FIELD_PRINCIPAL_DISABLED="disabled";
-    public static final String FIELD_PRINCIPAL_INTERNALID="internalId";
-    
+    public static final String FIELD_ID="id";
+    public static final String FIELD_ZONE="zoneId";
+    public static final String FIELD_INTERNALID="internalId";
+
+    public static final String FIELD_ENTITY_TITLE="title";
+    public static final String FIELD_ENTITY_DESCRIPTION="description";
+    public static final String FIELD_ENTITY_PARENTBINDER="parentBinder";
+    public static final String FIELD_ENTITY_DEFTYPE="definitionType";
+
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";
     public static final String FIELD_USER_LASTNAME="lastName";
@@ -122,13 +123,106 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL="emailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_TIMEZONE="timeZone";
+    public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
+    public static final String FIELD_PRINCIPAL_NAME="name";
+    public static final String FIELD_PRINCIPAL_DISABLED="disabled";
+    public static final String FIELD_GROUP_MEMBERS="members";
+ 
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
     
-	//************** Remove these
-    public static final String DEFAULT_FILE_FOLDER_DEF="402883b90cc53079010cc539bf260003";
-	public static final String DEFAULT_FILE_ENTRY_DEF="402883b90cc53079010cc539bf260004";
-	public static final String DEFAULT_FILE_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0003";
+    //xml tags - used in GenerateLdapList (as strings) - keep in sync
+    public static final String XTAG_ID="id";
+    public static final String XTAG_NAME="name";
+    public static final String XTAG_TYPE="type";
+    public static final String XTAG_ATTRIBUTE="attribute";
+    public static final String XTAG_ATTRIBUTE_SET="attribute-set";
+    public static final String XTAG_PROPERTY="property";
+    public static final String XTAG_OPERATION="operation";
+    public static final String XTAG_MODIFIEDBY="modifedBy";
+    public static final String XTAG_MODIFIEDON="modifedOn";
+    
+    
+    public static final String XTAG_TYPE_STRING="string";
+    public static final String XTAG_TYPE_DESCRIPTION="description";
+    public static final String XTAG_TYPE_COMMASEPARATED="commaSeparated";
+    public static final String XTAG_TYPE_BOOLEAN="boolean";
+    public static final String XTAG_TYPE_LONG="long";
+    public static final String XTAG_TYPE_DATE="date";
+    public static final String XTAG_TYPE_SERIALIZED="serialized";
+    public static final String XTAG_TYPE_XML="xml";
+    public static final String XTAG_TYPE_EVENT="event";
+    public static final String XTAG_TYPE_FILE="file";
 
+    public static final String XTAG_HISTORY_BY="author";
+    public static final String XTAG_HISTORY_WHEN="when";
+
+    public static final String XTAG_ENTITY_TITLE="title";
+    public static final String XTAG_ENTITY_DESCRIPTION="description";
+    public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
+    public static final String XTAG_ENTITY_LOGVERSION="logVersion";
+    public static final String XTAG_ENTITY_DEFINITION="entryDef";
+    public static final String XTAG_ENTITY_ICONNAME="iconName";
+    public static final String XTAG_ENTITY_CREATION="created";
+    public static final String XTAG_ENTITY_MODIFICATION="modified";
+    public static final String XTAG_FIELD_ENTITY_ATTACHMENTS="attachments";
+   
+    
+    public static final String XTAG_PRINCIPAL_FOREIGNNAME="foreignName";
+    public static final String XTAG_PRINCIPAL_NAME="name";
+    public static final String XTAG_PRINCIPAL_DISABLED="disabled";
+    public static final String XTAG_PRINCIPAL_INTERNALID="internalId";
+    
+    public static final String XTAG_USER_FIRSTNAME="firstName";
+    public static final String XTAG_USER_MIDDLENAME="middleName";
+    public static final String XTAG_USER_LASTNAME="lastName";
+    public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";
+    public static final String XTAG_USER_EMAIL="emailAddress";
+    public static final String XTAG_USER_LOCALE="locale";
+    public static final String XTAG_USER_TIMEZONE="timeZone";
+    public static final String XTAG_USER_PASSWORD="password";
+    public static final String XTAG_USER_DIGESTSEED="digestSeed";
+    public static final String XTAG_USER_ZONNAME="zonName";
+    public static final String XTAG_USER_ORGANIZATION="organization";
+    public static final String XTAG_USER_LOGINDATE="loginDate";
+    public static final String XTAG_USER_PHONE="phone";
+    
+    public static final String XTAG_GROUP_MEMBERS="members";
+    public static final String XTAG_GROUP_MEMBER_NAME="memberName";
+    
+    public static final String XTAG_FOLDERENTRY_DOCNUMBER="docNumber";
+    public static final String XTAG_FOLDERENTRY_TOPENTRY="topEntry";
+    public static final String XTAG_FOLDERENTRY_PARENTENTRY="parentEntry";
+    public static final String XTAG_FOLDERENTRY_POSTEDBY="postedBy";
+    
+    public static final String XTAG_FILE_NAME="fileName";
+    public static final String XTAG_FILE_LENGTH="fileLength";
+    public static final String XTAG_FILE_REPOSITORY="repository";
+    public static final String XTAG_FILE_LAST_VERSION="lastVersion";
+
+    public static final String XTAG_FILE_PARENT="parentAttachment";
+    public static final String XTAG_FILE_VERSION_NUMBER="versionNumber";
+    public static final String XTAG_FILE_VERSION_NAME="versionName";
+    
+    public static final String XTAG_WA_FUNCTION="function";
+    public static final String XTAG_WA_MEMBERS="members";
+
+    
+    public static final String XTAG_BINDER_LIBRARY="library";
+    public static final String XTAG_BINDER_INHERITMEMBERSHIP="inheritMembership";
+    public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
+    
+    public static final String XTAG_WF_CHANGE="workflowChange";
+    public static final String XTAG_WFS_DEFINITION="definition";
+    public static final String XTAG_WFS_TIMER="timer";
+    public static final String XTAG_WFS_THREAD="thread";
+     
+    public static final String XTAG_WFR_DEFINITION="definition";
+    public static final String XTAG_WFR_RESPONDER="responder";
+    public static final String XTAG_WFR_RESPONSEDATE="responseDate";
+    public static final String XTAG_WFR_RESPONSE="response";
+    
+
+     
 }

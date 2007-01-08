@@ -30,12 +30,15 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
@@ -48,6 +51,7 @@ import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -199,12 +203,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        Map entryData = new HashMap();
 	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
 	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, new ArrayList());
- 			if (inputData.exists(ObjectKeys.FIELD_ENTRY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTRY_TITLE, inputData.getSingleValue("title"));
-			if (inputData.exists(ObjectKeys.FIELD_ENTRY_DESCRIPTION)) {
+ 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue("title"));
+			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
-				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTRY_DESCRIPTION));
+				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
 				description.setFormat(Description.FORMAT_HTML);
-				entryData.put(ObjectKeys.FIELD_ENTRY_DESCRIPTION, description);
+				entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			}
       	
         	return entryDataAll;
@@ -227,6 +231,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         entry.setCreation(new HistoryStamp(user));
         entry.setModification(entry.getCreation());
         entry.setParentBinder(binder);
+        entry.setLogVersion(Long.valueOf(1));
         
         //initialize collections, or else hibernate treats any new 
         //empty collections as a change and attempts a version update which
@@ -258,6 +263,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    	//create history - using timestamp and version from fillIn
+    	processChangeLog(entry, ChangeLog.ADDENTRY);
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
@@ -279,7 +286,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		if (entryDef != null) {
     			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
     			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
-
+    			//indexing handled separetly
+    			processStateChange(entry, ChangeLog.STARTWORKFLOW, false);
     		}
     	}
     }
@@ -299,19 +307,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    
 	    try {	    	
 	    
-	    	final List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
-	    	final List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
 	    	
 	    	sp.reset("modifyEntry_transactionExecute").begin();
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
-	                modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData);
 	    			return null;
 	    		}});
 	    	sp.end().print();
+	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
+	        sp.reset("modifyBinder_removeAttachments").begin();
+	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
+	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
+            modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
+	        sp.end().print();
 	    	
 	    	sp.reset("modifyEntry_filterFiles").begin();
 	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
@@ -407,7 +418,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
     		List<FileAttachment> filesToReindex) {
        	removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
-       	//todo: if file_title element, must update title
        	
     }
     protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex) {
@@ -418,7 +428,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (!(entry instanceof WorkflowSupport)) return;
     	WorkflowSupport wEntry = (WorkflowSupport)entry;
     	//see if updates to entry, trigger transitions in workflow
-    	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry);
+    	if (!wEntry.getWorkflowStates().isEmpty()) {
+    		if (getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry))
+    			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, false);
+    			
+    	}
     }   
     
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
@@ -436,6 +450,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
+        entry.incrLogVersion();
         for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
         	Map.Entry mEntry = (Map.Entry)iter.next();
         	//need to generate id for the event so its id can be saved in customAttr
@@ -452,7 +467,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
- 	   if(!inputData.exists("_renameFileTo"))
+    	//create history - using timestamp and version from fillIn
+    	processChangeLog(entry, ChangeLog.MODIFYENTRY);
+ 
+    	if(!inputData.exists("_renameFileTo"))
 		   return;
 	   
 	   // We have a request for renaming the library file associated with
@@ -509,7 +527,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.end().print();
     }
      protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
-      	return null;
+     	//create history - using timestamp and version from fillIn
+        User user = RequestContextHolder.getRequestContext().getUser();
+        entry.setModification(new HistoryStamp(user));
+        entry.incrLogVersion();
+    	ChangeLog changes = new ChangeLog(entry, ChangeLog.DELETEENTRY);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
+       	return null;
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
@@ -525,6 +550,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
+
     	getCoreDao().delete(entry);   
       	return ctx;
     }
@@ -564,14 +590,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		//Find the workflowState
 		WorkflowState ws = wEntry.getWorkflowState(tokenId);
  		if (ws != null) {
-			getWorkflowModule().modifyWorkflowState(wEntry, ws, toState);
-			// Do NOT use reindexEntry(entry) since it reindexes attached
-			// files as well. We want workflow state change to be lightweight
-			// and reindexing all attachments will be unacceptably costly.
-			// TODO (Roy, I believe this was your design idea, so please 
-			// verify that this strategy will indeed work). 
-				
-			indexEntry(binder, entry, new ArrayList(), null, false);
+ 	        getWorkflowModule().modifyWorkflowState(wEntry, ws, toState);
+			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
 		}
     }
  
@@ -608,26 +628,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				}			
 			}
 			if (found) {
-				wr.setResponse(response);
+				if (!response.equals(wr.getResponse())) {
+					wr.setResponse(response);
+					entry.setModification(new HistoryStamp(user));
+					entry.incrLogVersion();
+					wr.setResponseDate(entry.getModification().getDate());
+					processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+				}
 			} else {
+			    entry.setModification(new HistoryStamp(user));
+			    entry.incrLogVersion();
 				wr = new WorkflowResponse();
 				wr.setResponderId(user.getId());
+				wr.setResponseDate(entry.getModification().getDate());
 				wr.setDefinitionId(def.getId());
 				wr.setName(question);
 				wr.setResponse(response);
 				wr.setOwner(entry);
 				getCoreDao().save(wr);
 				wEntry.addWorkflowResponse(wr);
+				processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);				
 			}
 		}
 		if (getWorkflowModule().modifyWorkflowStateOnResponse(wEntry)) {
-			// Do NOT use reindexEntry(entry) since it reindexes attached
-			// files as well. We want workflow state change to be lightweight
-			// and reindexing all attachments will be unacceptably costly.
-			// TODO (Roy, I believe this was your design idea, so please 
-			// verify that this strategy will indeed work). 
-			
-			indexEntry(binder, entry, new ArrayList(), null, false);
+			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
 		}
     	
     }
@@ -1171,5 +1195,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
         fillInIndexDocWithCommonPart(indexDoc, binder, entry);
     }
-    	
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation);
+		ChangeLogUtils.buildLog(changes, entry);
+		getCoreDao().save(changes);
+		return changes;
+	}
+    public void processStateChange(final Entry entry, String operation, boolean reIndex) {
+    	// The following part requires update database transaction.
+    	if (!(entry instanceof WorkflowSupport)) return;
+    	getTransactionTemplate().execute(new TransactionCallback() {
+    	public Object doInTransaction(TransactionStatus status) {
+    	   	ChangeLog changes = ((WorkflowSupport)entry).getStateChanges();
+        	getCoreDao().save(changes);
+    		return null;
+    	}});
+
+     	// Do NOT use reindexEntry(entry) since it reindexes attached
+		// files as well. We want workflow state change to be lightweight
+		// and reindexing all attachments will be unacceptably costly.
+		// TODO (Roy, I believe this was your design idea, so please 
+		// verify that this strategy will indeed work). 
+
+		if (reIndex) indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
+
+    }    	
 }

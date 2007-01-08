@@ -30,5 +30,6 @@
     <property name="response" length="4000"/>
     <property name="definitionId" length="32"/>
     <property name="responderId"/>
+    <property name="responseDate"/>
  </class>
 </hibernate-mapping>
