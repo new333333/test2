@@ -2,6 +2,7 @@ package com.sitescape.ef.rss;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -22,7 +24,9 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.util.ConfigPropertyNotFoundException;
 import com.sitescape.ef.util.Constants;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.XmlFileUtil;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.ef.util.NLT;
@@ -31,11 +35,24 @@ public class RssGenerator extends CommonDependencyInjection {
 
 	//TODO MAXITEMS should be set in properties or via that application context file.
 	private final int MAXITEMS = 20;
+	private final long DAYMILLIS = 24L * 60L * 60L * 1000L;
 	
 	protected Log logger = LogFactory.getLog(getClass());
 	protected ProfileDao profileDao;
 	
 	private String rssRootDir;
+	private long monthAgoTime = 31L * DAYMILLIS;
+	
+	public RssGenerator() {
+		int maxDays = 31;
+
+		try {
+			maxDays = SPropsUtil.getInt("rss.max.elapseddays");
+		} catch (ConfigPropertyNotFoundException e) {
+		}
+
+		monthAgoTime = new Date().getTime() - (maxDays * DAYMILLIS);
+	}
 	
 	public String getRssRootDir() {
 		return rssRootDir;
@@ -121,12 +138,23 @@ public class RssGenerator extends CommonDependencyInjection {
 		if (rf.exists()) rf.delete();
 	}
 	
-	public void trimItems(Element channelNode) {
-		List items = channelNode.selectNodes("item");
-		if (items.size() > MAXITEMS){
-			int numToRemove = items.size() -MAXITEMS;
-			for (int count=0; count<numToRemove; count++)
-				((Node)items.get(count)).detach();
+	
+	public void trimItems(Element rssRoot) {
+
+		// trim based on elapsed time since the entry has been modified.
+
+		// Get the list of nodes with ages set
+		List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
+
+		// Walk thru the nodes, see if any of the items are older
+		// than the age requirement
+		for (Iterator i = ageNodes.iterator(); i.hasNext();) {
+			Node thisAge = (Node) i.next();
+			long itemAge = Long.parseLong(thisAge.getText());
+			if (itemAge < monthAgoTime) {
+				thisAge.getParent().detach();
+			}
+
 		}
 	}
 	
@@ -140,11 +168,9 @@ public class RssGenerator extends CommonDependencyInjection {
 		Document doc = this.parseFile(this.getRssFileName(entry.getParentBinder()));
 		Element rssRoot = doc.getRootElement();
 		Node channelPubDate = (Node)rssRoot.selectSingleNode("/rss/channel/pubDate");
-		channelPubDate.setText(new Date().toString());
-		
+		channelPubDate.setText(entry.getModification().getDate().toString());
+		trimItems(rssRoot);
 		Element channelNode = (Element)rssRoot.selectSingleNode("/rss/channel");
-		
-		trimItems(channelNode);
 		
 		// see if the current entry is already in the channel, if it is, update it.
 		Node entryNode = channelNode.selectSingleNode("item/guid[.='" + entry.getId() + "']");
@@ -191,6 +217,13 @@ public class RssGenerator extends CommonDependencyInjection {
  	       		thisAcl.detach();
  	       	}
         }
+		
+		//detach the age before sending the xml to the user
+		List ageNodes = rssRoot.selectNodes("/rss/channel/item/age");
+		for (Iterator i = ageNodes.iterator(); i.hasNext();) {
+			Node thisAge = (Node)i.next();
+			thisAge.detach();
+		}
 
 		// return the doc
 		return doc.asXML();
@@ -215,13 +248,16 @@ public class RssGenerator extends CommonDependencyInjection {
     	entryElement.addElement("link")
     		.addText(WebUrlUtil.getEntryViewURL((FolderEntry)entry));//ROY
     	String description = entry.getDescription() == null ? "" : entry.getDescription().getText();
+    	Date eDate = entry.getModification().getDate();
     	
     	entryElement.addElement("description")
     		.addText(description);
     	entryElement.addElement("author")
     		.addText(entry.getCreation().getPrincipal().getName());
     	entryElement.addElement("pubDate")
-    		.addText(new Date().toString());
+			.addText(eDate.toString());
+    	entryElement.addElement("age")
+    		.addText(new Long(eDate.getTime()).toString());
     	entryElement.addElement("guid")
     		.addAttribute("isPermaLink", "false")
     		.addText(entry.getId().toString());
