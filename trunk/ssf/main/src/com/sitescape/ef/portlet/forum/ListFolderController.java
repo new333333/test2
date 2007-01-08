@@ -181,7 +181,9 @@ public class ListFolderController extends  SAbstractController {
 			//Getting the new entries per page
 			String newEntriesPerPage = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_ENTRIES_PER_PAGE, "");
 			//Saving the Sort Order information in the User Properties
-			getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
+			//Changing the user folder paging information from folder/binder level to the user level 
+			//getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
+			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 		}
 
 		response.setRenderParameters(request.getParameterMap());
@@ -294,7 +296,9 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Determine the Records Per Page
 		//Getting the entries per page from the user properties
-		String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
+		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
+		//Moving the entries per information from the user/folder level to the user level.
+		String entriesPerPage = (String) userProperties.get(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
 		//Getting the number of records per page entry in the tab
 		Integer recordsInPage = (Integer) tabOptions.get(Tabs.RECORDS_IN_PAGE);
 		Integer pageRecordIndex = (Integer) tabOptions.get(Tabs.PAGE);
