@@ -148,13 +148,68 @@ public class SearchController extends AbstractBinderController {
 			//Get the search text to use it for the tab title 
 			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
 			if (!searchText.equals("")) {
-				String tabTitle = searchText;
-				options.put(Tabs.TITLE, tabTitle);
+				options.put(Tabs.TITLE, searchText);
+				options.put(Tabs.TAB_SEARCH_TEXT, searchText);
 			}
 			//Store the search query in the current tab
 			boolean blnClearTab = true;
 			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
-		} else if (tabType != null && tabType.equals(Tabs.QUERY)) {
+		} 
+		//Search For Text and  Tag Search
+		else if (formData.containsKey("searchTextAndTags")) {
+			//Parse the search filter
+			searchQuery = FilterHelper.getSearchTabQuery(request);
+			Map options = new HashMap();
+
+			//Get the search text to use it for the tab title
+			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
+			String searchCommunityTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
+			String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags, "");
+			
+			if (!searchText.equals("") || !searchCommunityTags.equals("") || !searchPersonalTags.equals("")) {
+				String strTabTitle = searchText;
+				if (!searchCommunityTags.equals("")) strTabTitle = strTabTitle + " + " + searchCommunityTags;
+				if (!searchPersonalTags.equals("")) strTabTitle = strTabTitle + " + " + searchPersonalTags;
+				
+				options.put(Tabs.TITLE,  strTabTitle);
+				options.put(Tabs.TAB_SEARCH_TEXT, searchText);
+				options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
+				options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
+			}
+			//Store the search query in the current tab
+			boolean blnClearTab = true;
+			if (tabId != null) 
+				tabs.setTab(tabId.intValue(), searchQuery, options, blnClearTab);
+			else 
+				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
+		}
+		//Search For Tag Search Alone
+		else if (formData.containsKey("searchTags")) {
+			//Parse the search filter
+			searchQuery = FilterHelper.getSearchTabQuery(request);
+			Map options = new HashMap();
+			//Get the search text to use it for the tab title 
+			String searchCommunityTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
+			String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags, "");
+			
+			if (!searchCommunityTags.equals("") || !searchPersonalTags.equals("")) {
+				String strTabTitle = "";
+				if (!searchCommunityTags.equals("")) strTabTitle = strTabTitle + " + " + searchCommunityTags;
+				if (!searchPersonalTags.equals("")) strTabTitle = strTabTitle + " + " + searchPersonalTags;
+				
+				options.put(Tabs.TITLE,  strTabTitle);
+				options.put(Tabs.TAB_SEARCH_TEXT, "");
+				options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
+				options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
+			}
+			//Store the search query in the current tab
+			boolean blnClearTab = true;
+			if (tabId != null) 
+				tabs.setTab(tabId.intValue(), searchQuery, options, blnClearTab);
+			else 
+				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
+		}
+		else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
 		} else if (tabType != null && !tabType.equals(Tabs.QUERY)) {
@@ -175,7 +230,6 @@ public class SearchController extends AbstractBinderController {
 		UserProperties userProp = getProfileModule().getUserProperties(user.getId());
 
 		Map options = new HashMap();		
-		
 
 		Map tabInfo = tabs.getTab(tabs.getCurrentTab());
 		
@@ -186,6 +240,9 @@ public class SearchController extends AbstractBinderController {
 		Integer recordsInPage = (Integer) tabInfo.get(Tabs.RECORDS_IN_PAGE);
 		Integer pageRecordIndex = (Integer) tabInfo.get(Tabs.PAGE);
 		String strTabTitle = (String) tabInfo.get(Tabs.TITLE);
+		String strTabSearchText = (String) tabInfo.get(Tabs.TAB_SEARCH_TEXT);
+		String strTabCommunityTagSearchText = (String) tabInfo.get(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT);
+		String strTabPersonalTagSearchText = (String) tabInfo.get(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT);
 
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
@@ -266,9 +323,9 @@ public class SearchController extends AbstractBinderController {
 		if (searchQuery != null) {
 			//Do the search and store the search results in the bean
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
-			peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
+			//peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
 			entries = (List) entryMap.get(WebKeys.FOLDER_ENTRIES);
-			people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
+			//people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
 			
 			int intEntriesLength = entries.size();
 			int intStartIndex = tabPageNumber.intValue();
@@ -297,8 +354,8 @@ public class SearchController extends AbstractBinderController {
 			entryCommunityTags = rateCommunityTags(entryCommunityTags, intMaxHits);
 			entryPersonalTags = ratePersonalTags(entryPersonalTags, intMaxHits);
 
-			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabTitle);
-			entryPersonalTags = determineSignBeforeTag(entryPersonalTags, strTabTitle);
+			entryCommunityTags = determineSignBeforeTag(entryCommunityTags, strTabCommunityTagSearchText);
+			entryPersonalTags = determineSignBeforeTag(entryPersonalTags, strTabPersonalTagSearchText);
 		}
 		else {
 			entries = new ArrayList();
@@ -330,6 +387,9 @@ public class SearchController extends AbstractBinderController {
 		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
 		
 		model.put(WebKeys.TAB_TITLE, strTabTitle);
+		model.put(WebKeys.TAB_SEARCH_TEXT, strTabSearchText);
+		model.put(WebKeys.TAB_COMMUNITY_TAG_SEARCH_TEXT, strTabCommunityTagSearchText);
+		model.put(WebKeys.TAB_PERSONAL_TAG_SEARCH_TEXT, strTabPersonalTagSearchText);
 		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
 		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
 		model.put(WebKeys.PAGE_NEXT, nextPage);
@@ -358,7 +418,7 @@ public class SearchController extends AbstractBinderController {
 		UserProperties userFolderProperties = null;
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, entryPeople);
-		model.put(WebKeys.PEOPLE_RESULTS, people);
+		//model.put(WebKeys.PEOPLE_RESULTS, people);
 		model.put(WebKeys.PEOPLE_RESULTCOUNT, peopleSearchTotalCount);
 		model.put(WebKeys.FOLDER_ENTRYPLACES, entryPlaces);
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
@@ -607,10 +667,10 @@ public class SearchController extends AbstractBinderController {
 	
 	//This method identifies if we need a + or - sign infront of the
 	//tags being displayed in the tags tab in the search tab
-	protected List determineSignBeforeTag(List entries, String tabTitle) {
+	protected List determineSignBeforeTag(List entries, String tabTagTitle) {
 		ArrayList tagList = new ArrayList();
 		for (int i = 0; i < entries.size(); i++) {
-			String strTabTitle = tabTitle;
+			String strTabTitle = tabTagTitle;
 			Map tag = (Map) entries.get(i);
 			String strTagName = (String) tag.get(WebKeys.TAG_NAME);
 			if (strTabTitle != null && !strTabTitle.equals("")) {
@@ -652,7 +712,7 @@ public class SearchController extends AbstractBinderController {
 				}
 				else if (strTabTitle.equals(strTagName)) {
 					tag.put(WebKeys.TAG_SIGN, "-");
-					tag.put(WebKeys.TAG_SEARCH_TEXT, strTagName);
+					tag.put(WebKeys.TAG_SEARCH_TEXT, "");
 				}
 				else {
 					tag.put(WebKeys.TAG_SIGN, "+");

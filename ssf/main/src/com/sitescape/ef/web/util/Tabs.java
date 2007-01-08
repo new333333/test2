@@ -43,6 +43,9 @@ public class Tabs {
    	public final static String SORTBY = "sortBy";
    	public final static String SORTDESCEND = "sortDescend";
    	public final static String RECORDS_IN_PAGE = "recordsInPage";
+   	public final static String TAB_SEARCH_TEXT = "tabSearchText";
+   	public final static String TAB_COMMUNITY_TAG_SEARCH_TEXT = "tabCommunityTagSearchText";
+   	public final static String TAB_PERSONAL_TAG_SEARCH_TEXT = "tabPersonalTagSearchText";
    	
    	//Type keys
    	public final static String WORKSPACE = "workspace";
@@ -220,6 +223,15 @@ public class Tabs {
 		String sortBy = (String) tab.get(Tabs.SORTBY);
 		if (options.containsKey(Tabs.SORTBY)) sortBy = (String) options.get(Tabs.SORTBY);
 		if (sortBy != null) tab.put(Tabs.SORTBY, sortBy);
+		String tabSearchText = (String) tab.get(Tabs.TAB_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_SEARCH_TEXT)) tabSearchText = (String) options.get(Tabs.TAB_SEARCH_TEXT);
+		if (tabSearchText != null) tab.put(Tabs.TAB_SEARCH_TEXT, tabSearchText);
+		String tabTagSearchText = (String) tab.get(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT)) tabTagSearchText = (String) options.get(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT);
+		if (tabTagSearchText != null) tab.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, tabTagSearchText);
+		String tabPTagSearchText = (String) tab.get(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT)) tabPTagSearchText = (String) options.get(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT);
+		if (tabPTagSearchText != null) tab.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, tabPTagSearchText);
 		String sortDescend = (String) tab.get(Tabs.SORTDESCEND);
 		if (options.containsKey(Tabs.SORTDESCEND)) sortDescend = (String) options.get(Tabs.SORTDESCEND);
 		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);
@@ -239,7 +251,7 @@ public class Tabs {
 		tab.put(ICON, binder.getIconName());
 		tab.remove(ENTRY_ID);
 		tab.remove(QUERY_DOC);
-
+		
 		return ((Integer)tab.get(TAB_ID)).intValue();
 	}
 	
@@ -305,6 +317,15 @@ public class Tabs {
 		String sortBy = (String) tab.get(Tabs.SORTBY);
 		if (options.containsKey(Tabs.SORTBY)) sortBy = (String) options.get(Tabs.SORTBY);
 		if (sortBy != null) tab.put(Tabs.SORTBY, sortBy);
+		String tabSearchText = (String) tab.get(Tabs.TAB_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_SEARCH_TEXT)) tabSearchText = (String) options.get(Tabs.TAB_SEARCH_TEXT);
+		if (tabSearchText != null) tab.put(Tabs.TAB_SEARCH_TEXT, tabSearchText);
+		String tabTagSearchText = (String) tab.get(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT)) tabTagSearchText = (String) options.get(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT);
+		if (tabTagSearchText != null) tab.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, tabTagSearchText);
+		String tabPTagSearchText = (String) tab.get(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT);
+		if (options.containsKey(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT)) tabPTagSearchText = (String) options.get(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT);
+		if (tabPTagSearchText != null) tab.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, tabPTagSearchText);
 		String sortDescend = (String) tab.get(Tabs.SORTDESCEND);
 		if (options.containsKey(Tabs.SORTDESCEND)) sortDescend = (String) options.get(Tabs.SORTDESCEND);
 		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);

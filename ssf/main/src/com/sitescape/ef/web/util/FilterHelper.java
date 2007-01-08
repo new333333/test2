@@ -28,6 +28,9 @@ import com.sitescape.ef.web.WebKeys;
 public class FilterHelper {  
 	//Search form field names
 	public final static String SearchText = "searchText";
+	public final static String SearchCommunityTags = "searchCommunityTags";
+	public final static String SearchPersonalTags = "searchPersonalTags";
+	public final static String SearchTextAndTags = "searchTextAndTags";
 	
    	//Search filter document element names
    	public final static String FilterRootName = "searchFilter";
@@ -41,6 +44,8 @@ public class FilterHelper {
    	public final static String FilterEntityType = "filterEntityType";
    	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterTypeSearchText = "text";
+   	public final static String FilterTypeCommunityTagSearch = "communityTag";
+   	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntry = "entry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
@@ -69,7 +74,6 @@ public class FilterHelper {
    	static public Document getSearchQuery (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterRootName);
-		Map formData = request.getParameterMap();
 
 		Element filterTerms = sfRoot.addElement(FilterTerms);
 
@@ -84,8 +88,45 @@ public class FilterHelper {
 		//searchFilter.asXML();
 		return searchFilter;
 	}
+
+	//Routine to create a search query for the generic and tab search
+   	static public Document getSearchTabQuery (PortletRequest request) throws Exception {
+		Document searchFilter = DocumentHelper.createDocument();
+		Element sfRoot = searchFilter.addElement(FilterRootName);
+
+		Element filterTerms = sfRoot.addElement(FilterTerms);
+
+		//Get the search text
+		String searchText = PortletRequestUtils.getStringParameter(request, SearchText, "");
+		if (!searchText.equals("")) {
+			Element filterTerm = filterTerms.addElement(FilterTerm);
+			filterTerm.addAttribute(FilterType, FilterTypeSearchText);
+			filterTerm.addText(searchText);
+		}
+		
+		//Get the community tag search
+		String searchCommunityTag = PortletRequestUtils.getStringParameter(request, SearchCommunityTags, "");
+		if (!searchCommunityTag.equals("")) {
+			Element tagCommunityFilterTerms = sfRoot.addElement(FilterTerms);
+			Element filterTerm = tagCommunityFilterTerms.addElement(FilterTerm);
+			filterTerm.addAttribute(FilterType, FilterTypeCommunityTagSearch);
+			filterTerm.addText(searchCommunityTag);
+		}
+		
+		//Get the community tag search
+		String searchPersonalTag = PortletRequestUtils.getStringParameter(request, SearchPersonalTags, "");
+		if (!searchPersonalTag.equals("")) {
+			Element tagPersonalFilterTerms = sfRoot.addElement(FilterTerms);
+			Element filterTerm = tagPersonalFilterTerms.addElement(FilterTerm);
+			filterTerm.addAttribute(FilterType, FilterTypePersonalTagSearch);
+			filterTerm.addText(searchPersonalTag);
+		}
+		
+		//searchFilter.asXML();
+		return searchFilter;
+	}
    	
-	//Routine to parse the results of submitting the filter builder form
+   	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterRootName);
@@ -439,7 +480,22 @@ public class FilterHelper {
 	    					child2.setText(entityTypeName);
 	    				}
 	    			}
-	    		}
+	    		} else if (filterType.equals(FilterTypeCommunityTagSearch)) {
+	    			Element field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText(filterTerm.getText());
+	    		} else if (filterType.equals(FilterTypePersonalTagSearch)) {
+		    		Element field = orField.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
+		    		String strPersonalTagValue = filterTerm.getText();
+				    String [] strTagArray = strPersonalTagValue.split("\\s");
+				    for (int k = 0; k < strTagArray.length; k++) {
+				    	String strTag = strTagArray[k];
+				    	if (strTag.equals("")) continue;
+			    		Element child = field.addElement(QueryBuilder.TAG_ELEMENT);
+			    	    child.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
+				    }
+		    	}
         	}
     	}
     	//Add in any additional fields from the options map
