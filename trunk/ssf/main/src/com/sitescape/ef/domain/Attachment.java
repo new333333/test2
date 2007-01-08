@@ -6,6 +6,9 @@
  */
 package com.sitescape.ef.domain;
 
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 
 /**
  * @hibernate.class table="SS_Attachments" discriminator-value="N" dynamic-update="true" lazy="false"
@@ -18,7 +21,6 @@ public abstract class Attachment extends PersistentTimestampObject
 	implements UpdateAttributeSupport {
  
     protected AnyOwner owner;
-    protected String usage="";
     protected String name;
     protected char type;
     public Attachment() {
@@ -66,4 +68,5 @@ public abstract class Attachment extends PersistentTimestampObject
     	return true;
     	
     }
+    public abstract Element addChangeLog(Element parent); 
 }

@@ -2,9 +2,9 @@ package com.sitescape.ef.domain;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclSet;
@@ -21,7 +21,9 @@ public abstract class WorkflowControlledEntry extends Entry
 	protected Set iWorkflowStates;
     protected HistoryStamp workflowChange;
     protected Set workflowResponses; //initialized by hiberate access=field  
-	/**
+	protected ChangeLog changes=null;
+
+    /**
       * @hibernate.component class="com.sitescape.ef.domain.HistoryStamp" prefix="wrk_" 
      */
     public HistoryStamp getWorkflowChange() {
@@ -161,7 +163,21 @@ public abstract class WorkflowControlledEntry extends Entry
 	    return result;
 	    	
 	}
-
+	/**
+	 * Hold change document.  Must be saved by some other mechanism.
+	 * @param ws
+	 */
+	public void setStateChange(WorkflowState ws) {
+		if (changes == null) {
+			changes = new ChangeLog(this, ChangeLog.MODIFYWORKFLOWSTATE);
+			changes.setOperationDate(ws.getWorkflowChange().getDate());
+		}
+		//record change
+		ws.addChangeLog(changes.getEntityRoot());
+	}
+	public ChangeLog getStateChanges() {
+		return changes;
+	}
 	public class WfAclSet implements AclSet {
 			
 	    public Set getReadMemberIds() {

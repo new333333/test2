@@ -1,10 +1,16 @@
 package com.sitescape.ef.domain;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import org.dom4j.Element;
+
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.util.Validator;
 
 /**
  * @hibernate.class table="SS_WorkflowStates" dynamic-update="true"
@@ -148,5 +154,18 @@ public class WorkflowState {
     	return acl;
     }
    
- 
+	public Element addChangeLog(Element parent) {
+		Element element = parent.addElement("workflowState");
+		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_NAME, getState());
+		
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
+		if (getTimerId() != null)
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
+		if (!Validator.isNull(getThreadName())) 
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFS_THREAD, getThreadName());
+		if (getWorkflowChange() != null) getWorkflowChange().addChangeLog(element, ObjectKeys.XTAG_WF_CHANGE);
+		return element;
+    	
+    }
 }

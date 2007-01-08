@@ -27,6 +27,7 @@
     <property name="internalId" length="32"/>
     <property name="calendarId"/>
     <property name="zoneId" not-null="true"/>
+	<property name="logVersion"/>
     <property name="signature" length="256"/>
     <property name="disabled"/>
     <property name="name" length="82" not-null="true"/>

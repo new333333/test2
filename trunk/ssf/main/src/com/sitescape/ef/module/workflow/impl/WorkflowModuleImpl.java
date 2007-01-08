@@ -38,6 +38,7 @@ import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
@@ -782,7 +783,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				//re-index for state changes
 				if (entry != null) {
 					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
-					processor.reindexEntry(entry);
+					processor.processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
 				}
 			} else {
 				// execute
@@ -790,7 +791,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				//re-index for state changes
 				if (entry != null) {
 					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
-					processor.reindexEntry(entry);
+					processor.processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
 				}
 				// if there was an exception, just save the timer
 				if (timer.getException()== null) {

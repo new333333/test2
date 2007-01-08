@@ -8,12 +8,17 @@ package com.sitescape.ef.domain;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import com.sitescape.ef.repository.RepositoryUtil;
+import org.dom4j.Element;
 
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.util.Validator;
 
 /**
  * @hibernate.subclass discriminator-value="F" dynamic-update="true"
@@ -326,5 +331,28 @@ public class FileAttachment extends Attachment {
     public String toString() {
     	return fileItem.toString();
     }
-
+	public Element addChangeLog(Element parent) {
+		return addChangeLog(parent, true);
+	}
+	public Element addChangeLog(Element parent, boolean includeVersions) {
+		Element element = parent.addElement("fileAttachment");
+		element.addAttribute(ObjectKeys.XTAG_ID, getId());
+		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+		
+		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
+		//modification date/principal may be different then log
+		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LAST_VERSION, getLastVersion().toString());
+		if (includeVersions) {
+			for (Iterator iter=getFileVersions().iterator(); iter.hasNext();) {
+				VersionAttachment v = (VersionAttachment)iter.next();
+				v.addChangeLog(element);
+			}
+		}
+		return element;
+    	
+    }
 }

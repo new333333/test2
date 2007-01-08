@@ -10,13 +10,20 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.util.Validator;
+
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 import org.dom4j.DocumentException;
+
+import org.apache.commons.codec.binary.Base64;
 import java.io.StringWriter;
 import java.io.StringReader;
 import java.io.IOException;
@@ -52,7 +59,7 @@ public class CustomAttribute  {
     protected int valueType=NONE;
     	private static final int NONE=0;
     	public static final int STRING= 1;
-    	public static final int NUMBER= 2;
+    	public static final int LONG= 2;
     	public static final int DATE= 3;
     	public static final int SERIALIZED= 4;
     	public static final int SET=5;
@@ -261,11 +268,11 @@ public class CustomAttribute  {
 			booleanValue = (Boolean)value;			
         } else if (value instanceof Long) {
             clearVals();
-            valueType = NUMBER;
+            valueType = LONG;
             longValue = (Long)value;
         } else if (value instanceof Integer) {
             clearVals();
-        	valueType = NUMBER;
+        	valueType = LONG;
         	longValue=new Long(((Integer)value).longValue());
         } else if (value instanceof Date) {
             clearVals();
@@ -361,7 +368,7 @@ public class CustomAttribute  {
     			
     		case BOOLEAN:
     			return booleanValue;
-    		case NUMBER:
+    		case LONG:
     		    return longValue;
     		case DATE:
     		    return dateValue;
@@ -432,5 +439,66 @@ public class CustomAttribute  {
     public void addIndexValue(CustomAttributeListElement value) {
     	if (iValues == null) iValues = new HashSet();
     	iValues.add(value);
+    }
+    public Element addChangeLog(Element parent) {
+		Element element = null;
+	    if (getValueType() == SET ) {
+  			element = parent.addElement(ObjectKeys.XTAG_ATTRIBUTE_SET);
+  			element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+   	    	if (iValues == null) {
+   	    		for (Iterator iter=values.iterator(); iter.hasNext();) {
+   	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
+  	    		}
+   	    	} else {
+   	    		for (Iterator iter=iValues.iterator(); iter.hasNext();) {
+   	    			((CustomAttributeListElement)iter.next()).addChangeLog(element);
+   	    		}
+   	    	}
+	    } else {
+	    	switch(getValueType()) {
+       			case STRING:
+       				if (!Validator.isNull(stringValue))
+       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
+       				else if (description != null)
+       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
+       				break;
+       			case DESCRIPTION:
+       				element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_DESCRIPTION, description.getText());
+      				break;
+       			case COMMASEPARATEDSTRING:
+       				if (!Validator.isNull(stringValue))
+       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, stringValue);
+       				else if (description != null)
+       					element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, description.getText());
+      				break;
+       			case BOOLEAN:		
+       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_BOOLEAN, booleanValue.toString());    	
+      				break;
+       			case LONG:
+       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_LONG, longValue.toString());  
+      				break;
+       			case DATE:
+       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DATE, dateValue.toString());  
+      				break;
+       			case SERIALIZED:
+       				element =  ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_SERIALIZED, serializedValue.toBase64String());
+      				break;
+        		case XML:
+        			element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
+      				break;
+       			case EVENT:
+  					element = ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_EVENT, null);
+         			Event event = owner.getEntity().getEvent(stringValue);
+        			if (event != null) event.addChangeLog(element);
+      				break;
+       			case ATTACHMENT:
+       				//attachments are logged separetly
+       				element = ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);
+      				break;
+      	    }
+    	}
+    
+
+	    return element;
     }
 }

@@ -78,7 +78,7 @@ import com.sitescape.util.Validator;
  */
 public class LdapModuleImpl extends CommonDependencyInjection implements LdapModule {
 	protected Log logger = LogFactory.getLog(getClass());
-	protected String [] principalAttrs = new String[]{ObjectKeys.FIELD_PRINCIPAL_NAME, ObjectKeys.FIELD_ENTRY_ID, ObjectKeys.FIELD_PRINCIPAL_DISABLED, ObjectKeys.FIELD_PRINCIPAL_INTERNALID, ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME};
+	protected String [] principalAttrs = new String[]{ObjectKeys.FIELD_PRINCIPAL_NAME, ObjectKeys.FIELD_ID, ObjectKeys.FIELD_PRINCIPAL_DISABLED, ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME};
 	
 	protected static final String[] sample = new String[0];
 	HashMap defaultProps = new HashMap(); 
@@ -362,7 +362,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		String [] sample = new String[0];
 	 
 		//get list of users.
-		List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId()));
+		List attrs = coreDao.loadObjects(new ObjectControls(User.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_ZONE, zone.getZoneId()));
 		//convert list of objects to a Map of forumNames 
 		for (int i=0; i<attrs.size(); ++i) {
 			row = (Object [])attrs.get(i);
@@ -418,7 +418,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 				getUpdates(userAttributeNames, userAttributes, lAttrs, userMods);
 				userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME, ssName);
 				userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
-				userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId());
+				userMods.put(ObjectKeys.FIELD_ZONE, zone.getZoneId());
 				ldap_new.put(ssName, userMods); 
 				dnUsers.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
 			}
@@ -483,7 +483,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		dnGroups = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 
 		//get list of existing groups.
-		List attrs = coreDao.loadObjects(new ObjectControls(Group.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId()));
+		List attrs = coreDao.loadObjects(new ObjectControls(Group.class, principalAttrs), new FilterControls(ObjectKeys.FIELD_ZONE, zone.getZoneId()));
 		//convert list of objects to a Map of forumNames 
 		for (int i=0; i<attrs.size(); ++i) {
 			row = (Object [])attrs.get(i);
@@ -531,7 +531,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 						ldap_new.put(ssName, userMods);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
 						userMods.put(ObjectKeys.FIELD_PRINCIPAL_NAME,ssName);
-						userMods.put(ObjectKeys.FIELD_PRINCIPAL_ZONEID, zone.getZoneId());
+						userMods.put(ObjectKeys.FIELD_ZONE, zone.getZoneId());
 						dnGroups.put(dn, new Object[]{ssName, null, Boolean.FALSE, null, dn});
 						ldapGroups.put(dn, lAttrs);
 					}

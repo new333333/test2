@@ -1,5 +1,8 @@
 package com.sitescape.ef.domain;
 
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import com.sitescape.util.Validator;
 
 /**
@@ -64,4 +67,5 @@ public class FileItem  {
     public String toString() {
     	return name;
     }
+ 
 }

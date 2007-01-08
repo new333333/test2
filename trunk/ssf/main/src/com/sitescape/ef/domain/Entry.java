@@ -3,25 +3,13 @@ package com.sitescape.ef.domain;
 
 /**
  * @author Jong Kim
- *
+ * Mostly a marker class
  */
 public abstract class Entry extends DefinableEntity  {
-
-    protected Binder parentBinder;
  
     public Entry() {
     }
- 
-    /**
-     * @hibernate.many-to-one
-     * @return
-     */
-    public Binder getParentBinder() {
-   	 return parentBinder;
-    }
-    public void setParentBinder(Binder parentBinder) {
-   	 this.parentBinder = parentBinder;
-    }
+
     public Definition getEntryDef() {
     	if (entryDef != null) return entryDef;
     	return getParentBinder().getDefaultEntryDef();

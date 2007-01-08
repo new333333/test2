@@ -27,7 +27,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 	protected String name="";
     protected User owner;
     protected Map properties;
-    protected Binder parentBinder;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
     protected Integer upgradeVersion;   
@@ -92,16 +91,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setPathName(String pathName) {
     	this.pathName = pathName;
     }
-    /**
-     * @hibernate.many-to-one
-     * @return
-     */
-    public Binder getParentBinder() {
-   	 return parentBinder;
-    }
-    public void setParentBinder(Binder parentBinder) {
-   	 this.parentBinder = parentBinder;
-    }
+
     /**
      * @hibernate.bag access="field" lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
 	 * @hibernate.key column="parentBinder" 

@@ -33,6 +33,7 @@
 	    <mapping resource="com/sitescape/ef/domain/Attachment.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/BinderConfig.hbm.xml"/>
+	    <mapping resource="com/sitescape/ef/domain/ChangeLog.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/CustomAttribute.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Dashboard.hbm.xml"/>
 	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>

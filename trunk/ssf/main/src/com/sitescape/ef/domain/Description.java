@@ -88,4 +88,7 @@ public class Description {
     	return getText().replaceAll("\\<.*?\\>","");
 
     }
+    public String toString() {
+    	return getText();
+    }
 }

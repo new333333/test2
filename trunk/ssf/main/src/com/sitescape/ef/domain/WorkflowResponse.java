@@ -1,4 +1,12 @@
 package com.sitescape.ef.domain;
+import java.util.Date;
+
+import org.dom4j.Element;
+
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.util.Validator;
+
 /**
  * @hibernate.class table="SS_WorkflowResponses" dynamic-update="true" lazy="false" 
  * @hibernate.mapping auto-import="false"
@@ -13,6 +21,7 @@ public class WorkflowResponse {
 	protected String response;
 	protected AnyOwner owner;
 	protected Long responderId;
+	protected Date responseDate;
    //no versioning on custom attributes
 	/**
 	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null"
@@ -78,6 +87,16 @@ public class WorkflowResponse {
     	this.responderId = responderId;
     }
     /**
+     * @hibernate.property
+     * @return
+     */
+    public Date getResponseDate() {
+    	return responseDate;
+    }
+    public void setResponseDate(Date responseDate) {
+    	this.responseDate = responseDate;
+    }
+    /**
      * Compares objects using the database Id.  This implies objects must be
      * persisted prior to making this call.
      */
@@ -102,5 +121,16 @@ public class WorkflowResponse {
     public int hashCode() {
     	return id.hashCode();
     }
-
+	public Element addChangeLog(Element parent) {
+		Element element = parent.addElement("workflowResponse");
+		element.addAttribute(ObjectKeys.XTAG_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_NAME, getName());
+		
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_DEFINITION, getDefinitionId());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONDER, getResponderId());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONSEDATE, getResponseDate());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_WFR_RESPONSE, getResponse());
+		return element;
+    	
+    }
 }

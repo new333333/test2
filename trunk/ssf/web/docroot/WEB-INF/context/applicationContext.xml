@@ -288,19 +288,11 @@
 	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
 		<property name="indexRootDir"><value>${data.root.dir}/lucene</value></property>
 	</bean>
-	
-	<bean id="objectIndexMapping" class = "com.sitescape.ef.search.docbuilder.mapped.ObjectIndexMapping">
-		<property name="mappingFilePath"><value>config/object-index-mapping.xml</value></property>
-	</bean>
-	
+		
 	<bean id="indexSynchronizationManager" class="com.sitescape.ef.search.IndexSynchronizationManager">
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 	
-	<bean id="mappedIndexDocumentBuilder" class="com.sitescape.ef.search.docbuilder.mapped.MappedIndexDocumentBuilder">
-		<property name="objectIndexMapping"><ref local="objectIndexMapping"/></property>		
-	</bean>
-
 	<bean id="indexSynchronizationManagerInterceptor" class="com.sitescape.ef.search.interceptor.IndexSynchronizationManagerInterceptor">
 	</bean>	
 	

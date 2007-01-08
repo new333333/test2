@@ -45,6 +45,7 @@
     </component>
     <property name="owningFolderSortKey" length="512"/>
     <property name="lastActivity"/>
+	<property name="logVersion"/>
     <property name="replyCount" not-null="true"/>
     <property name="nextDescendant" not-null="true"/>
     <property name="totalReplyCount" not-null="true"/>

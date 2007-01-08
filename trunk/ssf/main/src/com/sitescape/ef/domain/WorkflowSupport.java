@@ -1,7 +1,6 @@
 package com.sitescape.ef.domain;
 
 import java.util.Set;
-
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 
@@ -27,5 +26,6 @@ public interface WorkflowSupport extends AclControlled {
 	public Set getWorkflowResponses();
 	public void addWorkflowResponse(WorkflowResponse workflowResponse);
     public void removeWorkflowResponse(WorkflowResponse workflowResponse);
-	 
+	public void setStateChange(WorkflowState workflowState);
+	public ChangeLog getStateChanges();
 }

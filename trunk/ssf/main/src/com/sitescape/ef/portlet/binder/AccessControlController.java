@@ -51,14 +51,7 @@ public class AccessControlController extends AbstractBinderController {
 				Set memberIds = new HashSet();
 				if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
-				if (wfm == null) {
-					getAdminModule().addWorkAreaFunctionMembership(binder, roleId, memberIds);
-				} else {
-					//Modify the existing membership
-					wfm.setMemberIds(memberIds);
-					getAdminModule().modifyWorkAreaFunctionMembership(binder, wfm);
-				}
+				getAdminModule().setWorkAreaFunctionMembership(binder, roleId, memberIds);
 			}
 			
 		} else if (formData.containsKey("modifyBtn")) {

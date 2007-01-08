@@ -5,7 +5,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
@@ -17,23 +20,28 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.ChangeLog;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -46,9 +54,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************	
             
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+        ((Principal)entry).setZoneId(binder.getZoneId());
         doFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData);
-        ((Principal)entry).setZoneId(binder.getZoneId());
      }
        
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
@@ -63,30 +71,58 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param entryData
      */
     protected void doFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
+    	if (entry instanceof User) {
+    		if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
+    			entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_FIRSTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_FIRSTNAME)) {
+    			entryData.put(ObjectKeys.FIELD_USER_FIRSTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_FIRSTNAME));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_LASTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_LASTNAME)) {
+    			entryData.put(ObjectKeys.FIELD_USER_LASTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_LASTNAME));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_MIDDLENAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_MIDDLENAME)) {
+    			entryData.put(ObjectKeys.FIELD_USER_MIDDLENAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_MIDDLENAME));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_LOCALE) && !entryData.containsKey(ObjectKeys.FIELD_USER_LOCALE)) {
+    			entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleValue(ObjectKeys.FIELD_USER_LOCALE));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
+    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleValue(ObjectKeys.FIELD_USER_TIMEZONE));
+    		}
+    	} else {
+    		//must be a group
+        	if (inputData.exists(ObjectKeys.FIELD_GROUP_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
+    			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, inputData.getSingleValue(ObjectKeys.FIELD_GROUP_MEMBERS));
+        	}
+        	//hack to get member names from input and convert to set - Mostly for ldap
+        	if (inputData.exists(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
+        		String[] sNames = inputData.getValues(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME);
+        		
+         		//see if they exist
+        		Map params = new HashMap();
+        		params.put("plist", sNames);
+        		params.put("zoneId", ((Group)entry).getZoneId());
+        		List exists;
+        		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME))
+        			exists = getCoreDao().loadObjects("from com.sitescape.ef.domain.Principal where zoneId=:zoneId and foreignName in (:plist)", params);
+        		else
+           			exists = getCoreDao().loadObjects("from com.sitescape.ef.domain.Principal where zoneId=:zoneId and name in (:plist)", params);
+        		Set members = new HashSet();
+        		for (int x=0;x<exists.size(); ++x) {
+				   Principal p = (Principal)exists.get(x);
+				   members.add(p);
+        		}
+	   			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, members);
+        	}
+
+    	}
     	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME)) {
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME));
     	} 
-    	if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
-    		entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
-    	}
-    	if (inputData.exists(ObjectKeys.FIELD_USER_FIRSTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_FIRSTNAME)) {
-    		entryData.put(ObjectKeys.FIELD_USER_FIRSTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_FIRSTNAME));
-    	}
-    	if (inputData.exists(ObjectKeys.FIELD_USER_LASTNAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_LASTNAME)) {
-    		entryData.put(ObjectKeys.FIELD_USER_LASTNAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_LASTNAME));
-    	}
-    	if (inputData.exists(ObjectKeys.FIELD_USER_MIDDLENAME) && !entryData.containsKey(ObjectKeys.FIELD_USER_MIDDLENAME)) {
-    		entryData.put(ObjectKeys.FIELD_USER_MIDDLENAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_MIDDLENAME));
-    	}
-    	if (inputData.exists(ObjectKeys.FIELD_USER_LOCALE) && !entryData.containsKey(ObjectKeys.FIELD_USER_LOCALE)) {
-    		entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleValue(ObjectKeys.FIELD_USER_LOCALE));
-    	}
-       	if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
-    		entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
-    	}
-       	if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
-    		entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleValue(ObjectKeys.FIELD_USER_TIMEZONE));
-    	}
        	if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_NAME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_NAME)) {
     		entryData.put(ObjectKeys.FIELD_PRINCIPAL_NAME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_NAME));
     	}
@@ -184,7 +220,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
     //Overload entire delete entry.  Only want to disable users
     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
-    	if (entry instanceof User) return null;
     	return super.deleteEntry_preDelete(parentBinder, entry, ctx);
     }
         
@@ -285,6 +320,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        if (changed) {
 	 	       User user = RequestContextHolder.getRequestContext().getUser();
 	 	       entry.setModification(new HistoryStamp(user));
+	 	       entry.incrLogVersion();
+	 	       ChangeLog changes = new ChangeLog(entry, ChangeLog.MODIFYENTRY);
+	 	       ChangeLogUtils.buildLog(changes, entry);
+	 	       getCoreDao().save(changes);
+
 	        }
 	        return changed;
 		
@@ -366,4 +406,41 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected String getEntryPrincipalField() {
     	return EntityIndexUtils.DOCID_FIELD;
     }
+	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
+		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);
+		ChangeLog changes = new ChangeLog(entry, operation);
+		Element element = ChangeLogUtils.buildLog(changes, entry);
+		//add principal fields
+		Principal prin = (Principal)entry;
+		ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_PRINCIPAL_FOREIGNNAME, prin.getForeignName());
+		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_PRINCIPAL_DISABLED, String.valueOf(prin.isDisabled()));
+		if (!Validator.isNull(prin.getInternalId())) {
+			element.addAttribute(ObjectKeys.XTAG_PRINCIPAL_INTERNALID, prin.getInternalId());
+		}
+		if (prin instanceof User) {
+			User user = (User)prin;
+			//attributes are available through the definintion builder
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_FIRSTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getFirstName());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_MIDDLENAME, ObjectKeys.XTAG_TYPE_STRING, user.getMiddleName());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_LASTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getLastName());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
+			ChangeLogUtils.addLogAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
+
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
+			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
+
+		} else {
+			Group group = (Group)prin;
+  			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, CollectionUtil.toCommaIds(group.getMembers()));
+		}
+		getCoreDao().save(changes);
+		return changes;
+	}    
 }

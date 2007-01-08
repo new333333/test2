@@ -30,23 +30,21 @@
 */
 package com.sitescape.ef.domain;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import com.sitescape.ef.util.CollectionUtil;
+import org.dom4j.Element;
+
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.ChangeLogUtils;
 
 
 /**
@@ -2996,4 +2994,48 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 	    if (curVal.length != newVal.length) return true;
 	    return !curVal.equals(newVal);
 	}
+	public Element addChangeLog(Element parent) {
+		Element element = parent.addElement("event");
+		element.addAttribute("id", getId());
+		
+		ChangeLogUtils.addLogProperty(element, "start", getDtStart().toString());
+		ChangeLogUtils.addLogProperty(element, "duration", getDuration().toString());
+
+		if (getCount() == -1) {
+			ChangeLogUtils.addLogProperty(element, "count", "0");
+			ChangeLogUtils.addLogProperty(element, "until", getUntilString());
+	    } else {
+			ChangeLogUtils.addLogProperty(element, "count", Long.toString(getCount()));
+			ChangeLogUtils.addLogProperty(element, "until", null);
+	    }
+	    	
+		ChangeLogUtils.addLogProperty(element, "frequency", Long.toString(getFrequency()));
+	    
+		ChangeLogUtils.addLogProperty(element, "interval", Long.toString(getInterval()));
+
+		ChangeLogUtils.addLogProperty(element, "timeZoneSensitive", Boolean.toString(isTimeZoneSensitive()));
+
+		ChangeLogUtils.addLogProperty(element, "bySecond", getBySecondString());
+
+		ChangeLogUtils.addLogProperty(element, "byMinute", getByMinuteString());
+
+		ChangeLogUtils.addLogProperty(element, "byHour", getByHourString());
+
+		ChangeLogUtils.addLogProperty(element, "byDay", getByDayString());
+		
+		ChangeLogUtils.addLogProperty(element, "byMonthDay", getByMonthDayString());
+
+		ChangeLogUtils.addLogProperty(element, "byYearDay", getByYearDayString());
+
+		ChangeLogUtils.addLogProperty(element, "byWeekNo", getByWeekNoString());
+
+		ChangeLogUtils.addLogProperty(element, "byMonth", getByMonthString());
+
+		//modification date/principal in log with entry
+		//don't think creation stamp is needed
+//		ChangeLogUtils.addLogProperty(element, ObjectKeys.FIELD_ENTITY_CREATEDBY, getCreation().getPrincipal().getId());
+//		ChangeLogUtils.addLogProperty(element, ObjectKeys.FIELD_ENTITY_CREATEDON, getCreation().getDate());
+		return element;
+    	
+    }
 }

@@ -15,19 +15,22 @@ import com.sitescape.ef.util.CollectionUtil;
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title="";
     protected Description description;
+    protected Long logVersion=Long.valueOf(0);
+    protected Binder parentBinder; 
     protected boolean attachmentsParsed = false;
     protected Set attachments;	//initialized by hiberate access=field
     protected Map customAttributes;	//initialized by hiberate access=field
     protected Definition entryDef; //initialized by hiberate access=field
     protected Set events;	//initialized by hiberate access=field
-    // these collections are loaded for quicker indexing, hibernate will not persist them
-    protected Set iEvents,iAttachments;
-    protected Map iCustomAttributes;
     protected String iconName="";
     protected Integer definitionType=null;
     protected AverageRating rating=null;
     protected Long popularity=null;
- 
+    // these collections are loaded for quicker indexing, hibernate will not persist them
+    protected Set iEvents,iAttachments;
+    protected Map iCustomAttributes;
+
+    
     public DefinableEntity() {
     }
 	public abstract EntityIdentifier getEntityIdentifier();
@@ -73,6 +76,29 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     
     public void setEntryDef(Definition entryDef) {
         this.entryDef = entryDef;
+    }
+    /**
+     * @hibernate.many-to-one
+     * @return
+     */
+    public Binder getParentBinder() {
+   	 return parentBinder;
+    }
+    public void setParentBinder(Binder parentBinder) {
+   	 this.parentBinder = parentBinder;
+    }    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Long getLogVersion() {
+    	return logVersion;
+    }
+    public void setLogVersion(Long logVersion) {
+    	this.logVersion = logVersion;
+    }
+    public void incrLogVersion() {
+    	logVersion = logVersion + 1;
     }
     /**
      * @hibernate.property
