@@ -37,8 +37,16 @@
 <c:out value="${ssDefinitionEntry.title}"/></a>
 </span>
 </div>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
-<br>
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr>
+<td valign="top"><%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %></td>
+<td valign="top" align="right">
+<c:set var="ssPersonalTags" value="${ssBlogEntries[ss_blog_docId].ssPersonalTags}" scope="request"/>
+<c:set var="ssCommunityTags" value="${ssBlogEntries[ss_blog_docId].ssCommunityTags}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</td>
+</tr>
+</table>
 <span class="ss_italic ss_smallprint">
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 

@@ -884,7 +884,44 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			finish.addText((String) options.get(ObjectKeys.SEARCH_END_DATE));
         		}
         	}
+       	}
 
+       	//See if there is a year/month
+       	if (options.containsKey(ObjectKeys.SEARCH_YEAR_MONTH)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_YEAR_MONTH));
+        		}
+        	}
+       	}
+       	//See if there is a tag
+       	if (options.containsKey(ObjectKeys.SEARCH_COMMUNITY_TAG)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_COMMUNITY_TAG));
+        		}
+        	}
+       	}
+       	if (options.containsKey(ObjectKeys.SEARCH_PERSONAL_TAG)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element field = boolElement.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
+	    	    	Element child = field.addElement(QueryBuilder.TAG_ELEMENT);
+        			child.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, (String)options.get(ObjectKeys.SEARCH_PERSONAL_TAG));
+        		}
+        	}
        	}
        	//queryTree.asXML();
        	

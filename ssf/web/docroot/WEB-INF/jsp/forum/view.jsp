@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
@@ -100,4 +101,5 @@ function <portlet:namespace/>_getUnseenCounts() {
 <input type="hidden" name="ssNamespace" value="<portlet:namespace/>">
 </form>
 
+</c:if>
 

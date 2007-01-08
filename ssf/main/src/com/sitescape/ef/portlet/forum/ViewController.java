@@ -56,6 +56,18 @@ public class ViewController  extends SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			//Signal that this is the initialization step
+			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+			
+			PortletURL url;
+			url = response.createRenderURL();
+			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+			prefs.store();
+		}
+
 		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
@@ -75,8 +87,6 @@ public class ViewController  extends SAbstractController {
 			else if (pName.contains(TOOLBAR_PORTLET)) {
 				displayType=TOOLBAR_PORTLET;
 			}
-			//TODO temporary until we figure out why adding a portlet freezes
-			model.put("ssf_support_files_loaded", "1");
 		}
 			
         User user = RequestContextHolder.getRequestContext().getUser();

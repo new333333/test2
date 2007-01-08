@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletMode;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -21,6 +22,7 @@ import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.util.Validator;
 
 
 public class ViewController extends  SAbstractController {
@@ -32,6 +34,20 @@ public class ViewController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			//Signal that this is the initialization step
+			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+			
+			PortletURL url;
+			url = response.createRenderURL();
+			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+			prefs.store();
+		}
+		
 		PortletURL url;
 		//Build the tree
 		int nextId = 0;
@@ -251,7 +267,6 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 */
-		Map model = new HashMap();
 		model.put(WebKeys.ADMIN_TREE, adminTree);
 		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 		return new ModelAndView("administration/view", model);

@@ -270,16 +270,16 @@ public class AjaxController  extends SAbstractController {
 	private void ajaxModifyTags(ActionRequest request, ActionResponse response) throws Exception {
 		//Add or delete tags
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
 		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
 		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
-		if (operation2.equals("delete")) {
-			getFolderModule().setTagDelete(binderId, entryId, tagToDelete);
-		} else if (operation2.equals("add")) {
-			if (!communityTag.equals("")) getFolderModule().setTag(binderId, entryId, communityTag, true);
-			if (!personalTag.equals("")) getFolderModule().setTag(binderId, entryId, personalTag, false);
+		if (!entryId.equals("") && operation2.equals("delete")) {
+			getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
+		} else if (!entryId.equals("") && operation2.equals("add")) {
+			if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
+			if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
 		}
 	}
 	
@@ -457,11 +457,14 @@ public class AjaxController  extends SAbstractController {
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 		String type = PortletRequestUtils.getStringParameter(request, "type", "personalTag");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "personalTag");
+		String tagDivNumber = PortletRequestUtils.getStringParameter(request, "tagDivNumber", "");
 	
 		Map model = new HashMap();
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
 		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
 		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
+		model.put(WebKeys.ENTRY_ID, entryId.toString());
 		response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/tag_view_ajax", model);
 	}

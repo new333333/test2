@@ -6,7 +6,8 @@
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-  <taconite-replace contextNodeID="<c:out value="ss_tags${ss_tagViewNamespace}"/>" parseInBrowser="true">
+  <taconite-replace contextNodeID="<c:out value="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}"/>" 
+    parseInBrowser="true">
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
   </taconite-replace>
 </c:if>

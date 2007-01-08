@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${empty ss_portletInitialization}">
 <div class="ss_portlet_style ss_portlet">
 <table border="0" cellpadding="4" cellspacing="0" width="100%">
 <tr>
@@ -58,3 +59,4 @@
 </table>
 </div>
 
+</c:if>

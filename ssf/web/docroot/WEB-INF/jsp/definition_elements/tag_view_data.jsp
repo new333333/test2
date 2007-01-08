@@ -1,13 +1,14 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_tags${ss_tagViewNamespace}" class="ss_tag_pane">
+<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}" class="ss_tag_pane">
 <div align="right">
-<a onClick="ss_hideTags${ss_tagViewNamespace}();return false;"><img 
+<a onClick="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"><img 
   border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
 </div>
 <div style="padding:0px 10px;">
 <form class="ss_style ss_form ss_tag_pane_color" 
   method="post" action=""
-  id="ss_modifyTagsForm${ss_tagViewNamespace}" name="ss_modifyTagsForm${ss_tagViewNamespace}">
+  id="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" 
+  name="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}">
 <table class="ss_tag_pane_color">
 <tbody>
 
@@ -20,7 +21,7 @@
   </td>
   <td>
     <a class="ss_fineprint ss_linkButton" href="#"
-      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}');return false;"
+      onClick="ss_deleteTag${ss_tagViewNamespace}('${ptag.id}', '${ss_tagDivNumber}', '${ssEntryId}');return false;"
     ><ssf:nlt tag="button.delete"/></a>
   </td>
 </tr>
@@ -35,7 +36,7 @@
     <input type="text" class="ss_text" name="personalTag" />
     </td><td>
       <a class="ss_linkButton" href="#" 
-        onClick="ss_addTag${ss_tagViewNamespace}();return false;"
+        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
       ><ssf:nlt tag="button.add"/></a>
     </td></tr>
   </tbody></table>
@@ -49,7 +50,7 @@
     <span class="ss_tags" style="padding-right:10px;"><c:out value="${tag.name}"/></span>
   </td>
   <td><a class="ss_fineprint ss_linkButton" href="#"
-    onClick="ss_deleteTag${ss_tagViewNamespace}('${tag.id}');return false;"
+    onClick="ss_deleteTag${ss_tagViewNamespace}('${tag.id}', '${ss_tagDivNumber}', '${ssEntryId}');return false;"
     ><ssf:nlt tag="button.delete"/></a>
   </td>
 </tr>
@@ -64,7 +65,7 @@
     <input type="text" class="ss_text" name="communityTag"/>
     </td><td style="padding-left:4px;">
     <a class="ss_linkButton" href="#" 
-      onClick="ss_addTag${ss_tagViewNamespace}();return false;"
+      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
     ><ssf:nlt tag="button.add"/></a>
     </td></tr>
   </tbody></table>
@@ -73,7 +74,7 @@
 </tbody>
 </table>
 <input type="submit" value="ok" style="height:10px; width:10px;"
-  onClick="ss_addTag${ss_tagViewNamespace}();return false;"/>
+  onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"/>
 <div class="ss_tag_pane_ok_cover">
 </div>
 </form>

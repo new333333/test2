@@ -5,7 +5,7 @@
  <span class="ss_bold"><c:out value="${property_caption}" /></span>
 <br/>
 </c:if>
- <div class="ss_text_field">
+ <div class="ss_entryDescription">
 <c:out value="${ssDefinitionEntry.customAttributes[property_name].value.text}" escapeXml="false"/>
  </div>
 </div>
@@ -18,7 +18,7 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
-    <div class="ss_text_field"><c:out 
+    <div class="ss_entryContent ss_entryDescription"><c:out 
       value="${ssDefinitionEntry.customAttributes[property_name].value.text}" 
       escapeXml="false"/></div>
   </td>

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -396,6 +397,21 @@ public class ListFolderController extends  SAbstractController {
 			options.put(ObjectKeys.SEARCH_END_DATE, DateHelper.getDateStringFromDMY(day, month, year));
 			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
 		}
+		//See if this is a request for a specific year/month
+		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, "");
+		if (!yearMonth.equals("")) {
+			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
+		}
+		//See if the url has tags 
+		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
+		if (!cTag.equals("")) {
+			options.put(ObjectKeys.SEARCH_COMMUNITY_TAG, cTag);
+		}
+		String pTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_PERSONAL, "");
+		if (!pTag.equals("")) {
+			options.put(ObjectKeys.SEARCH_PERSONAL_TAG, pTag);
+		}
+		
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
 		
@@ -442,7 +458,7 @@ public class ListFolderController extends  SAbstractController {
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the list of all entries to build the archive list
-			buildBlogBeans(response, folder, options, model);
+			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
 			folderEntries = getFolderModule().getEntries(folderId, options);
 		}
@@ -516,7 +532,7 @@ public class ListFolderController extends  SAbstractController {
 	}  
 	
 	//Routine to build the beans for the blog archives list
-	public void buildBlogBeans(RenderResponse response, Folder folder, Map options, Map model) {
+	public void buildBlogBeans(RenderResponse response, Folder folder, Map options, Map model, Map folderEntries) {
 		Document searchFilter = (Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
 		if (searchFilter == null) {
 			searchFilter = DocumentHelper.createDocument();
@@ -525,10 +541,33 @@ public class ListFolderController extends  SAbstractController {
     		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
 		}
 		Map options2 = new HashMap();
-		options2.put(ObjectKeys.SEARCH_MAX_HITS, 2000);
+		options2.put(ObjectKeys.SEARCH_MAX_HITS, 
+				Integer.valueOf(SPropsUtil.getString("blog.archives.searchCount")));
+		options2.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		options2.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+    	//Look only for binderId=binder and doctype = entry (not attachement)
+    	if (folder != null) {
+			Document searchFilter2 = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
+    		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	child.setText(folder.getId().toString());
+        	
+        	//Look only for docType=entry and entryType=entry
+        	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+           	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+           	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+           	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+           	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+        	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
+    	}
 		Map entriesMap = getBinderModule().executeSearchQuery(folder, searchFilter, options2);
 		List entries = (List) entriesMap.get(WebKeys.FOLDER_ENTRIES);
-		Map monthHits = new TreeMap();
+		LinkedHashMap monthHits = new LinkedHashMap();
 		Map monthTitles = new HashMap();
 		Map monthUrls = new HashMap();
 		String[] monthNames = { 
@@ -552,9 +591,10 @@ public class ListFolderController extends  SAbstractController {
 				String yearMonth = (String) entry.get(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
 				if (!monthHits.containsKey(yearMonth)) {
 					monthHits.put(yearMonth, new Integer(0));
-					String monthNumber = yearMonth.substring(4,6);
+					String year = yearMonth.substring(0, 4);
+					String monthNumber = yearMonth.substring(4, 6);
 					int m = Integer.valueOf(monthNumber).intValue() - 1;
-					monthTitles.put(yearMonth, monthNames[m%11]);
+					monthTitles.put(yearMonth, monthNames[m%12] + " " + year);
 					PortletURL url = response.createRenderURL();
 					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -564,12 +604,34 @@ public class ListFolderController extends  SAbstractController {
 				int hitCount = (Integer) monthHits.get(yearMonth);
 				monthHits.put(yearMonth, new Integer(++hitCount));
 			}
+			if (entry.containsKey(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD)) {
+				
+			}
 		}
+		List entryCommunityTags = new ArrayList();
+		List entryPersonalTags = new ArrayList();
+		entryCommunityTags = BinderHelper.sortCommunityTags(entries);
+		entryPersonalTags = BinderHelper.sortPersonalTags(entries);
+		
+		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
+		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
+		
+		int intMaxHits = intMaxHitsForCommunityTags;
+		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
+		
+		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
+		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
+
+		entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, "");
+		entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, "");
 		model.put(WebKeys.BLOG_MONTH_HITS, monthHits);
 		model.put(WebKeys.BLOG_MONTH_TITLES, monthTitles);
 		model.put(WebKeys.BLOG_MONTH_URLS, monthUrls);
+		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
+		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 
 		/*
+		//The following code shows how to search for the count of entries in a month
 		options2.put(ObjectKeys.SEARCH_MAX_HITS, 1);
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.AND_ELEMENT);
@@ -1311,6 +1373,8 @@ public class ListFolderController extends  SAbstractController {
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
+			entryMap.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folder.getId(), entry.getId()));
+			entryMap.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folder.getId(), entry.getId()));
 		}
 	}
 	

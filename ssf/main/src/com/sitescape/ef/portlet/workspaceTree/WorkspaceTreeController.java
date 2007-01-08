@@ -6,6 +6,7 @@ import java.util.Random;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletPreferences;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -37,6 +38,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -49,9 +51,22 @@ public class WorkspaceTreeController extends SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
-        User user = RequestContextHolder.getRequestContext().getUser();
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			//Signal that this is the initialization step
+			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+			
+			PortletURL url;
+			url = response.createRenderURL();
+			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+			prefs.store();
+		}
+
+		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.setBinderPermaLink(this, request, response);
-		Map<String,Object> model = new HashMap<String,Object>();
 		try {
 			//won't work on adapter
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
