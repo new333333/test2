@@ -108,6 +108,8 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
+	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
+	public static final String ACTION_UNLOCK_FOLDER_ENTRY = "unlock_folder_entry";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
 	public static final String ACTION_VIEW_FOLDER_LISTING = "view_folder_listing";
@@ -139,6 +141,8 @@ public class WebKeys {
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
+    public static final String OPERATION_LOCK="lock";
+    public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
       
@@ -393,6 +397,9 @@ public class WebKeys {
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";
     public static final String TAB_TITLE="ss_tab_title";
+    public static final String TAB_SEARCH_TEXT="ss_tab_search_text";
+    public static final String TAB_COMMUNITY_TAG_SEARCH_TEXT="ss_tab_community_tag_search_text";
+    public static final String TAB_PERSONAL_TAG_SEARCH_TEXT="ss_tab_personal_tag_search_text";
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
