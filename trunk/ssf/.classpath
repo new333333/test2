@@ -72,5 +72,8 @@
 	<classpathentry kind="lib" path="lib/slide-jaas.jar"/>
 	<classpathentry kind="lib" path="lib/slide-kernel.jar"/>
 	<classpathentry kind="lib" path="lib/ehcache.jar"/>
+	<classpathentry kind="lib" path="lib/unoil.jar"/>
+	<classpathentry kind="lib" path="lib/juh.jar"/>
+	<classpathentry kind="lib" path="lib/ridl.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
