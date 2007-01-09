@@ -90,12 +90,14 @@ function ss_showBlogReplyIframe<portlet:namespace/>(obj, id) {
 		}
 	}
 }
-function ss_hideBlogReplyIframe<portlet:namespace/>(id) {
+function ss_hideBlogReplyIframe<portlet:namespace/>(id, count) {
 	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
 	if (targetDiv != null) {
 		targetDiv.style.visibility = 'hidden'
 		targetDiv.style.display = 'none'
 	}
+	var replyCountObj = document.getElementById('<portlet:namespace/>ss_blog_reply_count_' + id)
+	if (replyCountObj != null) replyCountObj.innerHTML = count;
 	ss_showBlogReplies<portlet:namespace/>(id);
 }
 </script>

@@ -31,10 +31,12 @@ public class ReloadOpenerController  extends SAbstractController {
  		
 		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.BLOG_REPLY, "");
 		if (!blogReply.equals("")) {
-			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ID, "");
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
+			String blogReplyCount = PortletRequestUtils.getStringParameter(request, WebKeys.BLOG_REPLY_COUNT, "");
 			model.put(WebKeys.ENTRY_ID, entryId);
 			model.put(WebKeys.NAMESPACE, namespace);
+			model.put(WebKeys.BLOG_REPLY_COUNT, blogReplyCount);
 			return new ModelAndView("forum/reload_blog_reply", model);
 		}
 		

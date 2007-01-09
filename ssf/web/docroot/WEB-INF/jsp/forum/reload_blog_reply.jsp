@@ -18,7 +18,7 @@
 <script type="text/javascript">
 
 if (self.parent.ss_hideBlogReplyIframe${ss_namespace}) {
-	self.parent.ss_hideBlogReplyIframe${ss_namespace}('${ssEntryId}')
+	self.parent.ss_hideBlogReplyIframe${ss_namespace}('${ssEntryId}', '${ssBlogReplyCount}')
 	self.parent.focus();
 }
 

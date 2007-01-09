@@ -45,6 +45,7 @@ public class WebKeys {
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_BLOG_REPLY="blogReply";
+    public static final String URL_BLOG_REPLY_COUNT="blogReplyCount";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DATE_DAY="day";
@@ -231,6 +232,7 @@ public class WebKeys {
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
 	public static final String BLOG_REPLY="ssBlogReply"; 
+	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONFIGURATIONS="ssConfigurations";
 	public static final String CONFIGURATION="ssConfiguration";
