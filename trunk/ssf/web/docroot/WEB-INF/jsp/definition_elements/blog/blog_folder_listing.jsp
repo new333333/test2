@@ -7,6 +7,7 @@
 			<div class="ss_blog_content" style="margin:2px 8px 20px 2px;">
 			  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
 			  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
+			  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>
 			  <c:if test="${!empty entry._workflowStateCaption}">
 			  <c:set var="ss_blog_workflowStateCaption" value="${entry._workflowStateCaption}" scope="request"/>
 			  </c:if>

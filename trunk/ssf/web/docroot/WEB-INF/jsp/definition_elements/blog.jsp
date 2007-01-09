@@ -30,8 +30,8 @@ function ss_blog_sidebar_date_callback() {
 	url += "\&rn=" + rn++
 	self.location.href = url;
 }
-function ss_showBlogReplies(id) {
-	var targetDiv = document.getElementById('ss_blog_replies_' + id)
+function ss_showBlogReplies<portlet:namespace/>(id) {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
 			targetDiv.style.visibility = 'hidden'
@@ -50,13 +50,53 @@ function ss_showBlogReplies(id) {
 		    	</ssf:url>"
 			url += "\&entryId=" + id
 			url += "\&rn=" + rn++
-			ss_fetch_url(url, ss_showBlogRepliesCallback, id);
+			ss_fetch_url(url, ss_showBlogRepliesCallback<portlet:namespace/>, id);
 		}
 	}
 }
-function ss_showBlogRepliesCallback(s, id) {
-	var targetDiv = document.getElementById('ss_blog_replies_' + id)
+function ss_showBlogRepliesCallback<portlet:namespace/>(s, id) {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
 	if (targetDiv != null) targetDiv.innerHTML = s;
+}
+function ss_addBlogReply<portlet:namespace/>(obj, id) {
+	var showRepliesDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
+	if (showRepliesDiv != null) {
+		if (showRepliesDiv.style.visibility == 'visible') {
+			//Hide the list of replies
+			ss_showBlogReplies<portlet:namespace/>(id)
+		}
+	}
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
+	if (targetDiv != null) {
+		if (targetDiv.style.visibility == 'visible') {
+			targetDiv.style.visibility = 'hidden'
+			targetDiv.style.display = 'none'
+			return
+		}
+	}
+	targetDiv.style.visibility = 'visible';
+	targetDiv.style.display = 'block';
+	var iframeDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_iframe_' + id)
+	iframeDiv.src = obj.href;
+}
+var ss_replyIframeOffset = 50;
+function ss_showBlogReplyIframe<portlet:namespace/>(obj, id) {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
+	var iframeDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_iframe_' + id)
+	if (window.frames['<portlet:namespace/>ss_blog_add_reply_iframe_' + id] != null) {
+		eval("var iframeHeight = parseInt(window.<portlet:namespace/>ss_blog_add_reply_iframe_" + id + ".document.body.scrollHeight);")
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + ss_replyIframeOffset + "px"
+		}
+	}
+}
+function ss_hideBlogReplyIframe<portlet:namespace/>(id) {
+	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_add_reply_' + id)
+	if (targetDiv != null) {
+		targetDiv.style.visibility = 'hidden'
+		targetDiv.style.display = 'none'
+	}
+	ss_showBlogReplies<portlet:namespace/>(id);
 }
 </script>
 

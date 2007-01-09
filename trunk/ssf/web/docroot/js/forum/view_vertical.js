@@ -58,8 +58,10 @@ var ss_savedSliderClassName = ""
 var ss_savedSliderBorder = ""
 function ss_showEntryDiv() {
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    wObj1.style.visibility = "visible";
-    wObj1.style.display = "block";
+    if (wObj1 != null) {
+    	wObj1.style.visibility = "visible";
+    	wObj1.style.display = "block";
+    }
 }
 
 function ss_checkLayoutChange() {

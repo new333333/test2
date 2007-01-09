@@ -53,6 +53,13 @@ public class AddEntryController extends SAbstractController {
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
+				String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+				String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+				if (!blogReply.equals("")) {
+					response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
+					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
+				}
 			}
 			//flag reload of folder listing
 			//response.setRenderParameter("ssReloadUrl", "");

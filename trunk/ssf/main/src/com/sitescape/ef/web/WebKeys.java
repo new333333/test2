@@ -44,6 +44,7 @@ public class WebKeys {
     public static final String URL_BINDER_ID="binderId";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
+    public static final String URL_BLOG_REPLY="blogReply";
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DATE_DAY="day";
@@ -62,6 +63,7 @@ public class WebKeys {
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
+    public static final String URL_NAMESPACE="namespace";
     public static final String URL_NEW_TAB="newTab";
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
     public static final String URL_OPERATION="operation";
@@ -228,6 +230,7 @@ public class WebKeys {
 	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
+	public static final String BLOG_REPLY="ssBlogReply"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONFIGURATIONS="ssConfigurations";
 	public static final String CONFIGURATION="ssConfiguration";
@@ -373,6 +376,7 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RELOAD_URL="ss_reloadUrl";
+    public static final String REPLY_BLOG_URL="replyBlogUrl";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SEARCH_FORM_DATA="ssSearchFormData";

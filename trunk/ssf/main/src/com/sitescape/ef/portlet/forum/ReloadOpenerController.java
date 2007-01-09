@@ -29,6 +29,15 @@ public class ReloadOpenerController  extends SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		
+		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.BLOG_REPLY, "");
+		if (!blogReply.equals("")) {
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
+			model.put(WebKeys.ENTRY_ID, entryId);
+			model.put(WebKeys.NAMESPACE, namespace);
+			return new ModelAndView("forum/reload_blog_reply", model);
+		}
+		
 	    return new ModelAndView("forum/reload_opener", model);
 	}
 
