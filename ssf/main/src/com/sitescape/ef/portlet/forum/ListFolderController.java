@@ -373,10 +373,8 @@ public class ListFolderController extends  SAbstractController {
 		}
 		if (viewType.equals("blog")) {
 			//This is a blog view, set the default sort order
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
-				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_DATE_FIELD);
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 
 		} else {
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
@@ -1365,7 +1363,7 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
-	protected void getBlogEntries(Folder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
+	protected void getBlogEntries(Folder folder, List entrylist, Map model, RenderRequest request, RenderResponse response) {
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
 		Iterator entryIterator = entrylist.listIterator();
@@ -1377,6 +1375,28 @@ public class ListFolderController extends  SAbstractController {
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
+			//See if this entry can have replies added
+			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
+			Definition def = (Definition)entryMap.get(WebKeys.ENTRY_DEFINITION);
+			Document defDoc = def.getDefinition();
+			List replyStyles = defDoc.getRootElement().selectNodes("properties/property[@name='replyStyle']");
+			if (!replyStyles.isEmpty()) {
+				try {
+					getFolderModule().checkAccess(entry, "addReply");
+					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+					if (!replyStyleId.equals("")) {
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_BLOG_REPLY, "1");
+						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+						entryMap.put(WebKeys.REPLY_BLOG_URL, adapterUrl);
+					}
+				} catch(Exception e) {}
+			}
+
 			entryMap.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folder.getId(), entry.getId()));
 			entryMap.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folder.getId(), entry.getId()));
 		}
