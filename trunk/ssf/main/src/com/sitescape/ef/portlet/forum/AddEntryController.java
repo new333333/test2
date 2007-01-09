@@ -33,6 +33,8 @@ public class AddEntryController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		//See if the add entry form was submitted
 		Long entryId=null;
 		if (formData.containsKey("okBtn")) {
@@ -53,18 +55,27 @@ public class AddEntryController extends SAbstractController {
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
-				String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
-				String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 				if (!blogReply.equals("")) {
+			    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 					response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
-					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
+					response.setRenderParameter(WebKeys.ENTRY_ID, entry.getParentEntry().getId().toString());
+					response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getParentEntry().getTotalReplyCount()));
 				}
 			}
 			//flag reload of folder listing
 			//response.setRenderParameter("ssReloadUrl", "");
 		} else if (formData.containsKey("cancelBtn")) {
-			setupCloseWindow(response);
+			if (!blogReply.equals("")) {
+				setupReloadOpener(response, folderId, entryId);
+		    	FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
+				response.setRenderParameter(WebKeys.BLOG_REPLY, "1");
+				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+				response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
+				response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getTotalReplyCount()));
+			} else {
+				setupCloseWindow(response);
+			}
 		} else {
 			response.setRenderParameters(formData);
 		}

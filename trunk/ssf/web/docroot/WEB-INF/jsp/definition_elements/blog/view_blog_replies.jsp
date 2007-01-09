@@ -5,25 +5,17 @@
 <c:if test="${empty ssDefinitionEntry.topEntry}" >
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
-<td valign="top">
-<c:if test="${ssDefinitionEntry.totalReplyCount > 0}">
+<td valign="top" nowrap="nowrap">
 <div>
 <a href="#" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}');return false;">
-<span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: 
-  ${ssDefinitionEntry.totalReplyCount}</span>
+<span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: </span>
+<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>
 </a>
 </div>
 <div id="<portlet:namespace/>ss_blog_replies_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;"></div>
-</c:if>
-<c:if test="${ssDefinitionEntry.totalReplyCount <= 0}">
-<div>
-<span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: 
-  ${ssDefinitionEntry.totalReplyCount}</span>
-</div>
-</c:if>
 </td>
-<td align="right" valign="top">
+<td align="right" valign="top" nowrap="nowrap">
 <c:if test="${!empty ss_blog_reply_url}">
 <a href="${ss_blog_reply_url}" 
   onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;">
