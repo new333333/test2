@@ -31,7 +31,7 @@ public class FileStore {
 	 */
 	public void copyFile(String sourceFileRelativePath, String targetFileRelativePath) throws IOException {
 		File fromFile = getFile(sourceFileRelativePath);
-		File toFile = getFile(targetFileRelativePath);
+		File toFile = getFileMkdir(targetFileRelativePath);
 		
 		FileCopyUtils.copy(fromFile, toFile);
 	}
@@ -46,7 +46,7 @@ public class FileStore {
 	 */
 	public void moveFile(String sourceFileRelativePath, String targetFileRelativePath) throws IOException {
 		File fromFile = getFile(sourceFileRelativePath);
-		File toFile = getFile(targetFileRelativePath);
+		File toFile = getFileMkdir(targetFileRelativePath);
 		
 		FileHelper.move(fromFile, toFile);
 	}
@@ -60,7 +60,7 @@ public class FileStore {
 	 * @throws IOException
 	 */
 	public void writeFile(String fileRelativePath, InputStream input) throws IOException {
-		File file = getFile(fileRelativePath);
+		File file = getFileMkdir(fileRelativePath);
 		
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 
@@ -68,7 +68,7 @@ public class FileStore {
 	}
 	
 	public void writeFile(String fileRelativePath, byte[] input) throws IOException {
-		File file = getFile(fileRelativePath);
+		File file = getFileMkdir(fileRelativePath);
 
 		FileCopyUtils.copy(input, file);
 	}
@@ -101,13 +101,7 @@ public class FileStore {
 	 * @return
 	 */
 	public File getFile(String fileRelativePath) {
-		File file = new File(rootPath, fileRelativePath);
-		
-		File parentDir = file.getParentFile();
-		if(!parentDir.exists())
-			parentDir.mkdirs();
-		
-		return file;
+		return new File(rootPath, fileRelativePath);
 	}
 	
 	/**
@@ -117,7 +111,19 @@ public class FileStore {
 	 * @param fileRelativePath
 	 * @return
 	 */
+	/*
 	public String getAbsolutePath(String fileRelativePath) {
 		return getFile(fileRelativePath).getAbsolutePath();
+	}*/
+	
+	private File getFileMkdir(String fileRelativePath) {
+		File file = getFile(fileRelativePath);
+		
+		File parentDir = file.getParentFile();
+		if(!parentDir.exists())
+			parentDir.mkdirs();
+		
+		return file;
 	}
+	
 }
