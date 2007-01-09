@@ -7,6 +7,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.ArrayList;
@@ -26,7 +28,10 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
@@ -136,7 +141,8 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.TABS, tabs.getTabs());
 
 		Document searchQuery = null;
-
+		Document andSearchQuery = null;
+		
 		Map tab = tabs.getTab(tabs.getCurrentTab());
 		String tabType = null;
 		if (tab != null) tabType = (String)tab.get(Tabs.TYPE);
@@ -157,9 +163,19 @@ public class SearchController extends AbstractBinderController {
 		} 
 		//Search For Text and  Tag Search
 		else if (formData.containsKey("searchTags")) {
-			//Parse the search filter
-			searchQuery = FilterHelper.getSearchTabQuery(request);
+			//
+			String searchTags = PortletRequestUtils.getStringParameter(request, "searchTags", "");
+			
+			if (searchTags.equals("addToSearchText")) searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
+			else searchQuery = FilterHelper.getEmptySearchQuery();
+			
+			//Getting the "And portion" of the search filter
+			//This query will be in the format acceptable to lucene search engine
+			andSearchQuery = getAndSearchQuery(request);
+			
 			Map options = new HashMap();
+			
+			if (andSearchQuery != null) options.put(Tabs.AND_QUERY_DOC, andSearchQuery);
 
 			//Get the search text to use it for the tab title
 			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
@@ -186,6 +202,7 @@ public class SearchController extends AbstractBinderController {
 		else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
 			searchQuery = (Document) tab.get(Tabs.QUERY_DOC);
+			andSearchQuery = (Document) tab.get(Tabs.AND_QUERY_DOC);
 		} else if (tabType != null && !tabType.equals(Tabs.QUERY)) {
 			//The tab changed, go to the right controller
 			return new ModelAndView("binder/tab_redirect", model);
@@ -295,6 +312,9 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{recordsToBeDisplayed}));
 		
 		if (searchQuery != null) {
+			if (andSearchQuery != null) {
+				options.put(ObjectKeys.SEARCH_FILTER_AND, andSearchQuery);
+			}
 			//Do the search and store the search results in the bean
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			//peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
@@ -408,6 +428,38 @@ public class SearchController extends AbstractBinderController {
 		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
 	}
 
+	//Method to generate the "and portion" of the Search Filter
+	//We are adding the tags filter to the search query
+	public Document getAndSearchQuery(RenderRequest request) {
+		Document andQuery = DocumentHelper.createDocument();
+		Element tagRootElement = null;
+
+		String searchCommunityTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
+		if (searchCommunityTag != null && !searchCommunityTag.equals("")) {
+			tagRootElement = andQuery.addElement(QueryBuilder.AND_ELEMENT);
+			Element field = tagRootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+	    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
+	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	child.setText(searchCommunityTag);
+		}
+
+		String searchPersonalTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags, "");
+		if (searchPersonalTag != null && !searchPersonalTag.equals("")) {
+			if (tagRootElement == null) tagRootElement = andQuery.addElement(QueryBuilder.AND_ELEMENT);
+			Element fieldTag = tagRootElement.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
+		    String [] strTagArray = searchPersonalTag.split("\\s");
+		    for (int k = 0; k < strTagArray.length; k++) {
+		    	String strTag = strTagArray[k];
+		    	if (strTag.equals("")) continue;
+	    		Element childTag = fieldTag.addElement(QueryBuilder.TAG_ELEMENT);
+	    		childTag.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
+		    }
+		}
+		
+		if (tagRootElement == null) return null;
+		else return andQuery;
+	}
+	
 	// This class is used by the following method as a way to sort
 	// the values in a hashmap
 	public class Person implements Comparable {
