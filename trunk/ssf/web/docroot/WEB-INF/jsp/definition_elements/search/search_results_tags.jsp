@@ -21,11 +21,11 @@
 				name="searchText" value="${ss_tab_search_text}"/><portlet:param 
 				name="searchCommunityTags" value="${tag.ssTagSearchText}"/><portlet:param 
 				name="searchPersonalTags" value="${ss_tab_personal_tag_search_text}"/><portlet:param 
-				name="searchTags" value="yes"/><portlet:param 
+				name="searchTags" value="addToSearchText"/><portlet:param 
 				name="tabId" value="${tabId}"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">${tag.ssTagSign}</a><a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="search"/><portlet:param 
 				name="searchCommunityTags" value="${tag.ssTag}"/><portlet:param 
-				name="searchTags" value="yes"/><portlet:param 
+				name="searchTags" value="tagOnlySearch"/><portlet:param 
 				name="tabId" value="${tabId}"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">&nbsp;${tag.ssTag}</a>&nbsp;&nbsp;
    	
    </c:forEach>
@@ -53,11 +53,11 @@
 				name="searchText" value="${ss_tab_search_text}"/><portlet:param 
 				name="searchPersonalTags" value="${tag.ssTagSearchText}"/><portlet:param 
 				name="searchCommunityTags" value="${ss_tab_community_tag_search_text}"/><portlet:param 
-				name="searchTags" value="yes"/><portlet:param 
+				name="searchTags" value="addToSearchText"/><portlet:param 
 				name="tabId" value="${tabId}"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">${tag.ssTagSign}</a><a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="search"/><portlet:param 
 				name="searchPersonalTags" value="${tag.ssTag}"/><portlet:param 
-				name="searchTags" value="yes"/><portlet:param 
+				name="searchTags" value="tagOnlySearch"/><portlet:param 
 				name="tabId" value="${tabId}"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">&nbsp;${tag.ssTag}</a>&nbsp;&nbsp;
 				
    </c:forEach>

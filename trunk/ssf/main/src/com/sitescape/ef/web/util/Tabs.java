@@ -37,6 +37,7 @@ public class Tabs {
    	public final static String BINDER_ID = "binderId";
    	public final static String ENTRY_ID = "entryId";
    	public final static String QUERY_DOC = "query_doc";
+   	public final static String AND_QUERY_DOC = "andQuery_doc";
    	public final static String TITLE = "title";
    	public final static String ICON = "icon";
    	public final static String PAGE = "page";
@@ -251,6 +252,7 @@ public class Tabs {
 		tab.put(ICON, binder.getIconName());
 		tab.remove(ENTRY_ID);
 		tab.remove(QUERY_DOC);
+		tab.remove(AND_QUERY_DOC);
 		
 		return ((Integer)tab.get(TAB_ID)).intValue();
 	}
@@ -284,6 +286,7 @@ public class Tabs {
 		tab.put(ICON, entry.getIconName());
 		tab.remove(PAGE);
 		tab.remove(QUERY_DOC);
+		tab.remove(AND_QUERY_DOC);
 		
 		return ((Integer)tab.get(TAB_ID)).intValue();
 	}
@@ -331,6 +334,12 @@ public class Tabs {
 		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);
 		tab.put(TYPE, QUERY);
 		tab.put(QUERY_DOC, query);
+		if (options.containsKey(AND_QUERY_DOC)) {
+			Document andQuery = (Document) options.get(AND_QUERY_DOC);
+			tab.put(AND_QUERY_DOC, andQuery);
+		} else {
+			tab.put(AND_QUERY_DOC, null);
+		}
 		tab.put(PAGE, page);
 		if (options.containsKey(TITLE)) {
 			tab.put(TITLE, new String((String) options.get(TITLE)));
