@@ -78,13 +78,13 @@ public class DocConverterHandler extends AbstractDocHandler {
 			// API makes it more complex to decide who is responsible for disposing
 			// of the file returned from such method. 
 			inputFile = inputTempFile = TempFileUtil.createTempFileWithContent
-				("docconverinput", SPropsUtil.getFile("temp.dir"), source.getDataAsInputStream());
+			("docconverterinput_", source.getDataAsInputStream());
 		}
 		
 		try {
 			// Create an empty file to be used as output file for the converter.
 			// The output file will contain text data in xml format. 
-			File outputTextFile = TempFileUtil.createTempFile("docconverteroutput", SPropsUtil.getFile("temp.dir"));
+			File outputTextFile = TempFileUtil.createTempFile("docconverteroutput_");
 			
 			try {
 				// Invoke the actual converter function giving it timeout value.
