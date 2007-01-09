@@ -1208,7 +1208,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	getTransactionTemplate().execute(new TransactionCallback() {
     	public Object doInTransaction(TransactionStatus status) {
     	   	ChangeLog changes = ((WorkflowSupport)entry).getStateChanges();
-        	getCoreDao().save(changes);
+        	if (changes != null) getCoreDao().save(changes);
     		return null;
     	}});
 
