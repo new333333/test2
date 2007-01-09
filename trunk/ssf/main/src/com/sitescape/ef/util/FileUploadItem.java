@@ -19,8 +19,6 @@ public class FileUploadItem {
 	private static final int THUMBNAIL_MAX_HEIGHT_DEFAULT = 100;
 	
 	private static final String TEMP_FILE_PREFIX = "upload_";
-	private static final String CONVERT_FILE_PREFIX = "convert_";
-	private static final String HTMLCONVERTED_FILE_PREFIX = "htmlconvert_";
 	
 	private int type;
 	private boolean uniqueName=false;
@@ -184,19 +182,11 @@ public class FileUploadItem {
 	private void setup() throws IOException {
 		// Make sure that the uploaded data is accessible through File interface,
 		// regardless of the mechanism used. May not be the most efficient way though.
-		File tempDir = SPropsUtil.getFile("temp.dir");
-		if(!tempDir.exists())
-			FileHelper.mkdirs(tempDir);
-		
-		this.tempFile = File.createTempFile(TEMP_FILE_PREFIX, null, tempDir);
+		this.tempFile = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
 		
 		this.mf.transferTo(this.tempFile);
 		
 		ready = true;
-	}
-	
-	public File getTempFile()  throws IOException {
-		return SPropsUtil.getTempFile(CONVERT_FILE_PREFIX);
 	}
 	
 	/**
