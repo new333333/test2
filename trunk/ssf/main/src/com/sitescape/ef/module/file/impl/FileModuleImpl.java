@@ -637,6 +637,10 @@ public class FileModuleImpl implements FileModule {
 			
 			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
 			htmlfile = cacheFileStore.getFile(filePath);
+			// If the output file's parent directory doesn't already exist, create it.
+			File parentDir = htmlfile.getParentFile();
+			if(!parentDir.exists())
+				parentDir.mkdirs();
 			outFile = htmlfile.getAbsolutePath();
 			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
 			generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), FilePathUtil.getEntityDirPath(binder, entry) + relativeFilePath, outFile);
