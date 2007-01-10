@@ -103,13 +103,11 @@ function ss_positionEntryDiv() {
 }
 
 function ss_hideEntryDiv() {
-    var wObj1 = null
-    if (isNSN || isNSN6 || isMoz5) {
-        wObj1 = self.document.getElementById('ss_showentrydiv')
-    } else {
-        wObj1 = self.document.all['ss_showentrydiv']
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+    if (wObj1 != null) {
+    	wObj1.style.visibility = "hidden";
+    	wObj1.style.display = "none";
     }
-    if (wObj1 != null) wObj1.style.visibility = "hidden";
     ss_showSpannedAreas();
 }
 
