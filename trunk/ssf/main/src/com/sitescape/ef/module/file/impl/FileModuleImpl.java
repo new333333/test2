@@ -30,7 +30,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.ObjectKeys;
@@ -393,71 +392,37 @@ public class FileModuleImpl implements FileModule {
 	public void readCacheHtmlFile(String url, Binder binder, DefinableEntity entry, FileAttachment fa, OutputStream out) 
 	{
 		InputStream is = null;
-		FileOutputStream fos = null;
-		RepositorySession session = null;
-		File reposFile = null,
-		 	 htmlFile = null;
-		String filePath = "",
-			   reposFilename = "";
+		File htmlFile = null;
+		String filePath = "";
 
 		try
 		{
-			// Open session to repository that holds the attachment file we want to convert to
-			// an HTML file type
-			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
-			
-			// We need to find the most recent revision of file to get correct name
-			reposFilename = fa.getFileItem().getName();
-			
 			// See if we already have a cached version of file.
 			// The cached version of the file will have an HTML extension as opposed to the original file extension
 			// such as (DOC, PPT, etc). We need to change the filename to reflect this.
 			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
 			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
 			htmlFile = cacheFileStore.getFile(filePath);
-			if (htmlFile != null && htmlFile.exists())
+			if (htmlFile != null
+			&& htmlFile.exists()
+			&& htmlFile.lastModified() >= fa.getModification().getDate().getTime())
 			{
 				// Process Character file
 				is = new FileInputStream(htmlFile);
 				byte[] bbuf = new byte[is.available()];
 				is.read(bbuf);
 				out.write(bbuf);
-				
 				return;
 			}
-			
-			reposFile = new File(FilePathUtil.getEntityDirPath(binder, entry) + reposFilename);
-			if (reposFile == null || !reposFile.exists())
+			else
 			{
-				try
-				{
-					is = session.read(binder, entry, reposFilename);
-					byte[] bbuf = new byte[is.available()];
-					is.read(bbuf);
-					
-					fos = new FileOutputStream(reposFile);
-					fos.write(bbuf);
-				}
-				finally
-				{
-					if (is != null)
-						is.close();
-					
-					if (fos != null)
-						fos.close();
-				}
-			}
-			
-			FileHelper.mkdirsIfNecessary(filePath.substring(0, filePath.lastIndexOf(File.separator)));
-			// If incoming file is newer than cached file we will regenerated cached file
-			if (!htmlFile.exists() || htmlFile.lastModified() < reposFile.lastModified())
 				generateHtmlFile(url, binder, entry, fa);
-			
-			// Process Character file
-			is = new FileInputStream(htmlFile);
-			byte[] bbuf = new byte[is.available()];
-			is.read(bbuf);
-			out.write(bbuf);
+				// Process Character file
+				is = new FileInputStream(htmlFile);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				out.write(bbuf);
+			}
 		}
 		catch(FileNotFoundException e) {
 			throw new UncheckedIOException(e);
@@ -473,11 +438,7 @@ public class FileModuleImpl implements FileModule {
 					is.close();
 				} catch (Exception e) {}
 			}
-			
-			if (session != null)
-				session.close();
 		}
-		
 	}
 	
 	/**
