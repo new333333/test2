@@ -5,10 +5,6 @@
 
 <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
 <%
-	if (!ssSeenMap.checkIfSeen(title_entry)) {
-		ssSeenMap.setSeen(title_entry);
-		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
-	}
 	//Get a dispalyable number for the replies
 	String docNumber = "";
 	String fontSize = "ss_largestprint";
@@ -23,6 +19,12 @@
 %>
 
 <div class="ss_blog_title">
+<%
+	if (!ssSeenMap.checkIfSeen(title_entry)) {
+		ssSeenMap.setSeen(title_entry);
+		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+	}
+%>
 <span class="ss_bold <%= fontSize %>">
  <a style="text-decoration: none;" 
    href="<ssf:url adapter="true" portletName="ss_forum" 

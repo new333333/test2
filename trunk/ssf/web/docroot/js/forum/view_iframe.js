@@ -19,7 +19,8 @@ function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-
+	if (wObj1 != null) return true;
+	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
     wObj1.style.zIndex = ssEntryZ;
@@ -55,6 +56,7 @@ function ss_positionEntryDiv() {
     if (ss_entryWindowHeight < ss_minEntryWindowHeight) ss_entryWindowHeight = ss_minEntryWindowHeight;
 
     var wObj1 = self.document.getElementById('ss_showentrydiv')
+    if (wObj1 != null) return;
     ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
@@ -107,14 +109,14 @@ function ss_hideEntryDiv() {
     } else {
         wObj1 = self.document.all['ss_showentrydiv']
     }
-    wObj1.style.visibility = "hidden";
+    if (wObj1 != null) wObj1.style.visibility = "hidden";
     ss_showSpannedAreas();
 }
 
 function ss_repositionEntryDiv() {
     //ss_debug('reposition div')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    if (wObj1.style.visibility == "visible") {
+    if (wObj1 != null && wObj1.style.visibility == "visible") {
     	//The entry div is visible, so reposition it to the new size
     	ss_positionEntryDiv();
     }
