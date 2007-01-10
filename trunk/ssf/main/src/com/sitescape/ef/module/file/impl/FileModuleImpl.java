@@ -878,7 +878,7 @@ public class FileModuleImpl implements FileModule {
 		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, entity, fa.getFileItem().getName(), newName);
         if ((entity.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDef().getDefinition(), fa.getName(), "title")) {
         	//check title
-        	entity.getEntryDef().setTitle(newName);			   			   
+        	entity.setTitle(newName);			   			   
 		}
 		fa.getFileItem().setName(newName);
 		
