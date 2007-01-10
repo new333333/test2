@@ -9,6 +9,7 @@ import org.dom4j.Document;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
@@ -50,11 +51,22 @@ public interface FolderModule {
     		Map fileItems) throws AccessControlException, WriteFilesException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
-     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, 
-    		WriteFilesException, ReservedByAnotherUserException;
-    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData) 
-    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    /**
+     * 
+     * @param folderId
+     * @param entryId
+     * @param inputData
+     * @param fileItems
+     * @param deleteAttachments A collection of either <code>java.lang.String</code>
+     * representing database id of each attachment or 
+     * {@link com.sitescape.ef.domain.Attachment Attachment}.
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     * @throws ReservedByAnotherUserException
+     */
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
 	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;

@@ -764,7 +764,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 
 		try {
 			bs.getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-					inputData, fileItems, null);
+					inputData, fileItems, null, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {
@@ -911,7 +911,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		faId.add(fa.getId());
 		
 		try {
-			bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId);
+			bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null);
 		}
 		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
@@ -1011,16 +1011,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void renameResource(Map sourceUri, Map sourceMap, Map targetUri, 
 			Map targetMap) throws NoAccessException {
 		try {
-			Map data = new HashMap();
-			// To request file name change for library folder file, we use a
-			// special key/value pair. Sort of a hack. 
-			data.put("_renameFileTo", getLastElemName(targetMap));
-			data.put("_renameFileTo_fa", getFileAttachment(sourceMap));
+			Map<FileAttachment,String> renamesTo = new HashMap<FileAttachment,String>();
+			renamesTo.put(getFileAttachment(sourceMap), getLastElemName(targetMap));
 			
 			FolderEntry entry = getFolderEntry(sourceMap);
 			
 			bs.getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
-					entry.getId(), new MapInputData(data), null, null);
+					entry.getId(), new EmptyInputData(), null, null, renamesTo);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());

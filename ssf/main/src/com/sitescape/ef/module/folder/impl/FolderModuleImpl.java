@@ -225,13 +225,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         
         return reply.getId();
     }
-    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
-			throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
-    	modifyEntry(binderId, id, inputData, new HashMap(), null);
-    }
+
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, 
-    		WriteFilesException, ReservedByAnotherUserException {
+    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -260,7 +257,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		}
     	}
     	Date stamp = entry.getModification().getDate();
-        processor.modifyEntry(folder, entry, inputData, fileItems, atts);
+        processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo);
         if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
     }
 

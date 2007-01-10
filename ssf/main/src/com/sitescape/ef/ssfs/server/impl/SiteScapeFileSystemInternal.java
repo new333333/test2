@@ -336,7 +336,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		faId.add(fa.getId());
 		
 		try {
-			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), new EmptyInputData(), null, faId);
+			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), new EmptyInputData(), null, faId, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());						
 		} catch (WriteFilesException e) {
@@ -567,7 +567,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		}
 
 		try {
-			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null);
+			bs.getFolderModule().modifyEntry(getBinderId(uri), getEntryId(uri), inputData, fileItems, null, null);
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {

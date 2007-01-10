@@ -57,7 +57,7 @@ public class ModifyEntryController extends SAbstractController {
 					
 				}
 			
-				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
+				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
 				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
 				//response.setRenderParameter("ssReloadUrl", "");

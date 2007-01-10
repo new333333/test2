@@ -13,6 +13,7 @@ import org.dom4j.Document;
 
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Rating;
@@ -37,8 +38,10 @@ public interface ProfileModule {
 
    public boolean checkUserSeeAll();
 
-   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
+   public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, 
+		   Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
 		throws AccessControlException, WriteFilesException;
+
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;
   

@@ -24,6 +24,7 @@ import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.FolderHierarchyException;
@@ -201,8 +202,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //***********************************************************************************************************
    
- 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
- 		super.modifyEntry_postFillIn(binder, entry, inputData, entryData);
+ 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
+ 			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
+ 		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
    }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
