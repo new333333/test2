@@ -38,6 +38,12 @@ public class Tabs {
    	public final static String ENTRY_ID = "entryId";
    	public final static String QUERY_DOC = "query_doc";
    	public final static String AND_QUERY_DOC = "andQuery_doc";
+   	
+	public static final String END_DATE="endDate";
+	public static final String YEAR_MONTH="yearMonth";
+	public static final String TAG_COMMUNITY = "cTag";
+	public static final String TAG_PERSONAL = "pTag";
+   	
    	public final static String TITLE = "title";
    	public final static String ICON = "icon";
    	public final static String PAGE = "page";
@@ -246,10 +252,27 @@ public class Tabs {
     			equals(EntityIdentifier.EntityType.profiles)) {
     		tab.put(TYPE, PROFILES);
     	}
+    	
+    	String strEndDate = (String) tab.get(END_DATE);
+    	if (options.containsKey(END_DATE)) strEndDate = (String) options.get(END_DATE);
+    	
+    	String strYearMonth = (String) tab.get(YEAR_MONTH);
+    	if (options.containsKey(YEAR_MONTH)) strYearMonth = (String) options.get(YEAR_MONTH);
+
+    	String strTagCommunity = (String) tab.get(TAG_COMMUNITY);
+    	if (options.containsKey(TAG_COMMUNITY)) strTagCommunity = (String) options.get(TAG_COMMUNITY);
+
+    	String strTagPersonal = (String) tab.get(TAG_PERSONAL);
+    	if (options.containsKey(TAG_PERSONAL)) strTagPersonal = (String) options.get(TAG_PERSONAL);
+    	
 		tab.put(BINDER_ID, binder.getId());
 		tab.put(PAGE, page);
 		tab.put(TITLE, binder.getTitle());
 		tab.put(ICON, binder.getIconName());
+    	tab.put(END_DATE, strEndDate);
+    	tab.put(YEAR_MONTH, strYearMonth);		
+    	tab.put(TAG_COMMUNITY, strTagCommunity);		
+    	tab.put(TAG_PERSONAL, strTagPersonal);		
 		tab.remove(ENTRY_ID);
 		tab.remove(QUERY_DOC);
 		tab.remove(AND_QUERY_DOC);
@@ -346,6 +369,23 @@ public class Tabs {
 		} else {
 			tab.put(TITLE, "");
 		}
+		
+    	String strEndDate = (String) tab.get(END_DATE);
+    	if (options.containsKey(END_DATE)) strEndDate = (String) options.get(END_DATE);
+    	
+    	String strYearMonth = (String) tab.get(YEAR_MONTH);
+    	if (options.containsKey(YEAR_MONTH)) strYearMonth = (String) options.get(YEAR_MONTH);
+
+    	String strTagCommunity = (String) tab.get(TAG_COMMUNITY);
+    	if (options.containsKey(TAG_COMMUNITY)) strTagCommunity = (String) options.get(TAG_COMMUNITY);
+
+    	String strTagPersonal = (String) tab.get(TAG_PERSONAL);
+    	if (options.containsKey(TAG_PERSONAL)) strTagPersonal = (String) options.get(TAG_PERSONAL);
+		
+    	tab.put(END_DATE, strEndDate);
+    	tab.put(YEAR_MONTH, strYearMonth);		
+    	tab.put(TAG_COMMUNITY, strTagCommunity);		
+    	tab.put(TAG_PERSONAL, strTagPersonal);		
 		tab.put(ICON, "pics/sym_s_search.gif");
 		tab.remove(BINDER_ID);
 		tab.remove(ENTRY_ID);

@@ -81,6 +81,7 @@ public class WebKeys {
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
+	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";

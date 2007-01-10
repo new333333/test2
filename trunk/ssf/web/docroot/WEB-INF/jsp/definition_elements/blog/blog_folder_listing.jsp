@@ -39,7 +39,9 @@
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  <tr>
-		  <td><a href="${ssBlogMonthUrls[monthYear.key]}"><c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
+		  <td><a href="${ssBlogMonthUrls[monthYear.key]}" 
+		  class="<c:if test="${!empty selectedYearMonth && selectedYearMonth == ssBlogMonthTitles[monthYear.key]}">ss_bold</c:if>">
+		  <c:out value="${ssBlogMonthTitles[monthYear.key]}"/></a></td>
 		  <td align="right">(<c:out value="${monthYear.value}"/>)</td>
 		  </tr>
 		</c:forEach>
@@ -50,13 +52,11 @@
 		<span class="ss_bold ss_underline"><ssf:nlt tag="tags.community"/></span>
 		<br/>
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-		   
-		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				name="action" value="view_folder_listing"/><portlet:param 
-				name="binderId" value="${ssBinder.id}"/><portlet:param 
-				name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
-		   	
+			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+					name="action" value="view_folder_listing"/><portlet:param 
+					name="binderId" value="${ssBinder.id}"/><portlet:param 
+					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+					class="${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		
         <br>
@@ -69,7 +69,7 @@
 				name="action" value="view_folder_listing"/><portlet:param 
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="${tag.searchResultsRatingCSS}">${tag.ssTag}</a>&nbsp;&nbsp;
+				class="${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
 	  </td>
