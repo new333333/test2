@@ -19,7 +19,7 @@ function ss_showForumEntryInIframe(url) {
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-	if (wObj1 != null) return true;
+	if (wObj1 == null) return true;
 	
     ss_hideSpannedAreas();
     wObj1.style.display = "block";
@@ -56,7 +56,7 @@ function ss_positionEntryDiv() {
     if (ss_entryWindowHeight < ss_minEntryWindowHeight) ss_entryWindowHeight = ss_minEntryWindowHeight;
 
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-    if (wObj1 != null) return;
+    if (wObj1 == null) return;
     ss_moveObjectToBody(wObj1)
     var wObj2 = self.document.getElementById(ss_iframe_box_div_name)
     var wObj3 = self.document.getElementById('ss_showentryframe')
