@@ -623,9 +623,11 @@ public class FileModuleImpl implements FileModule {
 	public void generateHtmlFile(String url, Binder binder, 
 			 DefinableEntity entry, FileAttachment fa)
 	{
-		File htmlfile = null;
+		InputStream is = null;
+		FileOutputStream fos = null;
 		RepositorySession session = null;
-		ByteArrayOutputStream baos = null;
+		File htmlfile = null,
+		 	 originalFile = null;
 		String filePath = "",
 			   outFile = "",
 			   relativeFilePath = "";
@@ -641,9 +643,29 @@ public class FileModuleImpl implements FileModule {
 			File parentDir = htmlfile.getParentFile();
 			if(!parentDir.exists())
 				parentDir.mkdirs();
+			
+			try
+			{
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + relativeFilePath);
+				originalFile = cacheFileStore.getFile(filePath);
+				fos = new FileOutputStream(originalFile);
+				fos.write(bbuf);
+				fos.flush();
+			}
+			catch(Exception e)
+			{
+				if (is != null)
+					is.close();
+				if (fos != null)
+					fos.close();
+			}
+			
 			outFile = htmlfile.getAbsolutePath();
 			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
-			generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), FilePathUtil.getEntityDirPath(binder, entry) + relativeFilePath, outFile);
+			generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), originalFile.getAbsolutePath(), outFile);
 		}
 		catch(FileNotFoundException e) {
 			throw new UncheckedIOException(e);
