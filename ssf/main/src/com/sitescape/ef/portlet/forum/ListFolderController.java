@@ -65,6 +65,22 @@ import com.sitescape.util.cal.CalendarUtil;
  *
  */
 public class ListFolderController extends  SAbstractController {
+	
+	String[] monthNames = { 
+			NLT.get("calendar.january"),
+			NLT.get("calendar.february"),
+			NLT.get("calendar.march"),
+			NLT.get("calendar.april"),
+			NLT.get("calendar.may"),
+			NLT.get("calendar.june"),
+			NLT.get("calendar.july"),
+			NLT.get("calendar.august"),
+			NLT.get("calendar.september"),
+			NLT.get("calendar.october"),
+			NLT.get("calendar.november"),
+			NLT.get("calendar.december")
+		};
+	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
@@ -292,7 +308,7 @@ public class ListFolderController extends  SAbstractController {
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 
-		Map tabOptions = tabs.getTab(tabs.getCurrentTab());	
+		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
 		
 		//Determine the Records Per Page
 		//Getting the entries per page from the user properties
@@ -396,24 +412,93 @@ public class ListFolderController extends  SAbstractController {
 		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
 		String year = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_YEAR, "");
 		if (!day.equals("") || !month.equals("") || !year.equals("")) {
-			options.put(ObjectKeys.SEARCH_END_DATE, DateHelper.getDateStringFromDMY(day, month, year));
+			String strDate = DateHelper.getDateStringFromDMY(day, month, year);
+			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
+			tabOptions.put(Tabs.END_DATE, strDate);
+			tabOptions.put(Tabs.YEAR_MONTH, "");
+			tabOptions.put(Tabs.TAG_COMMUNITY, "");
+			tabOptions.put(Tabs.TAG_PERSONAL, "");	
 			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
+			model.put(WebKeys.URL_DATE_DAY, day);
+			model.put(WebKeys.URL_DATE_MONTH, month);
+			model.put(WebKeys.URL_DATE_YEAR, year);
 		}
+		else if (tabOptions.containsKey(Tabs.END_DATE)) {
+			String strEndDate = (String) tabOptions.get(Tabs.END_DATE);
+			if (strEndDate != null && !"".equals(strEndDate)) {
+				options.put(ObjectKeys.SEARCH_END_DATE, strEndDate);
+				model.put(WebKeys.URL_DATE_DAY, day);
+				model.put(WebKeys.URL_DATE_MONTH, month);
+				model.put(WebKeys.URL_DATE_YEAR, year);
+			}
+		}
+		
 		//See if this is a request for a specific year/month
 		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, "");
 		if (!yearMonth.equals("")) {
 			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
+			tabOptions.put(Tabs.END_DATE, "");
+			tabOptions.put(Tabs.YEAR_MONTH, yearMonth);
+			tabOptions.put(Tabs.TAG_COMMUNITY, "");
+			tabOptions.put(Tabs.TAG_PERSONAL, "");	
+			model.put(WebKeys.URL_YEAR_MONTH, yearMonth);
+
+			String strYear = yearMonth.substring(0, 4);
+			String strMonth = yearMonth.substring(4, 6);
+			int intMonth = Integer.parseInt(strMonth);
+			String strMonthName = monthNames[intMonth-1];
+			
+			model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
 		}
+		else if (tabOptions.containsKey(Tabs.YEAR_MONTH)) {
+			String strYearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
+			if (strYearMonth != null && !"".equals(strYearMonth)) {
+				options.put(ObjectKeys.SEARCH_YEAR_MONTH, strYearMonth);
+				model.put(WebKeys.URL_YEAR_MONTH, strYearMonth);
+				String strYear = strYearMonth.substring(0, 4);
+				String strMonth = strYearMonth.substring(4, 6);
+				int intMonth = Integer.parseInt(strMonth);
+				String strMonthName = monthNames[intMonth-1];
+				
+				model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
+			}
+		}
+		
 		//See if the url has tags 
 		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
 		if (!cTag.equals("")) {
 			options.put(ObjectKeys.SEARCH_COMMUNITY_TAG, cTag);
+			tabOptions.put(Tabs.END_DATE, "");
+			tabOptions.put(Tabs.YEAR_MONTH, "");
+			tabOptions.put(Tabs.TAG_COMMUNITY, cTag);
+			tabOptions.put(Tabs.TAG_PERSONAL, "");	
+			model.put(WebKeys.URL_TAG_COMMUNITY, cTag);
 		}
+		else if (tabOptions.containsKey(Tabs.TAG_COMMUNITY)) {
+			String strCommunityTag = (String) tabOptions.get(Tabs.TAG_COMMUNITY);
+			if (strCommunityTag != null && !"".equals(strCommunityTag)) {
+				options.put(ObjectKeys.SEARCH_COMMUNITY_TAG, strCommunityTag);
+				model.put(WebKeys.URL_TAG_COMMUNITY, strCommunityTag);
+			}
+		}
+
 		String pTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_PERSONAL, "");
 		if (!pTag.equals("")) {
 			options.put(ObjectKeys.SEARCH_PERSONAL_TAG, pTag);
+			tabOptions.put(Tabs.END_DATE, "");
+			tabOptions.put(Tabs.YEAR_MONTH, "");
+			tabOptions.put(Tabs.TAG_COMMUNITY, "");
+			tabOptions.put(Tabs.TAG_PERSONAL, pTag);	
+			model.put(WebKeys.URL_TAG_PERSONAL, pTag);
 		}
-		
+		else if (tabOptions.containsKey(Tabs.TAG_PERSONAL)) {
+			String strPersonalTag = (String) tabOptions.get(Tabs.TAG_PERSONAL);
+			if (strPersonalTag != null && !"".equals(strPersonalTag)) {
+				options.put(ObjectKeys.SEARCH_PERSONAL_TAG, strPersonalTag);
+				model.put(WebKeys.URL_TAG_PERSONAL, strPersonalTag);
+			}
+		}
+
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
 		
@@ -572,20 +657,6 @@ public class ListFolderController extends  SAbstractController {
 		LinkedHashMap monthHits = new LinkedHashMap();
 		Map monthTitles = new HashMap();
 		Map monthUrls = new HashMap();
-		String[] monthNames = { 
-				NLT.get("calendar.january"),
-				NLT.get("calendar.february"),
-				NLT.get("calendar.march"),
-				NLT.get("calendar.april"),
-				NLT.get("calendar.may"),
-				NLT.get("calendar.june"),
-				NLT.get("calendar.july"),
-				NLT.get("calendar.august"),
-				NLT.get("calendar.september"),
-				NLT.get("calendar.october"),
-				NLT.get("calendar.november"),
-				NLT.get("calendar.december")
-			};
 		Iterator itEntries = entries.iterator();
 		while (itEntries.hasNext()) {
 			Map entry = (Map)itEntries.next();
