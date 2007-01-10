@@ -9,6 +9,7 @@ import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -29,7 +30,8 @@ public interface EntryProcessor extends BinderProcessor {
     	throws WriteFilesException;
     public void deleteEntry(Binder binder, Entry entry);
     public Entry getEntry(Binder binder, Long entryId);
-    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments)
+    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
+    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);

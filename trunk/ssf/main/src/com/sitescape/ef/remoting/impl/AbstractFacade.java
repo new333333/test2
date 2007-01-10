@@ -2,6 +2,7 @@ package com.sitescape.ef.remoting.impl;
 
 import java.io.IOException;
 import java.text.DateFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -233,7 +234,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		
 		try {
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new DomInputData(doc));
+				new DomInputData(doc), new HashMap(), null, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Membership;
@@ -267,9 +268,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {
-    	modifyEntry(binderId, id, inputData, new HashMap(), null);
+    	modifyEntry(binderId, id, inputData, new HashMap(), null, null);
     }
-   public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
+   public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, 
+		   Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
    		throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
@@ -283,7 +285,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     			if (a != null) atts.add(a);
     		}
     	}
-         processor.modifyEntry(binder, entry, inputData, fileItems, atts);
+         processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
      }
 
      public void addEntries(Long binderId, Document doc) {

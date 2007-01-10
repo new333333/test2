@@ -294,7 +294,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  	
    //***********************************************************************************************************
     public void modifyEntry(final Binder binder, final Entry entry, 
-    		final InputDataAccessor inputData, Map fileItems, final Collection deleteAttachments)  
+    		final InputDataAccessor inputData, Map fileItems, 
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
     		throws WriteFilesException {
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
@@ -313,7 +314,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
-	    			modifyEntry_postFillIn(binder, entry, inputData, entryData);
+	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
 	    			return null;
 	    		}});
 	    	sp.end().print();
@@ -466,20 +467,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     }
 
-    protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
+    		InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
  
-    	if(!inputData.exists("_renameFileTo"))
-		   return;
-	   
-	   // We have a request for renaming the library file associated with
-	   // the file folder entry.
-	   String toName = inputData.getSingleValue("_renameFileTo");
-	   FileAttachment fa = (FileAttachment) inputData.getSingleObject("_renameFileTo_fa");
-	   
-	   getFileModule().renameFile(binder, entry, fa, toName);
-	   
+    	if(fileRenamesTo != null)
+	    	for(FileAttachment fa : fileRenamesTo.keySet()) {
+	    		String toName = fileRenamesTo.get(fa);
+	    		getFileModule().renameFile(binder, entry, fa, toName);
+	    	}
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 

@@ -60,7 +60,7 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				
 			}
-			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts);
+			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
 			setupReloadOpener(response, binderId, entryId);
 			//flag reload of folder listing
 			//response.setRenderParameter("ssReloadUrl", "");
