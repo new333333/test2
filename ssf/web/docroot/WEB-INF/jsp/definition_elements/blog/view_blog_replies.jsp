@@ -12,8 +12,6 @@
 <span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>
 </a>
 </div>
-<div id="<portlet:namespace/>ss_blog_replies_${ssDefinitionEntry.id}" 
-  style="display:none; visibility:hidden;"></div>
 </td>
 <td align="right" valign="top" nowrap="nowrap">
 <c:if test="${!empty ss_blog_reply_url}">
@@ -25,6 +23,8 @@
 </td>
 </tr>
 </table>
+<div id="<portlet:namespace/>ss_blog_replies_${ssDefinitionEntry.id}" 
+  style="display:none; visibility:hidden;"></div>
 <div id="<portlet:namespace/>ss_blog_add_reply_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;">
 <iframe 
