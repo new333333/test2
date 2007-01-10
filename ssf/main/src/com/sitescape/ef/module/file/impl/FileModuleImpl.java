@@ -1769,7 +1769,7 @@ public class FileModuleImpl implements FileModule {
 				htmlConverter = (IHtmlConverterManager)SpringContextUtil.getBean("htmlConverterMgr");
 				converter = htmlConverter.getConverter();
 				
-				converter.convert(inFile, outFile, 5000);
+				converter.convert(inFile, outFile, 30000);
 				// When generating the HMTL equivalent file.
 				// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
 				// Every HTML file in directory should be related to converter process
