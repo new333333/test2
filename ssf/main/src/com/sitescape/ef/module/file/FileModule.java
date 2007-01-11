@@ -407,6 +407,25 @@ public interface FileModule {
 		throws UncheckedIOException, RepositoryServiceException;
 
 	/**
+	 * Moves the file.
+	 * 
+	 * Important: Unlike many other methods in this class, this method
+	 * assumes that the caller is responsible for transaction demarcation
+	 * with respect to updating the metadata in the database. 
+	 * This inconsistency is here merely for improved efficiency.
+	 * 
+	 * @param binder
+	 * @param entity
+	 * @param destination
+	 * @param fa
+	 * @throws UncheckedIOException
+	 * @throws RepositoryServiceException
+	 */
+	public void moveFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, Binder destBinder) 
+	throws UncheckedIOException, RepositoryServiceException;
+
+	/**
 	 * Delete the specified version. 
 	 * If it is the only remaining version for the file, the request fails and 
 	 * the method throws <code>DeleteVersionException</code>.

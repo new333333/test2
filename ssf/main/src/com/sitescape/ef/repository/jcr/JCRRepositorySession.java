@@ -242,11 +242,13 @@ public class JCRRepositorySession implements RepositorySession {
 		}	
 	}
 
-	public void miniMove(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String newRelativeFilePath) 
+	public void move(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntity, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
+
 		String fileNodePath = getFileNodePath(binder, entity, relativeFilePath);
-		String newFileNodePath = getFileNodePath(binder, entity, newRelativeFilePath);
+		String newFileNodePath = getFileNodePath(destBinder, destEntity, destRelativeFilePath);
 
 		try {
 			Node dirNode = getRootNode();

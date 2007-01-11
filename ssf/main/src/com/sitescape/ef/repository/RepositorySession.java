@@ -409,21 +409,20 @@ public interface RepositorySession {
 			UncheckedIOException;
 	
 	/**
-	 * Moves the file resource. 
-	 * This method is named miniMove to distinguish it from full-blown move
-	 * operation, since this move is intra-entity (as opposed to inter-entity).
-	 * In other word, the move takes place only within the confinement of the 
-	 * same entity. 
+	 * Moves the file resource.
 	 * 
 	 * @param binder
 	 * @param entity
 	 * @param relativeFilePath
-	 * @param newRelativeFilePath
+	 * @param destBinder
+	 * @param destEntity
+	 * @param destRelativeFilePath
 	 * @throws RepositoryServiceException
 	 * @throws UncheckedIOException
 	 */
-	public void miniMove(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String newRelativeFilePath) 
+	public void move(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntity, String destRelativeFilePath)
 		throws RepositoryServiceException, UncheckedIOException;
 	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 

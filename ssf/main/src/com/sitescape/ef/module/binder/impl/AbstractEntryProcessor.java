@@ -780,6 +780,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			reindexEntry(entry);
    		}
    	}
+   	public void moveFiles(Binder binder, Collection entries, Binder destination) {
+   		for (Iterator iter=entries.iterator(); iter.hasNext();) {
+   			Entry entry = (Entry)iter.next();
+   			moveFiles(binder, entry, destination);
+   		}
+   	}
+   	
+    protected void moveFiles(Binder binder, Entry entry, Binder destination) {
+    	List atts = entry.getFileAttachments();
+    	for(int i = 0; i < atts.size(); i++) {
+    		FileAttachment fa = (FileAttachment) atts.get(i);
+    		getFileModule().moveFile(binder, entry, fa, destination);
+    	}
+    }
    	
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {

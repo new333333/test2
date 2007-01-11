@@ -871,8 +871,8 @@ public class FileModuleImpl implements FileModule {
 			FileAttachment fa, String newName) 
 	throws UncheckedIOException, RepositoryServiceException {
 		// Rename the file in the repository
-		RepositoryUtil.miniMove(fa.getRepositoryName(), binder, entity, 
-				fa.getFileItem().getName(), newName);
+		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+				fa.getFileItem().getName(), binder, entity, newName);
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
 		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, entity, fa.getFileItem().getName(), newName);
@@ -889,7 +889,25 @@ public class FileModuleImpl implements FileModule {
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILERENAME);
 		ChangeLogUtils.buildLog(changes, fa);
 		getCoreDao().save(changes);
+	}
+	
+	public void moveFile(Binder binder, DefinableEntity entity, 
+			FileAttachment fa, Binder destBinder) 
+	throws UncheckedIOException, RepositoryServiceException {
+		// Rename the file in the repository
+		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+				fa.getFileItem().getName(), destBinder, entity, 
+				fa.getFileItem().getName());
 		
+		if (binder.isLibrary() && !binder.equals(entity))
+			getCoreDao().unRegisterLibraryEntry(binder, fa.getFileItem().getName());
+		if (destBinder.isLibrary() && !destBinder.equals(entity))
+			getCoreDao().registerLibraryEntry(destBinder, entity, fa.getFileItem().getName());
+
+
+		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
+		ChangeLogUtils.buildLog(changes, fa);
+		getCoreDao().save(changes);
 	}
 	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
