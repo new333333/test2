@@ -1,13 +1,20 @@
 package com.sitescape.ef.lucene.server;
 
-import java.rmi.*;
+import java.rmi.Naming;
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.document.Document;
 
 import com.sitescape.ef.lucene.SsfIndexInterface;
+import com.sitescape.ef.lucene.SsfQueryAnalyzer;
+import com.sitescape.ef.search.BasicIndexUtils;
+
 
 /**
  * The main server for the lucene indexserver.
@@ -33,7 +40,8 @@ public class SsfIndexer
     extends UnicastRemoteObject implements SsfIndexInterface {
 
     IndexObjectCache ioc;
-
+    private static final long serialVersionUID = 1L;
+    
     /**
      * Constructor
      *
@@ -170,7 +178,35 @@ public class SsfIndexer
         IndexObject io = ioc.getIndexObject(indexname);
         io.stop();
     }
+    
+    /**
+     * Optimize this index
+     * 
+     *
+     * @param indexname
+     * @throws RemoteException
+     */
+    public void optimize(String indexname) throws RemoteException {
+        IndexObject io = ioc.getIndexObject(indexname);
+        io.optimize();
+    }
 
+	public void updateDocument(String indexname, String uid, String fieldname, String fieldvalue)  throws RemoteException {
+        //build the query
+		Query q = null;
+		QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,
+				new SsfQueryAnalyzer());
+		try {
+			q = qp.parse(BasicIndexUtils.UID_FIELD + ":" + uid);
+		} catch (ParseException pe) {
+			throw new RemoteException(pe.toString());
+		}
+		updateDocuments(indexname, q, fieldname, fieldvalue);
+	}
 
+	public void updateDocuments(String indexname, Query query, String fieldname, String fieldvalue) throws RemoteException {
+        IndexObject io = ioc.getIndexObject(indexname);
+        io.updateDocs(query, fieldname, fieldvalue);
+	}
 }
 
