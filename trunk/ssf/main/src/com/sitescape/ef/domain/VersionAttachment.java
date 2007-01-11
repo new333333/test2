@@ -1,6 +1,5 @@
 
 package com.sitescape.ef.domain;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
@@ -74,7 +73,6 @@ public class VersionAttachment extends FileAttachment {
 		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_REPOSITORY, getRepositoryName());
 	
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
-		//modification date/principal may be different then log
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		if (!parent.getName().equals("fileVersions")) {
 			//add additional information if logged along

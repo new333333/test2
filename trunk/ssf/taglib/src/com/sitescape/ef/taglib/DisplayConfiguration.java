@@ -20,6 +20,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -69,7 +70,7 @@ public class DisplayConfiguration extends TagSupport {
 							// (rsordillo) Jsps contained in configDefaultDefinition only, removed code to check Definition
 							String jsp = DefinitionHelper.getDefinitionBuilderConfig().getItemJspByStyle(itemType, this.configJspStyle);
 
-								if (!jsp.equals("")) {
+								if (!Validator.isNull(jsp)) {
 									RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
 									ServletRequest req = null;
@@ -79,6 +80,7 @@ public class DisplayConfiguration extends TagSupport {
 									req.setAttribute("item", nextItem);
 									req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
 									req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
+									req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
 									
 									//Each item property that has a value is added as a "request attribute". 
 									//  The key name is "property_xxx" where xxx is the property name.
@@ -184,8 +186,10 @@ public class DisplayConfiguration extends TagSupport {
 											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
 								}
 							} else {
-								pageContext.getOut().print("<br><i>[No jsp for configuration element: "
+								if (!"mail".equals(configJspStyle)) {
+									pageContext.getOut().print("<br><i>[No jsp for configuration element: "
 										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+								}
 							}
 //						}
 					}

@@ -109,6 +109,7 @@
 		
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail_entry_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -146,6 +147,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
 		</jsps>
 	</item>
 		
@@ -155,6 +157,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 		
@@ -164,6 +167,8 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+			
 		</jsps>
 	</item>
 		
@@ -173,6 +178,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
 		</jsps>
 	</item>
 		
@@ -233,6 +239,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -246,6 +253,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderIcon" />
 	</item>
@@ -285,6 +293,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.ef.module.definition.index.FieldBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.ef.module.definition.notify.NotifyBuilderDescription" />
@@ -296,6 +305,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 		</jsps>
 	</item>
 	
@@ -305,6 +315,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 		</jsps>
 	</item>
 	
@@ -314,6 +325,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 		</jsps>
 	</item>
 	
@@ -323,6 +335,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -753,6 +766,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
 	</item>
 		
@@ -784,6 +798,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
 	</item>
 		
@@ -801,6 +816,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
 	</item>
 		
@@ -808,6 +824,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 	</item>
 		
@@ -839,6 +856,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 		</jsps>
 	</item>
 		
@@ -870,6 +888,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
 	</item>
 
@@ -900,6 +919,7 @@
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 	</item>
 		

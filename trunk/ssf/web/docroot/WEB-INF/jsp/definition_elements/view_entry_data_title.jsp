@@ -2,10 +2,6 @@
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <c:if test="${!empty ssDefinitionEntry.docNumber}">
-  <c:set var="title_entry" value="${ssDefinitionEntry}"/>
-  <jsp:useBean id="title_entry" type="com.sitescape.ef.domain.Entry" />
-
-  <jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
   <c:out value="${ssDefinitionEntry.docNumber}"/>.
   <a style="text-decoration: none;" href="<ssf:url 
     folderId="${ssDefinitionEntry.parentFolder.id}" 

@@ -18,6 +18,7 @@
 	<default-mappings>
 		<model-class name="com.sitescape.ef.domain.ProfileBinder">
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor"/>
+			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.ef.domain.Folder">
 			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter"/>
@@ -32,6 +33,7 @@
 			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.ef.jobs.DefaultLdapSynchronization"/>
 			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.ef.ldap.DefaultLdapNameMapper"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
+			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
 		</model-class>
 	</default-mappings>
 </model-processor-mapping>

@@ -45,6 +45,7 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.util.SsfsUtil;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -57,8 +58,6 @@ import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.util.cal.CalendarUtil;
 
 /**
  * @author Peter Hurley
@@ -174,7 +173,7 @@ public class ListFolderController extends  SAbstractController {
 			Map options = new HashMap();
 			options.put(Tabs.PAGE, new Integer(pageStartIndex));
 			
-			int intTab = tabs.setTab(binder, options);
+			tabs.setTab(binder, options);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
 			//Saves the folder page informaton when the user enters the page number in the go to page field
 			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
@@ -191,7 +190,7 @@ public class ListFolderController extends  SAbstractController {
 			Map options = new HashMap();
 			options.put(Tabs.PAGE, new Integer(intPageStartIndex));
 			
-			int intTab = tabs.setTab(binder, options);
+			tabs.setTab(binder, options);
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page
 			//Getting the new entries per page
@@ -1038,6 +1037,12 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), adapterUrl.toString());
 		
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+
 		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);

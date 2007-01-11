@@ -29,6 +29,7 @@ import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
@@ -517,7 +518,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         checkAccess(entry, "getEntryTree");
         return processor.getEntryTree(folder, entry);   	
     }
-    
     public void deleteEntry(Long parentFolderId, Long entryId) {
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);

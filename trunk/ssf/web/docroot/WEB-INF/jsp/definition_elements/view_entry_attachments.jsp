@@ -14,9 +14,11 @@
     entryId="${ssDefinitionEntry.id}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>" 
+<c:if test="${ssConfigJspStyle != 'mail'}">    
     onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
-    ><c:out value="${selection.fileItem.name} "/></a>
-    
+</c:if>
+     ><c:out value="${selection.fileItem.name} "/></a>
+<c:if test="${ssConfigJspStyle != 'mail'}">        
 <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
 <a style="text-decoration: none;"
 	href="<ssf:ssfsInternalAttachmentUrl 
@@ -25,6 +27,7 @@
 		fileAttachment="${selection}"/>">
 		<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
 </ssf:ifSupportsEditInPlace>
+</c:if>
 <div class="ss_indent_medium">
 <table class="ss_compact20">
 <tr>

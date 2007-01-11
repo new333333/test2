@@ -12,7 +12,7 @@ public interface FailedEmail {
      * concrete class implementing this interface).
      */
     public static final String PROCESSOR_KEY = "processorKey_failedEmailJob";
-	public static final String RETRY_NOTIFICATION_GROUP="retry-send-email-notification";
+	public static final String RETRY_GROUP="retry-send-email";
 
     public void schedule(Binder binder, String zoneName, JavaMailSender mailSender, MimeMessage mail, File fileDir);
 

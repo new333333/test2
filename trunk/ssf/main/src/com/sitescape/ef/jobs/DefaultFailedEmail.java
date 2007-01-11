@@ -19,6 +19,8 @@ import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailSendException;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.mail.JavaMailSender;
@@ -47,18 +49,33 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 		try {
 			fs = new FileInputStream(file);
 			String name = (String)jobDataMap.get("mailSender");
-			if (mail.sendMail(name, fs) == true)  {
+			try {
+				mail.sendMail(name, fs);
 				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
 				try {
 					fs.close();
 					fs = null;
-					context.setResult("Success");
 					file.delete();
 				} catch (IOException io) {
 					logger.error("Mail file error (" + file.getName() + ") " + io);
+				} finally {
+					context.setResult("Success");
 				}
+				return;
 				
-			} else if (next == null) {
+		   	} catch (MailSendException sx) {
+		   		//try again
+	    		logger.error("Error sending mail:" + sx.getMessage());
+	    	} catch (MailAuthenticationException ax) {
+		   		//try again
+	       		logger.error("Authentication Exception:" + ax.getMessage());				
+			} catch (Exception ex) {
+				//remove job
+				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+				throw new JobExecutionException(ex);
+			}
+			//see if we should give up
+			if (next == null) {
 				//end of schedule
 				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
 				try {
@@ -77,8 +94,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 					file.renameTo(dead);
 				} catch (IOException io) {
 					logger.error("Mail file error (" + file.getName() + ") " + io);
-				}
-					
+				}		
 			}
 
 		} catch (FileNotFoundException fe) {
@@ -106,7 +122,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + binder.toString());
 	 	String className = this.getClass().getName();
 	  	try {		
-			JobDetail jobDetail = new JobDetail(jobName, RETRY_NOTIFICATION_GROUP, 
+			JobDetail jobDetail = new JobDetail(jobName, RETRY_GROUP, 
 					Class.forName(className),false, false, false);
 			jobDetail.setDescription(description);
 			JobDataMap data = new JobDataMap();
@@ -128,14 +144,14 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 			data.put("mailSender", mailSender.getName());
 			jobDetail.setJobDataMap(data);
 			jobDetail.addJobListener(getDefaultCleanupListener());
-	  		SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_NOTIFICATION_GROUP, jobName, RETRY_NOTIFICATION_GROUP, start.getTime(), null, 24, 1000*60*60);
+	  		SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_GROUP, jobName, RETRY_GROUP, start.getTime(), null, 24, 1000*60*60);
   			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
   			trigger.setDescription(description);
   			trigger.setVolatility(false);
 			scheduler.scheduleJob(jobDetail, trigger);				
  		} catch (Exception e) {
    			throw new ConfigurationException("Cannot start (job:group) " + jobName 
-   					+ ":" + RETRY_NOTIFICATION_GROUP, e);
+   					+ ":" + RETRY_GROUP, e);
    		}
     }	
 }

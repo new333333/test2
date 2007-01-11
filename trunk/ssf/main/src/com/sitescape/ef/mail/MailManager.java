@@ -2,14 +2,9 @@
 package com.sitescape.ef.mail;
 import java.util.Date;
 import java.util.Map;
-
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.mail.MimeMessagePreparator;
-
 import javax.mail.internet.MimeMessage;
+import java.util.Collection;
+import com.sitescape.ef.domain.Binder;
 
 /**
  * @author Janet McCann
@@ -27,9 +22,11 @@ public interface MailManager {
 	public Date sendNotifications(Long folderId, Date start);
 	public void fillSubscription(Long folderId, Long entryId, Date stamp);
 	public void receivePostings();
-	public boolean sendMail(MimeMessage msg);
-	public boolean sendMail(String mailSenderName, java.io.InputStream input);
-    public boolean sendMail(String mailSenderName, MimeMessagePreparator preparer);
+	public void sendMail(MimeMessage msg);
+	public void sendMail(String mailSenderName, MimeMessage msg);
+	public void sendMail(String mailSenderName, java.io.InputStream input);
+    public void sendMail(String mailSenderName, MimeMessagePreparator preparer);
+    public boolean sendMail(Binder binder, Map message, String comment);
     public void scheduleMail(Binder binder, Map message, String comment);
 	public String getMailProperty(String zoneName, String name);
 	public String getMailAttribute(String zoneName, String node, String name);

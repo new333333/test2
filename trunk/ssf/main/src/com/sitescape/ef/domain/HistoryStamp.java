@@ -7,7 +7,6 @@
 package com.sitescape.ef.domain;
 
 import java.util.Date;
-
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
@@ -63,7 +62,7 @@ public class HistoryStamp {
 	public Element addChangeLog(Element parent) {
 		Element element = parent.addElement("historyStamp");
 		element.addAttribute(ObjectKeys.XTAG_HISTORY_BY, getPrincipal().getId().toString());
-		element.addAttribute(ObjectKeys.XTAG_HISTORY_WHEN, getDate().toString());
+		element.addAttribute(ObjectKeys.XTAG_HISTORY_WHEN, getDate().toGMTString());
 		return element;
 		
 	}

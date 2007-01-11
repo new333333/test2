@@ -1,6 +1,7 @@
 <% //checkbox view %>
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
+<c:if test="${ssConfigJspStyle != 'mail'}">
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 <input type="checkbox" checked DISABLED>
 </c:if>
@@ -8,6 +9,17 @@
 <input type="checkbox" DISABLED>
 </c:if>
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
+</c:if>
+
+<c:if test="${ssConfigJspStyle == 'mail'}">
+<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
+<ssf:nlt tag="(checked)"/>
+</c:if>
+<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
+<ssf:nlt tag="(notchecked)"/>
+</c:if>
+<span class="ss_labelRight"><c:out value="${property_caption}" /></span>
+</c:if>
 </div>
 </c:if>
 
@@ -18,12 +30,22 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
+<c:if test="${ssConfigJspStyle != 'mail'}">
 	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
 	<input type="checkbox" checked DISABLED>
 	</c:if>
 	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
 	<input type="checkbox" DISABLED>
 	</c:if>
+</c:if>
+<c:if test="${ssConfigJspStyle == 'mail'}">
+	<c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
+	<ssf:nlt tag="(checked)"/>
+	</c:if>
+	<c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
+	<ssf:nlt tag="(notchecked)"/>
+	</c:if>
+</c:if>
   </td>
 </tr>
 </c:if>

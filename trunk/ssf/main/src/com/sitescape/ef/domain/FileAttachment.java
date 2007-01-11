@@ -340,7 +340,6 @@ public class FileAttachment extends Attachment {
 		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_NAME, getName());
 		
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
-		//modification date/principal may be different then log
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_NAME, getFileItem().getName());
 		ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FILE_LENGTH, Long.toString(getFileItem().getLength()));

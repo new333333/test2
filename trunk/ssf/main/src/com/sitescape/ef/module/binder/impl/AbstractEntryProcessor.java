@@ -38,7 +38,6 @@ import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.User;
@@ -107,8 +106,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         			addEntry_fillIn(binder, entry, inputData, entryData);
         			addEntry_preSave(binder, entry, inputData, entryData);      
         			addEntry_save(binder, entry, inputData, entryData);      
+                   	//After the entry is successfully added, start up any associated workflows
+                	addEntry_startWorkflow(entry);
          			addEntry_postSave(binder, entry, inputData, entryData);
-        			return null;
+       			return null;
         		}
         	});
         	sp.end().print();
@@ -124,11 +125,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
         	sp.end().print();
         
-        	sp.reset("addEntry_startWorkflow").begin();
-        	//After the entry is successfully added, start up any associated workflows
-        	addEntry_startWorkflow(entry);
-        	sp.end().print();
-
+ 
         	sp.reset("addEntry_indexAdd").begin();
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
@@ -255,13 +252,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
     }
 
+    //inside write transaction
     protected void addEntry_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
     }
 
+    //inside write transaction
     protected void addEntry_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
         getCoreDao().save(entry);
     }
     
+    //inside write transaction
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(entry, ChangeLog.ADDENTRY);
@@ -276,6 +276,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
     }
  
+    //inside write transaction
     protected void addEntry_startWorkflow(Entry entry) {
     	if (!(entry instanceof WorkflowSupport)) return;
     	Binder binder = entry.getParentBinder();
@@ -286,8 +287,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		if (entryDef != null) {
     			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
     			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
-    			//indexing handled separetly
-    			processStateChange(entry, ChangeLog.STARTWORKFLOW, false);
     		}
     	}
     }
@@ -314,6 +313,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
+	    	    	modifyEntry_startWorkflow(entry);
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
 	    			return null;
 	    		}});
@@ -333,9 +333,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
 	    	sp.end().print();
 
-	    	sp.reset("modifyEntry_startWorkflow").begin();
-	    	modifyEntry_startWorkflow(entry);
-	    	sp.end().print();
 
 	    	// Since index update is implemented as removal followed by add, 
 	    	// the update requests must be added to the removal and then add
@@ -424,18 +421,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex) {
     	removeFilesIndex(entry, filesToDeindex);
     }
-
-    protected void modifyEntry_startWorkflow(Entry entry) {
-    	if (!(entry instanceof WorkflowSupport)) return;
-    	WorkflowSupport wEntry = (WorkflowSupport)entry;
-    	//see if updates to entry, trigger transitions in workflow
-    	if (!wEntry.getWorkflowStates().isEmpty()) {
-    		if (getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry))
-    			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, false);
-    			
-    	}
-    }   
-    
+   
     protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
         //Call the definition processor to get the entry data to be stored
         Definition def = entry.getEntryDef();
@@ -448,6 +434,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        return entryDataAll;
         }
     }
+    //inside write transaction
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
@@ -466,9 +453,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  	   takeCareOfLastModDate(entry, inputData);
 
     }
-
-    protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
-    		InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
+    //inside write transaction
+    protected void modifyEntry_startWorkflow(Entry entry) {
+    	if (!(entry instanceof WorkflowSupport)) return;
+    	WorkflowSupport wEntry = (WorkflowSupport)entry;
+    	//see if updates to entry, trigger transitions in workflow
+    	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry);
+     }   
+    //inside write transaction
+    protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
+    		Map entryData, Map<FileAttachment,String> fileRenamesTo) {
     	//create history - using timestamp and version from fillIn
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
  
@@ -587,8 +581,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		//Find the workflowState
 		WorkflowState ws = wEntry.getWorkflowState(tokenId);
  		if (ws != null) {
+ 	   		entry.incrLogVersion();
  	        getWorkflowModule().modifyWorkflowState(wEntry, ws, toState);
-			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
+			processChangeLog(entry, ChangeLog.MODIFYWORKFLOWSTATE);
+	     	// Do NOT use reindexEntry(entry) since it reindexes attached
+			// files as well. We want workflow state change to be lightweight
+			// and reindexing all attachments will be unacceptably costly.
+			// TODO (Roy, I believe this was your design idea, so please 
+			// verify that this strategy will indeed work). 
+
+			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
 		}
     }
  
@@ -599,6 +601,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
  		WorkflowState ws = wEntry.getWorkflowState(stateId);
 		Definition def = ws.getDefinition();
+		boolean changes = false;
 		//TODO: what access check belongs here??
 		Map questions = WorkflowUtils.getQuestions(def, ws.getState());
 		for (Iterator iter=questions.entrySet().iterator(); iter.hasNext();) {
@@ -626,15 +629,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			}
 			if (found) {
 				if (!response.equals(wr.getResponse())) {
+					//if no changes have been made update timestamp
+					if (!changes) {
+						entry.setModification(new HistoryStamp(user));
+						entry.incrLogVersion();	
+						changes = true;
+					}
 					wr.setResponse(response);
-					entry.setModification(new HistoryStamp(user));
-					entry.incrLogVersion();
 					wr.setResponseDate(entry.getModification().getDate());
-					processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
 				}
 			} else {
-			    entry.setModification(new HistoryStamp(user));
-			    entry.incrLogVersion();
+				//if no changes have been made update timestamp
+				if (!changes) {
+					entry.setModification(new HistoryStamp(user));
+					entry.incrLogVersion();				
+					changes = true;
+				}
 				wr = new WorkflowResponse();
 				wr.setResponderId(user.getId());
 				wr.setResponseDate(entry.getModification().getDate());
@@ -644,11 +654,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 				wr.setOwner(entry);
 				getCoreDao().save(wr);
 				wEntry.addWorkflowResponse(wr);
-				processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);				
 			}
 		}
-		if (getWorkflowModule().modifyWorkflowStateOnResponse(wEntry)) {
-			processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
+		if (changes) {
+			getWorkflowModule().modifyWorkflowStateOnResponse(wEntry);
+			processChangeLog(entry, ChangeLog.ADDWORKFLOWRESPONSE);
+			// Do NOT use reindexEntry(entry) since it reindexes attached
+			// files as well. We want workflow state change to be lightweight
+			// and reindexing all attachments will be unacceptably costly.
+			// TODO (Roy, I believe this was your design idea, so please 
+			// verify that this strategy will indeed work). 
+
+			indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
 		}
     	
     }
@@ -1072,7 +1089,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      }     
     
 
-
+    public void indexEntry(Entry entry) {
+    	indexEntry(entry.getParentBinder(), entry, null, null, false);
+    }
     /**
      * Index entry and optionally its attached files.
      * 
@@ -1213,23 +1232,5 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		getCoreDao().save(changes);
 		return changes;
 	}
-    public void processStateChange(final Entry entry, String operation, boolean reIndex) {
-    	// The following part requires update database transaction.
-    	if (!(entry instanceof WorkflowSupport)) return;
-    	getTransactionTemplate().execute(new TransactionCallback() {
-    	public Object doInTransaction(TransactionStatus status) {
-    	   	ChangeLog changes = ((WorkflowSupport)entry).getStateChanges();
-        	if (changes != null) getCoreDao().save(changes);
-    		return null;
-    	}});
-
-     	// Do NOT use reindexEntry(entry) since it reindexes attached
-		// files as well. We want workflow state change to be lightweight
-		// and reindexing all attachments will be unacceptably costly.
-		// TODO (Roy, I believe this was your design idea, so please 
-		// verify that this strategy will indeed work). 
-
-		if (reIndex) indexEntry(entry.getParentBinder(), entry, new ArrayList(), null, false);
-
-    }    	
+	
 }

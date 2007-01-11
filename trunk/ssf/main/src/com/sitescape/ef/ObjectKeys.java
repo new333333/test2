@@ -30,8 +30,11 @@ public interface ObjectKeys {
 	public static final String TOP_WORKSPACE_ID="402883b90d0de1f3010d0df5582b0007";
 	public static final String ANONYMOUS_POSTING_USER_ID="402883b90d0de1f3010d0df5582b0008";
 	
+    //custom property prefix from ssf.properties
+	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
+
+    //map keys returned from modules
     public static final String BINDER="binder";
-    public static final String CUSTOM_PROPERTY_PREFIX="custom.";
     public static final String SEARCH_ENTRIES="search_entries";
     public static final String FULL_ENTRIES="database_entries";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
@@ -40,11 +43,20 @@ public interface ObjectKeys {
     public static final String SEARCH_COUNT_TOTAL="searchCountTotal";
     public static final String TOTAL_SEARCH_COUNT="totalSearchCount";
     public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
+    //map keys from definition module
+    public static final String DEFINITION_ENTRY_DATA="entryData";
+    public static final String DEFINITION_FILE_DATA="fileData";
+    //map keys from admin/sendMail
+    public static final String SENDMAIL_ERRORS="errors";
+    public static final String SENDMAIL_STATUS="status";
+    public static final String SENDMAIL_STATUS_SENT="sent";
+    public static final String SENDMAIL_STATUS_FAILED="failed";
+    public static final String SENDMAIL_STATUS_SCHEDULED="scheduled";
+    	
+    
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
-    public static final String TOOLBAR_QUALIFIER_ONCLICK = "onClick";
-    public static final String USER = "user";
     
     public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
 
@@ -92,7 +104,6 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS = "userSearchResultsFolderColumns";
 
-    public static final String WORKAREA_OPERATION = "workarea_operation";
     
     //workflow definition names
     public static final String WORKFLOW_START_STATE = "__start_state";
@@ -128,9 +139,6 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
     public static final String FIELD_GROUP_MEMBERS="members";
  
-    //map keys from definition module
-    public static final String DEFINITION_ENTRY_DATA="entryData";
-    public static final String DEFINITION_FILE_DATA="fileData";
     
     //xml tags - used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ID="id";

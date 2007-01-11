@@ -15,6 +15,7 @@
     <ssf:param name="fileId" value="${selection.id}"/>
     </ssf:url>"><c:out value="${selection.fileItem.name}"/>
 </a>
+<c:if test="${ssConfigJspStyle != 'mail'}">
 <ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
 <a 
 	href="<ssf:ssfsInternalFileUrl 
@@ -24,6 +25,7 @@
 		fileAttachment="${selection}"/>"><b><font color="#FF0000">Edit</font></b>
 </a>
 </ssf:ifSupportsEditInPlace>
+</c:if>
 <br>
 </c:forEach>
 </span>

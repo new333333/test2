@@ -272,15 +272,16 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         this.inheritAclFromParent = inherit;
     }
     /**
-     * @hibernate.property column="acl_widenRead" 
+     * handled on a zone wide basis, so the search queries
+     * can work correctly on zone-wide search 
      */
-    public boolean isWidenRead() {
-        return widenRead;
-    }
+//    public boolean isWidenRead() {
+//        return widenRead;
+//    }
 
-    public void setWidenRead(boolean widenRead) {
-        this.widenRead = widenRead;
-    }
+//    public void setWidenRead(boolean widenRead) {
+//        this.widenRead = widenRead;
+//    }
     /**
      * @hibernate.property column="acl_widenModify" 
      */
