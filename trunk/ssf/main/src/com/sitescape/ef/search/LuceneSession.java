@@ -1,10 +1,12 @@
 package com.sitescape.ef.search;
+
 import java.util.Collection;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
+
 import com.sitescape.ef.lucene.Hits;
 
 /**
@@ -35,113 +37,146 @@ import com.sitescape.ef.lucene.Hits;
  *
  */
 public interface LuceneSession {
-    /**
-     * Add a document.
-     * 
-     * @param doc
-     * @throws LuceneException
-     */
-    public void addDocument(Document doc) throws LuceneException;
-    
-    /**
-     * Add a collection of document.
-     * 
-     * @param doc
-     * @throws LuceneException
-     */
-    public void addDocuments(Collection docs) throws LuceneException;
+	/**
+	 * Add a document.
+	 * 
+	 * @param doc
+	 * @throws LuceneException
+	 */
+	public void addDocument(Document doc) throws LuceneException;
 
-    /**
-     * Delete the document identified by the uid. 
-     * 
-     * @param uid
-     * @throws LuceneException
-     */
-    public void deleteDocument(String uid) throws LuceneException;
-    
-    /**
-     * Delete all documents matching the term.
-     * 
-     * @param term
-     * @throws LuceneException
-     */
-    public void deleteDocuments(Term term) throws LuceneException;    
-    
-    /**
-     * Apply the query and delete all matching documents.
-     * 
-     * @param query
-     * @throws LuceneException
-     */
-    public void deleteDocuments(Query query) throws LuceneException;
-    
-    /**
-     * Search and return the entire result set.
-     * 
-     * @throws LuceneException
-     */
-    public Hits search(Query query) throws LuceneException;
-    
-    /**
-     * Search and return only the portion of the result specified.
-     * 
-     * @param query
-     * @param offset
-     * @param size
-     * @return
-     * @throws LuceneException
-     */
-    public Hits search(Query query, int offset, int size) throws LuceneException;
-    
-    /**
-     * Force the <code>LuceneSession</code> to flush.
-     * <p>
-     * Flushing is the process of synchronizing the underlying persistent store
-     * (ie, index files on disk) with persistable state held in memory.
-     * 
-     * @throws LuceneException
-     *
-     */
-    
-    /**
-     * Search and return the entire result set.
-     * 
-     * @throws LuceneException
-     */
-    public Hits search(Query query, Sort sort) throws LuceneException;
-    
-    /**
-     * Search and return only the portion of the result specified.
-     * 
-     * @param searchobject
-     * @param offset
-     * @param size
-     * @return
-     * @throws LuceneException
-     */
-    public Hits search(Query query, Sort sort, int offset, int size) throws LuceneException;
-    
-    /**
-     * Force the <code>LuceneSession</code> to flush.
-     * <p>
-     * Flushing is the process of synchronizing the underlying persistent store
-     * (ie, index files on disk) with persistable state held in memory.
-     * 
-     * @throws LuceneException
-     *
-     */
-    public void flush() throws LuceneException;
-    
-    /**
-     * End the <code>LuceneSession</code> by disconnecting from the Lucene
-     * service and cleaning up. Note that this does NOT implicitly perform
-     * <code>flush</code> operation. In other words, <code>flush</code>
-     * must be invoked explicitly by the caller before closing the session
-     * if that was intended. Once <code>close</code> method is called, the 
-     * session object is no longer usable.
-     * 
-     * @throws LuceneException
-     *
-     */
-    public void close() throws LuceneException; 
+	/**
+	 * Add a collection of documents.
+	 * 
+	 * @param doc
+	 * @throws LuceneException
+	 */
+	public void addDocuments(Collection docs) throws LuceneException;
+
+	/**
+	 * Update the field in the document identified by the uid. 
+	 * 
+	 * @param uid
+	 * @param fieldname
+	 * @param fieldvalue
+	 * @throws LuceneException
+	 */
+	public void updateDocument(String uid, String fieldname, String fieldvalue)
+			throws LuceneException;
+
+	/**
+	 * Update all documents matching the query.
+	 * 
+	 * @param query
+	 * @param fieldname
+	 * @param fieldvalue
+	 * @throws LuceneException
+	 */
+	public void updateDocuments(Query query, String fieldname, String fieldvalue)
+			throws LuceneException;
+
+	/**
+	 * Delete the document identified by the uid. 
+	 * 
+	 * @param uid
+	 * @throws LuceneException
+	 */
+	public void deleteDocument(String uid) throws LuceneException;
+
+	/**
+	 * Delete all documents matching the term.
+	 * 
+	 * @param term
+	 * @throws LuceneException
+	 */
+	public void deleteDocuments(Term term) throws LuceneException;
+
+	/**
+	 * Apply the query and delete all matching documents.
+	 * 
+	 * @param query
+	 * @throws LuceneException
+	 */
+	public void deleteDocuments(Query query) throws LuceneException;
+
+	/**
+	 * Search and return the entire result set.
+	 * 
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query) throws LuceneException;
+
+	/**
+	 * Search and return only the portion of the result specified.
+	 * 
+	 * @param query
+	 * @param offset
+	 * @param size
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query, int offset, int size)
+			throws LuceneException;
+
+	/**
+	 * Force the <code>LuceneSession</code> to flush.
+	 * <p>
+	 * Flushing is the process of synchronizing the underlying persistent store
+	 * (ie, index files on disk) with persistable state held in memory.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+
+	/**
+	 * Search and return the entire result set.
+	 * 
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query, Sort sort) throws LuceneException;
+
+	/**
+	 * Search and return only the portion of the result specified.
+	 * 
+	 * @param searchobject
+	 * @param offset
+	 * @param size
+	 * @return
+	 * @throws LuceneException
+	 */
+	public Hits search(Query query, Sort sort, int offset, int size)
+			throws LuceneException;
+
+	/**
+	 * Force the <code>LuceneSession</code> to flush.
+	 * <p>
+	 * Flushing is the process of synchronizing the underlying persistent store
+	 * (ie, index files on disk) with persistable state held in memory.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+	public void flush() throws LuceneException;
+
+	/**
+	 * Force the <code>LuceneSession</code> to optimize the index. This helps reduce
+	 * the size of the index by removing deleted docs and renumbering the inner docs.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+	public void optimize() throws LuceneException;
+
+	/**
+	 * End the <code>LuceneSession</code> by disconnecting from the Lucene
+	 * service and cleaning up. Note that this does NOT implicitly perform
+	 * <code>flush</code> operation. In other words, <code>flush</code>
+	 * must be invoked explicitly by the caller before closing the session
+	 * if that was intended. Once <code>close</code> method is called, the 
+	 * session object is no longer usable.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+	public void close() throws LuceneException;
 }
