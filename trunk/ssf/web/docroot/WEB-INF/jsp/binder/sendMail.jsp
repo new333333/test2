@@ -16,6 +16,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.ef.util.NLT" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 <script type="text/javascript">
 	var width = ss_getWindowWidth()/2;
 	if (width < 600) width=600;
@@ -120,3 +123,7 @@ self.window.resizeTo(width, height);
 </c:otherwise>
 </c:choose>
 </div>
+ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
