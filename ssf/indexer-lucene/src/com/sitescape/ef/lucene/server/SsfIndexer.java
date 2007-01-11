@@ -13,7 +13,6 @@ import org.apache.lucene.search.Sort;
 
 import com.sitescape.ef.lucene.SsfIndexInterface;
 import com.sitescape.ef.lucene.SsfQueryAnalyzer;
-import com.sitescape.ef.search.BasicIndexUtils;
 
 
 /**
@@ -42,6 +41,9 @@ public class SsfIndexer
     IndexObjectCache ioc;
     private static final long serialVersionUID = 1L;
     
+    private static final String ALL_TEXT_FIELD = "_allText";
+    private static final String UID_FIELD = "_uid";
+
     /**
      * Constructor
      *
@@ -194,10 +196,10 @@ public class SsfIndexer
 	public void updateDocument(String indexname, String uid, String fieldname, String fieldvalue)  throws RemoteException {
         //build the query
 		Query q = null;
-		QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,
+		QueryParser qp = new QueryParser(ALL_TEXT_FIELD,
 				new SsfQueryAnalyzer());
 		try {
-			q = qp.parse(BasicIndexUtils.UID_FIELD + ":" + uid);
+			q = qp.parse(UID_FIELD + ":" + uid);
 		} catch (ParseException pe) {
 			throw new RemoteException(pe.toString());
 		}
