@@ -15,6 +15,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 <%@ page import="com.sitescape.ef.util.NLT" %>
 <script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">tinyMCE.init(
@@ -134,3 +137,7 @@ self.window.resizeTo(width, height);
 </c:otherwise>
 </c:choose>
 </div>
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
