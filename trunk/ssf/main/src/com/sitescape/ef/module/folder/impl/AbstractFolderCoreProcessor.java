@@ -287,7 +287,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	ChangeLog changes = new ChangeLog(fEntry, ChangeLog.MOVEENTRY);
     	changes.getEntityRoot();
     	getCoreDao().save(changes);
-    	
 
     	List ids = new ArrayList();
     	for (int i=0; i<entries.size(); ++i) {
@@ -310,10 +309,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	//write out changes before bulk updates
     	getCoreDao().flush();
     	getFolderDao().moveEntries(to,ids);
-    	//finally remove from index and reAdd.
     	entries.add(fEntry);
+    	// Move files in the entries
+    	moveFiles(binder, entries, destination);
+    	//finally remove from index and reAdd.
     	reindexEntries(entries);
     }
+    
     protected void checkEntryMoveType(Integer source, Integer destination) {
        	if (source == null) source=Integer.valueOf(Definition.FOLDER_VIEW);
     	if (destination == null) destination=Integer.valueOf(Definition.FOLDER_VIEW);

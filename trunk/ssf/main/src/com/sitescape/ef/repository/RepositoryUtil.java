@@ -254,13 +254,14 @@ public class RepositoryUtil {
 			append(separator).toString();
 	}
 	
-	public static void miniMove(String repositoryName, Binder binder, 
-			DefinableEntity entry, String relativeFilePath, String newRelativeFilePath)
-			throws RepositoryServiceException, UncheckedIOException {
+	public static void move(String repositoryName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntry, String destRelativeFilePath)
+	throws RepositoryServiceException, UncheckedIOException {
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
 		try {
-			session.miniMove(binder, entry, relativeFilePath, newRelativeFilePath);
+			session.move(binder, entry, relativeFilePath, destBinder, destEntry, destRelativeFilePath);
 		} finally {
 			session.close();
 		}

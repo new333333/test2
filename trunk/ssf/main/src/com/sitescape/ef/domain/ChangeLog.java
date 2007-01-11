@@ -29,6 +29,7 @@ public class ChangeLog {
 	public static final String FILEADD="addFile";
 	public static final String FILEMODIFY="modifyFile";
 	public static final String FILEDELETE="deleteFile";
+	public static final String FILEMOVE="moveFile";
 	public static final String ACCESSDELETE="deleteAccess";
 	public static final String ACCESSMODIFY="modifyAccess";
 

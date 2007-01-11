@@ -490,13 +490,14 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 	
-	public void miniMove(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String newRelativeFilePath) 
+	public void move(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntity, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
 		File tempFile = getTempFile(binder, entity, relativeFilePath);
 		
 		if(tempFile.exists()) {
-			File newTempFile = getTempFile(binder, entity, newRelativeFilePath);			
+			File newTempFile = getTempFile(destBinder, destEntity, destRelativeFilePath);			
 			move(tempFile, newTempFile);
 		}
 		
@@ -507,14 +508,14 @@ public class FileRepositorySession implements RepositorySession {
 		for(int i = 0; i < versionFileNames.length; i++) {
 			versionName = getVersionName(versionFileNames[i]);
 			versionFile = getVersionFileFromVersionFileName(binder, entity, relativeFilePath, versionFileNames[i]);
-			newVersionFile = getVersionFile(binder, entity, newRelativeFilePath, versionName);
+			newVersionFile = getVersionFile(destBinder, destEntity, destRelativeFilePath, versionName);
 			move(versionFile, newVersionFile);
 		}
 		
 		File unversionedFile = getUnversionedFile(binder, entity, relativeFilePath);
 
 		if(unversionedFile.exists()) {
-			File newUnversionedFile = getUnversionedFile(binder, entity, newRelativeFilePath);
+			File newUnversionedFile = getUnversionedFile(destBinder, destEntity, destRelativeFilePath);
 			move(unversionedFile, newUnversionedFile);
 		}
 	}

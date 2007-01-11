@@ -381,12 +381,13 @@ public class WebdavRepositorySession implements RepositorySession {
 		}	
 	}
 	
-	public void miniMove(Binder binder, DefinableEntity entity, 
-			String relativeFilePath, String newRelativeFilePath) 
+	public void move(Binder binder, DefinableEntity entity, 
+			String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntity, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
 		try {
 			String resourcePath = getResourcePath(binder, entity, relativeFilePath);
-			String newResourcePath = getResourcePath(binder, entity, newRelativeFilePath);
+			String newResourcePath = getResourcePath(destBinder, destEntity, destRelativeFilePath);
 			
 			moveResource(wdr, resourcePath, newResourcePath);
 		} catch (IOException e) {
