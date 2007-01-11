@@ -20,6 +20,8 @@ public class ChangeLog {
 	public static final String STARTWORKFLOW="startWorkflow";
 	public static final String MODIFYWORKFLOWSTATE="modifyWorkflowState";
 	public static final String ADDWORKFLOWRESPONSE="addWorkflowResponse";
+	public static final String WORKFLOWTIMEOUT="timeoutWorkflow";
+	public static final String MODIFYWORKFLOWSTATEONREPLY="modifyWorkflowStateOnReply";
 	public static final String ADDBINDER="addBinder";
 	public static final String MODIFYBINDER="modifyBinder";
 	public static final String DELETEBINDER="deleteBinder";
@@ -59,10 +61,17 @@ public class ChangeLog {
 				this.docNumber = ((FolderEntry)entity).getDocNumber();
 		}
 		this.operation = operation;
-		this.operationDate = entity.getModification().getDate();
-		this.userName = entity.getModification().getPrincipal().getName();
-		this.userId = entity.getModification().getPrincipal().getId();
-		this.zoneId = entity.getModification().getPrincipal().getZoneId();
+		if (operation.contains("Workflow") && entity instanceof WorkflowSupport) {
+			WorkflowSupport wfEntry = (WorkflowSupport)entity;
+			this.operationDate = wfEntry.getWorkflowChange().getDate();
+			this.userName = wfEntry.getWorkflowChange().getPrincipal().getName();
+			this.userId = wfEntry.getWorkflowChange().getPrincipal().getId();
+		} else { 
+			this.operationDate = entity.getModification().getDate();
+			this.userName = entity.getModification().getPrincipal().getName();
+			this.userId = entity.getModification().getPrincipal().getId();
+		}
+		this.zoneId = entity.getParentBinder().getZoneId();
 		this.entityId = entity.getEntityIdentifier().getEntityId();
 		this.entityType = entity.getEntityIdentifier().getEntityType().name();
 		this.version = entity.getLogVersion();

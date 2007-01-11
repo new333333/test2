@@ -1157,7 +1157,8 @@ public class FileModuleImpl implements FileModule {
 	       		getCoreDao().save(changes);
 
 				entry.removeAttachment(fAtt);
-				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().unRegisterLibraryEntry(binder, fAtt.getFileItem().getName());
+				//if we are deleteing a binder, the the libary names will be deleted elsewhere
+				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateLibraryName(binder, entry, fAtt.getFileItem().getName(), null);
 		        if (!binder.equals(entry) && (entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), ObjectKeys.FIELD_ENTITY_TITLE)) {
 		        	//check title for entries
 		        	entry.getEntryDef().setTitle("");			   			   

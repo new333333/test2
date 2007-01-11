@@ -92,26 +92,32 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         try {
          	final FolderEntry entry = addReply_create(def);
          	        
-        
+         	Long lastParentVersion = parent.getLogVersion();
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		addReply_fillIn(parent, entry, inputData, entryData);
-        
         		addReply_preSave(parent, entry, inputData, entryData);
-        		
         		addReply_save(parent, entry, inputData, entryData);
-        
-        		addReply_postSave(parent, entry, inputData, entryData);
-        		return null;
+               	addReply_startWorkflow(entry);
+           		addReply_postSave(parent, entry, inputData, entryData);
+           	return null;
         	}});
-        
+        	//assume parent has been updated, index now
+        	if (!lastParentVersion.equals(parent.getLogVersion())) {
+    	     	// Do NOT use reindexEntry(entry) since it reindexes attached
+    			// files as well. We want workflow state change to be lightweight
+    			// and reindexing all attachments will be unacceptably costly.
+    			// TODO (Roy, I believe this was your design idea, so please 
+    			// verify that this strategy will indeed work). 
+
+    			indexEntry(parent.getParentBinder(), parent, new ArrayList(), null, false);
+        		
+        	}
            	// Need entry id before filtering 
             FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData);
         	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
-        
-        	addReply_startWorkflow(entry);
-         
+                 
         	addReply_indexAdd(parent, entry, inputData, fileData);
                 
         	addReply_done(parent, entry, inputData);
@@ -158,7 +164,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		List fileData, FilesErrors filesErrors) {
     	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors);
     }
-    
+    //inside write transaction
     protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
         parent.addReply(entry);         
     	if (inputData.exists(ObjectKeys.INPUT_FIELD_POSTING_FROM)) {
@@ -167,14 +173,27 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	super.addEntry_fillIn(entry.getParentBinder(), entry, inputData, entryData);
     }
     
+    //inside write transaction
     protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     	addEntry_preSave(parent.getParentBinder(), entry, inputData, entryData);
     }
     
+    //inside write transaction
     protected void addReply_save(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     	addEntry_save(parent.getParentBinder(), entry, inputData, entryData);
     }
+    //inside write transaction
+    protected void addReply_startWorkflow(FolderEntry entry) {
+    	FolderEntry parent = entry.getParentEntry();
+   		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
+   	   		parent.incrLogVersion();
+   			processChangeLog(parent, ChangeLog.MODIFYWORKFLOWSTATEONREPLY);
+   		}
+    	//Starting a workflow on a reply works the same as for the entry
+    	addEntry_startWorkflow(entry);
+    }
     
+    //inside write transaction
     protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
     	//will log addEntry
     	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData);
@@ -190,17 +209,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData);
     }
     
-    protected void addReply_startWorkflow(FolderEntry entry) {
-    	FolderEntry parent = entry.getParentEntry();
-   		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
-   			processStateChange(parent, ChangeLog.MODIFYWORKFLOWSTATE, true);
-   		}
-    	//Starting a workflow on a reply works the same as for the entry
-    	addEntry_startWorkflow(entry);
-		//use current timestamp and version
-		processStateChange(entry, ChangeLog.STARTWORKFLOW, false);
-    }
-    //***********************************************************************************************************
+     //***********************************************************************************************************
    
  	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
@@ -565,9 +574,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
     	int entryLevel;
     	List lineage;
-    	Map model = new HashMap();
-        //TODO: what about access control here?
-    	
+    	Map model = new HashMap();   	
         //load tree including parent chain and all replies and entry
         lineage = getFolderDao().loadEntryTree(entry);
         //split the tree
@@ -602,8 +609,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			FolderEntry fEntry = (FolderEntry)entry;
 
 			ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
-			if (fEntry.getTopEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry());
-			if (fEntry.getParentEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry());
+			if (fEntry.getTopEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
+			if (fEntry.getParentEntry() != null) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
 			if (!Validator.isNull(fEntry.getPostedBy())) ChangeLogUtils.addLogProperty(element, ObjectKeys.XTAG_FOLDERENTRY_POSTEDBY, fEntry.getPostedBy());
 		}
 		getCoreDao().save(changes);

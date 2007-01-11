@@ -2,6 +2,7 @@ package com.sitescape.ef.module.shared;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 
 import org.dom4j.Element;
 
@@ -22,6 +23,10 @@ public class ChangeLogUtils {
 
 	public static Element buildLog(ChangeLog changes, DefinableEntity entry) {
 		Element element = changes.getEntityRoot();
+		if (entry.getCreation() != null)
+			entry.getCreation().addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
+		if (entry.getModification() != null)
+			entry.getModification().addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		if (entry.getParentBinder() != null) {
 			addLogProperty(element, ObjectKeys.XTAG_ENTITY_PARENTBINDER, entry.getParentBinder().getId().toString());
 		}
@@ -32,8 +37,6 @@ public class ChangeLogUtils {
 		if (!Validator.isNull(entry.getIconName())) {
 			addLogAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
 		}
-		if (entry.getCreation() != null)
-			entry.getCreation().addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
 		//process all form items
 		addLogAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, "string", entry.getTitle());
 		addLogAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, "description", entry.getDescription());
@@ -80,6 +83,11 @@ public class ChangeLogUtils {
 		prop.addAttribute(ObjectKeys.XTAG_NAME, name);
 		if (!Validator.isNull(value)) prop.addText(value);
 		return prop;
+	}
+	//force comman date format.  This is a problem cause hibernate returns sql Timestamps which format
+	//differently then java.util.date
+	public static Element addLogProperty(Element parent, String name, Date value) {
+		return addLogProperty(parent, name, value.toGMTString());
 	}
 	public static Element addLogProperty(Element parent, String name, Object value) {
 		Element prop = parent.addElement("property");

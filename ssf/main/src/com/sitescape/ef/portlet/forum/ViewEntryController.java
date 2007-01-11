@@ -264,6 +264,14 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");
 		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), "#", qualifiers);
 
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 
@@ -277,12 +285,10 @@ public class ViewEntryController extends  SAbstractController {
 		Map folderEntries = null;
 		if (!entryId.equals("")) {
 			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
-			if (folderEntries != null) {
-				entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-				folder = entry.getParentFolder();
-				model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
-				model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			}
+			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			folder = entry.getParentFolder();
+			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
+			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		} else {
 			folder = getFolderModule().getFolder(folderId);
 		}
@@ -301,7 +307,7 @@ public class ViewEntryController extends  SAbstractController {
 			DefinitionHelper.getDefinition(null, model, "//item[@name='entryView']");
 			return model;
 		}
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView' or @name='fileEntryView']") == false) {
+		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		}
 		if (!entryId.equals("")) {

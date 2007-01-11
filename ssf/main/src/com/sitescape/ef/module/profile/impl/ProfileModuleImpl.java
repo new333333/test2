@@ -442,7 +442,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
  
 	public Collection getUsers(Set entryIds) {
-		checkAccess(getProfileBinder(), "getUsers");
+		checkAccess(getProfileBinder(), "getEntries");
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new UserComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet<User>(c);

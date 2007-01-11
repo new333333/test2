@@ -782,16 +782,20 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 				timer.execute();
 				//re-index for state changes
 				if (entry != null) {
-					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
-					processor.processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
+					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder());
+			   		entry.incrLogVersion();
+					processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
+					processor.indexEntry(entry);
 				}
 			} else {
 				// execute
 				timer.execute();
 				//re-index for state changes
 				if (entry != null) {
+			   		entry.incrLogVersion();
 					EntryProcessor processor = loadEntryProcessor(entry.getParentBinder()); 
-					processor.processStateChange(entry, ChangeLog.MODIFYWORKFLOWSTATE, true);
+					processor.processChangeLog(entry, ChangeLog.WORKFLOWTIMEOUT);
+					processor.indexEntry(entry);
 				}
 				// if there was an exception, just save the timer
 				if (timer.getException()== null) {

@@ -135,6 +135,8 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
+	public static final String ACTION_SEND_EMAIL="send_email";
+	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
@@ -479,6 +481,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
+    public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
@@ -489,6 +492,7 @@ public class WebKeys {
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
+    public static final String VIEW_ENTRY_SENDMAIL="entry/sendMail";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";

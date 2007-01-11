@@ -3006,7 +3006,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 			ChangeLogUtils.addLogProperty(element, "until", getUntilString());
 	    } else {
 			ChangeLogUtils.addLogProperty(element, "count", Long.toString(getCount()));
-			ChangeLogUtils.addLogProperty(element, "until", null);
+			ChangeLogUtils.addLogProperty(element, "until", "");
 	    }
 	    	
 		ChangeLogUtils.addLogProperty(element, "frequency", Long.toString(getFrequency()));

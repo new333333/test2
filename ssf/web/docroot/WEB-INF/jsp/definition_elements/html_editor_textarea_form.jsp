@@ -6,6 +6,7 @@
   language: "en", 
   content_css: "<html:rootPath/>css/editor.css", 
   relative_urls: false, accessibility_focus: false,
+  remove_script_host: false,
   plugins: "table,advimage,preview,contextmenu,paste", 
   theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 

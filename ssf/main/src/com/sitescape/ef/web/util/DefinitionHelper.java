@@ -179,7 +179,7 @@ public class DefinitionHelper {
 	}
 	//Routine to build a definition file on the fly for viewing entries with no definition
 	public static void getDefaultEntryView(Entry entry, Map model) {
-		String path = "//item[@name='entryView' or @name='profileEntryView' or @name='fileEntryView']";
+		String path = "//item[@name='entryView' or @name='profileEntryView']";
 		getDefaultEntryView(entry, model, path);
 	}
 	public static void getDefaultEntryView(Entry entry, Map model, String path) {

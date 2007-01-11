@@ -88,7 +88,7 @@ function showEntryInDiv(str) {
     //If the entry div needs dynamic positioning, do it now
     if (self.ss_positionEntryDiv) {ss_positionEntryDiv();}
     
-    if (str.indexOf('<body onLoad="self.location =') >= 0) {self.loaction.reload();}
+    if (str.indexOf('<body onLoad="self.location =') >= 0) {self.location.reload();}
     wObj1.style.display = "block";
     wObj2.innerHTML = str;
     wObj1.style.visibility = "visible";

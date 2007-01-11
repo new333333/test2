@@ -23,6 +23,7 @@ import com.sitescape.ef.security.acl.AclAccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.ef.util.SPropsUtil;
 
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
@@ -126,7 +127,7 @@ public class AccessUtils  {
 	       	//see if owner can read
 	       	if (entry.checkOwner(AccessType.READ)) {
 	    	   if (user.getId().equals(entry.getCreatorId())) {
-	    		   if (binder.isWidenRead()) return;
+	    		   if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_READ, false)) return;
 	    		   if (getAccessManager().testOperation(user, binder, WorkAreaOperation.CREATOR_READ)) return;
 	    	   }
 	       }
@@ -137,12 +138,12 @@ public class AccessUtils  {
 	           		return;
 	    	   } catch (OperationAccessControlException ex) {
 	    		   //at this point we can stop if workflow cannot widen access
-	    		   if (!binder.isWidenRead()) throw ex;
+	    		   if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_READ, false)) throw ex;
 	    	   }
 	       }
 	       //if fails this test exception is thrown
 	       getAccessManager().checkAcl(user, binder, entry, AccessType.READ, false, false);
-	       if (binder.isWidenRead()) return;
+	       if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_READ, false)) return;
 	       //make sure acl list is sub-set of binder access
 	       	getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);     	   
 	    }

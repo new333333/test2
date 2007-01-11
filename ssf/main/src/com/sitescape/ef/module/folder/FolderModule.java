@@ -7,20 +7,15 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.ReservedByAnotherUserException;
 import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.User;
-
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.domain.Definition;
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller

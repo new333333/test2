@@ -82,7 +82,7 @@ public class ConfigureRolesController extends  SAbstractController {
 		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
 		while (itWorkAreaOperations.hasNext()) {
 			String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
-			operations.put(operationName, NLT.get(ObjectKeys.WORKAREA_OPERATION + "." + operationName));
+			operations.put(operationName, NLT.get("workarea_operation." + operationName));
 		}
 		model.put("ssWorkAreaOperations", operations);
 		

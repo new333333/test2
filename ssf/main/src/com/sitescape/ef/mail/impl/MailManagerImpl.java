@@ -2,6 +2,7 @@
 package com.sitescape.ef.mail.impl;
 
 import java.io.File;
+
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,6 +32,7 @@ import org.dom4j.Element;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
@@ -52,6 +54,7 @@ import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.util.Constants;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.PortabilityUtil;
 import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -310,7 +313,11 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mHelper.getMessage(), getMailDirPath(folder));
- 	    	} catch (Exception ex) {
+		   	} catch (MailAuthenticationException ax) {
+	    		logger.error("Error sending mail:" + ax.getMessage());
+		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
+		   		process.schedule(folder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mHelper.getMessage(), getMailDirPath(folder));		   	 
+		   	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());
 	    	} 
 		}
@@ -364,68 +371,39 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		}
 		return until;
 	}
-    public boolean sendMail(String mailSenderName, java.io.InputStream input) {
+    //used for re-try mail.  MimeMessage has been serialized 
+    public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
     	try {
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
 			mailSender.send(mailMsg);
-		} catch (MailParseException px) {
-       		logger.error(px.getMessage());
-    		return false;
-    		
-    	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
-    		return false;
-    	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getMessage());
-    		return false;    		
-		} catch (MessagingException mx) {
-       		logger.error(mx.getMessage());
-    		return false;
-    	}
-    	return true;
+ 		} catch (MessagingException mx) {
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {mx.getLocalizedMessage()}));
+		}
     }
-    public boolean sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
+    //prepare mail and send it - caller must retry if desired
+    public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());
 		//Use spring callback to wrap exceptions into something more useful than javas 
-		try {
-			mailSender.send(mHelper);
-		} catch (MailParseException px) {
-       		logger.error(px.getMessage());
-    		return false;
-    		
-    	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
-    		return false;
-    	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getMessage());
-    		return false;    		
-    	}
-    	return true;
- 
+		mailSender.send(mHelper);
 	}
-    public boolean sendMail(MimeMessage mailMsg) {
-        String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-        JavaMailSender mailSender = getMailSender(zoneName);
-
-    	try {
-			mailSender.send(mailMsg);
-		} catch (MailParseException px) {
-       		logger.error(px.getMessage());
-    		return false;
-    		
-    	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getMessage());
-    		return false;
-    	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getMessage());
-    		return false;    		
-    	}
-    	return true;
+    //used to send prepared mail now.
+    public void sendMail(MimeMessage mailMsg) {
+       	String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+        sendMail(getMailSender(zoneName).getName(), mailMsg);
     }
-
-
+    //used to send prepared mail now.    
+    public void sendMail(String mailSenderName, MimeMessage mailMsg) {
+    	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
+		mailSender.send(mailMsg);
+    }
+    //send mail now, if fails, reschedule
+    public boolean sendMail(Binder binder, Map message, String comment) {
+  		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
+   		return process.sendMail(getMailSender(binder).getName(), message, comment);
+	}
+    // schedule mail delivery - message cannot contain attachments
     public void scheduleMail(Binder binder, Map message, String comment) {
   		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
    		process.schedule(getMailSender(binder).getName(), message, comment);

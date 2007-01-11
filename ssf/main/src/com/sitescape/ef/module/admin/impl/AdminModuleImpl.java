@@ -12,8 +12,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
+import javax.mail.internet.InternetAddress;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.InvalidArgumentException;
@@ -27,6 +29,8 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.PostingDef;
@@ -35,6 +39,7 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.jobs.EmailPosting;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.jobs.SendEmail;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -445,6 +450,80 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    wa.addAll(result);
 	    return wa;
 	    
+    }
+    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries) throws Exception {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+		Set userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
+		//TODO is there accesschecking on seeing email address
+		List users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
+		Set emailSet = new HashSet();
+		List errors = new ArrayList();
+		Map result = new HashMap();
+		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		//add email address listed 
+		Object[] errorParams = new Object[3];
+		for (Iterator iter=emailAddresses.iterator(); iter.hasNext();) {
+			String e = (String)iter.next();
+			if (!Validator.isNull(e)) {
+				try {
+					emailSet.add(new InternetAddress(e.trim()));
+				} catch (Exception ex) {
+					errorParams[0] = "";
+					errorParams[1] = e;
+					errorParams[2] = ex.getLocalizedMessage();
+					errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+				}
+			}
+		}
+		for (Iterator iter=users.iterator(); iter.hasNext();) {
+			User e = (User)iter.next();
+			try {
+				emailSet.add(new InternetAddress(e.getEmailAddress().trim()));
+			} catch (Exception ex) {
+				errorParams[0] = e.getTitle();
+				errorParams[1] = e.getEmailAddress();
+				errorParams[2] = ex.getLocalizedMessage();
+				errors.add(NLT.get("errorcode.badToAddress", errorParams));							
+			}
+		}
+		if (emailSet.isEmpty()) {
+			//no-one to send tos
+			errors.add(0, NLT.get("errorcode.noRecipients", errorParams));
+			result.put(ObjectKeys.SENDMAIL_STATUS, Boolean.FALSE);
+			return result;			
+		}
+    	Map message = new HashMap();
+       	try {
+    		message.put(SendEmail.FROM, new InternetAddress(user.getEmailAddress()));
+    	} catch (Exception ex) {
+			errorParams[0] = user.getTitle();
+			errorParams[1] = user.getEmailAddress();
+			errorParams[2] = ex.getLocalizedMessage();
+			errors.add(0, NLT.get("errorcode.badFromAddress", errorParams));
+			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
+			//cannot send without valid from address
+			return result;
+    	}
+    	if (body.getFormat() == Description.FORMAT_HTML)
+    		message.put(SendEmail.HTML_MSG, body.getText());
+    	else 
+       		message.put(SendEmail.TEXT_MSG, body.getText());
+    		
+    	message.put(SendEmail.SUBJECT, subject);
+ 		message.put(SendEmail.TO, emailSet);
+ 		if (entries != null) {
+ 			List attachments = new ArrayList();
+ 			for (int i=0; i<entries.size(); ++i) {
+ 				DefinableEntity entry = (DefinableEntity)entries.get(i);
+ 				attachments.addAll(entry.getFileAttachments());
+ 			}
+ 			message.put(SendEmail.ATTACHMENTS, attachments);
+ 		}
+		
+		boolean sent = getMailManager().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
+		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
+		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
+		return result;
     }
 
 	public void addZone(String name) {

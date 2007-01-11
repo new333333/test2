@@ -418,6 +418,12 @@ public class WorkspaceTreeController extends SAbstractController  {
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
+
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		Map qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 		
 		
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());

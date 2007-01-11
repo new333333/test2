@@ -6,15 +6,14 @@
  */
 package com.sitescape.ef.module.admin;
 import java.text.ParseException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 /**
@@ -61,4 +60,13 @@ public interface AdminModule {
     public List getChanges(Long binderId, String operation);
     public List getChanges(Long entityId, String entityType, String operation);
 
+    /**
+     * Send mail
+     * @param ids - Set on principal ids
+     * @param emailAddresses - Set if Strings
+     * @param subject
+     * @param body
+     * @return - Map - status and list of errors
+     **/
+    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries) throws Exception;
 }

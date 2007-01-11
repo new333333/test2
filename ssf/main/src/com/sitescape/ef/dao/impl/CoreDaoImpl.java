@@ -488,8 +488,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	Session s = sf.openSession();
     	try {
     		LibraryEntry le = new LibraryEntry(binder.getId(), name);
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-			if (exist != null) delete(le);
+			LibraryEntry exist = (LibraryEntry)s.get(LibraryEntry.class, le);
+			if (exist != null) s.delete(exist);
     		s.flush();
     	} catch (Exception ex) {
 				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
@@ -497,14 +497,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     		s.close();
     	}    	
     }
-    //done in the current transaction on a title rename
+ 
+    //done in the current transaction on a title rename or remove attachment
     public void updateLibraryName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
-        if (Validator.isNull(newName)) throw new TitleException("");
-        if (newName.equalsIgnoreCase(oldName)) return;
+        if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
         LibraryEntry le=null;
  		if (oldName != null) {
-	        LibraryEntry newLe = new LibraryEntry(binder.getId(), oldName);
-			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, newLe);
+	        LibraryEntry oldLe = new LibraryEntry(binder.getId(), oldName);
+			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
 			if (le != null) {
 				//it exists, is it ours?
 				if (!binder.equals(entity)) {
@@ -513,31 +513,27 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 						delete(le);
 						flush();
 					}
-					newLe.setEntityId(entity.getId());
 				} else if (le.getEntityId() == null) {
 					//belongs to this binder; delete cause changing primary key
 					delete(le);
 					flush();
 				}
-
-				newLe.setName(newName);
-				save(newLe);
-				return;
 			}
 		}
-		if (le == null) {
-			try {
-				le = new LibraryEntry(binder.getId(), newName);
-				LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-				if (exist == null) {
-					if (!binder.equals(entity)) le.setEntityId(entity.getId());
-					save(le);
-				}
-				else throw new TitleException(newName);
-			} catch (Exception ex) {
-				throw new TitleException(newName);
+		//this was a remove
+		if (Validator.isNull(newName)) return;
+		//register new name
+		try {
+			le = new LibraryEntry(binder.getId(), newName);
+			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+			if (exist == null) {
+				if (!binder.equals(entity)) le.setEntityId(entity.getId());
+				save(le);
 			}
-		}   	
+			else throw new TitleException(newName);
+		} catch (Exception ex) {
+			throw new TitleException(newName);
+		}  	
     }
     public  Long findLibraryEntryId(Binder binder, String name) {
     	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(), name));
