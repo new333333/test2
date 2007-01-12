@@ -828,8 +828,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		// Nothing to do. 
     	}
     	else {
-    		if(reservation.getPrincipal().equals(user)) {
-    			// The entry is currently reserved by the same user. 
+    		boolean isUserBinderAdministrator = false;
+    		try {
+    			checkAccess(entry, "overrideReserveEntry");
+    			isUserBinderAdministrator = true;
+    		}
+    		catch (AccessControlException ac) {};    		
+    		
+    		if(reservation.getPrincipal().equals(user) || isUserBinderAdministrator) {
+    			// The entry is currently reserved by the same user or if the user happens to be a binder administrator 
     			// Cancel the reservation.
     			entry.clearReservation();
     		}
