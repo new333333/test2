@@ -36,7 +36,16 @@ public class ModifyEntryController extends SAbstractController {
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			getFolderModule().deleteEntry(folderId, entryId);
 			setupViewFolder(response, folderId);		
-		} else if (formData.containsKey("okBtn")) {
+		} 
+		else if (op.equals(WebKeys.OPERATION_LOCK)) {
+			getFolderModule().reserveEntry(folderId, entryId);
+			setupViewEntry(response, folderId, entryId);
+		}
+		else if (op.equals(WebKeys.OPERATION_UNLOCK)) {
+			getFolderModule().unreserveEntry(folderId, entryId);
+			setupViewEntry(response, folderId, entryId);
+		}
+		else if (formData.containsKey("okBtn")) {
 			if (op.equals("")) {
 
 				//See if the add entry form was submitted
@@ -54,7 +63,6 @@ public class ModifyEntryController extends SAbstractController {
 					if (key.startsWith("_delete_")) {
 						deleteAtts.add(key.substring(8));
 					}
-					
 				}
 			
 				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);

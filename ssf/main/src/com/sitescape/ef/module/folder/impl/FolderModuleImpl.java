@@ -109,7 +109,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		} else if ("reserveEntry".equals(operation)) {
 			AccessUtils.modifyCheck(entry);   		
 		} else if ("moveEntry".equals(operation)) {
-			AccessUtils.modifyCheck(entry);   		
+			AccessUtils.modifyCheck(entry);
+	    } else if ("overrideReserveEntry".equals(operation)) {
+	    	AccessUtils.overrideReserveEntryCheck(entry);
 	    } else {
 	    	AccessUtils.readCheck(entry);
 	    }

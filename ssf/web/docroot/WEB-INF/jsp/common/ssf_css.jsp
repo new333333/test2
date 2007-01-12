@@ -82,6 +82,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 <c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+<c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
 
 <c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 <c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
@@ -192,6 +193,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar_dropdown_menu_color" value="#666666" scope="request"/>
+	<c:set var="ss_toolbar_inactive" value="#999999" scope="request"/>
 
 	<c:set var="ss_help_spot_background_color" value="#ffff00" scope="request"/>
 	<c:set var="ss_help_panel_background_color" value="#ffffff" scope="request"/>
@@ -712,6 +714,9 @@ table.ss_mouseOverInfo {
 }
 .ss_toolbar a:hover {
   color: ${ss_toolbar_link_hover_color};
+}
+.ss_toolbar_inactive { 
+  color:#999999; 
 }
 
 .ss_entry_toolbar {

@@ -37,9 +37,18 @@ String menuDivWidth = "300px";
 	     </c:otherwise>
 	 </c:choose>
  
-      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
-	  onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');"
-	 >${toolbarMenu.value.title}</a>
+     <c:choose>
+     	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
+	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
+	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
+	      ${toolbarMenu.value.title}</a>
+		</c:when>
+     	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
+		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
+		</c:when>
+        <c:otherwise>
+        </c:otherwise>
+	 </c:choose>
 
       <% // END Helpspots for folder menus %>
       <c:if test="${toolbarMenu.value.title == 'Manage this folder' || toolbarMenu.value.title == 'Manage dashboard'}">

@@ -196,6 +196,23 @@ public class AccessUtils  {
     	   getAccessManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES);     	   
         }    	
     }
+
+     public static void overrideReserveEntryCheck(Entry entry) {
+     	try {
+     		getAccessManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
+     	} catch (OperationAccessControlException ex) {
+    		throw ex;
+    	}
+     }          
+     
+     public static void overrideReserveEntryCheck(Binder binder) {
+        try {
+        	getAccessManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+        } catch (OperationAccessControlException ex) {
+       		throw ex;
+       	}
+     }     
+     
      public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
      	throws AccessControlException {
      	 WfAcl acl = WorkflowUtils.getStateTransitionInAcl(definition, toState);

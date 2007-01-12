@@ -62,6 +62,8 @@
 						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
 						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
 						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="lock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="unlock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
 						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
 						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
