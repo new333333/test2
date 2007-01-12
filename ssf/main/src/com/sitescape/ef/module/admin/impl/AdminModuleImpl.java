@@ -315,6 +315,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
 	
+	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
+		checkAccess(workArea, "setWorkAreaFunctionMembership");
+		Iterator itFunctions = functionMemberships.entrySet().iterator();
+		while (itFunctions.hasNext()) {
+			Map.Entry fm = (Map.Entry)itFunctions.next();
+			setWorkAreaFunctionMembership(workArea, (Long)fm.getKey(), (Set)fm.getValue());
+		}
+	}
+	
 	public void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
       	Workspace zone = RequestContextHolder.getRequestContext().getZone();
@@ -374,6 +383,17 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    }
  
         return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), source);
+	}
+
+	//Routine to return the workarea that access control is being inherited from
+	public WorkArea getWorkAreaFunctionInheritance(WorkArea workArea) {
+		checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
+	    WorkArea source = workArea;
+	    if (!workArea.isFunctionMembershipInherited()) return source;
+	    while (source != null && source.isFunctionMembershipInherited()) {
+	    	source = source.getParentWorkArea();
+	    }
+        return source;
 	}
 
 	public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) 
