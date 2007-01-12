@@ -49,7 +49,10 @@
 	 <tr>
 	  <td valign="top" style="padding-left:30px;">
 		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;"><ssf:nlt tag="entry.reservedBy"/></span>
+		  <span style="padding-right:8px;">
+		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		  </span>
+		  
 		  <ssf:presenceInfo user="${ssDefinitionEntry.reservation.principal}" showTitle="true"/>
 		</div>
 	  </td>
