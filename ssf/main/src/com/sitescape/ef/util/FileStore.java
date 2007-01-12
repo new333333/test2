@@ -17,7 +17,7 @@ public class FileStore {
 
 	private String rootPath;
 	
-	public void setRootPath(String rootPath) {
+	public FileStore(String rootPath) {
 		this.rootPath = rootPath;
 	}
 	
