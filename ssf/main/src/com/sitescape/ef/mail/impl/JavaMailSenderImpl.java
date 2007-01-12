@@ -1,5 +1,11 @@
 package com.sitescape.ef.mail.impl;
+import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.Transport;
+
+import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
+
 import com.sitescape.util.Validator;
 /**
  * This class extends the spring JavaMailSenderImpl.  It adds the bean name, so
@@ -12,6 +18,24 @@ public class JavaMailSenderImpl extends
 		org.springframework.mail.javamail.JavaMailSenderImpl
 		implements com.sitescape.ef.mail.JavaMailSender {
 	private String name;
+	protected Transport getTransport(Session session) throws NoSuchProviderException {
+		Transport transport = super.getTransport(session);
+		//setup password
+		String protocol = getProtocol();
+		String prefix = "mail." + protocol + ".";
+		String auth = session.getProperty(prefix + "auth");
+		if (Validator.isNull(auth)) 
+			auth = session.getProperty("mail.auth");
+		//apparently this isn't a standard property
+		if ("true".equals(auth)) {
+			String password = session.getProperty(prefix + "password");
+			if (Validator.isNull(password)) 
+				password = session.getProperty("mail.password");
+			setPassword(password);
+		}
+		return transport;
+	}
+
 	public String getDefaultFrom() {
 		Session session = getSession();
 		String protocol = getProtocol();
@@ -26,4 +50,5 @@ public class JavaMailSenderImpl extends
 	public String getName() {
 		return name;
 	}
+
 }

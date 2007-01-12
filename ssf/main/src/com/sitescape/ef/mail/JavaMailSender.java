@@ -9,4 +9,5 @@ public interface JavaMailSender extends
 	public void setSession(Session session);
 	public String getName();
 	public void setName(String name);
+	
 }
