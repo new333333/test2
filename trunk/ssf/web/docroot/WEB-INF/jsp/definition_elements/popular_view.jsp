@@ -13,6 +13,7 @@ var ss_saveRatingUrl = "<ssf:url
 	</ssf:url>";
 var ss_binderId = "${ssBinder.id}";
 var ss_confirmDeleteEntryText = "<ssf:nlt tag="entry.confirmDeleteEntry"/>";
+var ss_confirmUnlockEntryText = "<ssf:nlt tag="entry.confirmUnlockEntry"/>";
 
 ss_ratings_info[1] = "<ssf:nlt tag="popularity.rating.1star" />"
 ss_ratings_info[2] = "<ssf:nlt tag="popularity.rating.2stars" />"

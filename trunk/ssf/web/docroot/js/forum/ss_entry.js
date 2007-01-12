@@ -65,3 +65,11 @@ function ss_confirmDeleteEntry() {
 		return false
 	}
 }
+
+function ss_confirmUnlockEntry() {
+	if (confirm(ss_confirmUnlockEntryText)) {
+		return true
+	} else {
+		return false
+	}
+}

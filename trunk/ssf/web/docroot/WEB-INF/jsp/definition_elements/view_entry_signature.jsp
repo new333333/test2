@@ -43,3 +43,16 @@
  </tr>
 </table>
 </c:if>
+
+<c:if test="${!empty ssDefinitionEntry.reservation.principal}">
+	<table cellspacing="0" cellpadding="0">
+	 <tr>
+	  <td valign="top" style="padding-left:30px;">
+		<div class="ss_entryContent ss_entrySignature">
+		  <span style="padding-right:8px;"><ssf:nlt tag="entry.reservedBy"/></span>
+		  <ssf:presenceInfo user="${ssDefinitionEntry.reservation.principal}" showTitle="true"/>
+		</div>
+	  </td>
+	 </tr>
+	</table>
+</c:if>

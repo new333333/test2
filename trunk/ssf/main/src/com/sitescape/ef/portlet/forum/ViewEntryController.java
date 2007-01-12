@@ -13,21 +13,24 @@ import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Subscription;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
@@ -170,41 +173,84 @@ public class ViewEntryController extends  SAbstractController {
 		List replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']");
 		PortletURL url;
 		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+
+		Map disabledQual = new HashMap();
+		disabledQual.put("disabled", new Boolean(true));
+		PortletURL nullPortletUrl = null;
+		boolean reserveAccessCheck = false;
+		boolean isUserBinderAdministrator = false;
+		boolean isEntryReserved = false;
+		boolean isLockedByAndLoginUserSame = false;
+
+		try {
+			getFolderModule().checkAccess(entry, "reserveEntry");
+			reserveAccessCheck = true;
+		}
+		catch (AccessControlException ac) {};
+		try {
+			getFolderModule().checkAccess(entry, "overrideReserveEntry");
+			isUserBinderAdministrator = true;
+		}
+		catch (AccessControlException ac) {};
+		
+		HistoryStamp historyStamp = entry.getReservation();
+		if (historyStamp != null) isEntryReserved = true;
+
+		if (isEntryReserved) {
+			Principal lockedByUser = historyStamp.getPrincipal();
+			if (lockedByUser.getId().equals(user.getId())) {
+				isLockedByAndLoginUserSame = true;
+			}
+		}
+		
 		if (!replyStyles.isEmpty()) {
 			try {
 				getFolderModule().checkAccess(entry, "addReply");
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
-					if (!replyStyleId.equals("")) {
-						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-
-						Map qualifiers = new HashMap();
-						qualifiers.put("popup", new Boolean(true));
-						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), 
-								adapterUrl.toString(), qualifiers);
+					
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ){
+						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), nullPortletUrl, disabledQual);
 					}
-				} else {
-					toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
-					Map qualifiers = new HashMap();
-					qualifiers.put("popup", new Boolean(true));
-					for (int i = 0; i < replyStyles.size(); i++) {
-						String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
-						try {
-							Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
+					else {
+						if (!replyStyleId.equals("")) {
 							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
 							adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-							toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), 
+	
+							Map qualifiers = new HashMap();
+							qualifiers.put("popup", new Boolean(true));
+							toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), 
 									adapterUrl.toString(), qualifiers);
-						} catch (NoDefinitionByTheIdException e) {
-							continue;
+						}
+					}
+				} else {
+					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ){
+						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), nullPortletUrl, disabledQual);
+					}
+					else {
+						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"));
+						Map qualifiers = new HashMap();
+						qualifiers.put("popup", new Boolean(true));
+						for (int i = 0; i < replyStyles.size(); i++) {
+							String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
+							try {
+								Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
+								AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+								adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
+								adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+								adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, replyStyleId);
+								adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+								toolbar.addToolbarMenuItem("1_reply", "replies", replyDef.getTitle(), 
+										adapterUrl.toString(), qualifiers);
+							} catch (NoDefinitionByTheIdException e) {
+								continue;
+							}
 						}
 					}
 				} 
@@ -213,37 +259,89 @@ public class ViewEntryController extends  SAbstractController {
 	    
 		try {
 			getFolderModule().checkAccess(entry, "modifyEntry");
-			//The "Modify" menu
-			Map qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-			//The "Move" menu
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			toolbar.addToolbarMenu("3_move", NLT.get("toolbar.move"), url);
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
+				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
+			}
+			else {
+				//The "Modify" menu
+				Map qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+				//The "Move" menu
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
+			}
 		} catch (AccessControlException ac) {};
+
+		//Does the user have access to reserve the entry
+		if (reserveAccessCheck) {
+			//If no one has reserved the entry
+			if (!isEntryReserved) {
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_LOCK);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+				toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.lock"), url);
+			}
+			else {
+			//If some one has reserved the entry	
+				//If the person who has locked the entry and the logged in user are the same we allow access to unlock
+				if (isLockedByAndLoginUserSame) {
+		   			url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNLOCK);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url);
+				}
+				else {
+					//If the person who has logged in is the binder administrator we allow access to unlock
+					if (isUserBinderAdministrator) {
+						Map qualifiers = new HashMap();
+						qualifiers.put("onClick", "return ss_confirmUnlockEntry();");
+						url = response.createActionURL();
+						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOCK_FOLDER_ENTRY);
+						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_UNLOCK);
+						url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+						url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.unlock"), url, qualifiers);
+					}
+					else {
+					//If the person logged is not binder administrator
+						toolbar.addToolbarMenu("3_lock", NLT.get("toolbar.lock"), nullPortletUrl, disabledQual);
+					}
+				}
+			}
+		}
 		
-	    
 		try {
 			getFolderModule().checkAccess(entry, "deleteEntry");
 			//The "Delete" menu
-			Map qualifiers = new HashMap();
-			qualifiers.put("onClick", "return ss_confirmDeleteEntry();");
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-			toolbar.addToolbarMenu("4_delete", NLT.get("toolbar.delete"), url, qualifiers);
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), nullPortletUrl, disabledQual);
+			}
+			else {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "return ss_confirmDeleteEntry();");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
+			}
 		} catch (AccessControlException ac) {};
 	    
 		//The "Footer" menu
