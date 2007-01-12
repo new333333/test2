@@ -28,5 +28,8 @@ public class EmployeeSalaryIncrementController extends SAbstractController {
 	    // Set the action parameter to go to the default view
 		response.setRenderParameter("action","employees");
 
+		// TEST moveEntry
+		//getFolderModule().moveEntry(new Long(268), new Long(655), new Long(287));
+		//getFolderModule().moveEntry(new Long(287), new Long(602), new Long(268));
 	}
 }
