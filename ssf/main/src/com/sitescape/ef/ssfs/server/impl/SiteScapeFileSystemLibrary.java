@@ -536,7 +536,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		InputStream fromContent = bs.getFileModule().readFile
 		(fromEntry.getParentFolder(), fromEntry, fromFA);
 	
-		modifyLibraryFolderEntry(toEntry, fromContent, fromFA.getModification().getDate());
+		modifyLibraryFolderEntry(toEntry, fileName, fromContent, fromFA.getModification().getDate());
 	}
 	
 	private String objectInfo(Map uri, Map objMap) throws NoAccessException {
@@ -734,7 +734,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		}
 	}
 	
-	private void modifyLibraryFolderEntry(FolderEntry entry, InputStream content, Date modDate) 
+	private void modifyLibraryFolderEntry(FolderEntry entry, String fileName, 
+			InputStream content, Date modDate) 
 	throws NoAccessException {
 		Folder folder = entry.getParentFolder();
 		Definition def = getFolderEntryDefinition(folder);
@@ -744,7 +745,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		String elementName = getLibraryElementName(def);
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
-		SsfsMultipartFile mf = new SsfsMultipartFile(entry.getTitle(), content, modDate);
+		SsfsMultipartFile mf = new SsfsMultipartFile(fileName, content, modDate);
 		
 		Map fileItems = new HashMap(); // Map of names to file items	
 		fileItems.put(elementName, mf); // single file item
@@ -791,7 +792,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
 		}
 		else {
-			modifyLibraryFolderEntry(getFolderEntry(objMap), content, null);
+			modifyLibraryFolderEntry(getFolderEntry(objMap), fileName, content, null);
 		}
 	}
 	

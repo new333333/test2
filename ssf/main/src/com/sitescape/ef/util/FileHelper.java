@@ -63,6 +63,10 @@ public class FileHelper {
 		if(dest.exists() && !dest.delete())
 			throw new IOException("Destination file [" + dest.getAbsolutePath() + "] already exists and could not be deleted");
 		
+		File destParent = dest.getParentFile();
+		if(!destParent.exists())
+			destParent.mkdirs();
+		
 		// First, try to rename it.
 		if(source.renameTo(dest))
 			return;
@@ -88,6 +92,7 @@ public class FileHelper {
 			catch(IOException e2) {
 				// Nothing more we can do...
 			}
+			throw e; // Rethrow
 		}
 	}
 
