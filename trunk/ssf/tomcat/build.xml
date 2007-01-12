@@ -28,6 +28,10 @@
 			token="@@@mail.smtp.host.out" value="${mail.smtp.host.out}"/>
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
 			token="@@@mail.smtp.user.out" value="${mail.smtp.user.out}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+			token="@@@mail.smtp.auth.out" value="${mail.smtp.auth.out}"/>
+		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
+				token="@@@mail.smtp.password.out" value="${mail.smtp.password.out}"/>
 
 		<replace file="${app.server.dir}/conf/Catalina/localhost/ssf.xml" 
 			token="@@@mail.store.protocol.in" value="${mail.store.protocol.in}"/>

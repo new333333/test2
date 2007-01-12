@@ -17,6 +17,8 @@
 		mail.transport.protocol="@@@mail.transport.protocol.out"
 		mail.smtp.host="@@@mail.smtp.host.out"
 		mail.smtp.user="@@@mail.smtp.user.out"
+		mail.smtp.password="@@@mail.smtp.password.out"
+		mail.smtp.auth="@@@mail.smtp.auth.out"
 	/>
 	<Resource 
 		name="mail/SiteScapePosting" 
