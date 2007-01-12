@@ -26,6 +26,7 @@ import org.dom4j.Element;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -104,7 +105,7 @@ import com.sitescape.ef.web.util.FilterHelper;
  * @author jong
  *
  */
-public class FileModuleImpl implements FileModule {
+public class FileModuleImpl implements FileModule, InitializingBean {
 
 	private static final String FAILED_FILTER_FILE_DELETE 			= "DELETE";
 	private static final String FAILED_FILTER_FILE_MOVE 			= "MOVE";
@@ -192,13 +193,6 @@ public class FileModuleImpl implements FileModule {
 		return this.lockExpirationAllowance * 1000;
 	}
 	
-	public void setCacheFileStore(FileStore cacheFileStore) {
-		this.cacheFileStore = cacheFileStore;
-	}
-	protected FileStore getCacheFileStore() {
-		return cacheFileStore;
-	}
-	
 	public void setFailedFilterFile(String failedFilterFile) {
 		if(FAILED_FILTER_FILE_DELETE.equals(failedFilterFile)) {
 			this.failedFilterFile = FAILED_FILTER_FILE_DELETE;
@@ -231,6 +225,10 @@ public class FileModuleImpl implements FileModule {
 		}
 	}
 
+	public void afterPropertiesSet() throws Exception {
+		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+	}
+	
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
 			FilesErrors errors) {
 		return deleteFiles(binder, entry, errors, true);
