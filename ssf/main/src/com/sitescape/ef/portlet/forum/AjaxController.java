@@ -142,7 +142,9 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/favorites_tree", model);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL)) {
 				return new ModelAndView("forum/ajax_return", model);
-			} 
+			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
+				return new ModelAndView("binder/access_control_table", model);
+			}
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
@@ -223,7 +225,10 @@ public class AjaxController  extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.OPERATION_SET_CURRENT_TAB)) {
 			return ajaxSetCurrentTab(request, response);
-		} 
+			
+		} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
+			return ajaxGetAccessControlTable(request, response);
+		}
 				
 		return ajaxReturn(request, response);
 	} 
@@ -1099,6 +1104,41 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.TABS, tabs.getTabs());
 		model.put(WebKeys.TAB_ID, -1);
 		return new ModelAndView("binder/show_tabs", model);
+	}
+
+	private ModelAndView ajaxGetAccessControlTable(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		Map model = new HashMap();
+		List functions = getAdminModule().getFunctions();
+		List membership;
+		if (binder.isFunctionMembershipInherited()) {
+			membership = getAdminModule().getWorkAreaFunctionMembershipsInherited(binder);
+		} else {
+			membership = getAdminModule().getWorkAreaFunctionMemberships(binder);
+		}
+		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, membership, model);
+
+		if (!binder.isFunctionMembershipInherited()) {
+			Binder parentBinder = binder.getParentBinder();
+			List parentMembership;
+			if (parentBinder.isFunctionMembershipInherited()) {
+				parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
+			} else {
+				parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+			}
+			Map modelParent = new HashMap();
+			BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
+					functions, parentMembership, modelParent);
+			model.put(WebKeys.ACCESS_PARENT, modelParent);
+			BinderHelper.mergeAccessControlTableBeans(model);
+		}
+		
+		model.put(WebKeys.NAMESPACE, namespace);
+		response.setContentType("text/xml");
+		return new ModelAndView("binder/access_control_ajax", model);
 	}
 
 }

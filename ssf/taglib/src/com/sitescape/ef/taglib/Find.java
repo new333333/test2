@@ -1,10 +1,6 @@
 package com.sitescape.ef.taglib;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.RequestDispatcher;
@@ -12,10 +8,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -32,6 +26,9 @@ public class Find extends TagSupport {
     private String width = "30";
     private String type;
     private Boolean singleItem;
+    private Boolean leaveResultsVisible;
+    private String clickRoutine = "";
+    private Integer instanceCount = 0;
     
 	public int doStartTag() throws JspException {
 		try {
@@ -41,6 +38,8 @@ public class Find extends TagSupport {
 			if (this.userList == null) this.userList = new HashSet();
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
 			if (singleItem == null) singleItem = false;
+			if (leaveResultsVisible == null) leaveResultsVisible = false;
+			this.instanceCount++;
 			
 			//Output the start of the area
 			RequestDispatcher rd;
@@ -68,6 +67,9 @@ public class Find extends TagSupport {
 			req.setAttribute("element_width", this.width);
 			req.setAttribute("list_type", this.type);
 			req.setAttribute("singleItem", this.singleItem);
+			req.setAttribute("clickRoutine", this.clickRoutine);
+			req.setAttribute("instanceCount", this.instanceCount);
+			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -81,6 +83,8 @@ public class Find extends TagSupport {
 			this.userList = null;
 			this.singleItem = false;
 			this.width = "30";
+			this.clickRoutine = "";
+			this.leaveResultsVisible = false;
 		}
 	}
 
@@ -108,8 +112,16 @@ public class Find extends TagSupport {
 	    this.type = type;
 	}
 
+	public void setClickRoutine(String clickRoutine) {
+	    this.clickRoutine = clickRoutine;
+	}
+
 	public void setSingleItem(Boolean singleItem) {
 	    this.singleItem = singleItem;
+	}
+
+	public void setLeaveResultsVisible(Boolean leaveResultsVisible) {
+	    this.leaveResultsVisible = leaveResultsVisible;
 	}
 
 }

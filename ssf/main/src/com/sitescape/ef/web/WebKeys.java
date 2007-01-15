@@ -164,6 +164,7 @@ public class WebKeys {
     public static final String OPERATION_DELETE_TAB="delete_tab";
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
+	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
@@ -218,6 +219,16 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_ENTRIES_ON_SEARCH_PAGE="change_entries_on_search_page";
 	
 	// MODEL TAGS & Attributes
+	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
+	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
+	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
+	public static final String ACCESS_PARENT = "ss_accessParent";
+	public static final String ACCESS_SORTED_FUNCTIONS = "ss_accessSortedFunctions";
+	public static final String ACCESS_SORTED_FUNCTIONS_MAP = "ss_accessSortedFunctionsMap";
+	public static final String ACCESS_SORTED_GROUPS = "ss_accessSortedGroups";
+	public static final String ACCESS_SORTED_GROUPS_MAP = "ss_accessSortedGroupsMap";
+	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
+	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
 	public static final String ACTION = "action";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
