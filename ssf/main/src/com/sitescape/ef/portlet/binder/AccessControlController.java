@@ -95,17 +95,19 @@ public class AccessControlController extends AbstractBinderController {
 
 		if (!binder.isFunctionMembershipInherited()) {
 			Binder parentBinder = binder.getParentBinder();
-			List parentMembership;
-			if (parentBinder.isFunctionMembershipInherited()) {
-				parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
-			} else {
-				parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+			if (parentBinder != null) {
+				List parentMembership;
+				if (parentBinder.isFunctionMembershipInherited()) {
+					parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
+				} else {
+					parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+				}
+				Map modelParent = new HashMap();
+				BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
+						functions, parentMembership, modelParent, true);
+				model.put(WebKeys.ACCESS_PARENT, modelParent);
+				BinderHelper.mergeAccessControlTableBeans(model);
 			}
-			Map modelParent = new HashMap();
-			BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
-					functions, parentMembership, modelParent, true);
-			model.put(WebKeys.ACCESS_PARENT, modelParent);
-			BinderHelper.mergeAccessControlTableBeans(model);
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);

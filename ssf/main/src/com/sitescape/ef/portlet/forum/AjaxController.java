@@ -84,7 +84,6 @@ public class AjaxController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 
 		if (!WebHelper.isUserLoggedIn(request)) {
 			Map model = new HashMap();
@@ -460,8 +459,7 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		String type = PortletRequestUtils.getStringParameter(request, "type", "personalTag");
-		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "personalTag");
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String tagDivNumber = PortletRequestUtils.getStringParameter(request, "tagDivNumber", "");
 	
 		Map model = new HashMap();
@@ -947,7 +945,6 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetDashboardSearchMore(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String componentId = op2;
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIV_ID, ""));
@@ -1057,7 +1054,6 @@ public class AjaxController  extends SAbstractController {
 		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		String type = PortletRequestUtils.getRequiredStringParameter(request, "type");
-		Map formData = request.getParameterMap();
 		int tabId = 0;
 		if (type.equals(Tabs.BINDER)) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
@@ -1124,17 +1120,19 @@ public class AjaxController  extends SAbstractController {
 
 		if (!binder.isFunctionMembershipInherited()) {
 			Binder parentBinder = binder.getParentBinder();
-			List parentMembership;
-			if (parentBinder.isFunctionMembershipInherited()) {
-				parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
-			} else {
-				parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+			if (parentBinder != null) {
+				List parentMembership;
+				if (parentBinder.isFunctionMembershipInherited()) {
+					parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
+				} else {
+					parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+				}
+				Map modelParent = new HashMap();
+				BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
+						functions, parentMembership, modelParent, true);
+				model.put(WebKeys.ACCESS_PARENT, modelParent);
+				BinderHelper.mergeAccessControlTableBeans(model);
 			}
-			Map modelParent = new HashMap();
-			BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
-					functions, parentMembership, modelParent, true);
-			model.put(WebKeys.ACCESS_PARENT, modelParent);
-			BinderHelper.mergeAccessControlTableBeans(model);
 		}
 		
 		model.put(WebKeys.NAMESPACE, namespace);
