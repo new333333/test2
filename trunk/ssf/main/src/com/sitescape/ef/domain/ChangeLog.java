@@ -66,12 +66,14 @@ public class ChangeLog {
 			this.operationDate = wfEntry.getWorkflowChange().getDate();
 			this.userName = wfEntry.getWorkflowChange().getPrincipal().getName();
 			this.userId = wfEntry.getWorkflowChange().getPrincipal().getId();
+			this.zoneId = wfEntry.getWorkflowChange().getPrincipal().getZoneId();
 		} else { 
 			this.operationDate = entity.getModification().getDate();
 			this.userName = entity.getModification().getPrincipal().getName();
 			this.userId = entity.getModification().getPrincipal().getId();
+			this.zoneId = entity.getModification().getPrincipal().getZoneId();
 		}
-		this.zoneId = entity.getParentBinder().getZoneId();
+
 		this.entityId = entity.getEntityIdentifier().getEntityId();
 		this.entityType = entity.getEntityIdentifier().getEntityType().name();
 		this.version = entity.getLogVersion();
