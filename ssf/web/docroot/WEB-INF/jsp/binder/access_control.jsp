@@ -72,7 +72,7 @@ function ss_selectRole<portlet:namespace/>() {
 %>
 <c:set var="roleId" value="<%= roleId %>" />
 <div class="ss_portlet">
-<div class="ss_style ss_form" style="margin:6px; padding:10px 16px 10px 10px;">
+<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
 <div style="margin:6px; width:100%;">
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
