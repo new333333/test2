@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.portlet.PortletURL;
@@ -22,14 +25,19 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
 
 public class BinderHelper {
@@ -430,5 +438,225 @@ public class BinderHelper {
 		}
 		return intMaxHitsPerFolder;
 	}
+	
+	public static void buildAccessControlTableBeans(RenderRequest request, 
+			RenderResponse response, Binder binder, List functions, List membership, Map model) {
+		Map formData = request.getParameterMap();
+
+		Set newRoleIds = new HashSet();
+		String[] roleIds = new String[0];
+		String[] principalIds = new String[0];
+		String principalId = "";
+		
+		Map functionMap = new HashMap();
+		Map sortedGroupsMap = new TreeMap();
+		Map sortedUsersMap = new TreeMap();
+
+		String[] btnClicked = new String[] {""};
+ 		if (formData.containsKey("btnClicked")) btnClicked = (String[])formData.get("btnClicked");
+		if (formData.containsKey("addRoleBtn") || btnClicked[0].equals("addPrincipal")) {
+			if (formData.containsKey("roleIds")) {
+				roleIds = (String[]) formData.get("roleIds");
+				for (int i = 0; i < roleIds.length; i++) {
+					if (!roleIds[i].equals("")) newRoleIds.add(Long.valueOf(roleIds[i]));
+				}
+			}
+			if (formData.containsKey("principalId")) {
+				String[] pIds = (String[]) formData.get("principalId");
+				if (pIds.length >= 1) principalId = pIds[0];
+			}
+
+			if (formData.containsKey("principalIds")) {
+				principalIds = (String[]) formData.get("principalIds");
+			}
+
+			//Get the role and user data from the form
+			Map roleMembers = new HashMap();
+			membership = new ArrayList();
+			if (!principalId.equals("")) membership.add(Long.valueOf(principalId));
+			for (int i = 0; i < principalIds.length; i++) {
+				if (!principalIds[i].equals("")) {
+					Long id = Long.valueOf(principalIds[i]);
+					if (!membership.contains(id)) membership.add(id);
+				}
+			}
+			Iterator itFormData = formData.entrySet().iterator();
+			while (itFormData.hasNext()) {
+				Map.Entry me = (Map.Entry)itFormData.next();
+				String key = (String)me.getKey();
+				if (key.length() >= 8 && key.substring(0,7).equals("role_id")) {
+					String[] s_roleId = key.substring(7).split("_");
+					if (s_roleId.length == 2) {
+						Long roleId = Long.valueOf(s_roleId[0]);
+						Long memberId = Long.valueOf(s_roleId[1]);
+						if (!roleMembers.containsKey(roleId)) roleMembers.put(roleId, new ArrayList());
+						List members = (List)roleMembers.get(roleId);
+						if (!members.contains(memberId)) members.add(memberId);
+						if (!membership.contains(memberId)) membership.add(memberId);
+					}
+				}
+			}
+			Collection ids = ResolveIds.getPrincipals(membership);
+			Map principalMap = new HashMap();
+    		for (Iterator iter=ids.iterator();iter.hasNext();) {
+	    		Principal p = (Principal)iter.next();
+				principalMap.put(p.getId(), p);
+			}
+
+			//Build the basic map structure
+			for (int i=0; i<functions.size(); ++i) {
+				Function f = (Function)functions.get(i);
+				Map pMap = new HashMap();
+				functionMap.put(f, pMap);
+				Map groups = new HashMap();
+				Map users = new HashMap();
+				pMap.put(WebKeys.USERS, users);
+				pMap.put(WebKeys.GROUPS, groups);
+				
+				//Populate the map with data from the form instead of getting it from the database
+				List members = (List)roleMembers.get(f.getId());
+				if (members != null) {
+					for (Iterator iter = members.iterator();iter.hasNext();) {
+						Long pId = (Long)iter.next();
+						Principal p = (Principal)principalMap.get(pId);
+						if (p instanceof Group) {
+							groups.put(p.getId(), p);
+						} else {
+							users.put(p.getId(), p);
+						}
+					}
+				}
+			}
+			//Populate the sorted users and groups maps 
+			for (Iterator iter = membership.iterator();iter.hasNext();) {
+				Long pId = (Long)iter.next();
+				Principal p = (Principal)principalMap.get(pId);
+				if (p instanceof Group) {
+					sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+				} else {
+					sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+				}
+			}
+
+		} else {
+			for (int i=0; i<functions.size(); ++i) {
+				Function f = (Function)functions.get(i);
+				Map pMap = new HashMap();
+				functionMap.put(f, pMap);
+				Map groups = new HashMap();
+				Map users = new HashMap();
+				pMap.put(WebKeys.USERS, users);
+				pMap.put(WebKeys.GROUPS, groups);
+				for (int j=0; j<membership.size(); ++j) {
+					WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)membership.get(j);
+					if (f.getId().equals(m.getFunctionId())) {
+						Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
+						for (Iterator iter=ids.iterator(); iter.hasNext();) {
+							Principal p = (Principal)iter.next();
+							if (p instanceof Group) {
+								groups.put(p.getId(), p);
+								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+							} else {
+								users.put(p.getId(), p);
+								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		//Build a sorted list of functions
+		List sortedFunctions = new ArrayList();
+		Map sortedFunctionsMap = new TreeMap();
+		for (int i=0; i<functions.size(); ++i) {
+			Function f = (Function)functions.get(i);
+			Map pMap = (Map)functionMap.get(f);
+			Map users = (Map)pMap.get(WebKeys.USERS);
+			Map groups = (Map)pMap.get(WebKeys.GROUPS);
+			if (users.size() > 0 || groups.size() > 0 || newRoleIds.contains(f.getId())) {
+				//This function has some membership; add it to the sorted list
+				sortedFunctionsMap.put(f.getName().toLowerCase() + f.getId().toString(), f);
+			}
+		}
+		Iterator itFunctions = sortedFunctionsMap.keySet().iterator();
+		while (itFunctions.hasNext()) {
+			sortedFunctions.add(sortedFunctionsMap.get((String) itFunctions.next()));
+		}
+		//Build the sorted lists of users and groups
+		List sortedGroups = new ArrayList();
+		Iterator itGroups = sortedGroupsMap.keySet().iterator();
+		while (itGroups.hasNext()) {
+			sortedGroups.add(sortedGroupsMap.get((String) itGroups.next()));
+		}
+
+		List sortedUsers = new ArrayList();
+		Iterator itUsers = sortedUsersMap.keySet().iterator();
+		while (itUsers.hasNext()) {
+			sortedUsers.add(sortedUsersMap.get((String) itUsers.next()));
+		}
+
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FUNCTION_MAP, functionMap);
+		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS, sortedFunctions);
+		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP, sortedFunctionsMap);
+		model.put(WebKeys.ACCESS_FUNCTIONS_COUNT, Integer.valueOf(sortedFunctions.size()));
+		model.put(WebKeys.ACCESS_SORTED_USERS_MAP, sortedUsersMap);
+		model.put(WebKeys.ACCESS_SORTED_USERS, sortedUsers);
+		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
+		model.put(WebKeys.ACCESS_SORTED_GROUPS_MAP, sortedGroupsMap);
+		model.put(WebKeys.ACCESS_SORTED_GROUPS, sortedGroups);
+		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
+	}
+	
+	public static void mergeAccessControlTableBeans(Map model) {
+		List sortedFunctions = (List)model.get(WebKeys.ACCESS_SORTED_FUNCTIONS);
+		Map sortedFunctionsMap = (Map)model.get(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP);
+		List sortedGroups = (List)model.get(WebKeys.ACCESS_SORTED_GROUPS);
+		List sortedUsers = (List)model.get(WebKeys.ACCESS_SORTED_USERS);
+		Map sortedGroupsMap = (Map)model.get(WebKeys.ACCESS_SORTED_GROUPS_MAP);
+		Map sortedUsersMap = (Map)model.get(WebKeys.ACCESS_SORTED_USERS_MAP);
+		
+		Map parentModel = (Map)model.get(WebKeys.ACCESS_PARENT);
+		Map parentSortedFunctionsMap = (Map)parentModel.get(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP);
+		Map parentSortedGroupsMap = (Map)parentModel.get(WebKeys.ACCESS_SORTED_GROUPS_MAP);
+		Map parentSortedUsersMap = (Map)parentModel.get(WebKeys.ACCESS_SORTED_USERS_MAP);
+		
+		for (Iterator i = parentSortedFunctionsMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry me = (Map.Entry) i.next();
+			sortedFunctionsMap.put(me.getKey(), me.getValue());
+		}
+		Iterator itFunctions = sortedFunctionsMap.keySet().iterator();
+		while (itFunctions.hasNext()) {
+			Function f = (Function)sortedFunctionsMap.get((String) itFunctions.next());
+			if (!sortedFunctions.contains(f)) sortedFunctions.add(f);
+		}
+
+		for (Iterator i = parentSortedGroupsMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry me = (Map.Entry) i.next();
+			sortedGroupsMap.put(me.getKey(), me.getValue());
+		}
+
+		for (Iterator i = parentSortedUsersMap.entrySet().iterator(); i.hasNext();) {
+			Map.Entry me = (Map.Entry) i.next();
+			sortedUsersMap.put(me.getKey(), me.getValue());
+		}
+
+		//Merge the sorted lists of users and groups
+		Iterator itGroups = sortedGroupsMap.keySet().iterator();
+		while (itGroups.hasNext()) {
+			Principal p = (Principal)sortedGroupsMap.get((String) itGroups.next());
+			if (!sortedGroups.contains(p)) sortedGroups.add(p);
+		}
+		Iterator itUsers = sortedUsersMap.keySet().iterator();
+		while (itUsers.hasNext()) {
+			Principal p = (Principal)sortedUsersMap.get((String) itUsers.next());
+			if (!sortedUsers.contains(p)) sortedUsers.add(p);
+		}
+
+		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
+		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
+}
 
 }

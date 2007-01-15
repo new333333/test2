@@ -13,20 +13,12 @@ import java.util.Map;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.HashSet;
-import java.util.Collection;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.FindIdsHelper;
+import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.security.function.Function;
-import com.sitescape.ef.util.ResolveIds;
-import com.sitescape.util.Validator;
+import com.sitescape.ef.security.function.WorkArea;
 
 /**
  * @author Peter Hurley
@@ -44,39 +36,45 @@ public class AccessControlController extends AbstractBinderController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		
 		//See if the form was submitted
-		if (formData.containsKey("addBtn")) {
-			String s_roleId = request.getParameter("roleId");
-			if (!Validator.isNull(s_roleId)) {
-				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
-				Set memberIds = new HashSet();
-				if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
-				if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-				getAdminModule().setWorkAreaFunctionMembership(binder, roleId, memberIds);
-			}
-			
-		} else if (formData.containsKey("modifyBtn")) {
-			String s_roleId = request.getParameter("roleId");
-			if (!Validator.isNull(s_roleId)) {
-				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
-				//find the function membership
-				WorkAreaFunctionMembership wfm = getAdminModule().getWorkAreaFunctionMembership(binder, roleId);
-				if (wfm != null) {
-					request.setAttribute("roleId", s_roleId);
+		if (formData.containsKey("okBtn")) {
+			Map functionMemberships = new HashMap();
+			if (formData.containsKey("roleIds")) {
+				String[] roleIds = (String[]) formData.get("roleIds");
+				for (int i = 0; i < roleIds.length; i++) {
+					if (!roleIds[i].equals("")) {
+						Long roleId = Long.valueOf(roleIds[i]);
+						if (!functionMemberships.containsKey(roleId)) {
+							functionMemberships.put(roleId, new HashSet());
+						}
+					}
 				}
 			}
-		} else if (formData.containsKey("deleteBtn")) {
-			String s_roleId = request.getParameter("roleId");
-			if (!Validator.isNull(s_roleId)) {
-				Long roleId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "roleId"));
-				//Delete the function membership
-				getAdminModule().deleteWorkAreaFunctionMembership(binder, roleId);
+			//Look for role settings (e.g., role_id..._...)
+			Iterator itFormData = formData.entrySet().iterator();
+			while (itFormData.hasNext()) {
+				Map.Entry me = (Map.Entry)itFormData.next();
+				String key = (String)me.getKey();
+				if (key.length() >= 8 && key.substring(0,7).equals("role_id")) {
+					String[] s_roleId = key.substring(7).split("_");
+					if (s_roleId.length == 2) {
+						Long roleId = Long.valueOf(s_roleId[0]);
+						Long memberId = Long.valueOf(s_roleId[1]);
+						Set members = (Set)functionMemberships.get(roleId);
+						if (!members.contains(memberId)) members.add(memberId);
+					}
+				}
 			}
+			getAdminModule().setWorkAreaFunctionMemberships((WorkArea) binder, functionMemberships);
 			
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			
+		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupViewBinder(response, binderId, binderType);
+			
+		} else {
+			response.setRenderParameters(request.getParameterMap());
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -85,47 +83,30 @@ public class AccessControlController extends AbstractBinderController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		
 		Map model = new HashMap();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		Map functionMap = new HashMap();
 		List functions = getAdminModule().getFunctions();
 		List membership;
-		if (binder.isFunctionMembershipInherited()) 
+		if (binder.isFunctionMembershipInherited()) {
 			membership = getAdminModule().getWorkAreaFunctionMembershipsInherited(binder);
-		else
+		} else {
 			membership = getAdminModule().getWorkAreaFunctionMemberships(binder);
-		
-		for (int i=0; i<functions.size(); ++i) {
-			Function f = (Function)functions.get(i);
-			Map pMap = new HashMap();
-			functionMap.put(f, pMap);
-			Set groups = new HashSet();
-			Set users = new HashSet();
-			pMap.put(WebKeys.USERS, users);
-			pMap.put(WebKeys.GROUPS, groups);
-			for (int j=0; j<membership.size(); ++j) {
-				WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)membership.get(j);
-				if (f.getId().equals(m.getFunctionId())) {
-					Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
-					for (Iterator iter=ids.iterator(); iter.hasNext();) {
-						Principal p = (Principal)iter.next();
-						if (p instanceof Group) {
-							groups.add(p);
-						} else users.add(p);
-					}
-					break;
-				}
-			}
 		}
-		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.FUNCTION_MAP, functionMap);
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
-			
-//		DefinitionUtils.getDefinitions(model);
-//		DefinitionUtils.getDefinitions(binder, model);
-//		DefinitionUtils.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-	
+		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, membership, model);
+
+		if (!binder.isFunctionMembershipInherited()) {
+			Binder parentBinder = binder.getParentBinder();
+			List parentMembership;
+			if (parentBinder.isFunctionMembershipInherited()) {
+				parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
+			} else {
+				parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
+			}
+			Map modelParent = new HashMap();
+			BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
+					functions, parentMembership, modelParent);
+			model.put(WebKeys.ACCESS_PARENT, modelParent);
+			BinderHelper.mergeAccessControlTableBeans(model);
+		}
+		
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
 
