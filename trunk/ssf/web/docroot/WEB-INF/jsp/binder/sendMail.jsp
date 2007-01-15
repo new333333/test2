@@ -123,7 +123,7 @@ self.window.resizeTo(width, height);
 </c:otherwise>
 </c:choose>
 </div>
-ssf:ifadapter>
+<ssf:ifadapter>
 </body>
 </html>
 </ssf:ifadapter>
