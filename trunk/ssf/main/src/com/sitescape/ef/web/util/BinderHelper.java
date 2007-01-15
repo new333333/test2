@@ -439,8 +439,8 @@ public class BinderHelper {
 		return intMaxHitsPerFolder;
 	}
 	
-	public static void buildAccessControlTableBeans(RenderRequest request, 
-			RenderResponse response, Binder binder, List functions, List membership, Map model) {
+	public static void buildAccessControlTableBeans(RenderRequest request, RenderResponse response, 
+			Binder binder, List functions, List membership, Map model, boolean ignoreFormData) {
 		Map formData = request.getParameterMap();
 
 		Set newRoleIds = new HashSet();
@@ -454,7 +454,8 @@ public class BinderHelper {
 
 		String[] btnClicked = new String[] {""};
  		if (formData.containsKey("btnClicked")) btnClicked = (String[])formData.get("btnClicked");
-		if (formData.containsKey("addRoleBtn") || btnClicked[0].equals("addPrincipal")) {
+		if (!ignoreFormData && (formData.containsKey("addRoleBtn") || 
+				btnClicked[0].equals("addPrincipal"))) {
 			if (formData.containsKey("roleIds")) {
 				roleIds = (String[]) formData.get("roleIds");
 				for (int i = 0; i < roleIds.length; i++) {

@@ -1119,7 +1119,8 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			membership = getAdminModule().getWorkAreaFunctionMemberships(binder);
 		}
-		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, membership, model);
+		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, 
+				membership, model, false);
 
 		if (!binder.isFunctionMembershipInherited()) {
 			Binder parentBinder = binder.getParentBinder();
@@ -1131,7 +1132,7 @@ public class AjaxController  extends SAbstractController {
 			}
 			Map modelParent = new HashMap();
 			BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
-					functions, parentMembership, modelParent);
+					functions, parentMembership, modelParent, true);
 			model.put(WebKeys.ACCESS_PARENT, modelParent);
 			BinderHelper.mergeAccessControlTableBeans(model);
 		}
