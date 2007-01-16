@@ -110,6 +110,12 @@ public class AccessControlController extends AbstractBinderController {
 			}
 		}
 		
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		model.put(WebKeys.ENTRY, binder);
+		
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
 
