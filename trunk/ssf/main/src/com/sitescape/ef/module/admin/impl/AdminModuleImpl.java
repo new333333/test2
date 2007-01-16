@@ -559,18 +559,18 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {name}, name));
 			top.setPathName("/"+top.getTitle());
 			top.setInternalId(ObjectKeys.TOP_WORKSPACE_ID);
-			getDefinitionModule().setDefaultBinderDefinition(top);
 			//generate id for top and profiles
 			getCoreDao().save(top);
 			top.setZoneId(top.getId());
-					
+			
+			
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
 			profiles.setTitle(NLT.get("administration.initial.profile.title", "Users and Groups"));
 			profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
 			profiles.setZoneId(top.getId());
 			profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
-			getDefinitionModule().setDefaultBinderDefinition(profiles);
+			
 			top.addBinder(profiles);
 			
 			//generate id for top and profiles
@@ -584,12 +584,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			user.setForeignName(adminName);
 			user.setZoneId(top.getId());
 			user.setParentBinder(profiles);
-			getDefinitionModule().setDefaultEntryDefinition(user);
+			
 			getCoreDao().save(user);
 			
 
 			//indexing needs the user
 			RequestContextHolder.getRequestContext().setUser(user);
+			
+			getDefinitionModule().setDefaultBinderDefinition(top);
+			getDefinitionModule().setDefaultBinderDefinition(profiles);
+			getDefinitionModule().setDefaultEntryDefinition(user);
 
 			//fill in timestampes
 			HistoryStamp stamp = new HistoryStamp(user);
