@@ -74,7 +74,7 @@ public class VersionAttachment extends FileAttachment {
 	
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
 		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
-		if (!parent.getName().equals("fileVersions")) {
+		if (!parent.getName().equals("fileAttachment")) {
 			//add additional information if logged along
 			if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_NAME, getName());
 			
