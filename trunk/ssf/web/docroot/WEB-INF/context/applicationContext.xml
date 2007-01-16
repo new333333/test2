@@ -634,6 +634,7 @@
 		<property name="failedFilterFile"><value>DELETE</value></property>
 		<!-- valid values are CONTINUE and ABORT -->
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
+		<property name="archiveStore"><ref local="archiveStore"/></property>
 	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper">
@@ -753,6 +754,10 @@
 		<property name="username"><value>none</value></property>
 		<property name="password"><value>none</value></property>
 		<property name="versionDeletionAllowed"><value>true</value></property>
+	</bean>
+	
+	<bean id="archiveStore" class="com.sitescape.ef.module.file.impl.ArchiveStoreImpl">
+		<property name="rootPath"><value>${data.root.dir}/archiveStore</value></property>
 	</bean>
 	
 	<!-- ================================ Presence Service =============================== -->
