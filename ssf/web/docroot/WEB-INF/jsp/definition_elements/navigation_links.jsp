@@ -1,5 +1,8 @@
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_breadcrumbsShowIdRoutine}">
+  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowId" scope="request" />
+</c:if>
 <div class="ss_breadcrumb">
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssDefinitionEntry.parentBinder && ssDefinitionEntry.entityIdentifier.entityType != 'profiles'}">
@@ -44,7 +47,7 @@
 <c:if test="${!empty ssNavigationLinkTree[nextBinder.id]}">
 <div style="display:inline">
 <ssf:tree treeName="wsTree${nextBinder.id}" treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
-  topId="${nextBinder.id}" rootOpen="false" showImages="false" dynamic="true" showIdRoutine="ss_treeShowId" />
+  topId="${nextBinder.id}" rootOpen="false" showImages="false" dynamic="true" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
 </div>
 </c:if>
 </li>
@@ -85,7 +88,7 @@
 <ssf:tree treeName="wsTree${ssDefinitionEntry.id}" 
   treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
   topId="${ssDefinitionEntry.id}" rootOpen="false" 
-  showImages="false" dynamic="true" showIdRoutine="ss_treeShowId" 
+  showImages="false" dynamic="true" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
   highlightNode="${ssDefinitionEntry.id}" />
 </div>
 </c:if>

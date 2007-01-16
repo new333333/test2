@@ -64,6 +64,24 @@ function ss_selectRole<portlet:namespace/>() {
 	formObj.btnClicked.value = "addPrincipal";
 	ss_selectPrincipalAjax<portlet:namespace/>();
 }
+
+function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="configure_access_control"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	self.location.href = url;
+	return false;
+}
+
 </script>
 
 <%
@@ -100,6 +118,11 @@ function ss_selectRole<portlet:namespace/>() {
 </td>
 </tr>
 </table>
+
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
+  scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
 <c:if test="${!empty ssBinder.parentWorkArea}">
   <ssf:box style="rounded">
