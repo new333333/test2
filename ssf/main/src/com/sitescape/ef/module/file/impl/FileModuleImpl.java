@@ -14,6 +14,7 @@ import java.io.OutputStream;
 
 import javax.imageio.stream.FileImageInputStream;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.util.KeyValuePair;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.ObjectKeys;
@@ -55,6 +57,7 @@ import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
 import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.lucene.Hits;
+import com.sitescape.ef.module.file.ArchiveStore;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.DeleteVersionException;
 import com.sitescape.ef.module.file.FileModule;
@@ -135,6 +138,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private String failedFilterTransaction;
 	private int lockExpirationAllowance; // number of seconds
 	private FileStore cacheFileStore;
+	private ArchiveStore archiveStore;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -225,6 +229,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 	}
 
+	public void setArchiveStore(ArchiveStore archiveStore) {
+		this.archiveStore = archiveStore;
+	}
+	
+	protected ArchiveStore getArchiveStore() {
+		return archiveStore;
+	}
+	
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
@@ -241,12 +253,16 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			errors = new FilesErrors();
 		
 		List fAtts = entry.getFileAttachments();
+		List<ChangeLog> changeLogs = new ArrayList<ChangeLog>();
+		boolean updateMetadata = deleteAttachment;
 		for(int i = 0; i < fAtts.size(); i++) {
 			final FileAttachment fAtt = (FileAttachment) fAtts.get(i);
 
 			try {
-				deleteFileInternal(binder, entry, fAtt, errors, deleteAttachment);
-
+				ChangeLog changeLog = deleteFileInternal(binder, entry, fAtt, 
+						errors, updateMetadata);
+				if(changeLog != null)
+					changeLogs.add(changeLog);
 			}
 			catch(Exception e) {
 				logger.error("Error deleting file " + fAtt.getFileItem().getName(), e);
@@ -256,11 +272,16 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			}
 		}
 		
-		// Even in the situation where the operation was not entirely successful,
-		// we need to reflect the corresponding metadata changes back to the
-		// database. 
-		if (!errors.getProblems().isEmpty()) triggerUpdateTransaction();
-		
+		if(!updateMetadata) {
+			// No in-line transaction for updating metadata.
+			// In this case, we must run a separate transaction to record the 
+			// change logs. 
+			// The following call also ensures that, even in the situation where
+			// the operation was not entirely successful, we still reflect the
+			// correponding metadata changes back to the database. 
+			writeDeleteChangeLogTransactional(changeLogs);
+		}
+				
 		return errors;
 	}
 	
@@ -1026,8 +1047,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
         });	
 	}
 	
-	private void deleteFileInternal(Binder binder, DefinableEntity entry,
-			FileAttachment fAtt, FilesErrors errors, boolean deleteAttachment) {
+	private ChangeLog deleteFileInternal(Binder binder, DefinableEntity entry,
+			FileAttachment fAtt, FilesErrors errors, boolean updateMetadata) {
 		String relativeFilePath = fAtt.getFileItem().getName();
 		String repositoryName = fAtt.getRepositoryName();
 		
@@ -1048,9 +1069,30 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			errors.addProblem(new FilesErrors.Problem
 					(repositoryName, relativeFilePath, 
 							FilesErrors.Problem.PROBLEM_CANCELING_LOCK, e));
-			return;
+			return null;
 		}
 
+		// Archive the contents of the file. We archive all versions of the file.
+		List<KeyValuePair> archiveURIs = new ArrayList<KeyValuePair>();
+		for(Iterator i = fAtt.getFileVersionsUnsorted().iterator(); i.hasNext();) {
+			VersionAttachment v = (VersionAttachment) i.next();
+			try {
+				String archiveURI = archiveStore.write(binder, entry, v);
+				
+				if(archiveURI != null)
+					archiveURIs.add(new KeyValuePair(String.valueOf(v.getVersionNumber()), archiveURI));
+			}
+			catch(Exception e) {
+				logger.error("Error archiving file " + relativeFilePath + " version " + v.getVersionNumber(), e);
+				errors.addProblem(new FilesErrors.Problem
+						(repositoryName, relativeFilePath,
+								FilesErrors.Problem.PROBLEM_ARCHIVING, e));
+				// If we fail to archive we stop here, since we can't afford to
+				// delete without successfully archiving it first. 
+				return null;
+			}
+		}
+		
 		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
 
 		try {
@@ -1065,7 +1107,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 								FilesErrors.Problem.PROBLEM_DELETING_PRIMARY_FILE, e));
 				// If failed to delete primary file, it's not worth trying to
 				// delete generated files. Stop here and return.
-				return;				
+				return null;				
 			}
 
 			// Currently file module does not maintain metadata about "generated"
@@ -1144,16 +1186,33 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		} finally {
 			session.close();
 		}
-		if (deleteAttachment) writeDeleteMetaDataTransactional(binder, entry, fAtt);
+		
+   		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
+   		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
+   		if(archiveURIs.size() > 0) {
+   			Element fileElem = parent.addElement("fileArchive");
+   			for(KeyValuePair pair : archiveURIs) {
+   				Element verElem = fileElem.addElement("versionArchive");
+   				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
+   				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
+   			}
+   		}
+   		
+		//System.out.println(changeLog.getXmlNoHeader());
+
+		if(updateMetadata)
+			writeDeleteMetaDataTransactional(binder, entry, fAtt, changeLog);
+		
+		return changeLog;
 	}
-	private void writeDeleteMetaDataTransactional(final Binder binder, final DefinableEntity entry, final FileAttachment fAtt)  {
+	
+	private void writeDeleteMetaDataTransactional(final Binder binder, 
+			final DefinableEntity entry, final FileAttachment fAtt,
+			final ChangeLog changeLog)  {
 		// Remove metadata and log change
 	       getTransactionTemplate().execute(new TransactionCallback() {
 	       	public Object doInTransaction(TransactionStatus status) {  
-	       		ChangeLog changes = new ChangeLog(entry, ChangeLog.FILEDELETE);
-	       		ChangeLogUtils.buildLog(changes, fAtt);
-	       		getCoreDao().save(changes);
-
+	       		getCoreDao().save(changeLog);
 				entry.removeAttachment(fAtt);
 				//if we are deleteing a binder, the the libary names will be deleted elsewhere
 				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateLibraryName(binder, entry, fAtt.getFileItem().getName(), null);
@@ -1167,6 +1226,20 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	     });	
 	}
 
+	private void writeDeleteChangeLogTransactional(final List<ChangeLog> changeLogs) {
+		// We want to start a transaction even when there is nothing to write
+		// (ie, empty changeLogs), so that any pending updates that the caller
+		// made up to this point can get recorded permanently.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {  
+                for(ChangeLog changeLog : changeLogs) {
+                	getCoreDao().save(changeLog);
+                }
+            	return null;
+        	}
+        });	
+	}
+	
 	private void move(Binder binder, FileUploadItem fui) throws IOException {
 		File filteringFailedDir = SPropsUtil.getFile("filtering.failed.dir");
 		if(!filteringFailedDir.exists())
@@ -1264,8 +1337,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
             		changes = new ChangeLog(entry, ChangeLog.FILEMODIFY);
         		ChangeLogUtils.buildLog(changes, fAtt);
         		getCoreDao().save(changes);
-
-                return null;
+        		
+                 return null;
         	}
         });
     }

@@ -46,22 +46,24 @@ public class FilesErrors {
 		public static int PROBLEM_LOCKED_BY_ANOTHER_USER	= 11;
 		public static int PROBLEM_RESERVED_BY_ANOTHER_USER  = 12;
 		public static int PROBLEM_FILE_EXISTS				= 13;
+		public static int PROBLEM_ARCHIVING					= 14;
 		
 		public static String[] typeCodes = {
-			"fileupload.error.other",
-			"fileupload.error.filtering",
-			"fileupload.error.storing.primary.file",
-			"fileupload.error.generating.scaled.file",
-			"fileupload.error.storing.scaled.file",
-			"fileupload.error.generating.thumbnail.file",
-			"fileupload.error.storing.thumbnail.file",
-			"fileupload.error.deleting.primary.file",
-			"fileupload.error.deleting.scaled.file",
-			"fileupload.error.deleting.thumbnail.file",
-			"fileupload.error.canceling.lock",
-			"fileupload.error.locked.by.another.user",
-			"fileupload.error.reserved.by.another.user",
-			"fileupload.error.file.exists"
+			"file.error.other",
+			"file.error.filtering",
+			"file.error.storing.primary.file",
+			"file.error.generating.scaled.file",
+			"file.error.storing.scaled.file",
+			"file.error.generating.thumbnail.file",
+			"file.error.storing.thumbnail.file",
+			"file.error.deleting.primary.file",
+			"file.error.deleting.scaled.file",
+			"file.error.deleting.thumbnail.file",
+			"file.error.canceling.lock",
+			"file.error.locked.by.another.user",
+			"file.error.reserved.by.another.user",
+			"file.error.file.exists",
+			"file.error.archiving"
 		};
 		
 		private String repositoryName;
