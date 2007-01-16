@@ -1,11 +1,17 @@
 package com.sitescape.ef.servlet.forum;
 
+import java.io.File;
+import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 import javax.activation.FileTypeMap;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
@@ -73,14 +79,17 @@ public class ViewFileController extends SAbstractController {
 			try {
 				response.setContentType("text/html");
 				getFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
-				//getFileModule().readHtmlViewFile(parent, entity, fa, response.getOutputStream());
 				return null;
 			}
 			catch(Exception e) {
-				response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+				// http://localhost:8080/ssf/s/errorHandler
+				String url = request.getRequestURL().toString();
+				url = url.substring(0, url.lastIndexOf("/")+1) + "errorHandler";
+				String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><b>Error Form</b><input type='hidden' name='ssf-error' value='" + e.getMessage() + "'></input></form></body></html>";
+				
+				response.getOutputStream().print(output);
+				response.getOutputStream().flush();
 			}
-			
-			response.getOutputStream().flush();
 		}
 		else
 		if (viewType.equals("image")
