@@ -82,7 +82,6 @@ public class ViewFileController extends SAbstractController {
 				return null;
 			}
 			catch(Exception e) {
-				// http://localhost:8080/ssf/s/errorHandler
 				String url = request.getRequestURL().toString();
 				url = url.substring(0, url.lastIndexOf("/")+1) + "errorHandler";
 				String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><b>Error Form</b><input type='hidden' name='ssf-error' value='" + e.getMessage() + "'></input></form></body></html>";
