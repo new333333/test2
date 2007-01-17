@@ -91,14 +91,14 @@ public class Tabs {
 	}
 	public int findTab(Binder binder, boolean blnClearTab) {
 		Map options = new HashMap();
-		return findTab(binder, options, blnClearTab);
+		return findTab(binder, options, blnClearTab, -1);
 	}
 	public int findTab(Binder binder, Map options) {
 		boolean blnClearTab = false;
-		return findTab(binder, options, blnClearTab);
+		return findTab(binder, options, blnClearTab, -1);
 	}
 	
-	public int findTab(Binder binder, Map options, boolean blnClearTab) {
+	public int findTab(Binder binder, Map options, boolean blnClearTab, int defaultTabId) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -113,7 +113,11 @@ public class Tabs {
 				break;
 			}
 		}
-		if (tabId == -1) tabId = addTab();
+		if (tabId == -1 && defaultTabId == -1) {
+			tabId = addTab();
+		} else if (tabId == -1 && defaultTabId >= 0) {
+			tabId = defaultTabId;
+		}
 		if (blnClearTab == true) clearTabInfo(tabId);
 		return setTab(tabId, binder, options);
 	}	
@@ -130,9 +134,9 @@ public class Tabs {
 	
 	public int findTab(Entry entry) {
 		Map options = new HashMap();
-		return findTab(entry, options);
+		return findTab(entry, options, -1);
 	}
-	public int findTab(Entry entry, Map options) {
+	public int findTab(Entry entry, Map options, int defaultTabId) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -146,7 +150,11 @@ public class Tabs {
 				break;
 			}
 		}
-		if (tabId == -1) tabId = addTab();
+		if (tabId == -1 && defaultTabId == -1) {
+			tabId = addTab();
+		} else if (tabId == -1 && defaultTabId >= 0) {
+			tabId = defaultTabId;
+		}
 		return setTab(tabId, entry, options);
 	}
 	
@@ -165,9 +173,9 @@ public class Tabs {
 	}
 	public int findTab(Document query, Map options) {
 		boolean blnClearTab = false;
-		return findTab(query, options, blnClearTab);
+		return findTab(query, options, blnClearTab, -1);
 	}
-	public int findTab(Document query, Map options, boolean blnClearTab) {
+	public int findTab(Document query, Map options, boolean blnClearTab, int defaultTabId) {
 		List tabList = (List) tabs.get(TABLIST);
 		int tabId = -1;
 		//Look for this tab
@@ -179,7 +187,11 @@ public class Tabs {
 				break;
 			}
 		}
-		if (tabId == -1) tabId = addTab();
+		if (tabId == -1 && defaultTabId == -1) {
+			tabId = addTab();
+		} else if (tabId == -1 && defaultTabId >= 0) {
+			tabId = defaultTabId;
+		}
 		if (blnClearTab == true) clearTabInfo(tabId);
 		return setTab(tabId, query, options);
 	}

@@ -159,7 +159,7 @@ public class SearchController extends AbstractBinderController {
 			}
 			//Store the search query in the current tab
 			boolean blnClearTab = true;
-			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
+			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, tabs.getCurrentTab()));
 		} 
 		//Search For Text and  Tag Search
 		else if (formData.containsKey("searchTags")) {
@@ -197,7 +197,7 @@ public class SearchController extends AbstractBinderController {
 			if (tabId != null) 
 				tabs.setTab(tabId.intValue(), searchQuery, options, blnClearTab);
 			else 
-				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab));
+				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, tabs.getCurrentTab()));
 		}
 		else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab
