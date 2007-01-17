@@ -508,7 +508,19 @@ function changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountValue
     	  </ssf:url>" 
         onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
       </c:if>
-      <c:if test="${entry1._entityType == 'workspace'}">
+      <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType != 12}">
+        href="<ssf:url     
+          adapter="false" 
+          portletName="ss_forum" 
+          folderId="${entry1._docId}" 
+          action="view_ws_listing"
+          actionUrl="true" >
+    	  <ssf:param name="binderId" value="${entry1._docId}"/>
+    	  <ssf:param name="newTab" value="1"/>
+    	  </ssf:url>" 
+        onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
+      </c:if>
+      <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType == 12}">
         href="<ssf:url     
           adapter="false" 
           portletName="ss_forum" 
@@ -533,7 +545,7 @@ function changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountValue
     onMouseOver="ss_linkMenu.showButton(this);"
     onMouseOut="ss_linkMenu.hideButton(this);"
     ><img border="0" class="ss_title_menu"
-    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._definitionType}');"
+    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._entityType}');"
     src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
     ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
     ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
