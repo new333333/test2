@@ -129,7 +129,8 @@ public class ListProfilesController extends   SAbstractController {
 			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
 				tabs.setCurrentTab(tabs.findTab(binder));
 			} else {
-				tabs.setCurrentTab(tabs.setTab(binder));
+				Map options2 = new HashMap();
+				tabs.setCurrentTab(tabs.findTab(binder, options2, false, tabs.getCurrentTab()));
 			}
 		}
 		model.put(WebKeys.TABS, tabs.getTabs());

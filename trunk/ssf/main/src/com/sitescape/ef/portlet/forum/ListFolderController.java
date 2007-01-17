@@ -274,7 +274,8 @@ public class ListFolderController extends  SAbstractController {
 				
 			} else {
 				boolean blnClearTab = true;
-				tabs.setCurrentTab(tabs.setTab(binder, blnClearTab));
+				Map options = new HashMap();
+				tabs.setCurrentTab(tabs.findTab(binder, options, blnClearTab, tabs.getCurrentTab()));
 			}
 		}
 		model.put(WebKeys.TABS, tabs.getTabs());
