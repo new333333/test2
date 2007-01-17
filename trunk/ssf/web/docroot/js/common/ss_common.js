@@ -3202,6 +3202,8 @@ var ss_linkMenu = new function() {
 			url = this.binderUrl;
 		} else if (this.currentDefinitionType == this.type_workspace) {
 			url = this.binderUrl
+		} else if (this.currentDefinitionType == this.type_userWorkspace) {
+			url = this.binderUrl
 		}
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
