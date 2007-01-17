@@ -87,7 +87,8 @@ public class ChangeLogUtils {
 	//force comman date format.  This is a problem cause hibernate returns sql Timestamps which format
 	//differently then java.util.date
 	public static Element addLogProperty(Element parent, String name, Date value) {
-		return addLogProperty(parent, name, value.toGMTString());
+		if (value != null) return addLogProperty(parent, name, value.toGMTString());
+		return addLogProperty(parent, name, (Object)null);
 	}
 	public static Element addLogProperty(Element parent, String name, Object value) {
 		Element prop = parent.addElement("property");
