@@ -52,7 +52,7 @@
    padding-right:2px; 
  </c:if>
  <c:if test="${!ss_presence_show_title}">
-   padding-right:10px; 
+   padding-right:2px; 
  </c:if>
  text-decoration:none;"
  onClick="ss_popupPresenceMenu(this, 
@@ -64,7 +64,7 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-></a>
+><img width="12" height="12" src="<html:imagesPath/>pics/1pix.gif"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 

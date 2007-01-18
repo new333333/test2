@@ -1430,10 +1430,10 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:transparent;
 }
 .ss_global_toolbar_findUser .form-text {
-	width:70px;
+	width:40px;
 }
 div.ss_global_toolbar_findUser_text {
-    width:100px;
+    width:70px;
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
@@ -1453,11 +1453,11 @@ div.ss_global_toolbar_findUser_text span {
 	background:transparent;
 }
 .ss_global_toolbar_search .form-text {
-	width:120px;
+	width:100px;
 	background:#FFF;
 }
 div.ss_global_toolbar_search_text {
-    width:120px;
+    width:100px;
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
@@ -1955,6 +1955,20 @@ div.ss_thumbnail_gallery a:hover {
 }
 div.ss_end_thumbnail_gallery {
     clear: both;
+}
+
+/* Presence styles */
+.ss_presence_green_dude {
+    background:url(<html:imagesPath/>pics/sym_s_green_dude.gif) no-repeat left;
+}
+.ss_presence_gray_dude {
+    background:url(<html:imagesPath/>pics/sym_s_gray_dude.gif) no-repeat left;
+}
+.ss_presence_white_dude {
+    background:url(<html:imagesPath/>pics/sym_s_white_dude.gif) no-repeat left;
+}
+.ss_presence_yellow_dude {
+    background:url(<html:imagesPath/>pics/sym_s_yellow_dude.gif) no-repeat left;
 }
 
 /* Accessible mode styles */
