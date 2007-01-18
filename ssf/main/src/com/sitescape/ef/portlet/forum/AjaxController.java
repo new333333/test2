@@ -33,6 +33,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
@@ -176,7 +177,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxUserListSearch(request, response);
 
 		} else if (op.equals(WebKeys.OPERATION_FIND_USER_SEARCH) ||
-				op.equals(WebKeys.OPERATION_FIND_PLACES_SEARCH)) {
+				op.equals(WebKeys.OPERATION_FIND_PLACES_SEARCH) || 
+				op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
 			return ajaxFindUserSearch(request, response);
 
 		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
@@ -545,15 +547,29 @@ public class AjaxController  extends SAbstractController {
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
-		
+		Integer maxEntriesTags = Integer.valueOf(200);
+
+		User u = RequestContextHolder.getRequestContext().getUser();
+		Map options = new HashMap();
+		String view;
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+
 		//Build the search query
 		Document searchFilter = DocumentHelper.createDocument();
 		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
 		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			//Add the title term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+			filterTerm.setText(searchText.replaceFirst("\\*", ""));
+			
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
 			filterTerm.setText(searchText);
 			
@@ -566,6 +582,36 @@ public class AjaxController  extends SAbstractController {
 			filterTerm2.setText(EntityIdentifier.EntityType.folder.name());
 			filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
 			filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
+			
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
+			//Add terms to search tags
+			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.TAG_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
+
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.ACL_TAG_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(BasicIndexUtils.buildAclTag(searchText.replaceFirst("\\*", ""), u.getId().toString()));
+
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.TAG_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText);
+
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.ACL_TAG_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(BasicIndexUtils.buildAclTag(searchText, u.getId().toString()));
+
+			//Tags are special. Always search for more than needed. They get paginated later
+			options.put(ObjectKeys.SEARCH_MAX_HITS, maxEntriesTags);
+			options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
 
 		} else {
 			//Add the login name term
@@ -573,6 +619,20 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
 			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
+		
+			//Add a term to search the title field
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
+		
+			//Add the login name term
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 			filterTermValueEle.setText(searchText);
 		
 			//Add a term to search the title field
@@ -597,20 +657,29 @@ public class AjaxController  extends SAbstractController {
 		}
 	   	
 		//Do a search to find the first few items that match the search text
-		User u = RequestContextHolder.getRequestContext().getUser();
-		Map options = new HashMap();
-		String view;
-		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
-		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
-		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
 			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
 			view = "forum/find_places_search";
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
+			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
+			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+			String wordRoot = searchText;
+			int i = wordRoot.indexOf("*");
+			if (i > 0) wordRoot = wordRoot.substring(0, i);
+			
+			List tags = BinderHelper.sortCommunityTags(entries, wordRoot);
+			List tagsPage = new ArrayList();
+			if (tags.size() > startingCount.intValue()) {
+				int endTag = startingCount.intValue() + Integer.valueOf(maxEntries);
+				if (tags.size() < endTag) endTag = tags.size();
+				tagsPage = tags.subList(startingCount.intValue(), endTag);
+			}
+			model.put(WebKeys.TAGS, tagsPage);
+			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
+			view = "forum/find_tag_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
 			Map entries = getProfileModule().getGroups(u.getParentBinder().getId(), options);
 			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));

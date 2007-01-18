@@ -44,4 +44,3 @@ var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outl
 
 
 </script>
-<div id="ss_presencePopUp${ssNamespace}" style="position:absolute; visibility:hidden;"></div>

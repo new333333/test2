@@ -242,6 +242,9 @@ public class BinderHelper {
 	// This method reads thru the results from a search, finds the tags, 
 	// and places them into an array in a alphabetic order.
 	public static List sortCommunityTags(List entries) {
+		return sortCommunityTags(entries, "");
+	}
+	public static List sortCommunityTags(List entries, String wordRoot) {
 		HashMap tagMap = new HashMap();
 		ArrayList tagList = new ArrayList();
 		// first go thru the original search results and 
@@ -257,6 +260,9 @@ public class BinderHelper {
 		    	String strTag = strTagArray[j];
 
 		    	if (strTag.equals("")) continue;
+		    	
+		    	//See if this must match a specific word root
+		    	if (!wordRoot.equals("") && !strTag.toLowerCase().startsWith(wordRoot.toLowerCase())) continue;
 		    	
 		    	Integer tagCount = (Integer) tagMap.get(strTag);
 		    	if (tagCount == null) {

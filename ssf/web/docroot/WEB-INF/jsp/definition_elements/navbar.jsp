@@ -46,7 +46,7 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 			  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="user"
-			    width="100px" singleItem="true"/> 
+			    width="70px" singleItem="true"/> 
 		      <div class="ss_global_toolbar_findUser_text">
 		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
 		      </div>
@@ -65,9 +65,28 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 			    formName="ss_findPlacesForm${renderResponse.namespace}" 
 			    formElement="searchText" 
 			    type="places"
-			    width="100px" singleItem="true"/> 
+			    width="70px" singleItem="true"/> 
 		      <div class="ss_global_toolbar_findUser_text">
 		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findPlace"/></span>
+		      </div>
+		  </ssHelpSpot>
+		</form>
+	</li>
+
+<!-- Find tags form -->
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindTagsButton<portlet:namespace/>">
+		<form method="post" id="ss_findTagsForm<portlet:namespace/>" name="ss_findTagsForm<portlet:namespace/>" 
+		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  	name="action" value="findUser"/></portlet:actionURL>">
+		  <ssHelpSpot helpId="personal_toolbar/findPlaces_button" offsetX="40" offsetY="10"
+		    title="<ssf:nlt tag="helpSpot.findTagsButton"/>">
+			  <ssf:find 
+			    formName="ss_findTagsForm${renderResponse.namespace}" 
+			    formElement="searchText" 
+			    type="tags"
+			    width="70px" singleItem="true"/> 
+		      <div class="ss_global_toolbar_findUser_text">
+		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findTag"/></span>
 		      </div>
 		  </ssHelpSpot>
 		</form>

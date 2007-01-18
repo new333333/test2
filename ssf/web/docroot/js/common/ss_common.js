@@ -1204,26 +1204,12 @@ function ss_hideDiv(divName) {
 }
 
 function ss_positionDiv(divName, x, y) {
-    if (isNSN6 || isMoz5) {
-    	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
-	        self.document.getElementById(divName).style.left= (x - parseInt(self.document.getElementById(divName).offsetParent.offsetLeft)) + "px"
-	        self.document.getElementById(divName).style.top= (y - parseInt(self.document.getElementById(divName).offsetParent.offsetTop)) + "px"
-	    } else {
-	        self.document.getElementById(divName).style.left= x + "px"
-	        self.document.getElementById(divName).style.top= y + "px"
-	    }
-    } else if (isNSN) {
-        var nn4obj = getNN4DivObject(divName)
-        nn4obj.left=x
-        nn4obj.top=y
+	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
+        self.document.getElementById(divName).style.left= (x - parseInt(self.document.getElementById(divName).offsetParent.offsetLeft)) + "px"
+        self.document.getElementById(divName).style.top= (y - parseInt(self.document.getElementById(divName).offsetParent.offsetTop)) + "px"
     } else {
-        if (self.document.all[divName] && self.document.all[divName].offsetParent) {
-	        self.document.all[divName].style.left=x - self.document.all[divName].offsetParent.offsetLeft
-	        self.document.all[divName].style.top=y - self.document.all[divName].offsetParent.offsetTop
-    	} else {
-	        self.document.all[divName].style.left=x
-	        self.document.all[divName].style.top=y
-    	}
+        self.document.getElementById(divName).style.left= x + "px"
+        self.document.getElementById(divName).style.top= y + "px"
     }
 }
 
@@ -2922,6 +2908,14 @@ function ss_postSavePenletLayoutRequest(obj) {
 //Presence support
 function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
+    if (obj == null) {
+		obj = document.createElement("div");
+        obj.setAttribute("id", 'ss_presencePopUp'+ssNamespace);
+        obj.style.position = "absolute"
+        obj.style.visibility = "hidden";
+        obj.style.display = "none";
+    	document.getElementsByTagName("body").item(0).appendChild(obj);
+    }
     ss_moveObjectToBody(obj)
 	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge);
 }

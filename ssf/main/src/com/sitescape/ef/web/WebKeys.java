@@ -161,6 +161,7 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DELETE_TAB="delete_tab";
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
+	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
@@ -418,6 +419,7 @@ public class WebKeys {
     public static final String TAB_SEARCH_TEXT="ss_tab_search_text";
     public static final String TAB_COMMUNITY_TAG_SEARCH_TEXT="ss_tab_community_tag_search_text";
     public static final String TAB_PERSONAL_TAG_SEARCH_TEXT="ss_tab_personal_tag_search_text";
+    public static final String TAGS="ss_tags";
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TOOLBAR="ss_toolbar";
@@ -437,6 +439,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE="ss_userGroupType";
     public static final String USER_SEARCH_USER_GROUP_TYPE_GROUP="group";
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_TAGS="tags";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";

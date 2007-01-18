@@ -113,6 +113,7 @@ public class PresenceInfo extends BodyTagSupport {
 			componentId = "";
 			user = null;
 			zonName = null;
+			this.optionsDivId = "";
 		}
 	    
 		return EVAL_PAGE;
