@@ -1,28 +1,28 @@
 package com.sitescape.ef.security.impl;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.AccessControlManager;
-import com.sitescape.ef.security.acl.AclAccessControlException;
-import com.sitescape.ef.security.acl.AclContainer;
-import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.function.FunctionManager;
-import com.sitescape.ef.security.function.FunctionAccessControlException;
-import com.sitescape.ef.security.function.OperationAccessControlException;
-import com.sitescape.ef.security.function.WorkArea;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
-import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.security.function.Function;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.ef.security.acl.AclAccessControlException;
+import com.sitescape.ef.security.acl.AclContainer;
+import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.security.function.Function;
+import com.sitescape.ef.security.function.FunctionManager;
+import com.sitescape.ef.security.function.OperationAccessControlException;
+import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
+import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.ef.security.function.WorkAreaOperation;
 
 /**
  *
@@ -116,6 +116,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	
 	public boolean testOperation(User user,
 			WorkArea workArea, WorkAreaOperation workAreaOperation) {
+        if (ObjectKeys.SUPER_USER_ID.equals(user.getInternalId())) return true;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
@@ -206,6 +207,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
         	// specified user happens to be the creator. Grant it. 
         	return true;
         }
+        if (ObjectKeys.SUPER_USER_ID.equals(user.getInternalId())) return true;
         if(aclControlledObj.getInheritAclFromParent()) {
             // This object inherits ACLs from the parent for all access types. 
         	// In this case, we ignore includeCreator and includeParentAcl

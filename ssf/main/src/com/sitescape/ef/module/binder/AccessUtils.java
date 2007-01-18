@@ -65,7 +65,7 @@ public class AccessUtils  {
 				if (wEntry.checkWorkArea(AccessType.READ)) {
 					ids.addAll(readMemberIds);
 				}
-				//index workflow access - ignore widen for search engine - prune results later
+				//TODO: fix this index workflow access - ignore widen for search engine - prune results later
 				ids.addAll(wEntry.getAclSet().getMemberIds(AccessType.READ));
 				if (wEntry.checkOwner(AccessType.READ)) {
 					ids.add(wEntry.getCreatorId());

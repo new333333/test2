@@ -45,19 +45,14 @@ public class NotificationDef  {
 
 
     /**
-     * Callers deal with emailAddress as a comma separated list
+     * @hibernate.property
      * @return
      */
-    public String[] getEmailAddress() {
-    	if (emailAddress == null) return new String[0];
-    	return StringUtil.split(emailAddress);
+    public String getEmailAddress() {
+    	return emailAddress;
     }
-    public void setEmailAddress(String []address) {
-    	if ((address == null) || (address.length == 0)) {
-    		emailAddress = null;
-    	} else {
-    		emailAddress = StringUtil.merge(address);
-    	}
+    public void setEmailAddress(String emailAddress) {
+    	this.emailAddress = emailAddress;
     }
     /**
      * @hibernate.property length="128" column="fromAddress"

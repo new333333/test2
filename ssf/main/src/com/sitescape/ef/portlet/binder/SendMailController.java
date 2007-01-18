@@ -15,7 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.FindIdsHelper;
@@ -34,6 +37,7 @@ public class SendMailController extends SAbstractController {
 		
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			String subject = PortletRequestUtils.getStringParameter(request, "subject", "");	
 			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
 			Set emailAddress = new HashSet();
@@ -46,33 +50,55 @@ public class SendMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-
+			if (formData.containsKey("teamMembers")) {
+				try {
+					List team = getBinderModule().getTeamMembers(binderId);
+					for (int i=0; i<team.size();++i) {
+						memberIds.add(((Principal)team.get(i)).getId());
+					}					
+				} catch (AccessControlException ax) {
+					//don't use teamMembership if not a member
+				}
+			}
 			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML), null);
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
+			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);
 			if (ObjectKeys.SENDMAIL_STATUS_SENT.equals(result)) {
 				errors.add(0, NLT.get("sendMail.mailSent"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
 			} else if (ObjectKeys.SENDMAIL_STATUS_SCHEDULED.equals(result)) {
 				errors.add(0, NLT.get("sendMail.mailQueued"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
 			} else {
 				errors.add(0, NLT.get("sendMail.mailFailed"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
-			} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
+			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);			
+		} else {
+			response.setRenderParameters(formData);
 		}
+			
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
+		Map model = new HashMap();
 		if (errors != null) {
-			Map model = new HashMap();
 			model.put(WebKeys.ERROR_LIST, errors);
+			model.put(WebKeys.EMAIL_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_ADDRESSES));
 			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 		}
-		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		try {
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binderId));
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
+		Binder binder = getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
+		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
 
 }

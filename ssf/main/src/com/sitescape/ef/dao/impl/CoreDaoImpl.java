@@ -507,7 +507,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
 			if (le != null) {
 				//it exists, is it ours?
-				if (!binder.equals(entity)) {
+				if (!(entity instanceof Binder)) {
 					if (entity.getId().equals(le.getEntityId())) {
 						//delete the old one; delete cause changing primary key
 						delete(le);
@@ -527,7 +527,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 			le = new LibraryEntry(binder.getId(), newName);
 			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
 			if (exist == null) {
-				if (!binder.equals(entity)) le.setEntityId(entity.getId());
+				if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
 				save(le);
 			}
 			else throw new TitleException(newName);

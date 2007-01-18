@@ -8,15 +8,14 @@
 	<bean id="adminViewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ViewController" />
 	<bean id="adminConfigureLdapController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureLdapController" />
 	<bean id="adminConfigureRolesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureRolesController" />
-	<bean id="adminConfigureNotifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureNotifyController" />
 	<bean id="adminConfigurePostingJobController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingJobController" />
-	<bean id="adminConfigurePostingController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigurePostingController" />
 	<bean id="adminConfigureSearchIndexController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminImportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ImportDefinitionController" />
 	<bean id="adminExportDefinitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ExportDefinitionController" />
 	<bean id="adminConfigureConfigurationController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ConfigureConfigurationController" />
 	<bean id="adminImportProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ImportProfilesController" />
 	<bean id="adminViewChangeLogController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ViewChangeLogController" />
+	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.EmailConfigController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -28,9 +27,8 @@
 						<entry key="viewDefinitionXml"><ref bean="definitionBuilderXmlController"/></entry>
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
-						<entry key="configure_notify"><ref bean="adminConfigureNotifyController"/></entry>
+						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
-						<entry key="configure_posting"><ref bean="adminConfigurePostingController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>

@@ -15,7 +15,7 @@ public class PostingDef extends PersistentObject {
     private Integer replyPostingOption = POST_AS_A_REPLY;
     private boolean enabled=true;
     private Binder binder;
-    private String emailAddress;
+    private String emailAddress="";
     private Definition definition;
     private Long zoneId;
  

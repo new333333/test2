@@ -18,112 +18,88 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
+var <portlet:namespace/>_savedIndex;
 
-var <portlet:namespace/>_alias_count=0;
-
-function <portlet:namespace/>_addAlias(alias, forums) {
-   var tbl = document.getElementById('<portlet:namespace/>_alias_table');
-   var body = document.getElementById('<portlet:namespace/>_alias_body');
-   var row = document.createElement("tr");
-   body.appendChild(row);
-    
-    // delete cell
-	var cellLeft = document.createElement("td");
-	row.appendChild(cellLeft);
-    cellLeft.setAttribute("align", "center");
-	var inner = document.createElement("input");
-	inner.setAttribute("type", "checkbox");
-    inner.setAttribute("name", "delete" + <portlet:namespace/>_alias_count);
-    inner.setAttribute("id", "delete" + <portlet:namespace/>_alias_count);
-    cellLeft.appendChild(inner);
-  
-	//alias name
-	cellLeft = document.createElement("td");
-	row.appendChild(cellLeft);
-	inner = document.createElement("input");
-	inner.setAttribute("type", "text");
-  	inner.setAttribute("size", "32");
-	inner.setAttribute("name", "alias" + <portlet:namespace/>_alias_count);
-	inner.setAttribute("id", "alias" + <portlet:namespace/>_alias_count);
-	inner.setAttribute("value", alias);
-    cellLeft.appendChild(inner);
-
-	//mapped forums
-	cellLeft = document.createElement("td");
-	row.appendChild(cellLeft);
-	inner = document.createTextNode(forums);
- 	cellLeft.appendChild(inner);
-
-	<portlet:namespace/>_alias_count++;
-
+function <portlet:namespace/>_showAliasDiv(index) {
+	
+	self.document.<portlet:namespace/>_modifyAliasFm.alias.value=eval('self.document.<portlet:namespace/>fm.alias' + index + '.value');
+	<portlet:namespace/>_savedIndex=index;
+	ss_showPopupDivCentered('<portlet:namespace/>_modifyAliasDiv');	
 }
-
+function <portlet:namespace/>_modifyAlias() {
+	var param = eval('self.document.<portlet:namespace/>fm.alias' + <portlet:namespace/>_savedIndex);
+	param.value = self.document.<portlet:namespace/>_modifyAliasFm.alias.value;
+	var param = document.getElementById('aliasSpan' + <portlet:namespace/>_savedIndex);
+	param.innerHTML = self.document.<portlet:namespace/>_modifyAliasFm.alias.value;
+}
 </script>
-
 <div class="ss_style ss_portlet">
-<form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
 <br/>
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="incoming.job_title"/></legend>
-
-<br/>
-
+<table class="ss_style"  border="1" cellspacing="0" cellpadding="3">
+<tr>
+<th><ssf:nlt tag="incoming.job_title"/></th>
+<th><ssf:nlt tag="incoming.aliases"/></th>
+</tr>
+<tr><td valign="top">
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
 <tr><td> 
-<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="incoming.enable.all"/><br/>
-</td></tr></table>
-
-<div class="ss_divider"></div>
-<span class="ss_bold"><ssf:nlt tag="incoming.schedule_title" /></span>
+<input type="checkbox" class="ss_labelRight" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
+<ssf:nlt tag="incoming.enable.all"/>
+<br/>
 
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-</fieldset>
-<br/>
-
-<fieldset class="ss_fieldset">
-<table class="ss_style" border="0" cellspacing="0" cellpadding="3">
-<tr><td>
-<div id="<portlet:namespace/>_alias_div" name="<portlet:namespace/>_alias_div">
-<a class="ss_linkbutton" href="javascript:" onClick="<portlet:namespace/>_addAlias('','');"><ssf:nlt tag="button.add_alias" /></a>
-</td></tr><tr><td>
-<table border="0" cellspacing="0" cellpadding="3" class="ss_style ss_borderTable" name="<portlet:namespace/>_alias_table" id="<portlet:namespace/>_alias_table">
-<tbody name="<portlet:namespace/>_alias_body" id="<portlet:namespace/>_alias_body">
-
-  <tr class="ss_headerRow">
-  <td class="ss_finestprintgray" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete" /></td>
-  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.alias" /></td>
-  <td class="ss_bold" scope="col"><ssf:nlt tag="incoming.folder" /></td>
-</tr>
-</tBody>
-</table>
 </td></tr></table>
+</td><td valign="top">
+   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/></span>
+   <input type="text" class="ss_style" name="addresses" id="addresses" size="86" value="">
+<br/>
+<table border="0" cellspacing="0" cellpadding="0" class="ss_style ss_borderTable" >
+  <tr class="ss_headerRow">
+  <td class="ss_bold" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete"/></td>
+  <td class="ss_bold" align="left" scope="col"><ssf:nlt tag="incoming.alias" /></td>
+  <td class="ss_bold" align="left" scope="col"><ssf:nlt tag="incoming.folder" /></td>
+</tr>
 
 <c:forEach var="alias" varStatus="status" items="${ssPostings}" >
-<c:set var="title" value=" " scope="request"/>
-<c:if test="${!empty alias.binder}">
-<c:set var="title" value="${alias.binder.title}" scope="request"/>
-</c:if>
 <input type="hidden" id="aliasId${status.index}" name="aliasId${status.index}" value="${alias.id}"/>
-<script type="text/javascript">
-<portlet:namespace/>_addAlias('<c:out value="${alias.emailAddress}"/>','<c:out value="${title}"/>');
-</script>
+<input type="hidden" id="alias${status.index}" name="alias${status.index}" value="${alias.emailAddress}"/>
+<tr><td>
+<input type="checkbox" class="ss_normal" id="delete${status.index}" name="delete${status.index}">
+</td><td>
+<span class="ss_normal" id="aliasSpan${status.index}" name="aliasSpan${status.index}">${alias.emailAddress}</span>
+<input type="button" value="Edit" onClick="<portlet:namespace/>_showAliasDiv('${status.index}'); return false"/>
+</td><td>
+<c:if test="${!empty alias.binder}">
+${alias.binder.title}
+</c:if>
+</td></tr>
 </c:forEach>
-
-
-</fieldset>
-
-
-</div>
+</table>
+</table>
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
 </form>
-
+<div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="<portlet:namespace/>_modifyAliasDiv" id="<portlet:namespace/>_modifyAliasDiv">
+<form class="ss_style ss_form" name="<portlet:namespace/>_modifyAliasFm" id="<portlet:namespace/>_modifyAliasFm"
+	onSubmit="<portlet:namespace/>_modifyAlias(); ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv'); return false;">
+<br/><br/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span>
+ <input type="text" name="alias" id="alias" value="" size="32"/> 
+<br/><br/>
+<div class="ss_buttonBarLeft">
+  <input type="submit" value="<ssf:nlt tag="button.ok"/>" 
+  onClick="<portlet:namespace/>_modifyAlias(); ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv'); return false;">
+  <input type="submit" value="<ssf:nlt tag="button.cancel"/>"
+  onClick="ss_cancelPopupDiv('<portlet:namespace/>_modifyAliasDiv');return false;">  
+</div>
+</form>
+</div>
 </div>

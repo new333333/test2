@@ -175,22 +175,11 @@ public class ViewController extends  SAbstractController {
 
 		//Notification configuration
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.configure_notify"));
+		element.addAttribute("title", NLT.get("administration.configure_email"));
 		element.addAttribute("image", "bullet");
 		element.addAttribute("id", String.valueOf(nextId++));
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_NOTIFY_CONFIGURE);
-		url.setWindowState(WindowState.MAXIMIZED);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-		
-		//Posting schedule
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.configure_posting"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
@@ -258,15 +247,7 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-/*		//temp to fixup zone
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", "Temporary check zone");
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createActionURL();
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-*/
+
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.view_change_log"));
 		element.addAttribute("image", "bullet");

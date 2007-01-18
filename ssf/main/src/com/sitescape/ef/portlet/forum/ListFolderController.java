@@ -249,7 +249,7 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-		
+
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
@@ -590,9 +590,9 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new TreeBuilder(null, false, getBinderModule())));
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new TreeBuilder(null, false, this)));
 		} else {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule())));			
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, this)));			
 		}
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
@@ -1038,8 +1038,9 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), adapterUrl.toString());
 		
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);

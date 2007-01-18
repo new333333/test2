@@ -152,7 +152,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                
 	                addBinder_postSave(parent, binder, inputData, entryData);
 	                
-	                getCoreDao().updateLibraryName(binder.getParentBinder(), binder.getParentBinder(), null, binder.getTitle());
+	                getCoreDao().updateLibraryName(binder.getParentBinder(), binder, null, binder.getTitle());
 	                return null;
 	        	}
 	        });
@@ -295,22 +295,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		if (Validator.isNull(newTitle)) throw new TitleException("");
 	        		//case matters here
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
-	        			if (binder.getParentBinder() != null) {
-	        				binder.setPathName(binder.getParentBinder().getPathName() + "/" + newTitle);
-	        			} else {
-	        				//must be top
-	        				binder.setPathName("/" + newTitle);
-	        			}
-	         			List children = new ArrayList(binder.getBinders());
-	        			//if we index the path, need to reindex all these folders
-	        			while (!children.isEmpty()) {
-	        				Binder child = (Binder)children.get(0);
-	        				child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
-	        				children.remove(0);
-	        				children.addAll(child.getBinders());
-	        			}
+	        			fixupPath(binder);
 	        		}
-        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder.getParentBinder(), oldTitle, newTitle);
+        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder, oldTitle, newTitle);
 	        		return null;
 	        	}});
 	        sp.end().print();
@@ -516,10 +503,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
+    	//first remove name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
     	source.getParentBinder().removeBinder(source);
     	destination.addBinder(source);
+    	//now add name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
  		// The path changes since its parent changed.    	
- 		source.setPathName(destination.getPathName() + "/" + source.getTitle());
+ 		fixupPath(source);
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         source.setModification(new HistoryStamp(user));
@@ -805,6 +796,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	IndexSynchronizationManager.deleteDocuments(new Term(
     			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
+    protected void fixupPath(Binder binder) {
+		if (binder.getParentBinder() != null) {
+			binder.setPathName(binder.getParentBinder().getPathName() + "/" + binder.getTitle());
+		} else {
+			//must be top
+			binder.setPathName("/" + binder.getTitle());
+		}
+			List children = new ArrayList(binder.getBinders());
+		//if we index the path, need to reindex all these folders
+		while (!children.isEmpty()) {
+			Binder child = (Binder)children.get(0);
+			child.setPathName(child.getParentBinder().getPathName() + "/" + child.getTitle());
+			children.remove(0);
+			children.addAll(child.getBinders());
+		}
+	}
+    	
     
 	protected FileUploadItem findFileUploadItem(List fileUploadItems, String repositoryName, String fileName) {
 		for(int i = 0; i < fileUploadItems.size(); i++) {

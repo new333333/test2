@@ -746,7 +746,7 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.FILTER_TYPE, op2);
 			if (op.equals(WebKeys.OPERATION_GET_SEARCH_FORM_FILTER_TYPE) && op2.equals("folders")) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
-    			Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, getBinderModule()),1);
+    			Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, this),1);
     			model.put(WebKeys.DOM_TREE, tree);
 			} else {
 				DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
@@ -816,7 +816,13 @@ public class AjaxController  extends SAbstractController {
 		String multiSelectId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT_ID, "");
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		if (binderId != null) {
-			model.put("ss_tree_treeName", PortletRequestUtils.getStringParameter(request, "treeName", ""));
+			String treeName = PortletRequestUtils.getStringParameter(request, "treeName", "");
+			String treeKey = null; 
+			int pos = treeName.indexOf("_");
+			if (pos != -1)  {
+				treeKey = treeName.substring(0, pos);
+			}
+			model.put("ss_tree_treeName", treeName);
 			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
 			model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));
 			model.put("ss_tree_bottom", PortletRequestUtils.getStringParameter(request, "bottom", ""));
@@ -835,9 +841,9 @@ public class AjaxController  extends SAbstractController {
 			if (binder instanceof Workspace) {
 				if ((topId != null) && (binder.getParentBinder() != null)) {
 					//top must be a workspace
-					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new TreeBuilder(binder, true, getBinderModule()));
+					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new TreeBuilder(binder, true, this, treeKey));
 				} else {
-					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, getBinderModule()),1);
+					tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, this, treeKey),1);
 				}
 			} else {
 				Folder topFolder = ((Folder)binder).getTopFolder();
@@ -845,16 +851,16 @@ public class AjaxController  extends SAbstractController {
 				
 				//must be a folder
 				if (topId == null) {
-					tree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule()));
+					tree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, this, treeKey));
 				} else {
 					Binder top = getBinderModule().getBinder(topId);
 					if (top instanceof Folder)
 						//just load the whole thing
-						tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder(top, false, getBinderModule()));
+						tree = getFolderModule().getDomFolderTree(top.getId(), new TreeBuilder(top, false, this, treeKey));
 					else {
-						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new TreeBuilder(top, false, getBinderModule()));
+						tree = getWorkspaceModule().getDomWorkspaceTree(topId, topFolder.getParentBinder().getId(), new TreeBuilder(top, false, this, treeKey));
 						Element topBinderElement = (Element)tree.selectSingleNode("//" + DomTreeBuilder.NODE_CHILD + "[@id='" + topFolder.getId() + "']");
-						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, getBinderModule()));
+						Document folderTree = getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, this, treeKey));
 						topBinderElement.setContent(folderTree.getRootElement().content());
 					}
 						
