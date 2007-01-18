@@ -1,34 +1,30 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.Map;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.portlet.PortletMode;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
-
-import com.sitescape.ef.jobs.ScheduleInfo;
 
 public class ConfigurePostingJobController extends  SAbstractController  {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
+		if (formData.containsKey("okBtn")) {
 			ScheduleInfo config = getAdminModule().getPostingSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request, "enabled", false));
@@ -47,17 +43,19 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				
 				if (!formData.containsKey("delete" + pos)) {
 					if (!Validator.isNull(alias)) {
-						updates.put("emailAddress", alias);
-						if (!Validator.isNull(aliasId)) {
-							getAdminModule().modifyPosting(aliasId, updates);
-						} else {
-							getAdminModule().addPosting(updates);
-						}
-						
+						updates.put("emailAddress", alias);						
 					}
 				} else if (!Validator.isNull(aliasId)) getAdminModule().deletePosting(aliasId);
 				++pos;
 				updates.clear();
+			}
+			updates.clear();
+			String[] emailAddress = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
+			for (int i=0; i<emailAddress.length; ++i) {
+				String addr = emailAddress[i].trim();
+				updates.put("emailAddress", addr);
+				getAdminModule().addPosting(updates);
+				
 			}
 		response.setRenderParameters(formData);
 	} else if (formData.containsKey("closeBtn") || (formData.containsKey("cancelBtn"))) {
@@ -78,10 +76,10 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
 		Toolbar toolbar = new Toolbar();
 		PortletURL url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_POSTING_CONFIGURE);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
 		toolbar.addToolbarMenu("ss_scheduleLink", NLT.get("incoming.toolbar_forums"), url);
 		model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
-		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model); 
+		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}
 
 }

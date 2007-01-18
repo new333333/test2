@@ -29,6 +29,12 @@ public interface ObjectKeys {
 	public static final String ALL_USERS_GROUP_ID="402883b90d0de1f3010d0df5582b0006";
 	public static final String TOP_WORKSPACE_ID="402883b90d0de1f3010d0df5582b0007";
 	public static final String ANONYMOUS_POSTING_USER_ID="402883b90d0de1f3010d0df5582b0008";
+	public static final String TEAM_ROOT_ID="402883b90d0de1f3010d0df5582b0009";
+	public static final String GLOBAL_ROOT_ID="402883b90d0de1f3010d0df5582b000a";
+	//super user bypasses all acl and operation checks
+	public static final String SUPER_USER_ID="402883b90d0de1f3010d0df5582b000b";
+	//owner is a special id that is added to a membership list
+	public static final String OWNER_USER_ID="402883b90d0de1f3010d0df5582b000b";
 	
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
@@ -48,6 +54,7 @@ public interface ObjectKeys {
     public static final String DEFINITION_FILE_DATA="fileData";
     //map keys from admin/sendMail
     public static final String SENDMAIL_ERRORS="errors";
+    public static final String SENDMAIL_DISTRIBUTION="distributionList";
     public static final String SENDMAIL_STATUS="status";
     public static final String SENDMAIL_STATUS_SENT="sent";
     public static final String SENDMAIL_STATUS_FAILED="failed";

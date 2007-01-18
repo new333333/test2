@@ -362,7 +362,7 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");
 		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), "#", qualifiers);
 
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);

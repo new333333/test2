@@ -77,6 +77,7 @@ import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann
  *
@@ -257,7 +258,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 */
 	private List doEmailAddrs(Folder folder, Collection entries, List result) {
  		NotificationDef nDef = folder.getNotificationDef();
-		String [] emailAddrs = nDef.getEmailAddress();
+ 		String addrs = nDef.getEmailAddress();
+ 		if (Validator.isNull(addrs)) return result;
+		String [] emailAddrs = StringUtil.split(addrs);
 		//done if no-one is interested
 		if (emailAddrs.length == 0)  return result;
 

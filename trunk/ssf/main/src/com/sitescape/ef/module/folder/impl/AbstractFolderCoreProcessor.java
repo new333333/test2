@@ -422,9 +422,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public void moveFolderToFolder(Folder source, Folder destination) {
     	checkFolderMoveType(source.getDefinitionType(), destination.getDefinitionType());
     	HKey oldKey = source.getFolderHKey();
+    	//first remove name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
     	source.getParentBinder().removeBinder(source);
     	destination.addFolder(source);
- 		// The path changes since its parent changed.    	
+    	//now add name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
+		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -471,9 +475,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     public void moveFolderToWorkspace(Folder source, Workspace destination) {
        	HKey oldKey = source.getFolderHKey();
-    	source.getParentBinder().removeBinder(source);
+       	//first remove name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
+     	source.getParentBinder().removeBinder(source);
     	destination.addFolder(source);
- 		// The path changes since its parent changed.    	
+    	//now add name
+    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
+		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
      	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -487,6 +495,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	for (int i=0; i<binders.size(); ++i) {
     		Folder child = (Folder)binders.get(i);
     		child.setTopFolder(source);
+     		child.setPathName(source.getPathName() + "/" + child.getTitle());
     		moveLog(child, source.getModification());
     		fixupMovedChild(child, oldKey, newKey);
     	}

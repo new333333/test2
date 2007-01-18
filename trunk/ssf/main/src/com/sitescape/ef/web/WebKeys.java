@@ -126,8 +126,6 @@ public class WebKeys {
 	public static final String ACTION_VIEW_PROFILE_ENTRY = "view_profile_entry";
 	public static final String ACTION_AJAX_REQUEST = "__ajax_request";
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
-	public static final String ACTION_NOTIFY_CONFIGURE="configure_notify";
-	public static final String ACTION_POSTING_CONFIGURE="configure_posting";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
@@ -153,7 +151,7 @@ public class WebKeys {
     public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
-      
+    public static final String OPERATION_MODIFY_ALIAS="modify_alias";
     public static final String OPERATION_ADD_TAB="add_tab";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";
     public static final String OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";
@@ -204,9 +202,6 @@ public class WebKeys {
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_WORKSPACE_TREE = "workspace_tree";
-	public static final String OPERATION_POSTING_ALIASES="alias";
-	public static final String OPERATION_ADD_POSTING_ALIASES="addAlias";
-	public static final String OPERATION_MODIFY_POSTING_ALIASES="modifyAlias";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
@@ -294,6 +289,7 @@ public class WebKeys {
     public static final String DOM_TREE="ssDomTree";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
+    public static final String EMAIL_ADDRESSES="ssEmailAddresses";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
@@ -482,8 +478,6 @@ public class WebKeys {
     public static final String VIEW_ADMIN_CHANGELOG="administration/changeLog";
     public static final String VIEW_ADMIN_UPDATE_CHANGELOG="administration/updateChangeLog";
     public static final String VIEW_ADMIN_CONFIGURE_LDAP="administration/configureLdap";
-    public static final String VIEW_ADMIN_CONFIGURE_NOTIFICATION="administration/configureNotify";
-    public static final String VIEW_ADMIN_CONFIGURE_POSTING="administration/configurePosting";
     public static final String VIEW_ADMIN_CONFIGURE_POSTING_JOB="administration/configurePostingJob";
     public static final String VIEW_ADMIN_CONFIGURE_SEARCH_INDEX="administration/configureSearchIndex";
     public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
@@ -503,7 +497,6 @@ public class WebKeys {
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
-    public static final String VIEW_ENTRY_SENDMAIL="entry/sendMail";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";

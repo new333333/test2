@@ -30,7 +30,6 @@ import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.security.function.Function;
@@ -39,6 +38,7 @@ import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.util.Validator;
 
 public class BinderHelper {
 
@@ -89,6 +89,9 @@ public class BinderHelper {
 	}
 
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
+		buildNavigationLinkBeans(bs, binder, model, null);
+	}
+	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model, String key) {
 		Binder parentBinder = binder;
     	Map navigationLinkMap;
     	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
@@ -101,12 +104,12 @@ public class BinderHelper {
 	    	Document tree = null;
 	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new TreeBuilder(null, true, bs.getBinderModule()),0);
+						new TreeBuilder(null, true, bs, key),0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder(null, true, bs.getBinderModule()), 0);
+				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder(null, true, bs, key), 0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new TreeBuilder(null, true, bs.getBinderModule()),0);
+						new TreeBuilder(null, true, bs, key),0);
 			}
 			navigationLinkMap.put(parentBinder.getId(), tree);
 			parentBinder = ((Binder)parentBinder).getParentBinder();
@@ -115,11 +118,28 @@ public class BinderHelper {
 	public static class TreeBuilder implements DomTreeBuilder {
 		Binder bottom;
 		boolean check;
-		BinderModule binderModule;
-		public TreeBuilder(Binder bottom, boolean checkChildren, BinderModule binderModule) {
+		AllBusinessServicesInjected bs;
+		String key = null;
+		public static String EMAIL_KEY="email";
+		static Map actionMapper = new HashMap();
+		static {
+			actionMapper.put(EMAIL_KEY + DomTreeBuilder.TYPE_WORKSPACE, null);
+			actionMapper.put(EMAIL_KEY + DomTreeBuilder.TYPE_FOLDER, WebKeys.ACTION_CONFIG_EMAIL);
+		}
+		public TreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs) {
 			this.bottom = bottom;
 			this.check = checkChildren;
-			this.binderModule = binderModule;
+			this.bs = bs;
+		}
+		public TreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs,
+				String key) {
+			this.bottom = bottom;
+			this.check = checkChildren;
+			this.bs = bs;
+			//only set the key if the tree is registered
+			if (actionMapper.containsKey(key + DomTreeBuilder.TYPE_FOLDER) ||
+					actionMapper.containsKey(key + DomTreeBuilder.TYPE_WORKSPACE))
+					this.key = key;
 		}
 		public Element setupDomElement(String type, Object source, Element element) {
 			Binder binder = (Binder) source;
@@ -128,7 +148,7 @@ public class BinderHelper {
 
 			//only need this information if this is the bottom of the tree
 			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
-				if (binderModule.hasBinders(binder)) {
+				if (bs.getBinderModule().hasBinders(binder)) {
 					element.addAttribute("hasChildren", "true");
 				} else {	
 					element.addAttribute("hasChildren", "false");
@@ -145,7 +165,14 @@ public class BinderHelper {
 				element.addAttribute("type", "workspace");
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", imageClass);
-				element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
+				if (Validator.isNull(key)) {
+					element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
+				} else {
+					String action = (String)actionMapper.get(key + DomTreeBuilder.TYPE_WORKSPACE);
+					if (Validator.isNull(action)) element.addAttribute("displayOnly", "true");
+					else element.addAttribute("action", action);
+						
+				}
 			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
 				Folder f = (Folder)source;
 				String icon = f.getIconName();
@@ -153,7 +180,14 @@ public class BinderHelper {
 				element.addAttribute("type", "folder");
 				element.addAttribute("image", icon);
 				element.addAttribute("imageClass", "ss_twIcon");
-				element.addAttribute("action", WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				if (Validator.isNull(key)) {
+					element.addAttribute("action", WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				} else {
+					String action = (String)actionMapper.get(key + DomTreeBuilder.TYPE_FOLDER);
+					if (Validator.isNull(action)) element.addAttribute("displayOnly", "true");
+					else element.addAttribute("action", action);
+						
+				}
 			} else return null;
 			return element;
 		}

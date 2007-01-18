@@ -16,8 +16,58 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.ef.util.NLT" %>
-
+<%
+String wsTreeName = "email_" + renderResponse.getNamespace();
+%>
+<script type="text/javascript">
+function <%= wsTreeName %>_showId(id, obj, action) {
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
+			name="action" value="ssActionPlaceHolder"/><portlet:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
+}
+</script>
 <div class="ss_style ss_portlet">
+<c:choose>
+<c:when test="${!empty ssWsDomTree}">
+
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
+    id="<portlet:namespace/>fm" method="post" 
+    action="<portlet:actionURL><portlet:param 
+    	name="action" value="config_email"/></portlet:actionURL>">
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
+	<tr align="left"><td><ssf:nlt tag="tree.choose_folder"/></td></tr>
+	<tr>
+		<td align="left">
+			<div>
+			<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
+			  topId="${ssWsDomTreeBinderId}" 
+			  rootOpen="false" showImages="false" dynamic="true"/>
+			</div>
+		</td>
+	</tr>
+	</table>
+	<br/>
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+</form>
+</c:when>
+<c:otherwise>
+<span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>&nbsp;${ssBinder.title}</span><br/>
+
+<c:set var="ss_breadcrumbsShowIdRoutine" value="<%= wsTreeName + "_showId"%>" scope="request" />
+<c:set var="ss_breadcrumbsTreeName" value="<%= wsTreeName %>" scope="request" />
+
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
 
@@ -26,9 +76,7 @@
 			<portlet:param name="binderId" value="${ssBinder.id}"/>
 		</portlet:actionURL>">
 
-<span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>&nbsp;${ssBinder.title}</span>
-
-<br/><br/>
+<br/>
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
 <tr><td> 
 <span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span>
@@ -61,7 +109,7 @@
 </tr>
 <tr>
 <td valign="top">
-<input type="checkbox" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
+<input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
 <span class="ss_labelLeft"><ssf:nlt tag="notify.schedule.enable"/></span>
 <br/>
 
@@ -69,13 +117,18 @@
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 </td>
 <td>
+
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="notify.teams"/></td>
-<td valign="top">
-<input type="checkbox" id="teamOn" name="teamOn" <c:if test="${ssBinder.notificationDef.teamOn}">checked</c:if>/>
-</td>
-</tr>
+ <tr><td>
+   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/></span>
+   <input type="text" class="ss_style" name="addresses" id="addresses" size="86" value="${ssBinder.notificationDef.emailAddress}">
+ </td></tr>
+<tr><td>
+<input type="checkbox" class="ss_style" id="teamMembers" name="teamMembers" <c:if test="${ssBinder.notificationDef.teamOn}">checked</c:if>/>
+<span class="ss_labelRight"><ssf:nlt tag="sendMail.team"/></span>
+</td></tr>
+</table>
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -90,19 +143,6 @@
     type="group" userList="${ssGroups}"/>
 </td>
 </tr>
-<tr>
-<td colspan="2">
-<span class="ss_labelAbove ss_bold"><ssf:nlt tag="notify.addresses.instructions"/></span>
-	  	<c:set var="mappings" value="${ssBinder.notificationDef.emailAddress}"/>
-<jsp:useBean id="mappings" type="String[]" scope="page" />
-	  	<%
-			StringBuffer buf = new StringBuffer();
-	  		for (int i=0; i<mappings.length; ++i) {
-				buf.append(mappings[i] + "\n");
-	  		}
-	  	%>
-	  	<textarea name="emailAddress" style="height: 100px; width: 500px; overflow:auto;" wrap="hard" disabled><%=buf.toString()%></textarea>
-</td></tr>
 </table>
 </td>
 </tr>
@@ -117,4 +157,6 @@
 </c:if>
 </form>
 
+</c:otherwise>
+</c:choose>
 </div>

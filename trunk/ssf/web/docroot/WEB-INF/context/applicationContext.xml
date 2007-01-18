@@ -361,6 +361,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
+				<prop key="checkZone">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 			<property name="target">
@@ -637,7 +638,7 @@
 		<property name="archiveStore"><ref local="archiveStore"/></property>
 	</bean>
 
-	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper">
+	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper" parent="controllerDependencyTemplate">
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
 		<property name="dashboardModule"><ref local="dashboardModule"/></property>

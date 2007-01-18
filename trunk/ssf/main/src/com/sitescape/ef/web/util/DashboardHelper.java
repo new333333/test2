@@ -14,34 +14,39 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Dashboard;
-import com.sitescape.ef.domain.DashboardPortlet;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.file.FileModule;
 import com.sitescape.ef.module.folder.FolderModule;
+import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
 import com.sitescape.util.Validator;
 
-public class DashboardHelper {
+public class DashboardHelper implements AllBusinessServicesInjected {
 	private static DashboardHelper instance; // A singleton instance
 
 	//Dashboard map keys
@@ -78,12 +83,18 @@ public class DashboardHelper {
 	//Form keys
 	public final static String ElementNamePrefix = "data_";
 
-	protected BinderModule binderModule;
-	protected FolderModule folderModule;
-	protected DefinitionModule definitionModule;
-	protected ProfileModule profileModule;
-	protected WorkspaceModule workspaceModule;
-	protected DashboardModule dashboardModule;
+	private EmployeeModule employeeModule;
+	private WorkspaceModule workspaceModule;
+	private FolderModule folderModule;
+	private AdminModule adminModule;
+	private ProfileModule profileModule;
+	private DefinitionModule definitionModule;
+	private WorkflowModule workflowModule;
+	private BinderModule binderModule;
+	private LdapModule ldapModule;
+	private FileModule fileModule;
+	private RssGenerator rssGenerator;
+	private DashboardModule dashboardModule;
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -95,43 +106,103 @@ public class DashboardHelper {
     	return instance;
     }
 	
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
+	public RssGenerator getRssGenerator() {
+		return rssGenerator;
 	}
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
+	/**
+	 * @param rssGenerator The rssGenerator to set.
+	 */
+	public void setRssGenerator(RssGenerator rssGenerator) {
+		this.rssGenerator = rssGenerator;
 	}
-	protected FolderModule getFolderModule() {
-		return folderModule;
+
+	public void setEmployeeModule(EmployeeModule employeeModule) {
+		this.employeeModule = employeeModule;
 	}
-	public void setFolderModule(FolderModule folderModule) {
-		this.folderModule = folderModule;
-	}
-	protected ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-	protected WorkspaceModule getWorkspaceModule() {
-		return workspaceModule;
-	}
-	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
-		this.workspaceModule = workspaceModule;
-	}
-	protected BinderModule getBinderModule() {
-		return binderModule;
+	
+	public EmployeeModule getEmployeeModule() {
+		return employeeModule;
 	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
 	
-	protected DashboardModule getDashboardModule() {
-		return dashboardModule;
+	public BinderModule getBinderModule() {
+		return binderModule;
 	}
+
+	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
+		this.workspaceModule = workspaceModule;
+	}
+	
+	public WorkspaceModule getWorkspaceModule() {
+		return workspaceModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+	
+	public FolderModule getFolderModule() {
+		return folderModule;
+	}
+	
+	public void setAdminModule(AdminModule adminModule) {
+		this.adminModule = adminModule;
+	}
+	
+	public AdminModule getAdminModule() {
+		return adminModule;
+	}
+
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+	
+	public ProfileModule getProfileModule() {
+		return profileModule;
+	}
+	
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+	
+	public DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+
+	public WorkflowModule getWorkflowModule() {
+		return workflowModule;
+	}
+
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	
+	public void setLdapModule(LdapModule ldapModule) {
+		this.ldapModule = ldapModule;
+	}
+	
+	public LdapModule getLdapModule() {
+		return ldapModule;
+	}
+	
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	public FileModule getFileModule() {
+		return fileModule;
+	}
+	
 	public void setDashboardModule(DashboardModule dashboardModule) {
 		this.dashboardModule = dashboardModule;
 	}
+	
+	public DashboardModule getDashboardModule() {
+		return dashboardModule;
+	}
+
     protected static void getDashboardBeans(Binder binder, Map ssDashboard, Map model) {
 		//Go through each list and build the needed beans
     	List componentList = new ArrayList();
@@ -568,14 +639,14 @@ public class DashboardHelper {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
 				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     			} else {
-    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, getBinderModule()),1);
+    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, this),1);
     				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
     			}
     		} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     			Folder topFolder = ((Folder)binder).getTopFolder();
     			if (topFolder == null) topFolder = (Folder)binder;
     			Binder workspace = (Binder)topFolder.getParentBinder();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new TreeBuilder(workspace, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new TreeBuilder(workspace, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
 			
     		}
@@ -583,11 +654,11 @@ public class DashboardHelper {
     		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
     		if (topId == null) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID,ws.getId().toString());
     		} else {
     			Workspace ws = getWorkspaceModule().getWorkspace(topId);
-    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new TreeBuilder(ws, true, getBinderModule()),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new TreeBuilder(ws, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, topId.toString());			
     		}
     			

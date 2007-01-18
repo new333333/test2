@@ -20,6 +20,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.security.AccessControlException;
@@ -56,6 +57,16 @@ public class SendEntryMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			if (formData.containsKey("teamMembers")) {
+				try {
+					List team = getBinderModule().getTeamMembers(folderId);
+					for (int i=0; i<team.size();++i) {
+						memberIds.add(((Principal)team.get(i)).getId());
+					}					
+				} catch (AccessControlException ax) {
+					//don't use teamMembership if not a member
+				}
+			}
 			List entries = null;
 			//if want attachments load entries
 			if (PortletRequestUtils.getBooleanParameter(request, "attachments", false)) {
@@ -67,18 +78,21 @@ public class SendEntryMailController extends SAbstractController {
 					new Description(body, Description.FORMAT_HTML), entries);
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
+			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);
 			if (ObjectKeys.SENDMAIL_STATUS_SENT.equals(result)) {
 				errors.add(0, NLT.get("sendMail.mailSent"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
 			} else if (ObjectKeys.SENDMAIL_STATUS_SCHEDULED.equals(result)) {
 				errors.add(0, NLT.get("sendMail.mailQueued"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
+				response.setRenderParameter(WebKeys.EMAIL_ADDRESSES, (String[])addrs.toArray( new String[0]));
 			} else {
 				errors.add(0, NLT.get("sendMail.mailFailed"));
-				response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
+			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);			
+		} else {
+			response.setRenderParameters(formData);
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -87,7 +101,8 @@ public class SendEntryMailController extends SAbstractController {
 		String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
 		if (errors != null) {
 			model.put(WebKeys.ERROR_LIST, errors);
-			return new ModelAndView(WebKeys.VIEW_ENTRY_SENDMAIL, model);
+			model.put(WebKeys.EMAIL_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_ADDRESSES));
+			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 		}
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));	
@@ -99,6 +114,11 @@ public class SendEntryMailController extends SAbstractController {
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.BINDER, folder);
+		try {
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(folderId));
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
 		model.put(WebKeys.CONFIG_JSP_STYLE, "mail");
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
@@ -117,7 +137,7 @@ public class SendEntryMailController extends SAbstractController {
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
-		return new ModelAndView(WebKeys.VIEW_ENTRY_SENDMAIL, model);
+		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
 
 }

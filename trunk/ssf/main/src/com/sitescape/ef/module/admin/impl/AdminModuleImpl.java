@@ -33,6 +33,8 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
+import com.sitescape.ef.domain.NoBinderByTheNameException;
+import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.User;
@@ -45,6 +47,7 @@ import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.ObjectBuilder;
 import com.sitescape.ef.search.IndexSynchronizationManager;
@@ -57,6 +60,7 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.util.SpringContextUtil;
 
 import com.sitescape.util.Validator;
 
@@ -153,7 +157,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	PostingDef post = new PostingDef();
     	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
        	ObjectBuilder.updateObject(post, updates);
-       	coreDao.save(post);   	
+       	post.setEmailAddress(post.getEmailAddress().toLowerCase());
+      	coreDao.save(post);   	
     }
     public void deletePosting(String postingId) {
     	checkAccess("deletePosting");
@@ -474,12 +479,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries) throws Exception {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Set userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
-		//TODO is there accesschecking on seeing email address
+		//TODO is there accesschecking on sending email address
 		List users = getCoreDao().loadObjects(userIds, User.class, user.getZoneId());
 		Set emailSet = new HashSet();
+		List distribution = new ArrayList();
 		List errors = new ArrayList();
 		Map result = new HashMap();
 		result.put(ObjectKeys.SENDMAIL_ERRORS, errors);
+		result.put(ObjectKeys.SENDMAIL_DISTRIBUTION, distribution);
 		//add email address listed 
 		Object[] errorParams = new Object[3];
 		for (Iterator iter=emailAddresses.iterator(); iter.hasNext();) {
@@ -487,6 +494,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			if (!Validator.isNull(e)) {
 				try {
 					emailSet.add(new InternetAddress(e.trim()));
+					distribution.add(e);
 				} catch (Exception ex) {
 					errorParams[0] = "";
 					errorParams[1] = e;
@@ -499,6 +507,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			User e = (User)iter.next();
 			try {
 				emailSet.add(new InternetAddress(e.getEmailAddress().trim()));
+				distribution.add(e.getEmailAddress());
 			} catch (Exception ex) {
 				errorParams[0] = e.getTitle();
 				errorParams[1] = e.getEmailAddress();
@@ -564,18 +573,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			top.setZoneId(top.getId());
 			
 			
-			ProfileBinder profiles = new ProfileBinder();
-			profiles.setName("_profiles");
-			profiles.setTitle(NLT.get("administration.initial.profile.title", "Users and Groups"));
-			profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
-			profiles.setZoneId(top.getId());
-			profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
-			
-			top.addBinder(profiles);
-			
-			//generate id for top and profiles
-			getCoreDao().save(profiles);
-			getCoreDao().updateLibraryName(profiles, profiles, null, profiles.getTitle());
+			ProfileBinder profiles = addPersonalRoot(top);
 		
 			//build user
 			User user = new User();
@@ -583,13 +581,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			user.setLastName(adminName);
 			user.setForeignName(adminName);
 			user.setZoneId(top.getId());
+			user.setInternalId(ObjectKeys.SUPER_USER_ID);
 			user.setParentBinder(profiles);
-			
 			getCoreDao().save(user);
 			
-
 			//indexing needs the user
 			RequestContextHolder.getRequestContext().setUser(user);
+			//need request context
+			getDefinitionModule().setDefaultBinderDefinition(top);
+			getDefinitionModule().setDefaultBinderDefinition(profiles);
+			getDefinitionModule().setDefaultEntryDefinition(user);
 			
 			getDefinitionModule().setDefaultBinderDefinition(top);
 			getDefinitionModule().setDefaultBinderDefinition(profiles);
@@ -603,17 +604,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			profiles.setModification(stamp);
 			user.setCreation(stamp);
 			user.setModification(stamp);
-			addAnnonymous(profiles, stamp);
-			Group group = addAllUserGroup(profiles, stamp);
 			
+			addAnnonymous(profiles, stamp);
+			addOwner(profiles, stamp);
+			Group group = addAllUserGroup(profiles, stamp);
 			addAdminRole(top, top, user);
 			//all users are visitors
 			addVisitorsRole(top, top, group);
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(top);
-		
 			processor = (BinderProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(profiles);
+
+			Workspace global = addGlobalRoot(top, stamp);		
+			processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(global);
+			Workspace team = addTeamRoot(top, stamp);		
+			processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(team);
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 		} finally  {
@@ -637,19 +645,25 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		group.setModification(stamp);
 		return group;
 	}
-	private User addAnnonymous(Binder parent, HistoryStamp stamp) {
+	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String id) {
 		//build allUsers group
 		User user = new User();
-		user.setName("postingAgent");
-		user.setForeignName(user.getName());
+		user.setName(name);
+		user.setForeignName(name);
 		user.setZoneId(parent.getZoneId());
 		user.setParentBinder(parent);
-		user.setInternalId(ObjectKeys.ANONYMOUS_POSTING_USER_ID);
+		user.setInternalId(id);
 		getDefinitionModule().setDefaultEntryDefinition(user);
-		getCoreDao().save(user);
 		user.setCreation(stamp);
 		user.setModification(stamp);
+		getCoreDao().save(user);
 		return user;
+	}
+	private User addAnnonymous(Binder parent, HistoryStamp stamp) {
+		return addReservedUser(parent, stamp, "postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_ID);
+	}
+	private User addOwner(Binder parent, HistoryStamp stamp) {
+		return addReservedUser(parent, stamp, "owner", ObjectKeys.OWNER_USER_ID);
 	}
 	private void addAdminRole(Workspace top, WorkArea workArea, User user) {
 		Function function = new Function();
@@ -673,6 +687,57 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		getCoreDao().save(ms);
 		
 	}
+	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
+		Workspace team = new Workspace();
+		team.setCreation(stamp);
+		team.setModification(stamp);
+		team.setName("_teams");
+		team.setTitle(NLT.get("administration.initial.team.title", "Teams"));
+		team.setPathName(top.getPathName() + "/" + team.getTitle());
+		team.setZoneId(top.getId());
+		team.setInternalId(ObjectKeys.TEAM_ROOT_ID);
+		getDefinitionModule().setDefaultBinderDefinition(team);
+		top.addBinder(team);
+		
+		//generate id for top and profiles
+		getCoreDao().save(team);
+		getCoreDao().updateLibraryName(top, team, null, team.getTitle());
+		return team;
+		
+	}
+	private Workspace addGlobalRoot(Workspace top, HistoryStamp stamp) {
+		Workspace global = new Workspace();
+		global.setCreation(stamp);
+		global.setModification(stamp);
+		
+		global.setName("_global");
+		global.setTitle(NLT.get("administration.initial.global.title", "Global"));
+		global.setPathName(top.getPathName() + "/" + global.getTitle());
+		global.setZoneId(top.getId());
+		global.setInternalId(ObjectKeys.GLOBAL_ROOT_ID);
+		getDefinitionModule().setDefaultBinderDefinition(global);
+		top.addBinder(global);
+		
+		//generate id for top and profiles
+		getCoreDao().save(global);
+		getCoreDao().updateLibraryName(top, global, null, global.getTitle());
+		return global;
+	}
+	private ProfileBinder addPersonalRoot(Workspace top) {
+		ProfileBinder profiles = new ProfileBinder();
+		profiles.setName("_profiles");
+		profiles.setTitle(NLT.get("administration.initial.profile.title", "Personal"));
+		profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
+		profiles.setZoneId(top.getId());
+		profiles.setInternalId(ObjectKeys.PROFILE_ROOT_ID);
+		top.addBinder(profiles);
+		
+		//generate id for top and profiles
+		getCoreDao().save(profiles);
+		getCoreDao().updateLibraryName(top, profiles, null, profiles.getTitle());
+		return profiles;
+	}
+	
 	private void addVisitorsRole(Workspace top, WorkArea workArea, Group group) {
 		Function function = new Function();
 		function.setZoneId(top.getId());
@@ -693,73 +758,60 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);				
 	}
-	public void setZone1(String zoneName) {
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FileAttachment set uniqueName='0' where uniqueName is null");	
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.BinderConfig set library='0' where library is null");	
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Principal set logVersion=0 where logVersion is null");	
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.FolderEntry set logVersion=0 where logVersion is null");	
-		getCoreDao().executeUpdate("Update com.sitescape.ef.domain.Binder set logVersion=0 where logVersion is null");	
-		
+	public void setZone1(String zoneName) {		
 	}
 	public void setZone2(String zoneName) {
-		Workspace zone = getCoreDao().findTopWorkspace(zoneName);
-		int count = getCoreDao().countObjects(com.sitescape.ef.domain.LibraryEntry.class, new FilterControls("binderId", zone.getId()));
-		if (count == 0) {
-			List<Binder> binders = new ArrayList();
-			binders.addAll(zone.getBinders());
-			while (!binders.isEmpty()) {
-				Binder b = binders.get(0);
-				binders.remove(0);
-				binders.addAll(b.getBinders());
-				try {
-					coreDao.registerLibraryEntry(b.getParentBinder(), null, b.getTitle());
-				} catch (com.sitescape.ef.domain.TitleException te) {
-					logger.error("Cannot register binder name: " + b.getPathName());
-				}
-			}
+		com.sitescape.ef.module.binder.BinderModule binderModule = (com.sitescape.ef.module.binder.BinderModule)SpringContextUtil.getBean("binderModule");
+		
+		Workspace top = getCoreDao().findTopWorkspace(zoneName);
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_ID, top.getId());
+		} catch (NoUserByTheNameException nu) {
+			User superU = getProfileDao().findUserByName(SZoneConfig.getString(zoneName, "property[@name='adminUser']", "admin"), zoneName);
+			superU.setInternalId(ObjectKeys.SUPER_USER_ID);
 		}
-		Definition fDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
-		Definition eDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY);
-		List<com.sitescape.ef.domain.Folder> folders = getCoreDao().loadObjects("from com.sitescape.ef.domain.Folder where definitionType=9", null);
-		//old file folders
-		for (com.sitescape.ef.domain.Folder f: folders) {
-			f.setEntryDef(fDef);
-			f.setDefinitionType(fDef.getType());
-			f.setLibrary(true);
-			if (!f.isDefinitionsInherited()) {
-				List ds = f.getDefinitions();
-				ds.clear();
-				ds.add(fDef);
-				ds.add(eDef);
-			}
-			//get all attachments in this binder
-		   	FilterControls filter = new FilterControls("owner.owningBinderId", f.getId());
-	        List<com.sitescape.ef.domain.FileAttachment> atts = getCoreDao().loadObjects(com.sitescape.ef.domain.FileAttachment.class, filter);
-	 
-			for (com.sitescape.ef.domain.FileAttachment fa: atts) {
-				if (!(fa instanceof com.sitescape.ef.domain.VersionAttachment)) {
-					try {
-						getCoreDao().registerLibraryEntry(f, fa.getOwner().getEntity(), fa.getFileItem().getName());
-					} catch (com.sitescape.ef.domain.TitleException te) {
-						logger.error("Cannot register attachment: " + f.getPathName() + " " + fa.getFileItem().getName());
-					}
-				}
+		ProfileBinder profiles = (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_ID, top.getId());
+		String title = NLT.get("administration.initial.profile.title", "Personal");
+		if (!profiles.getTitle().equals(title)) {
+			Map updates = new HashMap();
+			updates.put("title", title);
+			try {
+				binderModule.modifyBinder(profiles.getId(), new com.sitescape.ef.module.shared.MapInputData(updates));
+			} catch (WriteFilesException wf) {}
+		}
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.OWNER_USER_ID, top.getId());
+		} catch (NoUserByTheNameException nu) {
+			addOwner(profiles, profiles.getCreation());
+		}
+		Workspace global=null;
+		Workspace team=null;
+		try {
+			global = (Workspace)getCoreDao().loadReservedBinder(ObjectKeys.GLOBAL_ROOT_ID, top.getId()); 
+		} catch (NoBinderByTheNameException nb) {
+			
+			global = addGlobalRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
+			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(global);
+			IndexSynchronizationManager.applyChanges();
+		}
+		try {
+			team = (Workspace)getCoreDao().loadReservedBinder(ObjectKeys.TEAM_ROOT_ID, top.getId()); 
+		} catch (NoBinderByTheNameException nb) {
+			team = addTeamRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
+			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+			processor.indexBinder(team);
+			IndexSynchronizationManager.applyChanges();
+		}
+		List binders = top.getBinders();
+		for (int i=0; i<binders.size(); ++i) {
+			Binder b = (Binder)binders.get(i);
+			if (!b.isReserved()) {
+				binderModule.moveBinder(b.getId(), global.getId());
 			}
 			
 		}
-		List<Definition> defs = getCoreDao().loadDefinitions(zone.getId(), 9);
-		for (Definition def: defs) {
-			getCoreDao().delete((Object)def);
-		}
-		defs = getCoreDao().loadDefinitions(zone.getId(), 10);
-		getCoreDao().flush();
-		for (Definition def: defs) {
-			getCoreDao().executeUpdate("update com.sitescape.ef.domain.FolderEntry set entryDef='" +eDef.getId() + "',definitionType=" +
-					Definition.FOLDER_ENTRY + " where entryDef='" + def.getId() + "'");
-			getCoreDao().flush();
-			getCoreDao().delete((Object)def);
-		}	
-		getCoreDao().executeUpdate("delete from com.sitescape.ef.domain.BinderConfig where definitionType=9");
+		
 	}
    public List getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
