@@ -113,7 +113,6 @@ public class HtmlOpenOfficeConverter
 			
 			ifp = ifp.replace('\\', '/');
 			ofp = ofp.replace('\\', '/');
-			if (ifp.startsWith("/") )
 				
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
