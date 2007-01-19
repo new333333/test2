@@ -24,6 +24,7 @@
 
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
+	<bean id="addAttachmentEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddAttachmentController" />
 
 	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
 	<bean id="folderViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
@@ -62,6 +63,7 @@
 						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
 						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
 						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>
+						<entry key="add_attachment_entry"><ref bean="addAttachmentEntryController"/></entry>
 						<entry key="lock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="unlock_folder_entry"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
