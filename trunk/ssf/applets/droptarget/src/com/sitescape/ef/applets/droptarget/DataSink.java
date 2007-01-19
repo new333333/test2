@@ -16,7 +16,8 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.applet.AppletContext;
 import java.net.URL;
-import netscape.javascript.JSObject;
+//Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
+//import netscape.javascript.JSObject;
 
 
 /**
@@ -147,10 +148,13 @@ private static ArrayList xferFileList;
   private void errorMsgOnDirectoryLoad(TopFrame topFrame)
   {
     try {
+    	/*
+    	 Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
       String onLoadFunction = "alert";
       JSObject win = JSObject.getWindow(topFrame);
       String args[] = {topframe.getParameter("directoryLoadErrorMessage")};
       Object foo = win.call(onLoadFunction,args);
+      */
     } catch (Exception ignored) { }
   }
   
@@ -325,6 +329,8 @@ private static ArrayList xferFileList;
    */
   private void deactivateApplet() {
     try {
+    	/*
+    	 * Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
       String reloadFunction = topframe.getParameter("reloadFunctionName");
       if (reloadFunction.equals(null)) return;
       String jsfunc = reloadFunction;
@@ -332,6 +338,7 @@ private static ArrayList xferFileList;
       JSObject win = JSObject.getWindow(topframe);
       String args[] = {Url};
       Object foo = win.call(reloadFunction,args);
+      */
     } catch (Exception ignored) { }
   }
 
@@ -341,6 +348,8 @@ private static ArrayList xferFileList;
   private String getBackgroundColor() {
     String color = "";
     try {
+    	/*
+    	 * Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
       String gbcolorfunc = topframe.getParameter("bgColorFunctionName");
       if (gbcolorfunc.equals("")) {
         return "";
@@ -348,6 +357,7 @@ private static ArrayList xferFileList;
       String jsfunc = gbcolorfunc;
       JSObject win = JSObject.getWindow(topframe);
       color = (String)win.call(jsfunc,null);
+      */
     } catch (Exception ignored) { }
     return color;
   }

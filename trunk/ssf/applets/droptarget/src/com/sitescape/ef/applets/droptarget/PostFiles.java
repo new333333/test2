@@ -18,7 +18,8 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.applet.AppletContext;
-import netscape.javascript.JSObject;
+//Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
+//import netscape.javascript.JSObject;
 
 public class PostFiles extends Thread {
   String CR = System.getProperty("line.separator");
@@ -261,9 +262,12 @@ public class PostFiles extends Thread {
 					String reloadFunction = topFrame.getParameter("reloadFunctionName");
 					
 					if (reloadFunction.equals(null)) return;
+					/*
+					 * Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
 					JSObject win = JSObject.getWindow(topFrame);
 					String args[] = {url};
 					Object foo = win.call(reloadFunction,args);
+					*/
 					
 				} catch (Exception ignored) { }
             }

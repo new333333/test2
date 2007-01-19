@@ -17,41 +17,9 @@ function reloadUrlFromApplet()
 <br/>
 <span class="ss_labelLeft"><c:out value="${property_caption}"/></span>
 
-<c:if test="<%= isIE %>">
-<object id="dropboxobj" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
-  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
-  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
-</c:if>
-<c:if test="<%= !isIE %>">
-<applet CODE = "com.sitescape.ef.applets.droptarget.TopFrame" 
-  JAVA_CODEBASE = "<html:rootPath/>applets" 
-  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
-  WIDTH = "20" HEIGHT = "20">
-</c:if>
-    <PARAM NAME = CODE VALUE = "com.sitescape.ef.applets.droptarget.TopFrame" >
-    <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
-    <PARAM NAME = ARCHIVE VALUE = "droptarget/ssf-droptarget-applet.jar" >
-    <PARAM NAME = "type" value="application/x-java-applet;version=1.5">
-    <param name = "scriptable" value="true">
-    <PARAM NAME = "NAME" VALUE = "droptarget" >
-    <PARAM NAME = "startingDir" VALUE="">
-    <PARAM NAME = "reloadFunctionName" VALUE="reloadUrlFromApplet">
-    <PARAM NAME = "bgcolorFunctionName" VALUE="getWindowBgColor">
-    <PARAM NAME = "savePreviousVersions" VALUE="yes">
-    <PARAM NAME = "fileReceiverURL" VALUE="<ssf:url adapter="true" actionUrl="true" portletName="ss_forum" action="add_attachment_entry"><ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}"/><ssf:param name="entryId" value="${ssDefinitionEntry.id}"/><ssf:param name="operation" value="add_files_from_applet" /></ssf:url>">
-    <PARAM NAME = "deactivationUrl" VALUE="">
-    <PARAM NAME = "displayUrl" VALUE="0">
-    <PARAM NAME = "loadDirectory" VALUE="no" />
-    <PARAM NAME = "menuLabelPaste" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
-    <PARAM NAME = "menuLabelCancel" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
-    <PARAM NAME = "menuLabelDeactivate" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
-    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory" />" />
-<c:if test="<%= !isIE %>">
-</applet>
-</c:if>
-<c:if test="<%= isIE %>">
-</object>
-</c:if>
+<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="return false;"><ssf:nlt tag="button.addattachments"/></a>
+
+
 
 <br>
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
@@ -104,7 +72,7 @@ function reloadUrlFromApplet()
 <c:if test="${!empty selection.fileVersions && versionCount > 1}">
 <div class="ss_indent_medium">
 <span class="ss_bold"><ssf:nlt tag="entry.PreviousVersions"/></span>
-<br>
+<br />
 <c:set var="versionCount" value="0"/>
 <table class="ss_compact20">
 <c:forEach var="fileVersion" items="${selection.fileVersions}">
@@ -138,7 +106,7 @@ function reloadUrlFromApplet()
 </c:forEach>
 </table>
 </div>
-<br>
+<br />
 </c:if>
 </c:forEach>
 </div>
