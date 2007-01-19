@@ -24,6 +24,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
@@ -47,6 +48,7 @@ import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.EntryProcessor;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.module.file.FilesErrors;
 import com.sitescape.ef.module.file.FilterException;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -55,6 +57,7 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.LuceneSession;
@@ -67,6 +70,7 @@ import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.util.Validator;
 /**
  *
  * Add entries to the binder
@@ -296,18 +300,33 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final InputDataAccessor inputData, Map fileItems, 
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
     		throws WriteFilesException {
-    	SimpleProfiler sp = new SimpleProfiler(false);
     	
-    	sp.reset("modifyEntry_toEntryData").begin();
-	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
-	    sp.end().print();
+    	Boolean filesFromApplet = new Boolean(false);
+    	modifyEntry(binder, entry, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
+    }
+    
+    public void modifyEntry(final Binder binder, final Entry entry, 
+    		final InputDataAccessor inputData, Map fileItems, 
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
+    		throws WriteFilesException {
+    	SimpleProfiler sp = new SimpleProfiler(false);
+
+    	Map entryDataAll;
+    	if (!filesFromApplet) {
+	    	sp.reset("modifyEntry_toEntryData").begin();
+	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
+		    sp.end().print();
+    	}
+    	else {
+	    	sp.reset("getFilesUploadedByApplet").begin();
+	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems);
+		    sp.end().print();
+    	}
 	    
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    
 	    try {	    	
-	    
-	    	
 	    	sp.reset("modifyEntry_transactionExecute").begin();
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
@@ -362,6 +381,56 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    }
 	}
 
+    //Method Used to get the files uploaded by the Applet
+    protected Map getFilesUploadedByApplet(Entry entry, InputDataAccessor inputData, Map fileItems)
+    {
+    	List fileData = new ArrayList();
+    	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
+    	Map entryDataAll = new HashMap();
+    	
+    	//No Definition Related Information - So it is set to empty HashMap
+        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  new HashMap());    	
+    	
+        //Call the definition processor to get the entry data to be stored
+        Definition def = entry.getEntryDef();
+        if (def != null) {
+        	boolean blnCheckForAppletFile = true;
+        	int intFileCount = 1;
+
+        	while (blnCheckForAppletFile) {
+        		String fileEleName = nameValue + Integer.toString(intFileCount);
+        		if (fileItems.containsKey(fileEleName)) {
+        	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+        	    	String fileName = myFile.getOriginalFilename();
+        	    	
+        	    	if (fileName != null && !fileName.equals("")) {
+            	    	// Different repository can be specified for each file uploaded.
+            	    	// If not specified, use the statically selected one.  
+            	    	String repositoryName = null;
+            	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
+            	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
+            	    	if (repositoryName == null) {
+            		    	repositoryName = "simpleFileRepository";
+            		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+            	    	}
+            	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+            	    	fileData.add(fui);
+        	    	}
+        	    	intFileCount++;
+        		}
+        		else {
+        			blnCheckForAppletFile = false;
+        		}
+        	}        	
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  fileData);
+            
+        } else {
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
+        }
+    	
+        return entryDataAll;
+    }
+    
     protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();

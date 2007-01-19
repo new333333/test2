@@ -62,6 +62,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
@@ -232,6 +233,14 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+        
+        Boolean filesFromApplet = new Boolean(false);
+        modifyEntry(folderId, entryId, inputData, fileItems, deleteAttachments, fileRenamesTo, filesFromApplet);
+    }
+
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
+    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -260,10 +269,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		}
     	}
     	Date stamp = entry.getModification().getDate();
-        processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo);
+        processor.modifyEntry(folder, entry, inputData, fileItems, atts, fileRenamesTo, filesFromApplet);
         if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
-    }
-
+    }    
     
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
         Folder folder = loadFolder(folderId);       

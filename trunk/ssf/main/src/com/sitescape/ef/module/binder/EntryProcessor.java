@@ -33,6 +33,9 @@ public interface EntryProcessor extends BinderProcessor {
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
     	throws WriteFilesException;
+    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
+    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)
+    	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
 	public void reindexEntry(Entry entry); 

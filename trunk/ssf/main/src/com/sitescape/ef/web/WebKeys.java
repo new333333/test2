@@ -151,6 +151,7 @@ public class WebKeys {
     public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
+    public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
     public static final String OPERATION_ADD_TAB="add_tab";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";

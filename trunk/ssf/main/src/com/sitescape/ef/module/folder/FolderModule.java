@@ -62,6 +62,9 @@ public interface FolderModule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
+    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
 	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;
