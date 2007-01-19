@@ -31,6 +31,9 @@ public class FilterHelper {
 	public final static String SearchCommunityTags = "searchCommunityTags";
 	public final static String SearchPersonalTags = "searchPersonalTags";
 	public final static String SearchTextAndTags = "searchTextAndTags";
+	public final static String SearchTags = "searchTags";
+	public final static String SearchTagsOr = "searchTagsOr";
+	public final static String TabTitle = "tabTitle";
 	
    	//Search filter document element names
    	public final static String FilterRootName = "searchFilter";

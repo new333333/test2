@@ -178,20 +178,24 @@ public class SearchController extends AbstractBinderController {
 			if (andSearchQuery != null) options.put(Tabs.AND_QUERY_DOC, andSearchQuery);
 
 			//Get the search text to use it for the tab title
+			String tabTitle = PortletRequestUtils.getStringParameter(request, FilterHelper.TabTitle, "");
 			String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
 			String searchCommunityTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
 			String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags, "");
 			
-			if (!searchText.equals("") || !searchCommunityTags.equals("") || !searchPersonalTags.equals("")) {
+			if (!tabTitle.equals("") || !searchText.equals("") || 
+					!searchCommunityTags.equals("") || !searchPersonalTags.equals("")) {
 				String strTabTitle = searchText;
 				if (!searchCommunityTags.equals("")) strTabTitle = strTabTitle + " + " + searchCommunityTags;
 				if (!searchPersonalTags.equals("")) strTabTitle = strTabTitle + " + " + searchPersonalTags;
+				if (!tabTitle.equals("")) strTabTitle = tabTitle;
 				
 				options.put(Tabs.TITLE,  strTabTitle);
-				options.put(Tabs.TAB_SEARCH_TEXT, searchText);
-				options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
-				options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
 			}
+			options.put(Tabs.TAB_SEARCH_TEXT, searchText);
+			options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
+			options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
+
 			//Store the search query in the current tab
 			boolean blnClearTab = true;
 			if (tabId != null) 
@@ -434,9 +438,11 @@ public class SearchController extends AbstractBinderController {
 		Document andQuery = DocumentHelper.createDocument();
 		Element tagRootElement = null;
 
+		String searchTags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchTags, "");
+		if (searchTags.equals(FilterHelper.SearchTagsOr)) tagRootElement = andQuery.addElement(QueryBuilder.OR_ELEMENT);
 		String searchCommunityTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags, "");
 		if (searchCommunityTag != null && !searchCommunityTag.equals("")) {
-			tagRootElement = andQuery.addElement(QueryBuilder.AND_ELEMENT);
+			if (tagRootElement == null) tagRootElement = andQuery.addElement(QueryBuilder.AND_ELEMENT);
 			Element field = tagRootElement.addElement(QueryBuilder.FIELD_ELEMENT);
 	    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
 	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);

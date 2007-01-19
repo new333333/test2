@@ -166,8 +166,9 @@ function ss_findTagSelectItem${prefix}(obj) {
 		name="action" value="search"/><portlet:param 
 		name="searchCommunityTags" value="ss_tagPlaceHolder"/><portlet:param 
 		name="searchPersonalTags" value="ss_tagPlaceHolder"/><portlet:param 
-		name="searchTags" value="tagOnlySearch"/><portlet:param 
-		name="tabId" value="${tabId}"/></portlet:actionURL>";
+		name="searchTags" value="searchTagsOr"/><portlet:param 
+		name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
+		name="newTab" value="1"/></portlet:actionURL>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findTag_id_', "");
 	if (ss_findTagClickRoutine${prefix} != "") {
 		eval(ss_findTagClickRoutine${prefix} + "('"+id+"');")
