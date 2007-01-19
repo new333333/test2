@@ -64,7 +64,7 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img width="12" height="12" src="<html:imagesPath/>pics/1pix.gif"/></a>
+><img border="0" width="1" height="12" src="<html:imagesPath/>pics/1pix.gif"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
