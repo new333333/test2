@@ -38,6 +38,7 @@
 		<mkdir dir="${classes.dir}" />
 		<javac
 			classpathref="project.classpath"
+			bootclasspath="${javac.bootclasspath}"
 			compiler="${javac.compiler}"
 			debug="${javac.debug}"
 			deprecation="${javac.deprecation}"
