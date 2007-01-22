@@ -8,7 +8,7 @@
  * First Release : November 26, 2005 - TinyMCE Version : 2.0RC4
  * Last Updated : November 20, 2006 - TinyMCE Version : 2.0.8
  */
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Geral',
 tab_appearance : 'Apar&ecirc;ncia',
 tab_advanced : 'Avan&ccedil;ado',

@@ -1,6 +1,6 @@
 // Iceland lang variables by Johannes Birgir Jensson
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'A&eth;alstillingar',
 tab_appearance : '&Uacute;tlit',
 tab_advanced : 'Fl&oacute;knari valkostir',

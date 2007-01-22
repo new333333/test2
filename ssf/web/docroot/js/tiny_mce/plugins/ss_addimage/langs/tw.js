@@ -1,6 +1,6 @@
 // UK lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'General',
 tab_appearance : 'Appearance',
 tab_advanced : 'Advanced',

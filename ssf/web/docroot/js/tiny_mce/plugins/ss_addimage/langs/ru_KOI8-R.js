@@ -1,6 +1,6 @@
 // RU lang variables KOI8-R
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Основные',
 tab_appearance : 'Визуализация',
 tab_advanced : 'Расширенные',

@@ -1,6 +1,6 @@
 // NL lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Algemeen',
 tab_appearance : 'Beeld',
 tab_advanced : 'Geavanceerd',

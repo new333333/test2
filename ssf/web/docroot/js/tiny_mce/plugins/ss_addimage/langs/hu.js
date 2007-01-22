@@ -1,6 +1,6 @@
 // HU lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Általános',
 tab_appearance : 'Megjelenés',
 tab_advanced : 'Haladó',

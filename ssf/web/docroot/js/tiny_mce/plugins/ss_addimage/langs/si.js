@@ -1,6 +1,6 @@
 // SI lang variables ISO-8859-2
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Splo&#353;no',
 tab_appearance : 'Izgled',
 tab_advanced : 'Napredno',

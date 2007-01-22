@@ -1,6 +1,6 @@
 // Danish lang variables contributed by Jan Moelgaard, John Dalsgaard and Bo Frederiksen.
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Generelt',
 tab_appearance : 'Udseende',
 tab_advanced : 'Avanceret',
