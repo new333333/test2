@@ -115,7 +115,7 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
-    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="no" >xxx</iframe>
+    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
   </ssf:box>
 </div>
 </c:if>

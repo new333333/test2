@@ -314,12 +314,12 @@
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>formName</name>
-			<required>true</required>
+			<name>name</name>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>

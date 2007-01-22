@@ -39,7 +39,7 @@
 <iframe id="<portlet:namespace/>_ss_googleWidget${ssComponentId}" 
   name="<portlet:namespace/>_ss_googleWidget${ssComponentId}" style="width: 99%;
   height: ${ssDashboard.dashboard.components[ssComponentId].data.height[0]};
-  margin:0px; padding:0px;" frameBorder="no" >xxx</iframe>
+  margin:0px; padding:0px;" frameBorder="0" >xxx</iframe>
 
 <script type="text/javascript">
 function ss_initGoogleWidget<portlet:namespace/>${ssComponentId}() {
