@@ -56,9 +56,6 @@ theme_anchor_desc : 'Insert/edit anchor',
 theme_insert_link_titlefield : 'Title',
 theme_clipboard_msg : 'Copy/Cut/Paste is not available in Mozilla and Firefox.\nDo you want more information about this issue?',
 theme_path : 'Path',
-underline_img : 'underline.gif',
-bold_img : 'bold.gif',
-italic_img: 'italic.gif',
 cut_desc : 'Cut',
 copy_desc : 'Copy',
 paste_desc : 'Paste',
@@ -80,5 +77,6 @@ loaded_plugins : 'Loaded plugins',
 help : 'Help',
 not_set : '-- Not set --',
 close : 'Close',
-toolbar_focus : 'Jump to tool buttons - Alt+Q, Jump to editor - Alt-Z, Jump to element path - Alt-X'
+toolbar_focus : 'Jump to tool buttons - Alt+Q, Jump to editor - Alt-Z, Jump to element path - Alt-X',
+invalid_data : 'Error: Invalid values entered, these are marked in red.'
 });
