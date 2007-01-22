@@ -92,19 +92,22 @@ public class TempFileUtil {
 		return createTempFileWithContent(prefix, null, fileDir, true, content);
 	}
 	
+	public static File getTempFileDir() {
+		return new File(getTempFileDirPath());
+	}
+	
+	public static String getTempFileDirPath() {
+		String filePath = SPropsUtil.getString("temp.dir", "");
+		if(filePath.equals(""))
+			filePath = System.getProperty("java.io.tmpdir");
+		return filePath;
+	}
+	
 	private static String getPrefix(Class caller) {
 		String name = caller.getSimpleName();
 		if(name.length() < 3) // very unlikely scenario
 			name = name + "_" + name;
 		return name;
-	}
-	
-	private static File getTempFileDir() {
-		String filePath = SPropsUtil.getString("temp.dir", "");
-		if(filePath.equals(""))
-			return null;
-		else
-			return new File(filePath);
 	}
 	
 	/**
