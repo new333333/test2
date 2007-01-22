@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -14,6 +15,7 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
@@ -242,6 +244,13 @@ public class WebHelper {
 		SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file);
 		
 		return mf;
+	}
+	
+	public static void readFileHandleContent(String fileHandle, OutputStream out)
+		throws IOException {
+		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
+
+		FileCopyUtils.copy(new BufferedInputStream(new FileInputStream(file)), out);
 	}
 	
 	/**
