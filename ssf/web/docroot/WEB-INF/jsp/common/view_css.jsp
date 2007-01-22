@@ -115,12 +115,12 @@ function ss_loadDojoFiles() {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		//dojo.require("dojo.fx.*");
 		dojo.require("dojo.html.*");
-		dojo.require("dojo.math.*");
-		dojo.require("dojo.math.curves");
+		//dojo.require("dojo.math.*");
+		//dojo.require("dojo.math.curves");
 		dojo.require("dojo.lfx.*");
 		dojo.require("dojo.event.*");
 		dojo.require("dojo.lang.*");
-		dojo.require("dojo.string.*");
+		//dojo.require("dojo.string.*");
 		dojo.require("dojo.dnd.*");
 		//dojo.require("dojo.widget.*");
 		//dojo.require("dojo.widget.TaskBar");
