@@ -45,7 +45,7 @@ public class SendMailController extends SAbstractController {
 				emailAddress.add(to[i]);				
 			}
 			boolean self = PortletRequestUtils.getBooleanParameter(request, "self", false);
-			String body = PortletRequestUtils.getStringParameter(request, "body", "");
+			String body = PortletRequestUtils.getStringParameter(request, "mailBody", "");
 			Set memberIds = new HashSet();
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
