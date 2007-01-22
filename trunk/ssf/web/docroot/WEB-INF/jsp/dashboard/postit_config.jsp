@@ -16,15 +16,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<script type="text/javascript">dojo.require("dojo.widget.Editor");</script>
 <span class="ss_bold"><ssf:nlt tag="dashboard.enterNoteText"/></span>
 <br/>
-<div class="ss_form_color" style="border:1px solid #CECECE; height:150px;">
-<textarea id="data_note" name="data_note" dojoType="Editor"
-  items="textGroup;"
-  minHeight="150px"
+<div class="ss_form_color" style="border:1px solid #CECECE;">
+<ssf:htmleditor id="data_note" name="data_note" 
 ><c:out
-value="${ssDashboard.dashboard.components[ssComponentId].data.note[0]}"/></textarea>
+value="${ssDashboard.dashboard.components[ssComponentId].data.note[0]}"/></ssf:htmleditor>
 </div>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="dashboard.postitNoteColor"/></span>
