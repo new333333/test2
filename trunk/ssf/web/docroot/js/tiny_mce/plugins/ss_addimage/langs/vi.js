@@ -1,11 +1,11 @@
-// Vietnamese lang variables - Đỗ Xuân Tiến - tiendx2002@yahoo.com Việt hóa
+// Vietnamese lang variables - �?ỗ Xuân Tiến - tiendx2002@yahoo.com Việt hóa
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Chung',
 tab_appearance : 'Xuất hiện',
 tab_advanced : 'Nâng cao',
 general : 'Chung',
-title : 'Tiêu đề',
+title : 'Tiêu đ�?',
 preview : 'Xem trước',
 constrain_proportions : 'Ràng buộc kích thước',
 langdir : 'Hướng ngôn ngữ',
@@ -23,5 +23,5 @@ mouseover : 'khi di chuột vào',
 mouseout : 'khi di chuột ra ngoài',
 misc : 'Linh tinh',
 example_img : 'Ảnh&nbsp;xem&nbsp;trước',
-missing_alt : 'Bạn có chắc bạn muốn tiếp tục mà không cần nhập vào mô tả ảnh? Không có mô tả sẽ hạn chế khả năng truy cập của những người sử dụng khuyết tật, hoặc những người sử dụng trình duyệt văn bản, hoặc xem trang này khi đã tắt chế độ hiển thị ảnh.'
+missing_alt : 'Bạn có chắc bạn muốn tiếp tục mà không cần nhập vào mô tả ảnh? Không có mô tả sẽ hạn chế khả năng truy cập của những ngư�?i sử dụng khuyết tật, hoặc những ngư�?i sử dụng trình duyệt văn bản, hoặc xem trang này khi đã tắt chế độ hiển thị ảnh.'
 });

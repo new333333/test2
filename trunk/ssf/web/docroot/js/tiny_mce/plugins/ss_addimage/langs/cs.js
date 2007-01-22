@@ -5,10 +5,10 @@
  * $Id: cs.js,v 1.4 2006/01/11 14:25:47 spocke Exp $ 
  */  
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Obecné',
 tab_appearance : 'Vzhled',
-tab_advanced : 'Pokročilé',
+tab_advanced : 'Pokro�?ilé',
 general : 'Obecné',
 title : 'Titulek',
 preview : 'Náhled',
@@ -28,6 +28,6 @@ mouseover : 'pro přejetí myší',
 mouseout : 'pro odjetí myší', 
 misc : 'Různé',
 example_img : 'Vzhled&nbsp;náhled&nbsp;obrázek',
-missing_alt : 'Jste si jistý(á), že chcete pokračovat bez vyplnění popisu obrázku? Bez popisu může být obrázek nepřístupný handicapovaným uživatelům, nebo těm kteří používají textový prohlížeč, nebo prohlíží stránky s vypnutým obrázky.'
+missing_alt : 'Jste si jistý(á), že chcete pokra�?ovat bez vyplnění popisu obrázku? Bez popisu může být obrázek nepřístupný handicapovaným uživatelům, nebo těm kteří používají textový prohlíže�?, nebo prohlíží stránky s vypnutým obrázky.'
 });
 

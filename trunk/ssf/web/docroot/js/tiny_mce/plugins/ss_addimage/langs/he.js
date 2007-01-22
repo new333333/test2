@@ -1,6 +1,6 @@
 // HE lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'כללי',
 tab_appearance : 'מראה',
 tab_advanced : 'מתקדם',

@@ -1,6 +1,6 @@
 // 日本語 euc
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : '一般',
 tab_appearance : '表示',
 tab_advanced : '詳細',

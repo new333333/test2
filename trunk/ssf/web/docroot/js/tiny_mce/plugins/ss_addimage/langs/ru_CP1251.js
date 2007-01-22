@@ -1,6 +1,6 @@
 // RU lang variables cp1251
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Основные',
 tab_appearance : 'Визуализация',
 tab_advanced : 'Расширенные',

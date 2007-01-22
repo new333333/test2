@@ -1,7 +1,7 @@
 // FR lang variables
 // Modified by Motte, last updated 2006-03-23
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'G&eacute;n&eacute;rale',
 tab_appearance : 'Apparence',
 tab_advanced : 'Avanc&eacute;',

@@ -1,6 +1,6 @@
 // Initial translation by Dimitris Giannitsaros / MediSign SA
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Γενικά',
 tab_appearance : 'Εμφάνιση',
 tab_advanced : 'Για προχωρημένους',

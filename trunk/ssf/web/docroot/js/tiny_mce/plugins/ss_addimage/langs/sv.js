@@ -1,6 +1,6 @@
 // SE lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Generella inställningar',
 tab_appearance : 'Visuella inställningar',
 tab_advanced : 'Avancerade inställningar',

@@ -1,7 +1,7 @@
 // PL lang variables
 // fixed by lemiel 14.11.2005
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Główne ustawienia',
 tab_appearance : 'Widok',
 tab_advanced : 'Zaawansowane',

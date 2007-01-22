@@ -1,6 +1,6 @@
 // FI lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Yleiset',
 tab_appearance : 'Ulkoasu',
 tab_advanced : 'Lis&auml;asetukset',

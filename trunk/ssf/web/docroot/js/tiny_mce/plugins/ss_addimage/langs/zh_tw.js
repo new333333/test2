@@ -2,7 +2,7 @@
 // 繁體中文 BIG-5 ；數位應用坊製作； twapweb_AT_gmail_DOT_com
 
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : '一般',
 tab_appearance : '外觀',
 tab_advanced : '進階',

@@ -9,7 +9,7 @@
  * TinyMCE Version : 2.0.6.1
  */
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'General',
 tab_appearance : 'Aspecto',
 tab_advanced : 'Avanzado',

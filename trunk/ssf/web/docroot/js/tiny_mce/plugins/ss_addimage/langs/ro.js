@@ -1,6 +1,6 @@
 // RO lang variables
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'General',
 tab_appearance : 'Aspect',
 tab_advanced : 'Avansat',

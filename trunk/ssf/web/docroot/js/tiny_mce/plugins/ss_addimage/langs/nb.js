@@ -1,6 +1,6 @@
 // nb = Norwegian (bokm&aring;l) lang variables by Knut B. Jacobsen
 
-tinyMCE.addToLang('advimage',{
+tinyMCE.addToLang('ss_addimage',{
 tab_general : 'Generelle innstillinger',
 tab_appearance : 'Visuelle innstillinger',
 tab_advanced : 'Avanserte innstillinger',
