@@ -29,29 +29,29 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     }
 
 
-	public ScheduleInfo getScheduleInfo(String zoneName, Binder binder) {
-		return getScheduleInfo(new MailJobDescription(zoneName, binder));
+	public ScheduleInfo getScheduleInfo(Binder binder) {
+		return getScheduleInfo(new MailJobDescription(binder));
 	}
-	public void setScheduleInfo(ScheduleInfo info, String zoneName,  Binder binder) {
+	public void setScheduleInfo(ScheduleInfo info, Binder binder) {
 		info.getDetails().put("binder", binder.getId());
-		setScheduleInfo(new MailJobDescription(zoneName, binder), info);
+		setScheduleInfo(new MailJobDescription(binder), info);
 	}
 
-	public void enable(boolean enable, String zoneName, Binder binder) {
-		enable(enable, new MailJobDescription(zoneName, binder));
+	public void enable(boolean enable, Binder binder) {
+		enable(enable, new MailJobDescription(binder));
  	}
 	public class MailJobDescription implements JobDescription {
 		private Binder binder;
-		private String zoneName;
-		public MailJobDescription(String zoneName, Binder binder) {
+		private Long zoneId;
+		public MailJobDescription(Binder binder) {
 			this.binder = binder;
-			this.zoneName = zoneName;
+			this.zoneId = binder.getZoneId();
 		}
     	public  String getDescription() {
     		return SSStatefulJob.trimDescription(binder.toString());
     	}
-    	public String getZoneName() {
-    		return zoneName;
+    	public Long getZoneId() {
+    		return zoneId;
     	}
     	public String getName() {
     		return binder.getId().toString();
@@ -66,7 +66,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     		return getDefaultCleanupListener();
     	}
     	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		ScheduleInfo info = new ScheduleInfo(zoneId);
     		info.getDetails().put("binder", binder.getId());
     		info.getDetails().put("lastNotification", new Date());
     		return info;

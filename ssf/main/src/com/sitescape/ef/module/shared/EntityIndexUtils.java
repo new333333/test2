@@ -415,9 +415,9 @@ public class EntityIndexUtils {
     	doc.add(uniqueField);     	
     }
 
-    public static void addAncestry(Document doc,  Binder binder) {
+    public static void addAncestry(Document doc, DefinableEntity entry) {
     	
-    	Binder parentBinder = binder;
+    	Binder parentBinder = entry.getParentBinder();
     	
     	while (parentBinder != null) {	
     		Field ancestry = new Field(ENTRY_ANCESTRY, parentBinder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);

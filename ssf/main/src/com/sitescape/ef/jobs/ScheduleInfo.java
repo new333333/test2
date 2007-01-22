@@ -8,10 +8,10 @@ public class ScheduleInfo {
 	private Schedule schedule;
 	protected Map details;
 	private boolean enabled;
-	private String zoneName;
+	private Long zoneId;
 	
-	public ScheduleInfo(String zoneName) {
-		this.zoneName = zoneName;
+	public ScheduleInfo(Long zoneId) {
+		this.zoneId = zoneId;
 	}
 	public ScheduleInfo(Map details) {
 		this.details = details;
@@ -33,23 +33,23 @@ public class ScheduleInfo {
 	public void setSchedule(Schedule schedule) {
 		this.schedule = schedule;
 	}
-	public void setZone(String zoneName) {
-		this.zoneName = zoneName;
+	public void setZoneId(Long zoneId) {
+		this.zoneId = zoneId;
 	}
-	public String getZoneName() {
-		if (zoneName == null) {
+	public Long getZoneId() {
+		if (zoneId == null) {
 			getDetails();
-			zoneName = (String)details.get("zoneName");
+			zoneId = (Long)details.get("zoneId");
 		}
-		return zoneName;
+		return zoneId;
 	}
 	public Map getDetails() {
 		if (details == null) details = new JobDataMap();
 		if (schedule != null) {
 			details.put("schedule", schedule.getQuartzSchedule());
 		}
-		if (zoneName != null) {
-			details.put("zoneName", zoneName);
+		if (zoneId != null) {
+			details.put("zoneId", zoneId);
 		}
 		return details;
 	}

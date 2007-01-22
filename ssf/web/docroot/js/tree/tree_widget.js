@@ -27,6 +27,11 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
 		ajaxRequest.setData("parentId", parentId)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
+	    eval("var seObj = ss_treeSelected_"+treeName); 	    
+	    //add single select id
+	    if (seObj != null) {
+	    	ajaxRequest.addKeyValue("select", seObj);
+	    }
 		//ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
@@ -137,13 +142,22 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type) {
 	url += "&parentId=" + parentId;
 	url += "&bottom=" + bottom;
 	url += "&type=" + type;
+	eval("var seObj = ss_treeSelected_"+treeName); 	    
+	//add single select id
+	if (seObj != null) {
+	   	url += "&select=" + seObj;
+	}
+	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {
 		iframeObj.src = url;
 	}
 }
-
+function ss_clearSingleSelect(treeName) {
+	eval("ss_treeSelected_" + treeName + "=null;");
+	return true;
+}
 function ss_createTreeCheckbox(treeName, prefix, id) {
 	alert(treeName)
 	var divObj = document.getElementById("ss_hiddenTreeDiv"+treeName);

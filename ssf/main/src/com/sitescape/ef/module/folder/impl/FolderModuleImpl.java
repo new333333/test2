@@ -29,9 +29,7 @@ import com.sitescape.ef.domain.AverageRating;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -262,9 +260,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     			}
     			else if(v instanceof Attachment) {
     				atts.add((Attachment) v);
-    			}
-    			else {
-    				throw new InternalException();
     			}
     		}
     	}

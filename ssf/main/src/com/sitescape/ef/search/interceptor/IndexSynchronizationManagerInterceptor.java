@@ -1,8 +1,6 @@
 package com.sitescape.ef.search.interceptor;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;

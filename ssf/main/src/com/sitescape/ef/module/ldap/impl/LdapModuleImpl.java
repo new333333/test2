@@ -40,6 +40,7 @@ import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.ProfileBinder;
+import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -133,7 +134,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Get the ldap configuration.  This object is stored in the scheduling database.  
 	 */
 	public LdapConfig getLdapConfig() {		
-		return new LdapConfig(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName()));
+		return new LdapConfig(getSyncObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId()));
 	}
 	/**
 	 * Update ldap configuration with scheduler. Only properties specified in the props file will
@@ -220,43 +221,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		zones.put(zoneName, zone);
 		return zone;
 	}
-    /**
-	 * Authenticate user against ldap
-	 * @param zoneName
-	 * @param loginName
-	 * @param password
-	 * @return <code>true</code> on success; <code>false\</false>authentication failed
-	 * @throws NoUserByTheNameException
-	 * @throws NamingException
-	 */
-	public boolean authenticate(String zoneName, String loginName, String password) 
-		throws NamingException, NoUserByTheNameException {
-
-		LdapContext ctx = null;
-		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zoneName));
-		Map mods = new HashMap();
-		String dn;
-		//make sure user exists
-		dn = getUpdates(info, loginName, mods);
-			
-		// Make sure the fetched user dn and password combination can bind
-		// against the LDAP server
-		try {
-			ctx = getContext(info, dn, password);
-			ctx.close();
-		} catch (Exception e) {
-			return false;
-		}
-		if (!mods.isEmpty()) {
-			try {
-				Binder zone = getCoreDao().findTopWorkspace(zoneName);
-				updateUser(zone, loginName, mods);
-			} catch (NoUserByTheNameException nu) {
-				//do nothing - liferay will catch it
-			}
-		}
-		return true;
-	}
 		
 	/**
 	 * Update a ssf user with an ldap person.  
@@ -265,13 +229,43 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * @throws NoUserByTheNameException
 	 * @throws NamingException
 	 */
-	public void syncUser(String zoneName, String loginName) 
+	public void syncUser(Long userId) 
 		throws NoUserByTheNameException, NamingException {
-		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zoneName));
-		Binder zone = getCoreDao().findTopWorkspace(zoneName);
+		Workspace zone = RequestContextHolder.getRequestContext().getZone();
+
+		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zone.getId()));
+		User user = getProfileDao().loadUser(userId, info.getZoneId());
 		Map mods = new HashMap();
-		getUpdates(info, loginName, mods);
-		updateUser(zone, loginName, mods);
+		LdapContext ctx = getContext(info);
+		String dn=null;
+		Map zoneMap = getZoneMap(RequestContextHolder.getRequestContext().getZoneName());
+		Map userAttributes = info.getUserMappings();
+		if (userAttributes == null) userAttributes = (Map)zoneMap.get(USER_ATTRIBUTES);
+		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
+		String userIdAttribute = info.getUserIdMapping();
+		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get(USER_ID_ATTRIBUTE);
+
+		try {
+			SearchControls sch = new SearchControls(
+					SearchControls.SUBTREE_SCOPE, 1, 0, userAttributeNames, false, false);
+
+			NamingEnumeration ctxSearch = ctx.search("", "(&(" + userIdAttribute + "=" + user.getName() + ")" +
+					(String)zoneMap.get(USER_FILTER) + ")", sch);
+			if (!ctxSearch.hasMore()) {
+				throw new NoUserByTheNameException(user.getName());
+			}
+			Binding bd = (Binding)ctxSearch.next();
+			getUpdates(userAttributeNames, userAttributes,  ctx.getAttributes(bd.getName()), mods);
+			if (bd.isRelative()) {
+				dn = bd.getName() + "," + ctx.getNameInNamespace();
+			} else {
+				dn = bd.getName();
+			}
+			mods.put(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME, dn);
+		} finally {
+		ctx.close();
+		}
+		updateUser(zone, user.getName(), mods);
 
 	}
 	/**
@@ -279,8 +273,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 	 * Need to flush cache after use
 	 */
 	public void syncAll() throws NamingException {
-		Binder top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
-		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(top.getName()));
+		Workspace zone = RequestContextHolder.getRequestContext().getZone();
+		LdapConfig info = new LdapConfig(getSyncObject().getScheduleInfo(zone.getId()));
    		LdapContext ctx=null;
    		String dn;
    		Object[] gRow,uRow;
@@ -288,8 +282,8 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
    		try {
    			
 			ctx = getContext(info);
-			Map dnUsers  = syncUsers(top, ctx, info); 
-			Map [] gResults = syncGroups(top, ctx, info);
+			Map dnUsers  = syncUsers(zone, ctx, info); 
+			Map [] gResults = syncGroups(zone, ctx, info);
 			if (info.isMembershipSync()) {
 				Map dnGroups = (Map)gResults[0];
 				Map ldapGroups = (Map)gResults[1];
@@ -305,7 +299,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 					Long groupId = (Long)gRow[1];
 					List membership = new ArrayList();
 					Attributes lAttrs = (Attributes)entry.getValue();
-					List memberAttributes = (List)getZoneMap(top.getName()).get(MEMBER_ATTRIBUTES);
+					List memberAttributes = (List)getZoneMap(zone.getName()).get(MEMBER_ATTRIBUTES);
 					for (int i=0; i<memberAttributes.size(); i++) {
 						Attribute att = lAttrs.get((String)memberAttributes.get(i));
 						if (att == null) continue;
@@ -347,7 +341,6 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		
 	}
 	
-
 	protected Map syncUsers(Binder zone, LdapContext ctx, LdapConfig info) 
 		throws NamingException {
 		String ssName;
@@ -595,41 +588,37 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 			}
 		}
 	}
-	protected LdapContext getContext(LdapConfig config) throws NamingException { 
-		return getContext(config, config.getUserPrincipal(), config.getUserCredential());
 		
-	}
 	/**
 	 * Initialize context to an ldap server using 
 	 * 
 	 * @param info
-	 * @param user if null use security attributes from info
-	 * @param pwd
-	 * @param domain
 	 * @return LdapContext
 	 * @throws NamingException
 	 */
-	protected LdapContext getContext(LdapConfig config, String user, String pwd) throws NamingException { 
+	protected LdapContext getContext(LdapConfig config) throws NamingException { 
 		// Load user from ldap
+		String user = config.getUserPrincipal();
+		String pwd = config.getUserCredential();
 		try {
 			Hashtable env = new Hashtable();
-
-			env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(config.getZoneName(), Context.INITIAL_CONTEXT_FACTORY));
+			Workspace zone = (Workspace)getCoreDao().load(Workspace.class, config.getZoneId());
+			env.put(Context.INITIAL_CONTEXT_FACTORY, getLdapProperty(zone.getName(), Context.INITIAL_CONTEXT_FACTORY));
 			if (Validator.isNull(user) || Validator.isNull(pwd)) {
-				user = getLdapProperty(config.getZoneName(), "java.naming.security.principal");
-				pwd = getLdapProperty(config.getZoneName(), "java.naming.security.credentials");
+				user = getLdapProperty(zone.getName(), "java.naming.security.principal");
+				pwd = getLdapProperty(zone.getName(), "java.naming.security.credentials");
 			}
 			if (!Validator.isNull(user) && !Validator.isNull(pwd)) {
 				env.put(Context.SECURITY_PRINCIPAL, user);
 				env.put(Context.SECURITY_CREDENTIALS, pwd);		
-				env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(config.getZoneName(), Context.SECURITY_AUTHENTICATION));
+				env.put(Context.SECURITY_AUTHENTICATION, getLdapProperty(zone.getName(), Context.SECURITY_AUTHENTICATION));
 			} 
 			String url = config.getUserUrl();
 			if (Validator.isNull(url)) {
-				url = getLdapProperty(config.getZoneName(), Context.PROVIDER_URL);
+				url = getLdapProperty(zone.getName(), Context.PROVIDER_URL);
 			}
 			env.put(Context.PROVIDER_URL, url);
-			String socketFactory = getLdapProperty(config.getZoneName(), "java.naming.ldap.factory.socket"); 
+			String socketFactory = getLdapProperty(zone.getName(), "java.naming.ldap.factory.socket"); 
 			if (!Validator.isNull(socketFactory))
 				env.put("java.naming.ldap.factory.socket", socketFactory);
 		
@@ -640,49 +629,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		}
 	}
 
-	/**
-	 * Connect to an ldap server and retrieve attributes corresponding to
-	 * the specified loginName
-	 * 
-	 * @param info
-	 * @param loginName
-	 * @param mods
-	 * @return ldap distinquished name of user; mods updated
-	 * @throws NamingException
-	 * @throws NoUserByTheNameException
-	 */
-	protected String getUpdates(LdapConfig info, String loginName, Map mods) throws NamingException, NoUserByTheNameException {
-		LdapContext ctx = getContext(info);
-		String dn=null;
-		Map zoneMap = getZoneMap(info.getZoneName());
-		Map userAttributes = info.getUserMappings();
-		if (userAttributes == null) userAttributes = (Map)zoneMap.get(USER_ATTRIBUTES);
-		String [] userAttributeNames = 	(String[])(userAttributes.keySet().toArray(sample));
-		String userIdAttribute = info.getUserIdMapping();
-		if (Validator.isNull(userIdAttribute)) userIdAttribute = (String)zoneMap.get(USER_ID_ATTRIBUTE);
 
-		try {
-			SearchControls sch = new SearchControls(
-					SearchControls.SUBTREE_SCOPE, 1, 0, userAttributeNames, false, false);
-
-			NamingEnumeration ctxSearch = ctx.search("", "(&(" + userIdAttribute + "=" + loginName + ")" +
-					(String)zoneMap.get(USER_FILTER) + ")", sch);
-			if (!ctxSearch.hasMore()) {
-				throw new NoUserByTheNameException(loginName);
-			}
-			Binding bd = (Binding)ctxSearch.next();
-			getUpdates(userAttributeNames, userAttributes,  ctx.getAttributes(bd.getName()), mods);
-			if (bd.isRelative()) {
-				dn = bd.getName() + "," + ctx.getNameInNamespace();
-			} else {
-				dn = bd.getName();
-			}
-
-		} finally {
-			ctx.close();
-		}
-		return dn;
-	}
 	protected void getUpdates(String []ldapAttrNames, Map mapping, Attributes attrs, Map mods)  throws NamingException {
 			
 		for (int i=0; i<ldapAttrNames.length; i++) {

@@ -7,17 +7,18 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import org.apache.lucene.index.Term;
-import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.ef.NotSupportedException;
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.ChangeLog;
@@ -53,6 +54,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SimpleProfiler;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.util.Validator;
 /**
  *
@@ -434,6 +436,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * There shouldn't be any sub-folders
      */
     public void deleteBinder(Binder binder) {
+    	if (binder.isReserved()) 
+    		throw new NotSupportedException(
+    				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.reset("deleteBinder_preDelete").begin();
@@ -503,6 +508,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
+    	if (source.isReserved() || source.getParentBinder() == null) 
+    		throw new NotSupportedException(
+    				NLT.get("errorcode.notsupported.moveBinder", new String[]{source.getPathName()}));
+ 
     	//first remove name
     	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
     	source.getParentBinder().removeBinder(source);
@@ -518,6 +527,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	ChangeLog changes = new ChangeLog(source, ChangeLog.MOVEBINDER);
     	changes.getEntityRoot();
     	getCoreDao().save(changes);
+    	indexTree(source, null);
 
     }
 
@@ -527,7 +537,25 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		indexBinder(binder, null, null, false);    	
     }
     //***********************************************************************************************************
- 
+    public Collection indexTree(Binder binder, Collection exclusions) {
+       	TreeSet indexedIds = new TreeSet();
+       	if (exclusions == null) exclusions = new TreeSet();
+       	if (!exclusions.contains(binder.getId())) {
+        	//index self.
+        	indexBinder(binder);
+        	indexedIds.add(binder.getId());
+        }
+       	List binders = binder.getBinders();
+   		for (int i=0; i<binders.size(); ++i) {
+   	    	Binder b = (Binder)binders.get(i);
+   	    	//index children
+   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+   	    	indexedIds.addAll(processor.indexTree(b, exclusions));
+   	   	 }
+   		return indexedIds;
+        	
+    }
+    //***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {
     	Principal p;
     	for (int i=0; i<users.size(); i++) {
@@ -591,7 +619,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
         // Create an index document from the entry object.
 		org.apache.lucene.document.Document indexDoc;
-		indexDoc = buildIndexDocumentFromBinder(binder);
+		List tags =  getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
+		indexDoc = buildIndexDocumentFromBinder(binder, tags);
 
         // Register the index document for indexing.
         IndexSynchronizationManager.addDocument(indexDoc);        
@@ -603,7 +632,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-        		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui);
+        		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui, tags);
            		// Register the index document for indexing.
            		IndexSynchronizationManager.addDocument(indexDoc);
            	} catch (Exception ex) {
@@ -612,7 +641,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 	}
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder, List tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         
     	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
@@ -624,14 +653,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add the events
         EntityIndexUtils.addEvents(indexDoc, binder);
         
-        // Add the tags for this entry
-        EntityIndexUtils.addTags(indexDoc, binder, getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier()));
-       
+        // Add the tags for this binder
+        if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
+        EntityIndexUtils.addTags(indexDoc, binder, tags);
+        
         return indexDoc;
     }   
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinderFile
-		(Binder binder, FileAttachment fa, FileUploadItem fui) {
-   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui);
+		(Binder binder, FileAttachment fa, FileUploadItem fui, List tags) {
+   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, binder, fa, fui, tags);
    	    fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
        	return indexDoc;
      }
@@ -645,7 +675,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected org.apache.lucene.document.Document buildIndexDocumentFromFile
-    	(Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui) {
+    	(Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
     	// Prepare for pipeline execution.
     	String text = null;
     	
@@ -703,12 +733,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
         EntityIndexUtils.addFileExtension(indexDoc, fa.getFileItem().getName());
         EntityIndexUtils.addFileUnique(indexDoc, fa.isCurrentlyLocked());
+        
+        // Add the tags for this entry
+        if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entity.getEntityIdentifier());
+        EntityIndexUtils.addTags(indexDoc, entity, tags);
+ 
              
         return indexDoc;
     }
+    
+    //add common fields from binder for binder and its attachments
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
-    	//if pathname or parentBinder are index, need to reindex after moveBinder operation
     	EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder));
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
@@ -760,7 +796,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add command definition
         EntityIndexUtils.addCommandDefinition(indexDoc, entity); 
        
-       // Add data fields driven by the entry's definition object. 
+        // Add ancestry 
+        EntityIndexUtils.addAncestry(indexDoc, entity);
+ 
+        // Add data fields driven by the entry's definition object. 
         getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);
         
     }

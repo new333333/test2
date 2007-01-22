@@ -1,9 +1,8 @@
 package com.sitescape.ef.domain;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.InternalException;
 
 /**

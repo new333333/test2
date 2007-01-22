@@ -587,7 +587,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						String flag = MailManager.REPLY_SUBJECT+folder.getId().toString()+":";
 						//see if for this folder
 						if (title.startsWith(flag)) {
-							if (option == PostingDef.RETURN_TO_SENDER) throw new NotSupportedException("Replies not allowed");
+							if (option == PostingDef.RETURN_TO_SENDER) 
+						   		throw new NotSupportedException(NLT.get("errorcode.notsupported.postingReplies"));
+							 							
 							String docId = title.substring(flag.length());
 							Long id=null;
 							int index = docId.indexOf(" ");
@@ -828,6 +830,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		protected boolean compareEntries(AclChecker c) {
 			if (c.entries.size() != entries.size()) return false;
 			// address compare is okay, working from same input
+			// lists are processed in the same order, so results should be in the same order
 			for (int i=0; i<entries.size(); ++i) {
 				if (entries.get(i) != c.entries.get(i)) return false;
 			}

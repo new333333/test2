@@ -61,7 +61,7 @@ public class DefaultFillEmailSubscription extends SSStatefulJob implements FillE
 			jobDetail.setDescription("Fill subscription");
 			JobDataMap data = new JobDataMap();
 			data.put("binder", folderId);
-			data.put("zoneName",RequestContextHolder.getRequestContext().getZoneName());
+			data.put("zoneId",RequestContextHolder.getRequestContext().getZoneId());
 			data.put("entry", entryId);
 			data.put("when", changeDate);
 			

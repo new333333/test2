@@ -2,7 +2,8 @@ package com.sitescape.ef;
 import com.sitescape.ef.exception.UncheckedCodedException;
 
 public class NotSupportedException extends UncheckedCodedException {
-    private static final String NotSupportedException_ErrorCode = "errorcode.not.supported";
+ 	private static final long serialVersionUID = 1L;
+	private static final String NotSupportedException_ErrorCode = "errorcode.not.supported";
 
     public NotSupportedException() {
         super(NotSupportedException_ErrorCode);

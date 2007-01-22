@@ -33,29 +33,29 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
 			context.setResult("Failed");
 		}
 	}
-	public ScheduleInfo getScheduleInfo(String zoneName) {
-		return getScheduleInfo(new LdapJobDescription(zoneName));
+	public ScheduleInfo getScheduleInfo(Long zoneId) {
+		return getScheduleInfo(new LdapJobDescription(zoneId));
 	}
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new LdapJobDescription(info.getZoneName()), info);
+		setScheduleInfo(new LdapJobDescription(info.getZoneId()), info);
 	}
 
-	public void enable(boolean enable, String zoneName) {
-		enable(enable, new LdapJobDescription(zoneName));
+	public void enable(boolean enable, Long zoneId) {
+		enable(enable, new LdapJobDescription(zoneId));
  	}
 	public class LdapJobDescription implements JobDescription {
-		String zoneName;
-		public LdapJobDescription(String zoneName) {
-			this.zoneName = zoneName;
+		Long zoneId;
+		public LdapJobDescription(Long zoneId) {
+			this.zoneId = zoneId;
 		}
 	    public  String getDescription() {
-	    	return SSStatefulJob.trimDescription(zoneName);
+	    	return zoneId.toString();
 	    }
-	    public String getZoneName() {
-	    	return zoneName;
+	    public Long getZoneId() {
+	    	return zoneId;
 	    }
 	    public String getName() {
-	    	return zoneName;
+	    	return zoneId.toString();
 	    }
 	    public String getGroup() {
 	    	return LdapSynchronization.LDAP_GROUP;
@@ -67,7 +67,7 @@ public class DefaultLdapSynchronization extends SSStatefulJob implements LdapSyn
     		return getDefaultCleanupListener();
     	}
     	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		ScheduleInfo info = new ScheduleInfo(zoneId);
     		//seconds minutes hours dayOfMonth months days year"
     		info.setSchedule(new Schedule("0 15 2 ? * mon-fri *"));
     		return info;

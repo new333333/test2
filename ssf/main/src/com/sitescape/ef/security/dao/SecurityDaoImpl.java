@@ -15,7 +15,6 @@ import org.hibernate.criterion.Expression;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
@@ -46,7 +45,7 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
     public Function loadFunction(Long zoneId, Long id)  throws NoObjectByTheIdException {
         Function f = (Function)getHibernateTemplate().get(Function.class, id);
         if (zoneId.equals(f.getZoneId())) return f;
-        throw new NoObjectByTheIdException(ErrorCodes.NoRoleByTheIdException, id);
+        throw new NoObjectByTheIdException("errorcode.no.role.by.the.id", id);
     }
 
     public List findFunctions(final Long zoneId) {

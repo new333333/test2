@@ -1,6 +1,5 @@
 
 package com.sitescape.ef.jobs;
-import java.text.ParseException;
 /**
  * @author Janet McCann
  *
@@ -13,8 +12,8 @@ public interface EmailPosting  {
      */
     public static final String PROCESSOR_KEY = "processorKey_emailPostingJob";
 	public static final String POSTING_GROUP="email-posting";
-	public void enable(boolean enable, String zoneName);
-	public ScheduleInfo getScheduleInfo(String zoneName);
+	public void enable(boolean enable, Long zoneId);
+	public ScheduleInfo getScheduleInfo(Long zoneId);
 	public void setScheduleInfo(ScheduleInfo schedulerInfo);
 	
 }

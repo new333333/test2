@@ -13,7 +13,6 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -47,6 +46,7 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -65,6 +65,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		fEntry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 
     	}
     	super.addEntry_fillIn(folder, entry, inputData, entryData);
+    	fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
  
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
@@ -171,6 +172,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		entry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 
     	}
     	super.addEntry_fillIn(entry.getParentBinder(), entry, inputData, entryData);
+    	entry.updateLastActivity(entry.getModification().getDate());
     }
     
     //inside write transaction
@@ -215,6 +217,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
+    	FolderEntry fEntry = (FolderEntry)entry;
+		fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
        	if (entry instanceof AclControlled)
@@ -228,12 +232,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
       	//pass replies along as context so we can delete them all at once
      	//load in reverse hkey order so foreign keys constraints are handled correctly
-      	List<FolderEntry> replies= getFolderDao().loadEntryDescendants((FolderEntry)entry);
+       	FolderEntry fEntry = (FolderEntry)entry;
+     	List<FolderEntry> replies= getFolderDao().loadEntryDescendants(fEntry);
       	//repeat pre-delete for each reply
       	for (int i=0; i<replies.size(); ++i) {
-    		super.deleteEntry_preDelete(parentBinder, replies.get(i), null);
+      		FolderEntry reply = (FolderEntry)replies.get(i);
+    		super.deleteEntry_preDelete(parentBinder, reply, null);
+    		reply.updateLastActivity(reply.getModification().getDate());
     	}
-     	
+      	fEntry.updateLastActivity(fEntry.getModification().getDate());
       	return replies;
     }
         
@@ -275,14 +282,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
-    	checkEntryMoveType(binder.getDefinitionType(), destination.getDefinitionType());
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
-    		throw new NotSupportedException("Must move folderEntry to another folder");
+    		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveEntryDestination", new String[] {destination.getPathName()}));
     	Folder to = (Folder)destination;
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (fEntry.getTopEntry() != null)
-    		throw new NotSupportedException("Cannot move a reply");
+    		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveReply"));
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
@@ -325,13 +331,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	reindexEntries(entries);
     }
     
-    protected void checkEntryMoveType(Integer source, Integer destination) {
-       	if (source == null) source=Integer.valueOf(Definition.FOLDER_VIEW);
-    	if (destination == null) destination=Integer.valueOf(Definition.FOLDER_VIEW);
-    	
-   		if (source.equals(destination)) return;
-   		throw new NotSupportedException("Cannot move folderEntry to another folder type");    	    	
-    }
     //***********************************************************************************************************
        
     protected SFQuery indexEntries_getQuery(Binder binder) {
@@ -416,11 +415,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		moveFolderToFolder((Folder)source, (Folder)destination);
     	else if (destination instanceof Workspace) 
     		moveFolderToWorkspace((Folder)source, (Workspace)destination);
-    	else throw new InternalException("Cannot move folder");
+    	else throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+
     	 
       }
     public void moveFolderToFolder(Folder source, Folder destination) {
-    	checkFolderMoveType(source.getDefinitionType(), destination.getDefinitionType());
     	HKey oldKey = source.getFolderHKey();
     	//first remove name
     	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
@@ -445,9 +444,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      		moveLog(child, source.getModification());
     		fixupMovedChild(child, oldKey, newKey);
     	}
+    	indexTree(source, null);
     	
-    }
-    protected void checkFolderMoveType(Integer source, Integer destination) {
     }
     protected void fixupMovedChild(Folder child, HKey oldParent, HKey newParent) {
     	HKey oldKey = child.getFolderHKey();
@@ -499,6 +497,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		moveLog(child, source.getModification());
     		fixupMovedChild(child, oldKey, newKey);
     	}
+    	indexTree(source, null);
    	
     }
     //***********************************************************************************************************
@@ -563,16 +562,18 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      }     
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
-    	               
+    	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number
-        IndexUtils.addDocNumber(indexDoc, (FolderEntry)entry);
+        IndexUtils.addDocNumber(indexDoc, fEntry);
 
         // Add sortable Doc number
-        IndexUtils.addSortNumber(indexDoc, (FolderEntry)entry);
+        IndexUtils.addSortNumber(indexDoc, fEntry);
 
         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, (Folder)binder);
-               
+        //add last activity for top entries
+        if (fEntry.isTopEntry()) IndexUtils.addLastActivityDate(indexDoc, fEntry);
+
         return indexDoc;
     }
        

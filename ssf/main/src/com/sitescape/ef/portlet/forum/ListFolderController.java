@@ -57,7 +57,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 
 /**
  * @author Peter Hurley
@@ -590,9 +590,9 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.FOLDER, folder);
 		Folder topFolder = folder.getTopFolder();
 		if (topFolder == null) {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new TreeBuilder(null, false, this)));
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new WsDomTreeBuilder(null, false, this)));
 		} else {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new TreeBuilder(topFolder, false, this)));			
+			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this)));			
 		}
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);

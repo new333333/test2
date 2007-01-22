@@ -43,7 +43,7 @@ import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 
 public class DashboardHelper implements AllBusinessServicesInjected {
@@ -639,14 +639,14 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
 				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     			} else {
-    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(binder, true, this),1);
+    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this),1);
     				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
     			}
     		} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     			Folder topFolder = ((Folder)binder).getTopFolder();
     			if (topFolder == null) topFolder = (Folder)binder;
     			Binder workspace = (Binder)topFolder.getParentBinder();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new TreeBuilder(workspace, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
 			
     		}
@@ -654,11 +654,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
     		if (topId == null) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID,ws.getId().toString());
     		} else {
     			Workspace ws = getWorkspaceModule().getWorkspace(topId);
-    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new TreeBuilder(ws, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsDomTreeBuilder(ws, true, this),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, topId.toString());			
     		}
     			

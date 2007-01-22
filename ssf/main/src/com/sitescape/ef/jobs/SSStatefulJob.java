@@ -17,6 +17,7 @@ import org.quartz.Trigger;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.SessionUtil;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.ObjectKeys;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.dao.CoreDao;
@@ -40,7 +41,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected JobDataMap jobDataMap;
 	protected ProfileDao profileDao;
 	protected User user;
-	protected String zoneName;
+	protected Long zoneId;
 	public static int JOBNAME_MAX = 120; 
 	public static int DESCRIPTION_MAX = 120; 
 	public static String trimJobName(String jobName) {
@@ -60,17 +61,16 @@ public abstract class SSStatefulJob implements StatefulJob {
 		context.setResult("Success");
 		try {  
 	           	//zone required
-           	if (!jobDataMap.containsKey("zoneName")) {			
-           		throw new SchedulerException(context.getJobDetail().getFullName() + " : zoneName missing from jobData");
+           	if (!jobDataMap.containsKey("zoneId")) {			
+           		removeJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
            	}
-           	zoneName = jobDataMap.getString("zoneName");
+           	zoneId = jobDataMap.getLong("zoneId");
            	//Validate user and zone are compatible
            	if (jobDataMap.containsKey("user")) {
            		Long id = new Long(jobDataMap.getLong("user"));
-           		user = profileDao.loadUserOnlyIfEnabled(id, zoneName);
+           		user = profileDao.loadUserOnlyIfEnabled(id, zoneId);
            	} else {
-        		String name = SZoneConfig.getString(zoneName, "property[@name='adminUser']");
-           		user = profileDao.findUserByNameOnlyIfEnabled(name, zoneName);
+           		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_ID, zoneId);
            	}
     	
            	//Setup thread context expected by business logic
@@ -121,7 +121,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 	 * @throws JobExecutionException
 	 */
 	protected void unscheduleJobOnError(JobExecutionContext context, Exception e) throws JobExecutionException {
-		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.UnscheduleJobOnError);
 		context.setResult("Failed");
 		throw new JobExecutionException(e);
 	}
@@ -140,7 +140,7 @@ public abstract class SSStatefulJob implements StatefulJob {
 				return job.getDefaultScheduleInfo();
 			}
 			
-			ScheduleInfo info = new ScheduleInfo(job.getZoneName());
+			ScheduleInfo info = new ScheduleInfo(job.getZoneId());
 			int state = scheduler.getTriggerState(job.getName(), job.getGroup());
 			if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE))
 				info.setEnabled(false);
@@ -244,7 +244,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     }
     protected interface JobDescription {
     	public  String getDescription();
-    	public String getZoneName();
+    	public Long getZoneId();
     	public String getName();
     	public String getGroup();
     	public TimeZone getTimeZone();

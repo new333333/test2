@@ -50,7 +50,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 			<div>
 			<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
 			  topId="${ssWsDomTreeBinderId}" 
-			  rootOpen="false" showImages="false" dynamic="true"/>
+			  rootOpen="true" showImages="false" />
 			</div>
 		</td>
 	</tr>

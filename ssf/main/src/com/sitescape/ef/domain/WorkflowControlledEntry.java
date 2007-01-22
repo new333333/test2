@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.webdav.lib.properties.GetLastModifiedProperty;
+
 import com.sitescape.ef.module.shared.ChangeLogUtils;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
@@ -19,7 +21,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	private Set readMemberIds,writeMemberIds,deleteMemberIds,changeAclMemberIds;
     protected Set workflowStates; //initialized by hiberate access=field  
 	protected Set iWorkflowStates;
-    protected HistoryStamp workflowChange;
+    protected HistoryStamp workflowChange;//initialized by hiberate access=field  
     protected Set workflowResponses; //initialized by hiberate access=field  
 	protected ChangeLog changes=null;
 
@@ -30,7 +32,12 @@ public abstract class WorkflowControlledEntry extends Entry
         return this.workflowChange;
     }
     public void setWorkflowChange(HistoryStamp workflowChange) {
-        this.workflowChange = workflowChange;
+        if (workflowChange != null) {
+        	if (workflowChange.compareDate(this.workflowChange) > 0)
+        		this.workflowChange = workflowChange;
+        	if (workflowChange.compareDate(getModification()) > 0) 
+        		setModification(workflowChange);
+        } else this.workflowChange = null;
     }
 
     public Set getWorkflowResponses() {

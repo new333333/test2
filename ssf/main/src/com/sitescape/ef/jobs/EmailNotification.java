@@ -15,7 +15,7 @@ public interface EmailNotification  {
     public static final String PROCESSOR_KEY = "processorKey_emailNotificationJob";
 	public static final String NOTIFICATION_GROUP="email-notifications";
 
-	public ScheduleInfo getScheduleInfo(String zoneName, Binder binder);
-	public void setScheduleInfo(ScheduleInfo info, String zoneName, Binder binder);
-	public void enable(boolean enable, String zoneName, Binder binder);
+	public ScheduleInfo getScheduleInfo(Binder binder);
+	public void setScheduleInfo(ScheduleInfo info, Binder binder);
+	public void enable(boolean enable, Binder binder);
 }

@@ -15,10 +15,12 @@
  */
 %>
 <%@ page import="java.util.ArrayList" %>
-<jsp:useBean id="ssDomTree" type="org.dom4j.Document" scope="request" />
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<%
+String wsTreeName = "search_" + renderResponse.getNamespace();
+%>
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" 
@@ -37,28 +39,35 @@
 <br>
 <br>
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+  href="javascript:<portlet:namespace/>_doSelect(true);"
 >Select all</a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+  href="javascript:<portlet:namespace/>_doSelect(false);"
 >Clear all</a>
 <br>
 <script type="text/javascript">
-function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
-	ss_createTreeCheckbox("t_<portlet:namespace />_wsTree", "id_", forum);
-	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=false;
+function <portlet:namespace/>_doSelect(newState) {
+	ss_selectAll('<portlet:namespace/>fm', 'workspace_', newState);
+	ss_selectAll('<portlet:namespace/>fm', 'folder_', newState);
+	ss_selectAll('<portlet:namespace/>fm', 'people_', newState);
+}
+function <%= wsTreeName %>_showId(forum, obj, action) {
+	var prefix = action+"_";
+	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);
+	var name = prefix + forum;
+	if (self.document.<portlet:namespace />fm[name] && self.document.<portlet:namespace />fm[name].checked) {
+		self.document.<portlet:namespace />fm[name].checked=false;
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
-			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
+			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = false;
 		}
 	} else {
-		self.document.<portlet:namespace />fm["id_"+forum].checked=true
+		self.document.<portlet:namespace />fm[name].checked=true
 		alert(self.parent.frames['ss_treeIframeDiv'])
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
-			alert("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
-			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "t_<portlet:namespace />_wsTree" + "id_" + forum)
+			alert("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
+			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = true;
 		}
 	}
@@ -76,16 +85,17 @@ function ss_selectAll(formName, prefix, newState) {
     }
 }
 </script>
-<ssf:tree treeName="<%= "t_" + renderResponse.getNamespace()+ "_wsTree" %>" treeDocument="<%= ssDomTree %>"  
-  rootOpen="true" multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id_" />
+<ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
+  rootOpen="true" topId="${ssWsDomTreeBinderId}" 
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
 
 <br>
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
+  href="javascript:<portlet:namespace/>_doSelect(true);"
 >Select all</a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
-  href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
+  href="javascript:<portlet:namespace/>_doSelect(false);"
 >Clear all</a>
 <br>
 <br>

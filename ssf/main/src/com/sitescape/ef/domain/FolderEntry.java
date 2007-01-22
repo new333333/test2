@@ -7,6 +7,8 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import com.sun.org.apache.bcel.internal.generic.ISTORE;
+
 
 
 
@@ -120,7 +122,20 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setLastActivity(Date lastActivity) {
         this.lastActivity = lastActivity;
     }
-
+    public void updateLastActivity(Date lastActivity) {
+    	if (lastActivity == null) return;
+    	if ((this.lastActivity == null) ||
+    			(this.lastActivity.compareTo(lastActivity) < 0)) {
+    		this.lastActivity = lastActivity;
+    		//propagate up the tree
+    		if (topEntry != null) topEntry.updateLastActivity(lastActivity);
+    	}
+    }
+    public void setWorkflowChange(HistoryStamp workflowChange) {
+    	super.setWorkflowChange(workflowChange);
+    	if (workflowChange == null) return;
+    	updateLastActivity(workflowChange.getDate()); 
+    }
     /**
      * @hibernate.property not-null="true"
      */
@@ -162,6 +177,9 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     }
     public void setTopEntry(FolderEntry topEntry) {
         this.topEntry = topEntry;
+    }
+    public boolean isTopEntry() {
+    	return topEntry == null;
     }
 
     /**

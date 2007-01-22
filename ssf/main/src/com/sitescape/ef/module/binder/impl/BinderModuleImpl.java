@@ -10,17 +10,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateSystemException;
-import org.hibernate.NonUniqueObjectException;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -160,21 +160,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	return false;
     }	
-    public void indexTree(Long binderId) {
+    public boolean hasBinders(Binder binder, EntityIdentifier.EntityType binderType) {
+    	List binders = binder.getBinders();
+    	for (int i=0; i<binders.size(); ++i) {
+    		Binder b = (Binder)binders.get(i);
+    		//only check for specific types
+    		if (b.getEntityIdentifier().getEntityType().equals(binderType)) 
+    			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
+    	}
+    	return false;
+    }	
+    public Collection indexTree(Long binderId) {
+    	return indexTree(binderId, null);
+    }
+    public Collection indexTree(Long binderId, Collection exclusions) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "indexTree");
-    	//get sub-binder and index them all
-		indexBinder(binder);
-    }
-    private void indexBinder(Binder binder) {
-    	List binders = binder.getBinders();
-		for (int i=0; i<binders.size(); ++i) {
-	    	Binder b = (Binder)binders.get(i);
-	    	indexBinder(b);
-		}
-	    loadBinderProcessor(binder).indexBinder(binder);
-    	
-    }
+		return loadBinderProcessor(binder).indexTree(binder, exclusions);
+	}    
     public void indexBinder(Long binderId) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "indexBinder");
@@ -660,7 +663,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder oldBinder = post.getBinder();
 		if ((oldBinder != null) && !oldBinder.equals(binder)) {
 			if (getAccessControlManager().testOperation(oldBinder, WorkAreaOperation.BINDER_ADMINISTRATION) == false)
-				throw new NotSupportedException(NLT.get(ErrorCodes.PostingAssigned,new Object[] {post.getEmailAddress()}));
+				throw new NotSupportedException(NLT.get("errorcode.posting.in.use",new Object[] {post.getEmailAddress()}));
 			oldBinder.setPosting(null);
 		}
 		binder.setPosting(post);
@@ -687,15 +690,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         checkAccess(binder, "getNotificationConfig"); 
         //data is stored with job
 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
-  		return process.getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName(), binder);
-    }
+  		return process.getScheduleInfo(binder);
+	}
 	    
     public void setNotificationConfig(Long id, ScheduleInfo config) {
         Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
         checkAccess(binder, "setNotificationConfig"); 
         //data is stored with job
         EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
-  		process.setScheduleInfo(config, RequestContextHolder.getRequestContext().getZoneName(), binder);
+  		process.setScheduleInfo(config, binder);
     }
     /**
      * Set the notification definition for a folder.  

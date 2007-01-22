@@ -24,12 +24,10 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
-import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.ef.ErrorCodes;
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.dao.CoreDao;
@@ -537,7 +535,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     }
     public  Long findLibraryEntryId(Binder binder, String name) {
     	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(), name));
-    	if (le == null) throw new NoObjectByTheIdException(ErrorCodes.NoLibraryEntryByTheIdException, new Object[]{binder.getId(), name});
+    	if (le == null) throw new NoObjectByTheIdException("errorcode.no.library.entry.by.the.id", new Object[]{binder.getId(), name});
     	return le.getEntityId();
 
     }
@@ -730,9 +728,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public PostingDef loadPosting(String postingId, Long zoneId) {
 		PostingDef post = (PostingDef)load(PostingDef.class, postingId);
-        if (post == null) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
+        if (post == null) {throw new NoObjectByTheIdException("errorcode.no.posting.by.the.id", postingId);}
         //make sure from correct zone
-        if (!post.getZoneId().equals(zoneId)) {throw new NoObjectByTheIdException(ErrorCodes.NoPostingByTheIdException, postingId);}
+        if (!post.getZoneId().equals(zoneId)) {throw new NoObjectByTheIdException("errorcode.no.posting.by.the.id", postingId);}
   		return post;
 		
 	}
@@ -878,7 +876,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public Tag loadTagById(final String tagId) {
         Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
         if (t != null) return t;
-        throw new NoObjectByTheIdException(ErrorCodes.NoTagByTheIdException, tagId);
+        throw new NoObjectByTheIdException("errorcode.no.tag.by.the.id", tagId);
 	}
 	//The entries must be of the same type
 	public Map loadAllTagsByEntity(final Collection entityIds) {
@@ -1047,7 +1045,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	public Dashboard loadDashboard(String id) {
 		Dashboard d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
         if (d != null) return d;
-        throw new NoObjectByTheIdException(ErrorCodes.NoDashboardByTheIdException, id);
+        throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
 	}
 	public void executeUpdate(final String query) {
     	getHibernateTemplate().execute(

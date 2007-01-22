@@ -14,7 +14,7 @@ public interface LdapSynchronization {
     public static final String PROCESSOR_KEY = "processorKey_wsLdapSynchronizationJob";
 	public static final String LDAP_GROUP="ldap-synchronization";
 
-	public ScheduleInfo getScheduleInfo(String zoneName);
+	public ScheduleInfo getScheduleInfo(Long zoneId);
 	public void setScheduleInfo(ScheduleInfo info);
-	public void enable(boolean enable, String zoneName);
+	public void enable(boolean enable, Long zoneId);
 }

@@ -1,27 +1,25 @@
 package com.sitescape.ef.taglib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
 import javax.portlet.PortletMode;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.Attribute;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
 
-import java.util.ArrayList;
-
-import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
@@ -29,7 +27,7 @@ import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Html;
-
+import com.sitescape.util.Validator;
 
 
 
@@ -46,11 +44,10 @@ public class TreeTag extends TagSupport {
     private boolean rootOpen = true;
     private boolean allOpen = false;
     private boolean showImages = true;
-    private boolean dynamic = false;
     private String nodeOpen = "";
     private String highlightNode = "";
     private List multiSelect;
-    private String multiSelectPrefix;
+    private String multiSelectPrefix; // $type => use type attribute on element
     private String displayStyle;
     private String singleSelectName, singleSelect;
     private boolean nowrap = false;
@@ -95,8 +92,11 @@ public class TreeTag extends TagSupport {
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
 			if (multiSelect != null) {
 				//This request is displaying the checkboxes. Remember that in the url
-				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT, "1");
+				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "2");
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, multiSelectPrefix);
+			} else if (singleSelectName != null) {
+				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "1");
+				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, singleSelectName);
 			}
 			if (!this.topId.equals("")) {
 				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
@@ -105,13 +105,23 @@ public class TreeTag extends TagSupport {
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
-			if (!this.noInit && (this.startingId == null || this.startingId.equals("") || this.initOnly)) {
+			if (!this.noInit && Validator.isNull(startingId) || this.initOnly) {
 				sb.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 				sb.append("<script type=\"text/javascript\">\n");
 				sb.append("ssTree_defineBasicIcons('"+contextPath+"/images');\n");
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
 				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
 				sb.append("var ss_treeShowIdRoutine_"+this.treeName+" = '" + this.showIdRoutine + "';\n");
+				if (multiSelect != null) {
+					//
+				} 
+				//define variable to hold initial value
+				sb.append("var ss_treeSelected_"+this.treeName+" = ");
+				if (!Validator.isNull(singleSelect)) {
+					 sb.append("'" + singleSelect + "';\n");
+				} else {
+					sb.append("null;\n");
+				}
 				String displayStyle = user.getDisplayStyle();
 				if (displayStyle == null) displayStyle = "";
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
@@ -232,7 +242,6 @@ public class TreeTag extends TagSupport {
 	    	this.nowrap = false;
 	    	allOpen=false;
 	    	showImages=true;
-	    	dynamic=false;
 	    	rootOpen=false;
 	    	singleSelect=null;
 	    	multiSelect=null;
@@ -309,6 +318,12 @@ public class TreeTag extends TagSupport {
 			boolean hhcn = (e.attributeValue("treeHasHiddenChildren") == "1") ? true : false;
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 			String action = e.attributeValue("action", "");
+			String mPrefix=this.multiSelectPrefix;
+			if (mPrefix.startsWith("$type")) {
+				mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
+			}
+				
+
 			//Show the tree in the requested style (sortable or normal)
 			if (this.displayStyle.equals("sortable")) {
 				//"sortable" style shows the tree in a series of lists
@@ -346,9 +361,9 @@ public class TreeTag extends TagSupport {
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"');\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"');\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
@@ -394,7 +409,7 @@ public class TreeTag extends TagSupport {
 					listStyle = "";
 				}
 				this.lastListStyle = listStyle;
-				if (hcn && !dynamic) {
+				if (hcn) {
 					boolean divHasBeenOutput = false;
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
@@ -420,7 +435,7 @@ public class TreeTag extends TagSupport {
 					if (divHasBeenOutput) {
 						jspOut.print("</div>\n");
 					}
-				} else if (hhcn || (hcn && dynamic)) {
+				} else if (hhcn) {
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
 					}
@@ -446,25 +461,25 @@ public class TreeTag extends TagSupport {
 							if (this.multiSelect.contains(s_id)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
-							jspOut.print(this.multiSelectPrefix + s_id + "\" id=\"");
-							jspOut.print("ss_tree_checkbox" + treeName + this.multiSelectPrefix + s_id + "\" ");
+							jspOut.print(mPrefix + s_id + "\" id=\"");
+							jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 							jspOut.print(checked + "/>");
 							if (this.startingId != null && !this.startingId.equals("")) {
 								jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
 								//recursedNodes.add(0, "1");
 							}
 						}
-					} else if (singleSelect != null) {
+					} else if (this.singleSelectName != null) {
 						//can only select one item from tree, but probably other things going on
 						//ie) don't want link to submit form
 						if (s_id.equals("") || displayOnly) {
 							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
 						} else {
 							String checked = "";
-							if (this.singleSelect.equals(s_id)) checked = "checked=\"checked\"";
+							if (s_id.equals(this.singleSelect)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"radio\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
-							jspOut.print(singleSelectName + "\" value=\""+s_id + "\" " + checked + "/>");
+							jspOut.print(singleSelectName + "\" value=\""+s_id + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
 						}
 						
 					}
@@ -492,9 +507,9 @@ public class TreeTag extends TagSupport {
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"');return false;\" ");
 							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"');return false;\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
 							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
@@ -519,9 +534,9 @@ public class TreeTag extends TagSupport {
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"');return false;\" ");
 							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"');\" ");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"');return false;\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
 							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
@@ -593,7 +608,7 @@ public class TreeTag extends TagSupport {
 				if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
 				
 				// Recurse if node has children
-				if (hcn && !dynamic) {
+				if (hcn) {
 					boolean divHasBeenOutput = false;
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
@@ -615,7 +630,7 @@ public class TreeTag extends TagSupport {
 					if (divHasBeenOutput) {
 						jspOut.print("</div>\n");
 					}
-				} else if (hhcn || (hcn && dynamic)) {
+				} else if (hhcn) {
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
 					}
@@ -848,11 +863,7 @@ public class TreeTag extends TagSupport {
 	public void setShowImages(boolean showImages) {
 	    this.showImages = showImages;
 	}
-	
-	public void setDynamic(boolean dynamic) {
-	    this.dynamic = dynamic;
-	}
-	
+		
 	public void setFlat(boolean flat) {
 	    this.flat = flat;
 	}

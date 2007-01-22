@@ -15,37 +15,37 @@ public class DefaultEmailPosting extends SSStatefulJob implements EmailPosting {
     	MailManager mail = (MailManager)SpringContextUtil.getBean("mailManager");
 		mail.receivePostings();
     }
-	public ScheduleInfo getScheduleInfo(String zoneName) {
-		return getScheduleInfo(new MailJobDescription(zoneName));
+	public ScheduleInfo getScheduleInfo(Long zoneId) {
+		return getScheduleInfo(new MailJobDescription(zoneId));
 	}
 	public void setScheduleInfo(ScheduleInfo info) {
-		setScheduleInfo(new MailJobDescription(info.getZoneName()), info);
+		setScheduleInfo(new MailJobDescription(info.getZoneId()), info);
 
 	}
 
-	public void enable(boolean enable, String zoneName) {
-		enable(enable, new MailJobDescription(zoneName));
+	public void enable(boolean enable, Long zoneId) {
+		enable(enable, new MailJobDescription(zoneId));
  	}
 
 	public class MailJobDescription implements JobDescription {
-		private String zoneName;
-		public MailJobDescription(String zoneName) {
-			this.zoneName = zoneName;
+		private Long zoneId;
+		public MailJobDescription(Long zoneId) {
+			this.zoneId = zoneId;
 		}
     	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(zoneName);
+    		return SSStatefulJob.trimDescription(zoneId.toString());
     	}
-    	public String getZoneName() {
-    		return zoneName;
+    	public Long getZoneId() {
+    		return zoneId;
     	}
     	public String getName() {
-    		return zoneName;
+    		return zoneId.toString();
     	}
     	public String getGroup() {
     		return POSTING_GROUP;
     	}		
     	public ScheduleInfo getDefaultScheduleInfo() {
-    		ScheduleInfo info = new ScheduleInfo(zoneName);
+    		ScheduleInfo info = new ScheduleInfo(zoneId);
     		return info;
     	}
       	public TimeZone getTimeZone() {
