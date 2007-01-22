@@ -13,6 +13,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -991,13 +992,25 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxUploadImageFile(ActionRequest request, 
 			ActionResponse response) throws Exception {
-		//See if the form was submitted
-		Map fileMap = null;
-		if (request instanceof MultipartFileSupport) {
-			fileMap = ((MultipartFileSupport) request).getFileMap();
-		} else {
-			fileMap = new HashMap();
+		// Get a handle on the uploaded file
+		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
+		if(fileHandle == null) {
+			// There was no uploaded file. Probably this shouldn't occur.
 		}
+		else {
+			// You can create a URL containing the handle...
+		}
+	
+		// And then, here's what you need to do at the time you create an entry.
+		
+		// You can use WebHelper.wrapFileHandleInMultipartFile(fileHandle) method
+		// to create a MultipartFile instance from the file handle and then put
+		// it into a map. Then you can pass it (along with other stuff) to 
+		// addEntry method to create an entry with file attachment, etc. 
+		
+		// When you're done creating an entry, make sure to call 
+		// WebHelper.releaseFileHandle(fileHandle) method to release system 
+		// resources associated with the file handle. 
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
