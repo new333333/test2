@@ -56,7 +56,7 @@ var ss_transferUrl = self.location.href;
 <body>
  <iframe id="iframe_window" name="iframe_window" 
     style="width:100%; height:95%; display:block;"
-    src="/c" frameBorder="no" onLoad="ss_loadTargetUrl();">xxx</iframe>
+    src="/c" frameBorder="0" onLoad="ss_loadTargetUrl();">xxx</iframe>
 
 </body>
 </html>

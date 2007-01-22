@@ -74,8 +74,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 				<td>
 					First editor:
 					<div >
-					<ssf:htmleditor id="editor1" 
-						formName="editortest"
+					<ssf:htmleditor id="editor1" name="editor1" 
 						height="150" color="tan"
 						initText="<%= textfield1 %>" />
 					</div>
@@ -85,8 +84,7 @@ First editor has height=150, second one has no size specified, so defaults to 25
 				<td>
 					Second editor:
 					<div>
-					<ssf:htmleditor id="editor2" 
-						formName="editortest"  
+					<ssf:htmleditor id="editor2" name="editor2" 
 						initText="<%= textfield2 %>" />
 					</div>
 				</td>

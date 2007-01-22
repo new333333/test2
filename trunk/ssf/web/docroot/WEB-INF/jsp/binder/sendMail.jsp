@@ -52,20 +52,6 @@ self.window.resizeTo(width, height);
 </form>
 </c:when>
 <c:otherwise>
-<script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
-<script type="text/javascript">tinyMCE.init(
- {mode: "specific_textareas", editor_selector: "mceEditable",
-  language: "en", 
-  content_css: "<html:rootPath/>css/editor.css", 
-  relative_urls: false, accessibility_focus: false,
-  remove_script_host: false,
-  plugins: "table,advimage,preview,contextmenu,paste", 
-  theme_advanced_toolbar_location: "top", theme_advanced_toolbar_align: "top", 
-  theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
-  theme_advanced_resizing: true, 
-  theme_advanced_buttons2_add: "pastetext,pasteword,advimage,spellchecker",
-  theme_advanced_buttons3_add: "tablecontrols", 
-  theme_advanced_resizing_use_cookie : false});</script>
   
 <form class="ss_style ss_form" method="post" 
   onSubmit="return ss_onSubmit(this);" name="<portlet:namespace />fm">
@@ -121,8 +107,8 @@ self.window.resizeTo(width, height);
 </td></tr>
 <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.message"/></span>
-   <textarea class="ss_style mceEditable" rows="20" cols="80"
-  name="body">
+    <div align="left">
+    <ssf:htmleditor name="mailBody" >
 <c:if test="${!empty ssEntry}">
 	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	    configElement="${ssConfigElement}" 
@@ -130,7 +116,8 @@ self.window.resizeTo(width, height);
 	    processThisItem="true" 
 	    entry="${ssEntry}" />
 </c:if>
-  </textarea>
+  </ssf:htmleditor>
+  </div>
 </td></tr>
 <c:if test="${!empty ssEntry}">
 <tr><td>
