@@ -5,17 +5,17 @@
  * 
  */
 package com.sitescape.ef.taglib;
-import java.util.HashSet;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.tagext.TagSupport;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.tagext.BodyContent;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+import javax.servlet.jsp.JspTagException;
 
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.User;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -28,24 +28,38 @@ import com.sitescape.util.servlet.StringServletResponse;
 // This is a stub so far; it is just a 
 // gutted version of datepicker.
 
-public class Htmleditor extends TagSupport {
+public class Htmleditor extends BodyTagSupport {
 	private String id;
-	private String formName;
+	private String name;
 	private String initText;
-	private String height = null;
-	private String color = "ButtonFace";
+	private String height = "";
+	private String color = "";
 	private String contextPath;
+	private String _bodyContent;
         
-	public int doStartTag() throws JspException {
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		BodyContent bc = getBodyContent();
+		_bodyContent = "";
+		if (bc != null) _bodyContent = getBodyContent().getString();
+
+		return SKIP_BODY;
+	}
+
+	public int doEndTag() throws JspTagException {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+		    User user = RequestContextHolder.getRequestContext().getUser();
+		    String languageCode = user.getLocale().getLanguage();
+		    if (languageCode == null || languageCode.equals("")) languageCode = "en";
+		    if (languageCode.startsWith("en")) languageCode = "en";
 	
-		    if (id == null) {
-		        throw new JspException("You must provide an element name"); 
-		    }
 		    if (height == null) {
-		    	height = "250";
+		    	height = "";
 		    }
 	
 		    if (initText == null) {
@@ -58,30 +72,44 @@ public class Htmleditor extends TagSupport {
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq);
 			req.setAttribute("element_id", this.id);
-			req.setAttribute("form_name", this.formName);
+			req.setAttribute("element_name", this.name);
 			req.setAttribute("init_text", this.initText);
 			req.setAttribute("element_height", this.height);
 			req.setAttribute("element_color", this.color);
+			req.setAttribute("language", languageCode);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
-	
-			return SKIP_BODY;
 
+			// Body
+			pageContext.getOut().print(_bodyContent);
+
+			// Bottom
+			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/htmlarea/htmlarea_bottom.jsp");
+			res = new StringServletResponse(httpRes);
+			rd.include(req, res);
+			pageContext.getOut().print(res.getString());
+	
+			return EVAL_PAGE;
 		}
-	    catch (Exception e) {
-	    	throw new JspException(e);
-	    }
+		catch (Exception e) {
+			throw new JspTagException(e.getMessage());
+		}
 		finally {
+			this.height = "";
+			this.color = "";
+			this.initText = "";
+			this.id = "";
+			this.name = "";
 		}
 	}
 
-	public int doEndTag() throws JspException {
-		return EVAL_PAGE;
-	}
-	
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setInitText(String initText) {
@@ -96,7 +124,4 @@ public class Htmleditor extends TagSupport {
 		this.color = color;
 	}
 
-	public void setFormName(String formName) {
-		this.formName = formName;
-	}
 }
