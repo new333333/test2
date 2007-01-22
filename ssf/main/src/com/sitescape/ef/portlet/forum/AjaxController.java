@@ -33,6 +33,7 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.SPropsUtil;
@@ -79,7 +80,9 @@ public class AjaxController  extends SAbstractController {
 					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
 					op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				ajaxChangeDashboardComponent(request, response);
-			} 
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
+				ajaxUploadImageFile(request, response);
+			}
 		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -949,7 +952,7 @@ public class AjaxController  extends SAbstractController {
 	}
 	
 	private void ajaxChangeDashboardComponent(ActionRequest request, 
-				ActionResponse response) throws Exception {
+			ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String componentId = op2;
@@ -958,7 +961,7 @@ public class AjaxController  extends SAbstractController {
 			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 			Binder binder = getBinderModule().getBinder(binderId);
 			if (scope.equals("")) scope = DashboardHelper.Local;
-
+	
 			if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 				DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
@@ -970,7 +973,7 @@ public class AjaxController  extends SAbstractController {
 			String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
 			Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
 			scope = DashboardHelper.Portlet;
-
+	
 			if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 				DashboardHelper.showHideComponent(request, dashboard, componentId, "show");
 			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
@@ -981,6 +984,18 @@ public class AjaxController  extends SAbstractController {
 			
 		}
 	}
+	
+	private void ajaxUploadImageFile(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		//See if the form was submitted
+		Map fileMap = null;
+		if (request instanceof MultipartFileSupport) {
+			fileMap = ((MultipartFileSupport) request).getFileMap();
+		} else {
+			fileMap = new HashMap();
+		}
+	}
+	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();

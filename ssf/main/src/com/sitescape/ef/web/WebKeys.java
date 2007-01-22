@@ -202,6 +202,7 @@ public class WebKeys {
 	public static final String OPERATION_SELECT_FILTER = "select_filter";
 	public static final String OPERATION_USER_FILTER = "user_filter";
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
+	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_WORKSPACE_TREE = "workspace_tree";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
