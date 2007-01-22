@@ -1,11 +1,25 @@
 package com.sitescape.ef.web.util;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
+import java.util.Scanner;
+
+import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.ef.util.SimpleMultipartFile;
+import com.sitescape.ef.util.TempFileUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class WebHelper {
@@ -181,5 +195,64 @@ public class WebHelper {
 		}
 		
 		return ses;
+	}
+	
+	/**
+	 * Returns a handle on the uploaded file. This handle is guaranteed to be
+	 * valid only during the current server session. In other words, the handle
+	 * is not persistent and will be lost once the server shuts down.
+	 * It returns <code>null</code> if there is no uploaded file.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	public static String getFileHandleOnUploadedFile(ActionRequest request)
+		throws IOException {
+		Map fileMap = null;
+		if (request instanceof MultipartFileSupport)
+			fileMap = ((MultipartFileSupport) request).getFileMap();
+		if(fileMap == null || fileMap.size() == 0)
+			return null;
+		MultipartFile file = (MultipartFile) fileMap.values().iterator().next();
+		String fileName = file.getOriginalFilename();
+		// Encode the original file name into the prefix.
+		String prefix = String.valueOf(fileName.length()) + "-" + fileName + "_";
+		File destFile = TempFileUtil.createTempFile(prefix);
+		file.transferTo(destFile);
+		return destFile.getName();
+	}
+	
+	/**
+	 * Wraps the file handle in a MultipartFile datastructure. This is used
+	 * primarily to put the data in an argument format compatible with some
+	 * of the module methods. 
+	 * 
+	 * @param fileHandle
+	 * @return
+	 * @throws IOException
+	 */
+	public static MultipartFile wrapFileHandleInMultipartFile(String fileHandle) 
+		throws IOException {
+		int idx = fileHandle.indexOf("-");
+		int fileNameLength = Integer.parseInt(fileHandle.substring(0, idx));
+		String fileName = fileHandle.substring(idx+1, idx+1+fileNameLength);
+		
+		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
+		
+		SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file);
+		
+		return mf;
+	}
+	
+	/**
+	 * Clean up resources associated with the file handle. Must be called
+	 * when the application is done with the file handle.
+	 * 
+	 * @param fileHandle
+	 */
+	public static void releaseFileHandle(String fileHandle) {
+		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
+
+		file.delete();
 	}
 }
