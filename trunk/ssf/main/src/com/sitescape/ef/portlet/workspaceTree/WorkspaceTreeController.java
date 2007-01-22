@@ -35,7 +35,7 @@ import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 
 /**
@@ -203,9 +203,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 //		} else {
 			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
 			if ((top != null) && (ws.getParentBinder() != null)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new TreeBuilder(ws, true, this));
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, this));
 			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new TreeBuilder(ws, true, this),1);
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 			}
 //		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);

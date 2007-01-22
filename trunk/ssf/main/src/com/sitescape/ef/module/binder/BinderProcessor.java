@@ -26,5 +26,6 @@ public interface BinderProcessor {
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);
 	public void indexBinder(Binder binder);	
+    public Collection indexTree(Binder binder, Collection exclusions);
 	public ChangeLog processChangeLog(Binder binder, String operation);
 }

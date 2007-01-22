@@ -130,7 +130,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 			jobDetail.setDescription(comment);
 			JobDataMap data = new JobDataMap();
 			data.put("mailSender", mailSenderName);
-			data.put("zoneName",RequestContextHolder.getRequestContext().getZoneName());
+			data.put("zoneId",RequestContextHolder.getRequestContext().getZoneId());
 			data.put("mailMessage", message);
 			
 			jobDetail.setJobDataMap(data);

@@ -66,6 +66,7 @@ import com.sitescape.ef.search.SearchFieldResult;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -626,7 +627,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    }
     //***********************************************************************************************************
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
-    	throw new NotSupportedException("Move entry not supported on this binder");
+		throw new NotSupportedException(
+				NLT.get("errorcode.notsupported.moveEntry", new String[]{entry.getTitle()}));
     }
     
     //***********************************************************************************************************
@@ -781,8 +783,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			Map tags = indexEntries_loadTags(binder, batch);
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
+       				List entryTags = (List)tags.get(entry.getEntityIdentifier());
        				// 	Create an index document from the entry object.
-       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, (List)tags.get(entry.getEntityIdentifier()));
+       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, entryTags);
       				docs.add(indexDoc);
             		if (logger.isDebugEnabled())
             			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
@@ -791,7 +794,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        		        for (int j = 0; j < atts.size(); j++) {
        		        	FileAttachment fa = (FileAttachment)atts.get(j);
        		        	try {
-       		        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null);
+       		        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null, entryTags);
       		        		// Register the index document for indexing.
        		        		docs.add(indexDoc);
       		        	} catch (Exception ex) {
@@ -1228,7 +1231,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	if(fileUploadItems != null)
         		fui = findFileUploadItem(fileUploadItems, fa.getRepositoryName(), fa.getFileItem().getName());
         	try {
-        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui);
+        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui, null);
            		// Register the index document for indexing.
         		IndexSynchronizationManager.addDocument(indexDoc);
 	        } catch (Exception ex) {
@@ -1256,14 +1259,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the workflows
         EntityIndexUtils.addWorkflow(indexDoc, entry);
         
-        // Add ancestry 
-        EntityIndexUtils.addAncestry(indexDoc, binder);
-        
+       
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui) {
-   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui);
+	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, List tags) {
+   		org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromFile(binder, entry, fa, fui, tags);
+        // Add the workflows - different for files
+        EntityIndexUtils.addWorkflow(indexDoc, entry);
    		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
    		return indexDoc;
  

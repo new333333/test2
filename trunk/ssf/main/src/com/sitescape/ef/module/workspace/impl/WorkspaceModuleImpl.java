@@ -212,19 +212,21 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
  		if (levels == 0) return;
     	--levels;
- 		//order result
-       	TreeSet ws = new TreeSet(c);
-    	ws.addAll(top.getFolders());
-      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
-    		f = (Folder)iter.next();
-    		if (f.getTopFolder() != null) continue;
-        	// Check if the user has "read" access to the folder.
-            if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
-            	continue;
-            next = current.addElement(DomTreeBuilder.NODE_CHILD);
-           	if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
-           		current.remove(next);
-         }
+		TreeSet ws = new TreeSet(c);
+		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER)) {
+ 			//	order result
+ 			ws.addAll(top.getFolders());
+ 			for (Iterator iter=ws.iterator(); iter.hasNext();) {
+ 				f = (Folder)iter.next();
+ 				if (f.getTopFolder() != null) continue;
+ 				// 	Check if the user has "read" access to the folder.
+ 				if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+ 					continue;
+ 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
+ 				if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
+ 					current.remove(next);
+ 			}
+        }
     	ws.clear();
     	ws.addAll(top.getWorkspaces());
      	for (Iterator iter=ws.iterator(); iter.hasNext();) {

@@ -16,7 +16,9 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<%
+String wsTreeName = "editForum_" + renderResponse.getNamespace();
+%>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0">
@@ -30,21 +32,12 @@
 </c:if>
 
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-<%
-/* Liferay handles this already
-<table>
-<tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
-</td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
-</td></tr>
-</table>
-*/
-%>
 
 <br>
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums" text="Select the forums to be shown:"/></span>
 <br>
 <script type="text/javascript">
-function <portlet:namespace/>_wsTree_showId(forum, obj) {
+function <%= wsTreeName %>_showId(forum, obj) {
 	if (self.document.<portlet:namespace />fm["id_"+forum] && self.document.<portlet:namespace />fm["id_"+forum].checked) {
 		self.document.<portlet:namespace />fm["id_"+forum].checked=false
 	} else {
@@ -53,8 +46,9 @@ function <portlet:namespace/>_wsTree_showId(forum, obj) {
 	return false
 }
 </script>
-<ssf:tree treeName="${renderResponse.namespace}_wsTree" treeDocument="${ssWsDomTree}"  
-  rootOpen="true" multiSelect="${ssBinderIdList}" multiSelectPrefix="id_" />
+<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
+ 	topId="${ssWsDomTreeBinderId}" rootOpen="true" 
+	  multiSelect="${ssBinderIdList}" multiSelectPrefix="id_" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

@@ -19,6 +19,7 @@ import java.util.TreeSet;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
+import com.sitescape.ef.util.NLT;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -75,7 +76,7 @@ public class User extends Principal {
     	return getName();		
 	}
 	public void setTitle(String title) {
-		throw new NotSupportedException("Cannot set title directly");
+		throw new NotSupportedException(NLT.get("errorcode.notsupported.setTitle"));
 	}
     private String setupTitle() {
     	String val;

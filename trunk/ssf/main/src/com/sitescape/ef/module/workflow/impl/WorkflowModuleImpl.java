@@ -80,7 +80,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 			   try {
 				   seconds = Integer.parseInt(secsString);
 			   } catch (Exception ex) {};
-			   	job.schedule(zone.getName(), seconds);
+			   	job.schedule(zone.getId(), seconds);
     	
 		   } catch (ClassNotFoundException e) {
 			   throw new ConfigurationException(

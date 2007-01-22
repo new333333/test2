@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -15,10 +16,14 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeHelper;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.util.Validator;
@@ -28,24 +33,35 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn") || formData.containsKey("applyBtn")) {
 			//Get the list of binders to be indexed
-			List binderIdList = new ArrayList();
-			
+			List<Long> folderIdList = new ArrayList();
+			List<Long> wsIdList = new ArrayList();
+			Long profileId = null;
 			//Get the binders to be indexed
 			Iterator itFormData = formData.entrySet().iterator();
 			while (itFormData.hasNext()) {
 				Map.Entry me = (Map.Entry) itFormData.next();
-				if (((String)me.getKey()).startsWith("id_")) {
-					String binderId = ((String)me.getKey()).substring(3);
-					binderIdList.add(binderId);
+				String key = (String)me.getKey();
+				if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
+					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
+					folderIdList.add(Long.valueOf(binderId));
+				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
+					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
+					wsIdList.add(Long.valueOf(binderId));
+				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_PEOPLE)) {
+					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_PEOPLE + "_", "");
+					profileId = Long.valueOf(binderId);
 				}
 			}
-			
-			//Now, index the binders
-			Iterator itBinders = binderIdList.iterator();
-			while (itBinders.hasNext()) {
-				Long folderId = new Long((String)itBinders.next());
-				getBinderModule().indexTree(folderId);
+			TreeSet exclude = new TreeSet();
+			for (Long id:wsIdList) {
+				exclude.addAll(getBinderModule().indexTree(id, exclude));
 			}
+			for (Long id:folderIdList) {
+				exclude.addAll(getBinderModule().indexTree(id, exclude));
+			}
+			//if people selected and not yet index; index content only
+			if ((profileId != null) && !exclude.contains(profileId))
+				getBinderModule().indexBinder(profileId);
 			
 			response.setRenderParameter("redirect", "true");
 			
@@ -62,12 +78,12 @@ public class ManageSearchIndexController extends  SAbstractController {
 		}
 
 		Map model = new HashMap();
-    	Document wsTree = DocumentHelper.createDocument();
-    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
+		Document pTree = DocumentHelper.createDocument();
+    	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
     	Element users = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
     	ProfileBinder p = getProfileModule().getProfileBinder();
-    	users.addAttribute("type", "people");
-    	users.addAttribute("title", p.getTitle());
+    	users.addAttribute("type", DomTreeBuilder.NODE_TYPE_PEOPLE);
+    	users.addAttribute("title", NLT.get("administration.profile.content"));
     	users.addAttribute("id", p.getId().toString());
 		String icon = p.getIconName();
 		if (Validator.isNull(icon)) {
@@ -77,45 +93,41 @@ public class ManageSearchIndexController extends  SAbstractController {
 			users.addAttribute("imageClass", "ss_twIcon");
 		}
 		users.addAttribute("url", "");
-    	Document result = getWorkspaceModule().getDomWorkspaceTree(new WSTreeHelper());
-    	rootElement.appendAttributes(result.getRootElement());
-    	rootElement.appendContent(result.getRootElement());
-		model.put(WebKeys.DOM_TREE, wsTree);
+    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+				new WsDomTreeBuilder(null, true, this, new SearchTree()),1);
+    	//merge the trees
+    	rootElement.appendAttributes(wsTree.getRootElement());
+    	rootElement.appendContent(wsTree.getRootElement());
+ 		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 			
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}
-	private class WSTreeHelper implements DomTreeBuilder {
-		public WSTreeHelper() {
+	public static class SearchTree implements DomTreeHelper {
+		public boolean supportsType(int type) {
+			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
+			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
+			return false;
+		}
+		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 
-		public Element setupDomElement(String type, Object source, Element element) {
-			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
-				String icon = ws.getIconName();
-				String imageClass = "ss_twIcon";
-				if (icon == null || icon.equals("")) {
-					icon = "/icons/workspace.gif";
-					imageClass = "ss_twImg";
-				}
-				element.addAttribute("type", "workspace");
-				element.addAttribute("title", ws.getTitle());
-				element.addAttribute("id", ws.getId().toString());
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", imageClass);
-				//element.addAttribute("displayOnly", "true");
-				element.addAttribute("url", "");
-			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-				Folder f = (Folder)source;
-				String icon = f.getIconName();
-				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
-				element.addAttribute("type", "folder");
-				element.addAttribute("title", f.getTitle());
-				element.addAttribute("id", f.getId().toString());
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", "ss_twIcon");
-				element.addAttribute("url", "");
-			} else return null;
-			return element;
+		public String getAction(int type) {
+			//use action to indicate type of name that is choose.  This allows us to 
+			//determine the name of the checkbox.  We use variable names so the
+			//profile binder can show up as the parent of the users/groups and 
+			//as the parent of user workspaces. 
+			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return DomTreeBuilder.NODE_TYPE_WORKSPACE;}
+			if (type == DomTreeBuilder.TYPE_FOLDER) {return DomTreeBuilder.NODE_TYPE_FOLDER;}
+			if (type == DomTreeBuilder.TYPE_PEOPLE) {return DomTreeBuilder.NODE_TYPE_PEOPLE;}
+			
+			return null;
 		}
+		public String getURL(int type) {return "";}
+		public String getDisplayOnly(int type) {return "false";}
+		public String getTreeNameKey() {return "search";}
+		
 	}
+
 }

@@ -37,8 +37,7 @@ function <portlet:namespace/>_modifyAlias() {
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" id="<portlet:namespace/>fm" method="post" action="<portlet:actionURL>
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
-<ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar" />
-<br/>
+
 <table class="ss_style"  border="1" cellspacing="0" cellpadding="3">
 <tr>
 <th><ssf:nlt tag="incoming.job_title"/></th>

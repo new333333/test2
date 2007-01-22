@@ -260,7 +260,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				} catch (MailSendException sx) {
 					if (binder != null) {
 				  		FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
-				   		process.schedule(binder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mailMsg, getMailDirPath(binder));			
+				   		process.schedule(binder, mailSender, mailMsg, getMailDirPath(binder));			
 					}
 					logger.error("Error sending posting reject:" + sx.getMessage());
 				} catch (MailAuthenticationException ax) {
@@ -312,11 +312,11 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mHelper.getMessage(), getMailDirPath(folder));
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
 		   	} catch (MailAuthenticationException ax) {
 	    		logger.error("Error sending mail:" + ax.getMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, RequestContextHolder.getRequestContext().getZoneName(), mailSender, mHelper.getMessage(), getMailDirPath(folder));		   	 
+		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));		   	 
 		   	} catch (Exception ex) {
 	       		logger.error(ex.getMessage());
 	    	} 

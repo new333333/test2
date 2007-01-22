@@ -114,8 +114,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
    	public void checkAccess(String operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);        		
-
+ 
         if ("modifyPosting".equals(operation)) {
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else if (operation.startsWith("addPosting")) {
@@ -123,6 +122,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		} else if (operation.startsWith("deletePosting")) {
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
  		} else if (operation.startsWith("setPostingSchedule")) {
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+ 		} else if (operation.startsWith("getPostingSchedule")) {
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else if (operation.startsWith("addConfiguration")) {
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
@@ -169,8 +170,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	coreDao.delete(post);
     }
     public ScheduleInfo getPostingSchedule() {
-    	//TODO: checkAccess;
-       	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneName());
+      	checkAccess("getPostingSchedule");
+       	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setPostingSchedule(ScheduleInfo config) throws ParseException {
        	checkAccess("setPostingSchedule");

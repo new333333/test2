@@ -32,7 +32,7 @@ import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 
 
@@ -136,9 +136,9 @@ public class ViewController  extends SAbstractController {
 			Document wsTree;
 			//when at the top, don't expand
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder(null, true, this), 0);
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, this), 0);
 			} else {
-				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new TreeBuilder((Workspace)binder, true, this), 1);									
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, this), 1);									
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());

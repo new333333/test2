@@ -74,11 +74,6 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		ScheduleInfo config = getAdminModule().getPostingSchedule();
 		model.put(WebKeys.SCHEDULE_INFO, config);	
 		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
-		Toolbar toolbar = new Toolbar();
-		PortletURL url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
-		toolbar.addToolbarMenu("ss_scheduleLink", NLT.get("incoming.toolbar_forums"), url);
-		model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}
 

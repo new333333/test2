@@ -66,4 +66,9 @@ public class HistoryStamp {
 		return element;
 		
 	}
+	public int compareDate(HistoryStamp stamp) {
+		if (date == null) return -1;
+		if ((stamp == null) || (stamp.getDate() == null)) return 1;
+		return date.compareTo(stamp.getDate());
+	}
 }

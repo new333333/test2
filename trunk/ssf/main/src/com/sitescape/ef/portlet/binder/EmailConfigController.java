@@ -20,12 +20,15 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.ScheduleHelper;
-import com.sitescape.ef.web.util.BinderHelper.TreeBuilder;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.util.Validator;
 
 public class EmailConfigController extends  AbstractBinderController  {
@@ -75,7 +78,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			model.put(WebKeys.BINDER, folder);
 			model.put(WebKeys.DEFINITION_ENTRY, folder);
 			//	Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, folder, model, BinderHelper.TreeBuilder.EMAIL_KEY);
+			BinderHelper.buildNavigationLinkBeans(this, folder, model, new mailTree());
 
 			if (folder.isTop()) {
 				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
@@ -98,7 +101,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		} catch (Exception e) {
 			//assume not selected yet - first time through from admin menu
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new TreeBuilder(null, true, this, TreeBuilder.EMAIL_KEY),1);
+					new WsDomTreeBuilder(null, true, this, new mailTree()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);
@@ -119,4 +122,25 @@ public class EmailConfigController extends  AbstractBinderController  {
 		config.setSchedule(ScheduleHelper.getSchedule(request));
 
 	}
+	public static class mailTree implements DomTreeHelper {
+		public boolean supportsType(int type) {
+			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
+			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
+			return false;
+		}
+		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+			return bs.getBinderModule().hasBinders((Binder)source);
+		}
+	
+		public String getAction(int type) {
+			return WebKeys.ACTION_CONFIG_EMAIL;
+		}
+		public String getURL(int type) {return "";}
+		public String getDisplayOnly(int type) {
+			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
+			return "true";
+		}
+		public String getTreeNameKey() {return "email";}
+		
+	}	
 }

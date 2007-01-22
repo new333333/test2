@@ -18,27 +18,24 @@ import javax.portlet.WindowState;
 
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
-import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.util.Validator;
 
 public class BinderHelper {
 
@@ -91,7 +88,7 @@ public class BinderHelper {
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
 		buildNavigationLinkBeans(bs, binder, model, null);
 	}
-	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model, String key) {
+	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
 		Binder parentBinder = binder;
     	Map navigationLinkMap;
     	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
@@ -104,94 +101,17 @@ public class BinderHelper {
 	    	Document tree = null;
 	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new TreeBuilder(null, true, bs, key),0);
+						new WsDomTreeBuilder(null, true, bs, helper),0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new TreeBuilder(null, true, bs, key), 0);
+				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
 			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new TreeBuilder(null, true, bs, key),0);
+						new WsDomTreeBuilder(null, true, bs, helper),0);
 			}
 			navigationLinkMap.put(parentBinder.getId(), tree);
 			parentBinder = ((Binder)parentBinder).getParentBinder();
 		}
 	}
-	public static class TreeBuilder implements DomTreeBuilder {
-		Binder bottom;
-		boolean check;
-		AllBusinessServicesInjected bs;
-		String key = null;
-		public static String EMAIL_KEY="email";
-		static Map actionMapper = new HashMap();
-		static {
-			actionMapper.put(EMAIL_KEY + DomTreeBuilder.TYPE_WORKSPACE, null);
-			actionMapper.put(EMAIL_KEY + DomTreeBuilder.TYPE_FOLDER, WebKeys.ACTION_CONFIG_EMAIL);
-		}
-		public TreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs) {
-			this.bottom = bottom;
-			this.check = checkChildren;
-			this.bs = bs;
-		}
-		public TreeBuilder(Binder bottom, boolean checkChildren, AllBusinessServicesInjected bs,
-				String key) {
-			this.bottom = bottom;
-			this.check = checkChildren;
-			this.bs = bs;
-			//only set the key if the tree is registered
-			if (actionMapper.containsKey(key + DomTreeBuilder.TYPE_FOLDER) ||
-					actionMapper.containsKey(key + DomTreeBuilder.TYPE_WORKSPACE))
-					this.key = key;
-		}
-		public Element setupDomElement(String type, Object source, Element element) {
-			Binder binder = (Binder) source;
-			element.addAttribute("title", binder.getTitle());
-			element.addAttribute("id", binder.getId().toString());
-
-			//only need this information if this is the bottom of the tree
-			if (check && (bottom == null ||  bottom.equals(binder.getParentBinder()))) {
-				if (bs.getBinderModule().hasBinders(binder)) {
-					element.addAttribute("hasChildren", "true");
-				} else {	
-					element.addAttribute("hasChildren", "false");
-				}
-			}
-			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
-				String icon = ws.getIconName();
-				String imageClass = "ss_twIcon";
-				if (icon == null || icon.equals("")) {
-					icon = "/icons/workspace.gif";
-					imageClass = "ss_twImg";
-				}
-				element.addAttribute("type", "workspace");
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", imageClass);
-				if (Validator.isNull(key)) {
-					element.addAttribute("action", WebKeys.ACTION_VIEW_WS_LISTING);
-				} else {
-					String action = (String)actionMapper.get(key + DomTreeBuilder.TYPE_WORKSPACE);
-					if (Validator.isNull(action)) element.addAttribute("displayOnly", "true");
-					else element.addAttribute("action", action);
-						
-				}
-			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-				Folder f = (Folder)source;
-				String icon = f.getIconName();
-				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
-				element.addAttribute("type", "folder");
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", "ss_twIcon");
-				if (Validator.isNull(key)) {
-					element.addAttribute("action", WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				} else {
-					String action = (String)actionMapper.get(key + DomTreeBuilder.TYPE_FOLDER);
-					if (Validator.isNull(action)) element.addAttribute("displayOnly", "true");
-					else element.addAttribute("action", action);
-						
-				}
-			} else return null;
-			return element;
-		}
-	}	
 
    	public static SortField[] getBinderEntries_getSortFields(Map options) {
    		SortField[] fields = new SortField[1];

@@ -322,8 +322,16 @@ public class Favorites {
 	}
 
 	private class FavoritesTreeHelper implements DomTreeBuilder {
-		public Element setupDomElement(String type, Object source, Element element) {
-			if (type.equals(DomTreeBuilder.TYPE_FAVORITES)) {
+
+		public boolean supportsType(int type) {
+			if (type == DomTreeBuilder.TYPE_FAVORITES) {return true;}
+			return false;
+		}
+		public boolean supportsWorkspace() {return false;}
+		public boolean supportsFavorites(){return true;}
+		public boolean supportsPeople() {return false;}
+		public Element setupDomElement(int type, Object source, Element element) {
+			if (type == DomTreeBuilder.TYPE_FAVORITES) {
 				Element e = (Element)source;
 				element.addAttribute("title", e.attributeValue("name", "???"));
 				element.addAttribute("image", e.attributeValue("image", "page"));

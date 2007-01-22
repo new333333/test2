@@ -16,7 +16,9 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<%
+String wsTreeName = "editWs_" + renderResponse.getNamespace();
+%>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssBinder}">
 <b><ssf:nlt tag="portlet.workspace.selected.workspace"/></b><br/><br/>
@@ -25,24 +27,17 @@
 </c:if>
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
-<%
-/* Liferay handles this already
-<table>
-<tr><td><span class="ss_labelLeft"><ssf:nlt tag="portlet.title"/></span>
-</td><td><input class="ss_text" name="title" size="20" value="${portletTitle}"/>
-</td></tr>
-</table>
-*/
-%>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>
 <br>
 <script type="text/javascript">
-function <portlet:namespace/>_wsTree_showId(forum, obj) {
+function <%= wsTreeName %>_showId(forum, obj) {
 	var r = self.document.<portlet:namespace />fm.topWorkspace;
     for (var b = 0; b < r.length; b++) {
       if (r[b].value == forum) 	r[b].checked=true;
 	}
+	ss_clearSingleSelect('<%= wsTreeName %>');
+	
 	return false;
 }
 </script>
@@ -50,8 +45,9 @@ function <portlet:namespace/>_wsTree_showId(forum, obj) {
 <c:if test="${!empty ssBinder}">
 	<c:set var="singleSelect" value="${ssBinder.id}"/>
 </c:if>
-<ssf:tree treeName="${renderResponse.namespace}_wsTree" treeDocument="${ssWsDomTree}"  
-  rootOpen="true" singleSelect="${singleSelect}" singleSelectName="topWorkspace" />
+<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
+ 	topId="${ssWsDomTreeBinderId}" rootOpen="true"
+	 singleSelect="${singleSelect}" singleSelectName="topWorkspace" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

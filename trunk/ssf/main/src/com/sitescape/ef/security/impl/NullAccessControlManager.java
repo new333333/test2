@@ -1,25 +1,22 @@
 package com.sitescape.ef.security.impl;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.domain.Group;
+import com.sitescape.ef.domain.User;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.AccessControlManager;
+import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.function.Function;
-import com.sitescape.ef.security.function.FunctionAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.dao.util.FilterControls;
 /**
  *
  * @author Jong Kim

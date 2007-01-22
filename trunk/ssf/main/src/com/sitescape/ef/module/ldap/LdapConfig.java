@@ -44,8 +44,8 @@ public class LdapConfig extends ScheduleInfo {
 	public LdapConfig(Map details) {
 		super(details);
 	}
-	public LdapConfig (String zoneName) {
-		super(zoneName);
+	public LdapConfig (Long zoneId) {
+		super(zoneId);
 	}
 	public String getUserUrl() {
 		return GetterUtil.get((String)details.get(USERS_URL), "");

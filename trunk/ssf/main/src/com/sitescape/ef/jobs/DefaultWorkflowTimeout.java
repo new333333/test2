@@ -59,24 +59,24 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     	}
     }
 
-    public void schedule(String zoneName, int seconds) {
+    public void schedule(Long zoneId, int seconds) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {
-			JobDetail jobDetail=scheduler.getJobDetail(zoneName, WORKFLOW_TIMER_GROUP);
+			JobDetail jobDetail=scheduler.getJobDetail(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 			if (jobDetail == null) {
-				jobDetail = new JobDetail(zoneName, WORKFLOW_TIMER_GROUP, 
+				jobDetail = new JobDetail(zoneId.toString(), WORKFLOW_TIMER_GROUP, 
 						Class.forName(this.getClass().getName()),false, false, false);
 				jobDetail.setDescription(WORKFLOW_TIMER_DESCRIPTION);
 				JobDataMap data = new JobDataMap();
-				data.put("zoneName",zoneName);
+				data.put("zoneId",zoneId);
 				jobDetail.setJobDataMap(data);
 				jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			}
-			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneName, WORKFLOW_TIMER_GROUP);
+			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 			//	see if job exists
 			if (trigger == null) {
-				trigger = new SimpleTrigger(zoneName, WORKFLOW_TIMER_GROUP, zoneName, WORKFLOW_TIMER_GROUP, new Date(), null, 
+				trigger = new SimpleTrigger(zoneId.toString(), WORKFLOW_TIMER_GROUP, zoneId.toString(), WORKFLOW_TIMER_GROUP, new Date(), null, 
 						SimpleTrigger.REPEAT_INDEFINITELY, seconds*1000);
 				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
 				trigger.setDescription(WORKFLOW_TIMER_DESCRIPTION);
@@ -84,13 +84,13 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 				scheduler.scheduleJob(trigger);				
     	
 			} else {
-				int state = scheduler.getTriggerState(zoneName, WORKFLOW_TIMER_GROUP);
+				int state = scheduler.getTriggerState(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
-					scheduler.resumeJob(zoneName, WORKFLOW_TIMER_GROUP);
+					scheduler.resumeJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);
 				}
 				if (trigger.getRepeatInterval() != seconds*1000) {
 					trigger.setRepeatInterval(seconds*1000);
-					scheduler.rescheduleJob(zoneName, WORKFLOW_TIMER_GROUP, trigger);
+					scheduler.rescheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP, trigger);
 				}
 			} 
 		} catch (SchedulerException se) {			

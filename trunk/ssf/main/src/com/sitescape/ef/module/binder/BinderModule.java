@@ -8,6 +8,7 @@ import java.util.Map;
 import org.dom4j.Document;
 
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.jobs.ScheduleInfo;
@@ -73,7 +74,8 @@ public interface BinderModule {
     public void deletePosting(Long binderId);
     public void setLibrary(Long binderId, boolean library);
     public boolean hasBinders(Binder binder);
-    
+    public boolean hasBinders(Binder binder, EntityType binderType);
+
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
     public void modifyBinder(Long binderId, InputDataAccessor inputData) 
@@ -87,8 +89,14 @@ public interface BinderModule {
     public Map executeSearchQuery(Binder binder, Document searchQuery, Map options);
     public Map executePeopleSearchQuery(Document searchQuery);
     public Map executePeopleSearchQuery(Binder binder, Document searchQuery);
-    
-    public void indexTree(Long binderId);
+    /**
+     * Index a binder and its child binders.
+     * @param binderId
+     * @param exclusions
+     * @return Collection binderIds indexed
+     */
+    public Collection indexTree(Long binderId, Collection exclusions);
+    public Collection indexTree(Long binderId);
     public void indexBinder(Long binderId);
 
     public void modifyNotification(Long binderId, Map updates, Collection principals); 

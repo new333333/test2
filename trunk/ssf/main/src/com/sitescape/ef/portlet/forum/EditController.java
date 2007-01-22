@@ -13,17 +13,21 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Workspace;
+import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeHelper;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.FindIdsHelper;
@@ -95,8 +99,10 @@ public class EditController extends SAbstractController {
 		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {
 		
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new BuildWsFolder());
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+					new WsDomTreeBuilder(null, true, this, new folderTree()),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 		
 			String[] forumPrefIdList = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 		
@@ -125,8 +131,10 @@ public class EditController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
 		} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(new BuildWs());
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+					new WsDomTreeBuilder(null, true, this, new wsTree()),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 			
 			String wsId = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
 			try {
@@ -151,58 +159,45 @@ public class EditController extends SAbstractController {
 		return null;
 
 	}
-	private static class BuildWsFolder implements DomTreeBuilder {
-		public Element setupDomElement(String type, Object source, Element element) {
-			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
-				String icon = ws.getIconName();
-				String imageClass = "ss_twIcon";
-				if (icon == null || icon.equals("")) {
-					icon = "/icons/workspace.gif";
-					imageClass = "ss_twImg";
-				}
-
-				element.addAttribute("type", "workspace");
-				element.addAttribute("title", ws.getTitle());
-				element.addAttribute("id", "");
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", imageClass);
-				element.addAttribute("displayOnly", "true");
-				element.addAttribute("url", "");
-			} else if (type.equals(DomTreeBuilder.TYPE_FOLDER)) {
-				Folder f = (Folder)source;
-				String icon = f.getIconName();
-				if (icon == null || icon.equals("")) icon = "/icons/folder.png";
-
-				element.addAttribute("type", "folder");
-				element.addAttribute("title", f.getTitle());
-				element.addAttribute("id", f.getId().toString());
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", "ss_twIcon");
-				element.addAttribute("url", "");
-			} else return null;
-			return element;
+	public static class wsTree implements DomTreeHelper {
+		public boolean supportsType(int type) {
+			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
+			return false;
 		}
-	}
-	private static class BuildWs implements DomTreeBuilder {
-		public Element setupDomElement(String type, Object source, Element element) {
-			if (type.equals(DomTreeBuilder.TYPE_WORKSPACE)) {
-				Workspace ws = (Workspace)source;
-				String icon = ws.getIconName();
-				String imageClass = "ss_twIcon";
-				if (icon == null || icon.equals("")) {
-					icon = "/icons/workspace.gif";
-					imageClass = "ss_twImg";
-				}
-
-				element.addAttribute("type", "workspace");
-				element.addAttribute("title", ws.getTitle());
-				element.addAttribute("id", ws.getId().toString());
-				element.addAttribute("image", icon);
-				element.addAttribute("imageClass", imageClass);
-				element.addAttribute("url", "");
-			} else return null;
-			return element;
+		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+			return bs.getBinderModule().hasBinders((Binder)source, EntityType.workspace);
 		}
-	}
+		
+	
+		public String getAction(int type) {
+			return null;
+		}
+		public String getURL(int type) {return null;}
+		public String getDisplayOnly(int type) {
+			return "false";
+		}
+		public String getTreeNameKey() {return "editWs";}
+		
+	}	
+	public static class folderTree implements DomTreeHelper {
+		public boolean supportsType(int type) {
+			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
+			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
+			return false;
+		}
+		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+			return bs.getBinderModule().hasBinders((Binder)source);
+		}
+	
+		public String getAction(int type) {
+			return null;
+		}
+		public String getURL(int type) {return null;}
+		public String getDisplayOnly(int type) {
+			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
+			return "true";
+		}
+		public String getTreeNameKey() {return "editForum";}
+		
+	}	
 }

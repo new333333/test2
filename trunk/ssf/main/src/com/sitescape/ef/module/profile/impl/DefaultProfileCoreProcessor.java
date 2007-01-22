@@ -2,19 +2,17 @@ package com.sitescape.ef.module.profile.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 
-import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
@@ -28,7 +26,6 @@ import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.Membership;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.binder.impl.AbstractEntryProcessor;
@@ -259,16 +256,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
       	} 
       	return super.deleteEntry_indexDel(entry, ctx);
    }
-    //***********************************************************************************************************
-    
-    public void deleteBinder(Binder binder) {
-    	throw new InternalException("Cannot delete profile binder");
-    }
     //***********************************************************************************************************    
-    public void moveBinder(Binder source, Binder destination) {
-    	throw new InternalException("Cannot move profile binder");
-    }
-
+ 
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
