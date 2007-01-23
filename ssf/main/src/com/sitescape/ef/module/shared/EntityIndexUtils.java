@@ -113,7 +113,7 @@ public class EntityIndexUtils {
     public static void addRating(Document doc, DefinableEntity entry) {
     	//rating may not exist or not be supported
     	try {
-        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	Field rateField = new Field(RATING_FIELD, entry.getAverageRating().getAverage().toString(), Field.Store.NO, Field.Index.UN_TOKENIZED);
         	doc.add(rateField);
         } catch (Exception ex) {};
    	
@@ -198,9 +198,9 @@ public class EntityIndexUtils {
     			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
     				WorkflowState ws = (WorkflowState)iter.next();
     				Field workflowStateField = new Field(WORKFLOW_STATE_FIELD, 
-   						ws.getState(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+   						ws.getState(), Field.Store.NO, Field.Index.UN_TOKENIZED);
     				Field workflowStateCaptionField = new Field(WORKFLOW_STATE_CAPTION_FIELD, 
-   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()), Field.Store.NO, Field.Index.UN_TOKENIZED);
     				//Index the workflow state
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);
@@ -208,7 +208,7 @@ public class EntityIndexUtils {
     				Definition def = ws.getDefinition();
     				if (def != null) {
     					Field workflowProcessField = new Field(WORKFLOW_PROCESS_FIELD, 
-    							def.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    							def.getId(), Field.Store.NO, Field.Index.UN_TOKENIZED);
     					//	Index the workflow title (which is always the id of the workflow definition)
     					doc.add(workflowProcessField);
     				}
@@ -306,19 +306,36 @@ public class EntityIndexUtils {
     	return(df.format(date));
     }
     
-    public static void addReadAcls(Document doc, Set ids) {
-    	if (ids == null) return;
-    	// Add ACL field. We only need to index ACLs for read access. 
-        Field racField;
-        // I'm not sure if putting together a long string value is more
-        // efficient than processing multiple short strings... We will see.
-        StringBuffer pIds = new StringBuffer();
-   		for (Iterator i = ids.iterator(); i.hasNext();) {
-    		pIds.append(i.next()).append(" ");
-    	}
-        racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);      
-        doc.add(racField);
-    }
+    public static void addReadAcls(Document doc, Set ids, Set binderIds) {
+		if (ids == null)
+			return;
+		// Add ACL field. We only need to index ACLs for read access.
+		Field racField;
+		// I'm not sure if putting together a long string value is more
+		// efficient than processing multiple short strings... We will see.
+		StringBuffer pIds = new StringBuffer();
+		for (Iterator i = ids.iterator(); i.hasNext();) {
+			pIds.append(i.next()).append(" ");
+		}
+		// leave this here for now - however, it needs to be removed in order to test the entry/folder ACLs
+		racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);
+		doc.add(racField);
+		// Add the Entry_ACL field
+		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+		doc.add(entryAclField);
+
+		StringBuffer bIds = new StringBuffer();
+		if (binderIds != null) {
+			for (Iterator i = binderIds.iterator(); i.hasNext();) {
+				bIds.append(i.next()).append(" ");
+			}
+		} else {
+			bIds.append(BasicIndexUtils.READ_ACL_ALL);
+		}
+		// Add the Folder_ACL field.  If the doc we're indexing is a binder, then set the Folder_ACL to READ_ALL
+		Field folderAclField = new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+		doc.add(folderAclField);
+	}
 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
     	List pubTags = new ArrayList<Tag>();

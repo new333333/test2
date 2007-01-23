@@ -13,7 +13,9 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclManager;
@@ -35,6 +37,8 @@ public class BasicIndexUtils {
     public static final String THIS_CLASS_FIELD = "_class";
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String READ_ACL_FIELD = "_readAcl";
+    public static final String ENTRY_ACL_FIELD = "_entryAcl";
+    public static final String FOLDER_ACL_FIELD = "_folderAcl";
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
     public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
@@ -142,6 +146,7 @@ public class BasicIndexUtils {
     public static void addReadAcls(Document doc, AclContainer container, Object entry, AclManager aclManager) {
         // Add ACL field. We only need to index ACLs for read access. 
         Field racField;
+        // the only path to get here shows that this entry will NEVER be AclControlled...
         if (entry instanceof AclControlled) {
 	        StringBuffer pIds = new StringBuffer();
 	        //only want to index acls on the entry itself.  Otherwise we use READ_DEF_ACL
@@ -157,12 +162,26 @@ public class BasicIndexUtils {
 	          racField = new Field(READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);
 	        else
 	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
-        }
-        else {
+	        doc.add(racField);
+	    } else {
             racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
-        }
-        
-        doc.add(racField);
+            doc.add(racField);
+            
+    		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED);
+    		doc.add(entryAclField);
+    		
+    		Set binderIds = AccessUtils.getReadAclIds((Binder)container);
+    		StringBuffer bIds = new StringBuffer();
+    		if (binderIds != null) {
+    			for (Iterator i = binderIds.iterator(); i.hasNext();) {
+    				bIds.append(i.next()).append(" ");
+    			}
+    		} else {
+    			bIds.append(BasicIndexUtils.READ_ACL_ALL);
+    		}   		
+    		Field folderAclField = new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+    		doc.add(folderAclField);
+	    }
     } 
     
     public static String buildAclTag(String tag, String aclId)

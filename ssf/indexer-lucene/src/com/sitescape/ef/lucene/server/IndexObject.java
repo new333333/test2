@@ -27,10 +27,10 @@ import com.sitescape.ef.lucene.SsfIndexAnalyzer;
 import com.sitescape.ef.lucene.SsfQueryAnalyzer;
 
 /**
- * Title: IndexObject
- * Description: The main object for each Index
- * Copyright:    Copyright (c) 2005
+ * Title: IndexObject Description: The main object for each Index 
+ * Copyright (c) 2005, 2006, 2007 
  * Company: SiteScape, Inc.
+ * 
  * @author Roy Klein
  * @version 1.0
  */
@@ -67,13 +67,13 @@ public class IndexObject {
 	Object SyncObj = new Object();
 
 	/**
-	 * Constructor - make sure the index directory either exists, or
-	 * can be created. The indexname will be appended to the basedirectory
-	 * (as specified in the options file) to find the directory where the index
+	 * Constructor - make sure the index directory either exists, or can be
+	 * created. The indexname will be appended to the basedirectory (as
+	 * specified in the options file) to find the directory where the index
 	 * lives.
-	 *
+	 * 
 	 * @param indexname
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public IndexObject(String indexname) throws RemoteException {
@@ -103,7 +103,8 @@ public class IndexObject {
 		// See if there's already a directory by that name
 		indexName = indexDirectory;
 
-		// Check if the directory exists, make sure it's actually a dir, and not a file.
+		// Check if the directory exists, make sure it's actually a dir, and not
+		// a file.
 		indexDir = new File(indexDirectory);
 		if (indexDir.exists()) {
 			if (!indexDir.isDirectory())
@@ -140,11 +141,11 @@ public class IndexObject {
 	}
 
 	/**
-	 * Add a document. The batch queue will make sure there's only one
-	 * document with this UID on the add q at any one time.
-	 *
+	 * Add a document. The batch queue will make sure there's only one document
+	 * with this UID on the add q at any one time.
+	 * 
 	 * @param ssfdocument
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized void addDocument(String UID, Document document)
@@ -157,12 +158,12 @@ public class IndexObject {
 	}
 
 	/**
-	 * Delete any document in the index with the matching uid. If the doc
-	 * is on the AddQ, delete it. then add the delete to the delQ so that
-	 * if it was in the index, it'll be deleted there too.
-	 *
+	 * Delete any document in the index with the matching uid. If the doc is on
+	 * the AddQ, delete it. then add the delete to the delQ so that if it was in
+	 * the index, it'll be deleted there too.
+	 * 
 	 * @param uid
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized void deleteDocument(String uid) throws RemoteException {
@@ -176,9 +177,9 @@ public class IndexObject {
 
 	/**
 	 * Delete all the documents which match the passed in term
-	 *
+	 * 
 	 * @param term
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized int deleteDocuments(Term term) throws RemoteException {
@@ -200,9 +201,9 @@ public class IndexObject {
 
 	/**
 	 * Delete all the documents which match the passed in query
-	 *
+	 * 
 	 * @param query
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized int deleteDocuments(Query query) throws RemoteException {
@@ -227,9 +228,9 @@ public class IndexObject {
 
 	/**
 	 * Commit all the changes that are queued up.
-	 *
+	 * 
 	 * @param indexname
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized void commit() throws RemoteException {
@@ -249,9 +250,9 @@ public class IndexObject {
 
 	/**
 	 * Stop this index
-	 *
+	 * 
 	 * @param indexname
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public synchronized void stop() throws RemoteException {
@@ -271,67 +272,73 @@ public class IndexObject {
 
 	/**
 	 * Empty the batch queue of all deleted docs
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	private void emptyDelQ() throws RemoteException {
-		System.out.println("delQ has: " + delQ.size() + " entries");
-		if (delQ.size() == 0)
-			return;
-		try {
-			openIndexReader();
-			for (int i = 0; i < delQ.size(); i++) {
-				SsfDocument sdoc = (SsfDocument) delQ.dequeue();
-				try {
-					indexReader
-							.deleteDocuments(new Term("_uid", sdoc.getUID()));
-				} catch (IOException ioe) {
-					throw new RemoteException(
-							"Error emptying the Delete Queue: ", ioe);
+		synchronized (SyncObj) {
+			System.out.println("delQ has: " + delQ.size() + " entries");
+
+			if (delQ.size() == 0)
+				return;
+			try {
+				openIndexReader();
+				for (int i = 0; i < delQ.size(); i++) {
+					SsfDocument sdoc = (SsfDocument) delQ.dequeue();
+					try {
+						indexReader.deleteDocuments(new Term("_uid", sdoc
+								.getUID()));
+					} catch (IOException ioe) {
+						throw new RemoteException(
+								"Error emptying the Delete Queue: ", ioe);
+					}
 				}
+			} finally {
+				closeReader();
 			}
-		} finally {
-			closeReader();
 		}
 	}
 
 	/**
 	 * Empty the batch queue of all added docs
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	private void emptyAddQ() throws RemoteException {
-		Analyzer manlzr = new SsfIndexAnalyzer();
-		System.out.println("addQ has: " + addQ.size() + " entries");
-		if (addQ.size() == 0)
-			return;
-		try {
-			openIndexWriter();
-			for (int i = 0; i < addQ.size(); i++) {
-				SsfDocument sdoc = (SsfDocument) addQ.dequeue();
-				try {
-					indexWriter.addDocument(sdoc.getDocument(), manlzr);
-				} catch (IOException ioe) {
-					throw new RemoteException("Error emptying the Add Queue: ",
-							ioe);
-				}
-			}
-		} finally {
+		synchronized (SyncObj) {
+			Analyzer manlzr = new SsfIndexAnalyzer();
+
+			System.out.println("addQ has: " + addQ.size() + " entries");
+			if (addQ.size() == 0)
+				return;
 			try {
-				closeWriter();
-			} catch (Exception e) {
-				throw new RemoteException(
-						"Could not close index writer for directory ["
-								+ this.indexDir + "]", e);
+				openIndexWriter();
+				for (int i = 0; i < addQ.size(); i++) {
+					SsfDocument sdoc = (SsfDocument) addQ.dequeue();
+					try {
+						indexWriter.addDocument(sdoc.getDocument(), manlzr);
+					} catch (IOException ioe) {
+						throw new RemoteException(
+								"Error emptying the Add Queue: ", ioe);
+					}
+				}
+			} finally {
+				try {
+					closeWriter();
+				} catch (Exception e) {
+					throw new RemoteException(
+							"Could not close index writer for directory ["
+									+ this.indexDir + "]", e);
+				}
 			}
 		}
 	}
 
 	/**
 	 * Search for documents in the index that match the query
-	 *
+	 * 
 	 * @param squery
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public com.sitescape.ef.lucene.Hits search(Query query)
@@ -342,9 +349,9 @@ public class IndexObject {
 
 	/**
 	 * Search for documents in the index that match the query
-	 *
+	 * 
 	 * @param squery
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public com.sitescape.ef.lucene.Hits search(Query query, Sort sort)
@@ -356,25 +363,24 @@ public class IndexObject {
 	/**
 	 * Search for documents in the index that match the query. Return size hits
 	 * starting at offset.
-	 *
+	 * 
 	 * @param query
 	 * @param offset
 	 * @param size
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public com.sitescape.ef.lucene.Hits search(Query query, int offset, int size)
 			throws RemoteException {
 		logger.info("search:QUERY = " + query.toString() + "offset = " + offset
 				+ "size = " + size);
-		/* Comment out for now.  This wipes out all optimizations, however, if
-		 * we decided that all searches MUST reflect all previous changes, then
-		 * we'll want this in here.
-		 * // first, process all the transactions in the batch queues
-		 * watchDog.resetTimer();
-		 * commit();
+		/*
+		 * Comment out for now. This wipes out all optimizations, however, if we
+		 * decided that all searches MUST reflect all previous changes, then
+		 * we'll want this in here. // first, process all the transactions in
+		 * the batch queues watchDog.resetTimer(); commit();
 		 */
-		//open a new searcher if necessary
+		// open a new searcher if necessary
 		openIndexSearcher();
 		try {
 			org.apache.lucene.search.Hits hits = indexSearcher.search(query);
@@ -393,25 +399,24 @@ public class IndexObject {
 	/**
 	 * Search for documents in the index that match the query. Return size hits
 	 * starting at offset.
-	 *
+	 * 
 	 * @param query
 	 * @param offset
 	 * @param size
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public com.sitescape.ef.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) throws RemoteException {
 		logger.info("search:QUERY = " + query.toString() + "offset = " + offset
 				+ "size = " + size);
-		/* Comment out for now.  This wipes out all optimizations, however, if
-		 * we decided that all searches MUST reflect all previous changes, then
-		 * we'll want this in here.
-		 * // first, process all the transactions in the batch queues
-		 * watchDog.resetTimer();
-		 * commit();
+		/*
+		 * Comment out for now. This wipes out all optimizations, however, if we
+		 * decided that all searches MUST reflect all previous changes, then
+		 * we'll want this in here. // first, process all the transactions in
+		 * the batch queues watchDog.resetTimer(); commit();
 		 */
-		//open a new searcher if necessary
+		// open a new searcher if necessary
 		openIndexSearcher();
 		org.apache.lucene.search.Hits hits = null;
 		try {
@@ -432,33 +437,44 @@ public class IndexObject {
 		}
 	}
 
-	public void updateDocs(Query q, String fieldname, String fieldvalue)
-			throws RemoteException {
+	public synchronized void updateDocs(Query q, String fieldname,
+			String fieldvalue) throws RemoteException {
 		synchronized (SyncObj) {
+			try {
+				closeWriter();
+			} catch (Exception e) {
+			}
+			IndexUpdater updater = null;
 			// first Optimize the index.
 			try {
 				this.optimize();
 				openIndexWriter();
 
-				Directory indDir = FSDirectory
-						.getDirectory(this.indexDir, true);
-				IndexUpdater updater = new IndexUpdater(indDir);
+				Directory indDir = FSDirectory.getDirectory(this.indexDir,
+						false);
+				updater = new IndexUpdater(indDir);
 				DocumentSelection docsel = updater.createDocSelection(q);
 				updater.updateField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfQueryAnalyzer(), docsel);
+				updater.close();
 			} catch (IOException ioe) {
 				throw new RemoteException(
 						"Could not update fields on the index ["
 								+ this.indexDir + " ], query is: "
-								+ q.toString() + " field: " + fieldname);
+								+ q.toString() + " field: " + fieldname, ioe);
+			} finally {
+				try {
+					updater.close();
+				} catch (Exception e) {
+				}
 			}
 		}
 	}
 
 	/**
 	 * Optimize the index
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	public void optimize() throws RemoteException {
@@ -467,7 +483,7 @@ public class IndexObject {
 			openIndexWriter();
 			indexWriter.optimize();
 		} catch (IOException ioe) {
-			throw new RemoteException("Error optimizing the index");
+			throw new RemoteException("Error optimizing the index", ioe);
 		} finally {
 			try {
 				closeWriter();
@@ -481,7 +497,7 @@ public class IndexObject {
 
 	/**
 	 * Open a reader
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	private void openIndexReader() throws RemoteException {
@@ -498,7 +514,7 @@ public class IndexObject {
 
 	/**
 	 * Open a searcher
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	private void openIndexSearcher() throws RemoteException {
@@ -515,30 +531,45 @@ public class IndexObject {
 
 	/**
 	 * Open a writer
-	 *
+	 * 
 	 * @throws RemoteException
 	 */
 	private void openIndexWriter() throws RemoteException {
 		if (this.indexWriter == null) {
+
+			boolean create = true;
+			if (this.indexDir.exists())
+				create = false;
 			try {
-				boolean create = true;
-				if (this.indexDir.exists())
-					create = false;
 				this.indexWriter = new IndexWriter(this.indexDir,
 						new StandardAnalyzer(), create);
-			} catch (IOException e) {
-				throw new RemoteException(
-						"Could not open index writer for directory ["
-								+ this.indexDir + "]", e);
+
+			} catch (IOException ioe) {
+				// try to unlock before throwing Exception
+				try {
+					if (IndexReader.isLocked(FSDirectory.getDirectory(indexDir,
+							false))) {
+						IndexReader.unlock(FSDirectory.getDirectory(indexDir,
+								false));
+					}
+					//Now try to open the writer again
+					this.indexWriter = new IndexWriter(this.indexDir,
+							new StandardAnalyzer(), create);
+				} catch (IOException e) {
+					throw new RemoteException(
+							"Could not open index writer for directory ["
+									+ this.indexDir + "]", e);
+				}
+				
 			}
+			this.indexWriter.setUseCompoundFile(false);
 		}
 	}
 
 	/**
-	 * Keep track of the last access to this index.
-	 * it's a small optimization that will keep us
-	 * from opening new Searchers until it is necessary
-	 *
+	 * Keep track of the last access to this index. it's a small optimization
+	 * that will keep us from opening new Searchers until it is necessary
+	 * 
 	 * @param currentcaller
 	 */
 	private boolean lastAccess(int currentCaller) {

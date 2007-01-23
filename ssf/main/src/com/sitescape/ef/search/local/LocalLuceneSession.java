@@ -35,6 +35,7 @@ import com.sitescape.ef.util.LuceneUtil;
  * 
  */
 public class LocalLuceneSession implements LuceneSession {
+	Object SyncObj = new Object();
 	// Note: I'm not convinced that this implementation makes good use of
 	// Lucene,
 	// primarily due to my lack of intimiate knowledge of Lucene.
@@ -72,7 +73,9 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexWriter indexWriter = null;
 
 		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
+			synchronized (SyncObj) {
+				indexWriter = LuceneUtil.getWriter(indexPath);
+			}
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -96,7 +99,9 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexWriter indexWriter = null;
 
 		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
+			synchronized (SyncObj) {
+				indexWriter = LuceneUtil.getWriter(indexPath);
+			}
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -279,22 +284,26 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public void optimize() {
 		IndexWriter indexWriter = null;
-		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open writer on the index ["
-					+ this.indexPath + "]", e);
-		}
-
-		try {
-			indexWriter.optimize();
-		} catch (IOException e) {
-			throw new LuceneException("Could not add document to the index ["
-					+ indexPath + "]", e);
-		} finally {
+		synchronized (SyncObj) {
 			try {
-				indexWriter.close();
+				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
+			}
+
+			try {
+				indexWriter.optimize();
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not add document to the index [" + indexPath
+								+ "]", e);
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
@@ -338,11 +347,14 @@ public class LocalLuceneSession implements LuceneSession {
 
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
 		synchronized (LocalLuceneSession.class) {
+			IndexUpdater updater = null;
 			// first Optimize the index.
 			IndexWriter indexWriter = null;
 
 			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
+				synchronized (SyncObj) {
+					indexWriter = LuceneUtil.getWriter(indexPath);
+				}
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
@@ -352,17 +364,22 @@ public class LocalLuceneSession implements LuceneSession {
 				indexWriter.optimize();
 				indexWriter.close();
 
-				Directory indDir = FSDirectory.getDirectory(indexPath, true);
-				IndexUpdater updater = new IndexUpdater(indDir);
+				Directory indDir = FSDirectory.getDirectory(indexPath, false);
+				updater = new IndexUpdater(indDir);
 				DocumentSelection docsel = updater.createDocSelection(q);
 				updater.updateField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfQueryAnalyzer(), docsel);
+				updater.close();
 			} catch (IOException ioe) {
 				throw new LuceneException(
 						"Could not update fields on the index ["
 								+ this.indexPath + " ], query is: "
 								+ q.toString() + " field: " + fieldname);
+			} finally {
+				try {
+					updater.close();
+				} catch (Exception e) {}
 			}
 		}
 	}
