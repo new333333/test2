@@ -7,7 +7,7 @@ import org.quartz.Scheduler;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.docconverter.DocConverter;
+import com.sitescape.ef.docconverter.impl.DocConverter;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
 import com.sitescape.ef.rss.RssGenerator;

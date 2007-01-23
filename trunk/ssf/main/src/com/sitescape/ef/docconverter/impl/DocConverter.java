@@ -4,17 +4,28 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
 
+import com.sitescape.ef.docconverter.TextConverter;
+import com.sitescape.ef.util.FileHelper;
+import com.sitescape.ef.util.TempFileUtil;
 import com.stellent.scd.*;
 import java.io.*;
-import java.net.URL;
 import java.util.*;
 
-import net.sf.ehcache.CacheManager;
+import javax.xml.transform.Source;
+import javax.xml.transform.Templates;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.dom4j.DocumentException;
+import org.dom4j.io.DocumentSource;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
@@ -32,7 +43,7 @@ import org.springframework.core.io.Resource;
  * @see Export Export
  */
 
-public class DocConverter implements InitializingBean, DisposableBean {
+public class DocConverter implements TextConverter, InitializingBean, DisposableBean {
 
 	private static final String INPUTPATHKEY = "inputpath";
 	private static final String OUTPUTPATHKEY = "outputpath";
@@ -43,6 +54,8 @@ public class DocConverter implements InitializingBean, DisposableBean {
 	Properties configProps = new Properties();
 	protected final Log logger = LogFactory.getLog(getClass());
 
+	private TransformerFactory transFactory = TransformerFactory.newInstance();
+	    
 	public void afterPropertiesSet() throws Exception {
 		try {
 			setConverterConfiguration(getConfigFileName());
@@ -184,5 +197,84 @@ public class DocConverter implements InitializingBean, DisposableBean {
 		// default the timeout value to 0
 		return convert(ifp,ofp,0);
 	}
+
+	public String convertToText(File inputFile, long timeout) throws Exception {
+		// Create an empty file to be used as output file for the converter.
+		// The output file will contain text data in xml format. 
+		File outputTextFile = TempFileUtil.createTempFile("docconverteroutput_");
+		
+		try {
+			// Invoke the actual converter function giving it timeout value.
+			boolean result = convert(inputFile, outputTextFile, timeout);
+			
+			String text = null;
+			
+			if(result) {
+				if(outputTextFile.length() > 0) {
+					// Create a dom object from the output file containing xml text.
+					org.dom4j.Document document = getDomDocument(outputTextFile);
+					
+					if(document != null) {
+						// Run the stylesheet to extract text from the xml. 
+						text = getTextFromXML(document, getNullTransformFile());
+						// Note: Roy, for some reason, the text coming out of the transformer
+						// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
+					}
+				}
+			}
+			
+			// Put the text data (result of conversion) into the sink 
+			// so that it can be consumed by the next guy in the chain.
+			if(text == null)
+				text = "";
+			
+			return text;
+		}
+		finally {
+			try {
+				// It is important to delete the output text file, since
+				// it is owned by this handler not by the framework. 
+				FileHelper.delete(outputTextFile);
+			}
+			catch(IOException e) {
+				logger.warn(e.getMessage(), e);
+			}
+		}
+
+	}
+
+	private org.dom4j.Document getDomDocument(File textFile) {
+    	// open the file with an xml reader
+		SAXReader reader = new SAXReader();
+		try {
+			return reader.read(textFile);
+		} catch (DocumentException e) {
+			logger.error(e.getMessage(), e);
+			return null;
+		}	
+	}
 	
+	
+    private String getTextFromXML(org.dom4j.Document tempfile, File transformFile) {
+    	
+    	Locale l = Locale.getDefault();
+		Templates trans;
+		Transformer tranny = null;
+        
+        try {
+			Source s = new StreamSource(transformFile);
+			trans = transFactory.newTemplates(s);
+			tranny =  trans.newTransformer();
+		} catch (TransformerConfigurationException tce) {}
+		
+		StreamResult result = new StreamResult(new StringWriter());
+		try {
+			tranny.setParameter("Lang", l);
+			tranny.transform(new DocumentSource(tempfile), result);
+		} catch (Exception ex) {
+			return ex.getMessage();
+		}
+		return result.getWriter().toString();
+	}
+
 }

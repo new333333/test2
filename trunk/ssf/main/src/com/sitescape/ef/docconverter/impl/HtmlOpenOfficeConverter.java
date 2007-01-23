@@ -4,11 +4,12 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
 
 import java.io.File;
 
 //UNO API
+import com.sitescape.ef.docconverter.HtmlConverter;
 import com.sun.star.comp.helper.Bootstrap;
 import com.sun.star.bridge.XUnoUrlResolver;
 import com.sun.star.uno.XComponentContext;

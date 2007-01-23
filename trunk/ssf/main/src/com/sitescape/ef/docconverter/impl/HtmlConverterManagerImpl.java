@@ -1,4 +1,7 @@
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
+
+import com.sitescape.ef.docconverter.HtmlConverter;
+import com.sitescape.ef.docconverter.IHtmlConverterManager;
 
 public class HtmlConverterManagerImpl
 	implements IHtmlConverterManager
