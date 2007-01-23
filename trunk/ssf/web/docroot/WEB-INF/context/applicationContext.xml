@@ -317,7 +317,7 @@
     </bean>
 
 	<!-- View file as HTML manager implementation -->
-    <bean id="htmlConverterMgr" class="com.sitescape.ef.docconverter.HtmlConverterManagerImpl">
+    <bean id="htmlConverterManager" class="com.sitescape.ef.docconverter.HtmlConverterManagerImpl">
     	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
     	<property name="active"><value>2</value></property>
     	<property name="openOfficeConverter"><ref local="htmlOpenOfficeConverter"/></property>
@@ -636,6 +636,7 @@
 		<!-- valid values are CONTINUE and ABORT -->
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 		<property name="archiveStore"><ref local="archiveStore"/></property>
+		<property name="htmlConverterManager"><ref local="htmlConverterManager"/></property>
 	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper" parent="controllerDependencyTemplate">
