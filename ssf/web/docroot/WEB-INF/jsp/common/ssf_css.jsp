@@ -33,6 +33,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
 <c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
 
+<c:set var="ss_table_font_family" value="Verdana, Arial, Helvetica, sans-serif" scope="request"/>
+<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
+<c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
+<c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
+<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
+<c:set var="ss_table_background_color_row_hover" value="#FFFFB3" scope="request"/>
+
 <c:set var="ss_style_brightest" value="1.0" scope="request"/>
 <c:set var="ss_style_brighter" value="0.8" scope="request"/>
 <c:set var="ss_style_bright" value="0.7" scope="request"/>
@@ -168,6 +175,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	
+	<c:set var="ss_table_font_family" value="Verdana, Arial, Helvetica, sans-serif" scope="request"/>
+	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
+	<c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
+	<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_table_background_color_row_hover" value="#FFFFB3" scope="request"/>
+
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
@@ -1975,6 +1989,101 @@ div.ss_end_thumbnail_gallery {
 .ss_treeIframeDiv {
 	position:absolute;
 	background-color:${ss_style_background_color};
+}
+
+/* CSS document for table - author: rsmart 1.23.07 v02*/
+.ss_table{
+	border-collapse: collapse;
+	width: 90%;
+}
+/*table head - dark grey with black border top*/	
+.ss_table thead tr{
+	background-color: ${ss_table_background_color_head};
+	border-top: 1px solid black;
+}
+/*table head - dark grey with black border bottom*/
+.ss_table thead th{
+	padding: 0.5em;
+	white-space: nowrap;
+	border-bottom: 1px solid black;
+}
+/*row is white*/
+.ss_table tr{
+background-color: ${ss_table_background_color_even_row};
+}
+/*row is lite grey*/
+.ss_table_tr_odd{
+background-color: ${ss_table_background_color_odd_row} !important;
+white-space: nowrap !important;
+}
+
+/*yellow hover for table rows*/	
+.ss_table tbody tr:hover{
+	background-color: ${ss_table_background_color_row_hover} !important;
+}
+/*cell and row border*/
+.ss_table td, th{
+	border: 1px dotted #CCCCCC;
+}
+.ss_table tbody td{
+	padding: 0.5em;
+}
+/*work around to eliminate borders on nested tables*/
+
+.ss_table_tr_noborder{
+	background-color: #E9E9E9 !important;
+	border: 1px dotted #E9E9E9 !important;
+	border collapse: collapse !important;
+	border-bottom: 1px solid black !important;
+	padding: 10px !important;
+}
+.ss_table_td_noborder{
+	background-color: #E9E9E9 !important;
+	border: 1px dotted #E9E9E9 !important ;
+	padding-top: 10px !important;
+	padding-right: 0px !important;
+	padding-bottom: 10px !important;
+	padding-left: 0px !important;	
+}
+.ss_table_noborder_td:hover{
+	background-color:#E9E9E9;
+	border-color:#E9E9E9;
+}
+
+/*fonts for master file tables*/
+
+.ss_table_paragraph_bld{
+	font-family: ${ss_table_font_family}
+	font-size: ${ss_style_font_normalprint}
+	color: #000000;
+	font-weight: bold;
+	margin-left: 25px;
+	}
+.ss_table_paragraph{
+	font-family: ${ss_table_font_family}
+	font-size: ${ss_style_font_smallprint}
+	color: #000000;
+	margin-left: 0px;
+}
+.ss_table_header{
+	font-family: ${ss_table_font_family}
+	font-size: ${ss_style_font_normal}
+	color: #000000;
+	font-weight: bold;
+	margin-left: 0px;
+}
+.ss_table_smheaders {
+	font-family: ${ss_table_font_family}
+	font-size: ${ss_style_font_smallerprint}
+	font-weight: bold;
+	color: #000000;
+	line-height: normal;
+}
+.ss_table_paragraph_red {
+	font-family: ${ss_table_font_family}
+	font-size: ${ss_style_font_smallprint}
+	color: #FF0000 !important;
+	margin-left: 25px;
 }
 
 </c:if>

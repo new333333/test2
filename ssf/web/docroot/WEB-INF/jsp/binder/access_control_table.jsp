@@ -16,11 +16,11 @@
 %>
 
 <div id="${ss_accessControlTableDivId}">
-<table border="1">
-<tbody>
+<table class="ss_table">
+<thead>
 <tr>
   <th rowspan="2" colspan="3"></th>
-  <th nowrap="nowrap" colspan="${ss_accessFunctionsCount}"><ssf:nlt tag="access.roles"/>
+  <th class="ss_table_paragraph_bld" nowrap="nowrap" colspan="${ss_accessFunctionsCount}"><ssf:nlt tag="access.roles"/>
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <br/>
   <select name="roleIds" onChange="ss_selectRole${ss_namespace}();">
@@ -47,28 +47,29 @@
 <tr>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <input type="hidden" name="roleIds" value="${function.id}"/>
-<th>${function.name}</th>
+<th class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}</span></th>
 </c:forEach>
 </tr>
-
+</thead>
+<tbody>
 <c:set var="ss_groupsProcessed" value="0"/>
 <c:forEach var="group" items="${ss_accessSortedGroups}">
 <input type="hidden" name="principalIds" value="${group.id}"/>
 <tr>
 <c:if test="${ss_groupsProcessed == 0}">
-  <td rowspan="${ss_accessGroupsCount}"><ssf:nlt tag="access.groups"/></td>
+  <td class="ss_table_paragraph_bld" rowspan="${ss_accessGroupsCount}"><ssf:nlt tag="access.groups"/></td>
   <c:set var="ss_groupsProcessed" value="1"/>
 </c:if>
-  <td>${group.title}</td><td>${group.name}</td>
+  <td class="ss_table_paragraph">${group.title}</td><td class="ss_table_paragraph">${group.name}</td>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-<td align="center">
+<td class="ss_table_paragraph" align="center">
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssGroups[group.id]}">
-    <img height="13" width="13" src="<html:imagesPath/>pics/sym_s_checkmark.gif" style="padding-right:10px;"/>
+    <img height="13" width="13" src="<html:imagesPath/>pics/sym_s_checkmark.gif" />
   </c:if>
   <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssGroups[group.id]}">
-    <img height="13" width="13" src="<html:imagesPath/>pics/1pix.gif" style="padding-right:10px;"/>
+    <img height="13" width="13" src="<html:imagesPath/>pics/1pix.gif"/>
   </c:if>
 </c:if>
 
@@ -98,12 +99,12 @@
 <input type="hidden" name="principalIds" value="${user.id}"/>
 <tr>
 <c:if test="${ss_usersProcessed == 0}">
-  <td rowspan="${ss_accessUsersCount}"><ssf:nlt tag="access.users"/></td>
+  <td class="ss_table_paragraph_bld" rowspan="${ss_accessUsersCount}"><ssf:nlt tag="access.users"/></td>
   <c:set var="ss_usersProcessed" value="1"/>
 </c:if>
-  <td>${user.title}</td><td>${user.name}</td>
+  <td class="ss_table_paragraph">${user.title}</td><td class="ss_table_paragraph">${user.name}</td>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-<td align="center">
+<td class="ss_table_paragraph" align="center">
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssUsers[user.id]}">
