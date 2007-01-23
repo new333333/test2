@@ -43,7 +43,7 @@ import org.springframework.core.io.Resource;
  * @see Export Export
  */
 
-public class DocConverter implements TextConverter, InitializingBean, DisposableBean {
+public class TextStellentConverter implements TextConverter, InitializingBean, DisposableBean {
 
 	private static final String INPUTPATHKEY = "inputpath";
 	private static final String OUTPUTPATHKEY = "outputpath";

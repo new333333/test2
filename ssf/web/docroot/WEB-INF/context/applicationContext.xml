@@ -298,7 +298,7 @@
 	
 	<!-- ============================== Document Converter ============================ -->
 	
-    <bean id="textConverter" class="com.sitescape.ef.docconverter.impl.DocConverter">
+    <bean id="textConverter" class="com.sitescape.ef.docconverter.impl.TextStellentConverter">
         <property name="configFileName"><value>config/docconverter.cfg</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
     </bean>

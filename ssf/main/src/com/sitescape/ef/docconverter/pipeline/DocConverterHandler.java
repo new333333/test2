@@ -1,35 +1,17 @@
 package com.sitescape.ef.docconverter.pipeline;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Locale;
-
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.DocumentException;
-import org.dom4j.io.DocumentSource;
-import org.dom4j.io.SAXReader;
-import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.ef.docconverter.TextConverter;
-import com.sitescape.ef.docconverter.impl.DocConverter;
 import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.PipelineInvocation;
 import com.sitescape.ef.util.FileHelper;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.TempFileUtil;
 
 /**

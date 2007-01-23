@@ -7,7 +7,6 @@ import org.quartz.Scheduler;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.docconverter.impl.DocConverter;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
 import com.sitescape.ef.rss.RssGenerator;
@@ -42,7 +41,6 @@ public abstract class CommonDependencyInjection {
 	protected Scheduler scheduler;
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
-	protected DocConverter docConverter;
 	protected RssGenerator rssGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	
@@ -76,9 +74,6 @@ public abstract class CommonDependencyInjection {
 	public void setPresenceService(PresenceService presenceService) {
 		this.presenceService = presenceService;
 	}
-	public void setDocConverter(DocConverter docConverter) {
-		this.docConverter = docConverter;
-	}
 	public void setRssGenerator(RssGenerator rssGenerator) {
 		this.rssGenerator = rssGenerator;
 	}
@@ -111,9 +106,6 @@ public abstract class CommonDependencyInjection {
 	}
 	protected PresenceService getPresenceService() {
 		return presenceService;
-	}
-	public DocConverter getDocConverter() {
-		return docConverter;
 	}
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
