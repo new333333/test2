@@ -6,8 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
@@ -18,11 +21,16 @@ import javax.servlet.http.HttpSession;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
+import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.util.SimpleMultipartFile;
 import com.sitescape.ef.util.TempFileUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.util.Validator;
 
 public class WebHelper {
 
@@ -246,6 +254,19 @@ public class WebHelper {
 		return mf;
 	}
 	
+	/**
+	 * Returns the file name of the uploaded file
+	 * 
+	 * @param fileHandle
+	 * @return fileName
+	 */
+	public static String getFileName(String fileHandle) {
+		int idx = fileHandle.indexOf("-");
+		if (idx < 0) return null;
+		int fileNameLength = Integer.parseInt(fileHandle.substring(0, idx));
+		return fileHandle.substring(idx+1, idx+1+fileNameLength);
+	}
+	
 	public static void readFileHandleContent(String fileHandle, OutputStream out)
 		throws IOException {
 		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
@@ -264,4 +285,37 @@ public class WebHelper {
 
 		file.delete();
 	}
+	
+	/**
+	 * Parse a description looking for uploaded file references
+	 * 
+	 * @param Description
+	 * @param File
+	 * @return 
+	 */
+	public static void scanDescriptionForUploadFiles(Description description, List fileData) {
+    	String fileHandle = "";
+    	Pattern pattern = Pattern.compile("<img .*src *=.*https*://.*viewType=ss_viewUploadFile.*>");
+    	Matcher m =pattern.matcher(description.getText());
+    	while (m.find()) {
+    		String img = description.getText().substring(m.regionStart(), m.regionEnd());
+	    	MultipartFile myFile = null;
+	    	try {
+	    		myFile = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+	    	} catch(IOException e) {
+	    		return;
+	    	}
+	    	if (myFile != null) {
+	    		String fileName = myFile.getOriginalFilename();
+		    	if (fileName.equals("")) return;
+		    	// Different repository can be specified for each file uploaded.
+		    	// If not specified, use the statically selected one.  
+		    	String repositoryName = RepositoryUtil.getDefaultRepositoryName();
+		    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+		    	fileData.add(fui);
+	    	}
+	    	WebHelper.releaseFileHandle(fileHandle);
+    	}
+	}
+	
 }
