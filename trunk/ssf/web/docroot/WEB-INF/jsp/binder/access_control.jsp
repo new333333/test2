@@ -194,35 +194,37 @@ function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
 </div>
 </c:if>
 
-<c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
-<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
-
-<table cellspacing="4px" cellpadding="4px">
+<table class="ss_table">
+<thead>
 <tr>
-<td valign="top" style="padding-left:10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addGroup"/></span>
-  <br/>
+<th class="ss_table_paragraph_bld"><ssf:nlt tag="access.addGroup"/></th>
+<th class="ss_table_paragraph_bld"><ssf:nlt tag="access.addUser"/></th>
+</tr>
+<tr class="ss_table_tr_noborder">
+<th class="ss_table_td_noborder" width="50%">
   <ssf:find formName="${renderResponse.namespace}rolesForm" 
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="group"
     leaveResultsVisible="true"
     clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
-</td>
+</th>
 
-<td valign="top" style="padding-left:40px;">
-  <span class="ss_bold"><ssf:nlt tag="access.addUser"/></span>
-  <br/>
+<th class="ss_table_td_noborder" width="50%">
   <ssf:find formName="${renderResponse.namespace}rolesForm" 
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="user"
     leaveResultsVisible="true"
     clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
-</td>
+</th>
 </tr>
+</thead>
 </table>
+
+<c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
+<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/binder/access_control_table.jsp" %>
 
 <br/>
 <c:if test="${!ssBinder.functionMembershipInherited}">
