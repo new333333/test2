@@ -139,6 +139,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private int lockExpirationAllowance; // number of seconds
 	private FileStore cacheFileStore;
 	private ArchiveStore archiveStore;
+	private IHtmlConverterManager htmlConverterManager;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -215,6 +216,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		return failedFilterTransaction;
 	}
 
+	public void setHtmlConverterManager(IHtmlConverterManager htmlConverterManager) {
+		this.htmlConverterManager = htmlConverterManager;
+	}
+	
+	protected IHtmlConverterManager getHtmlConverterManager() {
+		return htmlConverterManager;
+	}
+	
 	public void setFailedFilterTransaction(String failedFilterTransaction) {
 		if(FAILED_FILTER_TRANSACTION_CONTINUE.equals(failedFilterTransaction)) {
 			this.failedFilterTransaction = FAILED_FILTER_TRANSACTION_CONTINUE;
@@ -1842,7 +1851,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		int length = 2048;
 		char[] cbuf = new char[length];
 		HtmlConverter converter = null;
-		IHtmlConverterManager htmlConverter = null;
 		StringBuffer buffer = null,
 					 bufferAlter = null;
 			
@@ -1856,8 +1864,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				int j = outFile.lastIndexOf(File.separator);
 				//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
 				
-				htmlConverter = (IHtmlConverterManager)SpringContextUtil.getBean("htmlConverterMgr");
-				converter = htmlConverter.getConverter();
+				converter = htmlConverterManager.getConverter();
 				
 				converter.convert(inFile, outFile, 30000);
 				// When generating the HMTL equivalent file.
