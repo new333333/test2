@@ -79,6 +79,7 @@ public class WebKeys {
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
+	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
@@ -135,6 +136,8 @@ public class WebKeys {
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
+	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
+	
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
@@ -178,8 +181,6 @@ public class WebKeys {
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
-	public static final String OPERATION_VIEW_ENTRY = "view_entry";
-	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
 	public static final String OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
@@ -215,6 +216,9 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
 	public static final String OPERATION_SAVE_SEARCH_GOTOPAGE_INFO="save_search_goto_page_info";
 	public static final String OPERATION_CHANGE_ENTRIES_ON_SEARCH_PAGE="change_entries_on_search_page";
+	public static final String OPERATION_VIEW_ENTRY = "view_entry";
+	public static final String OPERATION_VIEW_FILE = "view_file";
+	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
@@ -307,6 +311,7 @@ public class WebKeys {
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
+    public static final String FILE_VIEW_TYPE_UPLOAD_FILE = "ss_viewUploadFile";
     public static final String FILTER_ENTRY_DEF_ID = "ss_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";
@@ -348,6 +353,7 @@ public class WebKeys {
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";
     public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
+    public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String IS_REFRESH="ssRefresh";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
@@ -435,6 +441,7 @@ public class WebKeys {
 	public static final String TAG_NAME = "ssTag";
 	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
     public static final String TAG_SIGN="ssTagSign";
+	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
 	public static final String USER_ID = "com.sitescape.userId";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";

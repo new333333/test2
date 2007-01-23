@@ -34,10 +34,12 @@ import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -48,6 +50,7 @@ import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 
@@ -109,6 +112,8 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
 					op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
+				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -233,6 +238,8 @@ public class AjaxController  extends SAbstractController {
 			
 		} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 			return ajaxGetAccessControlTable(request, response);
+		} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
+			return ajaxGetUploadImageFile(request, response);
 		}
 				
 		return ajaxReturn(request, response);
@@ -994,11 +1001,13 @@ public class AjaxController  extends SAbstractController {
 			ActionResponse response) throws Exception {
 		// Get a handle on the uploaded file
 		String fileHandle = WebHelper.getFileHandleOnUploadedFile(request);
-		if(fileHandle == null) {
-			// There was no uploaded file. Probably this shouldn't occur.
-		}
-		else {
-			// You can create a URL containing the handle...
+		if (fileHandle != null) {
+			// Create a URL containing the handle
+			String url = WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?" +
+			"&" + WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE + 
+			"&" + WebKeys.URL_FILE_ID + "=" + fileHandle; 
+
+			response.setRenderParameter(WebKeys.IMAGE_FILE_URL, url);
 		}
 	
 		// And then, here's what you need to do at the time you create an entry.
@@ -1245,6 +1254,15 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.NAMESPACE, namespace);
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_ajax", model);
+	}
+
+	private ModelAndView ajaxGetUploadImageFile(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String url = PortletRequestUtils.getStringParameter(request, WebKeys.IMAGE_FILE_URL, "");
+		model.put(WebKeys.UPLOAD_FILE_URL, url);
+
+		return new ModelAndView("binder/upload_image_file_ajax_return", model);
 	}
 
 }

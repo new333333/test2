@@ -51,6 +51,7 @@ import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.DateHelper;
 import com.sitescape.ef.web.util.EventHelper;
+import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
@@ -1387,6 +1388,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							if (inputData.exists(nameValue)) {
 								description.setText(inputData.getSingleValue(nameValue));
 								description.setFormat(Description.FORMAT_HTML);
+								WebHelper.scanDescriptionForUploadFiles(description, fileData);
 								entryData.put(nameValue, description);
 							}
 						} else if (itemName.equals("date")) {
