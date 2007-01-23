@@ -1286,7 +1286,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       	EntityIndexUtils.addEntryType(indexDoc, entry);       
         // Add ACL field. We only need to index ACLs for read access.
       	if (entry instanceof AclControlled)
-      		EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry));
+      		EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry), AccessUtils.getReadAclIds(binder));
       	else 
       		BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
       		

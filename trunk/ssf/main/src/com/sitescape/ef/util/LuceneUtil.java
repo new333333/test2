@@ -18,6 +18,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 import com.sitescape.ef.lucene.SsfIndexAnalyzer;
+import com.sitescape.ef.search.LuceneException;
 
 public class LuceneUtil {
 
@@ -84,12 +85,12 @@ public class LuceneUtil {
 		return getWriter(indexPath, false);
 	}
 
-	public static IndexWriter getWriter(String indexPath, boolean create)
-		throws IOException {
-
-		return new IndexWriter(indexPath, new SsfIndexAnalyzer(), create);
+	public static IndexWriter getWriter(String indexPath, boolean create) throws IOException {
+		IndexWriter iw = new IndexWriter(indexPath, new SsfIndexAnalyzer(), create);
+		iw.setUseCompoundFile(false);
+		return iw;
 	}
-
+	
 	private static boolean initializeIndex(String indexPath) throws IOException {
 		synchronized(LuceneUtil.class) {
 			if(IndexReader.indexExists(indexPath)) {

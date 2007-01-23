@@ -50,7 +50,6 @@ public interface AdminModule {
 	public List getConfigurations(int type);
 
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships);
-	public void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 
     public List getWorkAreaFunctionMemberships(WorkArea workArea);

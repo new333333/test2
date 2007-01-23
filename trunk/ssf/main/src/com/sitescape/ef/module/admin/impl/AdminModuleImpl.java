@@ -17,6 +17,12 @@ import java.util.Set;
 import java.util.TreeSet;
 import javax.mail.internet.InternetAddress;
 
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.InvalidArgumentException;
 import com.sitescape.ef.ObjectKeys;
@@ -31,6 +37,7 @@ import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
@@ -49,11 +56,17 @@ import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.ObjectBuilder;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
+import com.sitescape.ef.search.LuceneSession;
+import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.FunctionExistsException;
+import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
@@ -322,15 +335,52 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
 	
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
+		List folderIds = new ArrayList();
+		Set readAclIds = new HashSet();
+		
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
+		
+		// get the list of binderId's of this folder and all it's descendents who inherit
+		// Acls from their parent
+		if (functionMemberships.size() > 0) {
+			if (workArea instanceof Binder) {
+				Binder binder = (Binder) workArea;
+				folderIds = getInheritingDescendentBinderIds((Folder) binder, new ArrayList());
+			}
+		}
+
 		Iterator itFunctions = functionMemberships.entrySet().iterator();
 		while (itFunctions.hasNext()) {
 			Map.Entry fm = (Map.Entry)itFunctions.next();
 			setWorkAreaFunctionMembership(workArea, (Long)fm.getKey(), (Set)fm.getValue());
+			// get all the acls associated with each function that contains the 
+			// read entries operation
+			readAclIds = getReadEntryAcls(readAclIds, (Long)fm.getKey(), (Set)fm.getValue());
+			
 		}
+		// Now, create a query which can be used by the index update method to modify all the
+		// entries, replies, attachments, and binders(workspaces) in the index with this new 
+		// Acl list.
+
+		StringBuffer aIds = new StringBuffer();
+		for(Iterator i = readAclIds.iterator(); i.hasNext();) {
+			aIds.append(i.next()).append(" ");
+    	}
+		String folderAclFieldValue = aIds.toString();
+		String folderAclFieldName = BasicIndexUtils.FOLDER_ACL_FIELD;
+		Query q = buildQueryforUpdate(folderIds);
+		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+		try {
+			
+			luceneSession.updateDocuments(q, folderAclFieldName,
+					folderAclFieldValue);
+		} finally {
+			luceneSession.close();
+		}
+		
 	}
 	
-	public void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
+	private void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
       	Workspace zone = RequestContextHolder.getRequestContext().getZone();
       	WorkAreaFunctionMembership membership =
@@ -352,6 +402,86 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			getWorkAreaFunctionMembershipManager().updateWorkAreaFunctionMembership(membership);
     	    processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
 		}
+	}
+	
+	// a recursive routine which walks down the tree
+	// from here and builds a list of the ids of folders 
+	// who inherit acls from their parents.  The tree is pruned at
+	// the highest branch that does not inherit from it's parent.
+	private List getInheritingDescendentBinderIds(Folder folder, List ids) {
+		List folders = folder.getBinders();
+		if (folders.size() != 0) {
+			for (int i=0; i<folders.size(); ++i) {
+				Folder c = (Folder)folders.get(i);
+				if (c.getInheritAclFromParent()) {
+					ids = getInheritingDescendentBinderIds(c, ids);
+				}
+    			
+    		}
+			ids.add(folder.getId());
+    	} else {
+    		ids.add(folder.getId());
+    	}
+    	return ids;
+	}
+	
+	// for a given function, if it contains the read_entries operation add the memberIds to the list 
+	// of all the unique Ids who have read access
+	private Set getReadEntryAcls(Set aclIds, Long functionId, Set memberIds) {
+		Function f = getFunctionManager().getFunction(
+				RequestContextHolder.getRequestContext().getZoneId(),
+				functionId);
+		if (f.getOperations().contains(WorkAreaOperation.READ_ENTRIES)) {
+			for (Iterator iter=memberIds.iterator(); iter.hasNext();) {
+				Long id = (Long)iter.next();
+				aclIds.add(id);
+			}
+		}
+		return aclIds;
+	}	
+	
+	private Query buildQueryforUpdate(List folderIds) {
+		Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+    	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	//get all the entrys, replies and attachments
+    	// Folderid's and doctypes:{entry, binder, attachment}
+    	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
+    		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+    	String[] types = new String[] {"entry","binder","attachment"};
+    	
+    	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	for (int i =0; i < types.length; i++) {
+    		Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(types[i]);
+    	}
+    	// Get all the binder's themselves
+    	// OR Doctype=binder and binder id's
+    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
+    	Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText("binder");
+	   	for (Iterator iter = folderIds.iterator(); iter.hasNext();) {
+    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(iter.next().toString());
+    	}
+    	
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	SearchObject so = qb.buildQuery(qTree);
+
+		return so.getQuery();
 	}
 	
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
