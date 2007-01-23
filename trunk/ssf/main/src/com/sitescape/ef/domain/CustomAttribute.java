@@ -487,9 +487,8 @@ public class CustomAttribute  {
         			element =  ChangeLogUtils.addLogAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
       				break;
        			case EVENT:
-  					element = ChangeLogUtils.addLogAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_EVENT, null);
          			Event event = owner.getEntity().getEvent(stringValue);
-        			if (event != null) event.addChangeLog(element);
+        			if (event != null) element = event.addChangeLog(parent);
       				break;
        			case ATTACHMENT:
        				//attachments are logged separetly
