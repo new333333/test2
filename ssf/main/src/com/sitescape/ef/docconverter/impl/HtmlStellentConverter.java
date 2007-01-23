@@ -4,8 +4,9 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
 
+import com.sitescape.ef.docconverter.HtmlConverter;
 import com.stellent.scd.*;
 
 import java.io.File;

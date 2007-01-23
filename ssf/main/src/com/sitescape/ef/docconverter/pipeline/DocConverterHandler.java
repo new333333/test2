@@ -22,7 +22,8 @@ import org.dom4j.io.DocumentSource;
 import org.dom4j.io.SAXReader;
 import org.springframework.util.FileCopyUtils;
 
-import com.sitescape.ef.docconverter.DocConverter;
+import com.sitescape.ef.docconverter.TextConverter;
+import com.sitescape.ef.docconverter.impl.DocConverter;
 import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
@@ -40,21 +41,19 @@ import com.sitescape.ef.util.TempFileUtil;
  */
 public class DocConverterHandler extends AbstractDocHandler {
 
-    private TransformerFactory transFactory = TransformerFactory.newInstance();
-    
-	protected final Log logger = LogFactory.getLog(getClass());
+ 	protected final Log logger = LogFactory.getLog(getClass());
 
-	private DocConverter docConverter;
+	private TextConverter textConverter;
 	
 	// Export process timeout in milliseconds.
 	private long timeout = 10000; // default value
 
-	protected DocConverter getDocConverter() {
-		return docConverter;
+	protected TextConverter getTextConverter() {
+		return textConverter;
 	}
 
-	public void setDocConverter(DocConverter docConverter) {
-		this.docConverter = docConverter;
+	public void setTextConverter(TextConverter textConverter) {
+		this.textConverter = textConverter;
 	}
 
 	protected long getTimeout() {
@@ -82,46 +81,9 @@ public class DocConverterHandler extends AbstractDocHandler {
 		}
 		
 		try {
-			// Create an empty file to be used as output file for the converter.
-			// The output file will contain text data in xml format. 
-			File outputTextFile = TempFileUtil.createTempFile("docconverteroutput_");
+			String text = textConverter.convertToText(inputFile, timeout);
 			
-			try {
-				// Invoke the actual converter function giving it timeout value.
-				boolean result = docConverter.convert(inputFile, outputTextFile, timeout);
-				
-				String text = null;
-				
-				if(result) {
-					if(outputTextFile.length() > 0) {
-						// Create a dom object from the output file containing xml text.
-						org.dom4j.Document document = getDomDocument(outputTextFile);
-						
-						if(document != null) {
-							// Run the stylesheet to extract text from the xml. 
-							text = getTextFromXML(document, docConverter.getNullTransformFile());
-							// Note: Roy, for some reason, the text coming out of the transformer
-							// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
-						}
-					}
-				}
-				
-				// Put the text data (result of conversion) into the sink 
-				// so that it can be consumed by the next guy in the chain.
-				if(text == null)
-					text = "";
-				sink.setString(text, "UTF-8");
-			}
-			finally {
-				try {
-					// It is important to delete the output text file, since
-					// it is owned by this handler not by the framework. 
-					FileHelper.delete(outputTextFile);
-				}
-				catch(IOException e) {
-					logger.warn(e.getMessage(), e);
-				}
-			}
+			sink.setString(text, "UTF-8");
 		}
 		finally {
 			if(inputTempFile != null) {
@@ -136,38 +98,5 @@ public class DocConverterHandler extends AbstractDocHandler {
 		}
 		
 		invocation.proceed(); // Proceed to the next handler in the chain
-	}
-	
-	private org.dom4j.Document getDomDocument(File textFile) {
-    	// open the file with an xml reader
-		SAXReader reader = new SAXReader();
-		try {
-			return reader.read(textFile);
-		} catch (DocumentException e) {
-			logger.error(e.getMessage(), e);
-			return null;
-		}	
-	}
-	
-    private String getTextFromXML(org.dom4j.Document tempfile, File transformFile) {
-    	
-    	Locale l = Locale.getDefault();
-		Templates trans;
-		Transformer tranny = null;
-        
-        try {
-			Source s = new StreamSource(transformFile);
-			trans = transFactory.newTemplates(s);
-			tranny =  trans.newTransformer();
-		} catch (TransformerConfigurationException tce) {}
-		
-		StreamResult result = new StreamResult(new StringWriter());
-		try {
-			tranny.setParameter("Lang", l);
-			tranny.transform(new DocumentSource(tempfile), result);
-		} catch (Exception ex) {
-			return ex.getMessage();
-		}
-		return result.getWriter().toString();
 	}
 }
