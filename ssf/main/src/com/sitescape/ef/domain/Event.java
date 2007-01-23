@@ -2906,7 +2906,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 	}	
 	public boolean update(Object obj) {
 		Event newEvent = (Event)obj;
-		boolean changed=true;
+		boolean changed=false;
 		if (!getDtStart().equals(newEvent.getDtStart())) {
 			changed=true;
 			setDtStart(newEvent.getDtStart());
@@ -2915,12 +2915,19 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 			changed=true;
 			setDuration(newEvent.getDuration());
 		}
+		//-1 implies have until
 	    if (newEvent.getCount() == -1) {
-    		setCount(0);
-	    	if (!getUntil().equals(newEvent.getUntil())) {
-	    		setUntil(newEvent.getUntil());
-	    		changed=true;
-	    	}
+			//see if untils match
+    		if (getCount() == -1) {
+    			if (!getUntil().equals(newEvent.getUntil())) {
+    				setUntil(newEvent.getUntil());
+    				changed=true;
+    			}
+    		} else {
+    			setCount(0);
+    			setUntil(newEvent.getUntil());
+    			changed = true;
+    		}
 	    } else {
 	    	setUntil((Calendar)null);
 	    	if (getCount()!=newEvent.getCount())
@@ -2998,20 +3005,18 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 		Element element = parent.addElement("event");
 		element.addAttribute("id", getId());
 		
-		ChangeLogUtils.addLogProperty(element, "start", getDtStart().toString());
-		ChangeLogUtils.addLogProperty(element, "duration", getDuration().toString());
+		ChangeLogUtils.addLogProperty(element, "start", getDtStartString());
+		ChangeLogUtils.addLogProperty(element, "duration", getDuration().getString());
 
-		if (getCount() == -1) {
-			ChangeLogUtils.addLogProperty(element, "count", "0");
+		if (getCount() > 0) {
+			ChangeLogUtils.addLogProperty(element, "count", getCountString());
+		} else if (getCount() == -1) {
 			ChangeLogUtils.addLogProperty(element, "until", getUntilString());
-	    } else {
-			ChangeLogUtils.addLogProperty(element, "count", Long.toString(getCount()));
-			ChangeLogUtils.addLogProperty(element, "until", "");
-	    }
+	    } 
 	    	
-		ChangeLogUtils.addLogProperty(element, "frequency", Long.toString(getFrequency()));
+		ChangeLogUtils.addLogProperty(element, "frequency", getFrequencyString());
 	    
-		ChangeLogUtils.addLogProperty(element, "interval", Long.toString(getInterval()));
+		ChangeLogUtils.addLogProperty(element, "interval", getIntervalString());
 
 		ChangeLogUtils.addLogProperty(element, "timeZoneSensitive", Boolean.toString(isTimeZoneSensitive()));
 
@@ -3031,10 +3036,8 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
 
 		ChangeLogUtils.addLogProperty(element, "byMonth", getByMonthString());
 
-		//modification date/principal in log with entry
-		//don't think creation stamp is needed
-//		ChangeLogUtils.addLogProperty(element, ObjectKeys.FIELD_ENTITY_CREATEDBY, getCreation().getPrincipal().getId());
-//		ChangeLogUtils.addLogProperty(element, ObjectKeys.FIELD_ENTITY_CREATEDON, getCreation().getDate());
+		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
+		if (modification != null) modification.addChangeLog(element, ObjectKeys.XTAG_ENTITY_MODIFICATION);
 		return element;
     	
     }
