@@ -41,14 +41,14 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected boolean functionMembershipInherited = true;
     protected PersistentAclSet aclSet; 
     protected boolean inheritAclFromParent = true;
+    //uuid to identify a reserved binder
     private String internalId;
-    // these bits signify whether entries of a binder can allow wider access
-    // than the binder's .  This does not apply to sub-binders.
-    protected boolean widenRead=false;
-    protected boolean widenModify=false;
+    //force attachments of all child objects to have unique names.
     protected boolean library=false;
-    protected boolean widenDelete=false;
-    
+    //force child objects to have a unique normalized title.  This is an aide to 
+    //wikis which link to titles
+    protected boolean uniqueTitles=false;
+      
     /**
      * @hibernate.property not-null="true"
      */
@@ -58,6 +58,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
     }
+    public boolean isZone() {
+    	if (getZoneId().equals(getId())) return true;
+    	return false;
+    }
     /**
      * @hibernate.property
      */
@@ -66,6 +70,15 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     public void setLibrary(boolean library) {
     	this.library = library;
+    }
+    /**
+     * @hibernate.property
+     */
+    public boolean isUniqueTitles() {
+    	return uniqueTitles;
+    }
+    public void setUniqueTitles(boolean uniqueTitles) {
+    	this.uniqueTitles = uniqueTitles;
     }
     /**
      * Internal id used to identify default binders.  This id plus
@@ -147,7 +160,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
        this.name = name;
     }
     public String getFullName() {
-    	if (parentBinder == null) return name;
+    	if (isZone()) return name;
     	return parentBinder.getFullName() + "." + name;
     }
     /**
@@ -230,7 +243,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 	 * @return
 	 */
     public boolean isFunctionMembershipInherited() {
-    	if (parentBinder == null) return false;
+    	if (isZone()) return false;
         return functionMembershipInherited;
     }
     public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
@@ -271,38 +284,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setInheritAclFromParent(boolean inherit) {
         this.inheritAclFromParent = inherit;
     }
-    /**
-     * handled on a zone wide basis, so the search queries
-     * can work correctly on zone-wide search 
-     */
-//    public boolean isWidenRead() {
-//        return widenRead;
-//    }
 
-//    public void setWidenRead(boolean widenRead) {
-//        this.widenRead = widenRead;
-//    }
-    /**
-     * @hibernate.property column="acl_widenModify" 
-     */
-    public boolean isWidenModify() {
-        return widenModify;
-    }
-
-    public void setWidenModify(boolean widenModify) {
-        this.widenModify = widenModify;
-    }
-    /**
-     * @hibernate.property column="acl_widenDelete" 
-     */
-    public boolean isWidenDelete() {
-        return widenDelete;
-    }
-
-    public void setWidenDelete(boolean widenDelete) {
-        this.widenDelete = widenDelete;
-    }    
-    public Long getCreatorId() {
+    public Long getOwnerId() {
+    	if (owner != null) return owner.getId();
     	HistoryStamp creation = getCreation();
     	if(creation != null) {
     		Principal principal = creation.getPrincipal();

@@ -21,7 +21,6 @@ public interface WorkflowSupport extends AclControlled {
     public WorkflowState getWorkflowStateByThread(Definition def, String threadName);
 	public boolean hasAclSet();
 	public boolean checkWorkArea(AccessType type);
-	public boolean checkOwner(AccessType type);
 	public Set getStateMembers(AccessType type);
 	public Set getWorkflowResponses();
 	public void addWorkflowResponse(WorkflowResponse workflowResponse);

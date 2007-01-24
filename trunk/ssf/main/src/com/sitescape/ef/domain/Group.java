@@ -124,6 +124,16 @@ public class Group extends Principal implements WorkArea {
 		// TODO Then where should we inherit the function membership from?
 		return null; // For now
 	}
+	public Long getOwnerId() {
+	   	HistoryStamp creation = getCreation();
+    	if(creation != null) {
+    		Principal principal = creation.getPrincipal();
+    		if(principal != null)
+    			return principal.getId();
+    	}
+    	return null;
+ 
+	}
 	
 	// I have separate sets of methods for handling functionMembershipInherited
 	// field - one for WorkArea interface and the other for Hibernate persistence.

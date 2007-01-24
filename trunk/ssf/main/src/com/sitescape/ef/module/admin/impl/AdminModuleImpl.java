@@ -1,9 +1,3 @@
-/*
- * Created on Dec 13, 2004
- *
- * TODO To change the template for this generated file go to
- * Window - Preferences - Java - Code Style - Code Templates
- */
 package com.sitescape.ef.module.admin.impl;
 
 import java.text.ParseException;
@@ -737,7 +731,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			user.setModification(stamp);
 			
 			addAnnonymous(profiles, stamp);
-			addOwner(profiles, stamp);
 			Group group = addAllUserGroup(profiles, stamp);
 			addAdminRole(top, top, user);
 			//all users are visitors
@@ -791,10 +784,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return user;
 	}
 	private User addAnnonymous(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_ID);
-	}
-	private User addOwner(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "owner", ObjectKeys.OWNER_USER_ID);
+		return addReservedUser(parent, stamp, "_postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_ID);
 	}
 	private void addAdminRole(Workspace top, WorkArea workArea, User user) {
 		Function function = new Function();
@@ -909,11 +899,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			try {
 				binderModule.modifyBinder(profiles.getId(), new com.sitescape.ef.module.shared.MapInputData(updates));
 			} catch (WriteFilesException wf) {}
-		}
-		try {
-			getProfileDao().getReservedUser(ObjectKeys.OWNER_USER_ID, top.getId());
-		} catch (NoUserByTheNameException nu) {
-			addOwner(profiles, profiles.getCreation());
 		}
 		Workspace global=null;
 		Workspace team=null;

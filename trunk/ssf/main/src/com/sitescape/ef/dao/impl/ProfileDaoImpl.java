@@ -5,21 +5,19 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Map;
-import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.springframework.dao.DataAccessException;
@@ -615,7 +613,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return (User)objs.get(0);
     }
     public Set getPrincipalIds(User user) {
-    	return user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, user.getZoneId()));
+    	return new HashSet(user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, user.getZoneId())));
     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 

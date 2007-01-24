@@ -112,7 +112,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		final InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
-                
+      	if (parent.isZone())
+      		throw new NotSupportedException(NLT.get("errorcode.notsupported.addbinder"));
+               
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.reset("addBinder_toEntryData").begin();
@@ -300,7 +302,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        			fixupPath(binder);
 	        		}
         			getCoreDao().updateLibraryName(binder.getParentBinder(), binder, oldTitle, newTitle);
-	        		return null;
+        			if (binder.getParentBinder().isUniqueTitles()) {
+        				
+        			}
+        			return null;
 	        	}});
 	        sp.end().print();
 	        
@@ -508,10 +513,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
-    	if (source.isReserved() || source.getParentBinder() == null) 
+    	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
     				NLT.get("errorcode.notsupported.moveBinder", new String[]{source.getPathName()}));
- 
+    	if (destination.isZone())
+      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+
     	//first remove name
     	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
     	source.getParentBinder().removeBinder(source);

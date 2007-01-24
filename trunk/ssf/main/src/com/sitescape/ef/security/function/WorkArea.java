@@ -21,4 +21,7 @@ public interface WorkArea {
     public boolean isFunctionMembershipInherited();
     
     public void setFunctionMembershipInherited(boolean functionMembershipInherited);
+
+    public Long getOwnerId();
+
 }

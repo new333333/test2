@@ -304,8 +304,7 @@ public class ListFolderController extends  SAbstractController {
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		
 		//See if the user has selected a specific view to use
-        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
-		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 
 		Map tabOptions = tabs.getTab(tabs.getCurrentTab());

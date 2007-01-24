@@ -472,7 +472,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     }
     public void moveFolderToWorkspace(Folder source, Workspace destination) {
-       	HKey oldKey = source.getFolderHKey();
+      	if (destination.isZone())
+      		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
+      	HKey oldKey = source.getFolderHKey();
        	//first remove name
     	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
      	source.getParentBinder().removeBinder(source);

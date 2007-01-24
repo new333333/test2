@@ -13,7 +13,8 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.util.CollectionUtil;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
-    protected String title="";
+    protected String title=""; //initialized by hibernate access=field
+    protected String normalTitle=""; 
     protected Description description;
     protected Long logVersion=Long.valueOf(0);
     protected Binder parentBinder; 
@@ -56,7 +57,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         this.description = tmp; 
     }
     /**
-     * @hibernate.property length="1024"
+     * @hibernate.property length="256"
      * @return
      */
     public String getTitle() {
@@ -64,6 +65,18 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     public void setTitle(String title) {
         this.title = title;
+        //compute normalized title
+        
+    }
+    /**
+     * @hibernate.property length="256"
+     * @return
+     */
+    public String getNormalTitle() {
+        return normalTitle;
+    }
+    public void setNormalTitle(String normalTitle) {
+        this.normalTitle = normalTitle;
     }
     /** 
      * @hibernate.many-to-one access="field" class="com.sitescape.ef.domain.Definition"

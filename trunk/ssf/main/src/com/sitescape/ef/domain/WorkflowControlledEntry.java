@@ -100,7 +100,7 @@ public abstract class WorkflowControlledEntry extends Entry
      * 
      */
     public boolean getInheritAclFromParent() {
-    	return !hasAclSet();
+    	return false;
     }
 
     /**
@@ -110,7 +110,7 @@ public abstract class WorkflowControlledEntry extends Entry
 		throw new InternalError("Method not supported");
     }
     
-    public Long getCreatorId() {
+    public Long getOwnerId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {
     		Principal principal = creation.getPrincipal();
@@ -143,18 +143,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	       }
        return false;
    }
-	public boolean checkOwner(AccessType type) {
-	   Set states = getWorkflowStates();
-	   if ((states == null) || states.isEmpty()) return true; 
-	   //If any state allows creator, use it
-	   for (Iterator iter=states.iterator(); iter.hasNext();) {
-	    	WorkflowState state = (WorkflowState)iter.next();
-	    	WfAcl a = state.getAcl(type);
-	    	//return least restrictive
-	       	if ((a != null) && a.isCreator()) return true;
-	   }
-	   return false;
-	}
+
 	public Set getStateMembers(AccessType type) {
 	   	Set result = new HashSet();
 	   	Set states = getWorkflowStates();

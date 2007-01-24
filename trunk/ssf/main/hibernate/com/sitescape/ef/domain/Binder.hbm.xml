@@ -11,6 +11,7 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
 	<property name="library"/>
+	<property name="uniqueTitles"/>
 	<property name="logVersion"/>
     <many-to-one name="parentBinder"/>
     <many-to-one name="owner"/>
@@ -91,14 +92,12 @@
     </component>
     <property name="popularity"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
-<!-- moved to configProps so zone search handles    <property name="widenRead" column="acl_widenRead"/> -->
-    <property name="widenModify" column="acl_widenModify"/>
-    <property name="widenDelete" column="acl_widenDelete"/>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
-    <property name="title" length="1024"/>
+    <property name="title" length="256" access="field"/>
+    <property name="normalTitle" length="256"/>
     <property name="iconName" length="64"/>    
     <property name="internalId" length="32"/>
     <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">

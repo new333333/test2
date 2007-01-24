@@ -25,7 +25,6 @@ public class CollectionUtil {
 	 * 
 	 */
 	public static List mergeAsSet(List oColl, Collection nColl) {
-	   	Object o;
       	if (oColl == null) {
        		if (nColl instanceof List)
        			oColl = (List)nColl;
@@ -44,13 +43,13 @@ public class CollectionUtil {
        	
    	return oColl;
 	}
+	//return list of members in 1 but not in 2
 	public static Set differences(Collection coll1, Collection coll2) {
 	   	Object o;
 	   	if (coll1 == null) return new HashSet();
 	   	if (coll2 == null) 	return new HashSet(coll1);
 	   	Set coll = new HashSet();
 	   	
-		//return list of members in 1 but not in 2
     	for (Iterator iter=coll1.iterator(); iter.hasNext();) {
     		o=iter.next();
 			if (!coll2.contains(o)) {

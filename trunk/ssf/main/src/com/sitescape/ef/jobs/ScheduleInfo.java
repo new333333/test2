@@ -1,8 +1,9 @@
 package com.sitescape.ef.jobs;
 
-import org.quartz.JobDataMap;
 import java.util.Map;
-import java.util.HashMap;
+
+import org.quartz.JobDataMap;
+
 import com.sitescape.util.Validator;
 public class ScheduleInfo {
 	private Schedule schedule;

@@ -33,9 +33,8 @@ public interface ObjectKeys {
 	public static final String GLOBAL_ROOT_ID="402883b90d0de1f3010d0df5582b000a";
 	//super user bypasses all acl and operation checks
 	public static final String SUPER_USER_ID="402883b90d0de1f3010d0df5582b000b";
-	//owner is a special id that is added to a membership list
-	public static final String OWNER_USER_ID="402883b90d0de1f3010d0df5582b000b";
-	
+	public static final Long OWNER_USER_ID = Long.valueOf(-1);
+
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
 

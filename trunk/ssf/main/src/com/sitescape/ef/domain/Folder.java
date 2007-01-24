@@ -179,7 +179,7 @@ public class Folder extends Binder {
 	}
 
 
-    public Long getCreatorId() {
+    public Long getOwnerId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {
     		Principal principal = creation.getPrincipal();
