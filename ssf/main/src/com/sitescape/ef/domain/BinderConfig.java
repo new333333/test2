@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Iterator;
 
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AclSet;
-import com.sitescape.util.Validator;
 
 /**
  * Represent the definition configuration for a binder.  To be used to quickly
@@ -24,6 +22,8 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     private SSBlobSerializable definitions,workflows; //assigned by hibernate access="field"
     private Long zoneId;
     private boolean library=false;
+    protected boolean uniqueTitles=false;
+
     /**
      * Used by security manager only. Application should NEVER invoke this
      * method directly.  
@@ -46,7 +46,7 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     public void setInheritAclFromParent(boolean inherit) {
     	//ignore
     }
-    public Long getCreatorId() {
+    public Long getOwnerId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {
     		Principal principal = creation.getPrincipal();
@@ -55,15 +55,6 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
     	}
     	return null;
     }   
-    /**
-     * @hibernate.property
-     */
-    public boolean isLibrary() {
-    	return library;
-    }
-    public void setLibrary(boolean library) {
-    	this.library = library;
-    }    
 	/**
      * @hibernate.property not-null="true"
      */
@@ -120,5 +111,23 @@ public class BinderConfig extends PersistentTimestampObject implements AclContro
 	   //immutable type, requires new object
 	   this.workflows = new SSBlobSerializable(workflows);
    }
- 
+   /**
+    * @hibernate.property
+    */
+   public boolean isLibrary() {
+   	return library;
+   }
+   public void setLibrary(boolean library) {
+   	this.library = library;
+   }    
+   /**
+    * @hibernate.property
+    */
+   public boolean isUniqueTitles() {
+   	return uniqueTitles;
+   }
+   public void setUniqueTitles(boolean uniqueTitles) {
+   	this.uniqueTitles = uniqueTitles;
+   }
+
 }

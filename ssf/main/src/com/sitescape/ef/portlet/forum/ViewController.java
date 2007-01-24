@@ -91,9 +91,6 @@ public class ViewController  extends SAbstractController {
 			
         User user = RequestContextHolder.getRequestContext().getUser();
 
-//TODO: liferay has a configuration option that handles the title.  Don't know about other portals
-///		String title = (String)prefs.getValue(WebKeys.PORTLET_PREF_TITLE, null);
-//		if (!Validator.isNull(title)) response.setTitle(title);
 		if (FORUM_PORTLET.equals(displayType)) {
 			//Build the toolbar and add it to the model
 			buildForumToolbar(response.getNamespace(), model);

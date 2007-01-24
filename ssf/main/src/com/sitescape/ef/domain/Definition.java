@@ -187,7 +187,7 @@ public class Definition extends PersistentTimestampObject implements AclControll
         this.inheritAclFromParent = inherit;
     }
     
-    public Long getCreatorId() {
+    public Long getOwnerId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {
     		Principal principal = creation.getPrincipal();

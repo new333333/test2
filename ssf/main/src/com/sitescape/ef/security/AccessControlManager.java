@@ -1,12 +1,12 @@
 package com.sitescape.ef.security;
 
-import java.util.List;
+import java.util.Set;
 
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.security.acl.AclAccessControlException;
 import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 
@@ -17,13 +17,13 @@ import com.sitescape.ef.security.function.WorkAreaOperation;
 public interface AccessControlManager {
 
 	/**
-	 * Return a list of principalIds that have the 
+	 * Return a set of principalIds that have the 
      * privilege to run the operation against the work area. 
 	 * @param workArea
 	 * @param workAreaOperation
 	 * @return
 	 */
-	public List getWorkAreaAccessControl(WorkArea workArea,
+	public Set getWorkAreaAccessControl(WorkArea workArea,
 			WorkAreaOperation workAreaOperation); 
 	
     /**
@@ -148,8 +148,7 @@ public interface AccessControlManager {
      * @throws AccessControlException
      */
     public void checkAcl(AclContainer parent, AclControlled aclControlledObj,
-            AccessType accessType, boolean includeCreator, 
-            boolean includeParentAcl) throws AccessControlException;
+            AccessType accessType, boolean includeParentAcl) throws AccessControlException;
     
     /**
      * Same as <code>checkObjectAccessControl</code> except that this returns
@@ -161,8 +160,7 @@ public interface AccessControlManager {
      * @return
      */
     public boolean testAcl(AclContainer parent, AclControlled aclControlledObj,
-            AccessType accessType, boolean includeCreator, 
-            boolean includeParentAcl);
+            AccessType accessType, boolean includeParentAcl);
     
     /**
      * Check if the specified user has the specified type of access to the object.
@@ -181,7 +179,7 @@ public interface AccessControlManager {
      */
     public void checkAcl(User user, AclContainer parent, 
             AclControlled aclControlledObj, AccessType accessType,
-            boolean includeCreator, boolean includeParentAcl) 
+            boolean includeParentAcl) 
     	throws AccessControlException;
     
     /**
@@ -196,21 +194,23 @@ public interface AccessControlManager {
      */
     public boolean testAcl(User user, AclContainer parent, 
             AclControlled aclControlledObj, AccessType accessType,
-            boolean includeCreator, boolean includeParentAcl);
+            boolean includeParentAcl);
     
     public void checkAcl(AclContainer aclContainer, AccessType accessType,
-    		boolean includeCreator, boolean includeParentAcl) 
+    		boolean includeParentAcl) 
     	throws AccessControlException;
     
     public boolean testAcl(AclContainer aclContainer, AccessType accessType,
-    		boolean includeCreator, boolean includeParentAcl);
+    		boolean includeParentAcl);
     
     public void checkAcl(User user, AclContainer aclContainer, 
-            AccessType accessType, boolean includeCreator, 
-            boolean includeParentAcl) throws AccessControlException;
+            AccessType accessType, boolean includeParentAcl) throws AccessControlException;
     
     public boolean testAcl(User user, AclContainer aclContainer,
-            AccessType accessType, boolean includeCreator, 
-            boolean includeParentAcl);
+            AccessType accessType, boolean includeParentAcl);
+
+    public void checkAcl(User user, AclControlled aclControlledObj, Set memberIds)
+    	throws AccessControlException; 
+    public boolean testAcl(User user, AclControlled aclControlledObj, Set memberIds);
 
 }

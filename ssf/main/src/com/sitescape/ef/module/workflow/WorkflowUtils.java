@@ -10,6 +10,7 @@ import java.util.Set;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.WfAcl;
 import com.sitescape.ef.domain.WfNotify;
@@ -298,11 +299,13 @@ public class WorkflowUtils {
     	if (props != null)
     		result.setUseDefault(GetterUtil.getBoolean(props.attributeValue("value"), true));
     	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
-    	if (props != null)
-    		result.setCreator(GetterUtil.getBoolean(props.attributeValue("value"), false));
     	props = (Element)aclElement.selectSingleNode("./properties/property[@name='userGroupAccess']");
     	if (props != null)
     		result.setPrincipals(props.attributeValue("value"));
+    	if ((props != null) && GetterUtil.getBoolean(props.attributeValue("value"), false)) {
+    		//add special owner to allow list
+    		result.getPrincipals().add(ObjectKeys.OWNER_USER_ID);
+    	}
     	return result;
     }
     public static List getEnterNotifications(Definition wfDef, String stateName) {

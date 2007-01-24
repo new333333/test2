@@ -8,7 +8,6 @@ import com.sitescape.util.StringUtil;
  * Helper class for workflow Acl descriptions
  */
 public class WfAcl {
-	boolean creator=false;
 	boolean useDefault=true;
 	Set ids;
 	
@@ -30,12 +29,6 @@ public class WfAcl {
 	public Set getPrincipals() {
 		if (ids == null) ids = new HashSet();
 		return ids;
-	}
-	public void setCreator(boolean creator) {
-		this.creator = creator;
-	}
-	public boolean isCreator() {
-		return creator;
 	}
 	public void setUseDefault(boolean useDefault) {
 		this.useDefault = useDefault;

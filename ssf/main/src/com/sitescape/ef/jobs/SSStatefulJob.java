@@ -44,6 +44,9 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected Long zoneId;
 	public static int JOBNAME_MAX = 120; 
 	public static int DESCRIPTION_MAX = 120; 
+	public static String ZONEID="zoneId";
+	public static String USERID="userId";
+		
 	public static String trimJobName(String jobName) {
 		if (jobName.length() > JOBNAME_MAX)
 			return jobName.substring(0, Math.max(jobName.length(), JOBNAME_MAX));
@@ -61,13 +64,13 @@ public abstract class SSStatefulJob implements StatefulJob {
 		context.setResult("Success");
 		try {  
 	           	//zone required
-           	if (!jobDataMap.containsKey("zoneId")) {			
+           	if (!jobDataMap.containsKey(ZONEID)) {			
            		removeJobOnError(context, new SchedulerException(context.getJobDetail().getFullName() + " : zoneId missing from jobData"));
            	}
-           	zoneId = jobDataMap.getLong("zoneId");
+           	zoneId = jobDataMap.getLong(ZONEID);
            	//Validate user and zone are compatible
-           	if (jobDataMap.containsKey("user")) {
-           		Long id = new Long(jobDataMap.getLong("user"));
+           	if (jobDataMap.containsKey(USERID)) {
+           		Long id = new Long(jobDataMap.getLong(USERID));
            		user = profileDao.loadUserOnlyIfEnabled(id, zoneId);
            	} else {
            		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_ID, zoneId);
