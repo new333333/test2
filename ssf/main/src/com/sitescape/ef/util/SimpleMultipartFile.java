@@ -11,21 +11,34 @@ import java.io.InputStream;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * This class implements only a subset of the methods defined in 
+ * <code>MultipartFile</code> interface that are actually needed
+ * by Aspen. Furthermore, it adds a couple of additional methods - 
+ * <code>getFile</code> and <code>close</code>.  
+ * 
+ * @author jong
+ *
+ */
 public class SimpleMultipartFile implements MultipartFile {
 
 	protected String fileName;
+	
 	// Only one of the following two is set per instance.
-	protected File file;
 	protected InputStream content;
+	
+	protected File file;
+	protected boolean deleteOnClose = false;
 
 	public SimpleMultipartFile(String fileName, InputStream content) {
 		this.fileName = fileName;
 		this.content = content;
 	}
 	
-	public SimpleMultipartFile(String fileName, File file) {
+	public SimpleMultipartFile(String fileName, File file, boolean deleteOnClose) {
 		this.fileName = fileName;
 		this.file = file;
+		this.deleteOnClose = deleteOnClose;
 	}
 	
 	public String getName() {
@@ -91,6 +104,34 @@ public class SimpleMultipartFile implements MultipartFile {
 		}
 		else {
 			FileCopyUtils.copy(content, new BufferedOutputStream(new FileOutputStream(dest)));
+		}
+	}
+	
+	/**
+	 * Returns a file if the data is already in a file. 
+	 * Otherwise returns <code>null</code>.
+	 * 
+	 * @return file or <code>null</code>
+	 */
+	public File getFile() {
+		return file;
+	}
+	
+	/**
+	 * Releases resources associated with this object.
+	 */
+	public void close() {
+		if(content != null) {
+			try {
+				// The content may have already been closed. 
+				// But closing it multiple times shouldn't cause a trouble.
+				content.close();
+			}
+			catch(IOException ignore) {}
+		}
+		
+		if(file != null && deleteOnClose) {
+			file.delete();
 		}
 	}
 }

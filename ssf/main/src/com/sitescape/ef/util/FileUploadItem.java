@@ -41,7 +41,8 @@ public class FileUploadItem {
 	
 	private String repositoryName;
 	
-	private File tempFile;
+	private File file;
+	private boolean isTempFile = false;
 	
 	private boolean ready = false;
 
@@ -141,7 +142,7 @@ public class FileUploadItem {
 			// first. 
 			if(!ready)
 				setup();
-			size = tempFile.length();
+			size = file.length();
 		}
 		return size;
 	}
@@ -156,35 +157,38 @@ public class FileUploadItem {
 	}
 	
 	public byte[] getBytes() throws IOException {
-		if(!ready)
-			setup();
-		return FileCopyUtils.copyToByteArray(tempFile);
+		return mf.getBytes();
 	}
 	
 	public InputStream getInputStream() throws IOException  {
-		if(!ready)
-			setup();
-		return new FileInputStream(tempFile);
+		return mf.getInputStream();
 	}
 
 	public File getFile() throws IOException {
 		if(!ready)
 			setup();
-		return tempFile;
+		return file;
 	}
 	
 	public void delete() throws IOException {
-		if(tempFile != null) {
-			FileHelper.delete(tempFile);
+		if(file != null && isTempFile) {
+			FileHelper.delete(file);
 		}
+		if(mf instanceof SimpleMultipartFile)
+			((SimpleMultipartFile) mf).close();
 	}
 	
 	private void setup() throws IOException {
 		// Make sure that the uploaded data is accessible through File interface,
-		// regardless of the mechanism used. May not be the most efficient way though.
-		this.tempFile = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
+		// regardless of the mechanism used. 
+		if(mf instanceof SimpleMultipartFile)
+			file = ((SimpleMultipartFile) mf).getFile();
 		
-		this.mf.transferTo(this.tempFile);
+		if(file == null) {
+			file = TempFileUtil.createTempFile(TEMP_FILE_PREFIX);
+			mf.transferTo(file);
+			isTempFile = true;
+		}
 		
 		ready = true;
 	}
