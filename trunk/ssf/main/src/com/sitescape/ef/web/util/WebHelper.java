@@ -249,7 +249,7 @@ public class WebHelper {
 		
 		File file = new File(TempFileUtil.getTempFileDir(), fileHandle);
 		
-		SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file);
+		SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, true);
 		
 		return mf;
 	}
