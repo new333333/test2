@@ -295,26 +295,38 @@ public class WebHelper {
 	 */
 	public static void scanDescriptionForUploadFiles(Description description, List fileData) {
     	String fileHandle = "";
-    	Pattern pattern = Pattern.compile("<img .*src *=.*https*://.*viewType=ss_viewUploadFile.*>");
+    	Pattern pattern = Pattern.compile("(<img src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
     	Matcher m =pattern.matcher(description.getText());
     	while (m.find()) {
-    		String img = description.getText().substring(m.regionStart(), m.regionEnd());
-	    	MultipartFile myFile = null;
-	    	try {
-	    		myFile = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
-	    	} catch(IOException e) {
-	    		return;
+    		String img = m.group(0);
+        	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
+        	Matcher m2 = p2.matcher(img);
+        	if (m2.find() && m2.groupCount() >= 1) fileHandle = m2.group(1);
+
+	    	if (!fileHandle.equals("")) {
+	    		MultipartFile myFile = null;
+		    	try {
+		    		myFile = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
+		    	} catch(IOException e) {
+		    		return;
+		    	}
+		    	if (myFile != null) {
+		    		String fileName = myFile.getOriginalFilename();
+			    	if (fileName.equals("")) return;
+			    	// Different repository can be specified for each file uploaded.
+			    	// If not specified, use the statically selected one.  
+			    	String repositoryName = RepositoryUtil.getDefaultRepositoryName();
+			    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+			    	fileData.add(fui);
+		    	}
 	    	}
-	    	if (myFile != null) {
-	    		String fileName = myFile.getOriginalFilename();
-		    	if (fileName.equals("")) return;
-		    	// Different repository can be specified for each file uploaded.
-		    	// If not specified, use the statically selected one.  
-		    	String repositoryName = RepositoryUtil.getDefaultRepositoryName();
-		    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
-		    	fileData.add(fui);
-	    	}
-	    	WebHelper.releaseFileHandle(fileHandle);
+	    	//Now, replace the url with special markup version
+	    	Pattern p3 = Pattern.compile("src *= *\"([^\"]*)\"");
+	    	Matcher m3 = p3.matcher(img);
+        	if (m3.find() && m3.groupCount() >= 1) {
+        		img = m3.replaceFirst("src=\"{{attachmentUrl: " + WebHelper.getFileName(fileHandle) + "}}\"");
+        		description.setText(m.replaceFirst(img));
+        	}
     	}
 	}
 	
