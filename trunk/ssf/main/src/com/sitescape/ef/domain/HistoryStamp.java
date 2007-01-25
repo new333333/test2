@@ -69,6 +69,10 @@ public class HistoryStamp {
 	public int compareDate(HistoryStamp stamp) {
 		if (date == null) return -1;
 		if ((stamp == null) || (stamp.getDate() == null)) return 1;
-		return date.compareTo(stamp.getDate());
+		//have to handle ourselves, cause hibernate uses 
+    	//java.sql.TimeStamp and doesn't compare with Date
+		if (date.getTime() < stamp.getDate().getTime()) return -1;
+		if (date.getTime() > stamp.getDate().getTime()) return 1;
+		return 0;
 	}
 }
