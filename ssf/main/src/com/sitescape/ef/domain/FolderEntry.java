@@ -124,8 +124,10 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     }
     public void updateLastActivity(Date lastActivity) {
     	if (lastActivity == null) return;
+		//have to handle ourselves, cause hibernate uses 
+    	//java.sql.TimeStamp and doesn't compare with Date
     	if ((this.lastActivity == null) ||
-    			(this.lastActivity.compareTo(lastActivity) < 0)) {
+    			(this.lastActivity.getTime() < lastActivity.getTime())) {
     		this.lastActivity = lastActivity;
     		//propagate up the tree
     		if (topEntry != null) topEntry.updateLastActivity(lastActivity);
