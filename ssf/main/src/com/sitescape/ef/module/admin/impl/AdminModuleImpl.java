@@ -339,7 +339,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (functionMemberships.size() > 0) {
 			if (workArea instanceof Binder) {
 				Binder binder = (Binder) workArea;
-				folderIds = getInheritingDescendentBinderIds((Folder) binder, new ArrayList());
+				folderIds = getInheritingDescendentBinderIds((Binder) binder, new ArrayList());
 			}
 		}
 
@@ -402,11 +402,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	// from here and builds a list of the ids of folders 
 	// who inherit acls from their parents.  The tree is pruned at
 	// the highest branch that does not inherit from it's parent.
-	private List getInheritingDescendentBinderIds(Folder folder, List ids) {
+	private List getInheritingDescendentBinderIds(Binder folder, List ids) {
 		List folders = folder.getBinders();
 		if (folders.size() != 0) {
 			for (int i=0; i<folders.size(); ++i) {
-				Folder c = (Folder)folders.get(i);
+				Binder c = (Binder)folders.get(i);
 				if (c.getInheritAclFromParent()) {
 					ids = getInheritingDescendentBinderIds(c, ids);
 				}
