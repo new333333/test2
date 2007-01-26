@@ -1,0 +1,54 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>{$lang_ss_addimage_insert_image_title}</title>
+	<link href="css/ss_addimage.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript">
+var strNoFileWarningMessage = "";
+var strCloseDivFunction = "";
+function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction) {
+	browseForm.action = url;
+	browseForm.browseSubmit.value = submitButtonName;
+	browseForm.closeBrowse.value = cancelButtonName;
+	strNoFileWarningMessage = noFileWarningMessage;
+	strCloseDivFunction = closeDivFunction;
+	browseForm.ssCloseDivFunctionName.value = closeDivFunction;
+}
+
+function ssCloseDiv() {
+	eval("parent."+strCloseDivFunction);
+}
+
+function checkForFile() {
+	var fileName = browseForm.filesFromApplet1.value;
+	if (fileName == "") {
+		alert(strNoFileWarningMessage);
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+</script>
+</head>
+<body>
+<form action="" id="browseForm" name="browseForm" method="post" enctype="multipart/form-data">
+
+<table width="100%">
+<tbody>
+	<tr>
+		<td width="100%">
+			<input id="filesFromApplet1" name="filesFromApplet1" type="file" size="35" />	
+		</td>
+	</tr>
+	<tr>
+		<td width="100%">
+			<input type="submit" id="browseSubmit" name="browseSubmit" value="" onClick="return (checkForFile());" />&nbsp;&nbsp;
+			<input type="submit" id="closeBrowse" name="closeBrowse" value="" onClick="ssCloseDiv(); return false;" />
+			<input type="hidden" id="ssCloseDivFunctionName" name="ssCloseDivFunctionName" value="" />
+		</td>
+	</tr>
+</tbody>
+</table>
+</form>
+</body>
+</html>
