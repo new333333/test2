@@ -3,6 +3,7 @@ package com.sitescape.ef.lucene.server;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -209,6 +210,13 @@ public class SsfIndexer
 	public void updateDocuments(String indexname, Query query, String fieldname, String fieldvalue) throws RemoteException {
         IndexObject io = ioc.getIndexObject(indexname);
         io.updateDocs(query, fieldname, fieldvalue);
+	}
+
+	public ArrayList getTags(String indexname, Query query, String tag) throws RemoteException {
+		ArrayList results = new ArrayList();
+		IndexObject io = ioc.getIndexObject(indexname);
+		results = io.getTags(query, tag);
+		return results;
 	}
 }
 
