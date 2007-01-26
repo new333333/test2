@@ -1,5 +1,6 @@
 package com.sitescape.ef.search;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.lucene.document.Document;
@@ -145,6 +146,17 @@ public interface LuceneSession {
 	 * @throws LuceneException
 	 */
 	public Hits search(Query query, Sort sort, int offset, int size)
+			throws LuceneException;
+	
+	/**
+	 * Get all the unique tags that this user can see, based on the wordroot passed in.
+	 * 
+	 * @param query
+	 * @param wordroot
+	 * @return
+	 * @throws LuceneException
+	 */
+	public ArrayList getTags(Query query, String tag)
 			throws LuceneException;
 
 	/**

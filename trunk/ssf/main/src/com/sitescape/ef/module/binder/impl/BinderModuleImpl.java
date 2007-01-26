@@ -15,6 +15,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
@@ -55,6 +56,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
+import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
@@ -604,6 +606,54 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         return retMap;
 	}
 
+	public ArrayList getSearchTags(String wordroot) {
+		ArrayList tags = new ArrayList();
+		Element qTreeElement = null;
+		
+		// Top of query doc 
+		Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		
+		// TODO Depending on whether the system defaults to users being able to see entries
+		// in folders they don't have access to
+		//if (getsprop(entry_security_level) == MINIMUM)
+		//	qTreeElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+		//else
+		qTreeElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		
+		Element field = qTreeElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ENTRY_ACL_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(RequestContextHolder.getRequestContext().getUserId().toString());
+
+		field = qTreeElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.FOLDER_ACL_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(RequestContextHolder.getRequestContext().getUserId().toString());
+
+			
+    	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	SearchObject so = qb.buildQuery(qTree);
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        tags = luceneSession.getTags(so.getQuery(), wordroot);
+        }
+        finally {
+            luceneSession.close();
+        }
+        ArrayList tagList = new ArrayList();
+		for (int j = 0; j < tags.size(); j++) {
+			HashMap tag = new HashMap();
+			String strTag = (String) tags.get(j);
+			tag.put(WebKeys.TAG_NAME, strTag);
+			tagList.add(tag);
+		}
+		return tagList;
+	}
+	
    	public Binder getBinderByPathName(String pathName) throws AccessControlException {
 	   	List binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
 	    	

@@ -1,6 +1,7 @@
 
 package com.sitescape.ef.module.binder;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -89,6 +90,7 @@ public interface BinderModule {
     public Map executeSearchQuery(Binder binder, Document searchQuery, Map options);
     public Map executePeopleSearchQuery(Document searchQuery);
     public Map executePeopleSearchQuery(Binder binder, Document searchQuery);
+    public ArrayList getSearchTags(String wordroot); 
     /**
      * Index a binder and its child binders.
      * @param binderId

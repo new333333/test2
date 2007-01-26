@@ -1,6 +1,7 @@
 package com.sitescape.ef.lucene;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
@@ -52,4 +53,7 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 
 	public void updateDocuments(String indexname, Query query,
 			String fieldname, String fieldvalue) throws RemoteException;
+	
+	public ArrayList getTags(String indexName, Query query, String tag)
+		throws RemoteException;
 }

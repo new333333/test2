@@ -68,7 +68,6 @@ public class SearchObject {//implements Serializable {
 			long startTime = System.currentTimeMillis();
 			Query retQ = qp.parse(queryString);
 			long endTime = System.currentTimeMillis();
-			logger.info("QueryParser took " + (endTime - startTime) + " milliseconds");
 			return retQ;
 		} catch (ParseException pe){ return new BooleanQuery();}
 	}

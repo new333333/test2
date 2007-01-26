@@ -1,11 +1,16 @@
 package com.sitescape.ef.search.local;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.analysis.WhitespaceAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.DocumentSelection;
@@ -13,8 +18,11 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexUpdater;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermDocs;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
@@ -22,6 +30,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.lucene.SsfQueryAnalyzer;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneException;
@@ -275,7 +284,87 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 	}
+	/**
+	 * Get all the unique tags that this user can see, based on the wordroot passed in.
+	 * 
+	 * @param query
+	 * @param tag
+	 * @return
+	 * @throws LuceneException
+	 */
+	public ArrayList getTags(Query query, String tag) throws LuceneException {
+		IndexReader indexReader = null;
+		IndexSearcher indexSearcher = null;
+		TreeSet results = new TreeSet();
+		ArrayList resultTags = new ArrayList();
 
+		try {
+			indexReader = LuceneUtil.getReader(indexPath);
+			indexSearcher = LuceneUtil.getSearcher(indexReader);
+		} catch (IOException e) {
+			throw new LuceneException("Could not open reader on the index ["
+					+ this.indexPath + "]", e);
+		}
+		try {
+			final BitSet userDocIds = new BitSet(indexReader.maxDoc());
+			indexSearcher.search(query, new HitCollector() {
+				public void collect(int doc, float score) {
+					userDocIds.set(doc);
+				}
+			});
+
+			String[] fields = { BasicIndexUtils.TAG_FIELD,
+					BasicIndexUtils.ACL_TAG_FIELD };
+			int preTagLength = 0;
+			for (int i = 0; i < fields.length; i++) {
+				if (fields[i].equalsIgnoreCase("_aclTagField")) {
+					String preTag = BasicIndexUtils.TAG_ACL_PRE
+							+ RequestContextHolder.getRequestContext()
+									.getUserId().toString() + BasicIndexUtils.TAG;
+					preTagLength = preTag.length();
+					tag = preTag + tag;
+				}
+				TermEnum enumerator = indexReader
+						.terms(new Term(fields[i], tag));
+
+				TermDocs termDocs = indexReader.termDocs();
+				if (enumerator.term() == null) {
+					// no matches
+					return null;
+				}
+				do {
+					Term term = enumerator.term();
+					// stop when the field is no longer the field we're looking
+					// for, or, when
+					// the term doesn't startwith the string we're matching.
+					if (term.field().compareTo(fields[i]) != 0
+							|| !term.text().startsWith(tag)) {
+						break; // no longer in '_tagField' field
+					}
+					termDocs.seek(enumerator);
+					while (termDocs.next()) {
+						if (userDocIds.get((termDocs.doc()))) {
+							// Add term.text to results
+							String matchingTerm = term.text();
+							results.add(term.text().substring(preTagLength));
+							break;
+						}
+					}
+				} while (enumerator.next());
+			}
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+
+		Iterator iter = results.iterator();
+		while (iter.hasNext())
+			resultTags.add(iter.next());
+
+		return resultTags;
+
+	}
+	
+	
 	public void flush() {
 		// Because Liferay's Lucene functions (on which this implementation
 		// is based) are atomic in that it flushes out after each operation,
@@ -384,4 +473,79 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 
+	private ArrayList getUserUniqueTags(Query aclQuery, String tag, int id) {
+		ArrayList resultTags = new ArrayList();
+		TreeSet results = new TreeSet();
+		try {
+			IndexReader reader = null;
+			try {
+				reader = LuceneUtil.getReader(indexPath);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open reader on the index [" + this.indexPath
+								+ "]", e);
+			}
+			IndexSearcher searcher = new IndexSearcher(reader);
+			Query query = null;
+
+			try {
+				QueryParser qp = new QueryParser("text",
+						new WhitespaceAnalyzer());
+				qp.setDefaultOperator(QueryParser.OR_OPERATOR);
+				query = qp.parse(BasicIndexUtils.ENTRY_ACL_FIELD + ":" + id + " OR " + BasicIndexUtils.FOLDER_ACL_FIELD +":" + id);
+			} catch (Exception qe) {
+				System.out.println(qe.toString());
+			}
+
+			final BitSet userDocIds = new BitSet(reader.maxDoc());
+
+			searcher.search(query, new HitCollector() {
+				public void collect(int doc, float score) {
+					userDocIds.set(doc);
+				}
+			});
+
+			String[] fields = { BasicIndexUtils.TAG_FIELD, BasicIndexUtils.ACL_TAG_FIELD };
+			int preTagLength = 0;
+			for (int i = 0; i < fields.length; i++) {
+				if (fields[i].equalsIgnoreCase("_aclTagField")) {
+					String preTag = "ACL" + id + "TAG";
+					preTagLength = preTag.length();
+					tag = preTag + tag;
+				}
+				TermEnum enumerator = reader.terms(new Term(fields[i], tag));
+
+				TermDocs termDocs = reader.termDocs();
+				if (enumerator.term() == null) {
+					// no matches
+					return null;
+				}
+				do {
+					Term term = enumerator.term();
+					// stop when the field is no longer the field we're looking
+					// for, or, when
+					// the term doesn't startwith the string we're matching.
+					if (term.field().compareTo(fields[i]) != 0
+							|| !term.text().startsWith(tag)) {
+						break; // no longer in '_tagField' field
+					}
+					termDocs.seek(enumerator);
+					while (termDocs.next()) {
+						if (userDocIds.get((termDocs.doc()))) {
+							// Add term.text to results
+							String matchingTerm = term.text();
+							results.add(term.text().substring(preTagLength));
+							break;
+						}
+					}
+				} while (enumerator.next());
+			}
+		} catch (Exception e) {
+			System.out.println(e.toString());
+		}
+		Iterator iter = results.iterator();
+        while (iter.hasNext())
+           resultTags.add(iter.next());
+		return resultTags;
+	}
 }

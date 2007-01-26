@@ -66,19 +66,21 @@ public class LuceneUtil {
 	}
 
 	public static IndexSearcher getSearcher(String indexPath)
-		throws IOException {
+			throws IOException {
 
 		try {
 			return new IndexSearcher(indexPath);
-		}
-		catch(IOException e) {
-			if(initializeIndex(indexPath)) {
+		} catch (IOException e) {
+			if (initializeIndex(indexPath)) {
 				return new IndexSearcher(indexPath);
-			}
-			else {
+			} else {
 				throw e;
 			}
 		}
+	}
+
+	public static IndexSearcher getSearcher(IndexReader reader) {
+		return new IndexSearcher(reader);
 	}
 
 	public static IndexWriter getWriter(String indexPath) throws IOException {

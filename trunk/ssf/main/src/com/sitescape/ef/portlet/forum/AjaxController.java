@@ -597,35 +597,7 @@ public class AjaxController  extends SAbstractController {
 			filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
 			
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
-			//Add terms to search tags
-			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.TAG_FIELD);
-			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
-
-			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.ACL_TAG_FIELD);
-			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(BasicIndexUtils.buildAclTag(searchText.replaceFirst("\\*", ""), u.getId().toString()));
-
-			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.TAG_FIELD);
-			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText);
-
-			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-			filterTerm.addAttribute(FilterHelper.FilterElementName, BasicIndexUtils.ACL_TAG_FIELD);
-			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(BasicIndexUtils.buildAclTag(searchText, u.getId().toString()));
-
-			//Tags are special. Always search for more than needed. They get paginated later
-			options.put(ObjectKeys.SEARCH_MAX_HITS, maxEntriesTags);
-			options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
-
+			// this has been replaced by a getTags method in the search engine.
 		} else {
 			//Add the login name term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
@@ -677,13 +649,14 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
 			view = "forum/find_places_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
-			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
-			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+			
 			String wordRoot = searchText;
 			int i = wordRoot.indexOf("*");
 			if (i > 0) wordRoot = wordRoot.substring(0, i);
 			
-			List tags = BinderHelper.sortCommunityTags(entries, wordRoot);
+			//
+			List tags = getBinderModule().getSearchTags(wordRoot);
+			
 			List tagsPage = new ArrayList();
 			if (tags.size() > startingCount.intValue()) {
 				int endTag = startingCount.intValue() + Integer.valueOf(maxEntries);

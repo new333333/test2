@@ -2,6 +2,7 @@ package com.sitescape.ef.search.remote;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -128,6 +129,15 @@ public class RemoteLuceneSession implements LuceneSession {
 		return hits;
 	}
 
+	public ArrayList getTags(Query query, String tag) throws LuceneException {
+		ArrayList results = new ArrayList();
+		try {
+			results = index.getTags(indexName, query, tag);
+		} catch (RemoteException re) {
+			throw new LuceneException(re);
+		}
+		return results;	
+	}
 	public void flush() throws LuceneException {
 		try {
 			index.commit(indexName);
