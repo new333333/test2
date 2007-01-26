@@ -21,7 +21,7 @@ function ss_showAddAttachmentBrowse<portlet:namespace/>() {
 	frameObj.style.visibility = "visible";
 	
 	divObj.style.width = "360px";
-	divObj.style.height = "80px";
+	divObj.style.height = "100px";
 
     //ss_setObjectTop(divObj, (ss_getDivTop('ss_browse_div_position<portlet:namespace/>')+20) + "px");
 	//ss_setObjectLeft(divObj, (ss_getDivLeft('ss_browse_div_position<portlet:namespace/>')) + "px");
@@ -60,8 +60,8 @@ function ss_showAddAttachmentDropbox<portlet:namespace/>() {
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-	divObj.style.width = "50px";
-	divObj.style.height = "50px";
+	divObj.style.width = "55px";
+	divObj.style.height = "55px";
 
     //ss_setObjectTop(divObj, (ss_getDivTop('ss_dropbox_div_position<portlet:namespace/>')+20) + "px");
     //ss_setObjectLeft(divObj, (ss_getDivLeft('ss_dropbox_div_position<portlet:namespace/>')) + "px");
