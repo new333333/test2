@@ -1993,8 +1993,8 @@ div.ss_end_thumbnail_gallery {
 
 /* CSS document for table - author: rsmart 1.23.07 v02*/
 .ss_table{
+	font-family: ${ss_table_font_family};
 	border-collapse: collapse;
-	width: 90%;
 }
 /*table head - dark grey with black border top*/	
 .ss_table thead tr{
@@ -2009,6 +2009,9 @@ div.ss_end_thumbnail_gallery {
 }
 /*row is white*/
 .ss_table tr{
+background-color: ${ss_table_background_color_even_row};
+}
+.ss_table_tr_even{
 background-color: ${ss_table_background_color_even_row};
 }
 /*row is lite grey*/
@@ -2033,13 +2036,13 @@ white-space: nowrap !important;
 .ss_table_tr_noborder{
 	background-color: #E9E9E9 !important;
 	border: 1px dotted #E9E9E9 !important;
-	border collapse: collapse !important;
+	border-collapse: collapse !important;
 	border-bottom: 1px solid black !important;
 	padding: 10px !important;
 }
 .ss_table_td_noborder{
 	background-color: #E9E9E9 !important;
-	border: 1px dotted #E9E9E9 !important ;
+	border: 1px dotted #E9E9E9 !important;
 	padding-top: 10px !important;
 	padding-right: 0px !important;
 	padding-bottom: 10px !important;
@@ -2053,35 +2056,30 @@ white-space: nowrap !important;
 /*fonts for master file tables*/
 
 .ss_table_paragraph_bld{
-	font-family: ${ss_table_font_family}
-	font-size: ${ss_style_font_normalprint}
+	font-size: ${ss_style_font_normalprint};
 	color: #000000;
 	font-weight: bold;
 	margin-left: 25px;
 	}
 .ss_table_paragraph{
-	font-family: ${ss_table_font_family}
-	font-size: ${ss_style_font_smallprint}
+	font-size: ${ss_style_font_smallprint};
 	color: #000000;
 	margin-left: 0px;
 }
 .ss_table_header{
-	font-family: ${ss_table_font_family}
-	font-size: ${ss_style_font_normal}
+	font-size: ${ss_style_font_normalprint};
 	color: #000000;
 	font-weight: bold;
 	margin-left: 0px;
 }
 .ss_table_smheaders {
-	font-family: ${ss_table_font_family}
-	font-size: ${ss_style_font_smallerprint}
+	font-size: ${ss_style_font_fineprint};
 	font-weight: bold;
 	color: #000000;
 	line-height: normal;
 }
 .ss_table_paragraph_red {
-	font-family: ${ss_table_font_family}
-	font-size: ${ss_style_font_smallprint}
+	font-size: ${ss_style_font_smallprint};
 	color: #FF0000 !important;
 	margin-left: 25px;
 }

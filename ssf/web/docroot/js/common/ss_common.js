@@ -913,25 +913,13 @@ function ss_setObjectHeight(obj, height) {
 }
 
 function ss_setObjectLeft(obj, value) {
-    if (isNSN6 || isMoz5) {
-        obj.style.left = value;
-    } else if (isNSN) {
-        obj.style.left = value;
-    } else {
-        obj.style.left = value;
-    }
+    obj.style.left = value;
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectTop(obj, value) {
-    if (isNSN6 || isMoz5) {
-        obj.style.top = value;
-    } else if (isNSN) {
-        obj.style.top = value;
-    } else {
-        obj.style.top = value;
-    }
+    obj.style.top = value;
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }

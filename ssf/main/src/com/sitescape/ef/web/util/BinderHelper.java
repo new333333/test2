@@ -415,16 +415,23 @@ public class BinderHelper {
 		String[] btnClicked = new String[] {""};
  		if (formData.containsKey("btnClicked")) btnClicked = (String[])formData.get("btnClicked");
 		if (!ignoreFormData && (formData.containsKey("addRoleBtn") || 
-				btnClicked[0].equals("addPrincipal"))) {
+				btnClicked[0].equals("addPrincipal") || btnClicked[0].equals("addRole"))) {
 			if (formData.containsKey("roleIds")) {
 				roleIds = (String[]) formData.get("roleIds");
 				for (int i = 0; i < roleIds.length; i++) {
 					if (!roleIds[i].equals("")) newRoleIds.add(Long.valueOf(roleIds[i]));
 				}
 			}
+			if (formData.containsKey("roleIdToAdd")) {
+				roleIds = (String[]) formData.get("roleIdToAdd");
+				for (int i = 0; i < roleIds.length; i++) {
+					if (!roleIds[i].equals("") && !newRoleIds.contains(Long.valueOf(roleIds[i]))) 
+						newRoleIds.add(Long.valueOf(roleIds[i]));
+				}
+			}
 			if (formData.containsKey("principalId")) {
 				String[] pIds = (String[]) formData.get("principalId");
-				if (pIds.length >= 1) principalId = pIds[0];
+				if (pIds.length >= 1 && !pIds[0].equals("")) principalId = pIds[0];
 			}
 
 			if (formData.containsKey("principalIds")) {
@@ -449,7 +456,12 @@ public class BinderHelper {
 					String[] s_roleId = key.substring(7).split("_");
 					if (s_roleId.length == 2) {
 						Long roleId = Long.valueOf(s_roleId[0]);
-						Long memberId = Long.valueOf(s_roleId[1]);
+						Long memberId;
+						if (s_roleId[1].equals("owner")) {
+							memberId = Long.valueOf("-1");
+						} else {
+							memberId = Long.valueOf(s_roleId[1]);
+						}
 						if (!roleMembers.containsKey(roleId)) roleMembers.put(roleId, new ArrayList());
 						List members = (List)roleMembers.get(roleId);
 						if (!members.contains(memberId)) members.add(memberId);
@@ -479,11 +491,16 @@ public class BinderHelper {
 				if (members != null) {
 					for (Iterator iter = members.iterator();iter.hasNext();) {
 						Long pId = (Long)iter.next();
-						Principal p = (Principal)principalMap.get(pId);
-						if (p instanceof Group) {
-							groups.put(p.getId(), p);
+						if (pId.equals(Long.valueOf("-1"))) {
+							//The owner has this right
+							pMap.put(WebKeys.OWNER, pId);
 						} else {
-							users.put(p.getId(), p);
+							Principal p = (Principal)principalMap.get(pId);
+							if (p instanceof Group) {
+								groups.put(p.getId(), p);
+							} else {
+								users.put(p.getId(), p);
+							}
 						}
 					}
 				}
@@ -492,9 +509,9 @@ public class BinderHelper {
 			for (Iterator iter = membership.iterator();iter.hasNext();) {
 				Long pId = (Long)iter.next();
 				Principal p = (Principal)principalMap.get(pId);
-				if (p instanceof Group) {
+				if (p != null && p instanceof Group) {
 					sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-				} else {
+				} else if (p != null && p instanceof User) {
 					sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				}
 			}
@@ -511,13 +528,15 @@ public class BinderHelper {
 				for (int j=0; j<membership.size(); ++j) {
 					WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)membership.get(j);
 					if (f.getId().equals(m.getFunctionId())) {
+						if (m.getMemberIds().contains(Long.valueOf("-1"))) 
+							pMap.put(WebKeys.OWNER, Long.valueOf("-1"));
 						Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
 						for (Iterator iter=ids.iterator(); iter.hasNext();) {
 							Principal p = (Principal)iter.next();
-							if (p instanceof Group) {
+							if (p != null && p instanceof Group) {
 								groups.put(p.getId(), p);
 								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-							} else {
+							} else if (p != null && p instanceof User) {
 								users.put(p.getId(), p);
 								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							}
@@ -536,7 +555,8 @@ public class BinderHelper {
 			Map pMap = (Map)functionMap.get(f);
 			Map users = (Map)pMap.get(WebKeys.USERS);
 			Map groups = (Map)pMap.get(WebKeys.GROUPS);
-			if (users.size() > 0 || groups.size() > 0 || newRoleIds.contains(f.getId())) {
+			if (users.size() > 0 || groups.size() > 0 || pMap.containsKey(WebKeys.OWNER) || 
+					newRoleIds.contains(f.getId())) {
 				//This function has some membership; add it to the sorted list
 				sortedFunctionsMap.put(f.getName().toLowerCase() + f.getId().toString(), f);
 			}
@@ -618,6 +638,6 @@ public class BinderHelper {
 
 		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
 		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
-}
+	}
 
 }
