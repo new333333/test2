@@ -12,8 +12,7 @@ import java.util.*;
 import javax.swing.JApplet;
 import javax.swing.*;
 import javax.swing.tree.*;
-//Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
-//import netscape.javascript.JSObject;
+import netscape.javascript.JSObject;
 
 
 public class TopFrame extends JApplet implements Runnable {
@@ -145,7 +144,7 @@ public class TopFrame extends JApplet implements Runnable {
             }
        if (paramName.equals("onLoadFunction"))
             if (null == paramValue) {
-                paramValue = "appear";
+                paramValue = "";
             }
        if (paramName.equals("loadDirectory"))
            if (null == paramValue) {
@@ -263,14 +262,12 @@ public class TopFrame extends JApplet implements Runnable {
     private void onLoad(TopFrame topFrame)
     {
       try {
-    	 /*
-    	Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed 
         String onLoadFunction = topFrame.getParameter("onLoadFunction");
-        if (onLoadFunction.equals(null)) return;
+        System.out.println("Hemanth: onLoadFunction: "+onLoadFunction);
+        if (onLoadFunction.equals(null) || "".equals(onLoadFunction)) return;
         JSObject win = JSObject.getWindow(topFrame);
         String args[] = {};
         Object foo = win.call(onLoadFunction,args);
-        */
       } catch (Exception ignored) { }
     }
 

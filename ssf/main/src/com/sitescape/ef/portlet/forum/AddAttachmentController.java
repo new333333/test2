@@ -34,7 +34,7 @@ public class AddAttachmentController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
-		if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
+		if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET) || op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
 			//See if the add entry form was submitted
 			//The form was submitted. Go process it
 			Map fileMap=null;
@@ -53,7 +53,14 @@ public class AddAttachmentController extends SAbstractController {
 			}
 			Boolean filesFromApplet = new Boolean(true);
 			getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, filesFromApplet);
-			setupReloadOpener(response, folderId, entryId);
+			
+			if (op.equals(WebKeys.OPERATION_ADD_FILES_FROM_APPLET)) {
+				setupReloadOpener(response, folderId, entryId);
+			}
+			else {
+				String closeDivFunctionName = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, "");
+				setupCloseDiv(response, folderId, closeDivFunctionName);
+			}
 			//flag reload of folder listing
 			//response.setRenderParameter("ssReloadUrl", "");
 		} else {
@@ -61,6 +68,13 @@ public class AddAttachmentController extends SAbstractController {
 		}
 	}
 
+	private void setupCloseDiv(ActionResponse response, Long folderId, String strCloseDivFunctionName) {
+		//return to close div page
+		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		response.setRenderParameter(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, strCloseDivFunctionName);
+	}	
+	
 	private void setupReloadOpener(ActionResponse response, Long folderId, Long entryId) {
 		//return to view entry
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
@@ -86,7 +100,8 @@ public class AddAttachmentController extends SAbstractController {
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 		RenderResponse response) throws Exception {
-		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		String closeDivFunctionName = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, "");
 
 		Map model = new HashMap();	
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
@@ -94,12 +109,9 @@ public class AddAttachmentController extends SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
 		FolderEntry entry=null;
-		if (op.equals(WebKeys.OPERATION_MOVE)) {
-			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
-			entry  = getFolderModule().getEntry(folderId, entryId);
-			model.put(WebKeys.ENTRY, entry);
-			model.put(WebKeys.BINDER, entry.getParentFolder());
-			path = WebKeys.VIEW_MOVE_ENTRY;
+		if (op.equals(WebKeys.OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY)) {
+			model.put(WebKeys.ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION, closeDivFunctionName);
+			path="definition_elements/close_div";
 		} else {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
@@ -109,7 +121,8 @@ public class AddAttachmentController extends SAbstractController {
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 			path = WebKeys.VIEW_MODIFY_ENTRY;
-		} 
+		}
+		
 			
 		return new ModelAndView(path, model);
 	}

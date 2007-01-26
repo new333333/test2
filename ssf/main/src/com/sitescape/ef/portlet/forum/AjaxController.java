@@ -153,7 +153,7 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/ajax_return", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 				return new ModelAndView("binder/access_control_table", model);
-			}
+			} 
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
@@ -241,7 +241,9 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 			return ajaxGetUploadImageFile(request, response);
 		}
-				
+		else if (op.equals(WebKeys.OPERATION_ADD_ATTACHMENT_OPTIONS)) {
+			return addAttachmentOptions(request, response); 
+		}		
 		return ajaxReturn(request, response);
 	} 
 	
@@ -1217,7 +1219,7 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.TAB_ID, -1);
 		return new ModelAndView("binder/show_tabs", model);
 	}
-
+	
 	private ModelAndView ajaxGetAccessControlTable(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -1257,7 +1259,33 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_ajax", model);
 	}
+	
+	private ModelAndView addAttachmentOptions(RenderRequest request, 
+			RenderResponse response) throws Exception {
+	
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_ENTRY_ATTACHMENT);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FILES_FROM_APPLET);
 
+		//This replace has been done AJAX does not allow "&"
+		String strURL = adapterUrl.toString();
+		strURL = strURL.replaceAll("&", "&amp;");
+		
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
+		
+		//response.setContentType("text/xml");
+		return new ModelAndView("definition_elements/entry_attachment_options", model);
+	}
+	
 	private ModelAndView ajaxGetUploadImageFile(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1266,5 +1294,4 @@ public class AjaxController  extends SAbstractController {
 
 		return new ModelAndView("binder/upload_image_file_ajax_return", model);
 	}
-
 }
