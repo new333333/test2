@@ -30,12 +30,8 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.lucene.SsfIndexAnalyzer;
 import com.sitescape.ef.lucene.SsfQueryAnalyzer;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.LuceneException;
-import com.sitescape.ef.util.LuceneUtil;
 
 /**
  * Title: IndexObject Description: The main object for each Index 
@@ -77,6 +73,13 @@ public class IndexObject {
 
 	Object SyncObj = new Object();
 
+	private final static String TAG_FIELD = "_tagField";
+
+	private final static String TAG = "TAG";
+
+	private final static String TAG_ACL_PRE = "ACL";
+
+	private final static String ACL_TAG_FIELD = "_aclTagField";
 	/**
 	 * Constructor - make sure the index directory either exists, or can be
 	 * created. The indexname will be appended to the basedirectory (as
@@ -483,7 +486,7 @@ public class IndexObject {
 		}
 	}
 	
-	public ArrayList getTags(Query query, String tag) throws RemoteException {
+	public ArrayList getTags(Query query, long id, String tag) throws RemoteException {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
 		TreeSet results = new TreeSet();
@@ -499,14 +502,13 @@ public class IndexObject {
 				}
 			});
 
-			String[] fields = { BasicIndexUtils.TAG_FIELD,
-					BasicIndexUtils.ACL_TAG_FIELD };
+			String[] fields = { TAG_FIELD,
+					ACL_TAG_FIELD };
 			int preTagLength = 0;
 			for (int i = 0; i < fields.length; i++) {
 				if (fields[i].equalsIgnoreCase("_aclTagField")) {
-					String preTag = BasicIndexUtils.TAG_ACL_PRE
-							+ RequestContextHolder.getRequestContext()
-									.getUserId().toString() + BasicIndexUtils.TAG;
+					String preTag = TAG_ACL_PRE
+							+ id + TAG;
 					preTagLength = preTag.length();
 					tag = preTag + tag;
 				}

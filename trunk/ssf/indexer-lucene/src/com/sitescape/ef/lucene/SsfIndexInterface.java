@@ -54,6 +54,6 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	public void updateDocuments(String indexname, Query query,
 			String fieldname, String fieldvalue) throws RemoteException;
 	
-	public ArrayList getTags(String indexName, Query query, String tag)
+	public ArrayList getTags(String indexName, Query query, Long id, String tag)
 		throws RemoteException;
 }
