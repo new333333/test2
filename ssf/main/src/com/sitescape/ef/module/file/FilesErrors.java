@@ -1,12 +1,15 @@
 package com.sitescape.ef.module.file;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.sitescape.ef.util.NLT;
 
-public class FilesErrors {
-
+public class FilesErrors implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
 	private List problems;
 	
 	public FilesErrors() {
@@ -31,7 +34,9 @@ public class FilesErrors {
 		return sb.toString();
 	}
 	
-	public static class Problem {
+	public static class Problem implements Serializable {
+		private static final long serialVersionUID = 1L;
+		
 		public static int OTHER_PROBLEM						= 0;
 		public static int PROBLEM_FILTERING					= 1;
 		public static int PROBLEM_STORING_PRIMARY_FILE		= 2;
