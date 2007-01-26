@@ -167,6 +167,9 @@ function ss_findUserSelectItem${prefix}(obj) {
 		value="${ssUser.parentBinder.id}"/><portlet:param name="entryId" 
 		value="ss_entryIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
+		var textObj = document.getElementById(ss_findUserSearchLastTextObjId${prefix});
+		alert(textObj.value)
+		textObj.value = "";
 	if (ss_findUserClickRoutine${prefix} != "") {
 		eval(ss_findUserClickRoutine${prefix} + "('"+id+"');")
 		<% if (leaveResultsVisible) { %>

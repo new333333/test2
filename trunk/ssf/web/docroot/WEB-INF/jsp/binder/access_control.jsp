@@ -32,6 +32,13 @@ function ss_selectPrincipal<portlet:namespace/>(id) {
 function ss_selectPrincipalAccessible<portlet:namespace/>() {
 	setTimeout("document.forms['${renderResponse.namespace}rolesForm'].submit();", 100)
 }
+function ss_addAccessControlRole<portlet:namespace/>(id) {
+	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
+	formObj.btnClicked.value = "addRole";
+	formObj.roleIdToAdd.value = id;
+	ss_selectPrincipalAjax<portlet:namespace/>();
+	ss_hideDiv('ss_addRolesMenu<portlet:namespace/>');
+}
 
 function ss_selectPrincipalAjax<portlet:namespace/>() {
 	ss_setupStatusMessageDiv()
@@ -45,11 +52,15 @@ function ss_selectPrincipalAjax<portlet:namespace/>() {
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
+	//ajaxRequest.addKeyValue("random", ss_random++);
 	ajaxRequest.addFormElements("${renderResponse.namespace}rolesForm");
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postSelectPrincipal<portlet:namespace/>);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
+	
+	ss_hideDiv('ss_addGroupsMenu<portlet:namespace/>');
+	ss_hideDiv('ss_addUsersMenu<portlet:namespace/>');	
 }
 
 function ss_postSelectPrincipal<portlet:namespace/>(obj) {
@@ -57,11 +68,13 @@ function ss_postSelectPrincipal<portlet:namespace/>(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	}
+	var divObj = document.getElementById('ss_accessControlDiv${renderResponse.namespace}');
+	var s = divObj.innerHTML;
 }
 
 function ss_selectRole<portlet:namespace/>() {
 	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
-	formObj.btnClicked.value = "addPrincipal";
+	formObj.btnClicked.value = "addRole";
 	ss_selectPrincipalAjax<portlet:namespace/>();
 }
 
@@ -80,6 +93,48 @@ function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
 	return false;
+}
+
+function ss_showAddRolesMenu<portlet:namespace/>(obj) {
+	var divObj = document.getElementById('ss_addRolesMenu<portlet:namespace/>');
+	ss_moveObjectToBody(divObj)
+	var objTopOffset = 40
+	var objLeftOffset = 40
+	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
+	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
+		ss_hideDiv('ss_addRolesMenu<portlet:namespace/>')
+	} else {
+		ss_showDiv('ss_addRolesMenu<portlet:namespace/>')
+	}
+}
+
+function ss_showAddGroupsMenu<portlet:namespace/>(obj) {
+	var divObj = document.getElementById('ss_addGroupsMenu<portlet:namespace/>');
+	ss_moveObjectToBody(divObj)
+	var objTopOffset = 40
+	var objLeftOffset = 40
+	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
+	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
+		ss_hideDiv('ss_addGroupsMenu<portlet:namespace/>')
+	} else {
+		ss_showDiv('ss_addGroupsMenu<portlet:namespace/>')
+	}
+}
+
+function ss_showAddUsersMenu<portlet:namespace/>(obj) {
+	var divObj = document.getElementById('ss_addUsersMenu<portlet:namespace/>');
+	ss_moveObjectToBody(divObj)
+	var objTopOffset = 40
+	var objLeftOffset = 40
+	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
+	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
+		ss_hideDiv('ss_addUsersMenu<portlet:namespace/>')
+	} else {
+		ss_showDiv('ss_addUsersMenu<portlet:namespace/>')
+	}
 }
 
 </script>
@@ -177,6 +232,7 @@ function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
   		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 <input type="hidden" name="principalId"/>
 <input type="hidden" name="btnClicked"/>
+<input type="hidden" name="roleIdToAdd"/>
 
 <c:if test="${!ssBinder.functionMembershipInherited && !empty ss_accessParent.ssBinder}">
 <div>
@@ -194,33 +250,69 @@ function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
 </div>
 </c:if>
 
-<table class="ss_table">
-<thead>
-<tr>
-<th class="ss_table_paragraph_bld"><ssf:nlt tag="access.addGroup"/></th>
-<th class="ss_table_paragraph_bld"><ssf:nlt tag="access.addUser"/></th>
-</tr>
-<tr class="ss_table_tr_noborder">
-<th class="ss_table_td_noborder" width="50%">
+<c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+<c:if test="${!ssBinder.functionMembershipInherited}">
+<div id="ss_addGroupsMenu<portlet:namespace/>" 
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  <div align="right">
+    <a href="#" onClick="ss_hideDiv('ss_addGroupsMenu<portlet:namespace/>');return false;">
+      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+    </a>
+  </div>
+  <div style="padding:0px 10px 10px 10px;">
+  <span class="ss_bold"><ssf:nlt tag="access.addGroup"/></span><br/>
   <ssf:find formName="${renderResponse.namespace}rolesForm" 
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="group"
-    leaveResultsVisible="true"
+    leaveResultsVisible="false"
     clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
-</th>
+  </div>
+</div>
 
-<th class="ss_table_td_noborder" width="50%">
+<div id="ss_addUsersMenu<portlet:namespace/>" 
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  <div align="right">
+    <a href="#" onClick="ss_hideDiv('ss_addUsersMenu<portlet:namespace/>');return false;">
+      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+    </a>
+  </div>
+  <div style="padding:0px 10px 10px 10px;">
+  <span class="ss_bold"><ssf:nlt tag="access.addUser"/></span><br/>
   <ssf:find formName="${renderResponse.namespace}rolesForm" 
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="user"
-    leaveResultsVisible="true"
+    leaveResultsVisible="false"
     clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
-</th>
-</tr>
-</thead>
-</table>
+  </div>
+</div>
+
+  <c:if test="${ssUser.displayStyle != 'accessible'}" >
+	<div id="ss_addRolesMenu<portlet:namespace/>" class="ss_actions_bar_submenu" >
+		<ul class="ss_actions_bar_submenu" style="width:250px;">
+		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
+	    <c:forEach var="function" items="${ssFunctionMap}">
+	      <c:set var="includeRole" value="1"/>
+	      <c:forEach var="sortedFunction" items="${ss_accessSortedFunctions}">
+	        <c:if test="${sortedFunction.id == function.key.id}">
+	          <c:set var="includeRole" value="0"/>
+	        </c:if>
+	      </c:forEach>
+	      <c:if test="${includeRole == '1'}">
+	        <li>
+	          <a href="javascript: ;" 
+	          onClick="ss_addAccessControlRole${ss_namespace}('${function.key.id}');"
+	          ><c:out value="${function.key.name}"/></a>
+	        </li>
+	      </c:if>
+	    </c:forEach>
+		</ul>
+	</div>
+  </c:if>
+  
+</c:if>
+
 
 <c:set var="ss_accessControlTableDivId" value="ss_accessControlDiv${renderResponse.namespace}" scope="request"/>
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>

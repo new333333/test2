@@ -58,7 +58,12 @@ public class AccessControlController extends AbstractBinderController {
 					String[] s_roleId = key.substring(7).split("_");
 					if (s_roleId.length == 2) {
 						Long roleId = Long.valueOf(s_roleId[0]);
-						Long memberId = Long.valueOf(s_roleId[1]);
+						Long memberId = null;
+						if (s_roleId[1].equals("owner")) {
+							memberId = Long.valueOf("-1");
+						} else {
+							memberId = Long.valueOf(s_roleId[1]);
+						}
 						Set members = (Set)functionMemberships.get(roleId);
 						if (!members.contains(memberId)) members.add(memberId);
 					}

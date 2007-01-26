@@ -652,7 +652,7 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
 			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 			filterTermValueEle.setText(searchText);
-		
+			
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
 			if (!getProfileModule().checkUserSeeAll()) {
@@ -1251,6 +1251,8 @@ public class AjaxController  extends SAbstractController {
 			}
 		}
 		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.NAMESPACE, namespace);
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_ajax", model);
