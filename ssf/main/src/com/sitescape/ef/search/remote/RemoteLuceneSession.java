@@ -12,6 +12,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
+import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.lucene.SsfIndexInterface;
 import com.sitescape.ef.search.BasicIndexUtils;
@@ -131,8 +132,9 @@ public class RemoteLuceneSession implements LuceneSession {
 
 	public ArrayList getTags(Query query, String tag) throws LuceneException {
 		ArrayList results = new ArrayList();
+		Long id = RequestContextHolder.getRequestContext().getUserId();
 		try {
-			results = index.getTags(indexName, query, tag);
+			results = index.getTags(indexName, query, id, tag);
 		} catch (RemoteException re) {
 			throw new LuceneException(re);
 		}

@@ -212,10 +212,10 @@ public class SsfIndexer
         io.updateDocs(query, fieldname, fieldvalue);
 	}
 
-	public ArrayList getTags(String indexname, Query query, String tag) throws RemoteException {
+	public ArrayList getTags(String indexname, Query query, Long id, String tag) throws RemoteException {
 		ArrayList results = new ArrayList();
 		IndexObject io = ioc.getIndexObject(indexname);
-		results = io.getTags(query, tag);
+		results = io.getTags(query, id.longValue(), tag);
 		return results;
 	}
 }
