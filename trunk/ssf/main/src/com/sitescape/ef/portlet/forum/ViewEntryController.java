@@ -44,6 +44,7 @@ import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.ef.ssfs.util.SsfsUtil;
 
 
 public class ViewEntryController extends  SAbstractController {
@@ -390,12 +391,16 @@ public class ViewEntryController extends  SAbstractController {
 		} else {
 			folder = getFolderModule().getFolder(folderId);
 		}
+		
+		String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
+		
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.SEEN_MAP, seen);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.BINDER, (Binder) folder);
+		model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));

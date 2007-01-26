@@ -18,8 +18,7 @@ import java.net.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.applet.AppletContext;
-//Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
-//import netscape.javascript.JSObject;
+import netscape.javascript.JSObject;
 
 public class PostFiles extends Thread {
   String CR = System.getProperty("line.separator");
@@ -188,6 +187,9 @@ public class PostFiles extends Thread {
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Connection", "keep-alive");
             conn.connect();
+            
+            System.out.println("Hemanth: conn: "+ conn);
+            
             OutputStream out = conn.getOutputStream();
             //ChunkedOutputStream out = new ChunkedOutputStream(conn.getOutputStream());
             out.write(new String("--" + boundary + "\r\n").getBytes());
@@ -219,6 +221,7 @@ public class PostFiles extends Thread {
         } catch (java.lang.OutOfMemoryError oome) {
           String jsfunc = new String("memoryError");
         } catch (Exception e) {
+        	System.out.println("Hemanth: Exception e: "+e);
             displayResponse(topFrame, conn);
         }
     }
@@ -230,15 +233,28 @@ public class PostFiles extends Thread {
      */
     public void displayResponse( TopFrame topFrame, HttpURLConnection conn) {
         try {
+        	System.out.println("Hemanth: Inside displayResponse...."+conn);
             InputStream httpStream = conn.getInputStream();
+            System.out.println("Hemanth: After Getting InputStream");
+            
             boolean writing = false;
             String url = "";
             String jsfunc = "";
 
             String du = new String(topFrame.getParameter("displayUrl"));
             
+            System.out.println("Hemanth: du:"+du);
+            
             if (!du.equals("1")) {
               topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
+			  try {
+				  String reloadFunction = topFrame.getParameter("reloadFunctionName");
+				  System.out.println("Hemanth: Reload function to be called: "+reloadFunction);
+				  if (reloadFunction.equals(null)) return;
+				  JSObject win = JSObject.getWindow(topFrame);
+				  String args[] = {url};
+			      Object foo = win.call(reloadFunction,args);
+				} catch (Exception ignored) { }
               return;
             }
             
@@ -255,19 +271,20 @@ public class PostFiles extends Thread {
 				url += new String(bytes).toString().trim();
             }
             
+            System.out.println("Hemanth: Before the writing loop");
+            
             if (writing) {
 				writing = false;
 				url = url.substring(4);
 				try {
 					String reloadFunction = topFrame.getParameter("reloadFunctionName");
 					
+					System.out.println("Hemanth: Reload function to be called: "+reloadFunction);
+					
 					if (reloadFunction.equals(null)) return;
-					/*
-					 * Hemanth: Uncomment this once the build problem relating to Plugin.jar and JSObject is fixed
 					JSObject win = JSObject.getWindow(topFrame);
 					String args[] = {url};
 					Object foo = win.call(reloadFunction,args);
-					*/
 					
 				} catch (Exception ignored) { }
             }
@@ -276,6 +293,7 @@ public class PostFiles extends Thread {
         	return;
         }
         finally {
+        	System.out.println("Hemanth: Exception conn: "+conn);
         	conn.disconnect();
         	conn = null;
         }

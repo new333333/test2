@@ -107,6 +107,7 @@ public class WebKeys {
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CONFIG_EMAIL="config_email";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
+ 	public static final String ACTION_ADD_ENTRY_ATTACHMENT = "add_entry_attachment";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_FORUM = "configure_forum";
@@ -155,6 +156,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
     public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
     public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
+    public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
     public static final String OPERATION_ADD_TAB="add_tab";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";
@@ -168,6 +170,8 @@ public class WebKeys {
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
+	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
+	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";
 	public static final String OPERATION_GET_CONDITION_ENTRY_VALUE_LIST = "get_condition_entry_element_values";
@@ -241,6 +245,7 @@ public class WebKeys {
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
+	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String BLOG_FOLDER_COMMUNITY_TAGS="ssBlogFolderCommunityTags"; 
 	public static final String BLOG_FOLDER_PERSONAL_TAGS="ssBlogFolderPersonalTags"; 
@@ -307,6 +312,8 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
+    public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
+    public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
