@@ -53,7 +53,6 @@ Slide WebDAV client library 2.1
 Spring 1.2.2
 Spring mock 1.2.2 (comes with Spring)
 Spring Portlet spring-portlet.jar
-Stellent export.jar
 Trove 1.0.2
 Velocity 1.4
 WSDL4J 1.5.1

@@ -7,8 +7,8 @@ public class HtmlConverterManagerImpl
 	implements IHtmlConverterManager
 {
 	int _active = IHtmlConverterManager.OPENOFFICE;
-	HtmlStellentConverter _stellentConverter = null;
-	HtmlOpenOfficeConverter _openOfficeConverter = null;
+	HtmlConverter _stellentConverter = null;
+	HtmlConverter _openOfficeConverter = null;
 	
 	public HtmlConverterManagerImpl() {}
 	
@@ -44,22 +44,22 @@ public class HtmlConverterManagerImpl
 		return _active;
 	}
 	
-	public void setStellentConverter(HtmlStellentConverter converter_in)
+	public void setStellentConverter(HtmlConverter converter_in)
 	{
 		_stellentConverter = converter_in;
 	}
 	
-	public HtmlStellentConverter getStellentConverter()
+	public HtmlConverter getStellentConverter()
 	{
 		return _stellentConverter;
 	}
 	
-	public void setOpenOfficeConverter(HtmlOpenOfficeConverter converter_in)
+	public void setOpenOfficeConverter(HtmlConverter converter_in)
 	{
 		_openOfficeConverter = converter_in;
 	}
 	
-	public HtmlOpenOfficeConverter getOpenOfficeConverter()
+	public HtmlConverter getOpenOfficeConverter()
 	{
 		return _openOfficeConverter;
 	}
