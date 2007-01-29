@@ -570,7 +570,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   background-color:${ss_blog_title_background_color};
 }
 
-.ss_blog_sidebar, .ss_blog_sidebar table {
+.ss_blog_sidebar, .ss_blog_sidebar table, .ss_blog_sidebar form {
   background-color:${ss_blog_sidebar_background_color};
 }
 
