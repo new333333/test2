@@ -58,7 +58,7 @@ function <portlet:namespace/>_onsub(obj) {
 <br>
 <h3><ssf:nlt tag="administration.configure_cfg.existing" text="Currently defined configurations"/></h3>
 <c:if test="${!empty ssBinderConfigs}">
-<ssf:expandableArea title='<%= NLT.get("administration.configure_cfg.modify") %>'>
+<ssf:expandableArea title='<%= NLT.get("administration.configure_cfg.modify") %>' initOpen="true">
 <c:forEach var="cfg" items="${ssBinderConfigs}">
 <a href="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
