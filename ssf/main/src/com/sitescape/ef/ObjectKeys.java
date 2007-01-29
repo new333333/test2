@@ -93,6 +93,7 @@ public interface ObjectKeys {
     public static final String SEARCH_YEAR_MONTH = "yearMonth";
     public static final String SEARCH_COMMUNITY_TAG = "searchCommunityTag";
     public static final String SEARCH_PERSONAL_TAG = "searchPersonalTag";
+    public static final String SEARCH_TITLE = "searchTitle";
     
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
