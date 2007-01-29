@@ -78,5 +78,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jut.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/ridl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/unoil.jar"/>
+	<classpathentry kind="lib" path="lib/json-lib.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
