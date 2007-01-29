@@ -30,6 +30,7 @@ JBPM 3.1.2
 JBPM-Identity 3.1.2
 JCR 1.0
 JDOM 1.0
+JSon-lib 1.0b2 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
