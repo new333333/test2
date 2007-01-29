@@ -12,7 +12,8 @@
     <tr>
 	  <td class="ss_blog_sidebar" width="20%" valign="top">
 	  <ssf:expandableArea title="<%= NLT.get("wiki.findPage") %>" action="wipe" initOpen="false">
-	    <form method="post" action="<portlet:actionURL 
+	    <form method="post" 
+	    	action="<portlet:actionURL 
 	                windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
 					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
