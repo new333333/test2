@@ -100,7 +100,7 @@ public abstract class WorkflowControlledEntry extends Entry
      * 
      */
     public boolean getInheritAclFromParent() {
-    	return false;
+    	return !hasAclSet();
     }
 
     /**
