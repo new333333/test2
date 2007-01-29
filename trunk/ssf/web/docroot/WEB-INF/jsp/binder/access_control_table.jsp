@@ -15,7 +15,7 @@
  */
 %>
 
-<div id="${ss_accessControlTableDivId}">
+<div id="${ss_accessControlTableDivId}" class="ss_portlet ss_style ss_form">
 <TABLE class="ss_table">
 <THEAD>
 <TR>

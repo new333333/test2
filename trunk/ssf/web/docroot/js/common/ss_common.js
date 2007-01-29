@@ -1191,6 +1191,27 @@ function ss_hideDiv(divName) {
 	}
 }
 
+function ss_toggleDivWipe(divName) {
+	var divObj = self.document.getElementById(divName);
+	if (divObj.style.display == "block" || divObj.style.display == "inline") {
+		ss_hideDivWipe(divName);
+	} else {
+		ss_showDivWipe(divName);
+	}
+}
+function ss_showDivWipe(divName) {
+	var divObj = self.document.getElementById(divName);
+	divObj.style.display = "block"
+	divObj.style.visibility = "visible"
+	//setTimeout("dojo.lfx.html.wipeIn('" + divName + "', 400).play();", 100);
+}
+function ss_hideDivWipe(divName) {
+	var divObj = self.document.getElementById(divName);
+	divObj.style.visibility = "hidden"
+	divObj.style.display = "none"
+	//setTimeout("dojo.lfx.html.wipeOut('" + divName + "', 400).play();", 100);
+}
+
 function ss_positionDiv(divName, x, y) {
 	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
         self.document.getElementById(divName).style.left= (x - parseInt(self.document.getElementById(divName).offsetParent.offsetLeft)) + "px"

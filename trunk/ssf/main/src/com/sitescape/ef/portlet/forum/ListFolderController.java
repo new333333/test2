@@ -391,6 +391,11 @@ public class ListFolderController extends  SAbstractController {
 			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 
+		} else if (viewType.equals("wiki")) {
+			//This is a wiki view, set the default sort order
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			
 		} else {
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
 				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
@@ -498,6 +503,11 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 
+		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
+		if (!searchTitle.equals("")) {
+			options.put(ObjectKeys.SEARCH_TITLE, searchTitle);
+		}
+
 		String view;
 		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
 		
@@ -541,12 +551,15 @@ public class ListFolderController extends  SAbstractController {
 				viewType = viewElement.attributeValue("value", "");
 		}
 		if (viewType.equals("blog")) {
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
 			folderEntries = getFolderModule().getEntries(folderId, options);
+			if (viewType.equals("wiki")) {
+				//Get the list of all entries to build the archive list
+				buildBlogBeans(response, folder, options, model, folderEntries);
+			}
 		}
 
 		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);

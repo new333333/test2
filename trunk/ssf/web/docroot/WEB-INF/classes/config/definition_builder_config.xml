@@ -1015,6 +1015,9 @@
 				<option name="folder" caption="__folder_folder" />
 				<option name="event" caption="__folder_event" />
 				<option name="blog" caption="__folder_blog" />
+				<option name="wiki" caption="__folder_wiki" />
+				<option name="photo" caption="__folder_photo" />
+				<option name="file" caption="__folder_file" />
 				<help>__help_folder_view_type</help>
 			</property>
 		</properties>
