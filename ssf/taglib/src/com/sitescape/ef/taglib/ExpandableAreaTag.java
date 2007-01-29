@@ -32,6 +32,8 @@ import javax.portlet.PortletURL;
 public class ExpandableAreaTag extends BodyTagSupport {
 	private String _bodyContent;
 	private String title = "";
+	private String action = "";
+	private Boolean initOpen = false;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -53,6 +55,8 @@ public class ExpandableAreaTag extends BodyTagSupport {
 
 			Map _params = new HashMap();
 			_params.put("title", new String[] {this.title});
+			_params.put("openAction", new String[] {this.action});
+			_params.put("initOpen", new String[] {this.initOpen.toString()});
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq, _params);
@@ -76,11 +80,22 @@ public class ExpandableAreaTag extends BodyTagSupport {
 	        throw new JspException(e);
 	    }
 		finally {
+			this.title = "";
+			this.action = "";
+			this.initOpen = false;
 		}
 	}
 
 	public void setTitle(String title) {
 	    this.title = title;
+	}
+
+	public void setAction(String action) {
+	    this.action = action;
+	}
+
+	public void setInitOpen(Boolean initOpen) {
+	    this.initOpen = initOpen;
 	}
 
 }

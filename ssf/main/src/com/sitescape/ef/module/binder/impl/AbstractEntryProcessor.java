@@ -989,6 +989,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
        	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
 
+       	//See if there is a title field search request
+       	if (options.containsKey(ObjectKeys.SEARCH_TITLE)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.TITLE_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_TITLE));
+        		}
+        	}
+       	}
+
        	//See if there is an end date
        	if (options.containsKey(ObjectKeys.SEARCH_END_DATE)) {
         	Element rootElement = queryTree.getRootElement();

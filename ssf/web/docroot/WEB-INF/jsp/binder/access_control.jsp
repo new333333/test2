@@ -25,7 +25,12 @@ function ss_selectPrincipal<portlet:namespace/>(id) {
 	ss_selectPrincipalAccessible<portlet:namespace/>();
 </c:if>
 <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	ss_selectPrincipalAjax<portlet:namespace/>();
+	if (isIE) {
+		//IE does not display the table right, so repaint the screen
+		ss_selectPrincipalAccessible<portlet:namespace/>();
+	} else {
+		ss_selectPrincipalAjax<portlet:namespace/>();
+	}
 </c:if>
 }
 
@@ -36,7 +41,17 @@ function ss_addAccessControlRole<portlet:namespace/>(id) {
 	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
 	formObj.btnClicked.value = "addRole";
 	formObj.roleIdToAdd.value = id;
-	ss_selectPrincipalAjax<portlet:namespace/>();
+<c:if test="${ssUser.displayStyle == 'accessible'}" >
+	ss_selectPrincipalAccessible<portlet:namespace/>();
+</c:if>
+<c:if test="${ssUser.displayStyle != 'accessible'}" >
+	if (isIE) {
+		//IE does not display the table right, so repaint the screen
+		ss_selectPrincipalAccessible<portlet:namespace/>();
+	} else {
+		ss_selectPrincipalAjax<portlet:namespace/>();
+	}
+</c:if>
 	ss_hideDiv('ss_addRolesMenu<portlet:namespace/>');
 }
 
