@@ -33,6 +33,7 @@ public class WebKeys {
     public static final String PRINCIPAL = "_principal";
     public static final String SEARCH_BINDER_ID = "_binderId";
     public static final String SEARCH_TAG_ID = "_tagField";
+    public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_ACL_TAG_ID = "_aclTagField";
     
     //URL parameters
