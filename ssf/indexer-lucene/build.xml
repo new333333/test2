@@ -4,75 +4,11 @@
 	<import file="../build-common.xml" />	
     <import file="../deploy-support.xml" />
     	
-    <property name="jar.file" value="ssf-luceneserver.jar" />
-    <property name="client.jar.file" value="ssf-luceneapi.jar" />
+    <property name="jar.file" value="ssf-lucenecommon.jar" />
 
-    <target name="clean" depends="build-common.clean">
-    	<delete file="${client.jar.file}" failonerror="false" />
-    </target>
-	
-	<target name="compile" depends="javabuild,rmibuild">
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
 	</target>
-	
-	<target name="javabuild" depends="build-common.compile">
-		<copy 
-			file="${source.dir}/com/sitescape/ef/lucene/server/policy.all" 
-			todir="${classes.dir}"
-		/>
-		<copy 
-			file="${source.dir}/com/sitescape/ef/lucene/server/lucene-server.properties" 
-			todir="${classes.dir}"
-		/>
-    </target>
-	
-	<target name="rmibuild" depends="javabuild">
-		<rmic
-			classpathref="project.classpath"
-			classname="com.sitescape.ef.lucene.server.SsfIndexer"
-			base="${classes.dir}"
-		/>
-    </target>
-
-	<target name="jar" depends="jar1,jar2" />
-
-	<target name="jar1" depends="compile">
-        <jar
-            basedir="${classes.dir}"
-            jarfile="${jar.file}"
-        />
-    </target>
-	<target name="jar2" depends="compile">
-		<jar
-			basedir="${classes.dir}"
-			includes="**/lucene/*.class, **/server/SsfIndexer_S*"
-			jarfile="${client.jar.file}"
-		>
-			<manifest/>
-		</jar>
-	</target>
-    
-    <target name="deploy" depends="jar,jar2">
-        <antcall target="deploy-jar">
-        	<param name="deploy-support.jar.file" value="${client.jar.file}" />
-        </antcall>
-    </target>
-	
-	<target name="init-release">
-        <property environment="env" />
-    	<property name="root.dir" value="sitescape/indexserver" />
-    	<property name="zip.name" value="sitescape-indexserver" />
-	</target>
-
-	<target name="zip" depends="jar,init-release">
-		<delete file="../${dist.dir}/${zip.name}-${indexserver.version}.zip" failonerror="false" />
-        <delete failonerror="false">
-            <fileset dir="${root.dir}/lib" includes="**/*.jar" />
-        </delete>
-		<copy file="${jar.file}" todir="${root.dir}/lib" />
-		<zip destfile="../${dist.dir}/${zip.name}-${indexserver.version}.zip"
-			basedir="."
-			includes="sitescape/**/*"
-		/>
-	</target>
-
 </project>
