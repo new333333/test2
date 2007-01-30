@@ -173,6 +173,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
+	public static final String OPERATION_RELOAD_ENTRY_ATTACHMENTS = "reload_entry_attachments";
 	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
 	public static final String OPERATION_GET_CONDITION_ENTRY_ELEMENTS = "get_condition_entry_elements";
 	public static final String OPERATION_GET_CONDITION_ENTRY_OPERATIONS = "get_condition_entry_element_operations";

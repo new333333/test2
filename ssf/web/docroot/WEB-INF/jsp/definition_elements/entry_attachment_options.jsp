@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
 
 <script>
-function reloadUrlFromApplet()
+function reloadUrlFromApplet${ssEntryId}${ss_namespace}()
 {
-	parent.ss_hideAddAttachmentDropbox${ss_namespace}();
+	parent.ss_hideAddAttachmentDropboxAndAJAXCall${ssEntryId}${ss_namespace}();
 }
 
-function getWindowBgColor()
+function getWindowBgColor${ssEntryId}${ss_namespace}()
 {
 	return "#ffffff";
 }
@@ -36,8 +36,8 @@ function getWindowBgColor()
 			    <param name = "scriptable" value="true" />
 			    <PARAM NAME = "NAME" VALUE = "droptarget" />
 			    <PARAM NAME = "startingDir" VALUE=""/>
-			    <PARAM NAME = "reloadFunctionName" VALUE="reloadUrlFromApplet"/>
-			    <PARAM NAME = "bgcolorFunctionName" VALUE="getWindowBgColor"/>
+			    <PARAM NAME = "reloadFunctionName" VALUE="reloadUrlFromApplet${ssEntryId}${ss_namespace}"/>
+			    <PARAM NAME = "bgcolorFunctionName" VALUE="getWindowBgColor${ssEntryId}${ss_namespace}"/>
 			    <PARAM NAME = "savePreviousVersions" VALUE="yes"/>
 			    <PARAM NAME = "fileReceiverURL" VALUE="${ssAttachmentFileReceiverURL}" />
 			    <PARAM NAME = "deactivationUrl" VALUE=""/>

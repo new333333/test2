@@ -2,11 +2,15 @@ package com.sitescape.ef.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -30,14 +34,18 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
+import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.ssfs.util.SsfsUtil;
 import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
@@ -52,6 +60,7 @@ import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.util.Validator;
 
 /**
@@ -241,9 +250,10 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetAccessControlTable(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 			return ajaxGetUploadImageFile(request, response);
-		}
-		else if (op.equals(WebKeys.OPERATION_ADD_ATTACHMENT_OPTIONS)) {
+		} else if (op.equals(WebKeys.OPERATION_ADD_ATTACHMENT_OPTIONS)) {
 			return addAttachmentOptions(request, response); 
+		} else if (op.equals(WebKeys.OPERATION_RELOAD_ENTRY_ATTACHMENTS)) {
+			return reloadEntryAttachment(request, response); 
 		}		
 		return ajaxReturn(request, response);
 	} 
@@ -1253,6 +1263,15 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_ajax", model);
 	}
+
+	private ModelAndView ajaxGetUploadImageFile(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String url = PortletRequestUtils.getStringParameter(request, WebKeys.IMAGE_FILE_URL, "");
+		model.put(WebKeys.UPLOAD_FILE_URL, url);
+
+		return new ModelAndView("binder/upload_image_file_ajax_return", model);
+	}
 	
 	private ModelAndView addAttachmentOptions(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -1274,18 +1293,38 @@ public class AjaxController  extends SAbstractController {
 		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		
 		//response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/entry_attachment_options", model);
 	}
 	
-	private ModelAndView ajaxGetUploadImageFile(RenderRequest request, 
+	private ModelAndView reloadEntryAttachment(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String url = PortletRequestUtils.getStringParameter(request, WebKeys.IMAGE_FILE_URL, "");
-		model.put(WebKeys.UPLOAD_FILE_URL, url);
+		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 
-		return new ModelAndView("binder/upload_image_file_ajax_return", model);
-	}
+		Map model = new HashMap();
+		Folder folder = null;
+		FolderEntry entry = null;
+		Map folderEntries = null;
+
+		if (!entryId.equals("")) {
+			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
+			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			folder = entry.getParentFolder();
+		} else {
+			folder = getFolderModule().getFolder(folderId);
+		}
+		
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.ENTRY, entry);
+		model.put(WebKeys.DEFINITION_ENTRY, entry);
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("definition_elements/view_entry_attachments_ajax", model);
+	}	
+	
 }
