@@ -1043,6 +1043,10 @@ function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, op
 	}
 	ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openStyle);
 }
+function ss_activateMenuLayerMove(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
+    ss_moveDivToBody(divId);
+    ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openStyle)
+}
 function ss_activateMenuLayer(divId, parentDivId, offsetLeft, offsetTop, openStyle) {
 	if (!parentDivId || parentDivId == null || parentDivId == 'undefined') {parentDivId=""}
 	if (!offsetLeft || offsetLeft == null || offsetLeft == 'undefined') {offsetLeft="0"}

@@ -18,7 +18,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <br/>
 <br/>
-Search configuration
+<ssf:nlt tag="dashboard.config.search"/>
 <br/>
 <br/>
 

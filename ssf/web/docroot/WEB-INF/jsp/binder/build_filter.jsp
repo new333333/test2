@@ -122,7 +122,7 @@ function checkFilterForm(obj) {
 	formObj.ss_filterTermNumber.value = parseInt(ss_filterTermNumber);
 	formObj.ss_filterTermNumberMax.value = parseInt(ss_filterTermNumberMax);
 	if (ss_buttonSelected == 'ok' && obj.filterName.value == "") {
-		alert("<ssf:nlt tag="filter.enterName" text="Please fill in the filter name field."/>")
+		alert("<ssf:nlt tag="filter.enterName"/>")
 		obj.filterName.focus()
 		return false;
 	}
@@ -163,18 +163,18 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 </div>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="filter.filterName" text="Filter name"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="filter.filterName"/></legend>
 
 	  <span class="ss_labelAbove"><ssf:nlt tag="filter.filterName" text="Filter name"/></span>
-	  <input type="text" class="ss_text" style="width:400px;" name="filterName" value="<c:out value="${ss_selectedFilter}"/>">
+	  <input type="text" class="ss_text" style="width:400px;" name="filterName" 
+	    value="<c:out value="${ss_selectedFilter}"/>">
   </fieldset>
 
 <div class="ss_formBreak"/>
   
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="filter.terms" text="Filter terms"/></legend>
-	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType" 
-	  text="Select the terms of the filter to be added..."/></span>
+	<span class="ss_bold"><ssf:nlt tag="filter.selectFilterType"/></span>
 	<br/>
 	<div id="filterTerms">
 	  <table class="ss_style">
@@ -186,12 +186,12 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 	      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
 	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
-	          <ssf:nlt tag="filter.searchText" text="Search text"/>
+	          <ssf:nlt tag="filter.searchText"/>
 	      </a></li>
 	      
 	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
-	          <ssf:nlt tag="filter.entryAttributes" text="Entry attributes"/>
+	          <ssf:nlt tag="filter.entryAttributes" />
 	      </a></li>
 
 	      <li><a href="#" 
@@ -201,7 +201,7 @@ function t_<portlet:namespace/>_wsTree_showId(forum, obj) {
 
 	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
-	          <ssf:nlt tag="filter.workflowStates" text="Workflow states"/>
+	          <ssf:nlt tag="filter.workflowStates"/>
 	      </a></li>
 
 	    </div>
@@ -247,7 +247,7 @@ ss_filterTermNumberMax++;
 	
 		      <li><a href="javascript: ;" 
 		        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
-		          <ssf:nlt tag="filter.workflowStates" text="Workflow states"/>
+		          <ssf:nlt tag="filter.workflowStates"/>
 		      </a></li>
 	
 		    </div>
@@ -394,7 +394,8 @@ ss_filterTermNumberMax++;
 	  </table>
 	</div>
 	<br/>
-	<a class="ss_linkButton" href="javascript: ;" onClick="ss_addFilterTerm();return false;">Add another filter term</a>
+	<a class="ss_linkButton" href="javascript: ;" 
+	  onClick="ss_addFilterTerm();return false;"><ssf:nlt tag="search.addFilterTerm"/></a>
 	  
   </fieldset>
   

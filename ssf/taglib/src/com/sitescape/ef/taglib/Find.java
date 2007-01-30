@@ -49,6 +49,8 @@ public class Find extends TagSupport {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_place.jsp";
 				} else if (type.equals("tags")) {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_tag.jsp";
+				} else if (type.equals("entries")) {
+					jsp = "/WEB-INF/jsp/tag_jsps/find/single_entry.jsp";
 				} else {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_user.jsp";
 				}
@@ -57,6 +59,8 @@ public class Find extends TagSupport {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/places_list.jsp";
 				} else if (type.equals("tags")) {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/tag_list.jsp";
+				} else if (type.equals("entries")) {
+					jsp = "/WEB-INF/jsp/tag_jsps/find/entries_list.jsp";
 				} else {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/user_list.jsp";
 				}

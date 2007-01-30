@@ -28,8 +28,7 @@ function ss_buttonSelect(btn) {
 function checkFilterForm(obj) {
 	if (ss_buttonSelected == 'delete' && 
 			document.forms.filterData.selectedSearchFilter.value != "") {
-		if (!confirm("<ssf:nlt tag="filter.confirmDelete" 
-		text="Please confirm that you want to delete the filter named:"
+		if (!confirm("<ssf:nlt tag="filter.confirmDelete"
 		/>\n" + document.forms.filterData.selectedSearchFilter.value)) return false;
 	}
 	return true;
@@ -52,7 +51,7 @@ function checkFilterForm(obj) {
 </div>
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="filter.filterAddModDelete" text="Add, modify or delete filters"/></legend>
+    <legend class="ss_legend"><ssf:nlt tag="filter.filterAddModDelete"/></legend>
 
 	<br>
 	<input type="submit" class="ss_submit" name="addBtn"  onClick="ss_buttonSelect('add');"
@@ -64,10 +63,10 @@ function checkFilterForm(obj) {
 	  <tr>
 	  <td valign="top">
 	    <select name="selectedSearchFilter">
-	      <option value=""><ssf:nlt tag="filter.selectFilter" 
-	        text="--select the filter to be modified or deleted--"/></option>
+	      <option value=""><ssf:nlt tag="filter.selectFilter"/></option>
 	      <c:forEach var="searchFilter" items="${ss_searchFilters}">
-	        <option value="<c:out value="${searchFilter.key}" escapeXml="true"/>"><c:out value="${searchFilter.key}" escapeXml="true"/></option>
+	        <option value="<c:out value="${searchFilter.key}" 
+	          escapeXml="true"/>"><c:out value="${searchFilter.key}" escapeXml="true"/></option>
 	      </c:forEach>
 	    </select>
 	  </td>
