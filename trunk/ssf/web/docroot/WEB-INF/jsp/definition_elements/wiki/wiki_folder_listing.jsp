@@ -11,16 +11,22 @@
   <table class="ss_blog" width="100%">
     <tr>
 	  <td class="ss_blog_sidebar" width="20%" valign="top">
-	  <ssf:expandableArea title="<%= NLT.get("wiki.findPage") %>" action="wipe" initOpen="false">
-	    <form method="post" 
+	    <span class="ss_bold"><ssf:nlt tag="wiki.findPage"/>
+	    <br/>
+	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
 	    	action="<portlet:actionURL 
 	                windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
 					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
-	     <input type="text" size="20" name="searchTitle"/>
-	     <input type="submit" name="findPage" value="<ssf:nlt tag="button.ok"/>"/>
+		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
+		    formElement="searchTitle" 
+		    type="entries"
+		    width="70px" 
+		    binderId="${ssBinder.id}"
+		    searchSubFolders="false"
+		    singleItem="true"/> 
+	    <input type="hidden" name="searchTitle"/>
 	    </form>
-	  </ssf:expandableArea>
 	  <br/>
 	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" action="wipe" initOpen="true">
 		<table cellspacing="0" cellpadding="0">
