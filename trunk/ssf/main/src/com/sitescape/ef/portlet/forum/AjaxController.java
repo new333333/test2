@@ -187,6 +187,7 @@ public class AjaxController  extends SAbstractController {
 
 		} else if (op.equals(WebKeys.OPERATION_FIND_USER_SEARCH) ||
 				op.equals(WebKeys.OPERATION_FIND_PLACES_SEARCH) || 
+				op.equals(WebKeys.OPERATION_FIND_ENTRIES_SEARCH) || 
 				op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
 			return ajaxFindUserSearch(request, response);
 
@@ -577,6 +578,26 @@ public class AjaxController  extends SAbstractController {
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
+			//Add the title term
+			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+			filterTerm.setText(searchText.replaceFirst("\\*", ""));
+			
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+			filterTerm.setText(searchText);
+			
+			//Add terms to search folders and workspaces
+			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
+			Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
+			filterTerm2.setText(EntityIdentifier.EntityType.folder.name());
+			filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
+			filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
+			
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);

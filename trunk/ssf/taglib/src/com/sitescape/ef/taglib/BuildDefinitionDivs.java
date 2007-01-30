@@ -722,7 +722,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		Element help = (Element) item.selectSingleNode("./help");
 		if (help != null) {
 			helpDivCount++;
-			hb.append("<div id=\"help_div_" + rootElementId);
+			hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
 			hb.append(Integer.toString(helpDivCount));
 			hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 			hb.append("<span>");
@@ -730,7 +730,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			hb.append("</span>\n</div>\n");
 			sb.append(" <a name=\"help_div_" + rootElementId);
 			sb.append(Integer.toString(helpDivCount));
-			sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
+			sb.append("_a\" onClick=\"ss_activateMenuLayerMove('help_div_" + rootElementId);
 			sb.append(Integer.toString(helpDivCount));
 			sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 		}
@@ -1339,7 +1339,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
 					if (help != null) {
 						helpDivCount++;
-						hb.append("<div id=\"help_div_" + rootElementId);
+						hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
 						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
@@ -1347,7 +1347,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						hb.append("</span>\n</div>\n");
 						sb.append("<a name=\"help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
-						sb.append("_a\" onClick=\"ss_activateMenuLayer('help_div_" + rootElementId);
+						sb.append("_a\" onClick=\"ss_activateMenuLayerMove('help_div_" + rootElementId);
 						sb.append(Integer.toString(helpDivCount));
 						sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 					}
@@ -1445,7 +1445,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								Element help = (Element) optionItem.selectSingleNode("./help");
 								if (help != null) {
 									helpDivCount++;
-									hb.append("<div id=\"help_div_" + rootElementId);
+									hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
 									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
@@ -1484,7 +1484,7 @@ public class BuildDefinitionDivs extends TagSupport {
 								Element help = (Element) optionSelect.selectSingleNode("./help");
 								if (help != null) {
 									helpDivCount++;
-									hb.append("<div id=\"help_div_" + rootElementId);
+									hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
 									hb.append(Integer.toString(helpDivCount));
 									hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 									hb.append("<span>");
@@ -1514,7 +1514,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
 					if (help != null) {
 						helpDivCount++;
-						hb.append("<div id=\"help_div_" + rootElementId);
+						hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
 						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");

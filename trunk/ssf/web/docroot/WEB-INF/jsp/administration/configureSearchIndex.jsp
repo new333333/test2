@@ -40,11 +40,11 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <br>
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:<portlet:namespace/>_doSelect(true);"
->Select all</a>
+><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:<portlet:namespace/>_doSelect(false);"
->Clear all</a>
+><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <script type="text/javascript">
 function <portlet:namespace/>_doSelect(newState) {
@@ -92,11 +92,11 @@ function ss_selectAll(formName, prefix, newState) {
 <br>
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:<portlet:namespace/>_doSelect(true);"
->Select all</a>
+><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:<portlet:namespace/>_doSelect(false);"
->Clear all</a>
+><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <br>
 <div class="ss_buttonBarLeft">

@@ -154,9 +154,8 @@ function t_searchForm_wsTree_showId(forum, obj) {
   initOnly="true" />
 
   <fieldset class="ss_fieldset">
-    <legend class="ss_legend"><ssf:nlt tag="searchForm.terms" text="Filter terms"/></legend>
-	<span class="ss_bold"><ssf:nlt tag="searchForm.selectFilterType" 
-	  text="Select the terms of the filter to be added..."/></span>
+    <legend class="ss_legend"><ssf:nlt tag="searchForm.terms"/></legend>
+	<span class="ss_bold"><ssf:nlt tag="searchForm.selectFilterType"/></span>
 	<br/>
 	<div id="filterTerms">
 	  <table class="ss_style">
@@ -168,17 +167,17 @@ function t_searchForm_wsTree_showId(forum, obj) {
 	      <ul class="ss_square" style="margin:0px 14px; padding:2px;">
 	      <li><a href="javascript: ;" 
 	        onClick="ss_getFilterTypeSelection(this, 'text');return false;">
-	          <ssf:nlt tag="searchForm.searchText" text="Search text"/>
+	          <ssf:nlt tag="searchForm.searchText"/>
 	      </a></li>
 	      
 	      <li><a href="javascript: ;" 
 	        onClick="ss_getFilterTypeSelection(this, 'entry');return false;">
-	          <ssf:nlt tag="searchForm.entryAttributes" text="Entry attributes"/>
+	          <ssf:nlt tag="searchForm.entryAttributes"/>
 	      </a></li>
 
 	      <li><a href="javascript: ;" 
 	        onClick="ss_getFilterTypeSelection(this, 'workflow');return false;">
-	          <ssf:nlt tag="searchForm.workflowStates" text="Workflow states"/>
+	          <ssf:nlt tag="searchForm.workflowStates"/>
 	      </a></li>
 
 	      <li><a href="#" 
@@ -353,7 +352,7 @@ ss_filterTermNumberMax++;
 	  </table>
 	</div>
 	<br/>
-	<a class="ss_linkButton" href="javascript: ;" onClick="ss_addFilterTerm();return false;">Add another filter term</a>
+	<a class="ss_linkButton" href="javascript: ;" onClick="ss_addFilterTerm();return false;"><ssf:nlt tag="search.addFilterTerm"/></a>
 	  
   </fieldset>
   

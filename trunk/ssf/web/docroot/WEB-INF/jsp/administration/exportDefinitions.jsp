@@ -32,11 +32,11 @@
 <br>
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
->Select all</a>
+><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
->Clear all</a>
+><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <script type="text/javascript">
 function t_<portlet:namespace/>_tree_showId(forum, obj) {
@@ -65,11 +65,11 @@ function ss_selectAll(formName, prefix, newState) {
 <br>
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', true);"
->Select all</a>
+><ssf:nlt tag="button.selectAll"/></a>
 &nbsp;&nbsp;&nbsp;
 <a class="ss_linkButton ss_smallprint" 
   href="javascript:ss_selectAll('<portlet:namespace />fm', 'id_', false);"
->Clear all</a>
+><ssf:nlt tag="button.clearAll"/></a>
 <br>
 <br>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
