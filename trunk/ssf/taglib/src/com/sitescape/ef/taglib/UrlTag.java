@@ -103,13 +103,13 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
+					webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&amp;";
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&";
+						webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&amp;";
 					}
 				}
 				pageContext.getOut().print(webUrl);
