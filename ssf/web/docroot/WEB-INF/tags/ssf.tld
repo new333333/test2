@@ -316,7 +316,18 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>
-		</attribute>		
+		</attribute>
+		<attribute>
+			<name>binderId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>searchSubFolders</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
 	</tag>
 	
 	<tag>

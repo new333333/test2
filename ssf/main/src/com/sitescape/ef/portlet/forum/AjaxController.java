@@ -570,6 +570,8 @@ public class AjaxController  extends SAbstractController {
 		String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
 		Integer maxEntriesTags = Integer.valueOf(200);
 
@@ -617,15 +619,24 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
 			filterTerm.setText(searchText);
 			
-			//Add terms to search folders and workspaces
+			//Add terms to search entries only
 			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
 			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
 			Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
-			filterTerm2.setText(EntityIdentifier.EntityType.folder.name());
-			filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
-			filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
+			filterTerm2.setText(EntityIdentifier.EntityType.folderEntry.name());
+			
+			//Add terms to search this folder
+			if (!binderId.equals("")) {
+				filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+				filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+				filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+				filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeFolders);
+				filterTerm.addAttribute(FilterHelper.FilterFolderId, binderId);
+				
+				//TODO Need to implement "searchSubFolders"
+			}
 			
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
 			// this has been replaced by a getTags method in the search engine.
@@ -679,6 +690,12 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
 			view = "forum/find_places_search";
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
+			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
+			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+			model.put(WebKeys.ENTRIES, entries);
+			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
+			view = "forum/find_entries_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
 			
 			String wordRoot = searchText;

@@ -28,6 +28,8 @@ public class Find extends TagSupport {
     private Boolean singleItem;
     private Boolean leaveResultsVisible;
     private String clickRoutine = "";
+    private String binderId = "";
+    private Boolean searchSubFolders;
     private Integer instanceCount = 0;
     
 	public int doStartTag() throws JspException {
@@ -39,6 +41,7 @@ public class Find extends TagSupport {
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
+			if (searchSubFolders == null) searchSubFolders = false;
 			this.instanceCount++;
 			
 			//Output the start of the area
@@ -78,6 +81,8 @@ public class Find extends TagSupport {
 			req.setAttribute("clickRoutine", this.clickRoutine);
 			req.setAttribute("instanceCount", this.instanceCount);
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
+			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
+			req.setAttribute("binderId", this.binderId);
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -93,6 +98,8 @@ public class Find extends TagSupport {
 			this.width = "30";
 			this.clickRoutine = "";
 			this.leaveResultsVisible = false;
+			this.binderId = "";
+			this.searchSubFolders = false;
 		}
 	}
 
@@ -130,6 +137,14 @@ public class Find extends TagSupport {
 
 	public void setLeaveResultsVisible(Boolean leaveResultsVisible) {
 	    this.leaveResultsVisible = leaveResultsVisible;
+	}
+
+	public void setBinderId(String binderId) {
+	    this.binderId = binderId;
+	}
+
+	public void setSearchSubFolders(Boolean searchSubFolders) {
+	    this.searchSubFolders = searchSubFolders;
 	}
 
 }

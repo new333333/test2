@@ -7,6 +7,8 @@
 	String findEntriesFormName = (String) request.getAttribute("form_name");
 	String findEntriesElementName = (String) request.getAttribute("form_element");
 	String findEntriesElementWidth = (String) request.getAttribute("element_width");
+	String findEntriesBinderId = (String) request.getAttribute("binderId");
+	String findEntriesSearchSubFolders = (String) request.getAttribute("searchSubFolders");
 %>
 <c:set var="prefix" value="<%= findEntriesFormName + "_" + findEntriesElementName %>" />
 <c:if test="${empty ss_find_entries_support_stuff_loaded}">
@@ -101,6 +103,8 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
 	ajaxRequest.addKeyValue("pageNumber", ss_findEntries_pageNumber)
 	ajaxRequest.addKeyValue("findType", findEntriesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
+	ajaxRequest.addKeyValue("binderId", "<%= findEntriesBinderId %>")
+	ajaxRequest.addKeyValue("searchSubFolders", "<%= findEntriesSearchSubFolders %>")
 	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
 	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_prefindEntriesRequest);
