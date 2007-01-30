@@ -58,7 +58,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 }
 </script>
 <div style="margin:0px;">
-<div align="right" style="margin:0px 4px 0px 0px;">
+<div align="right" style="margin:0px 4px 0px 0px;">    
 
 <table width="99%" border="0" cellspacing="0px" cellpadding="0px">
 	<tr>
@@ -68,11 +68,18 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<tr>
 				<td>
 				    <span class="ss_light ss_fineprint">
-					[<ssf:nlt tag="folder.Results">
-					<ssf:param name="value" value="${ssPageStartIndex}"/>
-					<ssf:param name="value" value="${ssPageEndIndex}"/>
-					<ssf:param name="value" value="${ssEntrySearchCount}"/>
-					</ssf:nlt>]
+					<c:choose>
+					  <c:when test="${ssEntrySearchCount == '0'}">
+						[<ssf:nlt tag="search.NoResults" />]
+					  </c:when>
+					  <c:otherwise>
+						[<ssf:nlt tag="search.ResultsSimple">
+						<ssf:param name="value" value="${ssPageStartIndex}"/>
+						<ssf:param name="value" value="${ssPageEndIndex}"/>
+						<ssf:param name="value" value="${ssEntrySearchCount}"/>
+						</ssf:nlt>]
+					  </c:otherwise>
+					</c:choose>
 					</span>
 					&nbsp;&nbsp;
 				</td>

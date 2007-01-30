@@ -48,12 +48,19 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<tr>
 			<td>
 			    <span class="ss_light ss_fineprint">
-				[<ssf:nlt tag="folder.Results">
-				<ssf:param name="value" value="${ssPageStartIndex}"/>
-				<ssf:param name="value" value="${ssPageEndIndex}"/>
-				<ssf:param name="value" value="${ssTotalRecords}"/>
-				</ssf:nlt>]
-			    </span>
+					<c:choose>
+					  <c:when test="${ssTotalRecords == '0'}">
+						[<ssf:nlt tag="folder.NoResults" />]
+					  </c:when>
+					  <c:otherwise>
+						[<ssf:nlt tag="folder.Results">
+						<ssf:param name="value" value="${ssPageStartIndex}"/>
+						<ssf:param name="value" value="${ssPageEndIndex}"/>
+						<ssf:param name="value" value="${ssTotalRecords}"/>
+						</ssf:nlt>]
+					  </c:otherwise>
+					</c:choose>
+				</span>
 				&nbsp;&nbsp;
 			</td>
 
