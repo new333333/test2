@@ -615,9 +615,12 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
 			filterTerm.setText(searchText.replaceFirst("\\*", ""));
 			
+			//Add a term to search the title field
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
-			filterTerm.setText(searchText);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText);
 			
 			//Add terms to search entries only
 			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
