@@ -1,6 +1,10 @@
 package com.sitescape.ef.module.binder.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,9 +19,10 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.ef.docconverter.ITextConverterManager;
+import com.sitescape.ef.docconverter.TextConverter;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
@@ -44,18 +49,23 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.Pipeline;
-import com.sitescape.ef.pipeline.impl.RAMConduit;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
+import com.sitescape.ef.util.FilePathUtil;
+import com.sitescape.ef.util.FileStore;
 import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
+
 import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.util.Validator;
+
 /**
  *
  * 
@@ -64,6 +74,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	implements BinderProcessor {
     
    protected DefinitionModule definitionModule;
+   private static final String TEXT_SUBDIR = "text",
+   							   XML_EXT = ".xml";
+
  
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -71,7 +84,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-
+	
 	private WorkflowModule workflowModule;
     
 	public void setWorkflowModule(WorkflowModule workflowModule) {
@@ -683,43 +696,104 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      */
     protected org.apache.lucene.document.Document buildIndexDocumentFromFile
     	(Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
-    	// Prepare for pipeline execution.
-    	String text = null;
-    	
-    	Conduit firstConduit = new RAMConduit();
-    	
-    	try {
-	    	if(fui != null) {
-	    		// Use FileUploadItem object for the file content. Potentially this
-	    		// provides more efficient mechanism than fetching from repository.
-		    	try {
-					firstConduit.getSink().setFile(fui.getFile(), false, false, null);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
+    	byte[] bbuf = null;
+    	ITextConverterManager textConverterManager = null;
+    	TextConverter converter = null;
+		FileStore cacheFileStore;
+		InputStream is = null;
+		FileReader fr = null;
+		FileOutputStream fos = null;
+		File outFp = null,
+			 textfile = null;
+		String text = "",
+			   filePath = "",
+			   outFile = "",
+			   relativeFilePath = "";
+		
+		// Get the Text converter from manager
+		// Abstract Class can not use Spring Injection mechanism
+		textConverterManager = (ITextConverterManager)SpringContextUtil.getBean("textConverterManager");
+		converter = textConverterManager.getConverter();
+		
+		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
+		relativeFilePath = fa.getId() + File.separator + fa.getFileItem().getName();
+		
+		// Determine the location in cache to store files we are going to process an make the directories
+		// that are required if they don't exist
+		filePath = FilePathUtil.getFilePath(binder, entity, TEXT_SUBDIR, relativeFilePath);
+		textfile = cacheFileStore.getFile(filePath);
+		// If the output file's parent directory doesn't already exist, create it.
+		File parentDir = textfile.getParentFile();
+		if(!parentDir.exists())
+			parentDir.mkdirs();
+		
+		try
+		{
+			// Write the file to cache file store we can not be sure that item is an actual file in Repository
+			is = RepositoryUtil.read(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
+			bbuf = new byte[is.available()];
+			is.read(bbuf);
+			filePath = FilePathUtil.getFilePath(binder, entity, TEXT_SUBDIR, relativeFilePath);
+			fos = new FileOutputStream(cacheFileStore.getFile(filePath));
+			fos.write(bbuf);
+			fos.flush();
+			
+			outFile = textfile.getAbsolutePath();
+			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + XML_EXT;
+			outFp = new File(outFile);
+			
+			// If the output text file already exists and the last modification time is >= to incoming file
+			// we can use the cached version of the file (no conversion since it is already done)
+			if (!outFp.exists() || outFp.lastModified() <= fa.getModification().getDate().getTime())
+				text = converter.convert(textfile.getAbsolutePath(), outFile, 20000);
+			else
+			{
+				StringBuffer b = new StringBuffer("");
+				fr = new FileReader(outFp);
+				char[] cbuf = new char[1024];
+				while (fr.read(cbuf, 0, 1024) > 0)
+				{
+					b.append(cbuf);
+					// clear buffer
+					for (int x=0; x < 1024; x++)
+						cbuf[x] = '\0';
 				}
-	    	}
-	    	else {
-		    	firstConduit.getSink().setInputStream(getFileModule().readFile(binder, entity, fa), false, null);
-	    	}
-    	
-	    	Conduit lastConduit = new RAMConduit();
-	    	
-	    	try {
-		    	// Invoke pipeline.
-		    	// TODO For now all pipeline executions are synchronous.
-		    	// Asynchronous execution support to be added later.
-	    		getPipeline().invoke(firstConduit.getSource(), lastConduit.getSink());
-		    	
-		        // Get the resulting data of the pipeline execution as a string.
-		        text = lastConduit.getSource().getDataAsString();
-	    	}
-	    	finally {
-	    		lastConduit.close();
-	    	}
-    	}
-    	finally {
-    		firstConduit.close();
-    	}
+				text = b.toString();
+			}
+		}
+		catch (Exception e)
+		{
+			// Most like conversion did not succeed, nothing client can do about this
+			// limitation of Software.
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (is != null)
+			{
+				try
+				{
+					is.close();
+				} catch (Exception io) {}
+			}
+			
+			if (fos != null)
+			{
+				try
+				{
+					fos.close();
+				} catch (Exception io) {}
+			}
+			
+			if (fr != null)
+			{
+				try
+				{
+					fr.close();
+				} catch (Exception io) {}
+			}	
+		}
+
         
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	
