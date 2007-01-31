@@ -23,6 +23,5 @@ Class-Path: lib/compression-filter.jar lib/secure-filter.jar lib/strip
  b.jar lib/poi-scratchpad.jar lib/portals-bridges.jar lib/quartz.jar l
  ib/saaj.jar lib/simplecaptcha.jar lib/slf4j-log4j12.jar lib/soap.jar 
  lib/spring.jar lib/struts.jar lib/struts-el.jar lib/textmining.jar li
- b/trove.jar lib/velocity.jar lib/wbmp.jar lib/wsdl4j.jar lib/ym.jar l
- ib/ssf-liferay.jar lib/ssf-portalmodule.jar
- 
+ b/trove.jar lib/velocity.jar lib/wbmp.jar lib/wsdl4j.jar lib/ym.jar
+
