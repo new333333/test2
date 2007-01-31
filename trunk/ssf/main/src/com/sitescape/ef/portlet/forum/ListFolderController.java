@@ -202,6 +202,10 @@ public class ListFolderController extends  SAbstractController {
 			//Changing the user folder paging information from folder/binder level to the user level 
 			//getProfileModule().setUserProperty(user.getId(), binderId, ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
 			getProfileModule().setUserProperty(user.getId(), ObjectKeys.PAGE_ENTRIES_PER_PAGE, newEntriesPerPage);
+		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
+			//Set the id of the wiki homepage
+			Long entryId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.ENTRY_ID);
+			//TODO finish this code
 		}
 
 		response.setRenderParameters(request.getParameterMap());
@@ -565,6 +569,7 @@ public class ListFolderController extends  SAbstractController {
 			if (viewType.equals("wiki")) {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
+				buildWikiBeans(response, folder, options, model, folderEntries);
 			}
 		}
 
@@ -756,6 +761,11 @@ public class ListFolderController extends  SAbstractController {
 		*/
 	}
 
+	//Routine to build the beans for the blog archives list
+	public void buildWikiBeans(RenderResponse response, Folder folder, Map options, Map model, Map folderEntries) {
+		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, "");
+	}
+	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,
 	//Paging Number related Page Keys and the Next Page Keys.
 	public HashMap getPagingLinks(int intTotalRecordsFound, int intSearchOffset, 
