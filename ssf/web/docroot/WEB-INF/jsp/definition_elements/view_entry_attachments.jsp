@@ -178,9 +178,17 @@ function ss_postSelectEntryAttachment${ssDefinitionEntry.id}<portlet:namespace/>
 
 	<% if (isIE) { %>
 	<td width="10%" valign="top">
-		<a class="ss_linkButton ss_smallprint" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" folder="${ssWebDavURL}" target="_blank">
-			<ssf:nlt tag="entry.AttachFilesByWebDav"/>
-		</a>
+		<c:if test="${ss_folderViewStyle == 'blog'}">
+			<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
+			<a class="ss_linkButton ss_smallprint" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
+				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
+			</a>		
+		</c:if>
+		<c:if test="${ss_folderViewStyle != 'blog'}">
+			<a class="ss_linkButton ss_smallprint" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
+				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
+			</a>		
+		</c:if>
 	</td>
 	<% } %>
 	

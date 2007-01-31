@@ -345,6 +345,7 @@ public class WebKeys {
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";
     public static final String FOLDER_END_DATE="ssFolderEndDate";
     public static final String FOLDER_ENTRIES="ssFolderEntries";
+    public static final String FOLDER_ENTRIES_WEBDAVURLS="ssFolderEntriesWebDAVURLs";
     public static final String FOLDER_ENTRYPEOPLE="ssFolderEntryPeople";
     public static final String FOLDER_ENTRYPLACES="ssFolderEntryPlaces";
     public static final String FOLDER_ENTRYTAGS="ssFolderEntryCommunityTags";

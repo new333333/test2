@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
@@ -31,10 +32,12 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
@@ -45,6 +48,8 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.ssfs.util.SsfsUtil;
+import com.sitescape.util.GetterUtil;
+import com.sitescape.util.Validator;
 
 
 public class ViewEntryController extends  SAbstractController {
@@ -392,7 +397,9 @@ public class ViewEntryController extends  SAbstractController {
 			folder = getFolderModule().getFolder(folderId);
 		}
 		
-		String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
+		String strEntryURL = DefinitionUtils.getWebDAVURL(folder, entry);
+		//String strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
+		//String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
 		
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
 		model.put(WebKeys.SEEN_MAP, seen);
@@ -400,7 +407,8 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
 		model.put(WebKeys.BINDER, (Binder) folder);
-		model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
+		model.put(WebKeys.BINDER_WEBDAV_URL, strEntryURL);
+		//model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
