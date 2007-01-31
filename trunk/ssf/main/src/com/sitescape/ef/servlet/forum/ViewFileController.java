@@ -157,6 +157,8 @@ public class ViewFileController extends SAbstractController {
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
 					boolean scaledFileExists = false;
 					try {
+						// (rsordillo) different file types are possible need to convert extension to 'JPG' to ensure image
+						fa.getFileItem().setName(fa.getFileItem().getName() + com.sitescape.ef.docconverter.IImageConverterManager.IMG_EXTENSION);
 						if (getFileModule().scaledFileExists(parent, entity, fa)) {
 							scaledFileExists = true;
 						}
