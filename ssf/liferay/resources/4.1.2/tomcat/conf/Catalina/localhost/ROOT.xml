@@ -1,14 +1,12 @@
-<!-- SiteScape: Turn on cross context -->
-<Context path="" crossContext="true">
-	<!-- SiteScape: Resource parameters changed -->
+<Context path="">
 	<Resource
 		name="jdbc/LiferayPool"
 		auth="Container"
 		type="javax.sql.DataSource"
-		driverClassName="@@@driverClassName"
-		url="@@@url"
-		username="@@@username"
-		password="@@@password"
+		driverClassName="org.hsqldb.jdbcDriver"
+		url="jdbc:hsqldb:test"
+		username="sa"
+		password=""
 		maxActive="20"
 	/>
 	<Resource
