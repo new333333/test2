@@ -82,11 +82,12 @@ import com.sitescape.ef.util.FilePathUtil;
 import com.sitescape.ef.util.FileStore;
 import com.sitescape.ef.util.FileUploadItem;
 import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.util.Thumbnail;
 import com.sitescape.ef.util.ThumbnailException;
 import com.sitescape.ef.docconverter.HtmlConverter;
 import com.sitescape.ef.docconverter.IHtmlConverterManager;
+import com.sitescape.ef.docconverter.ImageConverter;
+import com.sitescape.ef.docconverter.IImageConverterManager;
 import com.sitescape.ef.web.util.FilterHelper;
 
 /**
@@ -140,6 +141,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	private FileStore cacheFileStore;
 	private ArchiveStore archiveStore;
 	private IHtmlConverterManager htmlConverterManager;
+	private IImageConverterManager imageConverterManager;
 	
 	protected CoreDao getCoreDao() {
 		return coreDao;
@@ -222,6 +224,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	
 	protected IHtmlConverterManager getHtmlConverterManager() {
 		return htmlConverterManager;
+	}
+	
+	public void setImageConverterManager(IImageConverterManager imageConverterManager) {
+		this.imageConverterManager = imageConverterManager;
+	}
+	
+	protected IImageConverterManager getImageConverterManager() {
+		return imageConverterManager;
 	}
 	
 	public void setFailedFilterTransaction(String failedFilterTransaction) {
@@ -393,10 +403,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		String relativeFilePath = fa.getFileItem().getName();
 		
 		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
-		if(!cacheFileStore.fileExists(filePath)) {
-			if (relativeFilePath.endsWith(".jpg")) {
+		if(!cacheFileStore.fileExists(filePath)) {			
 				generateThumbnailFile(binder, entry, fa, 150, 0);
-			}			
 		}
 
 		try {
@@ -584,9 +592,11 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				baos.toByteArray(), maxWidth, maxHeight);
 	}
 	
+/*
 	public void generateThumbnailFile(Binder binder, 
 			DefinableEntity entry, FileAttachment fa, int maxWidth, 
-			int maxHeight) {
+			int maxHeight)
+	{
 		String repositoryName = fa.getRepositoryName();
 		String relativeFilePath = fa.getFileItem().getName();
 		
@@ -597,6 +607,59 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 		generateAndStoreThumbnailFile(binder, entry, relativeFilePath, 
 				baos.toByteArray(), maxWidth, maxHeight);
+	}
+*/
+	
+	public void generateThumbnailFile(Binder binder, 
+			 DefinableEntity entry, FileAttachment fa, int maxWidth, int maxHeight)
+	{
+		InputStream is = null;
+		FileOutputStream fos = null;
+		File thumbfile = null,
+		 	 originalFile = null;
+		String filePath = "",
+			   outFile = "",
+			   relativeFilePath = "";
+
+		try 
+		{
+			relativeFilePath = fa.getFileItem().getName();
+			
+			filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+			thumbfile = cacheFileStore.getFile(filePath);
+			// If the output file's parent directory doesn't already exist, create it.
+			File parentDir = thumbfile.getParentFile();
+			if(!parentDir.exists())
+				parentDir.mkdirs();
+			
+			try
+			{
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+				originalFile = cacheFileStore.getFile(filePath);
+				fos = new FileOutputStream(originalFile);
+				fos.write(bbuf);
+				fos.flush();
+			}
+			catch(Exception e)
+			{
+				if (is != null)
+					is.close();
+				if (fos != null)
+					fos.close();
+			}
+			
+			outFile = thumbfile.getAbsolutePath();			
+			generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	/**
@@ -614,7 +677,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	{
 		InputStream is = null;
 		FileOutputStream fos = null;
-		RepositorySession session = null;
 		File htmlfile = null,
 		 	 originalFile = null;
 		String filePath = "",
@@ -623,7 +685,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 		try 
 		{
-			session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
 			relativeFilePath = fa.getFileItem().getName();
 			
 			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
@@ -662,11 +723,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
 		}
-		finally
-		{
-			if (session != null)
-				session.close();
-		}
 	}
 	
 	/**
@@ -691,8 +747,57 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
 		
 		// Generate and store thumbnail file.
-		generateAndStoreThumbnailFile(binder, entry, 
-				relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
+		// generateAndStoreThumbnailFile(binder, entry, relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
+		/**
+		 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
+		 * 		Stellent does not deal with Stream data
+		 */
+		InputStream is = null;
+		FileOutputStream fos = null;
+		File thumbfile = null,
+		 	 originalFile = null;
+		String filePath = "",
+			   outFile = "";
+
+		try 
+		{
+			relativeFilePath = fa.getFileItem().getName();
+			
+			filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+			thumbfile = cacheFileStore.getFile(filePath);
+			// If the output file's parent directory doesn't already exist, create it.
+			File parentDir = thumbfile.getParentFile();
+			if(!parentDir.exists())
+				parentDir.mkdirs();
+			
+			try
+			{
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+				originalFile = cacheFileStore.getFile(filePath);
+				fos = new FileOutputStream(originalFile);
+				fos.write(bbuf);
+				fos.flush();
+			}
+			catch(Exception e)
+			{
+				if (is != null)
+					is.close();
+				if (fos != null)
+					fos.close();
+			}
+			
+			outFile = thumbfile.getAbsolutePath();			
+			generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, maxWidth, maxHeight);
+		}
+		catch(FileNotFoundException e) {
+			throw new UncheckedIOException(e);
+		}
+		catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 	
     public FilesErrors writeFiles(Binder binder, DefinableEntity entry, 
@@ -1478,9 +1583,55 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	        	// Thumbnail file
 	        	if(fui.getGenerateThumbnail()) {
 	        		try {
-	        			generateAndStoreThumbnailFile(binder, entry,
-	        				relativeFilePath, primaryContent, fui.getThumbnailMaxWidth(), 
-	        				fui.getThumbnailMaxHeight());
+	        			//generateAndStoreThumbnailFile(binder, entry, relativeFilePath, primaryContent, fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight());
+	        			/**
+	        			 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
+	        			 * 		Stellent does not deal with Stream data
+	        			 */
+	        			InputStream is = null;
+	        			FileOutputStream fos = null;
+	        			File thumbfile = null,
+	        			 	 originalFile = null;
+	        			String filePath = "",
+	        				   outFile = "";
+
+	        			try 
+	        			{
+	        				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+	        				thumbfile = cacheFileStore.getFile(filePath);
+	        				// If the output file's parent directory doesn't already exist, create it.
+	        				File parentDir = thumbfile.getParentFile();
+	        				if(!parentDir.exists())
+	        					parentDir.mkdirs();
+	        				
+	        				try
+	        				{
+	        					is = RepositoryUtil.read(fui.getRepositoryName(), binder, entry, relativeFilePath);
+	        					byte[] bbuf = new byte[is.available()];
+	        					is.read(bbuf);
+	        					filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+	        					originalFile = cacheFileStore.getFile(filePath);
+	        					fos = new FileOutputStream(originalFile);
+	        					fos.write(bbuf);
+	        					fos.flush();
+	        				}
+	        				catch(Exception e)
+	        				{
+	        					if (is != null)
+	        						is.close();
+	        					if (fos != null)
+	        						fos.close();
+	        				}
+	        				
+	        				outFile = thumbfile.getAbsolutePath();			
+	        				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight());
+	        			}
+	        			catch(FileNotFoundException e) {
+	        				throw new UncheckedIOException(e);
+	        			}
+	        			catch(IOException e) {
+	        				throw new UncheckedIOException(e);
+	        			}
 	        		}
 	        		catch(ThumbnailException e) {
 	        			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
@@ -1820,6 +1971,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 	}
 	
+/*	
 	private void generateAndStoreThumbnailFile(Binder binder, 
 			DefinableEntity entry, String relativeFilePath, 
 			byte[] inputData, int maxWidth, int maxHeight) 
@@ -1841,6 +1993,22 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			cacheFileStore.writeFile(filePath, baos.toByteArray());
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
+		}
+	}
+*/	
+	private void generateAndStoreThumbnailFile(Long binderId, Long entryId, String inFile, String outFile, int maxWidth, int maxHeight) 
+		throws RepositoryServiceException, FileNotFoundException, IOException
+	{
+		ImageConverter converter = null;
+		
+		try
+		{
+			converter = imageConverterManager.getConverter();			
+			converter.convert(inFile, outFile, 30000, maxWidth, maxHeight);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 	}
 	
