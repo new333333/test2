@@ -11,6 +11,22 @@
   <table class="ss_blog" width="100%">
     <tr>
 	  <td class="ss_blog_sidebar" width="20%" valign="top">
+	    <c:if test="${!empty ss_wikiHomepageEntryId}">
+	    <span class="ss_bold">
+	    <a href="<ssf:url     
+		    adapter="<%= useAdaptor %>" 
+		    portletName="ss_forum" 
+		    folderId="${ssFolder.id}" 
+		    action="view_folder_entry" 
+		    entryId="${ss_wikiHomepageEntryId}" 
+		    actionUrl="true" />" 
+		    onClick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
+		><ssf:nlt tag="wiki.homePage"/></a>
+	    </span>
+	    <br/>
+	    <br/>
+	    </c:if>
+
 	    <span class="ss_bold"><ssf:nlt tag="wiki.findPage"/>
 	    <br/>
 	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
@@ -27,7 +43,19 @@
 		    singleItem="true"/> 
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
+
 	  <br/>
+
+	  <span class="ss_bold">
+	  <a href="<portlet:actionURL 
+	                windowState="maximized" portletMode="view"><portlet:param 
+					name="action" value="view_folder_listing"/><portlet:param 
+					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
+	  ><ssf:nlt tag="wiki.showAll"/></a>
+	  </span>
+	  <br/>
+	  <br/>
+
 	  <ssf:expandableArea title="<%= NLT.get("wiki.pages") %>" action="wipe" initOpen="true">
 		<table cellspacing="0" cellpadding="0">
 		  <c:forEach var="entry1" items="${ssFolderEntries}" >
@@ -51,8 +79,10 @@
 		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
 		    onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
 		    ><c:if test="${empty entry1.title}"
-		    ><span id="folderLine_${entry1._docId}" style="margin:-8px;" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
-		    ></c:if><span id="folderLine_${entry1._docId}" style="margin:-8px;" <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
+		    ><span id="folderLine_${entry1._docId}" class="ss_normal"
+		      style="margin:-8px;" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
+		    ></c:if><span id="folderLine_${entry1._docId}" class="ss_normal"
+		      style="margin:-8px;" <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
 		    </td></tr>
 		  </c:forEach>
 		</table>
@@ -67,7 +97,8 @@
 					name="binderId" value="${ssBinder.id}"/><portlet:param 
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
 					class="${tag.searchResultsRatingCSS} 
-					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
+					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		   </c:if>
       </ssf:expandableArea>
@@ -81,7 +112,8 @@
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
 				class="${tag.searchResultsRatingCSS} 
-				<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+				<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>
+				<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
 		   </c:if>
