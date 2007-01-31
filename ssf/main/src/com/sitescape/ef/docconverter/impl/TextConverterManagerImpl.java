@@ -1,4 +1,7 @@
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
+
+import com.sitescape.ef.docconverter.ITextConverterManager;
+import com.sitescape.ef.docconverter.TextConverter;
 
 public class TextConverterManagerImpl
 	implements ITextConverterManager
