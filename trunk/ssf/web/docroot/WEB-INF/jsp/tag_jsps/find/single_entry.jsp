@@ -157,11 +157,14 @@ function ss_findEntriesSelectItem0_${prefix}() {
 //Routine called when item is clicked
 function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_permalink"/><portlet:param name="binderId" 
-		value="ss_binderIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
-	var id = ss_reEntriesubStr(obj.id, 'ss_findEntries_id_', "");
-	url = ss_reEntriesubStr(url, 'ss_binderIdPlaceholder', id);
+	var url = "<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${ssBinder.id}"
+		    entryId="ss_entryIdPlaceholder">
+		    <ssf:param name="entityType" value="folderEntry" />
+			</ssf:url>";
+	var id = ss_replaceSubStr(obj.id, 'ss_findEntries_id_', "");
+	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 	self.location.href = url;
 }
 

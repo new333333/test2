@@ -146,6 +146,7 @@ public class SearchController extends AbstractBinderController {
 		Map tab = tabs.getTab(tabs.getCurrentTab());
 		String tabType = null;
 		if (tab != null) tabType = (String)tab.get(Tabs.TYPE);
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		//See if the search form was submitted
 		if (formData.containsKey("searchBtn") || formData.containsKey("searchBtn.x") || formData.containsKey("searchBtn.y")) {
 			//Parse the search filter
@@ -157,9 +158,11 @@ public class SearchController extends AbstractBinderController {
 				options.put(Tabs.TITLE, searchText);
 				options.put(Tabs.TAB_SEARCH_TEXT, searchText);
 			}
-			//Store the search query in the current tab
+			//Store the search query in a new tab
 			boolean blnClearTab = true;
-			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, tabs.getCurrentTab()));
+			int targetTab = tabs.getCurrentTab();
+			if (newTab.equals("1")) targetTab = -1;
+			tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, targetTab));
 		} 
 		//Search For Text and  Tag Search
 		else if (formData.containsKey("searchTags")) {
@@ -196,12 +199,15 @@ public class SearchController extends AbstractBinderController {
 			options.put(Tabs.TAB_COMMUNITY_TAG_SEARCH_TEXT, searchCommunityTags);
 			options.put(Tabs.TAB_PERSONAL_TAG_SEARCH_TEXT, searchPersonalTags);
 
-			//Store the search query in the current tab
+			//Store the search query in a new tab
 			boolean blnClearTab = true;
-			if (tabId != null) 
+			if (tabId != null) {
 				tabs.setTab(tabId.intValue(), searchQuery, options, blnClearTab);
-			else 
-				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, tabs.getCurrentTab()));
+			} else {
+				int targetTab = tabs.getCurrentTab();
+				if (newTab.equals("1")) targetTab = -1;
+				tabs.setCurrentTab(tabs.findTab(searchQuery, options, blnClearTab, targetTab));
+			}
 		}
 		else if (tabType != null && tabType.equals(Tabs.QUERY)) {
 			//Get the search query from the tab

@@ -218,6 +218,7 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
 	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
 	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
+	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -462,6 +463,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_TAGS="tags";
     public static final String USER_SEARCH_USER_GROUP_TYPE_ENTRIES="entries";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
+    public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";
@@ -474,7 +476,7 @@ public class WebKeys {
     public static final String WORKSPACE_DOM_TREE_BINDER_ID="ssWsDomTreeBinderId";
     public static final String WORKSPACES="ssWorkspaces";
     public static final String ZONE_NAME = "com.sitescape.zonename";
-
+    
     public static final String FOLDER_SORT_BY = "ssFolderSortBy";
     public static final String FOLDER_SORT_DESCEND = "ssFolderSortDescend";
     public static final String FOLDER_PAGE_INFO = "ssFolderPageInfo";

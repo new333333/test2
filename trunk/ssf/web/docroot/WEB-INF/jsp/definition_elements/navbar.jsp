@@ -98,6 +98,7 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 		  name="ss_simpleSearchForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="search"/>
+			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>">
 		  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
