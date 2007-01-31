@@ -14,6 +14,12 @@ import org.dom4j.Element;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.ef.ssfs.util.SsfsUtil;
+
 public class DefinitionUtils {
    public static String getPropertyValue(Element element, String name) {
 		Element variableEle = (Element)element.selectSingleNode("./properties/property[@name='" + name + "']");
@@ -50,4 +56,33 @@ public class DefinitionUtils {
 		return false;
 
     }
+    
+    public static String getWebDAVURL(Folder folder, FolderEntry entry) {
+    	String strEntryURL = "";
+		Definition entryDef = entry.getEntryDef();
+		Document entryDefDocTree = entryDef.getDefinition();
+		String strRepositoryName = "";
+		if (entryDefDocTree != null) {
+			//root is the root of the entry's definition
+			Element root = entryDefDocTree.getRootElement();
+			Element entryFormItem = (Element)root.selectSingleNode("item[@name='entryForm']");			
+			
+			//if root is not null
+			if (entryFormItem != null) {
+				//get the attachFiles
+				Element entryAttachFileItem = (Element)entryFormItem.selectSingleNode(".//item[@name='attachFiles']");
+				//if there is a attachFiles item entry
+				if (entryAttachFileItem != null) {
+					strRepositoryName = DefinitionUtils.getPropertyValue(entryAttachFileItem, "storage");
+					if (Validator.isNull(strRepositoryName)) strRepositoryName = RepositoryUtil.getDefaultRepositoryName();
+				}
+				
+			}
+		}
+		strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
+		
+		return strEntryURL;
+    }
+    
+    
 }

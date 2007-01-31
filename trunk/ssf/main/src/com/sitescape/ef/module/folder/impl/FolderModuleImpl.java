@@ -322,8 +322,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         
     }
 
-
-
     public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
     	return getDomFolderTree(folderId, domTreeHelper, -1);
     }
@@ -361,10 +359,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        		buildFolderDomTree(next, f, c, domTreeHelper, levels);
        	}
     }
- 
- 
- 
-  
+   
     public Map getEntries(Long folderId) {
         return getEntries(folderId, new HashMap());
     }
@@ -509,9 +504,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         return results;
     }
-
            
-     public FolderEntry getEntry(Long parentFolderId, Long entryId) {
+    public FolderEntry getEntry(Long parentFolderId, Long entryId) {
         FolderEntry entry = loadEntry(parentFolderId, entryId);
         checkAccess(entry, "getEntry");
         return entry;

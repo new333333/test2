@@ -11,6 +11,17 @@ public class SsfsUtil {
 
 	private static String[] editInPlaceFileExtensions;
 	
+	public static String getEntryUrl(Binder binder, 
+			DefinableEntity entity, String strRepositoryName) {
+		StringBuffer sb = getInternalCommonPart(binder, entity);
+		
+		return sb.append("attach/").
+		append(strRepositoryName).
+		append("/").toString();
+	}
+	
+
+	
 	public static String getInternalAttachmentUrl(Binder binder, 
 			DefinableEntity entity, FileAttachment fa) {
 		StringBuffer sb = getInternalCommonPart(binder, entity);
