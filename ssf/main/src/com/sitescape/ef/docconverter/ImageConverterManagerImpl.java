@@ -4,16 +4,16 @@ public class ImageConverterManagerImpl
 	implements IImageConverterManager
 {
 	int _active = IImageConverterManager.OPENOFFICE;
-	ImageStellentConverter _stellentConverter = null;
+	//ImageStellentConverter _stellentConverter = null;
 	ImageOpenOfficeConverter _openOfficeConverter = null;
 	
 	public ImageConverterManagerImpl() {}
 	
 	public ImageConverter getConverter()
 	{
-		if (_active == IImageConverterManager.STELLANT)
-			return _stellentConverter;
-		else
+		//if (_active == IImageConverterManager.STELLANT)
+		//	return _stellentConverter;
+		//else
 		if (_active == IImageConverterManager.OPENOFFICE)
 			return _openOfficeConverter;
 		
@@ -22,9 +22,9 @@ public class ImageConverterManagerImpl
 	
 	public ImageConverter getConverter(int type)
 	{
-		if (type == IImageConverterManager.STELLANT)
-			return _stellentConverter;
-		else
+		//if (type == IImageConverterManager.STELLANT)
+		//	return _stellentConverter;
+		//else
 		if (type == IImageConverterManager.OPENOFFICE)
 			return _openOfficeConverter;
 		
@@ -40,7 +40,7 @@ public class ImageConverterManagerImpl
 	{
 		return _active;
 	}
-	
+/*
 	public void setStellentConverter(ImageStellentConverter converter_in)
 	{
 		_stellentConverter = converter_in;
@@ -50,7 +50,7 @@ public class ImageConverterManagerImpl
 	{
 		return _stellentConverter;
 	}
-
+*/
 	public void setOpenOfficeConverter(ImageOpenOfficeConverter converter_in)
 	{
 		_openOfficeConverter = converter_in;
