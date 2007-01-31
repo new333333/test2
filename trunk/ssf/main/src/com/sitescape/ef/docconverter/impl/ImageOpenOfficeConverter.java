@@ -4,7 +4,7 @@
  * TODO To change the template for this generated file go to
  * Window - Preferences - Java - Code Style - Code Templates
  */
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -16,6 +16,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.ef.docconverter.IImageConverterManager;
+import com.sitescape.ef.docconverter.ImageConverter;
 import com.sitescape.ef.util.DirPath;
 import com.sitescape.ef.util.FileStore;
 import com.sitescape.ef.util.SPropsUtil;

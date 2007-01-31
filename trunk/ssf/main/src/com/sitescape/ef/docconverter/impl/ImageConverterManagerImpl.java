@@ -1,4 +1,7 @@
-package com.sitescape.ef.docconverter;
+package com.sitescape.ef.docconverter.impl;
+
+import com.sitescape.ef.docconverter.IImageConverterManager;
+import com.sitescape.ef.docconverter.ImageConverter;
 
 public class ImageConverterManagerImpl
 	implements IImageConverterManager

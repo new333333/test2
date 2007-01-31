@@ -35,7 +35,7 @@ public abstract class AbstractPipeline implements Pipeline, InitializingBean,
 	}*/
 
 	public void afterPropertiesSet() throws Exception {
-		if(conduitFactories.length != docHandlers.length)
+		if(conduitFactories.length + 1 != docHandlers.length)
 			throw new ConfigurationException("Number of doc handlers must be equal to number of conduit factories plus 1");
 	}
 
