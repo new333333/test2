@@ -63,7 +63,10 @@ public class DocConverterHandler extends AbstractDocHandler {
 		}
 		
 		try {
-			String text = textConverter.convertToText(inputFile, timeout);
+			// (rsordillo) The doHandle() method should not be getting called anymore. This method worked fine
+			// before the need to implement Stellent an OpenOffice mechanisms.
+			String text = "";
+			//String text = textConverter.convertToText(inputFile, timeout);
 			
 			sink.setString(text, "UTF-8");
 		}
