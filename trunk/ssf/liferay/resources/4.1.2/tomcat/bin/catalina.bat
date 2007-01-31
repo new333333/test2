@@ -88,7 +88,7 @@ set JAVA_OPTS=%JAVA_OPTS% -Djava.util.logging.manager=org.apache.juli.ClassLoade
 
 rem ----- Execute The Requested Command ---------------------------------------
 
-set JAVA_OPTS=-Xms128m -Xmx512m -Dfile.encoding=UTF8 -Duser.timezone=GMT -Djava.security.auth.login.config=%CATALINA_HOME%/conf/jaas.config
+set JAVA_OPTS=-Xms128m -Xmx512m -XX:MaxPermSize=256m -Dfile.encoding=UTF8 -Duser.timezone=GMT -Djava.security.auth.login.config=%CATALINA_HOME%/conf/jaas.config
 
 echo Using CATALINA_BASE:   %CATALINA_BASE%
 echo Using CATALINA_HOME:   %CATALINA_HOME%
