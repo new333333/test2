@@ -160,14 +160,10 @@ public class ViewFileController extends SAbstractController {
 					boolean scaledFileExists = false;
 					try {
 						// (rsordillo) different file types are possible need to convert extension to 'JPG' to ensure image
-						if (!(fa.getFileItem().getName().endsWith(".gif")
-						|| fa.getFileItem().getName().endsWith(".jpg")
-						|| fa.getFileItem().getName().endsWith(".jpeg")
-						|| fa.getFileItem().getName().endsWith(".png")
-						|| fa.getFileItem().getName().endsWith(".GIF")
-						|| fa.getFileItem().getName().endsWith(".JPG")
-						|| fa.getFileItem().getName().endsWith(".JPEG")
-						|| fa.getFileItem().getName().endsWith(".PNG")))
+						if (!(fa.getFileItem().getName().toLowerCase().endsWith(".gif")
+						|| fa.getFileItem().getName().toLowerCase().endsWith(".jpg")
+						|| fa.getFileItem().getName().toLowerCase().endsWith(".jpeg")
+						|| fa.getFileItem().getName().toLowerCase().endsWith(".png")))
 							fa.getFileItem().setName(fa.getFileItem().getName() + com.sitescape.ef.docconverter.IImageConverterManager.IMG_EXTENSION);
 						
 						if (getFileModule().scaledFileExists(parent, entity, fa)) {
