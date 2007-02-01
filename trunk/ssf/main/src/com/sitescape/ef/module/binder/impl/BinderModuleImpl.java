@@ -125,7 +125,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
 	public void checkAccess(Binder binder, String operation) throws AccessControlException {
   		if (binder instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(binder, WorkAreaOperation.SITE_ADMINISTRATION);
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
   		} else {
   			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
   			if (wfo == null) getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);

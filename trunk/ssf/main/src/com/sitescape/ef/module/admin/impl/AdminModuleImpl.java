@@ -30,6 +30,7 @@ import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.EntityDashboard;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.NoBinderByTheNameException;
@@ -46,6 +47,7 @@ import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.binder.BinderProcessor;
+import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.folder.FolderModule;
@@ -119,7 +121,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
    	public void checkAccess(WorkArea workArea, String operation) {
    		if (workArea instanceof TemplateBinder) {
-			getAccessControlManager().checkOperation(workArea, WorkAreaOperation.SITE_ADMINISTRATION);
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
    		} else if (operation.startsWith("setWorkAreaFunctionMembership")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		} else if (operation.startsWith("deleteWorkAreaFunctionMembership")) {
@@ -316,28 +318,38 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
 		if (type == Definition.USER_WORKSPACE_VIEW) {
 			//get default folder definition
+			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
 			TemplateBinder def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
 			TemplateBinder newDef = def.clone();
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
 			newDef.setFunctionMembershipInherited(true);
 			config.addBinder(newDef);
 			
 			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
 			newDef = def.clone();
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
 			newDef.setFunctionMembershipInherited(true);
 			config.addBinder(newDef);
 			
 			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);
 			newDef = def.clone();
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
 			newDef.setFunctionMembershipInherited(true);
 			config.addBinder(newDef);
 			
 			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
 			newDef = def.clone();
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
 			newDef.setFunctionMembershipInherited(true);
 			config.addBinder(newDef);
 		}
 		return config;
 	 }
+	//add top level template
 	 public Long addTemplate(int type, Map updates) {
 	    checkAccess("addTemplate");
 		TemplateBinder config = new TemplateBinder();
@@ -347,18 +359,44 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		definitions.add(entryDef);
 		config.setDefinitionsInherited(false);
 		config.setDefinitions(definitions);
+		config.setFunctionMembershipInherited(true);
 		doAddTemplate(config, type, updates);
 	    return config.getId();
 	 }
-	 public Long addTemplate(Long parentId, int type, Map updates) {
+	 //clone a top level template as a child of another template
+	 public Long addTemplate(Long parentId, Long srcConfigId) {
 	    checkAccess("addTemplate");
 	    TemplateBinder parentConfig = (TemplateBinder)getCoreDao().loadBinder(parentId, RequestContextHolder.getRequestContext().getZoneId());
-	    TemplateBinder config = doAddTemplate(new TemplateBinder(), type, updates);
-	    config.setFunctionMembershipInherited(true);
-	    if (type == parentConfig.getDefinitionType()) config.setDefinitionsInherited(true);
-	    else config.setDefinitionsInherited(false);
-	    parentConfig.addBinder(config);
-	    return config.getId();
+	    TemplateBinder srcConfig = (TemplateBinder)getCoreDao().loadBinder(srcConfigId, RequestContextHolder.getRequestContext().getZoneId());
+	    return addTemplate(parentConfig, srcConfig);
+	 }
+	 protected Long addTemplate(TemplateBinder parentConfig, TemplateBinder srcConfig) {
+		 TemplateBinder config = srcConfig.clone();
+		 config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		 config.setModification(config.getCreation());
+		 //by default, inherit from parent
+		 getCoreDao().save(config);
+		 //get childen before adding new children incase parent and source are the same
+		 List<TemplateBinder> children = new ArrayList(srcConfig.getBinders());
+		 parentConfig.addBinder(config);
+	     if (!config.isFunctionMembershipInherited()) {
+	    	 //copy to new template
+	    	 List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(srcConfig);
+	    	 for (WorkAreaFunctionMembership fm: wfms) {
+	    		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+		       	membership.setZoneId(fm.getZoneId());
+		       	membership.setWorkAreaId(config.getWorkAreaId());
+		       	membership.setWorkAreaType(config.getWorkAreaType());
+		       	membership.setFunctionId(fm.getFunctionId());
+		       	membership.setMemberIds(new HashSet(fm.getMemberIds()));
+		        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
+	    	}	    
+	     }
+
+		 for (TemplateBinder c:children) {
+			 addTemplate(config, c);
+		 }
+		 return config.getId();
 	 }
 	 protected TemplateBinder doAddTemplate(TemplateBinder config, int type, Map updates) {
 		config.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
@@ -456,7 +494,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinderId, def.getId(), inputData, fileItems), zoneId);
 	   }
 
-	   
+	   EntityDashboard dashboard = getCoreDao().loadEntityDashboard(cfg.getEntityIdentifier());
+	   if (dashboard != null) {
+		   EntityDashboard myDashboard = dashboard.clone();
+		   myDashboard.setOwnerIdentifier(binder.getEntityIdentifier());
+		   getCoreDao().save(myDashboard);
+	   }
 	   if (!cfg.isDefinitionsInherited()) {
 	    	binder.setDefinitionsInherited(false);
 	    	binder.setDefinitions(cfg.getDefinitions());
@@ -464,7 +507,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	}
 	    if (!cfg.isFunctionMembershipInherited()) {
 	    	binder.setFunctionMembershipInherited(false);
-	    	Set readAclIds = new HashSet();
 	    	List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(cfg);
 	    	for (WorkAreaFunctionMembership fm: wfms) {
 	    		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
@@ -472,52 +514,49 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		       	membership.setWorkAreaId(binder.getWorkAreaId());
 		       	membership.setWorkAreaType(binder.getWorkAreaType());
 		       	membership.setFunctionId(fm.getFunctionId());
-		       	membership.setMemberIds(fm.getMemberIds());
+		       	membership.setMemberIds(new HashSet(fm.getMemberIds()));
 		        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-				readAclIds = getReadEntryAcls(readAclIds, fm.getFunctionId(), fm.getMemberIds());
 	    		
 	    	}	    	
+	    	getCoreDao().flush();
 	    	//need to reindex acls
     		List binderIds = new ArrayList();
     		binderIds.add(binder.getId());
-    		indexMembership(binderIds, readAclIds);
+    		indexMembership(binderIds, AccessUtils.getReadAclIds(binder));
+	    } else {
+	    	//	do child configs
+	    	//	first flush updates, addBinder does a refresh which overwrites changes
+	    	getCoreDao().flush();
 	    }
-	    //do child configs
-	    //first flush updates, addBinder does a refresh which overwrites changes
-	    getCoreDao().flush();
-
 	    List<TemplateBinder> children = cfg.getBinders();    
 	    for (TemplateBinder child: children) {
-	    	addBinderFromTemplate(child.getId(), binder.getId(), child.getTitle());	    	
+	    	addBinderFromTemplate(child.getId(), binder.getId(), NLT.getDef(child.getTitle()));	    	
 	    }
 	    return binder.getId();
 	}
 	
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
 		List folderIds = new ArrayList();
-		Set readAclIds = new HashSet();
 		
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
 		
 		// get the list of binderId's of this folder and all it's descendents who inherit
 		// Acls from their parent
-		if (functionMemberships.size() > 0) {
-			if (workArea instanceof Binder) {
+		if (functionMemberships.size() > 0 && (workArea instanceof Binder)) {
 				Binder binder = (Binder) workArea;
 				folderIds = getInheritingDescendentBinderIds((Binder) binder, new ArrayList());
-			}
-		}
+		} 
 
 		Iterator itFunctions = functionMemberships.entrySet().iterator();
 		while (itFunctions.hasNext()) {
 			Map.Entry fm = (Map.Entry)itFunctions.next();
 			setWorkAreaFunctionMembership(workArea, (Long)fm.getKey(), (Set)fm.getValue());
-			// get all the acls associated with each function that contains the 
-			// read entries operation
-			readAclIds = getReadEntryAcls(readAclIds, (Long)fm.getKey(), (Set)fm.getValue());
-			
 		}
-		indexMembership(folderIds, readAclIds);
+		//flush so next query works
+		getCoreDao().flush();
+		//TODO: this needs to be fixed to index folders with different owners separatly
+		//This call replaces the owner flag (-1) with the owner of this workArea
+		indexMembership(folderIds, getAccessControlManager().getWorkAreaAccessControl(workArea, WorkAreaOperation.READ_ENTRIES));
 		
 	}
 	private void indexMembership(List folderIds, Set readAclIds) {
@@ -574,7 +613,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (folders.size() != 0) {
 			for (int i=0; i<folders.size(); ++i) {
 				Binder c = (Binder)folders.get(i);
-				if (c.getInheritAclFromParent()) {
+				if (c.isFunctionMembershipInherited()) {
 					ids = getInheritingDescendentBinderIds(c, ids);
 				}
     			
@@ -586,21 +625,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	return ids;
 	}
 	
-	// for a given function, if it contains the read_entries operation add the memberIds to the list 
-	// of all the unique Ids who have read access
-	private Set getReadEntryAcls(Set aclIds, Long functionId, Set memberIds) {
-		Function f = getFunctionManager().getFunction(
-				RequestContextHolder.getRequestContext().getZoneId(),
-				functionId);
-		if (f.getOperations().contains(WorkAreaOperation.READ_ENTRIES)) {
-			for (Iterator iter=memberIds.iterator(); iter.hasNext();) {
-				Long id = (Long)iter.next();
-				aclIds.add(id);
-			}
-		}
-	
-		return aclIds;
-	}	
 	
 	private Query buildQueryforUpdate(List folderIds) {
 		Document qTree = DocumentHelper.createDocument();
@@ -678,6 +702,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
 	    while (source.isFunctionMembershipInherited()) {
 	    	source = source.getParentWorkArea();
+	    	//template binders have this problem, cause they are not connected to a 
+	    	//root until instanciated, but want to inherit from a future parent
+	    	if (source == null) return new ArrayList();
 	    }
  
         return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(), source);

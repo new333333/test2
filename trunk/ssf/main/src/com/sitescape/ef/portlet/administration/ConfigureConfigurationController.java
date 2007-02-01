@@ -86,41 +86,20 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
 			//Get the function id from the form
 			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			TemplateBinder config = getAdminModule().getTemplate(configId);
+			if (!config.isRoot())
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getParentBinder().getId().toString());
+				
 			getAdminModule().deleteTemplate(configId);
-		} else if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
+		} else if (WebKeys.OPERATION_ADD_FOLDER.equals(operation) ||
+				WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
 			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			if (formData.containsKey("okBtn")) {
 				//Get the function id from the form
-				Map updates = new HashMap();
-				Boolean val = PortletRequestUtils.getBooleanParameter(request, "library");
-				if (val != null) updates.put("library", val);
-				val = PortletRequestUtils.getBooleanParameter(request, "uniqueTitles");
-				if (val != null) updates.put("uniqueTitles", val);
-				String sVal = PortletRequestUtils.getStringParameter(request, "configTitle");
-				if (Validator.isNotNull(sVal)) updates.put("title", sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "targetTitle");
-				if (Validator.isNotNull(sVal)) updates.put("targetTitle", sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-				if (sVal != null) updates.put("description", new Description(sVal));
-				Long newId = getAdminModule().addTemplate(configId, Definition.FOLDER_VIEW, updates);
+				Long srcConfigId = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
+				Long newId = getAdminModule().addTemplate(configId, srcConfigId);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
 			} else 	response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-			
-		} else if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
-			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			if (formData.containsKey("okBtn")) {
-				//Get the function id from the form
-				Map updates = new HashMap();
-				String sVal = PortletRequestUtils.getStringParameter(request, "configTitle");
-				if (Validator.isNotNull(sVal)) updates.put("title", sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "targetTitle");
-				if (Validator.isNotNull(sVal)) updates.put("targetTitle", sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-				if (sVal != null) updates.put("description", new Description(sVal));
-				Long newId = getAdminModule().addTemplate(configId, Definition.WORKSPACE_VIEW, updates);
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
-			} else 	response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-
 			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
@@ -161,6 +140,16 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				buildToolbar(request, response, config, model);
 				if (!config.isRoot() || !config.getBinders().isEmpty()) 
 					BinderHelper.buildNavigationLinkBeans(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
+			} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
+				List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+				model.put(WebKeys.BINDER_CONFIGS, configs);
+				model.put(WebKeys.OPERATION, operation);				
+				
+			} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
+				List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+				configs.addAll(getAdminModule().getTemplates(Definition.WORKSPACE_VIEW));
+				model.put(WebKeys.OPERATION, operation);				
+				model.put(WebKeys.BINDER_CONFIGS, configs);
 			} else {
 				model.put(WebKeys.OPERATION, operation);
 				if (operation.equals(WebKeys.OPERATION_MODIFY) || operation.equals(WebKeys.OPERATION_MODIFY_TEMPLATE)) {
@@ -172,14 +161,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, operation);				
 				model.put("cfgType", PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW)));
 				return new ModelAndView(WebKeys.VIEW_MODIFY_TEMPLATE, model);
-		} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
-			List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
-			model.put(WebKeys.BINDER_CONFIGS, configs);
-			
-		} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
-			List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
-			configs.addAll(getAdminModule().getTemplates(Definition.WORKSPACE_VIEW));
-			model.put(WebKeys.BINDER_CONFIGS, configs);
 		} else {
 			List<TemplateBinder> configs = getAdminModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);

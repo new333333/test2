@@ -21,6 +21,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.Workspace;
@@ -640,7 +641,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
     	Document tree = null;
  
-    	if (binder != null) {
+    	if (binder != null && !(binder instanceof TemplateBinder)) {
     		if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
 				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);

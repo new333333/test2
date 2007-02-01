@@ -142,8 +142,9 @@ function ss_confirmDeleteConfig() {
 </div>
 </c:if>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" %>
+<br/>
+
 <table>
-<c:if test="${!ssBinderConfig.root}">
 <tr><td>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTarget.label"/></span>
@@ -153,8 +154,6 @@ function ss_confirmDeleteConfig() {
 </c:if>
 <ssf:nlt tag="${ssBinderConfig.title}" checkIfTag="true"/>
 </td></tr>
-</c:if>
-
 <tr><td>
 <span class="ss_labelAbove"><ssf:nlt tag="administration.configure_cfg.description"/></span>
     <div align="left">
@@ -169,6 +168,7 @@ function ss_confirmDeleteConfig() {
 </td></tr>
 
 <tr><td>
+
 <input type="checkbox" name="defsI" <c:if test="${ssBinderConfig.definitionsInherited}">checked="checked"</c:if> disabled="disabled"/>
 <span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.definitionsInherited"/></span>
 </td></tr>
@@ -202,89 +202,26 @@ function ss_confirmDeleteConfig() {
 </c:if>
 
 
-<c:if test="${ssOperation == 'add_folder'}">
+<c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
 <form method="post" action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="add_folder"/><portlet:param 
+		<portlet:param name="operation" value="${ssOperation}"/><portlet:param 
 		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
 
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
+<h3><ssf:nlt tag="administration.configure_cfg.existing"/></h3>
+  <c:forEach var="config" items="${ssBinderConfigs}">
+      <input type="radio" name="binderConfigId" value="${config.id}" ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/><br/>
+  </c:forEach>
 
-<table>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
-<input type="text" name="configTitle" value="" checkIfTag="true"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.folderTarget.label"/></span>
-<input type="text" name="targetTitle" value="" checkIfTag="true"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.description"/></span>
-    <div align="left">
-    <ssf:htmleditor name="description" />
- 	</div>
-</td></tr>
-<tr><td>
-<input type="checkbox" name="library" />
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.library"/></span>
-</td></tr>
-<tr><td>
-<input type="checkbox" name="uniqueTitles" />
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.uniqueTitles"/></span>
-</td></tr>
-
-</table>
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>
 </c:if>
-
-
-<c:if test="${ssOperation == 'add_workspace'}">
-<form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="add_workspace"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
-
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
-
-<table>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
-<input type="text" name="configTitle" value="" checkIfTag="true"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTarget.label"/></span>
-<input type="text" name="targetTitle" value="" checkIfTag="true"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.description"/></span>
-    <div align="left">
-    <ssf:htmleditor name="description" />
- 	</div>
-</td></tr>
-
-</table>
-<div class="ss_formBreak"/>
-
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
-</div>
-
-</form>
-</c:if>
-
 
 
 </c:if>

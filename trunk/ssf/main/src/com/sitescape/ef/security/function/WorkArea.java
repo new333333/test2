@@ -17,7 +17,8 @@ public interface WorkArea {
     public String getWorkAreaType();
     
     public WorkArea getParentWorkArea();
-    
+    public boolean isFunctionMembershipInheritanceSupported();
+
     public boolean isFunctionMembershipInherited();
     
     public void setFunctionMembershipInherited(boolean functionMembershipInherited);

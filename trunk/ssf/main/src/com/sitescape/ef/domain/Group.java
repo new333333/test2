@@ -147,6 +147,10 @@ public class Group extends Principal implements WorkArea {
     	else		
     		return functionMembershipInherited.booleanValue();
 	}
+    //this is needed for templates, which may inherit from a yet to be determined parent
+    public boolean isFunctionMembershipInheritanceSupported() {
+    	return true;
+    }
 
 	public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
         this.functionMembershipInherited = Boolean.valueOf(functionMembershipInherited);

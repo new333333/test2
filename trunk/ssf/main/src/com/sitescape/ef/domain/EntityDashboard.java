@@ -1,5 +1,7 @@
 package com.sitescape.ef.domain;
 
+import java.util.HashMap;
+
 /**
  * This object represents a dashboard configured for a binder
  *
@@ -30,6 +32,16 @@ public class EntityDashboard extends Dashboard {
     public void setOwnerIdentifier(EntityIdentifier ownerId) {
     	this.ownerId = ownerId;
     }
-
+    public EntityDashboard clone() {
+    	try {
+    		EntityDashboard other = (EntityDashboard)super.clone();
+    		other.setId(null);
+    		other.setProperties(new HashMap(getProperties()));
+ 		   	return other;
+ 	   	}  catch (CloneNotSupportedException e) {
+ 	        // 	This shouldn't happen, since we are Cloneable
+ 	   		throw new InternalError("Clone error: " + e.getMessage());
+ 	   	}    	
+    }
 
 }

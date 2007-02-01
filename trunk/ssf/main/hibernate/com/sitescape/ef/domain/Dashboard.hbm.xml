@@ -30,10 +30,14 @@
 	    <property name="entityId" column="owner_id"/>
    		<property name="type" column="owner_type"/>
     </component>
-	   <subclass name="com.sitescape.ef.domain.UserDashboard" discriminator-value="U" dynamic-update="true">
-  		 <property name="binderId"/>
-   		</subclass>
-   </subclass>
+	</subclass>
+    <subclass name="com.sitescape.ef.domain.UserDashboard" discriminator-value="U" dynamic-update="true">
+	     <component name="ownerIdentifier" class="com.sitescape.ef.domain.EntityIdentifier">
+		    <property name="entityId" column="owner_id"/>
+   			<property name="type" column="owner_type"/>
+    	</component>
+  		<property name="binderId"/>
+   	</subclass>
    <subclass name="com.sitescape.ef.domain.DashboardPortlet" discriminator-value="P" dynamic-update="true">
   	 <property name="portletName" length="256"/>
    </subclass>

@@ -56,24 +56,36 @@ public class TemplateBinder extends Binder implements Cloneable {
     public void setTemplateTitle(String tTitle) {
     	this.tTitle = tTitle;
     }
+    //we always can inherit
+    public boolean isFunctionMembershipInherited() {
+       return functionMembershipInherited;
+    }
+    //this is needed for templates, which may inherit from a yet to be determined parent
+    public boolean isFunctionMembershipInheritanceSupported() {
+    	return true;
+    }
+
+
     public boolean isDefinitionInheritanceSupported() {
     	if (isRoot()) return true;  //may want config to always inherit
-    	return getParentBinder().getDefinitionType() == getDefinitionType();
+    	return getParentBinder().getEntityType().equals(getEntityType());
     }
     public TemplateBinder clone() {
  	   try {
  		   TemplateBinder other = (TemplateBinder)super.clone();
  		   other.setId(null);
  		   if (definitions != null)
+ 			   //can copy definitions since they are shared
  			   other.definitions = new ArrayList(definitions);
  		   other.parentBinder=null;
  		   other.binders = null;
  		   other.events = null;
  		   other.attachments = null;
  		   other.customAttributes = null;
- 		   
+ 		   other.setNotificationDef(null);
  		   if (workflowAssociations != null)
- 			   other.workflowAssociations = new HashMap(workflowAssociations);
+ 			   //can copy workflow associations since they are shared
+			   other.workflowAssociations = new HashMap(workflowAssociations);
  		   return other;
  	   }  catch (CloneNotSupportedException e) {
  	        // This shouldn't happen, since we are Cloneable

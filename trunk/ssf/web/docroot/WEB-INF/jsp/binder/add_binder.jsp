@@ -27,8 +27,10 @@
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
   <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span>
   <br/>
-  <c:forEach var="config" items="${ssConfigurations}">
-      <input type="radio" name="binderConfigId" value="${config.id}" ><ssf:nlt tag="${config.title}" checkIfTag="true"/><br/>
+  <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">
+      <input type="radio" name="binderConfigId" value="${config.id}" 
+      <c:if test="${status.count == 1}">checked="checked"</c:if>
+      ><ssf:nlt tag="${config.templateTitle}" checkIfTag="true"/>(<ssf:nlt tag="${config.title}" checkIfTag="true"/>)<br/>
   </c:forEach>
 <br/>  
 
