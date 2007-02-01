@@ -841,6 +841,7 @@ public class ListFolderController extends  SAbstractController {
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
+		Map qualifiers;
 		//	The "Add" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
@@ -848,8 +849,8 @@ public class ListFolderController extends  SAbstractController {
 			try {
 				getFolderModule().checkAccess(folder, "addEntry");				
 				int count = 1;
-				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
-				Map qualifiers = new HashMap();
+				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
+				qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));
 				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
 				//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
@@ -868,7 +869,9 @@ public class ListFolderController extends  SAbstractController {
 			} catch (AccessControlException ac) {};
 		}
 		//The "Administration" menu
-		folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisFolder"));
+		qualifiers = new HashMap();
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageFolderMenu");
+		folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
 		try {
 			getFolderModule().checkAccess(folder, "addFolder");
@@ -909,7 +912,7 @@ public class ListFolderController extends  SAbstractController {
 		//Delete binder
 		try {
 			getBinderModule().checkAccess(folder, "deleteBinder");
-			Map qualifiers = new HashMap();
+			qualifiers = new HashMap();
 			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
@@ -965,7 +968,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 		//WebDav folder view
 		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
-		Map qualifiers = new HashMap();
+		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
@@ -1011,7 +1014,9 @@ public class ListFolderController extends  SAbstractController {
 			}
 			
 			//This folder is showing the dashboard
-			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
+			folderToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"), "", qualifiers);
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 			folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);

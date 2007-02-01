@@ -315,6 +315,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		if ((workspace.getDefinitionType() != null) && 
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				workspace.getOwner() != null) {
+			User user = RequestContextHolder.getRequestContext().getUser();
 			User owner = workspace.getOwner();
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
@@ -325,10 +326,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 			try {
 				getProfileModule().checkAccess(owner, "deleteEntry");
-				showDeleteProfileMenu = true;
+				//Don't let a user delete his or her own account
+				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
 			} catch (AccessControlException ac) {};
 			
-			if (showModifyProfileMenu || showDeleteProfileMenu) {
+			if (showDeleteProfileMenu) {
 				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
 				if (showModifyProfileMenu) {
 					//	The "Modify" menu item
@@ -340,17 +342,25 @@ public class WorkspaceTreeController extends SAbstractController  {
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
 				}
-				if (showDeleteProfileMenu) {
-					//	The "Delete" menu item
-					Map qualifiers = new HashMap();
-					qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
-					url = response.createActionURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
-					url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
-				}
+				//	The "Delete" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
+			}
+			if (showModifyProfileMenu && !showDeleteProfileMenu) {
+				//	The "Modify" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
 			}
 		}
 		//	The "Manage dashboard" menu

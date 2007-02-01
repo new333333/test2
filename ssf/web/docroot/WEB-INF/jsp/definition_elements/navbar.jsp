@@ -36,7 +36,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
   <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
 
 <!-- Find user form -->
-	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>">
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 		<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="findUser"/>
@@ -55,7 +57,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 	</li>
 
 <!-- Find places form -->
-	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>">
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 		<form method="post" id="ss_findPlacesForm<portlet:namespace/>" name="ss_findPlacesForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
@@ -74,7 +78,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 	</li>
 
 <!-- Find tags form -->
-	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindTagsButton<portlet:namespace/>">
+	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindTagsButton<portlet:namespace/>"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 		<form method="post" id="ss_findTagsForm<portlet:namespace/>" name="ss_findTagsForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
@@ -93,7 +99,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 	</li>
 
 <!-- Search form -->
-	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>">
+	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
 		  name="ss_simpleSearchForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
@@ -122,7 +130,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 </c:if>
 
 <!-- Favorites -->
-    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');">
+    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
+      onMouseOver="this.style.cursor = 'pointer';"
+    >
       <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
@@ -140,7 +150,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
       	name="action" value="view_ws_listing"/><portlet:param 
       	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
       	name="entryId" value="${ssUser.id}"/><portlet:param 
-      	name="newTab" value="1"/></portlet:renderURL>';">
+      	name="newTab" value="1"/></portlet:renderURL>';"
+     onMouseOver="this.style.cursor = 'pointer';"
+    >
 	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	    <div id="ss_navbarMyWorkspaceButton">
@@ -151,7 +163,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 
 <!-- Clipboard -->
 <c:if test="">
-	<li class="ss_global_toolbar_clipboard" onClick="alert('Show the clipboard (tbd)');">
+	<li class="ss_global_toolbar_clipboard" onClick="alert('Show the clipboard (tbd)');"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 	  <ssHelpSpot helpId="personal_toolbar/clipboard_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.clipboardButton"/>">
 	    <div id="ss_navbarClipboardButton">
@@ -163,7 +177,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 
 <!-- Show/hide portal -->
 <c:if test="${ss_navbar_style != 'portlet'}">
-	<li class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;">
+	<li class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 	  <ssHelpSpot helpId="personal_toolbar/maximize_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
 	    <div id="ss_navbarHideShowPortalButton">
@@ -174,7 +190,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 </c:if>
 
 <!-- Help button -->
-	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();">
+	<li class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();"
+     onMouseOver="this.style.cursor = 'pointer';"
+	>
 	  <ssHelpSpot helpId="personal_toolbar/help_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.helpButton"/>">
 	    <div id="ss_navbarHelpButton">

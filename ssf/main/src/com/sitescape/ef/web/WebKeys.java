@@ -365,6 +365,7 @@ public class WebKeys {
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";
     public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
+    public static final String HELP_SPOT="helpSpot";
     public static final String IMAGE_FILE_URL="ssImageFileUrl";
     public static final String IS_REFRESH="ssRefresh";
     public static final String LDAP_CONFIG="ssLdapConfig";

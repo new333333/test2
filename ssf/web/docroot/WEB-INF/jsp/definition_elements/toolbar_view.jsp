@@ -25,11 +25,11 @@ String menuDivWidth = "300px";
 
      <% // BEGIN Helpspots for folder menus %>
      <c:choose>
-	     <c:when test="${toolbarMenu.value.title == 'Manage this folder'}">
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu'}">
          <ssHelpSpot helpId="folder_menu/manage_folder_menu" offsetY="5" offsetX="-10"
 		     title="<ssf:nlt tag="helpSpot.manageFolderMenu"/>">
          </c:when>
-	     <c:when test="${toolbarMenu.value.title == 'Manage dashboard'}">
+	     <c:when test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
          <ssHelpSpot helpId="folder_menu/manage_dashboard" offsetY="5" offsetX="-10"
 		     title="<ssf:nlt tag="helpSpot.manageDashboard"/>">
          </c:when>
@@ -41,7 +41,8 @@ String menuDivWidth = "300px";
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
 	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
-	      ${toolbarMenu.value.title}</a>
+	      ${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories}"
+	      > <img border="0" src="<html:imagesPath/>pics/downarrow.gif"/></c:if></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
 		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -51,7 +52,8 @@ String menuDivWidth = "300px";
 	 </c:choose>
 
       <% // END Helpspots for folder menus %>
-      <c:if test="${toolbarMenu.value.title == 'Manage this folder' || toolbarMenu.value.title == 'Manage dashboard'}">
+      <c:if test="${toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageFolderMenu' || 
+      		toolbarMenu.value.qualifiers.helpSpot == 'helpSpot.manageDashboard'}">
       </ssHelpSpot>
       </c:if>
 
