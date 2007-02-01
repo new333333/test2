@@ -43,9 +43,6 @@ public interface ObjectKeys {
 	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
 	//super user bypasses all acl and operation checks
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
-	// reserved id put in search engine for super user
-	// getPrincipalIds will insert this value if user is superUser
-	public static final Long SUPER_USER_ID = Long.valueOf(-2);
 	//reserved id put in acls to indicate owner of object has access
 	//search engine stores then ownerId of the entry in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);

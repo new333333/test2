@@ -478,7 +478,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    		
 	    	}	    	
 	    	//need to reindex acls
-	    	readAclIds.add(ObjectKeys.SUPER_USER_ID);
     		List binderIds = new ArrayList();
     		binderIds.add(binder.getId());
     		indexMembership(binderIds, readAclIds);
@@ -518,7 +517,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			readAclIds = getReadEntryAcls(readAclIds, (Long)fm.getKey(), (Set)fm.getValue());
 			
 		}
-		readAclIds.add(ObjectKeys.SUPER_USER_ID);
 		indexMembership(folderIds, readAclIds);
 		
 	}

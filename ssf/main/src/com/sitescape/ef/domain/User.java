@@ -295,8 +295,6 @@ public class User extends Principal {
     	if(principalIds == null) {
     		Set ids = new HashSet();
     		ids.add(reservedGroupId);
-    		if (isReserved() && ObjectKeys.SUPER_USER_INTERNALID.equals(getInternalId()))
-    			ids.add(ObjectKeys.SUPER_USER_ID);
     		addPrincipalIds(this, ids);
     		principalIds = ids;
     	}

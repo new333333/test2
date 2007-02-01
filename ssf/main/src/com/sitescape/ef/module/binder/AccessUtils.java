@@ -57,9 +57,6 @@ public class AccessUtils  {
         Set binderIds = getAccessManager().getWorkAreaAccessControl(entry.getParentBinder(), WorkAreaOperation.READ_ENTRIES);
 	       
 		Set<Long> entryIds = new HashSet<Long>();
-		//add super user
-	    binderIds.add(ObjectKeys.SUPER_USER_ID);
-	    entryIds.add(ObjectKeys.SUPER_USER_ID);
 	    if (entry instanceof WorkflowSupport) {
 			WorkflowSupport wEntry = (WorkflowSupport)entry;
 			if (wEntry.hasAclSet()) {
@@ -92,7 +89,6 @@ public class AccessUtils  {
      }
      public static Set getReadAclIds(Binder binder) {
         Set binderIds = new HashSet(getAccessManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES));
-	    binderIds.add(ObjectKeys.SUPER_USER_ID);
   		return binderIds;
      	 
       }     	
