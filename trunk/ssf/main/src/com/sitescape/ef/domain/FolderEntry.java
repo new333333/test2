@@ -180,7 +180,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setTopEntry(FolderEntry topEntry) {
         this.topEntry = topEntry;
     }
-    public boolean isTopEntry() {
+    public boolean isTop() {
     	return topEntry == null;
     }
 

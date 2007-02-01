@@ -574,7 +574,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, (Folder)binder);
         //add last activity for top entries
-        if (fEntry.isTopEntry()) IndexUtils.addLastActivityDate(indexDoc, fEntry);
+        if (fEntry.isTop()) IndexUtils.addLastActivityDate(indexDoc, fEntry);
 
         return indexDoc;
     }
