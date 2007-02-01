@@ -252,6 +252,11 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
         this.functionMembershipInherited = functionMembershipInherited;
     }
+    //this is needed for templates, which may inherit from a yet to be determined parent
+    public boolean isFunctionMembershipInheritanceSupported() {
+    	if (isRoot()) return false;
+    	return true;
+    }
 
     public AclContainer getParentAclContainer() {
         return this.getParentBinder();

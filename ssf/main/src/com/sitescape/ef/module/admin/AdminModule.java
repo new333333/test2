@@ -37,7 +37,7 @@ public interface AdminModule {
 
     public TemplateBinder createDefaultTemplate(int type);
 	public Long addTemplate(int type, Map updates);
-	public Long addTemplate(Long parentId, int type, Map updates);
+	public Long addTemplate(Long parentId, Long srcConfigId);
 	public void modifyTemplate(Long id, Map updates);
 	public void deleteTemplate(Long id);
 	public TemplateBinder getTemplate(Long id); 

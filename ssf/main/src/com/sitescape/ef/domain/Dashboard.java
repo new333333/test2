@@ -14,7 +14,7 @@ import java.util.Map;
  * @author Jong Kim
  *
  */
-public abstract class Dashboard extends PersistentTimestampObject {
+public abstract class Dashboard extends PersistentTimestampObject implements Cloneable {
 	public final static String Components = "components";
 
 	//Component list map keys (Components)

@@ -42,7 +42,8 @@
 	    <portlet:param name="action" value="modify_dashboard"/>
 	    <portlet:param name="binderId" value="${ssBinder.id}"/>
         </portlet:actionURL>">
-	  <div style="margin:10px;">
+         <input type="hidden" name="_scope" value="binder"/>
+ 	  <div style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
            <input type="radio" name="name" value="${component}">

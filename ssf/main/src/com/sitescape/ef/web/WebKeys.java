@@ -260,8 +260,6 @@ public class WebKeys {
 	public static final String BLOG_REPLY="ssBlogReply"; 
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
-	public static final String CONFIGURATIONS="ssConfigurations";
-	public static final String CONFIGURATION="ssConfiguration";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";
 	public static final String CONDITION_ELEMENT_OPERATION="conditionElementOperation";

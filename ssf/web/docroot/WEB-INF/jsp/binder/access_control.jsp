@@ -174,7 +174,8 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 <c:if test="${ssBinder.entityType != 'folder'}">
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 </c:if>
-<span class="ss_bold">${ssBinder.title}</span>
+<% //need to check tags for templates %>
+<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
@@ -194,7 +195,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
   scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
-<c:if test="${!empty ssBinder.parentWorkArea}">
+<c:if test="${ssBinder.functionMembershipInheritanceSupported}">
   <ssf:box style="rounded">
   <div style="padding:4px 8px;">
   <c:set var="yes_checked" value=""/>

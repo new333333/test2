@@ -30,7 +30,7 @@ public class AddFolderController extends SAbstractController {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
-			Long cfgType = PortletRequestUtils.getLongParameter(request, "binderConfigId");
+			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
 			Long newId = getAdminModule().addBinderFromTemplate(cfgType, binderId, 
 						PortletRequestUtils.getStringParameter(request, "title", ""));
 			
@@ -58,7 +58,7 @@ public class AddFolderController extends SAbstractController {
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
 			}
-			model.put(WebKeys.CONFIGURATIONS, result);
+			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 			if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
 				getFolderModule().checkAccess((Folder)binder, "addFolder");
@@ -69,14 +69,14 @@ public class AddFolderController extends SAbstractController {
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
 			}
-			model.put(WebKeys.CONFIGURATIONS, result);
+			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 			getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");
 			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
-			model.put(WebKeys.CONFIGURATIONS, result);
+			model.put(WebKeys.BINDER_CONFIGS, result);
 		}
 	
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);
