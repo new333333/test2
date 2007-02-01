@@ -309,12 +309,35 @@
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
+    
+    <bean id="textOpenOfficeConverter" class="com.sitescape.ef.docconverter.impl.TextOpenOfficeConverter">
+		<property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+        <property name="nullTransform"><value>config/null.xslt</value></property>
+    </bean>
+    
+    <bean id="imageOpenOfficeConverter" class="com.sitescape.ef.docconverter.impl.ImageOpenOfficeConverter">
+        <property name="host"><value>localhost</value></property>
+        <property name="port"><value>8100</value></property>
+    </bean>
 
 	<!-- View file as HTML manager implementation -->
     <bean id="htmlConverterManager" class="com.sitescape.ef.docconverter.impl.HtmlConverterManagerImpl">
     	<!-- Options 1=OpenOffice conversion implementation -->
     	<property name="active"><value>1</value></property>
     	<property name="openOfficeConverter"><ref local="htmlOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="textConverterManager" class="com.sitescape.ef.docconverter.impl.TextConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref local="textOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="imageConverterManager" class="com.sitescape.ef.docconverter.impl.ImageConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref local="imageOpenOfficeConverter"/></property>
     </bean>
     
     <!-- ============================== RSS Generator ============================ -->
