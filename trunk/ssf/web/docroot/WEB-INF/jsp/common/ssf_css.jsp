@@ -1410,8 +1410,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	margin-left:19px;
 	background:inherit !important;
 }
-.ss_global_toolbar_links li:hover {
-	cursor:pointer;
+.ss_global_toolbar_links li:hover div:hover {
+	cursor:pointer !important;
 }
 .ss_global_toolbar_links li div {
 	display:block;
