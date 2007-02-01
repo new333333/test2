@@ -102,10 +102,8 @@ public class ImageOpenOfficeConverter
 		try
 		{
 			// Can not handle anything other than JPEG
-			if (ifp.endsWith(".jpg")
-			|| ifp.endsWith(".JPG")
-			|| ifp.endsWith(".jpeg")
-			|| ifp.endsWith(".JPEG"))
+			if (ifp.toLowerCase().endsWith(".jpg")
+			|| ifp.toLowerCase().endsWith(".jpeg"))
 			{
 				is = new FileInputStream(ifp);
 				inputData = new byte[is.available()];
