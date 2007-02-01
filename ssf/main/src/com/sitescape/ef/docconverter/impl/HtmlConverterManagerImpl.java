@@ -7,8 +7,8 @@ public class HtmlConverterManagerImpl
 	implements IHtmlConverterManager
 {
 	int _active = IHtmlConverterManager.OPENOFFICE;
-	HtmlConverter _stellentConverter = null;
-	HtmlConverter _openOfficeConverter = null;
+	HtmlConverter _stellentConverter = null,
+				  _openOfficeConverter = null;
 	
 	public HtmlConverterManagerImpl() {}
 	
