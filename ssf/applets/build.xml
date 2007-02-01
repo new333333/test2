@@ -22,7 +22,7 @@
 		<ant dir="workflow-viewer" target="jar" />
 		<ant dir="droptarget" target="jar" />
 		<ant dir="fileedit" target="jar" />
-		<ant dir="filenew" target="jar" />
+		<ant dir="fileopen" target="jar" />
 	</target>
 
 	<target name="java2html">
@@ -30,7 +30,7 @@
 		<ant dir="workflow-viewer" target="java2html" />
 		<ant dir="droptarget" target="java2html" />
 		<ant dir="fileedit" target="java2html" />
-		<ant dir="filenew" target="java2html" />
+		<ant dir="fileopen" target="java2html" />
 	</target>
 
 	<target name="javadoc">
@@ -38,7 +38,7 @@
 		<ant dir="workflow-viewer" target="javadoc" />
 		<ant dir="droptarget" target="javadoc" />
 		<ant dir="fileedit" target="javadoc" />
-		<ant dir="filenew" target="javadoc" />
+		<ant dir="fileopen" target="javadoc" />
 	</target>
 
 	<target name="deploy">
@@ -46,6 +46,6 @@
 		<ant dir="workflow-viewer" target="javadoc" />
 		<ant dir="droptarget" target="javadoc" />
 		<ant dir="fileedit" target="javadoc" />
-		<ant dir="filenew" target="javadoc" />
+		<ant dir="fileopen" target="javadoc" />
 	</target>
 </project>
