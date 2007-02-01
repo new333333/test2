@@ -110,7 +110,7 @@ public class HtmlOpenOfficeConverter
 		{
 			// Are we dealing with Windows
 			if (ifp.indexOf("\\") > 0)
-				url = "file:///C:";
+				url = "file:///";
 			
 			ifp = ifp.replace('\\', '/');
 			ofp = ofp.replace('\\', '/');
