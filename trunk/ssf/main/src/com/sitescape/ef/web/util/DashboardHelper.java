@@ -279,6 +279,12 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						getInstance().getSearchResultsBean(binder, ssDashboard, 
 								model, id, component);
 						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					} else if (component.get(Name).equals(
+							ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+						//Set up the search results bean
+						getInstance().getSearchResultsBean(binder, ssDashboard, 
+								model, id, component);
+						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 					}
 				}
 			}
@@ -839,6 +845,29 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					}
 				} else if (componentMap.get(DashboardHelper.Name).
 						equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
+					//Get the folderIds out of the formData
+					Iterator itFormData = formData.keySet().iterator();
+					List folderIds = new ArrayList();
+					while (itFormData.hasNext()) {
+						String key = (String)itFormData.next();
+						if (key.matches("^ss_folder_id_[0-9]+$")) {
+							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
+						}
+					}
+					if (folderIds.size() == 0 && 
+							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {
+						//There was a list saved in a prior configuration, use it
+						folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
+					}
+					if (folderIds.size() > 0) {
+						try {
+							Document query = FilterHelper.getFolderListQuery(request, folderIds);
+							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
+							componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
+						} catch(Exception ex) {}
+					}
+				} else if (componentMap.get(DashboardHelper.Name).
+						equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
 					List folderIds = new ArrayList();
