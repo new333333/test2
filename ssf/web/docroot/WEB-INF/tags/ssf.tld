@@ -503,6 +503,19 @@
 	</tag>	
 
 	<tag>
+		<name>miniBusinessCard</name>
+		<tag-class>com.sitescape.ef.taglib.MiniBusinessCard</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.ef.domain.Principal</type>
+		</attribute>		
+	</tag>	
+
+
+	<tag>
 		<name>param</name>
 		<tag-class>com.sitescape.ef.taglib.ParamTag</tag-class>
 		<body-content>JSP</body-content>
