@@ -84,6 +84,7 @@ public interface ObjectKeys {
     public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";
 
     public static final String DASHBOARD_COMPONENT_BLOG_SUMMARY = "blog";
+    public static final String DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY = "guestbook";
     public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
     public static final String DASHBOARD_COMPONENT_SEARCH = "search";
