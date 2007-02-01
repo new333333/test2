@@ -1,4 +1,5 @@
 <%@ page language="java" pageEncoding="ISO-8859-1"%>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <html>
   <head>
     <title>HTML Conversion Error</title>
@@ -7,7 +8,7 @@
 	-->
   </head>
   <body>
-  	<h4 style="text-align:center">HTML Conversion Reporting Error</h4>
+  	<h4 style="text-align:center"><ssf:nlt tag="html.converterError"/></h4>
     Error: <%=request.getParameter("ssf-error")%><br>
   </body>
 </html>
