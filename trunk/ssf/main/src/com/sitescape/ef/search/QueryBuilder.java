@@ -15,6 +15,8 @@ import org.dom4j.io.SAXReader;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.ef.util.SPropsUtil;
 
 public class QueryBuilder {
 
@@ -180,15 +182,55 @@ public class QueryBuilder {
 		} else if (operator.equals(RANGE_ELEMENT)) {
 			qString += "(" + processRANGE(element) + ")";
 		} else if (operator.equals(USERACL_ELEMENT)) {
-			//Always check for aclreaddef
-			qString += "(";
-			qString += " " + BasicIndexUtils.READ_DEF_ACL_FIELD + ":"
-					+ BasicIndexUtils.READ_ACL_ALL + " ";
+			/*
+			 * if widen, then acl query is:
+			 * (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+			 * 
+			 * else
+			 * ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
+			 */
+			boolean widen = false;
+			if (SPropsUtil.getBoolean("entryacl.widens.folderacl"))
+				widen = true;
+			//folderAcl:1,2,3...
+			qString += "(((";
+			boolean first = true;
 			for (Iterator i = principalIds.iterator(); i.hasNext();) {
-				qString += " OR " + BasicIndexUtils.READ_ACL_FIELD + ":"
+				if (!first) {
+					qString += " OR";
+				}
+				qString += " " + BasicIndexUtils.FOLDER_ACL_FIELD + ":"
+						+ i.next();
+				first = false;
+			}
+			qString += ") AND ";
+			if (widen) {
+				// entryAcl:all
+				qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL + " ))";
+				qString += " OR (";
+				//OR entryAcl:1,2,3
+				first = true;
+				for (Iterator i = principalIds.iterator(); i.hasNext();) {
+					if (!first) {
+						qString += " OR";
+					}
+					qString += " " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
+							+ i.next();
+					first = false;
+				}
+				qString += ")";
+			} else {
+			
+				qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL;
+				for (Iterator i = principalIds.iterator(); i.hasNext();) {
+				
+				qString += " OR " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
 						+ i.next();
 			}
-			qString += ")";
+			qString += "))";
+		}
+		qString += ")";			
+			
 		} else if (operator.equals(GROUP_VISIBILITY_ELEMENT)) {
 			//Always check for groupReadAny
 			User user = RequestContextHolder.getRequestContext().getUser();
@@ -203,7 +245,7 @@ public class QueryBuilder {
 							+ ":" + groups.get(gcount);
 				}
 			}
-			qString += ")";
+			qString += "))";
 		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 			qString += "(" + processPERSONALTAGS(element) + ")";
 		} else if (operator.equals(RELATIVE_DATE_RANGE_ELEMENT)) {
