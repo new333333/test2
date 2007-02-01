@@ -865,6 +865,9 @@ public class ListFolderController extends  SAbstractController {
 						title = title + " (" + String.valueOf(count++) + ")";
 					}
 					entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+					if (i == 0) {
+						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+					}
 				}
 			} catch (AccessControlException ac) {};
 		}

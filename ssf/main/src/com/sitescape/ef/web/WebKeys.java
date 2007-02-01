@@ -40,6 +40,7 @@ public class WebKeys {
     public static final String IS_ACTION_URL="actionUrl";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
+    public static final String URL_ADD_DEFAULT_ENTRY = "addDefaultEntryURL";
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
