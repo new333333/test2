@@ -176,7 +176,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		Set groupIds = new HashSet();
 		for (Iterator iter=folder.getNotificationDef().getDistribution().iterator(); iter.hasNext();) {
 			Principal p = (Principal)iter.next();
-			if (p.getEntityIdentifier().getEntityType().equals(EntityType.group))
+			if (p.getEntityType().equals(EntityType.group))
 				groupIds.add(p.getId());
 			else
 				userIds.add(p.getId());
@@ -185,7 +185,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			List team = binderModule.getTeamMembers(folder);
 			for (Iterator iter=team.iterator(); iter.hasNext();) {
 				Principal p = (Principal)iter.next();
-				if (p.getEntityIdentifier().getEntityType().equals(EntityType.group))
+				if (p.getEntityType().equals(EntityType.group))
 					groupIds.add(p.getId());
 				else
 					userIds.add(p.getId());
@@ -380,7 +380,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
 		element.addAttribute("href", adapterUrl.toString());
 		PostingDef post = folder.getPosting();
 		if (post != null) {
@@ -474,7 +474,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
 		element.addAttribute("href", adapterUrl.toString());
 
 		for (Iterator i=entries.iterator();i.hasNext();) {
@@ -643,7 +643,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		if (users.size() > 1) {
 			logger.error("Multiple users with same email address, cannot use for incoming email");
 		}
-		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, RequestContextHolder.getRequestContext().getZoneId());
+		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	private void processText(Object content, Map inputData) {
 		if (inputData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) return;

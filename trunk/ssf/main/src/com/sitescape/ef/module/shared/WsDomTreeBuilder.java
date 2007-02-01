@@ -9,8 +9,8 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Folder;
+import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.ReflectHelper;
 import com.sitescape.ef.web.WebKeys;
@@ -26,8 +26,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 	AllBusinessServicesInjected bs;
 	DomTreeHelper helper = defaultHelper;
 			
-	public boolean supportsType(int type) {
-		return helper.supportsType(type);
+	public boolean supportsType(int type, Object source) {
+		return helper.supportsType(type, source);
 	}
 
 	
@@ -68,7 +68,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 		
 	}
 	public Element setupDomElement(int type, Object source, Element element) {
-		if (!helper.supportsType(type)) return null;
+		if (!helper.supportsType(type, source)) return null;
 		Binder binder = (Binder) source;
 		element.addAttribute("title", binder.getTitle());
 		element.addAttribute("id", binder.getId().toString());
@@ -91,8 +91,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
 			element.addAttribute("image", icon);
 			element.addAttribute("imageClass", imageClass);
-			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE));
-			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE));
+			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE, source));
+			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE, source));
 					
 		} else if ((type == DomTreeBuilder.TYPE_FOLDER)) {
 			Folder f = (Folder)source;
@@ -101,14 +101,14 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
 			element.addAttribute("image", icon);
 			element.addAttribute("imageClass", "ss_twIcon");
-			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER));
-			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER));
+			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
+			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
 		} else return null;
 		return element;
 	}
 	
 	protected static class WsTreeHelper implements DomTreeHelper {
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
 			return false;
@@ -117,12 +117,13 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 	
-		public String getAction(int type) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) return WebKeys.ACTION_VIEW_WS_LISTING;
-			else return WebKeys.ACTION_VIEW_FOLDER_LISTING;
+		public String getAction(int type, Object source) {
+			if (type == DomTreeBuilder.TYPE_FOLDER) return WebKeys.ACTION_VIEW_FOLDER_LISTING;
+			else if (source instanceof ProfileBinder) return WebKeys.ACTION_VIEW_PROFILE_LISTING;
+			return WebKeys.ACTION_VIEW_WS_LISTING;
 		}
-		public String getURL(int type) {return "";}
-		public String getDisplayOnly(int type) {return "false";}
+		public String getURL(int type, Object source){return "";}
+		public String getDisplayOnly(int type, Object source) {return "false";}
 		public String getTreeNameKey() {return null;};
 	}
 }	

@@ -52,6 +52,6 @@ public interface WorkspaceModule {
     public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems, boolean library) throws AccessControlException, WriteFilesException;
+       		Map fileItems) throws AccessControlException, WriteFilesException;
 }
 

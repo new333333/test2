@@ -21,9 +21,9 @@ public class Workspace extends Binder  {
     public Workspace() {
     	setType(EntityIdentifier.EntityType.workspace.name());
     }
-	public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.workspace);
-    }
+	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.workspace;
+	}
     public List getBinders() {
     	if (binders == null) binders = new ArrayList();
     	return binders;
@@ -72,7 +72,7 @@ public class Workspace extends Binder  {
     public Definition getDefaultPostingDef() {
     	Definition def = super.getDefaultPostingDef();
     	if (def != null) return def;
-    	if (getParentBinder() != null) return getParentBinder().getDefaultPostingDef();
+    	if (!isRoot()) return getParentBinder().getDefaultPostingDef();
     	return null;
     }
     

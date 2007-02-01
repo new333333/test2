@@ -104,7 +104,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
 	}
 	public static class SearchTree implements DomTreeHelper {
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
 			return false;
@@ -113,7 +113,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 
-		public String getAction(int type) {
+		public String getAction(int type, Object source) {
 			//use action to indicate type of name that is choose.  This allows us to 
 			//determine the name of the checkbox.  We use variable names so the
 			//profile binder can show up as the parent of the users/groups and 
@@ -124,8 +124,8 @@ public class ManageSearchIndexController extends  SAbstractController {
 			
 			return null;
 		}
-		public String getURL(int type) {return "";}
-		public String getDisplayOnly(int type) {return "false";}
+		public String getURL(int type, Object source) {return "";}
+		public String getDisplayOnly(int type, Object source) {return "false";}
 		public String getTreeNameKey() {return "search";}
 		
 	}

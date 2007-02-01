@@ -124,7 +124,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 	public String getMailAttribute(Binder binder, String node, String name) {
 		String result = getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), "binder[@id='" + binder.getId().toString() +"']/" + node, name);
 		if (result != null) return result;
-		if (binder.getParentBinder() != null) return getMailAttribute(binder.getParentBinder(), node, name);
+		if (!binder.isRoot()) return getMailAttribute(binder.getParentBinder(), node, name);
 		return getMailAttribute(RequestContextHolder.getRequestContext().getZoneName(), node, name);
 
 	}

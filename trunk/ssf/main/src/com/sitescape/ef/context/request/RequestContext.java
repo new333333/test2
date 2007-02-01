@@ -43,7 +43,7 @@ public class RequestContext {
     	this.user = user;
     	if(user != null) {
     		this.userId = user.getId(); // In case this wasn't already set.
-    		this.zoneId = user.getParentBinder().getParentBinder().getId();
+    		this.zoneId = user.getZoneId();
     	}
     }
     

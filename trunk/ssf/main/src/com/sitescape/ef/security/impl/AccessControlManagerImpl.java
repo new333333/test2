@@ -53,12 +53,17 @@ public class AccessControlManagerImpl implements AccessControlManager {
 		return profileDao;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
+    	//need to use this work areas owner, event if inheriting
+    	return getWorkAreaAccessControl(workArea, workArea.getOwnerId(), workAreaOperation);
+    }
+
+    protected Set getWorkAreaAccessControl(WorkArea workArea, Long ownerId, WorkAreaOperation workAreaOperation) {
         if(workArea.isFunctionMembershipInherited()) {
             WorkArea parentWorkArea = workArea.getParentWorkArea();
             if(parentWorkArea == null)
                 throw new InternalException("Cannot inherit function membership when it has no parent");
             else
-                return getWorkAreaAccessControl(parentWorkArea, workAreaOperation);
+                return getWorkAreaAccessControl(parentWorkArea, ownerId, workAreaOperation);
         }
         else {
 	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -79,7 +84,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	        	}
 	        }
 	        //replaces reserved ownerId with workArea owner
-	        if (result.remove(ObjectKeys.OWNER_USER_ID)) result.add(workArea.getOwnerId());
+	        if (result.remove(ObjectKeys.OWNER_USER_ID)) result.add(ownerId);
 	        return result;
 	        
         }    	
@@ -124,7 +129,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workArea, Long ownerId, WorkAreaOperation workAreaOperation) {
 
-		if (ObjectKeys.SUPER_USER_ID.equals(user.getInternalId())) return true;
+		if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
@@ -138,7 +143,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			//if current user is the workArea owner, add special Id to is membership
 			if (user.getId().equals(ownerId)) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
 			return getWorkAreaFunctionMembershipManager()
-					.checkWorkAreaFunctionMembership(user.getParentBinder().getParentBinder().getId(),
+					.checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, membersToLookup);
 		}
 
@@ -211,7 +216,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
     		boolean includeParentAcl) {
-        if (ObjectKeys.SUPER_USER_ID.equals(user.getInternalId())) return true;
+        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
          if(aclControlledObj.getInheritAclFromParent()) {
             // This object inherits ACLs from the parent for all access types. 
         	// In this case, we ignore includeCreator and includeParentAcl
@@ -247,7 +252,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 
     }
     public boolean testAcl(User user, AclControlled aclControlledObj, Set memberIds) {
-        if (ObjectKeys.SUPER_USER_ID.equals(user.getInternalId())) return true;
+        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
        	Set principalIds = getProfileDao().getPrincipalIds(user);
        	//if owner, add special id
         if (user.getId().equals(aclControlledObj.getOwnerId()))  principalIds.add(ObjectKeys.OWNER_USER_ID);

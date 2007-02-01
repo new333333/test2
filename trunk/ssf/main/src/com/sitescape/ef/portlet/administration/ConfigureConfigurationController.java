@@ -1,84 +1,127 @@
 package com.sitescape.ef.portlet.administration;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Description;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.User;
+import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.ef.module.shared.DomTreeHelper;
+import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.ef.web.util.BinderHelper;
+import com.sitescape.ef.web.util.DashboardHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("addBtn")) {
-			//Get the list of workAreaOperations to be added to this new role/function
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
+		if (WebKeys.OPERATION_ADD.equals(operation)) {
+			//adding top level config
 			int type = PortletRequestUtils.getIntParameter(request, "cfgType");
-			String configId = getAdminModule().addConfiguration(type, PortletRequestUtils.getRequiredStringParameter(request, "cfgTitle"));
-			response.setRenderParameter(WebKeys.URL_OBJECT_ID, configId);
-		} else if (formData.containsKey("okBtn")) {
-			//Get the function id from the form
-			String configId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_OBJECT_ID);
-			List definitions = new ArrayList();
-			//	Get the default binder view
-			String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
-			String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
-			if (!Validator.isNull(defBinderId)) {
-				//	The default binder view is always the first one in the list
-				if (defBinderIds != null) {
-					definitions.add(defBinderId);
-				}
-			}
-				
-			//Add the other allowed folder views
-			if (defBinderIds != null) {
-				for (int i = 0; i < defBinderIds.length; i++) {
-					String defId = defBinderIds[i];
-					if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
-						definitions.add(defId);
-					}
-				}
-			}
-
-			//Add the allowed entry types
-			// and the workflow associations
-			String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
-			Map workflowAssociations = new HashMap();
-			if (defEntryIds != null) {
-				for (int i = 0; i < defEntryIds.length; i++) {
-					String defId = defEntryIds[i];
-					if (!Validator.isNull(defId)) {
-						definitions.add(defId);
-						String wfDefId = PortletRequestUtils.getStringParameter(request, "workflow_" + defId, "");
-						if (!wfDefId.equals("")) workflowAssociations.put(defId,wfDefId);
-					}
-				}
-			}
 			Map updates = new HashMap();
-			updates.put("definitionIds", definitions);
-			updates.put("workflowIds", workflowAssociations);
-			getAdminModule().modifyConfiguration(configId, updates);
-			response.setRenderParameter(WebKeys.URL_OBJECT_ID, configId);
-		
-		} else if (formData.containsKey("deleteBtn")) {
+			String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+			updates.put("templateTitle", sVal);
+			sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+			updates.put("templateDescription", new Description(sVal));
+			sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
+			updates.put("iconName", sVal);
+			Long configId = getAdminModule().addTemplate(type, updates);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+		} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (formData.containsKey("okBtn")) {
+				//Get the function id from the form
+				Map updates = new HashMap();
+				Boolean val = PortletRequestUtils.getBooleanParameter(request, "library", false);
+				updates.put("library", val);
+				val = PortletRequestUtils.getBooleanParameter(request, "uniqueTitles", false);
+				updates.put("uniqueTitles", val);
+				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+				updates.put("title", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+				updates.put("description", new Description(sVal));
+			
+				getAdminModule().modifyTemplate(configId, updates);
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			} 
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+		} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (formData.containsKey("okBtn")) {
+				//Get the function id from the form
+				Map updates = new HashMap();
+				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+				updates.put("templateTitle", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+				updates.put("templateDescription", new Description(sVal));
+				sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
+				updates.put("iconName", sVal);
+			
+				getAdminModule().modifyTemplate(configId, updates);
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
+			} 
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
 			//Get the function id from the form
-			String configId = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_OBJECT_ID);
-			getAdminModule().deleteConfiguration(configId);
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			getAdminModule().deleteTemplate(configId);
+		} else if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (formData.containsKey("okBtn")) {
+				//Get the function id from the form
+				Map updates = new HashMap();
+				Boolean val = PortletRequestUtils.getBooleanParameter(request, "library");
+				if (val != null) updates.put("library", val);
+				val = PortletRequestUtils.getBooleanParameter(request, "uniqueTitles");
+				if (val != null) updates.put("uniqueTitles", val);
+				String sVal = PortletRequestUtils.getStringParameter(request, "configTitle");
+				if (Validator.isNotNull(sVal)) updates.put("title", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "targetTitle");
+				if (Validator.isNotNull(sVal)) updates.put("targetTitle", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+				if (sVal != null) updates.put("description", new Description(sVal));
+				Long newId = getAdminModule().addTemplate(configId, Definition.FOLDER_VIEW, updates);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
+			} else 	response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+			
+		} else if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
+			Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (formData.containsKey("okBtn")) {
+				//Get the function id from the form
+				Map updates = new HashMap();
+				String sVal = PortletRequestUtils.getStringParameter(request, "configTitle");
+				if (Validator.isNotNull(sVal)) updates.put("title", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "targetTitle");
+				if (Validator.isNotNull(sVal)) updates.put("targetTitle", sVal);
+				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+				if (sVal != null) updates.put("description", new Description(sVal));
+				Long newId = getAdminModule().addTemplate(configId, Definition.WORKSPACE_VIEW, updates);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, newId.toString());
+			} else 	response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+
+			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else
@@ -91,56 +134,190 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 		Map model = new HashMap();
-		String configId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OBJECT_ID);				
+		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (configId != null) {
-			BinderConfig config = getAdminModule().getConfiguration(configId);
+			TemplateBinder config = getAdminModule().getTemplate(configId);
 		
 			model.put(WebKeys.BINDER_CONFIG, config);
-		
-			if (config.getDefinitionType() == Definition.WORKSPACE_VIEW) {
-				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			} else if (config.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);			
-			} else if (config.getDefinitionType() == Definition.PROFILE_VIEW) {
-				DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-				DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			
+			model.put(WebKeys.BINDER, config);
+			if (WebKeys.OPERATION_RELOAD_LISTING.equals(operation)) {
+				//An action is asking us to build the url
+				PortletURL reloadUrl = response.createRenderURL();
+				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+				return new ModelAndView("administration/reload_opener");
+			} else if (Validator.isNull(operation)) {
+				model.put(WebKeys.DEFINITION_ENTRY, config);
+				DefinitionHelper.getDefinitions(config, model, "");
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+				model.put(WebKeys.USER_PROPERTIES, userProperties);
+				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), config.getId());
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+				DashboardHelper.getDashboardMap(config, userProperties, model);
+
+				buildToolbar(request, response, config, model);
+				if (!config.isRoot() || !config.getBinders().isEmpty()) 
+					BinderHelper.buildNavigationLinkBeans(this, config, model, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
 			} else {
-					DefinitionHelper.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-					DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);				 
-			}
-			Map defs = (Map)model.get(WebKeys.PUBLIC_BINDER_DEFINITIONS);
-			Map defsMap = new HashMap();
-			model.put(WebKeys.FOLDER_DEFINTION_MAP, defsMap);
-			List defIds = config.getDefinitionIds();
-			for (int i=0; i<defIds.size(); ++i) {
-				String id = (String)defIds.get(i);
-				if (defs.containsKey(id)) {
-					defsMap.put(id, defs.get(id));
-				}
-			}
-			if (!defIds.isEmpty()) {
-				if (defsMap.containsKey(defIds.get(0))) {
-					model.put(WebKeys.DEFAULT_FOLDER_DEFINITION, defsMap.get(defIds.get(0)));
-				}
-			}
-			defsMap = new HashMap();			
-			model.put(WebKeys.ENTRY_DEFINTION_MAP, defsMap);
-			defs = (Map)model.get(WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS);	
-			if (defs != null) {
-				for (int i=0; i<defIds.size(); ++i) {
-					String id = (String)defIds.get(i);
-					if (defs.containsKey(id)) {
-						defsMap.put(id, defs.get(id));
-					}
+				model.put(WebKeys.OPERATION, operation);
+				if (operation.equals(WebKeys.OPERATION_MODIFY) || operation.equals(WebKeys.OPERATION_MODIFY_TEMPLATE)) {
+					return new ModelAndView(WebKeys.VIEW_MODIFY_TEMPLATE, model);
 				}
 			}
 			
-			//DefinitionHelper.getDefinitions(config, model);
-			DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
+				model.put(WebKeys.OPERATION, operation);				
+				model.put("cfgType", PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW)));
+				return new ModelAndView(WebKeys.VIEW_MODIFY_TEMPLATE, model);
+		} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
+			List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			model.put(WebKeys.BINDER_CONFIGS, configs);
+			
+		} else  if (WebKeys.OPERATION_ADD_WORKSPACE.equals(operation)) {
+			List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			configs.addAll(getAdminModule().getTemplates(Definition.WORKSPACE_VIEW));
+			model.put(WebKeys.BINDER_CONFIGS, configs);
 		} else {
-			model.put(WebKeys.BINDER_CONFIGS, getAdminModule().getConfigurations());
+			List<TemplateBinder> configs = getAdminModule().getTemplates();
+			model.put(WebKeys.BINDER_CONFIGS, configs);
+
 		}
-		return new ModelAndView("administration/configureConfiguration", model);
+		return new ModelAndView(WebKeys.VIEW_TEMPLATE, model);
 		
 	}
+	protected void buildToolbar(RenderRequest request, 
+			RenderResponse response, TemplateBinder config, Map model) {
+		//Build the toolbar arrays
+		Toolbar toolbar = new Toolbar();
+		//	The "Add" menu
+		PortletURL url;
+		//The "Administration" menu
+		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisTemplate"));
+		String configId = config.getId().toString();
+		//Add Folder
+		if (config.getEntityType().equals(EntityType.folder)) {
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+			toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);
+		} else {
+			//must be workspace
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url);
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+			toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);			
+		}
+		//Delete config
+		Map qualifiers = new HashMap();
+		qualifiers.put("onClick", "return ss_confirmDeleteConfig();");
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.delete_template"), url, qualifiers);		
+
+		//Modify config
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url);		
+			
+
+		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisTarget"));
+
+		//Access control
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		//Configuration
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+
+		//Modify target
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url);		
+
+		
+		//	The "Manage dashboard" menu
+		//See if the dashboard is being shown in the definition
+		if (DefinitionHelper.checkIfBinderShowingDashboard(config)) {
+			boolean dashboardContentExists = false;
+			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
+				Map dashboard = (Map)ssDashboard.get("dashboard");
+				if (dashboard != null) {
+					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
+				}
+			}
+			
+			//This folder is showing the dashboard
+			toolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+			toolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+
+			if (dashboardContentExists) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				toolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, configId);
+				url.setParameter("_scope", "local");
+				toolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_BINDER_ID, configId);
+				url.setParameter("_scope", "global");
+				toolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+	
+				//Check the access rights of the user
+				try {
+					getBinderModule().checkAccess(config, "setProperty");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, configId);
+					url.setParameter("_scope", "binder");
+					toolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+				} catch(AccessControlException e) {};
+	
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+						response.getNamespace() + "_dashboardComponentCanvas', 'binderId="+
+						configId+"');return false;");
+				if (DashboardHelper.checkIfShowingAllComponents(config)) {
+					toolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					toolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
+			}
+		}
+		
+		model.put(WebKeys.FORUM_TOOLBAR,  toolbar.getToolbar());
+	}
+	
+
 }

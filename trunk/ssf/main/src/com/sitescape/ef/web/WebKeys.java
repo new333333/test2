@@ -111,7 +111,7 @@ public class WebKeys {
  	public static final String ACTION_ADD_ENTRY_ATTACHMENT = "add_entry_attachment";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
-	public static final String ACTION_CONFIGURE_FORUM = "configure_forum";
+	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
@@ -149,13 +149,13 @@ public class WebKeys {
     public static final String OPERATION_ADD_SUB_FOLDER = "add_subFolder";
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
+    public static final String OPERATION_ADD="add";
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
     public static final String OPERATION_LOCK="lock";
     public static final String OPERATION_UNLOCK="unlock";
-    public static final String OPERATION_ADD_CONFIGURATION="add_configuration";
-    public static final String OPERATION_MODIFY_CONFIGURATION="modify_configuration";
+    public static final String OPERATION_MODIFY_TEMPLATE="modify_template";
     public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
     public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
@@ -529,6 +529,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
+    public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
     public static final String VIEW_MOVE_ENTRY="entry/move_entry";
     public static final String VIEW_MODIFY_BINDER="binder/modify_binder";
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
@@ -539,6 +540,7 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_SEARCH_RESULTS="binder/view_search_results";
+    public static final String VIEW_TEMPLATE="administration/configureConfiguration";
     public static final String VIEW_TOOLBAR="toolbar/view";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";

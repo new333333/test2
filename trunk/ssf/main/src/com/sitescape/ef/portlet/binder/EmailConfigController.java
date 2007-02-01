@@ -88,7 +88,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 				Set uList = new HashSet();
 				for (int i=0; i<defaultDistribution.size(); ++i) {
 					Principal id = ((Principal)defaultDistribution.get(i));
-					if (id.getEntityIdentifier().getEntityType().name().equals(EntityType.group.name()))
+					if (id.getEntityType().name().equals(EntityType.group.name()))
 					 		gList.add(id); 
 					else uList.add(id);
 				}
@@ -123,7 +123,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 
 	}
 	public static class mailTree implements DomTreeHelper {
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
 			return false;
@@ -132,11 +132,11 @@ public class EmailConfigController extends  AbstractBinderController  {
 			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 	
-		public String getAction(int type) {
+		public String getAction(int type, Object source) {
 			return WebKeys.ACTION_CONFIG_EMAIL;
 		}
-		public String getURL(int type) {return "";}
-		public String getDisplayOnly(int type) {
+		public String getURL(int type, Object source) {return "";}
+		public String getDisplayOnly(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
 			return "true";
 		}

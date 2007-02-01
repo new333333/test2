@@ -2,22 +2,17 @@ package com.sitescape.ef.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletRequest;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,20 +29,15 @@ import com.sitescape.ef.domain.SeenMap;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.profile.index.ProfileIndexUtils;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.ef.portlet.binder.AccessControlController;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
-import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.ssfs.util.SsfsUtil;
 import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -59,8 +49,6 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.WebUrlUtil;
-import com.sitescape.ef.module.shared.WsDomTreeBuilder;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.util.Validator;
 
 /**
@@ -949,7 +937,7 @@ public class AjaxController  extends SAbstractController {
 			Long topId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_OPERATION2);
 			Document tree;
 			if (binder instanceof Workspace) {
-				if ((topId != null) && (binder.getParentBinder() != null)) {
+				if ((topId != null) && !binder.isRoot()) {
 					//top must be a workspace
 					tree = getWorkspaceModule().getDomWorkspaceTree(topId, binder.getId(), new WsDomTreeBuilder(binder, true, this, treeKey));
 				} else {
@@ -1248,37 +1236,12 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
-		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		Map model = new HashMap();
-		List functions = getAdminModule().getFunctions();
-		List membership;
-		if (binder.isFunctionMembershipInherited()) {
-			membership = getAdminModule().getWorkAreaFunctionMembershipsInherited(binder);
-		} else {
-			membership = getAdminModule().getWorkAreaFunctionMemberships(binder);
-		}
-		BinderHelper.buildAccessControlTableBeans(request, response, binder, functions, 
-				membership, model, false);
-
-		if (!binder.isFunctionMembershipInherited()) {
-			Binder parentBinder = binder.getParentBinder();
-			if (parentBinder != null) {
-				List parentMembership;
-				if (parentBinder.isFunctionMembershipInherited()) {
-					parentMembership = getAdminModule().getWorkAreaFunctionMembershipsInherited(parentBinder);
-				} else {
-					parentMembership = getAdminModule().getWorkAreaFunctionMemberships(parentBinder);
-				}
-				Map modelParent = new HashMap();
-				BinderHelper.buildAccessControlTableBeans(request, response, parentBinder, 
-						functions, parentMembership, modelParent, true);
-				model.put(WebKeys.ACCESS_PARENT, modelParent);
-				BinderHelper.mergeAccessControlTableBeans(model);
-			}
-		}
+		AccessControlController.setupAccess(this, request, response, binder, model);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.USER_PRINCIPAL, user);
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		model.put(WebKeys.NAMESPACE, namespace);
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_ajax", model);

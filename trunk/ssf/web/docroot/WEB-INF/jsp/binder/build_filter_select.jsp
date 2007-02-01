@@ -40,7 +40,7 @@ function checkFilterForm(obj) {
     action="<portlet:actionURL><portlet:param 
     	name="action" value="build_filter"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/><portlet:param 
-    	name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>" 
+    	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
 	onSubmit="return(checkFilterForm(this))"
 >
 

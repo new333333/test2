@@ -635,14 +635,14 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     	Document tree = null;
  
     	if (binder != null) {
-    		if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+    		if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
 				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     			} else {
     				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this),1);
     				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
     			}
-    		} else if (binder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+    		} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     			Folder topFolder = ((Folder)binder).getTopFolder();
     			if (topFolder == null) topFolder = (Folder)binder;
     			Binder workspace = (Binder)topFolder.getParentBinder();

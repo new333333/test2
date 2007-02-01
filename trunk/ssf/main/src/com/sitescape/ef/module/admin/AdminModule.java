@@ -5,9 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
@@ -34,13 +35,15 @@ public interface AdminModule {
     public void addPosting(Map updates);
     public void deletePosting(String postingId);
 
-    public BinderConfig createDefaultConfiguration(int type);
-	public String addConfiguration(int type, String title);
-	public void modifyConfiguration(String id, Map updates);
-	public void deleteConfiguration(String id);
-	public BinderConfig getConfiguration(String id); 
-	public List getConfigurations();
-	public List getConfigurations(int type);
+    public TemplateBinder createDefaultTemplate(int type);
+	public Long addTemplate(int type, Map updates);
+	public Long addTemplate(Long parentId, int type, Map updates);
+	public void modifyTemplate(Long id, Map updates);
+	public void deleteTemplate(Long id);
+	public TemplateBinder getTemplate(Long id); 
+	public List getTemplates();
+	public List getTemplates(int type);
+    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title) throws AccessControlException, WriteFilesException;
 
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 

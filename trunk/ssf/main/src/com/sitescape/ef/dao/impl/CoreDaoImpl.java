@@ -37,7 +37,7 @@ import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Attachment;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.CustomAttributeListElement;
 import com.sitescape.ef.domain.Dashboard;
@@ -211,12 +211,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
 		   			//delete reserved names for self which is registered in parent space
-		   			if (binder.getParentBinder() != null)
-		   			session.createQuery("DELETE com.sitescape.ef.domain.LibraryEntry where binderId=:binderId")
-		   				.setLong("binderId", binder.getParentBinder().getId())
-		   				.executeUpdate();
 		   			delete((DefinableEntity)binder);
-		   			session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
+		   			if (!binder.isRoot()) {
+		   				session.createQuery("DELETE com.sitescape.ef.domain.LibraryEntry where binderId=:binderId")
+		   				.setLong("binderId", binder.getParentBinder().getId())
+		   					.executeUpdate();
+		   				session.getSessionFactory().evictCollection("com.sitescape.ef.domain.Binder.binders", binder.getParentBinder().getId());
+		   			}
 		   			session.evict(binder);
 		   			
 		   			return null;
@@ -243,23 +244,23 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
 	   			//delete subscriptions to these entries
 	   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
 		   		//delete tags for these entries
 		   		session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id=:entityId and entity_type=:entityType")
  	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
 
 	   			//delete tags owned by these entries
 		   		session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id=:entityId and owner_type=:entityType")
  	   				.setLong("entityId", entity.getId())
-	   			  	.setParameter("entityType", entity.getEntityIdentifier().getEntityType().getValue())
+	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
     	   		//will this be a problem if the entry is proxied??
     	   		session.createQuery("DELETE  " + entity.getClass().getName() +   " where id=:id")
@@ -549,7 +550,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
                  	return session.createCriteria(Workspace.class)
-             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_ID))
+             				.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
              				.list();
                }
             }
@@ -560,12 +561,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Workspace.class)
-                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_ID))
+                             		.add(Expression.eq("internalId", ObjectKeys.TOP_WORKSPACE_INTERNALID))
                              		.add(Expression.eq("name", zoneName))
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
-                            throw new NoBinderByTheNameException(ObjectKeys.TOP_WORKSPACE_ID); 
+                            throw new NoBinderByTheNameException(ObjectKeys.TOP_WORKSPACE_INTERNALID); 
                         }
                         return (Workspace)results.get(0);
                     }
@@ -632,28 +633,34 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	return loadObjectsCacheable(new ObjectControls(Definition.class), filter);
 	}
 	
-	public BinderConfig loadConfiguration(String defId, Long zoneId) {
-		BinderConfig def = (BinderConfig)load(BinderConfig.class, defId);
-        if (def == null) {throw new NoConfigurationByTheIdException(defId);}
-        //make sure from correct zone
-        if (!def.getZoneId().equals(zoneId)) {throw new NoConfigurationByTheIdException(defId);}
-  		return def;
+	// return top level configurations
+	public List loadConfigurations(final Long zoneId) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(TemplateBinder.class)
+                 		.add(Expression.isNull("parentBinder"))
+                 		.add(Expression.eq("zoneId", zoneId))
+                 		.addOrder(Order.asc("definitionType"))
+                 		.addOrder(Order.asc("templateTitle"))
+	                 	.list();
+	                }
+	            }
+	        );
 	}
-
-	public List loadConfigurations(Long zoneId) {
-		OrderBy order = new OrderBy();
-		order.addColumn("definitionType");
-		order.addColumn("title");
-		FilterControls filter = new FilterControls("zoneId", zoneId);
-		filter.setOrderBy(order);
-    	return loadObjects(new ObjectControls(BinderConfig.class), filter);
-	}
-	public List loadConfigurations(Long zoneId, int type) {
-		OrderBy order = new OrderBy();
-		order.addColumn("title");
-		FilterControls filter = new FilterControls(new String[]{"zoneId", "definitionType"}, new Object[]{zoneId, Integer.valueOf(type)});
-		filter.setOrderBy(order);
-    	return loadObjects(new ObjectControls(BinderConfig.class), filter);
+	public List loadConfigurations(final Long zoneId, final int type) {
+		return (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(TemplateBinder.class)
+                 		.add(Expression.isNull("parentBinder"))
+                 		.add(Expression.eq("zoneId", zoneId))
+                 		.add(Expression.eq("definitionType", type))
+                 		.addOrder(Order.asc("templateTitle"))
+	                 	.list();
+	                }
+	            }
+	        );
 	}
 	//associations not maintained from definition to binders, only from
 	//binders to definitions

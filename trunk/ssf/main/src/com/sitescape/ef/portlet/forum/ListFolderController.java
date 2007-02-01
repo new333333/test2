@@ -393,7 +393,7 @@ public class ListFolderController extends  SAbstractController {
 			if (viewElement != null)
 				viewType = viewElement.attributeValue("value", "");
 		}
-		if (viewType.equals("blog")) {
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, set the default sort order
 			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
@@ -557,7 +557,7 @@ public class ListFolderController extends  SAbstractController {
 			if (viewElement != null)
 				viewType = viewElement.attributeValue("value", "");
 		}
-		if (viewType.equals("blog")) {
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the WebDAV URLs
 			buildWebDAVURLs(folderEntries, model, folder);
@@ -624,12 +624,12 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
 		//See if this folder is to be viewed as a calendar
-		if (viewType.equals("event")) {
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			//This is a calendar view, so get the event beans
 			getEvents(folder, entries, model, req, response);
 		}
 		//See if this folder is to be viewed as a blog
-		if (viewType.equals("blog")) {
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(folder, (List)folderEntries.get(ObjectKeys.FULL_ENTRIES), model, req, response);
 		}
@@ -875,7 +875,6 @@ public class ListFolderController extends  SAbstractController {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
 			folderToolbar.addToolbarMenuItem("2_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		} catch (AccessControlException ac) {};
@@ -884,27 +883,27 @@ public class ListFolderController extends  SAbstractController {
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder - forms
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.folderEntry"), url);
 		//Definition builder - workflows
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
 		
 		//Delete binder
@@ -916,7 +915,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
 		} catch (AccessControlException ac) {};
 
@@ -927,7 +926,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
 		} catch (AccessControlException ac) {};
 		
@@ -937,7 +936,7 @@ public class ListFolderController extends  SAbstractController {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityIdentifier().getEntityType().name());
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
 		} catch (AccessControlException ac) {};
@@ -1080,7 +1079,7 @@ public class ListFolderController extends  SAbstractController {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityIdentifier().getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), adapterUrl.toString());
 		
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);

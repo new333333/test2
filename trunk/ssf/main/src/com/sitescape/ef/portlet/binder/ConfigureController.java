@@ -23,7 +23,6 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
 /**
- * @author Peter Hurley
  *
  */
 public class ConfigureController extends AbstractBinderController {
@@ -36,40 +35,8 @@ public class ConfigureController extends AbstractBinderController {
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
 			List definitions = new ArrayList();
-			//	Get the default binder view
-			String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
-			String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
-			if (!Validator.isNull(defBinderId)) {
-				//	The default binder view is always the first one in the list
-				if (defBinderIds != null) {
-					definitions.add(defBinderId);
-				}
-			}
-				
-			//Add the other allowed folder views
-			if (defBinderIds != null) {
-				for (int i = 0; i < defBinderIds.length; i++) {
-					String defId = defBinderIds[i];
-					if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
-						definitions.add(defId);
-					}
-				}
-			}
-
-			//Add the allowed entry types
-			// and the workflow associations
-			String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
 			Map workflowAssociations = new HashMap();
-			if (defEntryIds != null) {
-				for (int i = 0; i < defEntryIds.length; i++) {
-					String defId = defEntryIds[i];
-					if (!Validator.isNull(defId)) {
-						definitions.add(defId);
-						String wfDefId = PortletRequestUtils.getStringParameter(request, "workflow_" + defId, "");
-						if (!wfDefId.equals("")) workflowAssociations.put(defId,wfDefId);
-					}
-				}
-			}
+			getDefinitions(request, definitions, workflowAssociations);
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("inheritanceBtn")) {
@@ -88,18 +55,58 @@ public class ConfigureController extends AbstractBinderController {
 		
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
-		
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
+
+		setupDefinitions(binder, model);
+		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
+	}
+	public static void getDefinitions(ActionRequest request, List definitions, Map workflowAssociations) {
+		//	Get the default binder view
+		String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
+		String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
+		if (!Validator.isNull(defBinderId)) {
+			//	The default binder view is always the first one in the list
+			if (defBinderIds != null) {
+				definitions.add(defBinderId);
+			}
+		}
+			
+		//Add the other allowed folder views
+		if (defBinderIds != null) {
+			for (int i = 0; i < defBinderIds.length; i++) {
+				String defId = defBinderIds[i];
+				if (!Validator.isNull(defId) && !defId.toString().equals(defBinderId.toString())) {
+					definitions.add(defId);
+				}
+			}
+		}
+		//Add the allowed entry types
+		// and the workflow associations
+		String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
+		if (defEntryIds != null) {
+			for (int i = 0; i < defEntryIds.length; i++) {
+				String defId = defEntryIds[i];
+				if (!Validator.isNull(defId)) {
+					definitions.add(defId);
+					String wfDefId = PortletRequestUtils.getStringParameter(request, "workflow_" + defId, "");
+					if (!wfDefId.equals("")) workflowAssociations.put(defId,wfDefId);
+				}
+			}
+		}
+
+	}
+	public static void setupDefinitions(Binder binder, Map model) {
+
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
-			
-		if (binder.getEntityIdentifier().getEntityType().getValue() == EntityType.workspace.getValue()) {
+		EntityType binderType = binder.getEntityType();
+		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 			} else {
 				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 			}
-		} else if (binder.getEntityIdentifier().getEntityType().getValue() == EntityType.profiles.getValue()) {
+		} else if (binderType.equals(EntityType.profiles)) {
 			DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
 			DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			
 		} else {
@@ -108,8 +115,7 @@ public class ConfigureController extends AbstractBinderController {
 		}
 		DefinitionHelper.getDefinitions(binder, model);
 		DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
-
-		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
+		
 	}
 
 }

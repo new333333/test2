@@ -29,6 +29,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.ChangeLog;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.domain.HistoryStamp;
@@ -153,6 +154,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        	title = (String)inputData.getSingleValue("title");
 	        	entryData.put("title", title);
 	        }
+	        if (Validator.isNull(title)) throw new TitleException("");
+	        
 	        binder.setPathName(parent.getPathName() + "/" + title);
 	        
 	        sp.reset("addBinder_transactionExecute").begin();
@@ -228,7 +231,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		Binder binder = (Binder)clazz.newInstance();
             binder.setEntryDef(def);
             if (def != null) {
-            	binder.setDefinitionType(Integer.valueOf(def.getType()));
+            	binder.setDefinitionType(def.getType());
             	List defs = new ArrayList();
             	defs.add(def);
             	binder.setDefinitions(defs);
@@ -257,7 +260,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if (obj instanceof Event)
         		getCoreDao().save(obj);
         }
-        EntryBuilder.buildEntry(binder, entryData);
+   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
+   			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, inputData.getSingleObject(ObjectKeys.FIELD_BINDER_LIBRARY));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, inputData.getSingleObject(ObjectKeys.FIELD_BINDER_UNIQUETITLES));
+   		}
+    
+   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_ICONNAME) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_ICONNAME)) {
+   			entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, inputData.getSingleObject(ObjectKeys.FIELD_ENTITY_ICONNAME));
+   		}
+   		EntryBuilder.buildEntry(binder, entryData);
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
@@ -314,9 +330,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        		if ((oldTitle == null) || !oldTitle.equals(newTitle)) {
 	        			fixupPath(binder);
 	        		}
-        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder, oldTitle, newTitle);
-        			if (binder.getParentBinder().isUniqueTitles()) {
-        				
+	        		if (!binder.isRoot()) {
+	        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder, oldTitle, newTitle);
+	        			if (binder.getParentBinder().isUniqueTitles()) {}
         			}
         			return null;
 	        	}});
@@ -513,7 +529,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	return ctx;
     }
     protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
-    	if (binder.getParentBinder() != null) binder.getParentBinder().removeBinder(binder);
+    	if (!binder.isRoot()) binder.getParentBinder().removeBinder(binder);
        	return ctx;
     }
 
@@ -917,7 +933,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
     }
     protected void fixupPath(Binder binder) {
-		if (binder.getParentBinder() != null) {
+		if (!binder.isRoot()) {
 			binder.setPathName(binder.getParentBinder().getPathName() + "/" + binder.getTitle());
 		} else {
 			//must be top

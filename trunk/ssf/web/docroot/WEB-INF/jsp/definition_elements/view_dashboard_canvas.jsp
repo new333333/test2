@@ -3,6 +3,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
   
   <!-- Start of dashboard "Add penlet" form -->
+  <c:if test="${empty ssBinderConfig}">
   <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL>
 	    <portlet:param name="action" value="modify_dashboard"/>
@@ -34,6 +35,33 @@
 	  </div>
     </form>
   </div>
+  </c:if>
+  <c:if test="${!empty ssBinderConfig}">
+  <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+    <form method="post" action="<portlet:actionURL>
+	    <portlet:param name="action" value="modify_dashboard"/>
+	    <portlet:param name="binderId" value="${ssBinder.id}"/>
+        </portlet:actionURL>">
+	  <div style="margin:10px;">
+        <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
+        <c:forEach var="component" items="${ssDashboard.components_list}">
+           <input type="radio" name="name" value="${component}">
+             <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
+           <br>
+        </c:forEach>
+        <br>
+	    <input class="ss_form" type="submit" name="add_wideTop" 
+	      value="<ssf:nlt tag="button.ok"/>">&nbsp;&nbsp;
+	    <input class="ss_form" type="submit" name="cancel" 
+	      value="<ssf:nlt tag="button.cancel"/>" 
+	      onClick="ss_hideDashboardMenu(this);return false;">
+	    <input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}">
+	    <input type="hidden" name="_componentId" value="">
+	    <input type="hidden" name="_returnView" value="binder"/>
+	  </div>
+    </form>
+  </div>
+  </c:if>
   <!-- End of dashboard "add penlet" form -->
   
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">

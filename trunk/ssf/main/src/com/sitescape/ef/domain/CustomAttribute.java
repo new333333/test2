@@ -256,7 +256,7 @@ public class CustomAttribute  {
                 stringValue=val;
                 description = null;
             } else {
-                description = new Description(val, Description.FORMAT_NONE);
+                description = new Description(val);
                 stringValue = null;
             }
         } else if (value instanceof Description) {

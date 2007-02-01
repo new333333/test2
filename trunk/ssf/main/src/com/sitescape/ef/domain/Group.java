@@ -24,9 +24,9 @@ public class Group extends Principal implements WorkArea {
     
     private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
       
-    public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.group);
-    }
+	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.group;
+	}
     public String getTitle() {
     	String title = super.getTitle();
     	if (Validator.isNull(title)) return getName();

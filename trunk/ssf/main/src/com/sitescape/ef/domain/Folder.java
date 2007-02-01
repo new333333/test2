@@ -24,9 +24,9 @@ public class Folder extends Binder {
     	setType(EntityIdentifier.EntityType.folder.name());
     	setLibrary(true);
     }
-    public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folder);
-    }
+ 	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.folder;
+	}
  
     /**
      * @hibernate.many-to-one 

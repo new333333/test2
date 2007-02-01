@@ -43,6 +43,11 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public static final int PROFILE_GROUP_VIEW=11;
 	public static final int USER_WORKSPACE_VIEW=12;
 	
+	public static final String VIEW_STYLE_DEFAULT="folder"; 
+	public static final String VIEW_STYLE_WIKI="wiki"; 
+	public static final String VIEW_STYLE_CALENDAR="event"; 
+	public static final String VIEW_STYLE_BLOG="blog"; 
+	
 	//visibility values
 	public static final int PUBLIC=1;
 	public static final int LOCAL=2;

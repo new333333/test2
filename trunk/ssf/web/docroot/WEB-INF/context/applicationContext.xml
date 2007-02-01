@@ -131,7 +131,7 @@
 
 	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
 	<!--<bean id="transactionManager" class="com.sitescape.ef.util.JtaTransactionManager" />-->
-
+	<!-- As a general rule, readonly transactions don't want accessControlExceptions to clear the session cache -->
 	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
 			abstract="true">
 		<property name="transactionManager"><ref bean="transactionManager"/></property>
@@ -151,9 +151,9 @@
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -464,6 +464,8 @@
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
 				<property name="mailManager"><ref local="mailManager"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
+				<property name="folderModule"><ref local="folderModule"/></property>
+				<property name="workspaceModule"><ref local="workspaceModule"/></property>
 			</bean>
 		</property>
 	</bean>
@@ -491,9 +493,9 @@
 				<prop key="reserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -514,9 +516,9 @@
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
 				<prop key="addUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
@@ -571,9 +573,9 @@
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -626,7 +628,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>		

@@ -37,9 +37,8 @@ public abstract class Principal extends Entry  {
     protected String internalId;
     protected String type;
     
-    public EntityIdentifier getEntityIdentifier() {
-    	//this assumes the type and EntityType strings are the same for user/group
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.valueOf(getType()));
+     public EntityIdentifier.EntityType getEntityType() {
+    	return EntityIdentifier.EntityType.valueOf(getType());
     }
     /**
      * @hibernate.property insert="false" update="false"

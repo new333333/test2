@@ -284,7 +284,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     }
         
     public ProfileBinder getProfileBinder(Long zoneId) {
-    	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_ID, zoneId);
+    	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
     }
 
     /*
@@ -613,7 +613,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return (User)objs.get(0);
     }
     public Set getPrincipalIds(User user) {
-    	return new HashSet(user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, user.getZoneId())));
+    	return new HashSet(user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
@@ -626,13 +626,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	public Set explodeGroups(final Set ids, Long zoneId) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
 		Set users;
-		if (ids.contains(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_ID, zoneId))) {
+		if (ids.contains(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
 			List<Object[]> result = getCoreDao().loadObjects(new ObjectControls(User.class, 
 					new String[]{"id"}), 
 					new FilterControls(new String[]{"zoneId"}, new Object[]{zoneId}));
 			users = new HashSet(result);
 			//remove postingAgent
-			User u = getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_ID, zoneId);
+			User u = getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId);
 			users.remove(u.getId());
 		} else {
 			users = (Set)getHibernateTemplate().execute(

@@ -17,22 +17,37 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
+	public static final String DEFAULT_USER_WORKSPACE_DEF="402883b90cc53079010cc539bf26000b";
 	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
 	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
+	public static final String DEFAULT_FOLDER_BLOG_DEF="402883b90cc53079010cc539bf26000a";
+	public static final String DEFAULT_FOLDER_CALENDAR_DEF="402883b90cc53079010cc539bf26000c";
+	public static final String DEFAULT_FOLDER_WIKI_DEF="402883b90cc53079010cc539bf26000d";
+
+	
+	
 	public static final String ADMINISTRATOR_ROLE_ID="402883b90cc53079010cc539bf260009";
-	public static final String DEFAULT_USER_WORKSPACE_DEF="402883b90cc53079010cc539bf26000b";
-	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
-	public static final String PROFILE_ROOT_ID="402883b90d0de1f3010d0df5582b0005";
-	public static final String ALL_USERS_GROUP_ID="402883b90d0de1f3010d0df5582b0006";
-	public static final String TOP_WORKSPACE_ID="402883b90d0de1f3010d0df5582b0007";
-	public static final String ANONYMOUS_POSTING_USER_ID="402883b90d0de1f3010d0df5582b0008";
-	public static final String TEAM_ROOT_ID="402883b90d0de1f3010d0df5582b0009";
-	public static final String GLOBAL_ROOT_ID="402883b90d0de1f3010d0df5582b000a";
+	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
+	public static final String DEFAULT_FOLDER_BLOG_CONFIG="402883b90d0de1f3010d0df5582b000c";
+	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
+	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
+
+	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
+	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
+	public static final String TOP_WORKSPACE_INTERNALID="402883b90d0de1f3010d0df5582b0007";
+	public static final String ANONYMOUS_POSTING_USER_INTERNALID="402883b90d0de1f3010d0df5582b0008";
+	public static final String TEAM_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0009";
+	public static final String GLOBAL_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b000a";
 	//super user bypasses all acl and operation checks
-	public static final String SUPER_USER_ID="402883b90d0de1f3010d0df5582b000b";
+	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
+	// reserved id put in search engine for super user
+	// getPrincipalIds will insert this value if user is superUser
+	public static final Long SUPER_USER_ID = Long.valueOf(-2);
+	//reserved id put in acls to indicate owner of object has access
+	//search engine stores then ownerId of the entry in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
 
     //custom property prefix from ssf.properties
@@ -135,6 +150,10 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_DESCRIPTION="description";
     public static final String FIELD_ENTITY_PARENTBINDER="parentBinder";
     public static final String FIELD_ENTITY_DEFTYPE="definitionType";
+    public static final String FIELD_ENTITY_ICONNAME="iconName";
+    
+    public static final String FIELD_BINDER_LIBRARY="library";
+    public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";
     public static final String FIELD_USER_MIDDLENAME="middleName";

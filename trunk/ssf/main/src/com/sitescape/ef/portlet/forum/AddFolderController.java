@@ -12,18 +12,13 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -33,30 +28,11 @@ public class AddFolderController extends SAbstractController {
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
-			String entryType = PortletRequestUtils.getStringParameter(request, "definitionId", "");
-			String cfgType = PortletRequestUtils.getStringParameter(request, "binderConfigId", "");
-			Map fileMap=null;
-			if (request instanceof MultipartFileSupport) {
-				fileMap = ((MultipartFileSupport) request).getFileMap();
-			} else {
-				fileMap = new HashMap();
-			} 
-			MapInputData inputData = new MapInputData(formData);
-			Long newId=null;
-			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-				newId = getFolderModule().addFolder(binderId, entryType, inputData, fileMap, false);
-			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-				newId = getWorkspaceModule().addFolder(binderId, entryType, inputData, fileMap, false);				
-			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-				newId = getWorkspaceModule().addWorkspace(binderId, entryType, inputData, fileMap);				
-			}
-			try {
-				BinderConfig cfg = getAdminModule().getConfiguration(cfgType);
-				getBinderModule().setDefinitions(newId, cfg.getDefinitionIds(), cfg.getWorkflowIds());
-			} catch (Exception ex) {}
+			Long cfgType = PortletRequestUtils.getLongParameter(request, "binderConfigId");
+			Long newId = getAdminModule().addBinderFromTemplate(cfgType, binderId, 
+						PortletRequestUtils.getStringParameter(request, "title", ""));
 			
 			setupViewBinder(response, newId);
 			
@@ -73,71 +49,44 @@ public class AddFolderController extends SAbstractController {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (operation.equals("")) operation = PortletRequestUtils.getStringParameter(request, "_operation", "");
-		String defId = PortletRequestUtils.getStringParameter(request, "binderConfigId", "");
 		Binder binder = getBinderModule().getBinder(binderId);
-    	model.put(WebKeys.URL_OPERATION, operation);
 		model.put(WebKeys.BINDER, binder); 
-		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
-		model.put(WebKeys.OPERATION, action);
 
-		String view = WebKeys.VIEW_ADD_BINDER_TYPE;
-		if (Validator.isNull(defId)) {
-			if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
+			getFolderModule().checkAccess((Folder)binder, "addFolder");
+			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
+			}
+			model.put(WebKeys.CONFIGURATIONS, result);
+		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
+			if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
 				getFolderModule().checkAccess((Folder)binder, "addFolder");
-				List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
-				if (result.isEmpty()) {
-					result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
-				}
-				model.put(WebKeys.CONFIGURATIONS, result);
-			} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-				if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
-					getFolderModule().checkAccess((Folder)binder, "addFolder");
-				} else {
-					getWorkspaceModule().checkAccess((Workspace)binder, "addFolder");
-				}
-				List result = getAdminModule().getConfigurations(Definition.FOLDER_VIEW);
-				if (result.isEmpty()) {
-					result.add(getAdminModule().createDefaultConfiguration(Definition.FOLDER_VIEW));
-				}
-				model.put(WebKeys.CONFIGURATIONS, result);
-			} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-				getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");
-				List result = getAdminModule().getConfigurations(Definition.WORKSPACE_VIEW);
-				if (result.isEmpty()) {
-					result.add(getAdminModule().createDefaultConfiguration(Definition.WORKSPACE_VIEW));	
-				}
-				model.put(WebKeys.CONFIGURATIONS, result);
-			}
-		} else {
-			BinderConfig cfg = getAdminModule().getConfiguration(defId);
-			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
-			model.put(WebKeys.CONFIGURATION, cfg);
-			List defs = cfg.getDefinitionIds();
-			Definition def=null;
-			if (!defs.isEmpty()) {
-				try {
-					 def = getDefinitionModule().getDefinition((String)defs.get(0));
-				} catch (Exception ex) {}
-			}
-			//	Make sure the requested definition is legal
-			if (def != null) {
-				model.put(WebKeys.DEFINITION, def);
-				DefinitionHelper.getDefinition(def, model, "//item[@type='form']");
 			} else {
-				DefinitionHelper.getDefinition(null, model, "//item[@type='form']");
+				getWorkspaceModule().checkAccess((Workspace)binder, "addFolder");
 			}
-			view = WebKeys.VIEW_ADD_BINDER;
+			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
+			}
+			model.put(WebKeys.CONFIGURATIONS, result);
+		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
+			getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");
+			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
+			if (result.isEmpty()) {
+				result.add(getAdminModule().createDefaultTemplate(Definition.WORKSPACE_VIEW));	
+			}
+			model.put(WebKeys.CONFIGURATIONS, result);
 		}
 	
-		return new ModelAndView(view, model);
+		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);
 	}
 
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());		
 		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder.name())) {
+		if (binder.getEntityType().name().equals(EntityType.folder.name())) {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		} else {
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
