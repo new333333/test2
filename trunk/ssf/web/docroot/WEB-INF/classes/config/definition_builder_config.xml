@@ -1430,6 +1430,7 @@
 			<option name="profileEntryForm" initial="true" />
 			<option name="profileEntryView" initial="true" />
 			<option name="profileEntryBusinessCard" initial="true" />
+			<option name="profileEntryMiniBusinessCard" initial="true" />			
 		</options>
 	</item>
 	
@@ -1587,6 +1588,22 @@
 		</jsps>
 	</item>
 	
+	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_business_card_elements" 
+				definitionType="7" initial="true" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card.jsp" />
+		</jsps>
+	</item>	
+	
 	<item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
 		  canBeDeleted="false" multipleAllowed="false">
 		<properties>
@@ -1617,6 +1634,37 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card_elements.jsp" />
 		</jsps>
 	</item>
+	
+	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_business_card_elements" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<properties>
+		    <property name="_elements" caption="__profile_elements_to_show" 
+				  type="selectbox" multipleAllowed="true">
+				<option name="name" caption="__userName" />
+				<option name="title" caption="__userTitle" />
+				<option name="organization" caption="__organization" />
+				<option name="phone" caption="__phone" />
+				<option name="emailAddress" caption="__emailAddress" />
+				<option name="zonName" caption="__zonName" />
+		    </property>
+			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+		</properties>
+
+		<options>
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card_elements.jsp" />
+		</jsps>
+	</item>	
 	
 	<item name="profileTitle" type="dataView" caption="__profile_title" 
 		    multipleAllowed="true" category="profileEntryViewData">
