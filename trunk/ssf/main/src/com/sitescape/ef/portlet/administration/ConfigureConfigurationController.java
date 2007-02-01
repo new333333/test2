@@ -18,10 +18,7 @@ import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
@@ -150,11 +147,10 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				configs.addAll(getAdminModule().getTemplates(Definition.WORKSPACE_VIEW));
 				model.put(WebKeys.OPERATION, operation);				
 				model.put(WebKeys.BINDER_CONFIGS, configs);
-			} else {
+			} else
 				model.put(WebKeys.OPERATION, operation);
-				if (operation.equals(WebKeys.OPERATION_MODIFY) || operation.equals(WebKeys.OPERATION_MODIFY_TEMPLATE)) {
+				if (operation.equals(WebKeys.OPERATION_MODIFY_TEMPLATE)) {
 					return new ModelAndView(WebKeys.VIEW_MODIFY_TEMPLATE, model);
-				}
 			}
 			
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
@@ -231,10 +227,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 
 		//Modify target
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 		url.setParameter(WebKeys.URL_BINDER_ID, configId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url);		
 
 		
