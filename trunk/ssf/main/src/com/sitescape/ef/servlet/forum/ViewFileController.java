@@ -22,6 +22,7 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.util.FileUtil;
 import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.util.SpringContextUtil;
@@ -105,9 +106,10 @@ public class ViewFileController extends SAbstractController {
 					return null;
 				}
 				catch(Exception e) {
-					String url = request.getRequestURL().toString();
-					url = url.substring(0, url.lastIndexOf("/")+1) + "errorHandler";
-					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><b>Error Form</b><input type='hidden' name='ssf-error' value='" + e.getMessage() + "'></input></form></body></html>";
+					String url = WebUrlUtil.getServletRootURL(request, false);
+					url += "errorHandler";
+					
+					String output = "<html><head><script language='javascript'>function submitForm(){ document.errorform.submit(); }</script></head><body onload='javascript:submitForm()'><form name='errorform' action='" + url + "'><input type='hidden' name='ssf-error' value='" + e.getMessage() + "'></input></form></body></html>";
 					
 					response.getOutputStream().print(output);
 					response.getOutputStream().flush();
@@ -158,7 +160,16 @@ public class ViewFileController extends SAbstractController {
 					boolean scaledFileExists = false;
 					try {
 						// (rsordillo) different file types are possible need to convert extension to 'JPG' to ensure image
-						fa.getFileItem().setName(fa.getFileItem().getName() + com.sitescape.ef.docconverter.IImageConverterManager.IMG_EXTENSION);
+						if (!(fa.getFileItem().getName().endsWith(".gif")
+						|| fa.getFileItem().getName().endsWith(".jpg")
+						|| fa.getFileItem().getName().endsWith(".jpeg")
+						|| fa.getFileItem().getName().endsWith(".png")
+						|| fa.getFileItem().getName().endsWith(".GIF")
+						|| fa.getFileItem().getName().endsWith(".JPG")
+						|| fa.getFileItem().getName().endsWith(".JPEG")
+						|| fa.getFileItem().getName().endsWith(".PNG")))
+							fa.getFileItem().setName(fa.getFileItem().getName() + com.sitescape.ef.docconverter.IImageConverterManager.IMG_EXTENSION);
+						
 						if (getFileModule().scaledFileExists(parent, entity, fa)) {
 							scaledFileExists = true;
 						}
