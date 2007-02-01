@@ -168,10 +168,10 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 <span class="ss_bold ss_largerprint"><ssf:nlt tag="access.configure"/></span>
 <br/>
 <br/>
-<c:if test="${ssBinder.entityIdentifier.entityType == 'folder'}">
+<c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="access.currentFolder"/></span>
 </c:if>
-<c:if test="${ssBinder.entityIdentifier.entityType != 'folder'}">
+<c:if test="${ssBinder.entityType != 'folder'}">
   <span><ssf:nlt tag="access.currentWorkspace"/></span>
 </c:if>
 <span class="ss_bold">${ssBinder.title}</span>
@@ -181,7 +181,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_access_control"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
+	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -213,7 +213,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
     onSubmit="return ss_onSubmit(this);"
     action="<portlet:actionURL><portlet:param 
   		name="action" value="configure_access_control"/><portlet:param 
-  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
+  		name="binderType" value="${ssBinder.entityType}"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
   <ssf:nlt tag="binder.configure.access_control.inherit"/>
   <br/>
@@ -244,7 +244,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
   action="<portlet:actionURL><portlet:param 
   		name="action" value="configure_access_control"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/><portlet:param 
-  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
+  		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
 <input type="hidden" name="principalId"/>
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
@@ -253,10 +253,10 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 <div>
 <img src="<html:imagesPath/>pics/sym_s_checkmark.gif"/> 
 <span class="ss_italic">
-<c:if test="${ss_accessParent.ssBinder.entityIdentifier.entityType == 'folder'}">
+<c:if test="${ss_accessParent.ssBinder.entityType == 'folder'}">
   <ssf:nlt tag="access.designatesFolder"/>
 </c:if>
-<c:if test="${ss_accessParent.ssBinder.entityIdentifier.entityType != 'folder'}">
+<c:if test="${ss_accessParent.ssBinder.entityType != 'folder'}">
   <ssf:nlt tag="access.designatesWorkspace"/>
 </c:if>
 </span>
@@ -355,7 +355,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_access_control"/><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
+	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>

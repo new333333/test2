@@ -31,7 +31,7 @@
 		    action="view_permalink"
 		    binderId="${ssDefinitionEntry.parentFolder.id}"
 		    entryId="${ssDefinitionEntry.id}">
-		    <ssf:param name="entityType" value="${ssDefinitionEntry.entityIdentifier.entityType}" />
+		    <ssf:param name="entityType" value="${ssDefinitionEntry.entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>">
 <%= docNumber %>

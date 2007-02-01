@@ -50,7 +50,7 @@
 						<entry key="build_filter"><ref bean="filterController"/></entry>
 						<entry key="close_window"><ref bean="closeWindowController"/></entry>
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
-						<entry key="configure_forum"><ref bean="configureController"/></entry>
+						<entry key="configure_definitions"><ref bean="configureController"/></entry>
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>

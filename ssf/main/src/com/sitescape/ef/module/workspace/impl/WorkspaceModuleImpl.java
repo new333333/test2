@@ -213,7 +213,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  		if (levels == 0) return;
     	--levels;
 		TreeSet ws = new TreeSet(c);
-		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER)) {
+		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
  			//	order result
  			ws.addAll(top.getFolders());
  			for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -240,7 +240,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
  
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, boolean library) throws AccessControlException, WriteFilesException {
+    		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
         checkAccess(parentWorkspace, "addFolder");
         Definition def = null;
@@ -251,7 +251,6 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         }
         
         Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
-        binder.setLibrary(library);
         return binder.getId();
     }
  

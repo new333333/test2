@@ -48,7 +48,7 @@
 <form name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
   action="<portlet:actionURL><portlet:param 
-  		name="action" value="configure_forum"/><portlet:param 
+  		name="action" value="configure_definitions"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/><portlet:param 
   		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
 <ssf:nlt tag="binder.configure.definitions.inherit"
@@ -65,7 +65,7 @@
 <br>
 </c:if>
 <form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_forum"/><portlet:param 
+		name="action" value="configure_definitions"/><portlet:param 
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" >
 
@@ -73,7 +73,7 @@
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
  
-<c:if test="${ssBinder.type == 'workspace'}">
+<c:if test="${ssBinder.entityType == 'workspace'}">
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
 
@@ -97,7 +97,7 @@
     <br>
  </c:if>
 
-<c:if test="${ssBinder.type == 'folder'}">
+<c:if test="${ssBinder.entityType == 'folder'}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedViews" text="Allowed folder views"/></legend>
 
@@ -204,7 +204,7 @@
   </fieldset>
 </c:if>
 
-<c:if test="${ssBinder.type == 'profiles'}">
+<c:if test="${ssBinder.entityType == 'profiles'}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/></legend>
 

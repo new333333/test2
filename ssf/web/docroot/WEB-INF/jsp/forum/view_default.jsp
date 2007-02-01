@@ -16,7 +16,7 @@
 				  href="<portlet:renderURL windowState="maximized">
 				  	<portlet:param name="action" value="configure_forum" />
 				  	<portlet:param name="binderId" value="${ssBinder.id}" />
-					<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+					<portlet:param name="binderType" value="${ssBinder.entityType}"/>
 		    		</portlet:renderURL>">Configure</a>
 			</li>
 			<li>
@@ -24,7 +24,7 @@
 				  href="<portlet:actionURL windowState="maximized">
 				  <portlet:param name="action" value="definition_builder" />
 				  	<portlet:param name="binderId" value="${ssBinder.id}"/>
-					<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+					<portlet:param name="binderType" value="${ssBinder.entityType}"/>
 		    		</portlet:actionURL>">Definition builder</a>
 			</li>
 		</ul>

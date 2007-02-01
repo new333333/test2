@@ -62,6 +62,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	if (getZoneId().equals(getId())) return true;
     	return false;
     }
+    public boolean isRoot() {
+    	return getParentBinder() == null;
+    }
     /**
      * @hibernate.property
      */
@@ -160,8 +163,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
        this.name = name;
     }
     public String getFullName() {
-    	if (isZone()) return name;
-    	return parentBinder.getFullName() + "." + name;
+    	if (isRoot()) return name;
+    	return getParentBinder().getFullName() + "." + name;
     }
     /**
      * @hibernate.component prefix="notify_"
@@ -233,7 +236,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         return getId();
     }
     public String getWorkAreaType() {
-        return getType();
+        return getEntityType().name();
     }
     public WorkArea getParentWorkArea() {
         return this.getParentBinder();
@@ -243,7 +246,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 	 * @return
 	 */
     public boolean isFunctionMembershipInherited() {
-    	if (isZone()) return false;
+    	if (isRoot()) return false;
         return functionMembershipInherited;
     }
     public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
@@ -313,7 +316,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     
     public String getDefinitionAreaType() {
-    	return getEntityIdentifier().getEntityType().name();
+    	return getEntityType().name();
     }
     
     public DefinitionArea getParentDefinitionArea() {
@@ -332,12 +335,12 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	this.definitionsInherited = definitionsInherited;
     }
     public boolean isDefinitionInheritanceSupported() {
-    	if (parentBinder != null) return true;
-    	return false;
+    	if (isRoot()) return false;
+    	return true;
     }
     protected List getDefs(int type) {
-       	if (definitionsInherited && parentBinder != null)
-    		return new ArrayList(parentBinder.getDefs(type));
+       	if (definitionsInherited && !isRoot())
+    		return new ArrayList(getParentBinder().getDefs(type));
       	Definition def;
     	List result = new ArrayList(); 
      	if (definitions == null) definitions = new ArrayList();
@@ -352,8 +355,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 
     // Setup by hibernate
     public List getDefinitions() {
-    	if (definitionsInherited && parentBinder != null)
-    		return new ArrayList(parentBinder.getDefinitions());
+    	if (definitionsInherited && !isRoot())
+    		return new ArrayList(getParentBinder().getDefinitions());
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
      }
@@ -395,8 +398,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      }
        // Setup by hibernate
      public Map getWorkflowAssociations() {
-     	if (definitionsInherited && parentBinder != null)
-    		return new HashMap(parentBinder.getWorkflowAssociations());
+     	if (definitionsInherited && !isRoot())
+    		return new HashMap(getParentBinder().getWorkflowAssociations());
     	if (workflowAssociations == null) workflowAssociations = new HashMap();
     	return workflowAssociations;
     }

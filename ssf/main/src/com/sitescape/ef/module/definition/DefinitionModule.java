@@ -1,17 +1,16 @@
 package com.sitescape.ef.module.definition;
 
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.List;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.BinderConfig;
-import com.sitescape.ef.domain.DefinitionInvalidException;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
+import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.ef.domain.Definition;
+import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.shared.InputDataAccessor;
@@ -26,6 +25,7 @@ public interface DefinitionModule {
 	public String addDefinition(Document doc);
 	public void deleteDefinition(String id);
 	public Definition createDefaultDefinition(int type);
+	public Definition createDefaultDefinition(int type, String viewType);
 	public Definition setDefaultBinderDefinition(Binder binder);
 	public Definition setDefaultEntryDefinition(Entry entry);
 	/**

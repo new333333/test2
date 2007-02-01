@@ -73,7 +73,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            		Long id = new Long(jobDataMap.getLong(USERID));
            		user = profileDao.loadUserOnlyIfEnabled(id, zoneId);
            	} else {
-           		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_ID, zoneId);
+           		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zoneId);
            	}
     	
            	//Setup thread context expected by business logic
@@ -82,9 +82,9 @@ public abstract class SSStatefulJob implements StatefulJob {
            	doExecute(context);
 
 		} catch (NoUserByTheIdException nu) {
-			unscheduleJobOnError(context, nu);
+			removeJobOnError(context, nu);
 		} catch (NoUserByTheNameException nn) {
-			unscheduleJobOnError(context, nn);
+			removeJobOnError(context, nn);
 		} catch (JobExecutionException je) {
 			context.setResult("Failed");
 			//re-throw

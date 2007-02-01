@@ -18,7 +18,7 @@
          <a href="<portlet:renderURL>
 		  <portlet:param name="action" value="view_folder_listing"/>
 		  <portlet:param name="binderId" value="${place.ssBinder.id}"/>
-		  <portlet:param name="binderType" value="${place.ssBinder.entityIdentifier.entityType}"/>
+		  <portlet:param name="binderType" value="${place.ssBinder.entityType}"/>
 		  </portlet:renderURL>">${place.ssBinder.title}
 		 </a>
 	    </td>

@@ -202,7 +202,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 //			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
 //		} else {
 			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
-			if ((top != null) && (ws.getParentBinder() != null)) {
+			if ((top != null) && (!ws.isRoot())) {
 				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, this));
 			} else {
 				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
@@ -222,7 +222,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		boolean addMenuCreated=false;
 		Binder parent = workspace.getParentBinder();
 		//Add Workspace except to top or a user workspace
-		if ((parent != null) && !parent.getEntityIdentifier().getEntityType().equals(EntityType.profiles)) {
+		if ((parent != null) && !parent.getEntityType().equals(EntityType.profiles)) {
 			try {
 				getWorkspaceModule().checkAccess(workspace, "addWorkspace");
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
@@ -230,7 +230,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
 				toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
 			} catch (AccessControlException ac) {};
@@ -246,7 +245,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
 				toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
 			} catch (AccessControlException ac) {};
@@ -258,19 +256,19 @@ public class WorkspaceTreeController extends SAbstractController  {
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		//Delete
@@ -283,7 +281,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url, qualifiers);
 			} catch (AccessControlException ac) {};
 		}
@@ -294,7 +292,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
@@ -308,7 +306,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityIdentifier().getEntityType().name());
+				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
 			} catch (AccessControlException ac) {};
 		}
@@ -418,7 +416,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityIdentifier().getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
 
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);

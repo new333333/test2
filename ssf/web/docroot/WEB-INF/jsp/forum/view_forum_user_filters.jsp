@@ -53,7 +53,7 @@ function ss_changeUserFilter(obj, filter) {
 <td valign="top" nowrap><a href="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="build_filter"/>
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
-		<portlet:param name="binderType" value="${ssBinder.entityIdentifier.entityType}"/>
+		<portlet:param name="binderType" value="${ssBinder.entityType}"/>
 		</portlet:renderURL>"
 ><span class="ss_fineprint">&nbsp;&nbsp;&nbsp;<ssf:nlt tag="edit" text="edit"/></span></a></td>
 </tr>

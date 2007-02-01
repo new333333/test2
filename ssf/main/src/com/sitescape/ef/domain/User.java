@@ -20,6 +20,7 @@ import com.sitescape.ef.NotSupportedException;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.util.NLT;
+import com.sitescape.ef.ObjectKeys;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -44,9 +45,9 @@ public class User extends Principal {
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
-	public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.user);
-    }
+	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.user;
+	}
 	public TimeZone getTimeZone() {
 		if (timeZone != null) return timeZone;
 		return TimeZone.getDefault();
@@ -294,6 +295,8 @@ public class User extends Principal {
     	if(principalIds == null) {
     		Set ids = new HashSet();
     		ids.add(reservedGroupId);
+    		if (isReserved() && ObjectKeys.SUPER_USER_INTERNALID.equals(getInternalId()))
+    			ids.add(ObjectKeys.SUPER_USER_ID);
     		addPrincipalIds(this, ids);
     		principalIds = ids;
     	}

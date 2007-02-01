@@ -357,7 +357,7 @@ public class ViewEntryController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityIdentifier().getEntityType().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
 		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
 			//If this is being shown in an adaptor, open link in parent
 			qualifiers.put("onClick", "self.parent.location.href = this.href;return false;");

@@ -39,9 +39,9 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public FolderEntry() {
         super();
     }
-    public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.folderEntry);
-    }
+ 	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.folderEntry;
+	}
  
      public Folder getParentFolder() {
         return (Folder)getParentBinder();

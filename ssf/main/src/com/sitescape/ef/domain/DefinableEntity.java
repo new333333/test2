@@ -30,11 +30,17 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     // these collections are loaded for quicker indexing, hibernate will not persist them
     protected Set iEvents,iAttachments;
     protected Map iCustomAttributes;
-
+    protected EntityIdentifier entityIdentifier;
     
     public DefinableEntity() {
     }
-	public abstract EntityIdentifier getEntityIdentifier();
+
+	public EntityIdentifier getEntityIdentifier() {
+		if (entityIdentifier == null) entityIdentifier = new EntityIdentifier(getId(), getEntityType());
+		return entityIdentifier;
+	}
+	public abstract EntityIdentifier.EntityType getEntityType();
+
    	
     /**
      * @hibernate.component prefix="description_"
@@ -489,6 +495,6 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     
     public String getTypedId() {
-    	return getEntityIdentifier().getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
+    	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
 }

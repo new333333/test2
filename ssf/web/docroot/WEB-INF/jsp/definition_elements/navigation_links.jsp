@@ -8,13 +8,13 @@
 </c:if>
 <div class="ss_breadcrumb">
 <ul style="margin-left:-15px;">
-<c:if test="${!empty ssDefinitionEntry.parentBinder && ssDefinitionEntry.entityIdentifier.entityType != 'profiles'}">
+<c:if test="${!empty ssDefinitionEntry.parentBinder}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
-		//if (((Binder)parentBinder).getEntityIdentifier().getEntityType().equals(com.sitescape.ef.domain.EntityIdentifier.EntityType.profiles)) break;
+		//if (((Binder)parentBinder).getEntityType().equals(com.sitescape.ef.domain.EntityIdentifier.EntityType.profiles)) break;
 		parentTree.push(parentBinder);
 		parentBinder = ((Binder)parentBinder).getParentBinder();
 	}
@@ -25,17 +25,17 @@
 <li style="float:left;">
 <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
 <a
-<c:if test="${nextBinder.entityIdentifier.entityType == 'folder'}">
+<c:if test="${nextBinder.entityType == 'folder'}">
   href="<ssf:url 
   folderId="${nextBinder.id}" 
   action="view_folder_listing"/>"
 </c:if>
-<c:if test="${nextBinder.entityIdentifier.entityType == 'workspace'}">
+<c:if test="${nextBinder.entityType == 'workspace'}">
   href="<ssf:url 
   folderId="${nextBinder.id}" 
   action="view_ws_listing"/>"
 </c:if>
-<c:if test="${nextBinder.entityIdentifier.entityType == 'profiles'}">
+<c:if test="${nextBinder.entityType == 'profiles'}">
   href="<ssf:url 
   folderId="${nextBinder.id}" 
   action="view_profile_listing"/>"
@@ -62,18 +62,18 @@
 <li style="float:left;">
 <c:if test="${empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <a class="ss_bold"
-<c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'folderEntry'}">
+<c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
   entryId="${ssDefinitionEntry.id}" 
   action="view_folder_entry"/>"
 </c:if>
-<c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'folder'}">
+<c:if test="${ssDefinitionEntry.entityType == 'folder'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.id}" 
   action="view_folder_listing"/>"
 </c:if>
-<c:if test="${ssDefinitionEntry.entityIdentifier.entityType == 'workspace'}">
+<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
   href="<ssf:url 
   folderId="${ssDefinitionEntry.id}" 
   action="view_ws_listing"/>"

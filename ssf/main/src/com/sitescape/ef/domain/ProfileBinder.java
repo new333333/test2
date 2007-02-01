@@ -11,9 +11,9 @@ public class ProfileBinder extends Workspace {
     	setType(EntityIdentifier.EntityType.profiles.name());
     	setDefinitionsInherited(false);
     }
-    public EntityIdentifier getEntityIdentifier() {
-    	return new EntityIdentifier(getId(), EntityIdentifier.EntityType.profiles);
-    }
+	public EntityIdentifier.EntityType getEntityType() {
+		return EntityIdentifier.EntityType.profiles;
+	}
 	
     public List getEntryDefinitions() {
    		return getDefs(Definition.PROFILE_ENTRY_VIEW);

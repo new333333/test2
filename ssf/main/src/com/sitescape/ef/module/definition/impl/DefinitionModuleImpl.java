@@ -31,6 +31,7 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -405,6 +406,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return
 	 */
 	public Definition createDefaultDefinition(int type) {
+		return createDefaultDefinition(type, null);
+	}
+	public Definition createDefaultDefinition(int type, String viewType) {
 		// no access needed, just fills indefaults
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String definitionTitle=null;
@@ -412,13 +416,41 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		String definitionName=null;
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
-				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
-				if (!result.isEmpty()) return (Definition)result.get(0);
-				definitionTitle = "__definition_default_folder";
-				definitionName="Folder";
-				internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
-				break;
+				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_BLOG_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder_blog";
+					definitionName="Blog folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_BLOG_DEF;
+					break;
+					
+				} else if (Definition.VIEW_STYLE_WIKI.equals(viewType)) {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_WIKI_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder_wiki";
+					definitionName="Wiki folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_WIKI_DEF;
+					break;
+				} else if (Definition.VIEW_STYLE_CALENDAR.equals(viewType)) {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CALENDAR_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder_calendar";
+					definitionName="Calendar folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_CALENDAR_DEF;
+					break;
+				} else {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder";
+					definitionName="Discussion folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
+					break;
+				}
+ 
 			}
 			case Definition.FOLDER_ENTRY: {
 				List result = getCoreDao().loadObjects(Definition.class, 
@@ -478,6 +510,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
+		if (Validator.isNotNull(viewType)) {
+			Element element = (Element)doc.getRootElement().selectSingleNode(".//item[@name='forumView']/properties/property[@name='type']");
+			element.addAttribute("value", viewType);			
+		}
 		return doAddDefinition(doc, internalId);
 	}
 	
@@ -528,14 +564,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//no access - fixing up stuff
 		//Create an empty binder definition
 		int definitionType;
-		if (binder instanceof Workspace) {			
+		if (binder.getEntityType().equals(EntityType.workspace)) {			
 			if ((binder.getDefinitionType() != null) &&
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				definitionType = Definition.USER_WORKSPACE_VIEW;
 			} else {
 				definitionType = Definition.WORKSPACE_VIEW;
 			}
-		} else if (binder instanceof ProfileBinder) {
+		} else if (binder.getEntityType().equals(EntityType.profiles)) {
 			definitionType = Definition.PROFILE_VIEW;
 		} else {
 				definitionType = Definition.FOLDER_VIEW;
@@ -1387,7 +1423,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Description description = new Description();
 							if (inputData.exists(nameValue)) {
 								description.setText(inputData.getSingleValue(nameValue));
-								description.setFormat(Description.FORMAT_HTML);
 								WebHelper.scanDescriptionForUploadFiles(description, fileData);
 								entryData.put(nameValue, description);
 							}

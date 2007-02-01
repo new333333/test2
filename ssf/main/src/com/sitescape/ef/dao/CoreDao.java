@@ -11,7 +11,7 @@ import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.SFQuery;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.BinderConfig;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.Dashboard;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Definition;
@@ -102,7 +102,6 @@ public interface CoreDao {
     public List loadDefinitions(Long zoneId);
     public List loadDefinitions(Long zoneId, int type);
     
-	public BinderConfig loadConfiguration(String defId, Long zoneId);   
     public List loadConfigurations(Long zoneId);
     public List loadConfigurations(Long zoneId, int type);
  

@@ -160,7 +160,7 @@ public class EditController extends SAbstractController {
 
 	}
 	public static class wsTree implements DomTreeHelper {
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 			return false;
 		}
@@ -169,18 +169,18 @@ public class EditController extends SAbstractController {
 		}
 		
 	
-		public String getAction(int type) {
+		public String getAction(int type, Object source) {
 			return null;
 		}
-		public String getURL(int type) {return null;}
-		public String getDisplayOnly(int type) {
+		public String getURL(int type, Object source) {return null;}
+		public String getDisplayOnly(int type, Object source) {
 			return "false";
 		}
 		public String getTreeNameKey() {return "editWs";}
 		
 	}	
 	public static class folderTree implements DomTreeHelper {
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
 			return false;
@@ -189,11 +189,11 @@ public class EditController extends SAbstractController {
 			return bs.getBinderModule().hasBinders((Binder)source);
 		}
 	
-		public String getAction(int type) {
+		public String getAction(int type, Object source) {
 			return null;
 		}
-		public String getURL(int type) {return null;}
-		public String getDisplayOnly(int type) {
+		public String getURL(int type, Object source) {return null;}
+		public String getDisplayOnly(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
 			return "true";
 		}

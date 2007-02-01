@@ -15,35 +15,26 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<ssf:ifadapter>
-<body>
-</ssf:ifadapter>
 
-<div class="ss_portlet"> 
+
+<div class="ss_portlet">
 <br/>
+
 <form class="ss_style ss_form" 
-  name="<portlet:namespace/>fm" 
-  method="post" onSubmit="return ss_onSubmit(this);" >
-<input type="hidden" name="operation" value="${operation}"/>
-<input type="hidden" name="definitionId" value="${ssDefinition.id}">
-<input type="hidden" name="binderConfigId" value="${ssConfiguration.id}">
+  id="<portlet:namespace/>fm" 
+  method="post">
+	<span class="ss_labelLeft"><ssf:nlt tag="folder.label.title" text="Title"/></span>
+	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+  <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span>
+  <br/>
+  <c:forEach var="config" items="${ssConfigurations}">
+      <input type="radio" name="binderConfigId" value="${config.id}" ><ssf:nlt tag="${config.title}" checkIfTag="true"/><br/>
+  </c:forEach>
+<br/>  
 
-<% // Show the workspace according to its definition %>
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
-
-<br/>
-	
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
 
 </form>
 </div>
 
-<ssf:ifadapter>
-</body>
-</html>
-</ssf:ifadapter>

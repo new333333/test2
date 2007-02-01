@@ -41,6 +41,7 @@ import com.sitescape.ef.domain.PostingDef;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.domain.Tag;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.exception.UncheckedCodedContainerException;
 import com.sitescape.ef.jobs.EmailNotification;
@@ -82,21 +83,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     * Called after bean is initialized.  
     */
 	public void afterPropertiesSet() {
-		operations.put("indexBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("indexTree", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("modifyBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("deleteBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("moveBinder", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("setProperty", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("setDefinitions", WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);
-		operations.put("modifyTag", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("deleteTag", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("modifyPosting", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("deletePosting", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("setPosting", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("setNotificationConfig", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("modifyNotification", WorkAreaOperation.BINDER_ADMINISTRATION);
-		operations.put("setLibrary", WorkAreaOperation.BINDER_ADMINISTRATION);
+		operations.put("indexBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("indexTree", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("modifyBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("deleteBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("moveBinder", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setProperty", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setDefinitions", new WorkAreaOperation[]{WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS});
+		operations.put("modifyTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("modifyPosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("deletePosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setPosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setNotificationConfig", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setLibrary", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
+
 	}
  
    protected DefinitionModule getDefinitionModule() {
@@ -117,12 +120,24 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
+	 * This should not be called inside a transaction because it results in a rollback.
 	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
 	 */
 	public void checkAccess(Binder binder, String operation) throws AccessControlException {
-		WorkAreaOperation wfo = (WorkAreaOperation)operations.get(operation);
-		if (wfo == null) getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-		else getAccessControlManager().checkOperation(binder, wfo);
+  		if (binder instanceof TemplateBinder) {
+			getAccessControlManager().checkOperation(binder, WorkAreaOperation.SITE_ADMINISTRATION);
+  		} else {
+  			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
+  			if (wfo == null) getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+  			else {
+  				for (int i=0; i<wfo.length-1; ++i) {
+				//	only need to have 1
+  					if (getAccessControlManager().testOperation(binder, wfo[i])) return;
+  				}
+  				//	will throw exception on failure
+  				getAccessControlManager().checkOperation(binder, wfo[wfo.length-1]);
+  			}
+		}
 //getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
 //addSubscription,modifySubscription,deleteSubscription (personal)
 	}
@@ -167,7 +182,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
     		//only check for specific types
-    		if (b.getEntityIdentifier().getEntityType().equals(binderType)) 
+    		if (b.getEntityType().equals(binderType)) 
     			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
     	}
     	return false;
@@ -670,10 +685,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
 	public List getTeamMembers(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		User user = RequestContextHolder.getRequestContext().getUser();
 		//give access to team members  or binder Admins.
-		if (!getAccessControlManager().testOperation(user, binder, WorkAreaOperation.TEAM_MEMBER)) 
-			getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+		checkAccess(binder, "getTeamMembers");
 		return getTeamMembers(binder);
 	}
 	public List getTeamMembers(Binder binder) {

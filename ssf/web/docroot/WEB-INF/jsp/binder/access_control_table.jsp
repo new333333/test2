@@ -71,16 +71,16 @@
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <img height="13" width="13" 
-  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].owner}">
+  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssOwner}">
     src="<html:imagesPath/>pics/sym_s_checkmark.gif"
   </c:if>
-  <c:if test="${empty ss_accessParent.ssFunctionMap[function].owner}">
+  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssOwner}">
     src="<html:imagesPath/>pics/1pix.gif"
   </c:if>
   style="padding-right:10px;"/>
 </c:if>
 
-<c:if test="${!empty ssFunctionMap[function].owner}">
+<c:if test="${!empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
   <c:if test="${ssBinder.functionMembershipInherited}">
     disabled="disabled"
@@ -88,7 +88,7 @@
   name="role_id${function.id}_owner" 
   checked="checked" />
 </c:if>
-<c:if test="${empty ssFunctionMap[function].owner}">
+<c:if test="${empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
   <c:if test="${ssBinder.functionMembershipInherited}">
     disabled="disabled"

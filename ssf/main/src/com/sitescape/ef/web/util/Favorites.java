@@ -323,7 +323,7 @@ public class Favorites {
 
 	private class FavoritesTreeHelper implements DomTreeBuilder {
 
-		public boolean supportsType(int type) {
+		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_FAVORITES) {return true;}
 			return false;
 		}

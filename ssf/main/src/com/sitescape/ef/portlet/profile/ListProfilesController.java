@@ -178,19 +178,19 @@ public class ListProfilesController extends   SAbstractController {
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
 		//Configuration
 		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_FORUM);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
 		//Definition builder
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityIdentifier().getEntityType().name());
+		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
 		//	The "Display styles" menu

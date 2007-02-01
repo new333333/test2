@@ -184,7 +184,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
    
 
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, boolean library) throws AccessControlException, WriteFilesException {
+    		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder parentFolder = loadFolder(parentFolderId);
         checkAccess(parentFolder, "addFolder");
         Definition def = null;
@@ -195,7 +195,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         
         Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
-        binder.setLibrary(library);
         return binder.getId();
     }
  

@@ -665,7 +665,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private boolean isFolder(Binder binder) {
-		return (binder.getEntityIdentifier().getEntityType() == EntityType.folder);		
+		return (binder.getEntityType() == EntityType.folder);		
 	}
 	
 	private boolean isLibraryFolder(Binder binder) {
@@ -816,7 +816,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		if(parentBinder == null) // No parent binder exists
 			throw new NoAccessException("Parent binder does not exist");
 		
-		EntityType parentType = parentBinder.getEntityIdentifier().getEntityType();
+		EntityType parentType = parentBinder.getEntityType();
 		if(parentType != EntityType.folder && parentType != EntityType.workspace)
 			throw new NoAccessException("Parent binder is neither folder nor workspace");
 		
@@ -835,14 +835,14 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		// Title field, not name, is used as the name of the folder. Weird...
 		data.put("title", folderName); 
 		//data.put("description", "This folder was created through WebDAV");
-		
+		data.put("library", Boolean.TRUE.toString());
 		try {
 			if(parentBinder instanceof Workspace)
 				return bs.getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap(), true);
+						new MapInputData(data), new HashMap());
 			else
 				return bs.getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap(), true);
+						new MapInputData(data), new HashMap());
 		} catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
 		} catch (WriteFilesException e) {

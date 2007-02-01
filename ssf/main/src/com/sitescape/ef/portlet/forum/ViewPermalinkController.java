@@ -43,7 +43,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		
 		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
 			Binder binder = getBinderModule().getBinder(new Long(binderId));
-			entityType = binder.getEntityIdentifier().getEntityType().name();
+			entityType = binder.getEntityType().name();
 		}
 		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString())) {
 			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");

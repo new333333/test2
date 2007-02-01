@@ -18,6 +18,8 @@ import javax.portlet.WindowState;
 
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
@@ -25,8 +27,11 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Group;
 import com.sitescape.ef.domain.Principal;
+import com.sitescape.ef.domain.TemplateBinder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
+import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
@@ -86,34 +91,121 @@ public class BinderHelper {
 	}
 
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
-		buildNavigationLinkBeans(bs, binder, model, null);
+		if (binder instanceof TemplateBinder)
+			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));
+		else
+			buildNavigationLinkBeans(bs, binder, model, null);
 	}
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model, DomTreeHelper helper) {
-		Binder parentBinder = binder;
-    	Map navigationLinkMap;
-    	if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
-    		navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
-    	else {
-    		navigationLinkMap = new HashMap();
-    		model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
-    	}
-    	while (parentBinder != null) {
-	    	Document tree = null;
-	    	if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new WsDomTreeBuilder(null, true, bs, helper),0);
-			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
-			} else if (parentBinder.getEntityIdentifier().getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-				tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-						new WsDomTreeBuilder(null, true, bs, helper),0);
+		if (binder instanceof TemplateBinder) {
+			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, helper);
+		} else {
+			Binder parentBinder = binder;
+			Map navigationLinkMap;
+			if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
+				navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
+			else {
+				navigationLinkMap = new HashMap();
+				model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
 			}
-			navigationLinkMap.put(parentBinder.getId(), tree);
-			parentBinder = ((Binder)parentBinder).getParentBinder();
+			while (parentBinder != null) {
+				Document tree = null;
+				if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
+					tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
+						new WsDomTreeBuilder(null, true, bs, helper),0);
+				} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+					tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
+				} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+					tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
+							new WsDomTreeBuilder(null, true, bs, helper),0);
+				}
+				navigationLinkMap.put(parentBinder.getId(), tree);
+				parentBinder = ((Binder)parentBinder).getParentBinder();
+			}
 		}
 	}
 
-   	public static SortField[] getBinderEntries_getSortFields(Map options) {
+	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, TemplateBinder config, Map model, DomTreeHelper helper) {
+		TemplateBinder parentConfig = config;
+		Map navigationLinkMap;
+		if (model.containsKey(WebKeys.NAVIGATION_LINK_TREE)) 
+			navigationLinkMap = (Map)model.get(WebKeys.NAVIGATION_LINK_TREE);
+		else {
+			navigationLinkMap = new HashMap();
+			model.put(WebKeys.NAVIGATION_LINK_TREE, navigationLinkMap);
+		}
+    	while (parentConfig != null) {
+        	Document tree = buildTemplateTreeRoot(bs, parentConfig, model, helper);
+ 			navigationLinkMap.put(parentConfig.getId(), tree);
+			parentConfig = (TemplateBinder)parentConfig.getParentBinder();
+		}
+	}
+	//trees should not be deep - do entire thing
+	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, TemplateBinder config, Map model, DomTreeHelper helper) {
+       	Document tree = DocumentHelper.createDocument();
+    	Element element = tree.addElement(DomTreeBuilder.NODE_ROOT);
+    	//only need this information if this is the bottom of the tree
+    	buildTemplateChildren(element, config, helper);
+    	return tree;
+	}
+	//trees should not be deep - do entire thing
+	static public Document buildTemplateTreeRoot(AllBusinessServicesInjected bs, List configs, DomTreeHelper helper) {
+       	Document tree = DocumentHelper.createDocument();
+    	Element element = tree.addElement(DomTreeBuilder.NODE_ROOT);
+	   	element.addAttribute("title", NLT.get("administration.configure_cfg"));
+    	element.addAttribute("displayOnly", "true");
+    	if (!configs.isEmpty()) {
+			element.addAttribute("hasChildren", "true");
+			for (int i=0; i<configs.size(); ++i) {
+				TemplateBinder child = (TemplateBinder)configs.get(i);
+    			Element cElement = element.addElement(DomTreeBuilder.NODE_CHILD);
+    			buildTemplateChildren(cElement, child, helper);
+    		}
+    	} else 	element.addAttribute("hasChildren", "false");
+
+    	return tree;
+	}
+	static void buildTemplateChildren(Element element, TemplateBinder config, DomTreeHelper helper) {
+		buildTemplateElement(element, config, helper);
+    	List<TemplateBinder> children = config.getBinders();
+    	for (TemplateBinder child: children) {
+    		Element cElement = element.addElement(DomTreeBuilder.NODE_CHILD);
+    		buildTemplateChildren(cElement, child, helper);
+    	}
+	}
+	static void buildTemplateElement(Element element, TemplateBinder config, DomTreeHelper helper) {
+	   	element.addAttribute("title", NLT.get(config.getTitle()));
+    	element.addAttribute("id", config.getId().toString());
+ 		
+    	if (!config.getBinders().isEmpty()) {
+			element.addAttribute("hasChildren", "true");
+		} else
+			element.addAttribute("hasChildren", "false");
+			
+		if (config.getEntityType().equals(EntityType.workspace)) {
+			String icon = config.getIconName();
+			String imageClass = "ss_twIcon";
+			if (icon == null || icon.equals("")) {
+				icon = "/icons/workspace.gif";
+				imageClass = "ss_twImg";
+			}
+			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", imageClass);
+			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_WORKSPACE);
+			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_TEMPLATE, config));
+					
+		} else {
+			String icon = config.getIconName();
+			if (icon == null || icon.equals("")) icon = "/icons/folder.png";
+			element.addAttribute("image", icon);
+			element.addAttribute("imageClass", "ss_twIcon");
+			element.addAttribute("type", DomTreeBuilder.NODE_TYPE_FOLDER);
+			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_TEMPLATE, config));
+		} 
+		
+	}
+  	public static SortField[] getBinderEntries_getSortFields(Map options) {
    		SortField[] fields = new SortField[1];
    		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;
     	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
@@ -582,7 +674,7 @@ public class BinderHelper {
 		model.put(WebKeys.FUNCTION_MAP, functionMap);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS, sortedFunctions);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP, sortedFunctionsMap);
-		model.put(WebKeys.ACCESS_FUNCTIONS_COUNT, Integer.valueOf(sortedFunctions.size()));
+		model.put(WebKeys.ACCESS_FUNCTIONS_COUNT, Integer.valueOf(functionMap.size()));
 		model.put(WebKeys.ACCESS_SORTED_USERS_MAP, sortedUsersMap);
 		model.put(WebKeys.ACCESS_SORTED_USERS, sortedUsers);
 		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
@@ -639,5 +731,28 @@ public class BinderHelper {
 		model.put(WebKeys.ACCESS_USERS_COUNT, Integer.valueOf(sortedUsers.size()));
 		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
 	}
-
+	public static class ConfigHelper implements DomTreeHelper {
+		String action;
+		public ConfigHelper(String action) {
+			this.action = action;
+		}
+		public boolean supportsType(int type, Object source) {
+			if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
+			return false;
+		}
+		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
+			TemplateBinder config = (TemplateBinder)source;
+			return !config.getBinders().isEmpty();
+		}
+	
+		public String getAction(int type, Object source) {
+			return action;
+		}
+		public String getURL(int type, Object source) {return null;}
+		public String getDisplayOnly(int type, Object source) {
+			return "false";
+		}
+		public String getTreeNameKey() {return null;}
+		
+	}	
 }

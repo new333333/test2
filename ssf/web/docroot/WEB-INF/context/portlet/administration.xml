@@ -16,6 +16,9 @@
 	<bean id="adminImportProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ImportProfilesController" />
 	<bean id="adminViewChangeLogController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.administration.ViewChangeLogController" />
 	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.EmailConfigController" />
+	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
+	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyDashboardController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -35,6 +38,11 @@
 						<entry key="export_definition"><ref bean="adminExportDefinitionController"/></entry>
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
+						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
+						<entry key="configure_definitions"><ref bean="configureController"/></entry>
+						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
+						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

@@ -10,7 +10,7 @@ import com.sitescape.ef.web.portlet.SAbstractController;
 
 public abstract class AbstractBinderController extends SAbstractController {
 	protected void setupViewBinder(ActionResponse response, Binder binder) {
-		setupViewBinder(response, binder.getId(), binder.getEntityIdentifier().getEntityType().name());
+		setupViewBinder(response, binder.getId(), binder.getEntityType().name());
 	}
 	protected void setupViewBinder(ActionResponse response, Long binderId, String binderType) {
 		if (binderType.equals(EntityIdentifier.EntityType.folder.name())) {
@@ -32,10 +32,10 @@ public abstract class AbstractBinderController extends SAbstractController {
 			Folder folder = (Folder)binder;
 			Binder parent = folder.getParentFolder();
 			if (parent != null) {
-				setupViewBinder(response, parent.getId(), parent.getEntityIdentifier().getEntityType().name());
+				setupViewBinder(response, parent.getId(), parent.getEntityType().name());
 			}
 		}
 		Binder parent = binder.getParentBinder();	
-		setupViewBinder(response, parent.getId(), parent.getEntityIdentifier().getEntityType().name());
+		setupViewBinder(response, parent.getId(), parent.getEntityType().name());
 	}
 }

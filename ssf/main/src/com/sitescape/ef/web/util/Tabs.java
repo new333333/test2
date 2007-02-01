@@ -254,13 +254,13 @@ public class Tabs {
 		String sortDescend = (String) tab.get(Tabs.SORTDESCEND);
 		if (options.containsKey(Tabs.SORTDESCEND)) sortDescend = (String) options.get(Tabs.SORTDESCEND);
 		if (sortDescend != null) tab.put(Tabs.SORTDESCEND, sortDescend);
-    	if (binder.getEntityIdentifier().getEntityType().
+    	if (binder.getEntityType().
     			equals(EntityIdentifier.EntityType.workspace)) {
     		tab.put(TYPE, WORKSPACE);
-    	} else if (binder.getEntityIdentifier().getEntityType().
+    	} else if (binder.getEntityType().
     			equals(EntityIdentifier.EntityType.folder)) {
     		tab.put(TYPE, BINDER);
-    	} else if (binder.getEntityIdentifier().getEntityType().
+    	} else if (binder.getEntityType().
     			equals(EntityIdentifier.EntityType.profiles)) {
     		tab.put(TYPE, PROFILES);
     	}
@@ -307,10 +307,10 @@ public class Tabs {
 		int tabNumber = findTabNumber(tabId);
 		if (tabNumber < 0) tabNumber = findTabNumber(addTab());
 		Map tab = (Map) tabList.get(tabNumber);
-    	if (entry.getEntityIdentifier().getEntityType().
+    	if (entry.getEntityType().
     			equals(EntityIdentifier.EntityType.folderEntry)) {
     		tab.put(TYPE, ENTRY);
-    	} else if (entry.getEntityIdentifier().getEntityType().
+    	} else if (entry.getEntityType().
     			equals(EntityIdentifier.EntityType.user)) {
     		tab.put(TYPE, USER);
     	}

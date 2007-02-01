@@ -5,7 +5,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.ef.domain;
-
+import com.sitescape.util.Validator;
 /**
  * @author janet
  *
@@ -22,7 +22,7 @@ public class Description {
     }
     public Description(String text) {
         setText(text);
-        setFormat(FORMAT_NONE);
+        setFormat(FORMAT_HTML);
     }
     public Description(String text, int format) {
         setText(text);
@@ -48,6 +48,12 @@ public class Description {
     }
     public void setText(String description) {
        this.description = new SSClobString(description);      
+    }
+    public boolean isTag() {
+    	String val = getText();
+    	if (Validator.isNull(val)) return false;
+    	if (val.startsWith("__")) return true;
+    	return false;
     }
     // Internal routines to deal with null. Since description is an optional component, it 
     // may not be allocated so we cannot default the format value.  Hibernate will not

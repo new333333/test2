@@ -75,7 +75,7 @@ public class ChangeLog {
 		}
 
 		this.entityId = entity.getEntityIdentifier().getEntityId();
-		this.entityType = entity.getEntityIdentifier().getEntityType().name();
+		this.entityType = entity.getEntityType().name();
 		this.version = entity.getLogVersion();
 		this.document = DocumentHelper.createDocument();
 		

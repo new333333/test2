@@ -55,18 +55,12 @@ public class AccessUtils  {
     public static Set getReadAclIds(Entry entry) {
      	if (!(entry instanceof AclControlled)) return null;
         Set binderIds = getAccessManager().getWorkAreaAccessControl(entry.getParentBinder(), WorkAreaOperation.READ_ENTRIES);
-		if (entry.getCreation() != null) {
-			try {
-				//principal should be a user
-				User creator = getInstance().getProfileDao().loadUser(entry.getCreation().getPrincipal().getId(), 
-						entry.getParentBinder().getZoneId());
-				if (getAccessManager().testOperation(creator, entry.getParentBinder(), 
-						WorkAreaOperation.CREATOR_READ)) 
-					binderIds.add(entry.getCreation().getPrincipal().getId());
-			} catch (Exception ex) {}
-		}
+	       
 		Set<Long> entryIds = new HashSet<Long>();
-		if (entry instanceof WorkflowSupport) {
+		//add super user
+	    binderIds.add(ObjectKeys.SUPER_USER_ID);
+	    entryIds.add(ObjectKeys.SUPER_USER_ID);
+	    if (entry instanceof WorkflowSupport) {
 			WorkflowSupport wEntry = (WorkflowSupport)entry;
 			if (wEntry.hasAclSet()) {
 				//index binders access
@@ -98,7 +92,7 @@ public class AccessUtils  {
      }
      public static Set getReadAclIds(Binder binder) {
         Set binderIds = new HashSet(getAccessManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES));
- 		//CREATOR_READ applies only to entries.
+	    binderIds.add(ObjectKeys.SUPER_USER_ID);
   		return binderIds;
      	 
       }     	
@@ -114,13 +108,7 @@ public class AccessUtils  {
     		
    }
 	private static void readCheck(User user, Binder binder, Entry entry) {
-       	try {
-       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
-       	} catch (OperationAccessControlException ex) {
-       		if (user.equals(entry.getCreation().getPrincipal())) 
-    				getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_READ);
-       		else throw ex;
-       	}
+      	getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
 		if (!entry.hasAclSet()) readCheck(user, binder, (Entry)entry);
