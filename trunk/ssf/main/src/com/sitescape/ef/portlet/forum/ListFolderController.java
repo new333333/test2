@@ -1428,7 +1428,7 @@ public class ListFolderController extends  SAbstractController {
 					HashMap dataMap = new HashMap();
 					HashMap e = (HashMap) thisMap.get("entry");
 					Event ev = (Event) thisMap.get("event");
-					SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm a");
+					SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
 					// we build up the dataMap for this instance
 					dataMap.put("entry", e);
 					dataMap.put("entry_tostring", e.get(BasicIndexUtils.UID_FIELD).toString());

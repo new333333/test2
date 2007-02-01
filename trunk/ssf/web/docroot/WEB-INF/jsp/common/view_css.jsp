@@ -192,6 +192,7 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 		ss_loadJsFile(ss_rootPath, "js/common/ss_drag.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dragdrop.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_coordinates.js");
+		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 		ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
 		ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
