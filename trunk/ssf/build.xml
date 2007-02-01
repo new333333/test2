@@ -29,16 +29,16 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<target name="clean-build-and-deploy" depends="clean,build,deploy-only" />
+	<target name="clean-build-and-full-deploy" depends="clean,build,deploy-internal" />
 
-	<target name="build-and-deploy" depends="build,deploy-only" />
+	<target name="build-and-full-deploy" depends="build,deploy-internal" />
 
 	<!-- Do NOT run the following target on its own (unless you know
 	     what you are doing). When executed on its own, it may very
 	     well be deploying an artifact built for different portal. 
 	     So when in doubt, ALWAYS run either "all" or "all-without-clean"
 	     which will re-build the artifacts before deploying them. -->
-	<target name="deploy-only" depends="init">
+	<target name="deploy-internal" depends="init">
 		<if>
 			<equals arg1="${portal.type}" arg2="liferay" />
 			<then>				
