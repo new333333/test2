@@ -68,7 +68,7 @@
 <%
 	} else {
 %>
-<div id="ss_folder_table" style="margin:2px; border-left:solid #666666 1px;">
+<div id="ss_folder_table" style="margin:2px; border-left:solid #666666 1px; border-right:solid #666666 1px;">
 <%
 	}
 %>

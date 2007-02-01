@@ -2084,4 +2084,306 @@ white-space: nowrap !important;
 	margin-left: 25px;
 }
 
-</c:if>
+
+/*
+ ************************************************************************
+ *                     Calendar View Styles                             *
+ ************************************************************************
+ */
+
+
+/*
+ * The following styles are used for calendar grid layouts.
+ * hr = horizontal rules/dividers
+ * vr = vertical rules/dividers
+ */
+
+table.ss_cal_gridTable  {
+  margin-top: 2px;
+  margin-bottom: 0px; 
+  border-collapse: collapse;
+  border-width: 0px;
+  width: 100%; 
+}
+
+table.ss_cal_gridTable td {
+  padding-left:   0px;
+  padding-right:  1px;
+  padding-top:    0px;
+  padding-bottom: 0px;
+}
+
+
+/* Discourage rubber-banding views to useless widths */
+.ss_cal_reserveWidth {
+  min-width: 300px;
+}
+
+
+/*
+ * Used to create a highlight in the grid when the current
+ * is visible.
+ */
+div.ss_cal_todayMarker {
+  background-color: #FFFFDD;
+  position: absolute;
+}
+
+
+/*
+ * Header for grids
+ */
+
+div.ss_cal_gridHeader {
+  position: relative;
+  width: 100%;
+  height: 20px;
+  background-color: #DDDDFF;
+}
+
+div.ss_cal_gridHeaderText {
+  position: absolute;
+  text-align: center;
+  font-size: 10px;
+  font-family: sans-serif;
+  padding-top: 3px;
+  color: #888888;
+
+}
+
+div.ss_cal_gridHeaderTextToday {
+  background-color: #BBBBDD;
+  color: #888888;
+}
+
+
+/*
+ * Day Grid styles
+ */
+
+
+/* Used to establish drawing grids for the day view */
+
+div.ss_cal_dayGridHour {
+  height: 1008px;
+  position: relative;
+}
+
+/*
+ * Overrides to the dayGridHour for the "all day" events area.
+ * Tied to a div with the same id.  Note that the height is the
+ * INITIAL height.  The element's actual height is set based
+ * on content.
+ */
+
+div.ss_cal_dayGridAllDay {
+  height: 25px;
+  min-width: 300px;
+  overflow-y: hidden;
+}
+
+
+/* A visual divider between the all-day grid and the hour grid */
+div.ss_cal_dayGridDivider {
+  height: 3px;
+  width: 100%;
+  background-color: #DDDDFF;
+}
+
+
+/* Left-hand column with the 24 hours of the day */
+td.ss_cal_dayGridHourTicksColumn {
+  width: 35px;
+}
+
+div.ss_cal_timeHead {
+  text-align: right;
+  padding-right: 3px;
+  padding-top: 3px;
+  font-size: 11px;
+  font-family: sans-serif;
+  color: #AAAAAA;
+}
+
+/* Styles to divide up the grid visually */
+
+div.ss_cal_hrHalfHour { border-top: 1px dotted #DDDDDD; }
+
+div.ss_cal_hrHour { border-top: 1px solid  #DDDDDD; }
+
+div.ss_cal_hr {
+  left: 0px;
+  position: absolute;
+  width: 100%;
+}
+
+div.ss_cal_dayRule {
+  position: absolute;
+  top: 0px;
+  height: 1008px;
+  width: 1px;
+  border-left: 2px solid #DDDDDD;
+}
+
+
+/*
+ * The inner/outer styles are tied to divs with the same ids.  They
+ * create an expansion window for the day grid to show working hours
+ * or a full 24-hour day.  The heights and top properties are changed
+ * with JavaScript to achieve the effect.
+ *
+ * If you play with the values, make coordinated changes to the 
+ * JavaScript routines.
+ */
+
+div.ss_cal_dayGridWindowOuter {
+  height: 500px;     /* Note: This is modified dynamically in the element */
+  top: 0px;
+  position: relative;
+  overflow: hidden;
+}
+
+div.ss_cal_dayGridWindowInner {
+  position: absolute;
+  top: -255px;    /* Note: This is modified dynamically in the element */
+}
+
+
+
+
+/*
+ * Month Grid layout styles
+ */
+
+div.ss_cal_monthGrid {
+  position: relative;
+  width: 99.8%;
+  height: 320px;
+  min-height: 300px;
+}
+
+
+div.ss_cal_monthVRule {
+  position: absolute;
+  top: 0px;
+  height: 100%;
+  width: 1px;
+  border-left: 1px solid #DDDDDD;
+}
+
+div.ss_cal_monthHRule {
+  position: absolute;
+  left: 0px;
+  height: 1px;
+  width: 100%;
+  border-top: 1px solid #DDDDDD;
+}
+
+
+/* Day of month numbers */
+div.ss_cal_monthGridDayBadge {
+  background-color: #EEEEEE;
+  position: absolute;
+  height: 11px;
+  width: 14.0%;
+  border-bottom: 1px solid #DDDDDD;
+  text-align: right;
+  padding-right: 3px;
+  font-size: 9px;
+  font-family: sans-serif;
+  color: #BBBBBB;
+}
+
+/* Highlight for today */
+div.ss_cal_monthGridDayBadgeToday {
+  background-color: #CCCCCC;
+  color: #FFFFFF;
+}
+
+
+/*
+ * Calendar events are displayed in small boxes with rounded corners.
+ * The rounding mechanism is suitable for any small rounded box, so there is no
+ * calendar-specific designation in the class names.
+ *
+ * You construct the box by placing divs in the following order:
+ *   box top 2
+ *   box top 1
+ *   box body
+ *   box bottom 1
+ *   box bottom 2
+ *
+ */
+
+div.ss_smallRBoxTop2 {
+  line-height: 1px;
+  margin: 0px 2px;
+  height: 1px;
+  font-size: 1px;
+}
+
+div.ss_smallRBoxTop1 {
+  line-height: 1px;
+  margin: 0px 1px;
+  height: 1px;
+  font-size: 1px;
+}
+
+
+div.ss_smallRBoxBtm1 {
+  line-height: 0px;
+  margin: 0px 1px;
+  height: 1px;
+  font-size: 0px;
+}
+
+div.ss_smallRBoxBtm2 {
+  line-height: 0px;
+  margin: 0px 2px;
+  height: 1px;
+  font-size: 0px;
+}
+
+div.ss_smallRBoxBody {
+  position: relative;
+  overflow: hidden;
+}
+
+
+/*
+ * Calendar event boxes
+ */
+
+div.ss_cal_eventBody {
+  font-size: 11px;
+  color: #FFFFFF;
+  font-family: sans-serif;
+  margin: 0px;
+  padding-left: 4px;
+  border-left: 1px solid;
+  border-right: 1px solid;
+}
+
+
+div.ss_cal_eventBox {
+  overflow: hidden;
+  position: absolute;
+}
+
+
+div.ss_cal_monthEventBody {
+  font-size: 11px;
+  color: #FFFFFF;
+  font-family: sans-serif;
+  margin: 0px;
+  padding-left: 4px;
+}
+
+/* Used to render the short-form time of the event */
+span.ss_cal_eventTime {
+  padding-right: 3px;
+}
+
+
+<% // Place all CSS code above this line %>
+</c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

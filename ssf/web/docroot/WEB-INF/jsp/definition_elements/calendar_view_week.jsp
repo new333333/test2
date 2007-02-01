@@ -1,106 +1,156 @@
 <% // Calendar week view %>
-
-
-<script type="text/javascript">
-var ss_entryList = new Array();
-var ss_entryList2 = new Array();
-var ss_entryList3 = new Array();
-var ss_entryCount = 0;
-function setFilteredEntry(id, binderId, entityType) {
-	ss_entryList2[ss_entryCount] = binderId;
-	ss_entryList3[ss_entryCount] = entityType;
-	ss_entryList[ss_entryCount++] = id;
+<style type="text/css">
+a.tinyControl {
+  border: 1px solid #999999;
+  background: #f5f599;
+  padding: 1px;
+  font-size: 9px;
+  font-family: sans-serif;
 }
-</script>
-<c:set var="delimiter" value=" | "/>
 
-<table border="0" cellpadding="2" cellspacing="0" class="ss_ruledTable">
-<tr class="ss_toolbar_color">
-<td colspan="2">
-<span>
-<ssf:nlt tag="calendar.begining" text="Week beginning"/>
+span.tinyLabel {
+  padding: 1px;
+  font-size: 9px;
+  font-family: sans-serif;
+}
+</style>
+<div>
+<span class="tinyLabel">Hours:</span>
+<a class="tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
+<span class="tinyLabel">Grid:</span>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 1; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">Single</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 3; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">3-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 5; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">5-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 7; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">7-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 14; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">14-day</a>
+<ssf:nlt tag="calendar.beginning" text="Week beginning"/>
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
-&nbsp;&nbsp;&nbsp;&nbsp;
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
-<a href="${set_day_view}"><ssf:nlt tag="calendar.Day" text="Day"/></a>
-<c:out value="${delimiter}" />
 <a href="${set_month_view}"><ssf:nlt tag="calendar.Month" text="Month"/></a>
-&nbsp;&nbsp;&nbsp;
-</span>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
-</td>
-</tr>
+</div>
+<div style="width: 100%"><%-- IE needs this for some stupid reason --%>
+<div id="ss_cal_DayGridMaster" style="display:none;">
+  <table class="ss_cal_gridTable">
+    <tbody>
+      <tr>
+        <td class="ss_cal_dayGridHourTicksColumn" style="padding-right: 0px;"><div class="ss_cal_gridHeader"></td>
+        <td><div id="ss_cal_dayGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
+      </tr>
+      <tr>
+        <td class="ss_cal_dayGridHourTicksColumn"></td>
+        <td><div id="ss_cal_dayGridAllDay" class="ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth"></div></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="ss_cal_dayGridDivider"></div>
+  <div id="ss_cal_dayGridWindowOuter" class="ss_cal_dayGridWindowOuter">
+    <div id="ss_cal_dayGridWindowInner" class="ss_cal_dayGridWindowInner">
+      <table class="ss_cal_gridTable">
+        <tbody>
+          <tr>
+            <td class="ss_cal_dayGridHourTicksColumn"><div id="hourHeader" class="ss_cal_dayGridHour"></div></td>
+            <td><div id="ss_cal_dayGridHour" class="ss_cal_dayGridHour ss_cal_reserveWidth"></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="ss_cal_MonthGridMaster" style="display: none; height: 500px;">
+  <table style="width: 100%" cellpadding=0 cellspacing=0 border=0>
+    <tbody>
+      <tr>
+        <td><div id="ss_cal_monthGridHeader" class="ss_cal_gridHeader ss_cal_reserveWidth"></div></td>
+      </tr>
+      <tr>
+        <td><div id="ss_cal_monthGrid" class="ss_cal_monthGrid ss_cal_reserveWidth"></div></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
 
-<% // the bean is a month's bean; we need to loop through the list of
-   // weeks in the month, even though for this template there's only one
-%>
+<div id="infoLightBox" style="display: none; visibility: hidden; width: 100%; height: 100%;"></div>
 
-<c:forEach var="week" items="${ssCalendarViewBean.weekList}" >
+<div id="infoBox" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
+        border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
+  <i>Imagine if you will...</i><br/>
+  A particularly stylish form will be here pertaining to the details of this event.
+  <p>
+  <a href="javascript: ;" class="tinyControl" onclick="ss_ActiveGrid.saveCurrentEvent(); ss_cancelPopupDiv('infoBox');">Save</a>
+  <a href="javascript: ;" class="tinyControl" onclick="ss_ActiveGrid.deleteCurrentEvent(); ss_cancelPopupDiv('infoBox');">Cancel</a>
+</div>
 
-<c:forEach var="daymap" items="${week.dayList}">
+<div id="infoBox2" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
+          border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
+  Information about event: <span id="ib2eid">EVENT</span>
+  <p>
+  <span id="ib2view">VIEW</span>
+  <p>
+  <a href="javascript: ;" class="tinyControl" onclick="ss_cancelPopupDiv('infoBox2');">Save</a>
+  <a href="javascript: ;" class="tinyControl" onclick="ss_cancelPopupDiv('infoBox2');">Cancel</a>
+</div>
 
-<c:choose>
-<c:when test="${daymap.isToday}">
-<tr class="ss_highlightManila">
-</c:when>
-<c:otherwise>
-<tr>
-</c:otherwise>
-</c:choose>
-<td align="center" width="1%" valign="top"><a style="text-decoration: none;" href="${daymap.dayURL}"><span>${daymap.cal_dow}</span>
-<br /><span class="ss_bold">${daymap.cal_dom}</a></td>
 
-<c:choose>
-<c:when test="${empty daymap.cal_eventdatamap}">
-<td>&nbsp;</td>
-</c:when>
-<c:otherwise>
+<div class="ss_cal_eventBody" id="hoverBox" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
 
-<td valign="top">
-<c:forEach var="ev" items="${daymap.cal_eventdatamap}">
-
-<c:forEach var="eviw" items="${ev.value}"> 
-<jsp:useBean id="eviw" type="java.util.Map" />
-<%
-    java.util.HashMap e = (java.util.HashMap) eviw.get("entry");
-%>
 <script type="text/javascript">
-	setFilteredEntry('${evid.entry._docId}', '${evid.entry._binderId}')
+
+ss_cal_CalData.setMap([
+  {calsrc: "cal1", box: "#8888CC", border: "#6666AA"},
+  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
+  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
+  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
+  {calsrc: "cal5", box: "#CCCC88", border: "#AAAA66"}]);
+
+var inputEvents = [<%--
+--%><c:set var="i" value="-1"/><%--
+--%><c:forEach var="week" items="${ssCalendarViewBean.weekList}" ><%--
+  --%><c:forEach var="daymap" items="${week.dayList}"><%--
+    --%><c:set var="i" value="${i + 1}"/><%--
+    --%><c:if test="${daymap.inView}"><% // is this day part of the month, or context at front/end? %><%--
+      --%><c:if test="${!empty daymap.cal_eventdatamap}"><%--
+        --%><c:forEach var="ev" items="${daymap.cal_eventdatamap}"><%--
+          --%><c:forEach var="eviw" items="${ev.value}"><%--
+            --%><jsp:useBean id="eviw" type="java.util.Map" /><%--
+            --%><% java.util.HashMap e = (java.util.HashMap) eviw.get("entry"); %><%--
+            --%>
+{eventId: "${eviw.entry._docId}", day: ${i}, start: "${eviw.cal_starttimestring}",  dur: 30, title: "${eviw.entry.title}", text: "${eviw.cal_endtimestring}", calsrc: "cal1",
+   viewHref: "<ssf:url adapter="<%= useAdaptor %>" portletName="ss_forum" folderId="${ssFolder.id}" action="view_folder_entry" entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />",
+   viewOnClick: "ss_loadEntry(this,'<c:out value="${eviw.entry._docId}"/>');return false;"},<%--
+          --%></c:forEach><% // end of events within a single time slot %><%--
+        --%></c:forEach><% // end of time slot loop %><%--
+      --%></c:if><% // end of case where there is at least one event in a cell %><%--
+    --%></c:if><% // end of test to see if a day is in view %><%--
+  --%></c:forEach><%--
+--%></c:forEach>];
+
+ss_cal_Events.clear();
+ss_cal_Events.set(inputEvents);
+ss_cal_CalData.monthTickList = [];
+ss_cal_CalData.dayHeaders = [<%--
+--%><c:set var="today" value="-1"/><%--
+--%><c:set var="i" value="-1"/><%--
+--%><c:forEach var="week" items="${ssCalendarViewBean.weekList}" ><%--
+  --%><c:forEach var="daymap" items="${week.dayList}"><%--
+    --%><c:out value="${daymap.cal_dom},"/><%--
+    --%><c:set var="i" value="${i + 1}"/><%--
+    --%><c:if test="${daymap.isToday}"><%--
+      --%><c:set var="today" value="${i}"/><%--
+    --%></c:if><%--
+  --%></c:forEach><%--
+--%></c:forEach>];
+ss_cal_CalData.monthTodayIndex = ${today};
+ss_cal_CalData.dayTodayIndex = ${today};
+ss_cal_Grid.activateGrid("day");
+ss_cal_Events.redrawAll();
+ss_createOnLoadObj('ss_cal_hoverBox', function() {
+	ss_moveDivToBody("hoverBox");
+	ss_moveDivToBody("infoLightBox");
+	ss_moveDivToBody("infoBox");
+	ss_moveDivToBody("infoBox2");
+} );
 </script>
-<div id="folderLine_${eviw.entry._docId}">	
-<%
-if (ssSeenMap.checkIfSeen(e)) {
-%><span><%
-	} else {
-%><span class="ss_bold"><%
-	}
-%>
-    <c:if test="${eviw.cal_starttimestring == eviw.cal_endtimestring}">
-    <c:out value="${eviw.cal_starttimestring}"/>: 
-    </c:if>
-    <c:if test="${eviw.cal_starttimestring != eviw.cal_endtimestring}">
-    <c:out value="${eviw.cal_starttimestring}"/>-<c:out value="${eviw.cal_endtimestring}"/>: 
-    </c:if>
-    <a href="<ssf:url 
-    adapter="<%= useAdaptor %>" 
-    portletName="ss_forum" 
-    folderId="${ssFolder.id}" 
-    action="view_folder_entry" 
-    entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />"
-    onClick="ss_loadEntry(this,'<c:out value="${eviw.entry._docId}"/>');return false;" 
-    ><c:if test="${empty eviw.entry.title}"
-    ><span class="ss_fineprint">--<ssf:nlt tag="entry.noTitle" text="no title"/>--</span
-    ></c:if><c:out value="${eviw.entry.title}"/></a></span></div>
 
-</c:forEach>
-</c:forEach></td>
-
-</c:otherwise>
-</c:choose>
-</tr>
-
-</c:forEach>
-</c:forEach>
-
-</table>
 
