@@ -31,7 +31,17 @@
 								entity="${ssDefinitionEntry}"
 								fileAttachment="${selection}"/>">
 								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
-						</ssf:ifSupportsEditInPlace>
+							
+							<!--	
+								
+							<a href="javascript: ;" onClick="javascript:callAlert('<ssf:ssfsInternalAttachmentUrl 
+									binder="${ssDefinitionEntry.parentBinder}"
+									entity="${ssDefinitionEntry}"
+									fileAttachment="${selection}"/>', this); return false;">App Edit</a>
+							-->		
+									
+									
+							</ssf:ifSupportsEditInPlace>
 					</c:if>
 				</td>
 			</tr>

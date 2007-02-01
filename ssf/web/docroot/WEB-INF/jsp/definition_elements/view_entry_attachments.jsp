@@ -153,6 +153,66 @@ function ss_postSelectEntryAttachment${ssDefinitionEntry.id}<portlet:namespace/>
 	var divObj = document.getElementById('ss_divAttachmentList${ssDefinitionEntry.id}<portlet:namespace/>');
 	var s = divObj.innerHTML;
 }
+
+function callAlert(strURLValue, aHrefObj)
+{
+	ss_showFileOpen(strURLValue, aHrefObj);
+}
+
+function custom_getDivTop(obj) {
+    var top = 0;
+    if (isNSN || isNSN6 || isMoz5) {
+        //var obj = self.document.getElementById(divName)
+        while (1) {
+            if (!obj) {break}
+            top += parseInt(obj.offsetTop)
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    } else {
+        //var obj = self.document.all[divName]
+        while (1) {
+            if (!obj) {break}
+            top += obj.offsetTop
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    }
+    return parseInt(top);
+}
+
+function custom_getDivLeft(obj) {
+    var left = 0;
+    if (isNSN || isNSN6 || isMoz5) {
+        //var obj = self.document.getElementById(divName)
+        while (1) {
+            if (!obj) {break}
+            left += parseInt(obj.offsetLeft)
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    } else {
+        //var obj = self.document.all[divName]
+        while (1) {
+            if (!obj) {break}
+            left += obj.offsetLeft
+            if (obj == obj.offsetParent) {break}
+            obj = obj.offsetParent
+        }
+    }
+    return parseInt(left);
+}
+
+function ss_showFileOpen(strURLValue, aHrefPos)
+{
+	ss_showDiv('ss_div_fileopen');
+	var fileOpenObj =  document.getElementById("fileopenobj");
+	fileOpenObj.callAlert(strURLValue);
+
+	var divObj = document.getElementById('ss_div_fileopen');
+	divObj.style.width = "0px";
+	divObj.style.height = "0px";
+}
 </script>
 
 <div class="ss_entryContent">
@@ -198,7 +258,40 @@ function ss_postSelectEntryAttachment${ssDefinitionEntry.id}<portlet:namespace/>
 		</a>
 	</td>
 	
-	<td width="30%"></td>	
+	<td width="30%">
+	<div id="ss_div_fileopen" width="0px" height="0px" name="ss_div_fileopen" style="visibility:hidden;display:none;position:relative;">
+	<%
+	 boolean isIETEST = com.sitescape.util.BrowserSniffer.is_ie(request);
+	%>								
+
+			<c:if test="<%= isIETEST %>">
+				<object id="fileopenobj" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="fileopen" 
+				  WIDTH = "0" HEIGHT = "0" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
+				  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
+			</c:if>
+			<c:if test="<%= !isIETEST %>">
+			<applet name="fileopenobj" id="fileopenobj" CODE = "com.sitescape.ef.applets.fileopen.FileOpen" 
+			  JAVA_CODEBASE = "<html:rootPath/>applets" 
+			  ARCHIVE = "fileopen/ssf-fileopen-applet.jar" 
+			  WIDTH = "0" HEIGHT = "0" MAYSCRIPT="true">
+			</c:if>
+				    <PARAM NAME="CODE" VALUE = "com.sitescape.ef.applets.fileopen.FileOpen" />
+				    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
+				    <PARAM NAME ="ARCHIVE" VALUE = "fileopen/ssf-fileopen-applet.jar" />
+				    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
+				    <param name = "scriptable" value="true" />
+				    <PARAM NAME = "NAME" VALUE = "fileopen" />
+				    <PARAM NAME = "startingDir" VALUE=""/>
+				    <PARAM NAME = "fileToOpen" VALUE=""/>
+			<c:if test="<%= !isIETEST %>">
+			</applet>
+			</c:if>
+			<c:if test="<%= isIETEST %>">
+			</object>
+			</c:if>
+			
+		</div>
+	</td>	
 </tr>
 <tr>
 	<td colspan="5" width="100%">
