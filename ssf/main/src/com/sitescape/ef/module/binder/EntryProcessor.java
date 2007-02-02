@@ -10,10 +10,10 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.team.lucene.Hits;
 
 /**
  * <code>EntryProcessor</code> is used by model processors for binders that

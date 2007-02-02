@@ -44,7 +44,6 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.jobs.FillEmailSubscription;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -68,6 +67,7 @@ import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.util.TagUtil;
+import com.sitescape.team.lucene.Hits;
 import com.sitescape.util.Validator;
 /**
  *

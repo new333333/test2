@@ -31,11 +31,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.lucene.SsfQueryAnalyzer;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
 import com.sitescape.ef.util.LuceneUtil;
+import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
 /**
  * This implementation provides access to local Lucene index.
@@ -210,11 +210,11 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 
-	public com.sitescape.ef.lucene.Hits search(Query query) {
+	public com.sitescape.team.lucene.Hits search(Query query) {
 		return this.search(query, 0, -1);
 	}
 
-	public com.sitescape.ef.lucene.Hits search(Query query, int offset, int size) {
+	public com.sitescape.team.lucene.Hits search(Query query, int offset, int size) {
 		IndexSearcher indexSearcher = null;
 
 		try {
@@ -228,7 +228,7 @@ public class LocalLuceneSession implements LuceneSession {
 			org.apache.lucene.search.Hits hits = indexSearcher.search(query);
 			if (size < 0)
 				size = hits.length();
-			com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits
+			com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 			return tempHits;
@@ -243,11 +243,11 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 
-	public com.sitescape.ef.lucene.Hits search(Query query, Sort sort) {
+	public com.sitescape.team.lucene.Hits search(Query query, Sort sort) {
 		return this.search(query, sort, 0, -1);
 	}
 
-	public com.sitescape.ef.lucene.Hits search(Query query, Sort sort,
+	public com.sitescape.team.lucene.Hits search(Query query, Sort sort,
 			int offset, int size) {
 		Hits hits = null;
 		IndexSearcher indexSearcher = null;
@@ -270,7 +270,7 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			if (size < 0)
 				size = hits.length();
-			com.sitescape.ef.lucene.Hits tempHits = com.sitescape.ef.lucene.Hits
+			com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
 					.transfer(hits, offset, size);
 			tempHits.setTotalHits(hits.length());
 			return tempHits;

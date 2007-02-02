@@ -32,6 +32,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.team.lucene.Hits;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
@@ -56,7 +57,6 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.FileAttachment.FileLock;
 import com.sitescape.ef.module.definition.DefinitionUtils;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.file.ArchiveStore;
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.DeleteVersionException;
