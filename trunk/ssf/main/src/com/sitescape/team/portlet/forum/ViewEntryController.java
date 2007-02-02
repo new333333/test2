@@ -120,7 +120,17 @@ public class ViewEntryController extends  SAbstractController {
 			return new ModelAndView(viewPath, model);
 		} else {
 			model = getShowEntry(entryId, formData, request, response, folderId);
+			
 			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+
+			boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
+			String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
+			String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
+
+			model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
+			model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
+			model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
+			
 			FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
 			
 			//Set up the tabs

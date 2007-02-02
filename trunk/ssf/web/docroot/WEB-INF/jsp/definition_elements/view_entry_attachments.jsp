@@ -8,6 +8,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <script language="JavaScript">
 var iFrameInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> = "false";
+var iFrameFileOpenInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> = "false";
+
 function reloadUrlFromApplet()
 {
 	alert("Called from Applet");
@@ -154,64 +156,37 @@ function ss_postSelectEntryAttachment${ssDefinitionEntry.id}<portlet:namespace/>
 	var s = divObj.innerHTML;
 }
 
-function callAlert(strURLValue, aHrefObj)
-{
-	ss_showFileOpen(strURLValue, aHrefObj);
-}
+function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValue) {
+ 	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="false" >
+		<ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}" />
+		<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
+		<ssf:param name="operation" value="open_webdav_file" />
+		<ssf:param name="namespace" value="${renderResponse.namespace}" />
+    	</ssf:url>"
+    	
+    url = url + "&ssURLValue="+strURLValue;
 
-function custom_getDivTop(obj) {
-    var top = 0;
-    if (isNSN || isNSN6 || isMoz5) {
-        //var obj = self.document.getElementById(divName)
-        while (1) {
-            if (!obj) {break}
-            top += parseInt(obj.offsetTop)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else {
-        //var obj = self.document.all[divName]
-        while (1) {
-            if (!obj) {break}
-            top += obj.offsetTop
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(top);
-}
+	var divId = "ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>";
+	var divObj = document.getElementById(divId);	
+	
+	var frameId = 'ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>';	
+	var frameObj = document.getElementById(frameId);
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
 
-function custom_getDivLeft(obj) {
-    var left = 0;
-    if (isNSN || isNSN6 || isMoz5) {
-        //var obj = self.document.getElementById(divName)
-        while (1) {
-            if (!obj) {break}
-            left += parseInt(obj.offsetLeft)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else {
-        //var obj = self.document.all[divName]
-        while (1) {
-            if (!obj) {break}
-            left += obj.offsetLeft
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(left);
-}
-
-function ss_showFileOpen(strURLValue, aHrefPos)
-{
-	ss_showDiv('ss_div_fileopen');
-	var fileOpenObj =  document.getElementById("fileopenobj");
-	fileOpenObj.callAlert(strURLValue);
-
-	var divObj = document.getElementById('ss_div_fileopen');
-	divObj.style.width = "0px";
-	divObj.style.height = "0px";
+	//if (iFrameFileOpenInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> == "false") {
+		frameObj.src = url;
+		//iFrameFileOpenInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> = "true";
+	//}
+	
+	divObj.style.width = "1px";
+	divObj.style.height = "1px";
+	//this.frames['ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>'].setFileName${ssDefinitionEntry.id}<portlet:namespace/>(strURLValue);
 }
 </script>
 
@@ -259,37 +234,10 @@ function ss_showFileOpen(strURLValue, aHrefPos)
 	</td>
 	
 	<td width="30%">
-	<div id="ss_div_fileopen" width="0px" height="0px" name="ss_div_fileopen" style="visibility:hidden;display:none;position:relative;">
-	<%
-	 boolean isIETEST = com.sitescape.util.BrowserSniffer.is_ie(request);
-	%>								
-
-			<c:if test="<%= isIETEST %>">
-				<object id="fileopenobj" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="fileopen" 
-				  WIDTH = "0" HEIGHT = "0" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
-				  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
-			</c:if>
-			<c:if test="<%= !isIETEST %>">
-			<applet name="fileopenobj" id="fileopenobj" CODE = "com.sitescape.team.applets.fileopen.FileOpen" 
-			  JAVA_CODEBASE = "<html:rootPath/>applets" 
-			  ARCHIVE = "fileopen/ssf-fileopen-applet.jar" 
-			  WIDTH = "0" HEIGHT = "0" MAYSCRIPT="true">
-			</c:if>
-				    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.fileopen.FileOpen" />
-				    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
-				    <PARAM NAME ="ARCHIVE" VALUE = "fileopen/ssf-fileopen-applet.jar" />
-				    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
-				    <param name = "scriptable" value="true" />
-				    <PARAM NAME = "NAME" VALUE = "fileopen" />
-				    <PARAM NAME = "startingDir" VALUE=""/>
-				    <PARAM NAME = "fileToOpen" VALUE=""/>
-			<c:if test="<%= !isIETEST %>">
-			</applet>
-			</c:if>
-			<c:if test="<%= isIETEST %>">
-			</object>
-			</c:if>
-			
+		<div id="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" width="1px" height="1px" name="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" style="visibility:hidden;display:none;">
+			<div align="right">
+				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" height="100%" width="100%">xxx</iframe>
+			</div>
 		</div>
 	</td>	
 </tr>
@@ -314,6 +262,7 @@ function ss_showFileOpen(strURLValue, aHrefPos)
 </table>
 
 <c:set var="ss_viewEntryAttachmentDivId" value="ss_divAttachmentList${ssDefinitionEntry.id}${renderResponse.namespace}" scope="request"/>
+<c:set var="ss_namespace_attach" value="${renderResponse.namespace}" scope="request"/>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
 

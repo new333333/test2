@@ -39,6 +39,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -243,7 +244,9 @@ public class AjaxController  extends SAbstractController {
 			return addAttachmentOptions(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_RELOAD_ENTRY_ATTACHMENTS)) {
 			return reloadEntryAttachment(request, response); 
-		}		
+		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE)) {
+			return openWebDAVFile(request, response); 
+		}
 		return ajaxReturn(request, response);
 	} 
 	
@@ -1289,7 +1292,7 @@ public class AjaxController  extends SAbstractController {
 		//response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/entry_attachment_options", model);
 	}
-	
+
 	private ModelAndView reloadEntryAttachment(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -1308,6 +1311,14 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			folder = getFolderModule().getFolder(folderId);
 		}
+
+		boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
+		String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
+		String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
+
+		model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
 		
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.ENTRY, entry);
@@ -1316,5 +1327,27 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/view_entry_attachments_ajax", model);
 	}	
+
+	private ModelAndView openWebDAVFile(RenderRequest request, 
+			RenderResponse response) throws Exception {
 	
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		String strURLValue = PortletRequestUtils.getStringParameter(request, "ssURLValue", "");
+		
+		System.out.println("strURLValue: "+strURLValue);
+		
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		
+		String strOpenInEditor = SsfsUtil.openInEditor(strURLValue);
+		
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.ENTRY_ID, entryId);
+		model.put(WebKeys.ENTRY_ATTACHMENT_URL, strURLValue);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
+
+		return new ModelAndView("definition_elements/view_entry_openfile", model);
+	}	
 }

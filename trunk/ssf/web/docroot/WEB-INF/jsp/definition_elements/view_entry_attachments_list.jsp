@@ -1,5 +1,8 @@
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <div id="${ss_viewEntryAttachmentDivId}">
-
+	<%
+	boolean isIECheck = BrowserSniffer.is_ie(request);
+	%>
 	<table width="100%" border="0">
 	<tbody>
 	<tr>
@@ -23,26 +26,48 @@
 					     ><c:out value="${selection.fileItem.name} "/></a>
 				</td>
 				<td width="40%" align="left">
-					<c:if test="${ssConfigJspStyle != 'mail'}">        
-						<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
-						<a style="text-decoration: none;"
-							href="<ssf:ssfsInternalAttachmentUrl 
-								binder="${ssDefinitionEntry.parentBinder}"
-								entity="${ssDefinitionEntry}"
-								fileAttachment="${selection}"/>">
-								<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
-							
-							<!--	
-								
-							<a href="javascript: ;" onClick="javascript:callAlert('<ssf:ssfsInternalAttachmentUrl 
-									binder="${ssDefinitionEntry.parentBinder}"
-									entity="${ssDefinitionEntry}"
-									fileAttachment="${selection}"/>', this); return false;">App Edit</a>
-							-->		
-									
-									
-							</ssf:ifSupportsEditInPlace>
+				
+					<c:if test="${ssConfigJspStyle != 'mail'}">
+					
+						<c:if test="${ssEntryAttachmentAllowEdit == 'true'}">
+							<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
+								<% if (isIECheck) { %>
+									<c:choose>
+									<c:when test="${ssEntryAttachmentEditTypeForIE == 'applet'}">
+										<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
+												binder="${ssDefinitionEntry.parentBinder}"
+												entity="${ssDefinitionEntry}"
+												fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+									</c:when>
+									<c:otherwise>
+										<a href="<ssf:ssfsInternalAttachmentUrl 
+												binder="${ssDefinitionEntry.parentBinder}"
+												entity="${ssDefinitionEntry}"
+												fileAttachment="${selection}"/>">
+												<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+									</c:otherwise>
+									</c:choose>							
+								<% } else { %>
+									<c:choose>
+									<c:when test="${ssEntryAttachmentEditTypeForNonIE == 'webdav'}">
+										<a href="<ssf:ssfsInternalAttachmentUrl 
+												binder="${ssDefinitionEntry.parentBinder}"
+												entity="${ssDefinitionEntry}"
+												fileAttachment="${selection}"/>">
+												<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+									</c:when>
+									<c:otherwise>
+										<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
+												binder="${ssDefinitionEntry.parentBinder}"
+												entity="${ssDefinitionEntry}"
+												fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+									</c:otherwise>
+									</c:choose>							
+								<% } %>
+							</ssf:ifSupportsEditInPlace>						
+						</c:if>
 					</c:if>
+					
 				</td>
 			</tr>
 		</tbody>
