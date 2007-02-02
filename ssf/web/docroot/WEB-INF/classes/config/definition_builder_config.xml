@@ -89,9 +89,14 @@
 	</item>
 
 	<item name="entryView" caption="__entry_view_definition" canBeDeleted="false" multipleAllowed="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="entryView" value="entryView">
+				<option name="entryView" caption="__entry_view" />
+				<option name="guestbook" caption="__entry_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
+		</properties>
 
 		<options optionCaption="__standard_entry_options">
 			<option name="titleView" caption="__title" initial="true" />
@@ -114,9 +119,14 @@
 	</item>
 	
 	<item name="entryBlogView" caption="__entry_blog_view_definition" canBeDeleted="false" multipleAllowed="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="blog" value="blog">
+				<option name="blog" caption="__blog_view" />
+				<option name="guestbook" caption="__entry_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
+		</properties>
 
 		<options optionCaption="__standard_entry_options">
 			<option name="titleBlogView" caption="__title" initial="true" />
@@ -133,7 +143,7 @@
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/blog_view.jsp" />
 		</jsps>
 	</item>
-	
+
 	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
 		<properties>
 			<property name="name" caption="__data_item_name" type="selectbox">
@@ -186,6 +196,12 @@
 		<properties>
 			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
 				value="form1" setAttribute="formName"/>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="form" value="form">
+				<option name="form" caption="__entry_form" />
+				<option name="guestbook" caption="__entry_form_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
 		</properties>
 		<options>
 			<option name="title" initial="true" />
@@ -1018,6 +1034,7 @@
 				<option name="wiki" caption="__folder_wiki" />
 				<option name="photo" caption="__folder_photo" />
 				<option name="file" caption="__folder_file" />
+				<option name="guestbook" caption="__folder_guestbook" />
 				<help>__help_folder_view_type</help>
 			</property>
 		</properties>
@@ -1635,24 +1652,24 @@
 		</jsps>
 	</item>
 	
-	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_business_card_elements" 
+	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 		  canBeDeleted="false" multipleAllowed="false">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
-				<option name="name" caption="__userName" />
+				<option name="name" caption="__userName" initial="true"/>
 				<option name="title" caption="__userTitle" />
-				<option name="organization" caption="__organization" />
-				<option name="phone" caption="__phone" />
-				<option name="emailAddress" caption="__emailAddress" />
-				<option name="zonName" caption="__zonName" />
+				<option name="organization" caption="__organization" initial="true"/>
+				<option name="phone" caption="__phone"/>
+				<option name="emailAddress" caption="__emailAddress" initial="true"/>
+				<option name="zonName" caption="__zonName" initial="true"/>
 		    </property>
 			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
-				characterMask="^[0-9]*$" default="200">
+				characterMask="^[0-9]*$" default="100">
 				<help>__help_graphic_constraints</help>
 			</property>
 			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
-				characterMask="^[0-9]*$" default="200">
+				characterMask="^[0-9]*$" default="100">
 				<help>__help_graphic_constraints</help>
 			</property>
 		</properties>
