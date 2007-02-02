@@ -15,7 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.ef.util.NLT" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 
 <div class="ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="ldap.title"/></span><br/><br/>

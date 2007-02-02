@@ -1,6 +1,8 @@
-package com.sitescape.ef.util;
+package com.sitescape.team.util;
 
 import java.lang.reflect.Method;
+
+import com.sitescape.ef.util.ReflectHelper;
 
 import junit.framework.TestCase;
 
@@ -13,7 +15,7 @@ public class ReflectHelperTests extends TestCase {
 	
 	public void testClassForNameOk() {
 		try {
-			Class c = ReflectHelper.classForName("com.sitescape.ef.util.ReflectHelperTests$TestClass");
+			Class c = ReflectHelper.classForName("com.sitescape.team.util.ReflectHelperTests$TestClass");
 			assertEquals(c, TestClass.class);
 		} catch (ClassNotFoundException e) {
 			fail("ClassNotFoundException should not be raised");

@@ -1,5 +1,5 @@
 <%@ page import="com.sitescape.ef.domain.Event" %>
-<%@ page import="com.sitescape.ef.util.NLT" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Iterator" %>
 <%@ page import="java.text.SimpleDateFormat" %>

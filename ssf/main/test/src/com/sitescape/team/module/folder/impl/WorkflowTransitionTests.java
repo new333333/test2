@@ -1,4 +1,4 @@
-package com.sitescape.ef.module.folder.impl;
+package com.sitescape.team.module.folder.impl;
 
 import java.util.Iterator;
 import java.util.Date;
