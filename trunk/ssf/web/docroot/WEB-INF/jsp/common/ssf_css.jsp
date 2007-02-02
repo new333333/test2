@@ -2169,6 +2169,16 @@ div.ss_cal_gridHeaderTextToday {
   color: #888888;
 }
 
+div.ss_cal_gridHeaderText a {
+  color: #888888;
+  text-decoration: none;
+}
+
+div.ss_cal_gridHeaderText a:hover {
+  color: #888888;
+  text-decoration: underline;
+}
+
 
 /*
  * Day Grid styles
@@ -2312,6 +2322,17 @@ div.ss_cal_monthGridDayBadgeToday {
   background-color: #CCCCCC;
   color: #FFFFFF;
 }
+
+div.ss_cal_monthGridDayBadge a {
+  color: #BBBBBB;
+  text-decoration: none;
+}
+
+div.ss_cal_monthGridDayBadge a:hover {
+  color: #BBBBBB;
+  text-decoration: underline;
+}
+
 
 
 /*

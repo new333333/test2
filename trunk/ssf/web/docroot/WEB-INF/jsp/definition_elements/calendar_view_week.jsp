@@ -20,9 +20,9 @@ span.tinyLabel {
 <span class="tinyLabel">Grid:</span>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 1; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">Single</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 3; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">3-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 5; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">5-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 7; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">7-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 14; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">14-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek'); return false;">5-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('week'); return false;">7-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
 <ssf:nlt tag="calendar.beginning" text="Week beginning"/>
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;

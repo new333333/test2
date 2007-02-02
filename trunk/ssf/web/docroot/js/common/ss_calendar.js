@@ -77,6 +77,7 @@ var ss_cal_Grid = {
 
     // Some defaults
     gridSize: 7,
+    gridOffset: 0,
     readOnly: false,
     dayGridDrawn: false,
     monthGridDrawn: false,
@@ -88,9 +89,9 @@ var ss_cal_Grid = {
             dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster"));
             dojo.html.show(dojo.byId("ss_cal_DayGridMaster"));
             if (!this.dayGridDrawn) {
-                this.drawDayHeader("ss_cal_dayGridHeader", this.gridSize);
-                this.drawDayGrid("ss_cal_dayGridAllDay", this.dayGridDrawn, this.gridSize, "ss_cal_allDay",   1); 
-                this.drawDayGrid("ss_cal_dayGridHour",   this.dayGridDrawn, this.gridSize, "ss_cal_hourGrid", 0); 
+                this.drawDayHeader("ss_cal_dayGridHeader", this.gridSize, this.gridOffset);
+                this.drawDayGrid("ss_cal_dayGridAllDay", this.dayGridDrawn, this.gridSize, this.gridOffset, "ss_cal_allDay",   1); 
+                this.drawDayGrid("ss_cal_dayGridHour",   this.dayGridDrawn, this.gridSize, this.gridOffset, "ss_cal_hourGrid", 0); 
                 this.drawHourMarkers("hourHeader", ss_cal_CalData.hourTickList);
                 if (!this.readOnly) {
                     dojo.event.connect(dojo.byId("ss_cal_dayGridHour"),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour"))});
@@ -98,9 +99,9 @@ var ss_cal_Grid = {
                 }
                 this.dayGridDrawn = true;
             } else {
-                this.drawDayHeader("ss_cal_dayGridHeader", this.gridSize);
-                this.drawDayGrid("ss_cal_dayGridAllDay", this.dayGridDrawn, this.gridSize, "ss_cal_allDay",   1); 
-                this.drawDayGrid("ss_cal_dayGridHour",   this.dayGridDrawn, this.gridSize, "ss_cal_hourGrid", 1); 
+                this.drawDayHeader("ss_cal_dayGridHeader", this.gridSize, this.gridOffset);
+                this.drawDayGrid("ss_cal_dayGridAllDay", this.dayGridDrawn, this.gridSize, this.gridOffset, "ss_cal_allDay",   1); 
+                this.drawDayGrid("ss_cal_dayGridHour",   this.dayGridDrawn, this.gridSize, this.gridOffset, "ss_cal_hourGrid", 1); 
             }
         } else if (this.currentType == "month") {
             dojo.html.hide(dojo.byId("ss_cal_DayGridMaster"));
@@ -114,7 +115,7 @@ var ss_cal_Grid = {
         }
     },
 
-    drawDayGrid: function(containerId, dayGridDrawn, days, ruleId, justVertical) {
+    drawDayGrid: function(containerId, dayGridDrawn, days, gridOffset, ruleId, justVertical) {
         var container = dojo.byId(containerId);
         var dayOffset = 0;
         var hourOffset = 0;
@@ -130,11 +131,11 @@ var ss_cal_Grid = {
         }
 
         var today = dojo.byId(containerId + "_Today")
-        if (ss_cal_CalData.dayTodayIndex < 0 || ss_cal_CalData.dayTodayIndex >= days) {
+        if ((ss_cal_CalData.dayTodayIndex - gridOffset) < 0 || (ss_cal_CalData.dayTodayIndex - gridOffset) >= days) {
             dojo.html.hide(today);
         } else {
             today.style.width = dayOffsetSize + "%";
-            today.style.left = (ss_cal_CalData.dayTodayIndex * dayOffsetSize) + "%";
+            today.style.left = ((ss_cal_CalData.dayTodayIndex - gridOffset) * dayOffsetSize) + "%";
             dojo.html.show(today);
         }
 
@@ -171,7 +172,7 @@ var ss_cal_Grid = {
     },
 
 
-    drawDayHeader: function(containerId, days) {
+    drawDayHeader: function(containerId, days, gridOffset) {
         var container = dojo.byId(containerId);
         var dayOffset = 0;
         var hourOffset = 0;
@@ -188,13 +189,13 @@ var ss_cal_Grid = {
         for (var x = 0; x < days; x++) {
             var badge = document.createElement("div");
             badge.className = "ss_cal_gridHeaderText";
-            if (x == ss_cal_CalData.dayTodayIndex) {
+            if ((x+gridOffset) == ss_cal_CalData.dayTodayIndex) {
                 badge.className += " ss_cal_gridHeaderTextToday";
             }
             badge.style.left = dayOffset + "%";
             badge.style.width = dayOffsetSize + "%";
-            var badgeText = document.createTextNode(ss_cal_CalData.dayHeader(x));
-            badge.appendChild(badgeText);
+            badge.innerHTML = '<a href="javascript: ;" onClick="ss_cal_Events.switchDayView(' + "'daydelta', " + x + ')">' + 
+                   ss_cal_CalData.dayHeader(x+gridOffset) + '</a>';
             container.appendChild(badge);
             dayOffset += dayOffsetSize;
         }
@@ -276,8 +277,8 @@ var ss_cal_Grid = {
             }
             badge.style.left = (d * vOffsetSize) + "%";
             badge.style.top = (w * hOffsetSize) + "%";
-            var badgeText = document.createTextNode(ticks[t++]);
-            badge.appendChild(badgeText);
+            badge.innerHTML = '<a href="javascript: ;" onClick="ss_cal_Events.switchDayView(' + "'daydirect', " + x + ')">' + 
+                   ticks[t++] + '</a>';
             container.appendChild(badge);
         }
 
@@ -358,7 +359,7 @@ var ss_cal_CalAllDayEvent = {
         dayOffset = Math.floor((gridX / gridWidth)  / (1.0 / ss_cal_Grid.gridSize));
         this.currDay = dayOffset;
         hourOffset = this.recordHourOffset(this.currDay);
-        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, 0, "All day", "", "#CCCCCC", "#CCCCCC", "");
+        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "#CCCCCC", "#CCCCCC", "");
         this.resetGridHeight();
         dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");
         this.currEventData = new Object();
@@ -588,7 +589,7 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
     e.setAttribute("id", "calevt" + ss_cal_Events.displayId);
     e.style.backgroundColor = boxColor;
     e.style.borderColor = borderColor
-    e.style.height = (((((duration == 0) ? 30 : duration) / 60) * 42) - 4) + "px";
+    e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
     if (duration >= 0) {
         e.innerHTML = ss_cal_CalData.shortTime(time);
     }
@@ -769,17 +770,22 @@ var ss_cal_Events = {
         while (this.order.length) {
             var eid = this.order.shift().substr(9);
             var e = this.eventData[eid];
+            // We filter and shift the days based on the gridSize and gridOffset
+            var gridDay = e.day - ss_cal_Grid.gridOffset;
+            if (gridDay < 0 || gridDay >= ss_cal_Grid.gridSize) {
+                continue;
+            }            
             if (e.start < 0) {
                 var grid = "ss_cal_dayGridAllDay";
                 this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
-                       e.day, ss_cal_CalAllDayEvent.recordHourOffset(e.day), -1, e.title, e.text,
+                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(e.day), -1, e.title, e.text,
                        ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid); 
             } else {
                 var grid = "ss_cal_dayGridHour";
                 this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
                        this.collisionCount(e.day, e.start),
                        this.collisionIndex(e.day, e.start),
-                       e.day, e.start, e.dur, e.title, e.text,
+                       gridDay, e.start, e.dur, e.title, e.text,
                        ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid); 
             }
         }
@@ -823,7 +829,7 @@ var ss_cal_Events = {
         if (this.overEventId != "") {
             var hb = dojo.byId("hoverBox");
             if (animate) {
-                dojo.lfx.html.fadeOut(hb, 100).play();
+                dojo.lfx.html.fadeHide(hb, 100).play();
             } else {
                 dojo.html.hide(hb);
             }
@@ -857,8 +863,36 @@ var ss_cal_Events = {
             dojo.html.placeOnScreen(hb, (ebox.left + eboxm.width), (ebox.top), 10, false, "TL");
             dojo.lfx.html.fadeIn(hb, 200).play();
         }
-    }
+    },
 
+
+    switchDayView: function(dayMode, tweak) {
+        switch (dayMode) {
+            case "daydelta":
+                ss_cal_Grid.gridSize = 1;
+                ss_cal_Grid.gridOffset += tweak;
+                break;
+            case "daydirect":
+                ss_cal_Grid.gridSize = 1;
+                ss_cal_Grid.gridOffset = tweak;
+                break;
+            case "week":
+                ss_cal_Grid.gridSize = 7;
+                ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
+                break;
+            case "fortnight":
+                ss_cal_Grid.gridSize = 14;
+                ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
+                break;
+            case "workweek":
+                ss_cal_Grid.gridSize = 5;
+                ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
+                ss_cal_Grid.gridOffset++;
+                break;
+        }
+        ss_cal_Grid.activateGrid('day');
+        this.redrawAll();
+    }
 
 };
 
