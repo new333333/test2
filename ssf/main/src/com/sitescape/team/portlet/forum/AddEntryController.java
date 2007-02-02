@@ -34,6 +34,7 @@ public class AddEntryController extends SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BLOG_REPLY, "");
+		String addEntryFromIFrame = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		//See if the add entry form was submitted
 		Long entryId=null;
@@ -50,6 +51,11 @@ public class AddEntryController extends SAbstractController {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
 				setupReloadOpener(response, folderId, entryId);
+				if (!addEntryFromIFrame.equals("")) {
+					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
+					response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");
+					response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
+				}
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap );
@@ -73,6 +79,8 @@ public class AddEntryController extends SAbstractController {
 				response.setRenderParameter(WebKeys.NAMESPACE, namespace);
 				response.setRenderParameter(WebKeys.ENTRY_ID, entryId.toString());
 				response.setRenderParameter(WebKeys.BLOG_REPLY_COUNT, String.valueOf(entry.getTotalReplyCount()));
+			} else if (!addEntryFromIFrame.equals("")) {
+				response.setRenderParameter(WebKeys.IN_IFRAME_ADD_ENTRY, "1");				
 			} else {
 				setupCloseWindow(response);
 			}
