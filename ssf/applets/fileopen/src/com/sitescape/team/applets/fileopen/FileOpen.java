@@ -29,8 +29,10 @@ public class FileOpen extends JApplet implements Runnable {
     String startingDirStr = ""; // dir to place files in when uploading
     
     final String fileToOpen = "fileToOpen";
+    final String editorType = "editorType";
     
     String strFileName = "";
+    String strEditorType = "";
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -40,113 +42,60 @@ public class FileOpen extends JApplet implements Runnable {
     ////////////////////////////////////////////////////////////////////////
     public void run () {
     	fileOpen = this;
-
-    	
-        // Allow secure interactions.
-        Security.addProvider(
-            new com.sun.net.ssl.internal.ssl.Provider());
-        System.setProperty("java.protocol.handler.pkgs",
-                           "com.sun.net.ssl.internal.www.protocol");
-       // the following should be equivalent to
-        // java -djavax.net.debug="ssl,session"
-        // but isn't as I notice a can't-find-class-SocketFactory error
-        // with former method
-        System.setProperty("javax.net.debug", "");
-    	
     	try {
-    		/*
-            while (true) {
-            	if (strFileName != "") {
-            		try {
-                        String[] command =  new String[4];
-                        command[0] = "cmd";
-                        command[1] = "/C";
-                        command[2] = "start winword";
-                        
-                        String strURL = strFileName;
-                        System.out.println("Hemanth: strURL: "+ strURL);
-                        
-                        String strReplacedURL = strURL.replaceAll(" ", "%20");
-                        System.out.println("Hemanth: strReplacedURL: "+ strReplacedURL+"Testing");
-                        command[3] = strReplacedURL;
-                        System.out.println("Hemanth: command[3]: "+ command[3]);
-                        
-                        Process p = Runtime.getRuntime().exec(command);
-                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+/*    		
+    	    int delay = 500;   // delay for 1/2 sec.
+    	    int period = 1000;  // repeat every sec.
+    	    java.util.Timer timer = new java.util.Timer();
+    	    
+    	    timer.scheduleAtFixedRate(new TimerTask() {
+    	            public void run() {
+    	            	*/
+    					strFileName = getParameter(fileToOpen);
+    					strEditorType = getParameter(editorType);
+    					
+    					System.out.println("FileName to open: "+strFileName + ", Editor Type: "+strEditorType);
+    					
+    	            	if (!strFileName.equals("") && !strEditorType.equals("")) {
+    	            		try {
+    	                        String[] command =  new String[4];
+    	                        command[0] = "cmd";
+    	                        command[1] = "/C";
+    	                        command[2] = "start " + strEditorType;
+    	                        
+    	                        String strURL = strFileName;
+    	                        String strReplacedURL = strURL.replaceAll(" ", "%20");
+    	                        
+    	                        command[3] = strReplacedURL;
+    	                        
+    	                        Process p = Runtime.getRuntime().exec(command);
+    	                        
+    	                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+    	                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-                        // read the output from the command
-                        String s = null;
-                        System.out.println("Here is the standard output of the command:\n");
-                        while ((s = stdInput.readLine()) != null) {
-                            System.out.println(s);
-                        }
+    	                        // read the output from the command
+    	                        String s = null;
+    	                        while ((s = stdInput.readLine()) != null) {
+    	                            System.out.println(s);
+    	                        }
 
-                        // read any errors from the attempted command
-                        System.out.println("Here is the standard error of the command (if any):\n");
-                        
-	                    while ((s = stdError.readLine()) != null) {
-	                        System.out.println(s);
-	                    }
-            		}
-                	catch(IOException ioe) {
-                		System.out.println("IO Err: "+ioe);
-                	}
-                	finally {
-                		strFileName = "";
-                	}
-            	}
-            }
-            */
-            
-            
-            /*
-            
-            jButtonEdit.addActionListener(new ActionListener() {
-            	public void actionPerformed(ActionEvent e) {
-            		System.out.println("Hemanth: e.getActionCommand(): "+e.getActionCommand());
-
-            		try {
-                        String[] command =  new String[4];
-                        command[0] = "cmd";
-                        command[1] = "/C";
-                        command[2] = "start winword";
-                        
-                        //String strURL = getParameter(fileToOpen);
-                        
-                        String strURL = strFileName;
-                        System.out.println("Hemanth: strURL: "+ strURL);
-                        
-                        String strReplacedURL = strURL.replaceAll(" ", "%20");
-                        System.out.println("Hemanth: strReplacedURL: "+ strReplacedURL+"Testing");
-                        command[3] = strReplacedURL;
-                        System.out.println("Hemanth: command[3]: "+ command[3]);
-                        
-                        Process p = Runtime.getRuntime().exec(command);
-                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-                        // read the output from the command
-                        String s = null;
-                        System.out.println("Here is the standard output of the command:\n");
-                        while ((s = stdInput.readLine()) != null) {
-                            System.out.println(s);
-                        }
-
-                        // read any errors from the attempted command
-                        System.out.println("Here is the standard error of the command (if any):\n");
-                        
-	                    while ((s = stdError.readLine()) != null) {
-	                        System.out.println(s);
-	                    }
-            		}
-                	catch(IOException ioe) {
-                		System.out.println("IO Err: "+ioe);
-                	}            		
-            	}
-            });
-            
-            */
+    	                        // read any errors from the attempted command
+    	                        System.out.println("Here is the standard error of the command (if any):\n");
+    		                    while ((s = stdError.readLine()) != null) {
+    		                        System.out.println(s);
+    		                    }
+    	            		}
+    	                	catch(IOException ioe) {
+    	                		System.out.println("IO Err: "+ioe);
+    	                	}
+    	                	finally {
+    	                		strFileName = "";
+    	                	}
+    	            	}
+/*    	            	
+    	            }
+    	        }, delay, period);
+    	        */
     	}
     	catch(Exception e) {
     		System.out.println("Err: "+e);
@@ -301,7 +250,6 @@ public class FileOpen extends JApplet implements Runnable {
         return appletContext;
     }
 
-
     private void onLoad(FileOpen fileOpen)
     {
       try {
@@ -314,63 +262,14 @@ public class FileOpen extends JApplet implements Runnable {
       } catch (Exception ignored) { }
     }
     
-    public void callAlert(String strInputURL)
+    public void setFileToBeOpened(String strInputURL)
     {
       try {
     	strFileName = strInputURL;
-    	/*
-        String onLoadFunction = "alert";
-        JSObject win = JSObject.getWindow(fileOpen);
-        String args[] = {"Testing....."+strInputURL};
-        Object foo = win.call(onLoadFunction,args);
-        System.out.println("Hemanth: foo: "+foo);
-    	invokeURL(strInputURL); 
-    	*/
       } 
       catch (Exception e) { 
-    	  System.out.println("Hemanth: callAlert: "+e);
+    	  System.out.println("setFileToBeOpened: "+e);
       }
-    }
-    
-    public void invokeURL()
-    {
-		try {
-            String[] command =  new String[4];
-            command[0] = "cmd";
-            command[1] = "/C";
-            command[2] = "start winword";
-            
-            //String strURL = getParameter(fileToOpen);
-            
-            String strURL = strFileName;
-            System.out.println("Hemanth: strURL: "+ strURL);
-            
-            String strReplacedURL = strURL.replaceAll(" ", "%20");
-            System.out.println("Hemanth: strReplacedURL: "+ strReplacedURL+"Testing");
-            command[3] = strReplacedURL;
-            System.out.println("Hemanth: command[3]: "+ command[3]);
-            
-            Process p = Runtime.getRuntime().exec(command);
-            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
-
-            // read the output from the command
-            String s = null;
-            System.out.println("Here is the standard output of the command:\n");
-            while ((s = stdInput.readLine()) != null) {
-                System.out.println(s);
-            }
-
-            // read any errors from the attempted command
-            System.out.println("Here is the standard error of the command (if any):\n");
-            
-            while ((s = stdError.readLine()) != null) {
-                System.out.println(s);
-            }
-		}
-    	catch(IOException ioe) {
-    		System.out.println("IO Err: "+ioe);
-    	}       	
     }
     
 } // end of class

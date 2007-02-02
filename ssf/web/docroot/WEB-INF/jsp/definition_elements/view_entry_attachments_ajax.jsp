@@ -10,6 +10,7 @@
 	parseInBrowser="true">
 	
 	<c:set var="ss_viewEntryAttachmentDivId" value="ss_divAttachmentList${ssDefinitionEntry.id}${ss_namespace}" scope="request"/>
+	<c:set var="ss_namespace_attach" value="${ss_namespace}" scope="request"/>
 	
 	<%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
 

@@ -99,4 +99,28 @@ public class SsfsUtil {
 		
 		return false;
 	}
+	
+	public static String openInEditor(String relativeFilePath) {
+		String extension = null;
+		int index = relativeFilePath.lastIndexOf(".");
+		if(index < 0)
+			return ""; // No extension. can not support edit-in-place
+		else {
+			extension = relativeFilePath.substring(index).toLowerCase();
+			String strEditor = SPropsUtil.getString("edit.in.place.editor"+extension, "");
+			return strEditor;
+		}
+	}
+	
+	public static boolean supportAttachmentEdit() {
+		return SPropsUtil.getBoolean("edit.in.place");
+	}	
+
+	public static String attachmentEditTypeForIE() {
+		return SPropsUtil.getString("edit.in.place.for.ie");
+	}	
+
+	public static String attachmentEditTypeForNonIE() {
+		return SPropsUtil.getString("edit.in.place.for.nonie");
+	}	
 }
