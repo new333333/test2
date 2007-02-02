@@ -2,10 +2,10 @@ package com.sitescape.team.ssfs.wck;
 
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
-import com.sitescape.ef.ssfs.CrossContextConstants;
-import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
-import com.sitescape.ef.web.util.NullServletResponse;
+import com.sitescape.team.ssfs.CrossContextConstants;
 import com.sitescape.team.ssfs.web.crosscontext.DispatchClient;
+import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
+import com.sitescape.team.web.util.NullServletResponse;
 
 public class AuthenticationManager implements SessionAuthenticationManager {
 

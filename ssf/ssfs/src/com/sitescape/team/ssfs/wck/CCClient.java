@@ -8,12 +8,12 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.ef.ssfs.AlreadyExistsException;
-import com.sitescape.ef.ssfs.LockException;
-import com.sitescape.ef.ssfs.CrossContextConstants;
-import com.sitescape.ef.ssfs.NoAccessException;
-import com.sitescape.ef.ssfs.NoSuchObjectException;
-import com.sitescape.ef.ssfs.TypeMismatchException;
+import com.sitescape.team.ssfs.AlreadyExistsException;
+import com.sitescape.team.ssfs.CrossContextConstants;
+import com.sitescape.team.ssfs.LockException;
+import com.sitescape.team.ssfs.NoAccessException;
+import com.sitescape.team.ssfs.NoSuchObjectException;
+import com.sitescape.team.ssfs.TypeMismatchException;
 
 import org.apache.slide.simple.store.WebdavStoreLockExtension.Lock;
 

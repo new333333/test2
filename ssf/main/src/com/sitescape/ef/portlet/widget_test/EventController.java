@@ -15,7 +15,6 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
-import com.sitescape.ef.web.portlet.SAbstractController;
 import javax.servlet.jsp.PageContext;
 
 import java.util.Calendar;
@@ -24,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.sitescape.ef.domain.Event;
+import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.util.cal.Duration;
 
 public class EventController extends SAbstractController {

@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 public class ViewCssController extends SAbstractController {
 	

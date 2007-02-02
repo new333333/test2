@@ -22,10 +22,10 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
 
 import org.springframework.web.servlet.ModelAndView;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import org.springframework.transaction.support.DefaultTransactionDefinition;

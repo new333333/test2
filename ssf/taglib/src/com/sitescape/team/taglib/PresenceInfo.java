@@ -14,9 +14,9 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.PresenceServiceUtils;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.servlet.StringServletResponse;
 
 

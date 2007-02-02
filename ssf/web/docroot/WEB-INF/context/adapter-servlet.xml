@@ -43,7 +43,7 @@
 		</property>
 	</bean>
 
-	<!--<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>-->
+	<!--<bean id="initRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.InitRequestContextInterceptor"/>-->
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->

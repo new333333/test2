@@ -6,15 +6,15 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.ef.ssfs.AlreadyExistsException;
-import com.sitescape.ef.ssfs.CrossContextConstants;
-import com.sitescape.ef.ssfs.LockException;
-import com.sitescape.ef.ssfs.NoAccessException;
-import com.sitescape.ef.ssfs.NoSuchObjectException;
-import com.sitescape.ef.ssfs.TypeMismatchException;
-import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
-import com.sitescape.ef.web.util.NullServletResponse;
+import com.sitescape.team.ssfs.AlreadyExistsException;
+import com.sitescape.team.ssfs.CrossContextConstants;
+import com.sitescape.team.ssfs.LockException;
+import com.sitescape.team.ssfs.NoAccessException;
+import com.sitescape.team.ssfs.NoSuchObjectException;
+import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.web.crosscontext.DispatchClient;
+import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
+import com.sitescape.team.web.util.NullServletResponse;
 
 public class CCExecutionTemplate {
 

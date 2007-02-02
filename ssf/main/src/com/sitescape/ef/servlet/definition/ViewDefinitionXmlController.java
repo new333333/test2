@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.util.Validator;
 import org.springframework.web.bind.RequestUtils;
 

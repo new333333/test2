@@ -24,12 +24,12 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.team.util.ConfigPropertyNotFoundException;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.XmlFileUtil;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class RssGenerator extends CommonDependencyInjection {
 

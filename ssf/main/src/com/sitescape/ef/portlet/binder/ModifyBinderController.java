@@ -18,9 +18,9 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 

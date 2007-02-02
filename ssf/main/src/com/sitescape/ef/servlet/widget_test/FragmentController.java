@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 public class FragmentController extends SAbstractController {
 

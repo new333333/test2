@@ -1,7 +1,7 @@
 package com.sitescape.ef.portlet.sample;
 
 import com.sitescape.ef.module.sample.Employee;
-import com.sitescape.ef.web.portlet.SSimpleFormController;
+import com.sitescape.team.web.portlet.SSimpleFormController;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;

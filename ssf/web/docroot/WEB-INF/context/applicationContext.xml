@@ -182,7 +182,7 @@
 	</bean>
 	
 	<bean id="nlt" class="com.sitescape.team.util.NLT"/>
-	<bean id="definitionHelper" class="com.sitescape.ef.web.util.DefinitionHelper">
+	<bean id="definitionHelper" class="com.sitescape.team.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
@@ -271,15 +271,15 @@
 	</bean>
 
 	<!-- Used for open-session-in-view pattern -->
-	<bean id="portletOpenSessionInViewInterceptor" class="com.sitescape.ef.web.portlet.handler.OpenSessionInViewInterceptor">
+	<bean id="portletOpenSessionInViewInterceptor" class="com.sitescape.team.web.portlet.handler.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="portletLoginCheckInterceptor" class="com.sitescape.ef.web.portlet.handler.LoginCheckInterceptor"/>
+	<bean id="portletLoginCheckInterceptor" class="com.sitescape.team.web.portlet.handler.LoginCheckInterceptor"/>
 		
-	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.ef.web.portlet.handler.InitRequestContextInterceptor"/>
+	<bean id="portletInitRequestContextInterceptor" class="com.sitescape.team.web.portlet.handler.InitRequestContextInterceptor"/>
 		
-	<bean id="portletUserPreloadInterceptor" class="com.sitescape.ef.web.portlet.handler.UserPreloadInterceptor">
+	<bean id="portletUserPreloadInterceptor" class="com.sitescape.team.web.portlet.handler.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="profileModule"><ref local="profileModule"/></property>
 	</bean>	
@@ -657,7 +657,7 @@
 		<property name="htmlConverterManager"><ref local="htmlConverterManager"/></property>
 	</bean>
 
-	<bean id="dashboardHelper" class="com.sitescape.ef.web.util.DashboardHelper" parent="controllerDependencyTemplate">
+	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="controllerDependencyTemplate">
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
 		<property name="dashboardModule"><ref local="dashboardModule"/></property>
@@ -668,12 +668,12 @@
 		
 	<bean id="ssfs" class="org.springframework.aop.framework.ProxyFactoryBean" depends-on="sPropsUtil">
 		<property name="target">
-			<bean class="com.sitescape.ef.ssfs.server.impl.SiteScapeFileSystemImpl" parent="controllerDependencyTemplate">
+			<bean class="com.sitescape.team.ssfs.server.impl.SiteScapeFileSystemImpl" parent="controllerDependencyTemplate">
 				<property name="mimeTypes"><ref local="mimeTypes"/></property>
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.ef.ssfs.server.SiteScapeFileSystem</value>
+			<value>com.sitescape.team.ssfs.server.SiteScapeFileSystem</value>
 		</property>
 		<property name="interceptorNames">
 			<list>

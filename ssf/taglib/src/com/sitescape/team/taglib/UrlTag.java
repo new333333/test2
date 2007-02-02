@@ -13,10 +13,11 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.WebUrlUtil;
 
 import javax.portlet.PortletURL;
+
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 

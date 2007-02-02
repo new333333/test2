@@ -32,16 +32,16 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Tabs;
-import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.Tabs;
+import com.sitescape.team.web.util.Toolbar;
 
 /**
  * @author Peter Hurley

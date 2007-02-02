@@ -13,9 +13,9 @@ import org.dom4j.io.XMLWriter;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 

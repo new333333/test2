@@ -15,7 +15,6 @@ import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.ProfileBinder;
@@ -24,14 +23,15 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Tabs;
-import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.Tabs;
+import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
 public class ListProfilesController extends   SAbstractController {

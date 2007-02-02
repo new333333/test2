@@ -11,9 +11,9 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.servlet.SAbstractController;
-import com.sitescape.ef.web.util.DebugHelper;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.DebugHelper;
 
 public class DownloadFileController extends SAbstractController {
 	

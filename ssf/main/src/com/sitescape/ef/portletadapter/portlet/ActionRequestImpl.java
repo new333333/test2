@@ -12,7 +12,7 @@ import javax.portlet.PortletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portletadapter.support.PortletInfo;
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.web.WebKeys;
 
 public class ActionRequestImpl extends PortletRequestImpl implements ActionRequest {
 

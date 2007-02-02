@@ -8,7 +8,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.ssfs.util.SsfsUtil;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 
 public class SsfsInternalFileUrlTag extends TagSupport {
 	private Binder binder;

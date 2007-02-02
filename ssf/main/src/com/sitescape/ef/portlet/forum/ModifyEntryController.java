@@ -16,10 +16,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley

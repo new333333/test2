@@ -24,13 +24,13 @@ import org.apache.slide.simple.store.WebdavStoreMacroMoveExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
-import com.sitescape.ef.ssfs.AlreadyExistsException;
-import com.sitescape.ef.ssfs.LockException;
-import com.sitescape.ef.ssfs.NoAccessException;
-import com.sitescape.ef.ssfs.NoSuchObjectException;
-import com.sitescape.ef.ssfs.TypeMismatchException;
+import com.sitescape.team.ssfs.AlreadyExistsException;
+import com.sitescape.team.ssfs.LockException;
+import com.sitescape.team.ssfs.NoAccessException;
+import com.sitescape.team.ssfs.NoSuchObjectException;
+import com.sitescape.team.ssfs.TypeMismatchException;
 
-import static com.sitescape.ef.ssfs.CrossContextConstants.*;
+import static com.sitescape.team.ssfs.CrossContextConstants.*;
 
 public class WebdavSiteScape implements BasicWebdavStore, 
 	WebdavStoreBulkPropertyExtension, WebdavStoreLockExtension,

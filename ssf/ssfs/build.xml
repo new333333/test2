@@ -233,7 +233,7 @@
 		<ant dir="${temp.slide.dir}/wck" target="dist" inheritAll="false" />
 		<copy file="${temp.slide.dir}/wck/dist/slide.war" todir="resources" />
 		<!-- The following jar files are copied into our lib directory because they are
-		     needed to compile the Java source files in com.sitescape.ef.ssfs.* packages.
+		     needed to compile the Java source files in com.sitescape.team.ssfs.* packages.
 		     (the first two jar files also contain some changes we made to customize Slide). -->
 		<!-- NOTE: Instead of copying these generated jar files into lib directory at build
 		           time, we checked them into SCM for two reasons: 1) dealing with archives

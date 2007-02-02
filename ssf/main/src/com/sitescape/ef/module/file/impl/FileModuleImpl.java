@@ -40,6 +40,7 @@ import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.Thumbnail;
 import com.sitescape.team.util.ThumbnailException;
+import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.UncheckedIOException;
@@ -88,7 +89,6 @@ import com.sitescape.ef.docconverter.HtmlConverter;
 import com.sitescape.ef.docconverter.IHtmlConverterManager;
 import com.sitescape.ef.docconverter.ImageConverter;
 import com.sitescape.ef.docconverter.IImageConverterManager;
-import com.sitescape.ef.web.util.FilterHelper;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 

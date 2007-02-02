@@ -9,7 +9,7 @@
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.ef.ObjectKeys" %>
-<%@ page import="com.sitescape.ef.web.WebKeys" %>
+<%@ page import="com.sitescape.team.web.WebKeys" %>
 
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 

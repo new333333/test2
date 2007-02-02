@@ -9,10 +9,10 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.DebugHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.DebugHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class DownloadFileController extends SAbstractController {
 	
