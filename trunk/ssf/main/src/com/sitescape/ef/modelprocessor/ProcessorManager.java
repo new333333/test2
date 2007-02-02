@@ -6,9 +6,9 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.util.MergeableXmlClassPathConfigFiles;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.MergeableXmlClassPathConfigFiles;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *

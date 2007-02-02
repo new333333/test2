@@ -64,12 +64,12 @@ import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.TagUtil;
 /**
  * @author Janet McCann
  *

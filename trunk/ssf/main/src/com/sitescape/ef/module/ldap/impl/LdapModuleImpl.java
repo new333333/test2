@@ -52,10 +52,10 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 
 /**

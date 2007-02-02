@@ -50,7 +50,7 @@ import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.UserPropertiesPK;
 import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.util.LongIdComparator;
+import com.sitescape.team.util.LongIdComparator;
 /**
  * @author Jong Kim
  *

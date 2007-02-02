@@ -8,7 +8,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 /**
  * @author hurley
  *

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.sitescape.ef.security.function.WorkArea;
-import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 

@@ -10,7 +10,7 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.web.servlet.SAbstractController;
-import com.sitescape.ef.util.XmlFileUtil;
+import com.sitescape.team.util.XmlFileUtil;
 
 public class ListController extends SAbstractController {
 

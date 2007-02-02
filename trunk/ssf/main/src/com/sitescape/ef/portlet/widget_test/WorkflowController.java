@@ -25,7 +25,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import org.springframework.transaction.support.DefaultTransactionDefinition;

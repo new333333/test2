@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.ef.NotSupportedException;
 
 /**

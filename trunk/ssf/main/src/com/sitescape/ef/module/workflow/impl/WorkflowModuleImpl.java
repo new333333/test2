@@ -52,8 +52,8 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.workflow.TransitionUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SZoneConfig;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 public class WorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule, InitializingBean {

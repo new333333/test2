@@ -37,7 +37,6 @@ import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.ef.portlet.binder.AccessControlController;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -49,6 +48,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
 
 /**

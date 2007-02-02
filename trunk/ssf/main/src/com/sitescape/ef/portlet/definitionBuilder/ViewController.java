@@ -21,11 +21,11 @@ import com.sitescape.ef.domain.DefinitionInvalidException;
 import com.sitescape.ef.domain.DefinitionInvalidOperation;
 import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 /**

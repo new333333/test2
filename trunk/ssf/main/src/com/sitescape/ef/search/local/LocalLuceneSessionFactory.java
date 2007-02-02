@@ -6,8 +6,8 @@ import java.io.IOException;
 import com.sitescape.ef.search.AbstractLuceneSessionFactory;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.util.FileHelper;
+import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.FileHelper;
 
 /**
  * @author Jong Kim

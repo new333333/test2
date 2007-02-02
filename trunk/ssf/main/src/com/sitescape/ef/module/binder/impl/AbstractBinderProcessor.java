@@ -56,15 +56,15 @@ import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.util.FilePathUtil;
-import com.sitescape.ef.util.FileStore;
-import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.repository.RepositoryUtil;
 
-import com.sitescape.ef.util.SimpleProfiler;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.FilePathUtil;
+import com.sitescape.team.util.FileStore;
+import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleProfiler;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 
 /**

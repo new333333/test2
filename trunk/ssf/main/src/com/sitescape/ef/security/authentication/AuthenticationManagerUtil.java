@@ -3,7 +3,7 @@ package com.sitescape.ef.security.authentication;
 import java.util.Map;
 
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 

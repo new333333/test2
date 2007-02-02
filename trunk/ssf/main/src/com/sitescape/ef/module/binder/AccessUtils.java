@@ -20,8 +20,8 @@ import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.OperationAccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.SPropsUtil;
 
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance

@@ -62,8 +62,8 @@ import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.domain.WorkflowControlledEntry;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.util.LongIdComparator;
+import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.LongIdComparator;
 import com.sitescape.util.Validator;
 /**
  * @author Jong Kim

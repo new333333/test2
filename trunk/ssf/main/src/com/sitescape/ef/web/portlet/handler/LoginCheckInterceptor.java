@@ -10,8 +10,8 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.team.util.NLT;
 
 public class LoginCheckInterceptor implements HandlerInterceptor {
 

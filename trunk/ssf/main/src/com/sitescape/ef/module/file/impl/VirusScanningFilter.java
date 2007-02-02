@@ -2,7 +2,7 @@ package com.sitescape.ef.module.file.impl;
 
 import com.sitescape.ef.module.file.ContentFilter;
 import com.sitescape.ef.module.file.FilterException;
-import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.team.util.FileUploadItem;
 
 public class VirusScanningFilter implements ContentFilter {
 

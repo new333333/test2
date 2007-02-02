@@ -12,7 +12,7 @@ import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.sample.SalaryMaxedOutException;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 
 public class EmployeeModuleImpl extends CommonDependencyInjection implements EmployeeModule {
 	

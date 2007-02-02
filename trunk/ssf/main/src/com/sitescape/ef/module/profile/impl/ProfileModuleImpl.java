@@ -51,7 +51,7 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 

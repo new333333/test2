@@ -14,9 +14,9 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 
 import com.sitescape.ef.domain.UpdateAttributeSupport;
-import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.util.ObjectPropertyNotFoundException;
 
 /**
  * @author hurley

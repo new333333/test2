@@ -18,7 +18,7 @@ import com.sitescape.ef.security.acl.AclControlled;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 /**
  *
  * @author Jong Kim

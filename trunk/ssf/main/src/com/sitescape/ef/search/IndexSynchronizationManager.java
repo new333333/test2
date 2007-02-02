@@ -11,7 +11,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.util.SimpleProfiler;
+import com.sitescape.team.util.SimpleProfiler;
 
 /**
  * Index synchronization interface for searchable objects.

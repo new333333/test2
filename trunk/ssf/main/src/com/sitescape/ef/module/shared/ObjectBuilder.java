@@ -4,8 +4,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.ObjectPropertyNotFoundException;
+import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.util.ObjectPropertyNotFoundException;
 
 public class ObjectBuilder  {
 	public static void updateObject(Object target, Map data)  {

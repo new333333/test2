@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 
 public class FilesErrors implements Serializable {
 	

@@ -16,7 +16,7 @@ import org.apache.webdav.lib.WebdavResource;
 import org.apache.webdav.lib.Property;
 import org.apache.webdav.lib.methods.DepthSupport;
 
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 
 
 public class WebdavUtil {

@@ -7,8 +7,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.NLT;
 
 
 /**

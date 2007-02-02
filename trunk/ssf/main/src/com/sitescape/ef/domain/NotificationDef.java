@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.StringUtil;
 
 /**

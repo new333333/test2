@@ -18,12 +18,12 @@ import org.apache.commons.logging.LogFactory;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.crosscontext.CrossContextConstants;
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class DispatchServer extends GenericServlet {
 

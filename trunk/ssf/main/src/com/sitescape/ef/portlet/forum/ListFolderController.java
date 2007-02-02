@@ -47,8 +47,6 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.ssfs.util.SsfsUtil;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -61,6 +59,8 @@ import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 
 /**
  * @author Peter Hurley

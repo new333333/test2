@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.team.util.CollectionUtil;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title=""; //initialized by hibernate access=field

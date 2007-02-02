@@ -6,8 +6,8 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.util.CollectionUtil;
 
 /**
  * @hibernate.class table="SS_WorkAreaFunctionMemberships" lazy="false" dynamic-update="true"

@@ -17,9 +17,9 @@ import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.sitescape.ef.NotSupportedException;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.ObjectKeys;
 
 /**

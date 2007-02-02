@@ -9,7 +9,7 @@ import javax.activation.DataHandler;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.util.FileHelper;
+import com.sitescape.team.util.FileHelper;
 
 /**
  * <code>MultipartFile</code> implementation for Apache Axis attachment support.

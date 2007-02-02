@@ -8,7 +8,7 @@ package com.sitescape.ef.domain;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 
 /**
  * Base class of objects with a Long id and hibernate version column

@@ -4,9 +4,9 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.ObjectPropertyNotFoundException;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ObjectPropertyNotFoundException;
 /**
  *
  * @author Jong Kim

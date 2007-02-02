@@ -26,7 +26,6 @@ import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
@@ -36,6 +35,7 @@ import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 /**

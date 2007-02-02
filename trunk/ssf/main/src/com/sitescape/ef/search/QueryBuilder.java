@@ -15,8 +15,8 @@ import org.dom4j.io.SAXReader;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.util.CollectionUtil;
-import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.SPropsUtil;
 
 public class QueryBuilder {
 

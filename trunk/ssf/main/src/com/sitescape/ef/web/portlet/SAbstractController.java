@@ -23,8 +23,8 @@ import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.rss.RssGenerator;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
-import com.sitescape.ef.util.XSSCheck;
+import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.XSSCheck;
 
 public abstract class SAbstractController extends AbstractController 
 implements AllBusinessServicesInjected {

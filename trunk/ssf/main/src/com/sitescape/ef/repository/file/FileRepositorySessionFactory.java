@@ -4,7 +4,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositorySessionFactory;
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 
 public class FileRepositorySessionFactory implements RepositorySessionFactory {
 

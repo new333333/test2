@@ -14,9 +14,6 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 
-import com.sitescape.ef.util.SpringContextUtil;
-import com.sitescape.ef.util.SessionUtil;
-import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.ObjectKeys;
 
 import com.sitescape.ef.ConfigurationException;
@@ -27,6 +24,9 @@ import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.domain.NoUserByTheNameException;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SessionUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  * @author Janet McCann

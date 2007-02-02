@@ -35,7 +35,7 @@ import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.repository.webdav.SWebdavResource;
 import com.sitescape.ef.repository.webdav.WebdavRepositorySession.WebDavDataSource;
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 

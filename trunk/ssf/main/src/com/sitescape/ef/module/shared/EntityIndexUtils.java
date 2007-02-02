@@ -29,7 +29,7 @@ import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.util.TagUtil;
+import com.sitescape.team.util.TagUtil;
 
 /**
  * Index the fields common to all Entry types.

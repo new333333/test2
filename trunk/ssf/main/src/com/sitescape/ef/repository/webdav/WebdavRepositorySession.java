@@ -20,7 +20,7 @@ import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 
 public class WebdavRepositorySession implements RepositorySession {
 

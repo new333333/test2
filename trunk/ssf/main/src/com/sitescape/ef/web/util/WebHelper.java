@@ -25,11 +25,11 @@ import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.FileUploadItem;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SimpleMultipartFile;
-import com.sitescape.ef.util.TempFileUtil;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SimpleMultipartFile;
+import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.util.Validator;
 
 public class WebHelper {

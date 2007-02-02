@@ -53,11 +53,11 @@ import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.PortabilityUtil;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.PortabilityUtil;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 /**
  * The public methods exposed by this implementation are not transaction 

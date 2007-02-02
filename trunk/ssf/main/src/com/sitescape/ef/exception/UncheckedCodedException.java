@@ -1,6 +1,6 @@
 package com.sitescape.ef.exception;
 
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 
 /**
  * @author Jong Kim

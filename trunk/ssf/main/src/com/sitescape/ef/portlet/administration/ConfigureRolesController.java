@@ -15,10 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 public class ConfigureRolesController extends  SAbstractController {

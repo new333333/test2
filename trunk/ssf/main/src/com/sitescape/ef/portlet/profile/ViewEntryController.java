@@ -14,13 +14,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.team.util.NLT;
 
 public class ViewEntryController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {

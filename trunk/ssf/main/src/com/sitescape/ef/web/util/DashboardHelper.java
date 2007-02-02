@@ -40,11 +40,11 @@ import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.rss.RssGenerator;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
-import com.sitescape.ef.util.ResolveIds;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.ResolveIds;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
 
 public class DashboardHelper implements AllBusinessServicesInjected {

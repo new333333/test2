@@ -2,7 +2,7 @@ package com.sitescape.team.util;
 
 import java.lang.reflect.Method;
 
-import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.team.util.ReflectHelper;
 
 import junit.framework.TestCase;
 
