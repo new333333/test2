@@ -22,24 +22,24 @@
 		<!-- Sitescape mappings only -->
 		<property name="mappingResources">
 			<list>
-		    <value>com.sitescape.team/domain/Attachment.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Binder.hbm.xml</value>
-		    <value>com.sitescape.team/domain/CustomAttribute.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Definition.hbm.xml</value>
-		    <value>com.sitescape.team/domain/EmailAlias.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Event.hbm.xml</value> 
-		    <value>com.sitescape.team/domain/FolderEntry.hbm.xml</value>
-		    <value>com.sitescape.team/domain/HistoryMap.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Membership.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Notification.hbm.xml</value>
-		    <value>com.sitescape.team/domain/PostingDef.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Principal.hbm.xml</value>
-		    <value>com.sitescape.team/domain/SeenMap.hbm.xml</value>
-		    <value>com.sitescape.team/domain/Tag.hbm.xml</value>
-		    <value>com.sitescape.team/domain/UserProperties.hbm.xml</value>
-		    <value>com.sitescape.team/domain/WorkflowState.hbm.xml</value>
-			<value>com.sitescape.team/security/function/Function.hbm.xml</value>
-		    <value>com.sitescape.team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Attachment.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Binder.hbm.xml</value>
+		    <value>com/sitescape/team/domain/CustomAttribute.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Definition.hbm.xml</value>
+		    <value>com/sitescape/team/domain/EmailAlias.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Event.hbm.xml</value> 
+		    <value>com/sitescape/team/domain/FolderEntry.hbm.xml</value>
+		    <value>com/sitescape/team/domain/HistoryMap.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Membership.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Notification.hbm.xml</value>
+		    <value>com/sitescape/team/domain/PostingDef.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Principal.hbm.xml</value>
+		    <value>com/sitescape/team/domain/SeenMap.hbm.xml</value>
+		    <value>com/sitescape/team/domain/Tag.hbm.xml</value>
+		    <value>com/sitescape/team/domain/UserProperties.hbm.xml</value>
+		    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
+			<value>com/sitescape/team/security/function/Function.hbm.xml</value>
+		    <value>com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 			</list>
 		</property>
 <!--  		<property name="hibernateProperties">

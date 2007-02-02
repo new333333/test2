@@ -14,7 +14,7 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 	protected ProcessorManager procMgr;
 	
 	protected String[] getConfigLocations() {
-		return new String[] {"/com.sitescape.team/modelprocessor/applicationContext-processor.xml"};
+		return new String[] {"/com/sitescape/team/modelprocessor/applicationContext-processor.xml"};
 	}
 	
 	public void setProcessorManager(ProcessorManager procMgr) {

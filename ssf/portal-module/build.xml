@@ -16,9 +16,9 @@
 				includes="com/sitescape/util/servlet/DynamicServletRequest.class"
 			/>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com.sitescape.team/web/crosscontext/CrossContextConstants.class"/>
-	        	<include name="com.sitescape.team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
-	        	<include name="com.sitescape.team/web/util/NullServletResponse.class"/>
+	        	<include name="com/sitescape/team/web/crosscontext/CrossContextConstants.class"/>
+	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
 	</target>

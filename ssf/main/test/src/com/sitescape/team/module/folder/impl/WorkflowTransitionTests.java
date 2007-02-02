@@ -42,7 +42,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 	private static String adminGroup = "administrators";
 	private static String adminUser = "administrator";
 	protected String[] getConfigLocations() {
-		return new String[] {"/com.sitescape.team/module/folder/impl/applicationContext-workflowTransition.xml"};
+		return new String[] {"/com/sitescape/team/module/folder/impl/applicationContext-workflowTransition.xml"};
 	}
 	
 	/*
@@ -526,7 +526,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		def.setName(name);
 		def.setTitle(name);
 	   	try {
-           Resource r = new ClassPathResource("com.sitescape.team/module/folder/impl/" + name);
+           Resource r = new ClassPathResource("com/sitescape/team/module/folder/impl/" + name);
            SAXReader xIn = new SAXReader();
            def.setDefinition(xIn.read(r.getInputStream()));   
     	} catch (Exception fe) {
@@ -543,7 +543,7 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		def.setName(name);
 		def.setTitle(name);
 	   	try {
-           Resource r = new ClassPathResource("com.sitescape.team/module/folder/impl/" + name);
+           Resource r = new ClassPathResource("com/sitescape/team/module/folder/impl/" + name);
            SAXReader xIn = new SAXReader();
            def.setDefinition(xIn.read(r.getInputStream()));   
     	} catch (Exception fe) {
