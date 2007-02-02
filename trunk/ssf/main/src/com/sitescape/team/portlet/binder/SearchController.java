@@ -21,8 +21,6 @@ import java.util.Set;
 import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -30,6 +28,8 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;

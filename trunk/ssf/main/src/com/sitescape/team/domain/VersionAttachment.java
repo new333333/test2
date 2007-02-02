@@ -3,7 +3,7 @@ package com.sitescape.team.domain;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.subclass discriminator-value="V" dynamic-update="true"

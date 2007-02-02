@@ -16,12 +16,12 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.module.shared.DomTreeBuilder;
-import com.sitescape.ef.module.shared.DomTreeHelper;
-import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.module.shared.DomTreeBuilder;
+import com.sitescape.team.module.shared.DomTreeHelper;
+import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;

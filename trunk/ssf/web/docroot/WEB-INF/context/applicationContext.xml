@@ -82,7 +82,7 @@
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
-	<bean id="workflowFactory" class="com.sitescape.ef.module.workflow.impl.WorkflowFactory">
+	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 	</bean> 
 
@@ -261,7 +261,7 @@
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.ef.module.file.WriteFilesException">error/fileUploadError</prop>
+				<prop key="com.sitescape.team.module.file.WriteFilesException">error/fileUploadError</prop>
 				<prop key="com.sitescape.team.exception.CheckedCodedException">common/defCodedError</prop>
 				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
@@ -446,12 +446,12 @@
 		<property name="rssGenerator"><ref local="rssGenerator"/></property>
 	</bean>
 	
-	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.sample.impl.EmployeeModuleImpl">
+	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
 	</bean>
 	
 	<bean id="workspaceModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.WorkspaceModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.workspace.impl.WorkspaceModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 			</bean>
 		</property>
@@ -461,7 +461,7 @@
 
 	<bean id="adminModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.admin.impl.AdminModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.admin.impl.AdminModuleImpl">
 				<property name="mailManager"><ref local="mailManager"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="folderModule"><ref local="folderModule"/></property>
@@ -502,7 +502,7 @@
 
 	<bean id="profileModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.ProfileModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
@@ -525,7 +525,7 @@
 		</property>
 	</bean>
 
-	<bean id="defaultWorkspaceCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor">
+	<bean id="defaultWorkspaceCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref local="workflowModule"/></property>
@@ -541,7 +541,7 @@
 		<property name="pipeline"><ref local="docPipeline"/></property>
 	</bean>
 
-	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor">
+	<bean id="defaultProfileCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref local="workflowModule"/></property>
@@ -551,7 +551,7 @@
 
 	<bean id="binderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.binder.impl.BinderModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.binder.impl.BinderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
 			</bean>
@@ -580,11 +580,11 @@
 		</property>
 	</bean>
 
-	<bean id="binderAccessUtils" class="com.sitescape.ef.module.binder.AccessUtils">
+	<bean id="binderAccessUtils" class="com.sitescape.team.module.binder.AccessUtils">
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
-	<bean id="definitionBuilderConfig" class="com.sitescape.ef.module.definition.DefinitionConfigurationBuilder">
+	<bean id="definitionBuilderConfig" class="com.sitescape.team.module.definition.DefinitionConfigurationBuilder">
 		<property name="configFiles">
 			<list>
 				<value>config/definition_builder_config.xml</value>
@@ -596,7 +596,7 @@
 
 	<bean id="definitionModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.definition.impl.DefinitionModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref local="workflowModule"/></property>
 				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 			</bean>	
@@ -605,7 +605,7 @@
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.dashboard.impl.DashboardModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.dashboard.impl.DashboardModuleImpl">
 			</bean>	
 		</property>
 	</bean>
@@ -618,7 +618,7 @@
 	
 	<bean id="ldapModule"  parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.ldap.impl.LdapModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.ldap.impl.LdapModuleImpl">
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
 				<property name="definitionModule"><ref local="definitionModule"/></property>
@@ -635,19 +635,19 @@
 		
 	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler, workflowFactory" >
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" depends-on="zoneConfig, scheduler, workflowFactory">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl" depends-on="zoneConfig, scheduler, workflowFactory">
 			</bean>
 		</property>
 	</bean>	
 
-	<bean id="fileModule" class="com.sitescape.ef.module.file.impl.FileModuleImpl">
+	<bean id="fileModule" class="com.sitescape.team.module.file.impl.FileModuleImpl">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>		
 		<property name="folderDao"><ref local="folderDao"/></property>		
 		<property name="profileDao"><ref local="profileDao"/></property>
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="contentFilter">
-			<bean class="com.sitescape.ef.module.file.impl.VirusScanningFilter"/>
+			<bean class="com.sitescape.team.module.file.impl.VirusScanningFilter"/>
 		</property>			
 		<!-- valid values are DELETE and MOVE -->
 		<property name="failedFilterFile"><value>DELETE</value></property>
@@ -776,7 +776,7 @@
 		<property name="versionDeletionAllowed"><value>true</value></property>
 	</bean>
 	
-	<bean id="archiveStore" class="com.sitescape.ef.module.file.impl.NullArchiveStore">
+	<bean id="archiveStore" class="com.sitescape.team.module.file.impl.NullArchiveStore">
 	</bean>
 	
 	<!-- ================================ Presence Service =============================== -->

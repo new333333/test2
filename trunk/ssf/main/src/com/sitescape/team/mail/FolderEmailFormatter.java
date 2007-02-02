@@ -6,10 +6,10 @@ import java.util.List;
 import javax.mail.Message;
 import javax.mail.Session;
 
-import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.module.definition.notify.Notify;
 /**
  * Interface to define 
  * @author Janet McCann

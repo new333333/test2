@@ -17,13 +17,13 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.util.ConfigPropertyNotFoundException;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;

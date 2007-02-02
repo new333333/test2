@@ -16,13 +16,13 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;

@@ -14,6 +14,8 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.workflow.impl.WorkflowFactory;
+import com.sitescape.team.module.workflow.impl.WorkflowModuleImpl;
 import com.sitescape.util.cal.Duration;
 
 import org.dom4j.io.SAXReader;
@@ -29,8 +31,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.impl.CoreDaoImpl;
 import com.sitescape.ef.dao.impl.FolderDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
-import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
 
 public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpringContextTests {
 

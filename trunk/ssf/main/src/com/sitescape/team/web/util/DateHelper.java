@@ -4,10 +4,10 @@
  */
 package com.sitescape.team.web.util;
 
-import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.util.NLT;
 
 import java.text.DateFormat;

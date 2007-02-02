@@ -37,8 +37,6 @@ import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
@@ -52,6 +50,8 @@ import com.sitescape.team.mail.FolderEmailFormatter;
 import com.sitescape.team.mail.JavaMailSender;
 import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.mail.MimeMessagePreparator;
+import com.sitescape.team.module.definition.notify.Notify;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;

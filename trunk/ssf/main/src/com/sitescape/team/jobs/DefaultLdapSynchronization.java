@@ -7,7 +7,7 @@ import org.quartz.JobExecutionException;
 
 import javax.naming.NamingException;
 
-import com.sitescape.ef.module.ldap.LdapModule;
+import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**

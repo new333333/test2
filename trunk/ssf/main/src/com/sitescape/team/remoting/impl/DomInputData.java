@@ -5,7 +5,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.InputDataAccessor;
 
 /**
  * An implementation of <code>InputDataAccessor</code> based on element-only

@@ -5,8 +5,6 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.module.admin.AdminModule;
-import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoBinderByTheNameException;
@@ -15,6 +13,8 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;

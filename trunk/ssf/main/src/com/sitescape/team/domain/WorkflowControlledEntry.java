@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.apache.webdav.lib.properties.GetLastModifiedProperty;
 
-import com.sitescape.ef.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.security.acl.AclSet;
