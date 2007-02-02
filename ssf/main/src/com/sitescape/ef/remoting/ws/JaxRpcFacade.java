@@ -2,10 +2,10 @@ package com.sitescape.ef.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.ef.remoting.api.Binder;
-import com.sitescape.ef.remoting.api.Facade;
-import com.sitescape.ef.remoting.api.Folder;
-import com.sitescape.ef.remoting.rmi.RemoteFacade;
+import com.sitescape.team.remoting.api.Binder;
+import com.sitescape.team.remoting.api.Facade;
+import com.sitescape.team.remoting.api.Folder;
+import com.sitescape.team.remoting.rmi.RemoteFacade;
 
 /**
  * JAX-RPC compliant implementation that simply delegates to the Facade 

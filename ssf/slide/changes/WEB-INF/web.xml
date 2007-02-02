@@ -254,7 +254,7 @@
     </servlet>
 	<servlet>
 		<servlet-name>SiteScapeServlet</servlet-name>
-		<servlet-class>com.sitescape.ef.ssfs.web.servlet.SiteScapeServlet</servlet-class>
+		<servlet-class>com.sitescape.team.ssfs.web.servlet.SiteScapeServlet</servlet-class>
 		<init-param>
 			<param-name>contextPath</param-name>
 			<param-value>/ssf</param-value>

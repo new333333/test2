@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.sitescape.ef.asmodule.bridge.SiteScapeBridgeUtil;
 import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.web.util.DebugHelper;
+import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
 
 /**
  * This servlet is loaded at the system startup time to set up a runtime
