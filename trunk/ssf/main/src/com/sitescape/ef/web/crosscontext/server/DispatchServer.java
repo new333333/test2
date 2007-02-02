@@ -15,7 +15,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.asmodule.bridge.SiteScapeBridgeUtil;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
@@ -24,6 +23,7 @@ import com.sitescape.ef.util.SZoneConfig;
 import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.crosscontext.CrossContextConstants;
+import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
 
 public class DispatchServer extends GenericServlet {
 

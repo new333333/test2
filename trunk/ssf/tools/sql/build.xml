@@ -64,7 +64,7 @@
   		<ant dir=".." target="compile" inheritAll="false" />
   		
   		<java
-  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
@@ -72,7 +72,7 @@
   			<arg value="${create.dir}/create-tables-core-${database.type}.sql" />
   		</java>
  		<java
-  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
@@ -81,7 +81,7 @@
  			<arg value="append"/>
   		</java>
  		<java
-  			classname="com.sitescape.ef.tools.sql.GenerateCreateTablesUnconstrained"
+  			classname="com.sitescape.team.tools.sql.GenerateCreateTablesUnconstrained"
   			classpathref="project.classpath"
   			fork="true"
   			dir="${basedir}"
