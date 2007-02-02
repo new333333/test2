@@ -30,6 +30,7 @@ public class ReloadOpenerController  extends SAbstractController {
  		Map<String,Object> model = new HashMap<String,Object>();
  		
 		String blogReply = PortletRequestUtils.getStringParameter(request, WebKeys.BLOG_REPLY, "");
+		String inIFrameAddEntry = PortletRequestUtils.getStringParameter(request, WebKeys.IN_IFRAME_ADD_ENTRY, "");
 		if (!blogReply.equals("")) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ID, "");
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
@@ -38,6 +39,12 @@ public class ReloadOpenerController  extends SAbstractController {
 			model.put(WebKeys.NAMESPACE, namespace);
 			model.put(WebKeys.BLOG_REPLY_COUNT, blogReplyCount);
 			return new ModelAndView("forum/reload_blog_reply", model);
+		} else if (!inIFrameAddEntry.equals("")) {
+			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ID, "");
+			model.put(WebKeys.NAMESPACE, namespace);
+			model.put(WebKeys.ENTRY_ID, entryId);
+			return new ModelAndView("forum/reload_parent", model);
 		}
 		
 	    return new ModelAndView("forum/reload_opener", model);
