@@ -9,6 +9,9 @@
 	String findEntriesElementWidth = (String) request.getAttribute("element_width");
 	String findEntriesBinderId = (String) request.getAttribute("binderId");
 	String findEntriesSearchSubFolders = (String) request.getAttribute("searchSubFolders");
+	String clickRoutine = (String) request.getAttribute("clickRoutine");
+	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	Boolean leaveResultsVisible = (Boolean) request.getAttribute("leaveResultsVisible");
 %>
 <c:set var="prefix" value="<%= findEntriesFormName + "_" + findEntriesElementName %>" />
 <c:if test="${empty ss_find_entries_support_stuff_loaded}">
@@ -24,6 +27,7 @@ var ss_findEntriesSearchLastText = "";
 var ss_findEntriesSearchLastTextObjId = "";
 var ss_findEntriesSearchLastElement = "";
 var ss_findEntriesSearchLastfindEntriesType = "";
+var ss_findEntriesClickRoutine${prefix} = "<%= clickRoutine %>";
 function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
@@ -164,8 +168,15 @@ function ss_findEntriesSelectItem<portlet:namespace/>(obj) {
 		    <ssf:param name="entityType" value="folderEntry" />
 			</ssf:url>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findEntries_id_', "");
-	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
-	self.location.href = url;
+	if (ss_findEntriesClickRoutine${prefix} != "") {
+		eval(ss_findEntriesClickRoutine${prefix} + "('"+id+"');")
+		<% if (leaveResultsVisible) { %>
+		  setTimeout("ss_showFindEntriesSelections${prefix}();", 200)
+		<% } %>
+	} else {
+		url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
+		self.location.href = url;
+	}
 }
 
 function ss_savefindEntriesData_${prefix}() {

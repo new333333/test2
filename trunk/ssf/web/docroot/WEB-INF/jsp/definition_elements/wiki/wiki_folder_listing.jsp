@@ -40,7 +40,8 @@
 		    width="70px" 
 		    binderId="${ssBinder.id}"
 		    searchSubFolders="false"
-		    singleItem="true"/> 
+		    singleItem="true"
+		    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"/> 
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
 
