@@ -229,12 +229,12 @@
          <param-name>xpoweredBy</param-name>
          <param-value>false</param-value>
       </init-param>
-      <!-- Uncomment to use jdk1.5 features in jsp pages
+      <!-- Uncomment to use jdk1.5 features in jsp pages 
+           SiteScape: Uncommented out to use jdk1.5 features -->
       <init-param>
          <param-name>compilerSourceVM</param-name>
          <param-value>1.5</param-value>
       </init-param>
-      -->
       <!-- Use a custom options class to allow the shared tag lib descriptors
        to be loaded from jars in the tomcat sar conf/tlds directory. The
        standard options implementation can only find taglibs based on the
