@@ -47,11 +47,26 @@
 	  <br/>
 
 	  <span class="ss_bold">
-	  <a href="<portlet:actionURL 
-	                windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
+	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_sortTitle"/>
+		<portlet:param name="ssFolderSortDescend" value="false"/>
+		</portlet:actionURL>"
 	  ><ssf:nlt tag="wiki.showAll"/></a>
+	  </span>
+	  <br/>
+	  
+	  <span class="ss_bold">
+	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
+		<portlet:param name="action" value="${action}"/>
+		<portlet:param name="operation" value="save_folder_sort_info"/>
+		<portlet:param name="binderId" value="${ssBinder.id}"/>
+		<portlet:param name="ssFolderSortBy" value="_modificationDate"/>
+		<portlet:param name="ssFolderSortDescend" value="true"/>
+		</portlet:actionURL>"
+	  ><ssf:nlt tag="wiki.showRecent"/></a>
 	  </span>
 	  <br/>
 	  <br/>

@@ -398,11 +398,6 @@ public class ListFolderController extends  SAbstractController {
 			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 
-		} else if (viewType.equals("wiki")) {
-			//This is a wiki view, set the default sort order
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-			
 		} else {
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
 				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
