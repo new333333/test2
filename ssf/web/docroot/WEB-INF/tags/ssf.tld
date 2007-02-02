@@ -8,7 +8,7 @@
 	
 	<tag>
 		<name>box</name>
-		<tag-class>com.sitescape.ef.taglib.BoxTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.BoxTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>style</name>
@@ -29,7 +29,7 @@
 	
 	<tag>
 		<name>buildDefinitionDivs</name>
-		<tag-class>com.sitescape.ef.taglib.BuildDefinitionDivs</tag-class>
+		<tag-class>com.sitescape.team.taglib.BuildDefinitionDivs</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -72,7 +72,7 @@
 
 	<tag>
 		<name>dashboard</name>
-		<tag-class>com.sitescape.ef.taglib.DashboardTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.DashboardTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -100,7 +100,7 @@
 	
 	<tag>
 		<name>datepicker</name>
-		<tag-class>com.sitescape.ef.taglib.Datepicker</tag-class>
+		<tag-class>com.sitescape.team.taglib.Datepicker</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -159,7 +159,7 @@
 
 	<tag>
 		<name>debug</name>
-		<tag-class>com.sitescape.ef.taglib.DebugTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.DebugTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>var</name>
@@ -170,7 +170,7 @@
 	
 	<tag>
 		<name>displayConfiguration</name>
-		<tag-class>com.sitescape.ef.taglib.DisplayConfiguration</tag-class>
+		<tag-class>com.sitescape.team.taglib.DisplayConfiguration</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>configDefinition</name>
@@ -193,7 +193,7 @@
 			<name>entry</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.DefinableEntity</type>
+			<type>com.sitescape.team.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>processThisItem</name>
@@ -205,7 +205,7 @@
 
 	<tag>
 		<name>eventeditor</name>
-		<tag-class>com.sitescape.ef.taglib.Eventeditor</tag-class>
+		<tag-class>com.sitescape.team.taglib.Eventeditor</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -233,24 +233,24 @@
 			<name>initEvent</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Event</type>
+			<type>com.sitescape.team.domain.Event</type>
 		</attribute>
 	</tag>
 	<tag>
 		<name>eventtext</name>
-		<tag-class>com.sitescape.ef.taglib.Eventtext</tag-class>
+		<tag-class>com.sitescape.team.taglib.Eventtext</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>event</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Event</type>
+			<type>com.sitescape.team.domain.Event</type>
 		</attribute>
 	</tag>
 
 	<tag>
 		<name>expandableArea</name>
-		<tag-class>com.sitescape.ef.taglib.ExpandableAreaTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.ExpandableAreaTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -272,7 +272,7 @@
 	
 	<tag>
 		<name>find</name>
-		<tag-class>com.sitescape.ef.taglib.Find</tag-class>
+		<tag-class>com.sitescape.team.taglib.Find</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>formName</name>
@@ -332,7 +332,7 @@
 	
 	<tag>
 		<name>htmleditor</name>
-		<tag-class>com.sitescape.ef.taglib.Htmleditor</tag-class>
+		<tag-class>com.sitescape.team.taglib.Htmleditor</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -363,19 +363,19 @@
 
 	<tag>
 		<name>ifadapter</name>
-		<tag-class>com.sitescape.ef.taglib.IfAdapterTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.IfAdapterTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifnotadapter</name>
-		<tag-class>com.sitescape.ef.taglib.IfNotAdapterTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.IfNotAdapterTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
 	<tag>
 		<name>ifSupportsEditInPlace</name>
-		<tag-class>com.sitescape.ef.taglib.IfSupportsEditInPlaceTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.IfSupportsEditInPlaceTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>relativeFilePath</name>
@@ -387,7 +387,7 @@
 	
 	<tag>
 		<name>menu</name>
-		<tag-class>com.sitescape.ef.taglib.MenuTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.MenuTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>title</name>
@@ -443,7 +443,7 @@
 	
 	<tag>
 		<name>nlt</name>
-		<tag-class>com.sitescape.ef.taglib.Nlt</tag-class>
+		<tag-class>com.sitescape.team.taglib.Nlt</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>tag</name>
@@ -465,13 +465,13 @@
 	
 	<tag>
 		<name>presenceInfo</name>
-		<tag-class>com.sitescape.ef.taglib.PresenceInfo</tag-class>
+		<tag-class>com.sitescape.team.taglib.PresenceInfo</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Principal</type>
+			<type>com.sitescape.team.domain.Principal</type>
 		</attribute>		
 		<attribute>
 			<name>showTitle</name>
@@ -504,20 +504,20 @@
 
 	<tag>
 		<name>miniBusinessCard</name>
-		<tag-class>com.sitescape.ef.taglib.MiniBusinessCard</tag-class>
+		<tag-class>com.sitescape.team.taglib.MiniBusinessCard</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>user</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Principal</type>
+			<type>com.sitescape.team.domain.Principal</type>
 		</attribute>		
 	</tag>	
 
 
 	<tag>
 		<name>param</name>
-		<tag-class>com.sitescape.ef.taglib.ParamTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.ParamTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>
@@ -539,7 +539,7 @@
 
 	<tag>
 		<name>searchForm</name>
-		<tag-class>com.sitescape.ef.taglib.SearchFormTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SearchFormTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>form</name>
@@ -560,7 +560,7 @@
 	
 	<tag>
 		<name>servletrooturl</name>
-		<tag-class>com.sitescape.ef.taglib.ServletRootUrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.ServletRootUrlTag</tag-class>
 		<body-content>empty</body-content>
 		<attribute>
 			<name>secure</name>
@@ -571,7 +571,7 @@
 
 	<tag>
 		<name>slidingTable</name>
-		<tag-class>com.sitescape.ef.taglib.SlidingTableTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SlidingTableTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -607,7 +607,7 @@
 	
 	<tag>
 		<name>slidingTableRow</name>
-		<tag-class>com.sitescape.ef.taglib.SlidingTableRowTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SlidingTableRowTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -624,7 +624,7 @@
 
 	<tag>
 		<name>slidingTableColumn</name>
-		<tag-class>com.sitescape.ef.taglib.SlidingTableColumnTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SlidingTableColumnTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>width</name>
@@ -635,43 +635,43 @@
 
 	<tag>
 		<name>ssfsInternalAttachmentUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsInternalAttachmentUrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SsfsInternalAttachmentUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Binder</type>
+			<type>com.sitescape.team.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.DefinableEntity</type>
+			<type>com.sitescape.team.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.FileAttachment</type>
+			<type>com.sitescape.team.domain.FileAttachment</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>ssfsInternalFileUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsInternalFileUrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SsfsInternalFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Binder</type>
+			<type>com.sitescape.team.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.DefinableEntity</type>
+			<type>com.sitescape.team.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>elemName</name>
@@ -683,49 +683,49 @@
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.FileAttachment</type>
+			<type>com.sitescape.team.domain.FileAttachment</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>ssfsInternalTitleFileUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsInternalTitleFileUrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SsfsInternalTitleFileUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Binder</type>
+			<type>com.sitescape.team.domain.Binder</type>
 		</attribute>		
 		<attribute>
 			<name>entity</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.DefinableEntity</type>
+			<type>com.sitescape.team.domain.DefinableEntity</type>
 		</attribute>		
 		<attribute>
 			<name>fileAttachment</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.FileAttachment</type>
+			<type>com.sitescape.team.domain.FileAttachment</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>ssfsLibraryFolderUrl</name>
-		<tag-class>com.sitescape.ef.taglib.SsfsLibraryFolderUrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.SsfsLibraryFolderUrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>binder</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.domain.Binder</type>
+			<type>com.sitescape.team.domain.Binder</type>
 		</attribute>		
 	</tag>	
 
 	<tag>
 		<name>timepicker</name>
-		<tag-class>com.sitescape.ef.taglib.Timepicker</tag-class>
+		<tag-class>com.sitescape.team.taglib.Timepicker</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>id</name>
@@ -757,13 +757,13 @@
 
 	<tag>
 		<name>toolbar</name>
-		<tag-class>com.sitescape.ef.taglib.ToolbarTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.ToolbarTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>toolbar</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.ef.web.util.Toolbar</type>
+			<type>com.sitescape.team.web.util.Toolbar</type>
 		</attribute>		
 		<attribute>
 			<name>style</name>
@@ -780,7 +780,7 @@
 
 	<tag>
 		<name>tree</name>
-		<tag-class>com.sitescape.ef.taglib.TreeTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.TreeTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>treeName</name>
@@ -890,7 +890,7 @@
 
 	<tag>
 		<name>url</name>
-		<tag-class>com.sitescape.ef.taglib.UrlTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.UrlTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>action</name>
@@ -954,7 +954,7 @@
 
 	<tag>
 		<name>velocity</name>
-		<tag-class>com.sitescape.ef.taglib.VelocityTag</tag-class>
+		<tag-class>com.sitescape.team.taglib.VelocityTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>name</name>

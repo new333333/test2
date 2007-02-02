@@ -34,14 +34,14 @@
 			update="true"
 		>
 			<fileset dir="${basedir}/../main/classes">
-	        	<include name="com/sitescape/ef/ssfs/CrossContextConstants.class"/>
-				<include name="com/sitescape/ef/ssfs/AlreadyExistsException.class"/>
-				<include name="com/sitescape/ef/ssfs/NoAccessException.class"/>
-				<include name="com/sitescape/ef/ssfs/NoSuchObjectException.class"/>
-				<include name="com/sitescape/ef/ssfs/LockException.class"/>
-				<include name="com/sitescape/ef/ssfs/TypeMismatchException.class"/>
-	        	<include name="com/sitescape/ef/web/util/AttributesAndParamsOnlyServletRequest.class"/>
-	        	<include name="com/sitescape/ef/web/util/NullServletResponse.class"/>
+	        	<include name="com.sitescape.team/ssfs/CrossContextConstants.class"/>
+				<include name="com.sitescape.team/ssfs/AlreadyExistsException.class"/>
+				<include name="com.sitescape.team/ssfs/NoAccessException.class"/>
+				<include name="com.sitescape.team/ssfs/NoSuchObjectException.class"/>
+				<include name="com.sitescape.team/ssfs/LockException.class"/>
+				<include name="com.sitescape.team/ssfs/TypeMismatchException.class"/>
+	        	<include name="com.sitescape.team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
+	        	<include name="com.sitescape.team/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
 		<jar 

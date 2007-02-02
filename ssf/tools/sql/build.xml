@@ -43,7 +43,7 @@
 	    	properties="${basedir}/hibernate-${database.type}.properties" 
 	          	quiet="false" text="true">
 	    	<fileset dir="${main.hibernate.dir}" >
-	    		<include name="com/sitescape/ef/**/*hbm.xml"/>
+	    		<include name="com.sitescape.team/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaexport>
 	    <schemaexport delimiter=";" output="${create.dir}/create-tables-jbpm-${database.type}.sql"

@@ -20,7 +20,7 @@ public class PipelineTests extends AbstractDependencyInjectionSpringContextTests
 	protected Pipeline pipeline;
 	
 	protected String[] getConfigLocations() {
-		return new String[] {"/com/sitescape/ef/pipeline/applicationContext-pipeline.xml"};
+		return new String[] {"/com.sitescape.team/pipeline/applicationContext-pipeline.xml"};
 	}
 	
 	protected void onSetUp() throws Exception {

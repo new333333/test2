@@ -42,7 +42,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 	private static String adminGroup = "administrators";
 	private static String adminUser = "administrator";
 	protected String[] getConfigLocations() {
-		return new String[] {"/com/sitescape/ef/dao/impl/applicationContext-folderdao.xml"};
+		return new String[] {"/com.sitescape.team/dao/impl/applicationContext-folderdao.xml"};
 	}
 	
 	/*
