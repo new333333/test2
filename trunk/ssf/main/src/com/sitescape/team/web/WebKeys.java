@@ -66,6 +66,7 @@ public class WebKeys {
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
+	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_NAMESPACE="namespace";
     public static final String URL_NEW_TAB="newTab";
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
@@ -132,6 +133,7 @@ public class WebKeys {
 	public static final String ACTION_LDAP_CONFIGURE="configure_ldap";
 	public static final String ACTION_POSTINGJOB_CONFIGURE="configure_posting_job";
 	public static final String ACTION_RELOAD_OPENER="reload_opener";
+	public static final String ACTION_RELOAD_PARENT="reload_parent";
 	public static final String ACTION_FOLDER_INDEX_CONFIGURE="configure_index";
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
@@ -258,7 +260,8 @@ public class WebKeys {
 	public static final String BLOG_MONTH_HITS="ssBlogMonthHits"; 
 	public static final String BLOG_MONTH_TITLES="ssBlogMonthTitles"; 
 	public static final String BLOG_MONTH_URLS="ssBlogMonthUrls"; 
-	public static final String BLOG_REPLY="ssBlogReply"; 
+	public static final String BLOG_REPLY="ssBlogReply";
+	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";

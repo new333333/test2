@@ -449,7 +449,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   border:1px solid ${ss_entry_description_border_color};
   background-color: ${ss_entry_description_background_color};
   }
-    
+      
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
   color: ${ss_linkbutton_text_color};
@@ -2082,6 +2082,19 @@ white-space: nowrap !important;
 	font-size: ${ss_style_font_smallprint};
 	color: #FF0000 !important;
 	margin-left: 25px;
+}
+
+
+.ss_miniBusinessCard { 
+	width: 20%;
+	vertical-align: top;
+}
+table.ss_guestbookContainer {
+	border-spacing: 5px;
+}
+td.ss_guestbookContainer {
+	vertical-align: top;
+	padding: 10px;
 }
 
 
