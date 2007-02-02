@@ -21,9 +21,9 @@ import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.NotSupportedException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;

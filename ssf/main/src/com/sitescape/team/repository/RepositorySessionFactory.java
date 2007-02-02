@@ -1,6 +1,6 @@
 package com.sitescape.team.repository;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 
 public interface RepositorySessionFactory {
 

@@ -26,7 +26,7 @@ import javax.jcr.version.VersionIterator;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;

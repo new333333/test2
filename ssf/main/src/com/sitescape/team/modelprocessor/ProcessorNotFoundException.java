@@ -1,6 +1,6 @@
 package com.sitescape.team.modelprocessor;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 
 /**
  *

@@ -11,7 +11,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.io.Resource;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 /**
  * It is strongly suggested to use Spring's regular dependency injection
  * capability for obtaining references to other beans. 

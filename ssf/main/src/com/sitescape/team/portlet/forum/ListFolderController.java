@@ -26,7 +26,7 @@ import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;

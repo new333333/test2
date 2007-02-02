@@ -20,8 +20,8 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;

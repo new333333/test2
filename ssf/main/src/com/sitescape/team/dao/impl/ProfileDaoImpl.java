@@ -24,7 +24,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.util.FilterControls;

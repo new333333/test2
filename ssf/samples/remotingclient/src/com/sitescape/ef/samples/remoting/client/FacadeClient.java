@@ -1,10 +1,10 @@
-package com.sitescape.ef.samples.remoting.client;
+package com.sitescape.team.samples.remoting.client;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 
-import com.sitescape.ef.remoting.api.Binder;
-import com.sitescape.ef.remoting.api.Facade;
+import com.sitescape.team.remoting.api.Binder;
+import com.sitescape.team.remoting.api.Facade;
 
 /**
  * Sample client that interacts with the server through Facade interface.

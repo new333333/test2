@@ -14,9 +14,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Trigger;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.CoreDao;

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import org.dom4j.Element;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;

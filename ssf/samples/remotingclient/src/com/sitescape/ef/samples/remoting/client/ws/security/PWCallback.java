@@ -1,4 +1,4 @@
-package com.sitescape.ef.samples.remoting.client.ws.security;
+package com.sitescape.team.samples.remoting.client.ws.security;
 
 import java.io.IOException;
 

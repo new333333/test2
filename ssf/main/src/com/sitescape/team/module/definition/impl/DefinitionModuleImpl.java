@@ -20,8 +20,8 @@ import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Binder;

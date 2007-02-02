@@ -1,6 +1,6 @@
 package com.sitescape.team.pipeline.impl;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.pipeline.Conduit;
 import com.sitescape.team.pipeline.ConduitFactory;
 

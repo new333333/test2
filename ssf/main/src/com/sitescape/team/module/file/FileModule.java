@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;

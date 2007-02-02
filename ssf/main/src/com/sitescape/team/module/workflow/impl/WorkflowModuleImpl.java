@@ -34,8 +34,8 @@ import org.jbpm.scheduler.exe.Timer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;

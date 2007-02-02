@@ -8,7 +8,7 @@ import java.io.InputStream;
 
 import org.springframework.util.FileCopyUtils;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 
 public class TempFileUtil {
 	

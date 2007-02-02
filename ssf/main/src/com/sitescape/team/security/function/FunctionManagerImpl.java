@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.sitescape.ef.NoObjectByTheIdException;
-import com.sitescape.ef.NotSupportedException;
+import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.util.NLT;
 /**

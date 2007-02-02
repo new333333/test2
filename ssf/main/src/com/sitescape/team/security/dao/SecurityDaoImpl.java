@@ -15,7 +15,7 @@ import org.hibernate.criterion.Expression;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 /**

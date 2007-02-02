@@ -1,7 +1,7 @@
 
 package com.sitescape.team.domain;
 
-import com.sitescape.ef.NoObjectByTheNameException;
+import com.sitescape.team.NoObjectByTheNameException;
 
 /**
  * @author Janet McCann

@@ -19,9 +19,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.ef.InternalException;
-import com.sitescape.ef.NoObjectByTheIdException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.InternalException;
+import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;

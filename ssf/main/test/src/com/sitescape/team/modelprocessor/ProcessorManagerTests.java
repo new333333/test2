@@ -2,7 +2,7 @@ package com.sitescape.team.modelprocessor;
 
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-import com.sitescape.ef.modelprocessor.ProcessorManager;
+import com.sitescape.team.modelprocessor.ProcessorManager;
 
 /**
  * This integration unit test uses the Spring container.

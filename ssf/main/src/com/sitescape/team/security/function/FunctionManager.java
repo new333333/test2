@@ -2,8 +2,8 @@ package com.sitescape.team.security.function;
 
 import java.util.List;
 
-import com.sitescape.ef.NotSupportedException;
-import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.NoObjectByTheIdException;
 
 /**
  *

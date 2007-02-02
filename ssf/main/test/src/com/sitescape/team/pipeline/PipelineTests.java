@@ -4,10 +4,10 @@ import java.io.File;
 
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-import com.sitescape.ef.pipeline.Conduit;
-import com.sitescape.ef.pipeline.Pipeline;
-import com.sitescape.ef.pipeline.PipelineException;
-import com.sitescape.ef.pipeline.impl.RAMConduit;
+import com.sitescape.team.pipeline.Conduit;
+import com.sitescape.team.pipeline.Pipeline;
+import com.sitescape.team.pipeline.PipelineException;
+import com.sitescape.team.pipeline.impl.RAMConduit;
 import com.sitescape.team.util.FileHelper;
 
 /**

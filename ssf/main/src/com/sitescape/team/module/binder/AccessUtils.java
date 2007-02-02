@@ -3,8 +3,8 @@ package com.sitescape.team.module.binder;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;

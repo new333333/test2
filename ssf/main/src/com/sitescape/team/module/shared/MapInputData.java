@@ -2,7 +2,7 @@ package com.sitescape.team.module.shared;
 
 import java.util.Map;
 
-import com.sitescape.ef.InternalException;
+import com.sitescape.team.InternalException;
 
 public class MapInputData implements InputDataAccessor {
 

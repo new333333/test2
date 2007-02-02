@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 
 /**
  * This class provides unified access to the SSF properties loaded from the 

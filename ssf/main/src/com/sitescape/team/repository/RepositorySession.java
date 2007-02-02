@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 

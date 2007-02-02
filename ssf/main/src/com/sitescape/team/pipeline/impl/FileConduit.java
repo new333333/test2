@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.pipeline.DocSink;
 import com.sitescape.team.pipeline.DocSource;
 import com.sitescape.team.util.FileHelper;

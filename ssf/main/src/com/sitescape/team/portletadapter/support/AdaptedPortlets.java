@@ -17,7 +17,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.portletadapter.portlet.PortletConfigImpl;
 import com.sitescape.team.portletadapter.portlet.PortletContextImpl;
 

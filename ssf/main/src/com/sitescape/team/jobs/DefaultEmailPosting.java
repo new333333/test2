@@ -6,7 +6,7 @@ import java.util.Map;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.util.SpringContextUtil;
 

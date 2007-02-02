@@ -98,10 +98,10 @@
 			url="http://peace:8080/ssf/ws/Facade?wsdl" >
 			<mapping
 				namespace="http://peace:8080/ssf/ws/Facade"
-				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
+				package="com.sitescape.team.samples.remoting.client.ws.jaxrpc" />
 			<mapping
 				namespace="urn:SSF"
-				package="com.sitescape.ef.samples.remoting.client.ws.jaxrpc" />
+				package="com.sitescape.team.samples.remoting.client.ws.jaxrpc" />
 		</axis-wsdl2java>
 	</target>
 	
@@ -109,7 +109,7 @@
 	
 	<target name="readDefinitionSpring" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -124,7 +124,7 @@
 	
 	<target name="readDefinitionConfigSpring" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -137,7 +137,7 @@
 	
 	<target name="readBinderSpring" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -151,7 +151,7 @@
 	
 	<target name="readEntrySpring" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -166,7 +166,7 @@
 	
 	<target name="addEntrySpring" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -182,7 +182,7 @@
 	
 	<target name="readDefinitionGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -197,7 +197,7 @@
 	
 	<target name="readDefinitionConfigGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -210,7 +210,7 @@
 	
 	<target name="readBinderGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -224,7 +224,7 @@
 	
 	<target name="readEntryGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -239,7 +239,7 @@
 	
 	<target name="addEntryGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"
@@ -255,7 +255,7 @@
 	
 	<target name="uploadFileGenerated" depends="compile">
 		<java 
-			classname="com.sitescape.ef.samples.remoting.client.ws.jaxrpc.FacadeClient"
+			classname="com.sitescape.team.samples.remoting.client.ws.jaxrpc.FacadeClient"
 			classpath="${classes.dir}"
 			classpathref="project.classpath"
 			fork="true"

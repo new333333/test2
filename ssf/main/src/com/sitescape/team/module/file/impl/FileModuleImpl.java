@@ -86,9 +86,9 @@ import com.sitescape.team.util.Thumbnail;
 import com.sitescape.team.util.ThumbnailException;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.KeyValuePair;
-import com.sitescape.ef.InternalException;
-import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.InternalException;
+import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.ObjectKeys;
 
 /**
  * This implementing class utilizes transactional demarcation strategies that 

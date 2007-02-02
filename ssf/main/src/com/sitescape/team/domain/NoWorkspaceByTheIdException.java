@@ -1,6 +1,6 @@
 package com.sitescape.team.domain;
 
-import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.team.NoObjectByTheIdException;
 
 /**
  * @author Jong Kim

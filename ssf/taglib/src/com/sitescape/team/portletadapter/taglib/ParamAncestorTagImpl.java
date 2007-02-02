@@ -1,6 +1,6 @@
 package com.sitescape.team.portletadapter.taglib;
 
-import com.sitescape.ef.portletadapter.support.KeyNames;
+import com.sitescape.team.portletadapter.support.KeyNames;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 

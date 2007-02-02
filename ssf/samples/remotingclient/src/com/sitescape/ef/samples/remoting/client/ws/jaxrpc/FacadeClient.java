@@ -1,4 +1,4 @@
-package com.sitescape.ef.samples.remoting.client.ws.jaxrpc;
+package com.sitescape.team.samples.remoting.client.ws.jaxrpc;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -11,10 +11,10 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Call;
 
-import com.sitescape.ef.samples.remoting.client.FacadeClientHelper;
-import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacade;
-import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeService;
-import com.sitescape.ef.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeServiceLocator;
+import com.sitescape.team.samples.remoting.client.FacadeClientHelper;
+import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacade;
+import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeService;
+import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeServiceLocator;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
