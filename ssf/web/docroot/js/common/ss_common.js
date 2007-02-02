@@ -196,6 +196,26 @@ function ss_openUrlInNewTab(url) {
 	self.location.href = url + "&newTab=1";
 }
 
+//Routine to close a pop-up form window if the cancel button is clicked
+//  This routine checks to see if it is in a pop-up or in an iframe
+function ss_cancelButtonCloseWindow() {
+	if (self == self.parent && self.opener) {
+		//This looks like it is a pop-up form
+		self.window.close();
+		return
+	} else if (self != self.parent) {
+		iframeObj = self.parent.document.getElementById(self.name)
+		if (iframeObj != null && iframeObj.tagName.toLowerCase() == 'iframe') {
+			if (iframeObj.parentNode.tagName.toLowerCase() == 'div') {
+				var divObj = self.parent.document.getElementById(iframeObj.parentNode.id);
+				divObj.style.visibility = 'hidden';
+				divObj.style.display = 'none';
+				return
+			}
+		}
+	}
+}
+
 function ss_reloadOpener(fallBackUrl) {
 	//Are we at the top window?
 	if (self.window != self.top) {
