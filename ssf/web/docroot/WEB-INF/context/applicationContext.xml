@@ -689,7 +689,7 @@
 	
 	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.ef.remoting.ws.FacadeImpl" parent="controllerDependencyTemplate" />
+			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="controllerDependencyTemplate" />
 		</property>
 		<property name="proxyInterfaces">
 			<value>com.sitescape.team.remoting.api.Facade</value>
@@ -780,12 +780,12 @@
 	</bean>
 	
 	<!-- ================================ Presence Service =============================== -->
-	<bean id="presenceService" class="com.sitescape.ef.presence.impl.PresenceServiceImpl">
+	<bean id="presenceService" class="com.sitescape.team.presence.impl.PresenceServiceImpl">
 		<property name="jabberServer"><value>${presence.service.jabber.server}</value></property>
 		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
 		<property name="enable"><value>${presence.service.enable}</value></property>
 	</bean>
-	<bean id="presenceBroker" class="com.sitescape.ef.presence.impl.PresenceBrokerImpl">
+	<bean id="presenceBroker" class="com.sitescape.team.presence.impl.PresenceBrokerImpl">
 		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
 		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>

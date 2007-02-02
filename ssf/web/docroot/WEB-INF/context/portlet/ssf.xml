@@ -4,41 +4,41 @@
 
 	<!-- Controllers -->
 
-	<bean id="viewController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewController" />
-	<bean id="closeWindowController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.CloseWindowController" />
-	<bean id="reloadOpenerController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ReloadOpenerController" />
-	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.EditController" />
+	<bean id="viewController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ViewController" />
+	<bean id="closeWindowController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.CloseWindowController" />
+	<bean id="reloadOpenerController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ReloadOpenerController" />
+	<bean id="editController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.EditController" />
 
-	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddEntryController" />
-	<bean id="folderAddFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddFolderController" />
-	<bean id="folderAjaxController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AjaxController" />
-	<bean id="profileAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.AddEntryController" />
+	<bean id="folderAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AddEntryController" />
+	<bean id="folderAddFolderController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AddFolderController" />
+	<bean id="folderAjaxController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AjaxController" />
+	<bean id="profileAddEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.profile.AddEntryController" />
 
-	<bean id="filterController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.FilterController" />
-	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.AccessControlController" />
-	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ConfigureController" />
-	<bean id="definitionController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.definitionBuilder.ViewController" />
-	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyBinderController" />
-	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.ModifyDashboardController" />
-	<bean id="searchController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.SearchController" />
+	<bean id="filterController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.FilterController" />
+	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
+	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
+	<bean id="definitionController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
+	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyBinderController" />
+	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
+	<bean id="searchController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SearchController" />
 
-	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ModifyEntryController" />
-	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ModifyEntryController" />
-	<bean id="addAttachmentEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.AddAttachmentController" />
+	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.profile.ModifyEntryController" />
+	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ModifyEntryController" />
+	<bean id="addAttachmentEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.AddAttachmentController" />
 
-	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ViewEntryController" />
-	<bean id="folderViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewEntryController" />
-	<bean id="binderViewPermalinkController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ViewPermalinkController" />
+	<bean id="profileViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.profile.ViewEntryController" />
+	<bean id="folderViewEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ViewEntryController" />
+	<bean id="binderViewPermalinkController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ViewPermalinkController" />
 
-	<bean id="listProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.profile.ListProfilesController" />
-	<bean id="listFolderController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.ListFolderController" />
-	<bean id="listWSController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.workspaceTree.WorkspaceTreeController" />
+	<bean id="listProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.profile.ListProfilesController" />
+	<bean id="listFolderController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ListFolderController" />
+	<bean id="listWSController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.workspaceTree.WorkspaceTreeController" />
 
-	<bean id="updatePresenceController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.presence.UpdatePresenceController" />
-	<bean id="dashboardPortletModifyController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.dashboard.ModifyDashboardController" />
-	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.EmailConfigController" />
-	<bean id="sendEmailController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.binder.SendMailController" />
-	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.ef.portlet.forum.SendEntryMailController" />
+	<bean id="updatePresenceController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.presence.UpdatePresenceController" />
+	<bean id="dashboardPortletModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.dashboard.ModifyDashboardController" />
+	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
+	<bean id="sendEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
+	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 
  	<!-- Handlers -->
 
