@@ -46,7 +46,6 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.exception.UncheckedCodedContainerException;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.binder.EntryProcessor;
@@ -70,6 +69,7 @@ import com.sitescape.ef.util.TagUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.team.lucene.Hits;
 /**
  * @author Janet McCann
  *

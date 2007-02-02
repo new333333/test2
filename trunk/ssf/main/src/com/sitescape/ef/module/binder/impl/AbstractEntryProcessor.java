@@ -45,7 +45,6 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.WorkflowResponse;
 import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.lucene.Hits;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.definition.DefinitionUtils;
@@ -71,6 +70,7 @@ import com.sitescape.ef.util.SimpleProfiler;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.team.lucene.Hits;
 import com.sitescape.util.Validator;
 /**
  *

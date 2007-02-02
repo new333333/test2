@@ -10,7 +10,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
 
-import com.sitescape.ef.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.lucene.SsfQueryAnalyzer;
 
 public class SearchObject {//implements Serializable {
 

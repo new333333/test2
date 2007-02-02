@@ -8,7 +8,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
-import com.sitescape.ef.lucene.Hits;
+import com.sitescape.team.lucene.Hits;
 
 /**
  * The main runtime interface between application and Lucene service. 
