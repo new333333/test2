@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.ef.util.NLT" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">

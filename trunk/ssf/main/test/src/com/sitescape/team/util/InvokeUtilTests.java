@@ -1,4 +1,7 @@
-package com.sitescape.ef.util;
+package com.sitescape.team.util;
+
+import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.ef.util.ObjectPropertyNotFoundException;
 
 import junit.framework.TestCase;
 

@@ -1,5 +1,5 @@
 <% //Icon form element %>
-<%@ page import="com.sitescape.ef.util.SPropsUtil" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%
 	String caption = (String) request.getAttribute("property_caption");

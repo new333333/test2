@@ -1,6 +1,6 @@
 <% // User filters %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.sitescape.ef.util.NLT" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.ef.domain.UserProperties" %>
 <%
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");

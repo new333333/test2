@@ -22,7 +22,7 @@
 		<property name="jdbc.batch_size">0</property>
 		<property name="jdbc.use_scrollable_resultset">true</property>
 		<property name="cglib.use_reflection_optimizer">true</property>
-		<property name="cache.provider_class">com.sitescape.ef.util.EhCacheProvider</property>
+		<property name="cache.provider_class">com.sitescape.team.util.EhCacheProvider</property>
 		<!-- Set the following two properties to false when running under production since it affect performance -->
 		<property name="show_sql">true</property>
 		<property name="hibernate.generate_statistics">true</property>

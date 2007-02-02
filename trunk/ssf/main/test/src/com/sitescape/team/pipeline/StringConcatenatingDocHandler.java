@@ -1,4 +1,4 @@
-package com.sitescape.ef.pipeline;
+package com.sitescape.team.pipeline;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
 
+import com.sitescape.ef.pipeline.DocSink;
+import com.sitescape.ef.pipeline.DocSource;
+import com.sitescape.ef.pipeline.PipelineInvocation;
 import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 import com.sitescape.ef.util.TempFileUtil;
 

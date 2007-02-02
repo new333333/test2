@@ -8,7 +8,7 @@
 	<!-- Configurer that replaces ${...} placeholders with values from ssf 
 	     properties file(s) that are accessed through sPropsUtil bean. -->
 	<bean id="propertyPlaceholderConfigurer" 
-		class="com.sitescape.ef.util.PropertyPlaceholderConfigurer" 
+		class="com.sitescape.team.util.PropertyPlaceholderConfigurer" 
 		depends-on="sPropsUtil">	
 		<!-- As explained above, this custom configurer gets properties values
 		     from SpropsUtil, NOT from the properties file specified below.
@@ -78,7 +78,7 @@
 		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
 	</bean>
 	
-	<bean id="hibernateConfiguration" class="com.sitescape.ef.util.HibernateConfigurationFactory">
+	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
@@ -86,9 +86,9 @@
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 	</bean> 
 
-	<bean id="springContextUtil" class="com.sitescape.ef.util.SpringContextUtil" />
+	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
 
-	<bean id="dataSource" class="com.sitescape.ef.util.JndiObjectFactoryBean">
+	<bean id="dataSource" class="com.sitescape.team.util.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
   
@@ -130,7 +130,7 @@
 	</bean>
 
 	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
-	<!--<bean id="transactionManager" class="com.sitescape.ef.util.JtaTransactionManager" />-->
+	<!--<bean id="transactionManager" class="com.sitescape.team.util.JtaTransactionManager" />-->
 	<!-- As a general rule, readonly transactions don't want accessControlExceptions to clear the session cache -->
 	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
 			abstract="true">
@@ -164,13 +164,13 @@
 		<property name="propagationBehaviorName"><value>PROPAGATION_REQUIRED</value></property>
 	</bean>
 
-	<bean id="userReloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserReloadInterceptor">
+	<bean id="userReloadInterceptor" class="com.sitescape.team.util.aopalliance.UserReloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
 	<bean id="modelProcessorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
 		<property name="config">
-			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/model-processor-mapping.xml</value>
@@ -181,15 +181,15 @@
 		</property>
 	</bean>
 	
-	<bean id="nlt" class="com.sitescape.ef.util.NLT"/>
+	<bean id="nlt" class="com.sitescape.team.util.NLT"/>
 	<bean id="definitionHelper" class="com.sitescape.ef.web.util.DefinitionHelper">
 		<property name="definitionModule"><ref bean="definitionModule"/> </property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
 	
-	<bean id="sPropsUtil" class="com.sitescape.ef.util.SPropsUtil">
+	<bean id="sPropsUtil" class="com.sitescape.team.util.SPropsUtil">
 		<property name="config">
-			<bean class="com.sitescape.ef.util.PropertiesClassPathConfigFiles">
+			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/ssf.properties</value>
@@ -199,9 +199,9 @@
 			</bean>
 		</property>
 	</bean>
-	<bean id="zoneConfig" class="com.sitescape.ef.util.SZoneConfig">
+	<bean id="zoneConfig" class="com.sitescape.team.util.SZoneConfig">
 		<property name="configDocs">
-			<bean class="com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles">
+			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
 						<value>config/zone.cfg.xml</value>
@@ -381,7 +381,7 @@
 			</props>
 		</property>
 			<property name="target">
-				<bean class="com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl">
+				<bean class="com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl">
 					<property name="profileDao"><ref local="profileDao"/></property>						
 					<property name="coreDao"><ref local="coreDao"/></property>						
 					<property name="adminModule"><ref local="adminModule"/></property>						
@@ -473,7 +473,7 @@
 
 	<bean id="folderModule" parent="baseTransactionProxy">
 		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.FolderModuleImpl">
+			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="fileModule"><ref local="fileModule"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
@@ -533,7 +533,7 @@
 		<property name="pipeline"><ref local="docPipeline"/></property>
 	</bean>
 
-	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.ef.module.folder.impl.DefaultFolderCoreProcessor">
+	<bean id="defaultFolderCoreProcessor" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="workflowModule"><ref local="workflowModule"/></property>
@@ -716,17 +716,17 @@
 		</property>
 	</bean>
 	
-	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.ef.util.aopalliance.LoggingInterceptor"/>
+	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.team.util.aopalliance.LoggingInterceptor"/>
 	
-	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.ef.util.aopalliance.OpenSessionInViewInterceptor">
+	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.team.util.aopalliance.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 	
-	<bean id="aopallianceUserPreloadInterceptor" class="com.sitescape.ef.util.aopalliance.UserPreloadInterceptor">
+	<bean id="aopallianceUserPreloadInterceptor" class="com.sitescape.team.util.aopalliance.UserPreloadInterceptor">
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
-	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.ef.util.aopalliance.MethodInvocationTraceInterceptor"/>
+	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.team.util.aopalliance.MethodInvocationTraceInterceptor"/>
 	
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap"/>

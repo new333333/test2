@@ -14,7 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="com.sitescape.ef.util.NLT" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <script type="text/javascript">

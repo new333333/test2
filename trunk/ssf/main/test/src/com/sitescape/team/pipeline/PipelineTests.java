@@ -1,9 +1,12 @@
-package com.sitescape.ef.pipeline;
+package com.sitescape.team.pipeline;
 
 import java.io.File;
 
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
+import com.sitescape.ef.pipeline.Conduit;
+import com.sitescape.ef.pipeline.Pipeline;
+import com.sitescape.ef.pipeline.PipelineException;
 import com.sitescape.ef.pipeline.impl.RAMConduit;
 import com.sitescape.ef.util.FileHelper;
 
