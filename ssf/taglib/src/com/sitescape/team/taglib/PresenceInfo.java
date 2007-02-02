@@ -11,9 +11,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.module.shared.PresenceServiceUtils;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.shared.PresenceServiceUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;

@@ -4,17 +4,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.sitescape.ef.module.admin.AdminModule;
-import com.sitescape.ef.module.binder.BinderModule;
-import com.sitescape.ef.module.dashboard.DashboardModule;
-import com.sitescape.ef.module.definition.DefinitionModule;
-import com.sitescape.ef.module.file.FileModule;
-import com.sitescape.ef.module.folder.FolderModule;
-import com.sitescape.ef.module.ldap.LdapModule;
-import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.module.sample.EmployeeModule;
-import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.dashboard.DashboardModule;
+import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.file.FileModule;
+import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ldap.LdapModule;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.sample.EmployeeModule;
+import com.sitescape.team.module.workflow.WorkflowModule;
+import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 

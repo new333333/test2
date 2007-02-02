@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 
 /**
  * @hibernate.class table="SS_SeenMap" dynamic-update="true"

@@ -7,8 +7,8 @@ import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.ChangeLogUtils;
-import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.util.Validator;
 

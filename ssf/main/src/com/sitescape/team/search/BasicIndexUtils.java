@@ -12,10 +12,10 @@ import java.util.Set;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;

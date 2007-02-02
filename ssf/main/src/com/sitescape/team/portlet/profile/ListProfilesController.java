@@ -14,13 +14,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;

@@ -22,12 +22,13 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.jpdl.xml.JpdlXmlWriter;
 
 import org.springframework.web.servlet.ModelAndView;
+
+import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -53,17 +54,17 @@ public class WorkflowController extends SAbstractController {
 			    ProcessDefinition processDefinition = getWorkflowModule().addWorkflow(
 			    	      "<process-definition name='hello world'>" +
 			    	      " <event type='node-enter'>" +
-			    	      "   <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+			    	      "   <action name='recordState' class='com.sitescape.team.module.workflow.RecordState' config-type='bean'/>" +
 			    	      " </event>" +
 			    	      "  <start-state name='start'>" +
 			    	      "    <transition to='notify' />" +
 			    	      "  </start-state>" +
 			    	      "  <state name='notify'>" +
-			    	      "    <action name='recordState' class='com.sitescape.ef.module.workflow.RecordState' config-type='bean'/>" +
+			    	      "    <action name='recordState' class='com.sitescape.team.module.workflow.RecordState' config-type='bean'/>" +
 			    	      " <event type='node-enter'>" +
 			    	      " <action ref-name='recordState'> " +
 			    	      " <wfState>test notify</wfState></action>" +
-			    	      " <action class='com.sitescape.ef.module.workflow.Notify' config-type='bean'>" +
+			    	      " <action class='com.sitescape.team.module.workflow.Notify' config-type='bean'>" +
 			    	      " <principals>10,25,100</principals>" +
 			    	      " <subject>State change</subject>" +
 			    	      " <body>Blah, blah, blah...</body>" +

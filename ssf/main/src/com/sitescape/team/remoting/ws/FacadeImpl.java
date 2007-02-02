@@ -13,8 +13,8 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
 
-import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.module.shared.EmptyInputData;
+import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 

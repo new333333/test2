@@ -11,7 +11,7 @@
     <bean id="employeeEditController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.sample.EmployeeEditController">
 		<property name="sessionForm"><value>false</value></property>
 		<property name="commandName"><value>employee</value></property>
-		<property name="commandClass"><value>com.sitescape.ef.module.sample.Employee</value></property>
+		<property name="commandClass"><value>com.sitescape.team.module.sample.Employee</value></property>
 		<property name="formView"><value>sample/employeeEdit</value></property>
 		<!--property name="validator"><ref bean="employeeValidator"/></property--> 
     </bean>

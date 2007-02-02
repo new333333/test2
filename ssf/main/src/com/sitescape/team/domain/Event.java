@@ -41,10 +41,10 @@ import java.util.Vector;
 
 import org.dom4j.Element;
 
+import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.module.shared.ChangeLogUtils;
 
 
 /**

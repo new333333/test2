@@ -9,12 +9,12 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.module.definition.DefinitionConfigurationBuilder;
-import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
+import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 

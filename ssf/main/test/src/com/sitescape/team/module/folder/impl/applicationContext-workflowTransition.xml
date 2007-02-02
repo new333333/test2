@@ -195,7 +195,7 @@
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
-	<bean id="workflowFactory" class="com.sitescape.ef.module.workflow.impl.WorkflowFactory">
+	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 	</bean> 
 
@@ -217,7 +217,7 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
-	<bean id="workflowModule" class="com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl" >
+	<bean id="workflowModule" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl" >
 		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>	
 	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
