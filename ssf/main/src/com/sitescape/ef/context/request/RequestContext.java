@@ -1,7 +1,7 @@
 package com.sitescape.ef.context.request;
 
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 /**
  * @author Jong Kim
  *

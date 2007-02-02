@@ -1,5 +1,5 @@
 <%@ page import="java.util.Map" %>
-<%@ page import="com.sitescape.ef.domain.Event" %>
+<%@ page import="com.sitescape.team.domain.Event" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <% // these beans need to be here because we need to
    // access them via scriptlets; they need to be 
@@ -8,7 +8,7 @@
 <jsp:useBean id="formName" type="String" scope="request" />
 <jsp:useBean id="startDate" type="java.util.Date" scope="request" />
 <jsp:useBean id="endDate" type="java.util.Date" scope="request" />
-<jsp:useBean id="initEvent" type="com.sitescape.ef.domain.Event" scope="request" />
+<jsp:useBean id="initEvent" type="com.sitescape.team.domain.Event" scope="request" />
 
 <jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
 

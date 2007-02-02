@@ -12,24 +12,24 @@ import org.springframework.test.AbstractTransactionalDataSourceSpringContextTest
 import com.sitescape.ef.dao.impl.CoreDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FileItem;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.NoUserByTheIdException;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.Membership;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Membership;
+import com.sitescape.team.domain.NoUserByTheIdException;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.Workspace;
 
 /**
  * Integration unit tests for data access layer. 

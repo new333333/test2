@@ -7,16 +7,16 @@ import java.util.Date;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.ChangeLog;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.VersionAttachment;
-import com.sitescape.ef.domain.WorkflowResponse;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.domain.WorkflowResponse;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.util.Validator;
 
 public class ChangeLogUtils {

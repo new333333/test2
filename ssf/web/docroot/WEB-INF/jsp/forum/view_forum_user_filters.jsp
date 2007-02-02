@@ -1,7 +1,7 @@
 <% // User filters %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
-<%@ page import="com.sitescape.ef.domain.UserProperties" %>
+<%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
 	String filterName = "--" + NLT.get("none") + "--";

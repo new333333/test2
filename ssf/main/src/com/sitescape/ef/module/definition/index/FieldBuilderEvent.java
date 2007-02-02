@@ -6,9 +6,9 @@ import java.util.Set;
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.search.BasicIndexUtils;
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
     public String makeFieldName(String dataElemName, String fieldName) {

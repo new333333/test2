@@ -6,9 +6,9 @@ import java.util.Iterator;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.Validator;
 /**
  *

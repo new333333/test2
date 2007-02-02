@@ -9,20 +9,20 @@ import org.springframework.dao.DataAccessException;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Rating;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Visits;
-import com.sitescape.ef.domain.NoUserByTheIdException;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.NoGroupByTheIdException;
-import com.sitescape.ef.domain.NoGroupByTheNameException;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoGroupByTheIdException;
+import com.sitescape.team.domain.NoGroupByTheNameException;
+import com.sitescape.team.domain.NoUserByTheIdException;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.Rating;
+import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Visits;
 
 /**
  * @author Jong Kim

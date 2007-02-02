@@ -1,5 +1,5 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 //int sliderDivHeight = 18;

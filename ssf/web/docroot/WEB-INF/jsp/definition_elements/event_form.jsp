@@ -31,7 +31,7 @@
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}" >
 <c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
 </c:if>
-<jsp:useBean id="ev" type="com.sitescape.ef.domain.Event" class="com.sitescape.ef.domain.Event" />
+<jsp:useBean id="ev" type="com.sitescape.team.domain.Event" class="com.sitescape.team.domain.Event" />
 
 <ssf:eventeditor id="<%= elementName %>" 
          formName="<%= formName %>" 

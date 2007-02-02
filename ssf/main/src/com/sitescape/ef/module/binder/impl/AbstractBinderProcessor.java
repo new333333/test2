@@ -19,24 +19,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sitescape.ef.docconverter.ITextConverterManager;
-import com.sitescape.ef.docconverter.TextConverter;
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.ChangeLog;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.TitleException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.VersionAttachment;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -51,13 +36,28 @@ import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.pipeline.Pipeline;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.repository.RepositoryUtil;
 
+import com.sitescape.team.docconverter.ITextConverterManager;
+import com.sitescape.team.docconverter.TextConverter;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.TitleException;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.IndexSynchronizationManager;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
@@ -683,7 +683,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
 
     	// Add search document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_BINDER);
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER);
         
          
         // Add the events
@@ -814,7 +814,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	
     	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.ef.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT);
         
         // Add UID of attachment file (FUID)
         EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);

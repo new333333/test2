@@ -5,9 +5,9 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.team.domain.Description;
+import com.sitescape.team.search.BasicIndexUtils;
 
 /**
  *

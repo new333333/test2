@@ -25,7 +25,7 @@ import org.springframework.mail.MailSendException;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.mail.JavaMailSender;
 import com.sitescape.ef.mail.MailManager;
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**

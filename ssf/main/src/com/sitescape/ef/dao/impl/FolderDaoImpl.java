@@ -23,17 +23,17 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HKey;
-import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
-import com.sitescape.ef.domain.TitleException;
-import com.sitescape.ef.domain.UserPerFolderPK;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HKey;
+import com.sitescape.team.domain.HistoryMap;
+import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.NoFolderEntryByTheIdException;
+import com.sitescape.team.domain.TitleException;
+import com.sitescape.team.domain.UserPerFolderPK;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 /**
  * @author Jong Kim
@@ -94,7 +94,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
-                        Query query = session.createQuery("from com.sitescape.ef.domain.FolderEntry d " + filter.getFilterString("d"));
+                        Query query = session.createQuery("from com.sitescape.team.domain.FolderEntry d " + filter.getFilterString("d"));
                 		List filterValues = filter.getFilterValues();
                			for (int i=0; i<filterValues.size(); ++i) {
                				query.setParameter(i, filterValues.get(i));
@@ -209,7 +209,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                    	List results = session.createQuery("from com.sitescape.ef.domain.FolderEntry this where parentBinder=:parent and " + 
+                    	List results = session.createQuery("from com.sitescape.team.domain.FolderEntry this where parentBinder=:parent and " + 
                     			" (this.creation.date > :cDate and this.creation.date <= :c2Date) or " +
 									    "(this.modification.date > :mDate and this.modification.date <= :m2Date) or " +
 									    "(this.workflowChange.date > :wDate and this.workflowChange.date <= :w2Date)" +
@@ -243,7 +243,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         List entries = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
-                    	Query q  = session.createQuery("from com.sitescape.ef.domain.FolderEntry x where owningFolderSortKey like '" + 
+                    	Query q  = session.createQuery("from com.sitescape.team.domain.FolderEntry x where owningFolderSortKey like '" + 
                     			folder.getFolderHKey().getSortKey() + "%' and ((x.creation.date > ? and x.creation.date <= ?) or " +
 									    "(x.modification.date > ? and x.modification.date <= ?) or " +
 									    "(x.workflowChange.date > ? and x.workflowChange.date <= ?)) order by " + order.getOrderByClause("x"));
@@ -309,41 +309,41 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 
            			getCoreDao().deleteEntityAssociations("owningBinderId=" + folder.getId(), FolderEntry.class);
 		   			//delete ratings/visits for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in " + 
- 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
 		   			  			" p.parentBinder=:folder) and entityType=:entityType")
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
 		   			//delete subscriptions to these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId in " + 
- 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
 		   			  			" p.parentBinder=:folder) and entityType=:entityType")
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
 		   			//delete tags for these entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id in " + 
- 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
 		   			  			" p.parentBinder=:folder) and entity_type=:entityType")
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
- 		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id in " + 
- 			   				"(select p.id from com.sitescape.ef.domain.FolderEntry p where " +
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.FolderEntry p where " +
 		   			  			" p.parentBinder=:folder) and owner_type=:entityType")
 		   			  	.setEntity("folder", folder)
 		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
 		   				.executeUpdate();
  		   			//delete any reserved names for entries
- 		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryEntry where binderId=:binderId and not entityId is null")
+ 		   			session.createQuery("Delete com.sitescape.team.domain.LibraryEntry where binderId=:binderId and not entityId is null")
 		   				.setLong("binderId", folder.getId())
 		   				.executeUpdate();
  		   			//remove foreign keys or mysql complains
-        	  		session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
+        	  		session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry=null,topEntry=null where parentBinder=:parent")
         	  			.setEntity("parent", folder)
    	   					.executeUpdate();
-        	  		session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where parentBinder=:parent")
+        	  		session.createQuery("Delete com.sitescape.team.domain.FolderEntry where parentBinder=:parent")
        	   				.setEntity("parent", folder)
        	   				.executeUpdate();
        	  			//if these are ever cached in secondary cache, clear them out.
@@ -372,34 +372,34 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
    		   					EntityType.folderEntry.name() + "'", FolderEntry.class);
     		   			//delete ratings/visits for these entries
-     		   			session.createQuery("Delete com.sitescape.ef.domain.Rating where entityId in (:pList) and entityType=:entityType")
+     		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();
        		   			//delete subscriptions to these entries
-     		   			session.createQuery("Delete com.sitescape.ef.domain.Subscription where entityId in (:pList) and entityType=:entityType")
+     		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();
     		   			//delete tags for these entries
-     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where entity_id in (:pList) and entity_type=:entityType")
+     		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id in (:pList) and entity_type=:entityType")
          	   				.setParameterList("pList", ids)
     		   			  	.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
     		   				.executeUpdate();
-     		   			session.createQuery("Delete com.sitescape.ef.domain.Tag where owner_id in (:pList) and owner_type=:entityType")
+     		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id in (:pList) and owner_type=:entityType")
      	   					.setParameterList("pList", ids)
      	   					.setParameter("entityType", EntityIdentifier.EntityType.folderEntry.getValue())
      	   					.executeUpdate();
     		   			//delete any reserved names
-     		   			session.createQuery("Delete com.sitescape.ef.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
+     		   			session.createQuery("Delete com.sitescape.team.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
     		   				.setParameterList("pList", ids)
     		   				.setLong("binderId", entry.getParentFolder().getId())
     		   				.executeUpdate();
      		   			//remove foreign key or mysql complains
-    		   			session.createQuery("Update com.sitescape.ef.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
+    		   			session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")
     	   				.setParameterList("pList", ids)
     	   				.executeUpdate();
-     		   			session.createQuery("Delete com.sitescape.ef.domain.FolderEntry where id in (:pList)")
+     		   			session.createQuery("Delete com.sitescape.team.domain.FolderEntry where id in (:pList)")
         	   				.setParameterList("pList", ids)
         	   				.executeUpdate();
            	  			//if these are ever cached in secondary cache, clear them out.      	   				
@@ -415,7 +415,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   	new HibernateCallback() {
 		   		public Object doInHibernate(Session session) throws HibernateException {
 		   			//load top level tokens
-		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.ef.domain.WorkflowState w where w.owner.owningBinderId=:id")
+		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.team.domain.WorkflowState w where w.owner.owningBinderId=:id")
     	   				.setLong("id", folder.getId().longValue())
     	   				.list());
 		   			workflowDelete(tokenIds, session);
@@ -430,7 +430,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 		   	new HibernateCallback() {
 		   		public Object doInHibernate(Session session) throws HibernateException {
 		   			//load top level tokens
-		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.ef.domain.WorkflowState w where w.owner.ownerId in (:pList) and w.owner.ownerType=:type")
+		   			Set tokenIds = new HashSet(session.createQuery("select w.tokenId from com.sitescape.team.domain.WorkflowState w where w.owner.ownerId in (:pList) and w.owner.ownerType=:type")
  	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
     	   				.list());
@@ -518,27 +518,27 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
-	    	   		session.createQuery("update com.sitescape.ef.domain.Attachment set owningFolderSortKey=:sortKey where owningBinderId=:id")
+	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningFolderSortKey=:sortKey where owningBinderId=:id")
 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.executeUpdate();
-	    	   		session.createQuery("update com.sitescape.ef.domain.Event set owningFolderSortKey=:sortKey where owningBinderId=:id")
+	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningFolderSortKey=:sortKey where owningBinderId=:id")
 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	       	   			.executeUpdate();
-	       	   		session.createQuery("update com.sitescape.ef.domain.CustomAttribute set owningFolderSortKey=:sortKey where owningBinderId=:id")
+	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningFolderSortKey=:sortKey where owningBinderId=:id")
 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	  	   				.executeUpdate();
-       	   			session.createQuery("update com.sitescape.ef.domain.WorkflowState set owningFolderSortKey=:sortKey where owningBinderId=:id")
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningFolderSortKey=:sortKey where owningBinderId=:id")
 	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	       	   			.executeUpdate();
-       	   			session.createQuery("update com.sitescape.ef.domain.WorkflowResponse set owningFolderSortKey=:sortKey where owningBinderId=:id")
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningFolderSortKey=:sortKey where owningBinderId=:id")
        	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
        	   				.setLong("id", folder.getId().longValue())
        	   				.executeUpdate();
-     	   			session.createQuery("update com.sitescape.ef.domain.FolderEntry set owningFolderSortKey=:sortKey where parentBinder=:id")
+     	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningFolderSortKey=:sortKey where parentBinder=:id")
       	   				.setString("sortKey", folder.getFolderHKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())
       	   				.executeUpdate();
@@ -558,35 +558,35 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
-	    	   		session.createQuery("update com.sitescape.ef.domain.Attachment set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	    	   			.executeUpdate();
-	    	   		session.createQuery("update com.sitescape.ef.domain.Event set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	    	   		session.createQuery("update com.sitescape.team.domain.Event set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
-	       	   		session.createQuery("update com.sitescape.ef.domain.CustomAttribute set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+	       	   		session.createQuery("update com.sitescape.team.domain.CustomAttribute set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	  	   				.executeUpdate();
-       	   			session.createQuery("update com.sitescape.ef.domain.WorkflowState set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
+       	   			session.createQuery("update com.sitescape.team.domain.WorkflowState set owningFolderSortKey=:sortKey,owningBinderId=:id where " +
 	    	   				"ownerId in (:pList) and ownerType=:type")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())
 	    	   			.setParameterList("pList", ids)
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
-      	   			session.createQuery("update com.sitescape.ef.domain.FolderEntry set owningFolderSortKey=:sortKey,parentBinder=:id where " +
+      	   			session.createQuery("update com.sitescape.team.domain.FolderEntry set owningFolderSortKey=:sortKey,parentBinder=:id where " +
 	    	   				"id in (:pList)")
  	    	   			.setString("sortKey", folder.getFolderHKey().getSortKey())
 	    	   			.setLong("id", folder.getId().longValue())

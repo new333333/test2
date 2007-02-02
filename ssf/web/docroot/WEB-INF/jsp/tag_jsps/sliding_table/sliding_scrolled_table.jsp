@@ -24,7 +24,7 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
-<%@ page import="com.sitescape.ef.domain.UserProperties" %>
+<%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%@ page import="java.lang.String" %>
 <%@ page import="java.lang.Boolean" %>
 <%@ page import="java.util.Map" %>

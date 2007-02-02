@@ -9,8 +9,8 @@ import java.util.Set;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.CustomAttribute;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
 
 public class ResolveIds {
 	public static Collection getPrincipals(CustomAttribute attribute) {
@@ -40,7 +40,7 @@ public class ResolveIds {
 		Map icons = new HashMap();
 		if ((ids == null) || ids.isEmpty()) return data;
 		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		String query = new String("select x.id,x.title,x.iconName from x in class com.sitescape.ef.domain.Binder where x.id in (:idList)");
+		String query = new String("select x.id,x.title,x.iconName from x in class com.sitescape.team.domain.Binder where x.id in (:idList)");
 		data.put("idList", ids);
 		List<Object[]> result = coreDao.loadObjects(query, data);
 		data.clear();

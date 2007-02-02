@@ -5,7 +5,7 @@ import java.util.Map;
 import org.dom4j.Element;
 import org.dom4j.DocumentHelper;
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.util.ReflectHelper;
 
 /**

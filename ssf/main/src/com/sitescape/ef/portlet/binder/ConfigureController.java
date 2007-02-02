@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;

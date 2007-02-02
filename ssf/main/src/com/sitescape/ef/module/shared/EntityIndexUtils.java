@@ -16,19 +16,19 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.TagUtil;
 
 /**

@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;

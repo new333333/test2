@@ -4,10 +4,10 @@ import java.util.List;
 import org.jbpm.graph.def.ProcessDefinition;
 import org.jbpm.graph.exe.ProcessInstance;
 
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WorkflowSupport;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 
 public interface WorkflowModule {
 	public List getAllDefinitions();

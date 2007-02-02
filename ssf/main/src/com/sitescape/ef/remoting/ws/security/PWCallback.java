@@ -10,8 +10,8 @@ import org.apache.ws.security.WSPasswordCallback;
 
 import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**

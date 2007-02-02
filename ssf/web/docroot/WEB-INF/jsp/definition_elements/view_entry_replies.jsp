@@ -12,7 +12,7 @@
 </c:if>
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
-  <jsp:useBean id="reply" type="com.sitescape.ef.domain.Entry" />
+  <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
   <ssf:box style="rounded">
   <ssf:param name="backgroundClass" value="ss_replies_background"/>
   <div class="ss_replies">

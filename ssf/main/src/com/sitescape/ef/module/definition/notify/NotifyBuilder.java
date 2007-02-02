@@ -2,7 +2,8 @@ package com.sitescape.ef.module.definition.notify;
 
 import java.util.Map;
 import org.dom4j.Element;
-import com.sitescape.ef.domain.DefinableEntity;
+
+import com.sitescape.team.domain.DefinableEntity;
 
 /**
  *

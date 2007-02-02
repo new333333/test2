@@ -10,8 +10,8 @@ import java.io.IOException;
 import java.lang.Integer;
 import java.util.HashMap;
 import java.util.Iterator;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.presence.PresenceService;
+import com.sitescape.team.domain.User;
 
 public class PresenceServiceImpl implements PresenceService, InitializingBean, DisposableBean {
 

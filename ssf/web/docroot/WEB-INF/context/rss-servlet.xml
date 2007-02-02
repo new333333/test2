@@ -39,12 +39,12 @@
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
-	<bean id="userPreloadInterceptor" class="com.sitescape.ef.rss.servlet.handler.UserPreloadInterceptor">
+	<bean id="userPreloadInterceptor" class="com.sitescape.team.rss.servlet.handler.UserPreloadInterceptor">
 		<property name="profileDao"><ref bean="profileDao"/></property>
 	</bean>	
 
 	<!-- Controllers -->
-	<bean id="list" parent="controllerDependencyTemplate" class="com.sitescape.ef.rss.servlet.ListController"/>
-	<bean id="view" parent="controllerDependencyTemplate" class="com.sitescape.ef.rss.servlet.ViewController"/>
+	<bean id="list" parent="controllerDependencyTemplate" class="com.sitescape.team.rss.servlet.ListController"/>
+	<bean id="view" parent="controllerDependencyTemplate" class="com.sitescape.team.rss.servlet.ViewController"/>
 
 </beans>

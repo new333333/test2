@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" lazy="false" table="SS_WorkAreaFunctionMemberships" name="com.sitescape.ef.security.function.WorkAreaFunctionMembership">
+  <class dynamic-update="true" lazy="false" table="SS_WorkAreaFunctionMemberships" name="com.sitescape.team.security.function.WorkAreaFunctionMembership">
     <cache usage="nonstrict-read-write"/>
     <id unsaved-value="null" name="id" type="long">
       <generator class="native"/>
@@ -18,8 +18,8 @@
     <property name="zoneId" not-null="true"/>
     <property name="functionId" column="functionId" not-null="true" type="long"/>
   </class>
-  <query name="check-WorkAreaFunctionMembership"><![CDATA[select fm.id from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
-  <query name="get-WorkAreaFunctionMembershipByOperation"><![CDATA[select fm from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId]]></query>
-  <query name="get-FunctionMembershipByOperation"><![CDATA[select fm from com.sitescape.ef.security.function.Function function join function.operationNames operationName, com.sitescape.ef.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+  <query name="check-WorkAreaFunctionMembership"><![CDATA[select fm.id from com.sitescape.team.security.function.Function function join function.operationNames operationName, com.sitescape.team.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
+  <query name="get-WorkAreaFunctionMembershipByOperation"><![CDATA[select fm from com.sitescape.team.security.function.Function function join function.operationNames operationName, com.sitescape.team.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and fm.workAreaId=:workAreaId and fm.workAreaType=:workAreaType and operationName=:operationName and function.id=fm.functionId]]></query>
+  <query name="get-FunctionMembershipByOperation"><![CDATA[select fm from com.sitescape.team.security.function.Function function join function.operationNames operationName, com.sitescape.team.security.function.WorkAreaFunctionMembership fm join fm.memberIds memberId where function.zoneId=:zoneId and fm.zoneId=:zoneId and operationName=:operationName and function.id=fm.functionId and memberId in (:principalIds)]]></query>
 	                    			
 </hibernate-mapping>

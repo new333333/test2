@@ -11,14 +11,14 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.repository.RepositoryUtil;
 
 public class DefinitionUtils {
    public static String getPropertyValue(Element element, String name) {

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import com.sitescape.ef.domain.Tag;
+import com.sitescape.team.domain.Tag;
 
 
 

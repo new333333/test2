@@ -24,21 +24,6 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.context.request.RequestContextUtil;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NoGroupByTheIdException;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -48,9 +33,24 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.search.IndexSynchronizationManager;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NoGroupByTheIdException;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.search.IndexSynchronizationManager;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
@@ -86,7 +86,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public void checkAccess(ProfileBinder binder, String operation) throws AccessControlException {
 		if ("getProfileBinder".equals(operation)) {
@@ -358,7 +358,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			Map params = new HashMap();
 			params.put("plist", newEntries.keySet());
 			params.put("zoneId", binder.getZoneId());
-			List<Principal> exists = getCoreDao().loadObjects("from com.sitescape.ef.domain.Principal where zoneId=:zoneId and name in (:plist)", params);
+			List<Principal> exists = getCoreDao().loadObjects("from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:plist)", params);
 			for (int x=0;x<exists.size(); ++x) {
 				Principal p = (Principal)exists.get(x);
 				newEntries.remove(p.getName());

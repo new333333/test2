@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.text.DateFormat;
 import java.util.Date;
 import java.sql.Timestamp;
-import com.sitescape.ef.domain.FileAttachment;
+
+import com.sitescape.team.domain.FileAttachment;
 
 public class Notify {
 	public static final String FULL="full";

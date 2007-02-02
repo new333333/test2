@@ -3,8 +3,8 @@
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="title_entry" type="com.sitescape.ef.domain.Entry" />
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
+<jsp:useBean id="title_entry" type="com.sitescape.team.domain.Entry" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		ssSeenMap.setSeen(title_entry);

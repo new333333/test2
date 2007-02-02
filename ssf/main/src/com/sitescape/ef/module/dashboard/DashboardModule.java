@@ -1,11 +1,11 @@
 package com.sitescape.ef.module.dashboard;
 import java.util.Map;
 
-import com.sitescape.ef.domain.Dashboard;
-import com.sitescape.ef.domain.DashboardPortlet;
-import com.sitescape.ef.domain.EntityDashboard;
-import com.sitescape.ef.domain.UserDashboard;
-import com.sitescape.ef.domain.EntityIdentifier;
+import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.DashboardPortlet;
+import com.sitescape.team.domain.EntityDashboard;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.UserDashboard;
 /**
  * <code>DashboardModule</code> provides dashboard-related operations
  * 

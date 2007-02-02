@@ -1,9 +1,9 @@
 package com.sitescape.team.ssfs.util;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.FileAttachment;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.WebUrlUtil;
 

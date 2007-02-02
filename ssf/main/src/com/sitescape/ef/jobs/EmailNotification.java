@@ -1,7 +1,7 @@
 
 package com.sitescape.ef.jobs;
 
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.team.domain.Binder;
 /**
  * @author Janet McCann
  *

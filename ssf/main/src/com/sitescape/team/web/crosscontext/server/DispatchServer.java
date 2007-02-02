@@ -15,10 +15,10 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.security.authentication.AuthenticationManager;
-import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
-import com.sitescape.ef.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.security.authentication.AuthenticationManager;
+import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
+import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;

@@ -7,9 +7,10 @@ package com.sitescape.team.web.util;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import com.sitescape.team.domain.Event;
 import com.sitescape.util.cal.DayAndPosition;
 
-import com.sitescape.ef.domain.Event;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 
 /**

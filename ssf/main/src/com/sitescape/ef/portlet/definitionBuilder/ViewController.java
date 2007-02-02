@@ -16,11 +16,11 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinitionInvalidException;
-import com.sitescape.ef.domain.DefinitionInvalidOperation;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinitionInvalidException;
+import com.sitescape.team.domain.DefinitionInvalidOperation;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;

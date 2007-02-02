@@ -5,7 +5,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Locale;
 
-import com.sitescape.ef.domain.Binder;
+import com.sitescape.team.domain.Binder;
 
 /**
  * This comparator is used to produce a sorted collection based on title

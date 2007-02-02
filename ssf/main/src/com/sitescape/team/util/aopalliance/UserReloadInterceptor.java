@@ -9,7 +9,7 @@ import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
 
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 
 public class UserReloadInterceptor implements MethodInterceptor {
 	

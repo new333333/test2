@@ -28,21 +28,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.LibraryEntry;
-import com.sitescape.ef.domain.NoBinderByTheIdException;
-import com.sitescape.ef.domain.NoDefinitionByTheIdException;
-import com.sitescape.ef.domain.NotificationDef;
-import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.TemplateBinder;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.exception.UncheckedCodedContainerException;
 import com.sitescape.ef.jobs.EmailNotification;
 import com.sitescape.ef.jobs.ScheduleInfo;
@@ -56,15 +41,30 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.ObjectBuilder;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.search.SearchObject;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkArea;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.LibraryEntry;
+import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NotificationDef;
+import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.TemplateBinder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkArea;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
@@ -121,7 +121,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
 	 * This should not be called inside a transaction because it results in a rollback.
-	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public void checkAccess(Binder binder, String operation) throws AccessControlException {
   		if (binder instanceof TemplateBinder) {
@@ -528,7 +528,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         	}
         }
 		EntryProcessor processor = 
-			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.ef.domain.Folder", 
+			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.team.domain.Folder", 
 						EntryProcessor.PROCESSOR_KEY);
         entries = (List) processor.getBinderEntries_entriesArray(hits);
         Map retMap = new HashMap();

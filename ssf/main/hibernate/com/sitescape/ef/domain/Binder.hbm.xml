@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" lazy="false" table="SS_Forums" dynamic-insert="false" name="com.sitescape.ef.domain.Binder">
+  <class dynamic-update="true" lazy="false" table="SS_Forums" dynamic-insert="false" name="com.sitescape.team.domain.Binder">
     <cache usage="read-write"/>
     <id unsaved-value="null" name="id" type="long" node="@id">
       <generator class="native"/>
@@ -18,37 +18,37 @@
     <bag inverse="true" access="field" cascade="all" optimistic-lock="false" lazy="true" name="binders">
         <cache usage="read-write"/>
         <key column="parentBinder"/>
-        <one-to-many class="com.sitescape.ef.domain.Binder"/>
+        <one-to-many class="com.sitescape.team.domain.Binder"/>
     </bag>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" name="customAttributes">
       <key column="binder"/>
       <map-key type="string" column="name"/>
-      <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
+      <one-to-many class="com.sitescape.team.domain.CustomAttribute"/>
     </map>
     <map inverse="false" table="SS_WorkflowMap" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" name="workflowAssociations">
       <key column="binder"/>
       <map-key type="string" column="entryDefinition" length="32"/>
-      <many-to-many class="com.sitescape.ef.domain.Definition">
+      <many-to-many class="com.sitescape.team.domain.Definition">
       	<column name="workflowDefinition" sql-type="char(32)"/>
       </many-to-many>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="binder"/>
-      <one-to-many class="com.sitescape.ef.domain.Attachment"/>
+      <one-to-many class="com.sitescape.team.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
       <key column="binder" on-delete="cascade"/>
-      <one-to-many class="com.sitescape.ef.domain.Event"/>
+      <one-to-many class="com.sitescape.team.domain.Event"/>
     </set>
     <list inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" lazy="true" table="SS_DefinitionMap" name="definitions">
       <cache usage="nonstrict-read-write"/>
       <key column="binder"/>
       <index type="integer" column="position"/>
-      <many-to-many fetch="join" class="com.sitescape.ef.domain.Definition">
+      <many-to-many fetch="join" class="com.sitescape.team.domain.Definition">
         <column name="definition" sql-type="char(32)"/>
       </many-to-many>
     </list>
-    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="defaultPostingDef">
+    <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="defaultPostingDef">
       <column name="defaultPostingDef" sql-type="char(32)" />
     </many-to-one>
     <property name="type" length="16" update="false" insert="false"/>
@@ -58,7 +58,7 @@
       <property name="teamOn" column="notify_teamOn"/>
 	  <bag inverse="false" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
       	<key column="binderId" />
- 	     <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="principalId"/>
+ 	     <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="principalId"/>
     	</bag>
        <property name="emailAddress" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
@@ -70,7 +70,7 @@
 
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
-    <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
+    <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
       <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>
@@ -86,7 +86,7 @@
     </component>
     <property name="definitionsInherited"/>
     <property name="definitionType"/>
-    <component name="averageRating" class="com.sitescape.ef.domain.AverageRating">
+    <component name="averageRating" class="com.sitescape.team.domain.AverageRating">
       <property name="average" column="rating_average" />
       <property name="count" column="rating_count"/>
     </component>
@@ -100,38 +100,38 @@
     <property name="normalTitle" length="256"/>
     <property name="iconName" length="64"/>    
     <property name="internalId" length="32"/>
-    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
+    <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>
-    <component name="creation" node="creation" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="creation" node="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
-    <component name="modification" node="modification" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="modification" node="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <subclass name="com.sitescape.ef.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
+    <subclass name="com.sitescape.team.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one embed-xml="false" node="topFolder/@id" name="topFolder"/>
       <property name="nextEntryNumber"/>
       <property name="nextFolderNumber"/>
-      <component name="folderHKey" class="com.sitescape.ef.domain.HKey">
+      <component name="folderHKey" class="com.sitescape.team.domain.HKey">
         <property name="level" column="folder_level"/>
         <property name="sortKey" length="512" column="folder_sortKey"/>
       </component>
-      <component name="entryRootHKey" class="com.sitescape.ef.domain.HKey">
+      <component name="entryRootHKey" class="com.sitescape.team.domain.HKey">
         <property name="level" column="entryRoot_level"/>
         <property name="sortKey" length="512" column="entryRoot_sortKey"/>
       </component>
     </subclass>
-    <subclass name="com.sitescape.ef.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
-     <subclass name="com.sitescape.ef.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
+    <subclass name="com.sitescape.team.domain.Workspace" discriminator-value="workspace" dynamic-update="true">
+     <subclass name="com.sitescape.team.domain.ProfileBinder" discriminator-value="profiles" dynamic-update="true"/>
     </subclass>
-    <subclass name="com.sitescape.ef.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">
+    <subclass name="com.sitescape.team.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">
   	  <property name="templateTitle" length="128"/>
 	   <component name="templateDescription">
    	   <property name="HDescription" column="tDescription_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>

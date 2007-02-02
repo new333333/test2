@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.util.InvokeUtil;
 
 /**

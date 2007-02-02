@@ -1,6 +1,6 @@
 <% // File folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.ef.domain.UserProperties" scope="request" />
+<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
 <%
 	Map ssFolderColumns = (Map) ssUserFolderProperties.getProperty("userFolderColumns");
 	if (ssFolderColumns == null) {

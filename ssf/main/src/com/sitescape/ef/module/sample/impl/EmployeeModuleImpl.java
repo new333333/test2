@@ -7,11 +7,11 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.sample.Employee;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.sample.SalaryMaxedOutException;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 
 public class EmployeeModuleImpl extends CommonDependencyInjection implements EmployeeModule {

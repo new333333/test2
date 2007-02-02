@@ -2,7 +2,7 @@ package com.sitescape.team.util;
 
 import java.util.Comparator;
 
-import com.sitescape.ef.domain.PersistentLongId;
+import com.sitescape.team.domain.PersistentLongId;
 
 public class LongIdComparator implements Comparator {
 	public int compare(Object obj1, Object obj2) {

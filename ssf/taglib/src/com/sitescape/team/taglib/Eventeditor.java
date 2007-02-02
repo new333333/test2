@@ -20,9 +20,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.sitescape.team.domain.Event;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
-import com.sitescape.ef.domain.Event;
 
 /**
  * @author billmers

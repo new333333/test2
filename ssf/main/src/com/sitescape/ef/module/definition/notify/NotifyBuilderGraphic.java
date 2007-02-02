@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
 /**

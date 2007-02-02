@@ -7,7 +7,7 @@ import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.module.folder.index.IndexUtils;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 
 /**
  *

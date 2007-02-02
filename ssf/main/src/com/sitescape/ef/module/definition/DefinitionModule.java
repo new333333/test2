@@ -7,13 +7,13 @@ import java.util.NoSuchElementException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinitionInvalidException;
-import com.sitescape.ef.domain.Entry;
 import com.sitescape.ef.module.definition.notify.Notify;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinitionInvalidException;
+import com.sitescape.team.domain.Entry;
 
 /**
  * @author hurley

@@ -2,14 +2,14 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" table="SS_Definitions" name="com.sitescape.ef.domain.Definition">
+  <class dynamic-update="true" table="SS_Definitions" name="com.sitescape.team.domain.Definition">
     <cache usage="nonstrict-read-write"/>
     <id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <component name="aclSet" class="com.sitescape.ef.domain.PersistentAclSet">
+    <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
       <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>
@@ -31,15 +31,15 @@
     <property name="zoneId" not-null="true"/>
     <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent" not-null="true"/>
-    <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
-    <component name="modification" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>

@@ -15,10 +15,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Description;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;

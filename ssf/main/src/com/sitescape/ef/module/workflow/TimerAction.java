@@ -6,8 +6,8 @@ import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 
 public class TimerAction extends AbstractActionHandler {
 	protected Log logger = LogFactory.getLog(getClass());

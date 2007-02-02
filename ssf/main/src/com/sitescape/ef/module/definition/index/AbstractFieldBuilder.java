@@ -7,8 +7,8 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
 

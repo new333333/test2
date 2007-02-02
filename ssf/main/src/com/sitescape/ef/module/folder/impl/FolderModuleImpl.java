@@ -24,25 +24,6 @@ import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.AverageRating;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HistoryStamp;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.Rating;
-import com.sitescape.ef.domain.ReservedByAnotherUserException;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.Subscription;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Visits;
-import com.sitescape.ef.domain.WorkflowState;
 import com.sitescape.ef.jobs.FillEmailSubscription;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -61,12 +42,31 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
-import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.search.SearchObject;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaOperation;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.AverageRating;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.Rating;
+import com.sitescape.team.domain.ReservedByAnotherUserException;
+import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Visits;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.util.Validator;
 /**
@@ -83,7 +83,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public void checkAccess(Folder folder, String operation) throws AccessControlException {
 		if ("getFolder".equals(operation)) {

@@ -30,11 +30,11 @@ import org.springframework.mail.MailSendException;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.mail.MimeMessagePreparator;
-import com.sitescape.ef.repository.RepositoryUtil;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 

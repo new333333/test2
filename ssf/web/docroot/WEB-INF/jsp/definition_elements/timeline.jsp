@@ -1,7 +1,7 @@
 <% // Timeline view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 	String displayStyle = ssUser.getDisplayStyle();
 	if (displayStyle == null) displayStyle = "";

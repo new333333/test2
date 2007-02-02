@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.team.domain.DefinableEntity;
 
 /**
  *

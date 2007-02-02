@@ -7,15 +7,15 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.ReservedByAnotherUserException;
-import com.sitescape.ef.domain.Subscription;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.ReservedByAnotherUserException;
+import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.security.AccessControlException;
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller
@@ -54,7 +54,7 @@ public interface FolderModule {
      * @param fileItems
      * @param deleteAttachments A collection of either <code>java.lang.String</code>
      * representing database id of each attachment or 
-     * {@link com.sitescape.ef.domain.Attachment Attachment}.
+     * {@link com.sitescape.team.domain.Attachment Attachment}.
      * @throws AccessControlException
      * @throws WriteFilesException
      * @throws ReservedByAnotherUserException

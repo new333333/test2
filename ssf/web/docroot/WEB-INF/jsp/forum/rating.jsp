@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.ef.domain.DefinableEntity" 
+<jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" 
   scope="request" />
 <%
 	int i_rating = 0;
