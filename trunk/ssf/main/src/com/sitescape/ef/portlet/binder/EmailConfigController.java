@@ -20,15 +20,15 @@ import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.jobs.ScheduleInfo;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.FindIdsHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.ScheduleHelper;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.ScheduleHelper;
 import com.sitescape.util.Validator;
 
 public class EmailConfigController extends  AbstractBinderController  {

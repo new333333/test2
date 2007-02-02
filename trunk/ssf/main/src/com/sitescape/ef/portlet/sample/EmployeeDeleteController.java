@@ -3,7 +3,7 @@ package com.sitescape.ef.portlet.sample;
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 
-import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.team.web.portlet.SAbstractController;
 
 public class EmployeeDeleteController extends SAbstractController {
 

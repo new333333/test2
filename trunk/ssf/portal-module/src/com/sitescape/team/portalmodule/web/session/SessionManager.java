@@ -6,10 +6,10 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.ef.web.crosscontext.CrossContextConstants;
-import com.sitescape.ef.web.util.AttributesAndParamsOnlyServletRequest;
-import com.sitescape.ef.web.util.NullServletResponse;
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.web.crosscontext.CrossContextConstants;
+import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
+import com.sitescape.team.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
 
 /**

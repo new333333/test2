@@ -9,7 +9,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.team.web.portlet.SAbstractController;
 
 public class FragmentController extends SAbstractController {
 

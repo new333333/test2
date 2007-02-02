@@ -18,7 +18,7 @@ import com.sitescape.ef.portletadapter.portlet.RenderResponseImpl;
 import com.sitescape.ef.portletadapter.support.AdaptedPortlets;
 import com.sitescape.ef.portletadapter.support.KeyNames;
 import com.sitescape.ef.portletadapter.support.PortletInfo;
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 /**
  * This controller invokes portlet.

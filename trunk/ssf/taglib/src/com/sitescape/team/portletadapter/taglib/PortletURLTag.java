@@ -1,7 +1,7 @@
 package com.sitescape.team.portletadapter.taglib;
 
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
 import java.util.Map;

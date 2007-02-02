@@ -9,8 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.web.servlet.SAbstractController;
 import com.sitescape.team.util.XmlFileUtil;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 public class ListController extends SAbstractController {
 

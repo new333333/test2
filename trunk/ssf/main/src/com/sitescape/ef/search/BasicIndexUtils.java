@@ -20,7 +20,7 @@ import com.sitescape.ef.security.acl.AclContainer;
 import com.sitescape.ef.security.acl.AccessType;
 import com.sitescape.ef.security.acl.AclManager;
 import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.web.WebKeys;
 /**
  *
  * @author Jong Kim

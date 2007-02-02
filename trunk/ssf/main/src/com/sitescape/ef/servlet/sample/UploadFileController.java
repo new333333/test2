@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 /**
  * @author Jong Kim

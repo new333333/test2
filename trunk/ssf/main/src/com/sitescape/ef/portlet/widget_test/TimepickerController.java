@@ -8,7 +8,8 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
-import com.sitescape.ef.web.portlet.SAbstractController;
+
+import com.sitescape.team.web.portlet.SAbstractController;
 
 public class TimepickerController extends SAbstractController {
   public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 

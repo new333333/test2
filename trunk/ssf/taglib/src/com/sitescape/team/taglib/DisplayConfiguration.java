@@ -16,10 +16,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;

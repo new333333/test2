@@ -3,7 +3,7 @@ package com.sitescape.team.taglib;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.ef.ssfs.util.SsfsUtil;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 
 public class IfSupportsEditInPlaceTag extends TagSupport {
 

@@ -16,9 +16,9 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.PortletRequestUtils;
 /**
  * @author Janet McCann
  *

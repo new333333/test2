@@ -10,9 +10,9 @@ import javax.portlet.WindowState;
 import org.hibernate.SessionFactory;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
 
 public class FlushController extends SAbstractController {
 

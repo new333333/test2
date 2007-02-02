@@ -17,8 +17,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 

@@ -8,7 +8,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.portlet.SAbstractController;
+import com.sitescape.team.web.portlet.SAbstractController;
 
 public class TreeController extends SAbstractController {
 

@@ -60,14 +60,14 @@
 		</property>
 	</bean>
 
-	<bean id="initRequestContextInterceptor" class="com.sitescape.ef.web.servlet.handler.InitRequestContextInterceptor"/>
+	<bean id="initRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.InitRequestContextInterceptor"/>
 
-	<bean id="openSessionInViewInterceptor" class="com.sitescape.ef.web.servlet.handler.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="com.sitescape.team.web.servlet.handler.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
 	
-	<bean id="userPreloadInterceptor" class="com.sitescape.ef.web.servlet.handler.UserPreloadInterceptor">
+	<bean id="userPreloadInterceptor" class="com.sitescape.team.web.servlet.handler.UserPreloadInterceptor">
 		<property name="profileDao"><ref bean="profileDao"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 	</bean>	

@@ -46,21 +46,21 @@ import com.sitescape.ef.rss.util.UrlUtil;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.ssfs.util.SsfsUtil;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DateHelper;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Tabs;
-import com.sitescape.ef.web.util.Toolbar;
-import com.sitescape.ef.web.util.WebHelper;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.DateHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.Tabs;
+import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.web.util.WebHelper;
 
 /**
  * @author Peter Hurley

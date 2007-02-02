@@ -20,7 +20,7 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="com.sitescape.ef.domain.Event" %>
-<%@ page import="com.sitescape.ef.web.util.EventHelper" %>
+<%@ page import="com.sitescape.team.web.util.EventHelper" %>
 
 
 <%

@@ -18,7 +18,7 @@
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.text.SimpleDateFormat" %>
-<%@ page import="com.sitescape.ef.web.util.DateHelper" %>
+<%@ page import="com.sitescape.team.web.util.DateHelper" %>
 <jsp:useBean id="formData" type="java.util.Map" scope="request" />
 
 

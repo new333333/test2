@@ -4,7 +4,7 @@ import javax.portlet.PortletRequest;
 
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class UrlUtil {
 

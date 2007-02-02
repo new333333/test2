@@ -19,14 +19,14 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.portlet.SAbstractController;
-import com.sitescape.ef.web.util.BinderHelper;
-import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.DefinitionHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.util.Toolbar;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {

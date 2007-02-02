@@ -18,10 +18,10 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.DashboardHelper;
-import com.sitescape.ef.web.util.FilterHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 
 /**
  * @author Peter Hurley

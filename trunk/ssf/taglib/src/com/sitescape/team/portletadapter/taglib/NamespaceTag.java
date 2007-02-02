@@ -6,7 +6,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.web.WebKeys;
 
 public class NamespaceTag extends TagSupport {
 

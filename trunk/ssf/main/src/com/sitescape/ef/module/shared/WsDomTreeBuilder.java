@@ -11,9 +11,9 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Folder;
 import com.sitescape.ef.domain.ProfileBinder;
 import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.web.WebKeys;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class WsDomTreeBuilder implements DomTreeBuilder {

@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.web.servlet.SAbstractController;
 
 /**
  * Call an error page. This Class was created to help the scenario of when your loading an OutputStream

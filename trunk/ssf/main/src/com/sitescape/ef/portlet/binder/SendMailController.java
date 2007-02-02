@@ -19,11 +19,11 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.web.WebKeys;
-import com.sitescape.ef.web.util.FindIdsHelper;
-import com.sitescape.ef.web.util.PortletRequestUtils;
-import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
 
 /**

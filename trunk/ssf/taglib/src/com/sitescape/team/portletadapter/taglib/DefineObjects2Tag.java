@@ -7,7 +7,7 @@ import javax.portlet.RenderResponse;
 import javax.servlet.ServletRequest;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.web.WebKeys;
 
 public class DefineObjects2Tag extends TagSupport {
 
