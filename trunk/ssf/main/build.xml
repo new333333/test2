@@ -87,8 +87,8 @@
 	    <xdoclet2>
 	    	
 	        <fileset dir="${source.dir}">
-	            <include name="com/sitescape/ef/**/domain/*.java"/>
-	            <include name="com/sitescape/ef/security/**/*.java"/>
+	            <include name="com.sitescape.team/**/domain/*.java"/>
+	            <include name="com.sitescape.team/security/**/*.java"/>
 	        </fileset>
 	    		    
 	    	<component 
@@ -148,8 +148,8 @@
 		    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
 		          	quiet="false" text="${schemaexport.text.value}">
 		    	<fileset dir="${classes.dir}" >
-		    		<include name="com/sitescape/ef/**/*hbm.xml"/>
-		            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
+		    		<include name="com.sitescape.team/**/*hbm.xml"/>
+		            <include name="com.sitescape.team/security/**/*hbm.xml"/>
 		        </fileset>
 		     </schemaexport>
 	    </target>
@@ -171,8 +171,8 @@
 	    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
 	          	quiet="no" text="no">
 	    	<fileset dir="${classes.dir}" >
-	    		<include name="com/sitescape/ef/**/*hbm.xml"/>
-	            <include name="com/sitescape/ef/security/**/*hbm.xml"/>
+	    		<include name="com.sitescape.team/**/*hbm.xml"/>
+	            <include name="com.sitescape.team/security/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaupdate>
 	</target>

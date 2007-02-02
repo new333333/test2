@@ -10,7 +10,7 @@
 			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
-						<value>com/sitescape/ef/modelprocessor/processor-mapping.xml</value>
+						<value>com.sitescape.team/modelprocessor/processor-mapping.xml</value>
 					</list>		
 				</property>
 				<property name="validating"><value>false</value></property>

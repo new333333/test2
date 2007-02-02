@@ -28,29 +28,29 @@
 		<property name="hibernate.generate_statistics">true</property>
 	
 		<!-- Sitescape Mappings -->
-		<mapping resource="com/sitescape/ef/security/function/Function.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/security/function/WorkAreaFunctionMembership.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Attachment.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Binder.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/ChangeLog.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/CustomAttribute.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Dashboard.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Definition.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Event.hbm.xml"/> 
-	    <mapping resource="com/sitescape/ef/domain/FolderEntry.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/HistoryMap.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/LibraryEntry.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Membership.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/PostingDef.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Principal.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Ratings.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/SeenMap.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Subscription.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Tag.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/UserProperties.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/Visits.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/WorkflowResponse.hbm.xml"/>
-	    <mapping resource="com/sitescape/ef/domain/WorkflowState.hbm.xml"/>
+		<mapping resource="com.sitescape.team/security/function/Function.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Attachment.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Binder.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/ChangeLog.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/CustomAttribute.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Dashboard.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Definition.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Event.hbm.xml"/> 
+	    <mapping resource="com.sitescape.team/domain/FolderEntry.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/HistoryMap.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/LibraryEntry.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Membership.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/PostingDef.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Principal.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Ratings.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/SeenMap.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Subscription.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Tag.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/UserProperties.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/Visits.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/WorkflowResponse.hbm.xml"/>
+	    <mapping resource="com.sitescape.team/domain/WorkflowState.hbm.xml"/>
 
    <!-- ############################################ -->
     <!-- # mapping files with external dependencies # -->
