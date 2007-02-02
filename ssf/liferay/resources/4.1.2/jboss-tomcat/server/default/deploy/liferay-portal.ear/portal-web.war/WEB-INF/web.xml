@@ -261,8 +261,9 @@
 		<servlet-name>HttpService</servlet-name>
 		<url-pattern>/httpbridge/http</url-pattern>
 	</servlet-mapping>
+	<!-- SiteScape: Stop liferay from timing sessions out -->
 	<session-config>
-		<session-timeout>30</session-timeout>
+		<session-timeout>0</session-timeout>
 	</session-config>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
