@@ -11,6 +11,21 @@ function ss_loadEntry(obj,id) {
 	iframeDiv.src = obj.href;
 	return false;
 }
+
+//Routine called when "find wiki page" is clicked
+function ss_loadWikiEntryId<portlet:namespace/>(id) {
+	var url = "<ssf:url     
+	    adapter="true" 
+	    portletName="ss_forum" 
+	    folderId="${ssBinder.id}" 
+	    action="view_folder_entry" 
+	    entryId="ss_entryIdPlaceholder" 
+	    actionUrl="true" />";
+	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
+	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
+	iframeDiv.src = url;
+}
+
 var ss_wikiIframeOffset = 20;
 function ss_setWikiIframeSize<portlet:namespace/>() {
 	var targetDiv = document.getElementById('ss_wikiEntryDiv<portlet:namespace/>')
