@@ -24,12 +24,6 @@ function ss_setPhotoIframeSize<portlet:namespace/>() {
 }
 
 </script>
-<div class="folder">
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-</div>
-<br>
-
 <div style="margin:0px;">
 
 <div align="right" style="margin:0px 4px 0px 0px;">

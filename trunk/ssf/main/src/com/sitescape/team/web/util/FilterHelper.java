@@ -50,6 +50,7 @@ public class FilterHelper {
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntry = "entry";
+   	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
    	public final static String FilterTypeEntityTypes = "entityTypes";
@@ -403,6 +404,21 @@ public class FilterHelper {
 		    				}
 		    			}
 	    			}
+	    		} else if (filterType.equals(FilterTypeTopEntry)) {
+	    			//This is asking for top entries only (e.g., no replies or attachments)
+	    	    	//Look only for entryType=entry
+					Element field;
+					Element child;
+					Element andField = orField;
+	    	       	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    	       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+	    	       	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	       	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+	    	       	//Look only for docType=entry
+	    	       	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+	    	    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+	    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
 	    		} else if (filterType.equals(FilterTypeWorkflow)) {
 	    			//This is a workflow state term. Build booleans from the state name.
 	    			String defId = filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, "");

@@ -36,6 +36,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -617,6 +618,11 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
 			Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
 			filterTerm2.setText(EntityIdentifier.EntityType.folderEntry.name());
+			
+			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeTopEntry);
 			
 			//Add terms to search this folder
 			if (!binderId.equals("")) {
