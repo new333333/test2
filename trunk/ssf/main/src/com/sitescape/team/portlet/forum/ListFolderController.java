@@ -1437,6 +1437,9 @@ public class ListFolderController extends  SAbstractController {
 					dataMap.put("entry_tostring", e.get(BasicIndexUtils.UID_FIELD).toString());
 					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
 					dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev.getDtEnd().getTime()));
+					dataMap.put("cal_starttime", ev.getDtStart().getTime());
+					dataMap.put("cal_endtime", ev.getDtEnd().getTime());
+					dataMap.put("cal_duration", ((ev.getDtEnd().getTime().getTime() - ev.getDtStart().getTime().getTime()) / 60000 ));
 					
 					// dayEvents is sorted by time in millis; must make a Long object though
 					Long millis = new Long(ev.getDtStart().getTime().getTime());

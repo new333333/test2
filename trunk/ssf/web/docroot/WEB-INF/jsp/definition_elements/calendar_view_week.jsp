@@ -116,7 +116,7 @@ var inputEvents = [<%--
             --%><jsp:useBean id="eviw" type="java.util.Map" /><%--
             --%><% java.util.HashMap e = (java.util.HashMap) eviw.get("entry"); %><%--
             --%>
-{eventId: "${eviw.entry._docId}", day: ${i}, start: "${eviw.cal_starttimestring}",  dur: 30, title: "${eviw.entry.title}", text: "${eviw.cal_endtimestring}", calsrc: "cal1",
+  {eventId: "${eviw.entry._docId}", day: ${i}, start: "<fmt:formatDate value="${eviw.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${eviw.cal_duration}, title: "${eviw.entry.title}", text: "${eviw.cal_endtimestring}", calsrc: "cal1",
    viewHref: "<ssf:url adapter="<%= useAdaptor %>" portletName="ss_forum" folderId="${ssFolder.id}" action="view_folder_entry" entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />",
    viewOnClick: "ss_loadEntry(this,'<c:out value="${eviw.entry._docId}"/>');return false;"},<%--
           --%></c:forEach><% // end of events within a single time slot %><%--
