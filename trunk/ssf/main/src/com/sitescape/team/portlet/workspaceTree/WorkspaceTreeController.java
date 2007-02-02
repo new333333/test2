@@ -1,0 +1,445 @@
+package com.sitescape.team.portlet.workspaceTree;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.PortletPreferences;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.dom4j.Document;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.sitescape.ef.ObjectKeys;
+import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.Tabs;
+import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.util.Validator;
+
+/**
+ * @author Peter Hurley
+ *
+ */
+public class WorkspaceTreeController extends SAbstractController  {
+	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
+		response.setRenderParameters(request.getParameterMap());
+	}
+	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			//Signal that this is the initialization step
+			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+			
+			PortletURL url;
+			url = response.createRenderURL();
+			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+			prefs.store();
+		}
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		BinderHelper.setBinderPermaLink(this, request, response);
+		try {
+			//won't work on adapter
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
+		} catch (UnsupportedOperationException us) {}
+
+		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
+		//see if it is a user workspace - can also get directly to user ws by a binderId
+		//so don't assume anything here.  This just allows us to handle users without a workspace.
+		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+			if (entryId != null) {
+				User entry = (User)getProfileModule().getEntry(binderId, entryId);
+				//TODO: temp - make call to fix up add one
+//				if (entry.getWorkspaceId() == null) {
+					Map data = new HashMap();
+					data.put("title", entry.getName());
+					MapInputData inputData = new MapInputData(data);
+					binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
+//				} else {
+//					binderId = entry.getWorkspaceId();
+//				}
+			}
+		}
+
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
+			//An action is asking us to build the url to reload the parent page
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+			String random = String.valueOf(new Random().nextInt(999999));
+			reloadUrl.setParameter(WebKeys.URL_RANDOM, random);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, "noop");
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+		}
+		
+		Map formData = request.getParameterMap();
+		Binder binder = getBinderModule().getBinder(binderId);
+
+ 		//Check special options in the URL
+		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
+		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
+			//The user is requesting debug mode to be turned on or off
+			if (debug[0].equals(WebKeys.DEBUG_ON)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(true));
+			} else if (debug[0].equals(WebKeys.DEBUG_OFF)) {
+				getProfileModule().setUserProperty(user.getId(), 
+						ObjectKeys.USER_PROPERTY_DEBUG, new Boolean(false));
+			}
+		}
+		
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		model.put(WebKeys.ENTRY, binder);
+
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.findTab(binder));
+		} else if (newTab.equals("2")) {
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (tabId != null) {
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
+		} else {
+			//Don't overwrite a search tab
+			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+				tabs.setCurrentTab(tabs.findTab(binder));
+			} else {
+				tabs.setCurrentTab(tabs.setTab(binder));
+			}
+		}
+		model.put(WebKeys.TABS, tabs.getTabs());
+
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+		
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+		
+		//See if this is a user workspace
+		if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
+				binder.getOwner() != null) {
+			Document profileDef = user.getEntryDef().getDefinition();
+			model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
+			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getOwner());
+		}
+	
+		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		DashboardHelper.getDashboardMap(binder, userProperties, model);
+		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
+		try {
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binder.getId()));
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (searchFilterName != null && !searchFilterName.equals("")) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			searchFilter = (Document)searchFilters.get(searchFilterName);
+		}
+		//See if the user has selected a specific view to use
+        UserProperties uProps = getProfileModule().getUserProperties(user.getId(), binderId);
+		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
+		getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
+			
+		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
+		if ((obj == null) || (obj.equals(""))) 
+			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		obj = model.get(WebKeys.CONFIG_DEFINITION);
+		if ((obj == null) || (obj.equals(""))) 
+			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		
+		return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+	}
+	protected void getShowWorkspace(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+		Document wsTree;
+
+//		if (searchFilter != null) {
+//			wsEntries = getWorkspaceModule().getWorkspaceTree(wsId, searchFilter);
+//		} else {
+			Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
+			if ((top != null) && (!ws.isRoot())) {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, this));
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			}
+//		}
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
+		
+	}  
+	protected void buildWorkspaceToolbar(RenderRequest request, 
+			RenderResponse response, Map model, Workspace workspace, 
+			String forumId) {
+		//Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		//	The "Add" menu
+		PortletURL url;
+		boolean addMenuCreated=false;
+		Binder parent = workspace.getParentBinder();
+		//Add Workspace except to top or a user workspace
+		if ((parent != null) && !parent.getEntityType().equals(EntityType.profiles)) {
+			try {
+				getWorkspaceModule().checkAccess(workspace, "addWorkspace");
+				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+				addMenuCreated=true;
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+				toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
+			} catch (AccessControlException ac) {};
+		}
+		//Add Folder except to top
+		if (parent != null) {
+			try {
+				getWorkspaceModule().checkAccess(workspace, "addFolder");
+				if (addMenuCreated == false) {
+					toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
+					addMenuCreated=true;
+				}
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+				toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
+			} catch (AccessControlException ac) {};
+		}
+	
+		//The "Administration" menu
+		toolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageThisWorkspace"));
+		//Access control
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		//Configuration
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		//Definition builder
+		url = response.createActionURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+		toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
+		
+		//Delete
+		if (!workspace.isReserved()) {
+			try {
+				getBinderModule().checkAccess(workspace, "deleteBinder");
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url, qualifiers);
+			} catch (AccessControlException ac) {};
+		}
+		//Modify
+		try {
+			getBinderModule().checkAccess(workspace, "modifyBinder");
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+		} catch (AccessControlException ac) {};
+		
+		if (!workspace.isReserved()) {
+			//Move
+			try {
+				getBinderModule().checkAccess(workspace, "moveBinder");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
+				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
+			} catch (AccessControlException ac) {};
+		}
+		
+		//If this is a user workspace, add the "Manage this profile" menu
+		if ((workspace.getDefinitionType() != null) && 
+				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
+				workspace.getOwner() != null) {
+			User user = RequestContextHolder.getRequestContext().getUser();
+			User owner = workspace.getOwner();
+			boolean showModifyProfileMenu = false;
+			boolean showDeleteProfileMenu = false;
+			try {
+				getProfileModule().checkAccess(owner, "modifyEntry");
+				showModifyProfileMenu = true;
+			} catch (AccessControlException ac) {};
+		
+			try {
+				getProfileModule().checkAccess(owner, "deleteEntry");
+				//Don't let a user delete his or her own account
+				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
+			} catch (AccessControlException ac) {};
+			
+			if (showDeleteProfileMenu) {
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
+				if (showModifyProfileMenu) {
+					//	The "Modify" menu item
+					Map qualifiers = new HashMap();
+					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+				}
+				//	The "Delete" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.delete"), url, qualifiers);
+			}
+			if (showModifyProfileMenu && !showDeleteProfileMenu) {
+				//	The "Modify" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
+			}
+		}
+		//	The "Manage dashboard" menu
+		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
+			boolean dashboardContentExists = false;
+			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
+				Map dashboard = (Map)ssDashboard.get("dashboard");
+				if (dashboard != null) {
+					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
+				}
+			}
+			toolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+			toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			
+			if (dashboardContentExists) {
+				qualifiers = new HashMap();
+				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "local");
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter("_scope", "global");
+				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+	
+				//Check the access rights of the user
+				try {
+					getBinderModule().checkAccess(workspace, "setProperty");
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+					url.setParameter("_scope", "binder");
+					toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+				} catch(AccessControlException e) {};
+			
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+						response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
+						workspace.getId().toString()+"');return false;");
+				if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
+					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+				} else {
+					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+				}
+			}
+		}
+
+		//The "Footer" menu
+		//RSS link 
+		Toolbar footerToolbar = new Toolbar();
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
+		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
+
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		Map qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		
+		
+		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
+	}
+		
+
+}
