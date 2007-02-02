@@ -1,6 +1,6 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 

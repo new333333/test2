@@ -4,15 +4,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.security.AccessControlException;
 import org.dom4j.Document;
 
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.NoWorkspaceByTheIdException;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.AccessControlException;
 /**
  * @author Jong Kim
  *

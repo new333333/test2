@@ -2,9 +2,9 @@ package com.sitescape.ef.module.shared;
 
 
 
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.presence.PresenceBroker;
 import com.sitescape.ef.presence.PresenceService;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**

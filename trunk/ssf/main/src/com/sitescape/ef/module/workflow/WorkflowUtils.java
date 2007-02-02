@@ -11,11 +11,11 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.WfAcl;
-import com.sitescape.ef.domain.WfNotify;
 import com.sitescape.ef.module.definition.DefinitionUtils;
-import com.sitescape.ef.security.acl.AccessType;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.WfAcl;
+import com.sitescape.team.domain.WfNotify;
+import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.GetterUtil;

@@ -1,6 +1,7 @@
 package com.sitescape.team.util;
 
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
+import com.sitescape.team.search.LuceneException;
 import com.sitescape.util.StringPool;
 import com.sitescape.util.Validator;
 import com.sitescape.util.lucene.KeywordsUtil;
@@ -18,7 +19,6 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
-import com.sitescape.ef.search.LuceneException;
 
 public class LuceneUtil {
 

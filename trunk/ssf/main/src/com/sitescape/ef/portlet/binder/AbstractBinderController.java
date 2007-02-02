@@ -2,9 +2,9 @@ package com.sitescape.ef.portlet.binder;
 
 import javax.portlet.ActionResponse;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Folder;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 

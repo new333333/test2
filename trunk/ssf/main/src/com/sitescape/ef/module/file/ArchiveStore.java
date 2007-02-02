@@ -1,9 +1,9 @@
 package com.sitescape.ef.module.file;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.VersionAttachment;
-import com.sitescape.ef.domain.DefinableEntity;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.VersionAttachment;
 
 public interface ArchiveStore {
 	

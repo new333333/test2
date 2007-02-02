@@ -12,7 +12,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.Definition;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.DefinitionHelper;

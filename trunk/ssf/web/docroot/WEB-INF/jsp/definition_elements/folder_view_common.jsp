@@ -1,7 +1,7 @@
 <% // Folder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 

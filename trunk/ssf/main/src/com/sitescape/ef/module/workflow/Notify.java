@@ -13,12 +13,12 @@ import org.jbpm.graph.exe.Token;
 import org.jbpm.graph.def.Event;
 import org.jbpm.context.exe.ContextInstance;
 
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WfNotify;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.WfNotify;
 import com.sitescape.ef.jobs.SendEmail;
 
 public class Notify extends AbstractActionHandler {

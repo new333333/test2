@@ -1,5 +1,5 @@
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
-<jsp:useBean id="ssSeenMap" type="com.sitescape.ef.domain.SeenMap" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
 String folderViewStyle = "folder";

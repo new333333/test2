@@ -34,14 +34,6 @@ import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.Membership;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.User;
 import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
@@ -50,8 +42,16 @@ import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.IndexSynchronizationManager;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Membership;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
@@ -747,7 +747,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         		return null;
         	}});
 		SessionFactory sF = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
-		sF.evictCollection("com.sitescape.ef.domain.Principal.memberOf");
+		sF.evictCollection("com.sitescape.team.domain.Principal.memberOf");
 		
     }
     /**
@@ -809,7 +809,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         //remove from index
    		IndexSynchronizationManager.begin();
    		for (Iterator i=ids.iterator(); i.hasNext();) {
-   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.ef.domain.User", (Long)i.next()));  			
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.team.domain.User", (Long)i.next()));  			
    		}
    		IndexSynchronizationManager.applyChanges();
    	    
@@ -823,7 +823,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
         //remove from index
    		IndexSynchronizationManager.begin();
    		for (Iterator i=ids.iterator(); i.hasNext();) {
-   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.ef.domain.Group", (Long)i.next()));  			
+   	   	    IndexSynchronizationManager.deleteDocument(BasicIndexUtils.makeUid("com.sitescape.team.domain.Group", (Long)i.next()));  			
    		}
    		IndexSynchronizationManager.applyChanges();
    }

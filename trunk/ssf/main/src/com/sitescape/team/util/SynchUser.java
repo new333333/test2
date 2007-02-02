@@ -1,8 +1,8 @@
 package com.sitescape.team.util;
 
-import com.sitescape.ef.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
-import com.sitescape.ef.security.authentication.UserDoesNotExistException;
+import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
+import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
+import com.sitescape.team.security.authentication.UserDoesNotExistException;
 
 /**
  * IMPORTANT: This class must NOT have any dependency on other classes in

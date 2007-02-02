@@ -15,7 +15,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.JspTagException;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 

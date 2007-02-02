@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" node="Principal" table="SS_Principals" name="com.sitescape.ef.domain.Principal">
+  <class dynamic-update="true" node="Principal" table="SS_Principals" name="com.sitescape.team.domain.Principal">
     <cache usage="read-write"/>
     <id unsaved-value="null" name="id" type="long" node="@id">
       <generator class="native"/>
@@ -12,15 +12,15 @@
     <map inverse="true" access="field" cascade="all,delete-orphan" embed-xml="false" lazy="true" name="customAttributes">
       <key column="principal"/>
       <map-key type="string" column="name"/>
-      <one-to-many class="com.sitescape.ef.domain.CustomAttribute"/>
+      <one-to-many class="com.sitescape.team.domain.CustomAttribute"/>
     </map>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="attachments">
       <key column="principal"/>
-      <one-to-many class="com.sitescape.ef.domain.Attachment"/>
+      <one-to-many class="com.sitescape.team.domain.Attachment"/>
     </set>
     <set inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="events">
       <key column="principal" on-delete="cascade"/>
-      <one-to-many class="com.sitescape.ef.domain.Event"/>
+      <one-to-many class="com.sitescape.team.domain.Event"/>
     </set>
     <property name="type" update="false" insert="false"/> 
     <property name="workspaceId"/>
@@ -43,7 +43,7 @@
     <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
       <cache usage="read-write"/>
       <key column="userId"/>
-      <many-to-many fetch="join" node="Group" class="com.sitescape.ef.domain.Group" column="groupId" embed-xml="false"/>
+      <many-to-many fetch="join" node="Group" class="com.sitescape.team.domain.Group" column="groupId" embed-xml="false"/>
     </bag>
     <many-to-one name="parentBinder"/>
     <component name="description">
@@ -54,30 +54,30 @@
     <property name="normalTitle" length="256"/>
     <property name="iconName" length="64"/>    
     <property name="definitionType"/>
-    <many-to-one access="field" class="com.sitescape.ef.domain.Definition" name="entryDef">
+    <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="entryDef">
       <column name="entryDef" sql-type="char(32)"/>
     </many-to-one>
-    <component name="creation" node="creation" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="creation" node="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
-    <component name="modification" node="modification" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="modification" node="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <subclass name="com.sitescape.ef.domain.Group" discriminator-value="group" dynamic-update="true">
+    <subclass name="com.sitescape.team.domain.Group" discriminator-value="group" dynamic-update="true">
       <bag inverse="false" access="field" cascade="persist,merge,save-update" lazy="true" table="SS_PrincipalMembership" name="members">
         <key column="groupId"/>
-        <many-to-many fetch="join" class="com.sitescape.ef.domain.Principal" column="userId"/>
+        <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="userId"/>
       </bag>
       <property name="functionMembershipInherited" access="field">
       </property>
     </subclass>
-    <subclass name="com.sitescape.ef.domain.User" node="User" discriminator-value="user" dynamic-update="true">
+    <subclass name="com.sitescape.team.domain.User" node="User" discriminator-value="user" dynamic-update="true">
       <property name="displayStyle" length="16"/>
       <property name="loginDate"/>
       <property name="emailAddress" length="256"/>
@@ -92,5 +92,5 @@
 	  <property name="locale" access="field" length="32"/>
     </subclass>
   </class>
-  <query name="find-User-Company"><![CDATA[from com.sitescape.ef.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
+  <query name="find-User-Company"><![CDATA[from com.sitescape.team.domain.User user where user.name=:userName and user.zoneId=:zoneId]]></query>
 </hibernate-mapping>

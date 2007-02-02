@@ -18,8 +18,8 @@ import org.springframework.orm.hibernate3.support.AbstractLobType;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 
-import com.sitescape.ef.domain.SSBlobSerializable;
-import com.sitescape.ef.domain.SSClobString;
+import com.sitescape.team.domain.SSBlobSerializable;
+import com.sitescape.team.domain.SSClobString;
 
 /*
  * Copied from  the spring ClobStingType to implement lazy loading of clobs

@@ -11,11 +11,11 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;

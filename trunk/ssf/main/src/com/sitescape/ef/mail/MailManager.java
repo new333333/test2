@@ -4,7 +4,8 @@ import java.util.Date;
 import java.util.Map;
 import javax.mail.internet.MimeMessage;
 import java.util.Collection;
-import com.sitescape.ef.domain.Binder;
+
+import com.sitescape.team.domain.Binder;
 
 /**
  * @author Janet McCann

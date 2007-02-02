@@ -19,12 +19,12 @@
 <%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.DocumentHelper" %>
 <%@ page import="org.dom4j.Element" %>
-<%@ page import="com.sitescape.ef.domain.DefinitionInvalidOperation" %>
+<%@ page import="com.sitescape.team.domain.DefinitionInvalidOperation" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<%@ page import="com.sitescape.ef.domain.Entry" %>
+<%@ page import="com.sitescape.team.domain.Entry" %>
 <jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
 <%
 	if (1 == 0) {

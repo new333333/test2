@@ -1,6 +1,6 @@
 package com.sitescape.ef.module.folder;
 
-import com.sitescape.ef.domain.Principal;
+import com.sitescape.team.domain.Principal;
 
 public class FileLockInfo {
 

@@ -10,18 +10,18 @@ import org.springframework.dao.DataAccessException;
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.ObjectControls;
 import com.sitescape.ef.dao.util.SFQuery;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.TemplateBinder;
-import com.sitescape.ef.domain.Dashboard;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.EntityDashboard;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.PostingDef;
-import com.sitescape.ef.domain.Tag;
-import com.sitescape.ef.domain.UserDashboard;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityDashboard;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.TemplateBinder;
+import com.sitescape.team.domain.UserDashboard;
+import com.sitescape.team.domain.Workspace;
 
 /**
  * @author Jong Kim

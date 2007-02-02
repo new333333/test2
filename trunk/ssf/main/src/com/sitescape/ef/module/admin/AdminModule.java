@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.domain.TemplateBinder;
-import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.jobs.ScheduleInfo;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkArea;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.TemplateBinder;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkArea;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 /**
  * @author Janet McCann
  *

@@ -13,10 +13,10 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
-import com.sitescape.ef.search.BasicIndexUtils;
-import com.sitescape.ef.search.QueryBuilder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 

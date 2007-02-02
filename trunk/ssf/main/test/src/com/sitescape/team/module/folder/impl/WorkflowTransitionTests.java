@@ -3,6 +3,17 @@ package com.sitescape.team.module.folder.impl;
 import java.util.Iterator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.util.cal.Duration;
 
 import org.dom4j.io.SAXReader;
@@ -18,16 +29,6 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.dao.impl.CoreDaoImpl;
 import com.sitescape.ef.dao.impl.FolderDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.Workspace;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
 import com.sitescape.ef.module.workflow.impl.WorkflowModuleImpl;
 

@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.Principal;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.util.ResolveIds;
 /**
 *

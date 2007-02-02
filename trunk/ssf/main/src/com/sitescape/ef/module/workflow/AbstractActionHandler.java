@@ -7,11 +7,11 @@ import org.jbpm.graph.def.ActionHandler;
 
 import com.sitescape.ef.dao.CoreDao;
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.Principal;
 import com.sitescape.ef.mail.MailManager;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.SpringContextUtil;
 
 public abstract class AbstractActionHandler implements ActionHandler {

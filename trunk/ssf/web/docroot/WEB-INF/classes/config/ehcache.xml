@@ -54,51 +54,51 @@
                             has reached the maxInMemory limit.
 
         -->
-<cache name="com.sitescape.ef.domain.Principal" 
+<cache name="com.sitescape.team.domain.Principal" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.Principal.memberOf" 
+<cache name="com.sitescape.team.domain.Principal.memberOf" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.UserProperties" 
+<cache name="com.sitescape.team.domain.UserProperties" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 	
-<cache name="com.sitescape.ef.domain.Binder" 
+<cache name="com.sitescape.team.domain.Binder" 
 	maxElementsInMemory="500" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.Binder.definitions" 
+<cache name="com.sitescape.team.domain.Binder.definitions" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.domain.Binder.binders" 
+<cache name="com.sitescape.team.domain.Binder.binders" 
 	maxElementsInMemory="500" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 	
-<cache name="com.sitescape.ef.domain.Definition" 
+<cache name="com.sitescape.team.domain.Definition" 
 	maxElementsInMemory="100" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 
-<cache name="com.sitescape.ef.security.function.Function" 
+<cache name="com.sitescape.team.security.function.Function" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.security.function.Function.operationNames" 
+<cache name="com.sitescape.team.security.function.Function.operationNames" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
 
-<cache name="com.sitescape.ef.security.function.WorkAreaFunctionMembership" 
+<cache name="com.sitescape.team.security.function.WorkAreaFunctionMembership" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>
-<cache name="com.sitescape.ef.security.function.WorkAreaFunctionMembership.memberIds" 
+<cache name="com.sitescape.team.security.function.WorkAreaFunctionMembership.memberIds" 
 	maxElementsInMemory="300" eternal="false"
 	timeToIdleSeconds="300" timeToLiveSeconds="600"
 	overflowToDisk="false"/>

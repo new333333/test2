@@ -20,7 +20,7 @@ import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.AbstractLobType;
 
-import com.sitescape.ef.domain.SSBlobSerializable;
+import com.sitescape.team.domain.SSBlobSerializable;
 
 /**
  * @author Janet McCann

@@ -60,7 +60,7 @@ type="time" /></span>
 				<c:if test="${!empty ssUsers}">
 					<table cellspacing="0" cellpadding="0">
 					<c:forEach var="u1" items="${ssUsers}">
-					<jsp:useBean id="u1" type="com.sitescape.ef.domain.User" />
+					<jsp:useBean id="u1" type="com.sitescape.team.domain.User" />
 					  <tr>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u1.id}"/>"
 					  ><ssf:presenceInfo user="<%=u1%>" componentId="${ssNamespace}"/> </span></td>
@@ -93,11 +93,11 @@ type="time" /></span>
 					<table cellspacing="0" cellpadding="0">
 					<c:forEach var="group" items="${ssGroups}">
 					<c:forEach var="u2" items="${group.members}">
-					<jsp:useBean id="u2" type="com.sitescape.ef.domain.Principal" />
-					<c:if test="<%= u2 instanceof com.sitescape.ef.domain.User %>">
+					<jsp:useBean id="u2" type="com.sitescape.team.domain.Principal" />
+					<c:if test="<%= u2 instanceof com.sitescape.team.domain.User %>">
 					  <tr>
 					  <td><span id="${ssNamespace}_user_<c:out value="${u2.id}"/>"
-					  ><ssf:presenceInfo user="<%=(com.sitescape.ef.domain.User)u2%>"
+					  ><ssf:presenceInfo user="<%=(com.sitescape.team.domain.User)u2%>"
 					    componentId="${ssNamespace}"/> </span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>

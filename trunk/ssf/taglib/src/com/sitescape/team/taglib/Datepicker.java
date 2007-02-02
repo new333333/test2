@@ -11,7 +11,7 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 
 import java.util.Date;

@@ -12,15 +12,7 @@ import java.util.ArrayList;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.NoWorkspaceByTheIdException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.security.function.WorkAreaOperation;
 import com.sitescape.ef.module.binder.BinderComparator;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.file.WriteFilesException;
@@ -28,6 +20,14 @@ import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.NoWorkspaceByTheIdException;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.util.Validator;
 
 import org.dom4j.Document;
@@ -43,7 +43,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     protected DefinitionModule definitionModule;
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
-	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.ef.domain.Binder, java.lang.String)
+	 * @see com.sitescape.ef.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public void checkAccess(Workspace workspace, String operation) throws AccessControlException {
 		if ("getWorkspace".equals(operation)) {

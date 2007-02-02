@@ -13,11 +13,11 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.module.shared.MapInputData;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;

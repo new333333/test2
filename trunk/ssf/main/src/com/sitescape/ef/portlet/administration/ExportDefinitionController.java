@@ -19,8 +19,8 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;

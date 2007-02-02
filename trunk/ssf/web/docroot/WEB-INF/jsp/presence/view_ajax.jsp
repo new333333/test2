@@ -14,7 +14,7 @@ value="<%= new java.util.Date() %>" type="time" /></span>
 </div></taconite-replace>
 
 <c:forEach var="user" items="${ssUsers}">
-<jsp:useBean id="user" type="com.sitescape.ef.domain.User" />
+<jsp:useBean id="user" type="com.sitescape.team.domain.User" />
 
 	<taconite-replace contextNodeID="${ssNamespace}_user_${user.id}" 
 	parseInBrowser="true"><span id="${ssNamespace}_user_${user.id}"

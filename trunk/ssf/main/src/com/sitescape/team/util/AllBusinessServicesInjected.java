@@ -11,7 +11,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
-import com.sitescape.ef.rss.RssGenerator;
+import com.sitescape.team.rss.RssGenerator;
 
 /**
  * This convenience interface acts as a facade for all business modules and 

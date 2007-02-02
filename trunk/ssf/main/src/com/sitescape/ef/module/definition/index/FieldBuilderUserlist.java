@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.search.BasicIndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 
 /**
  *

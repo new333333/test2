@@ -6,9 +6,9 @@ import java.util.TimeZone;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.NoBinderByTheIdException;
 import com.sitescape.ef.mail.MailManager;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.util.SpringContextUtil;
 /**
  *

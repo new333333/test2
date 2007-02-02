@@ -64,7 +64,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <span class="labelLeft"><ssf:nlt tag="administration.configure_cfg.standardTemplates"/></span>
 <ul class="ss_square">
 <c:forEach var="bconfig" items="${ssBinderConfigs}">
-<jsp:useBean id="bconfig" type="com.sitescape.ef.domain.TemplateBinder"/>
+<jsp:useBean id="bconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${bconfig.reserved}">
 	<li><a href="" onClick="return <%=cTreeName%>_showId('${bconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${bconfig.templateTitle}" checkIfTag="true"/></a>
@@ -79,7 +79,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <span class="labelLeft"><ssf:nlt tag="administration.configure_cfg.customTemplates"/></span>
 <ul class="ss_square">
 <c:forEach var="cconfig" items="${ssBinderConfigs}">
-<jsp:useBean id="cconfig" type="com.sitescape.ef.domain.TemplateBinder"/>
+<jsp:useBean id="cconfig" type="com.sitescape.team.domain.TemplateBinder"/>
 	<c:if test="${!cconfig.reserved}">
 	<li><a href="" onClick="return <%=cTreeName%>_showId('${cconfig.id}', this, 'configure_configuration');">
 	<ssf:nlt tag="${cconfig.templateTitle}" checkIfTag="true"/></a>

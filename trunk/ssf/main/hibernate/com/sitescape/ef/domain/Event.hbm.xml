@@ -2,23 +2,23 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  <class dynamic-update="true" lazy="false" table="SS_Events" name="com.sitescape.ef.domain.Event">
+  <class dynamic-update="true" lazy="false" table="SS_Events" name="com.sitescape.team.domain.Event">
     <id unsaved-value="null" name="id" node="@id">
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <component name="owner" class="com.sitescape.ef.domain.AnyOwner">
+    <component name="owner" class="com.sitescape.team.domain.AnyOwner">
       <many-to-one name="folderEntry"/>
       <many-to-one name="principal"/>
       <many-to-one name="binder"/>
       <any name="entity" id-type="java.lang.Long" meta-type="string">
-        <meta-value class="com.sitescape.ef.domain.FolderEntry" value="folderEntry"/>
-        <meta-value class="com.sitescape.ef.domain.User" value="user"/>
-        <meta-value class="com.sitescape.ef.domain.Group" value="group"/>
-        <meta-value class="com.sitescape.ef.domain.Folder" value="folder"/>
-        <meta-value class="com.sitescape.ef.domain.Workspace" value="workspace"/>
-        <meta-value class="com.sitescape.ef.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.team.domain.User" value="user"/>
+        <meta-value class="com.sitescape.team.domain.Group" value="group"/>
+        <meta-value class="com.sitescape.team.domain.Folder" value="folder"/>
+        <meta-value class="com.sitescape.team.domain.Workspace" value="workspace"/>
+        <meta-value class="com.sitescape.team.domain.ProfileBinder" value="profileBinder"/>
         <column name="ownerType" length="16"/>
         <column name="ownerId"/>
       </any>
@@ -56,15 +56,15 @@
     <property name="HDuration">
       <column name="duration" length="32" not-null="true"/>
     </property>
-    <component name="creation" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
-    <component name="modification" class="com.sitescape.ef.domain.HistoryStamp">
+    <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.ef.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>

@@ -14,8 +14,8 @@
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
-<jsp:useBean id="ssFolder" type="com.sitescape.ef.domain.Binder" scope="request" />
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssFolder" type="com.sitescape.team.domain.Binder" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 String op = WebKeys.ACTION_VIEW_ENTRY;
 String displayStyle = ssUser.getDisplayStyle();

@@ -85,13 +85,13 @@
 
 	<!-- Controllers -->
 
-	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.DownloadFileController"/>
-	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.sample.UploadFileController"/>
-	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewFileController"/>
-	<bean id="rssFeed" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewRssController"/>
-	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ViewCssController"/>
-	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.definition.ViewDefinitionXmlController"/>
-	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.widget_test.FragmentController"/>
-	<bean id="errorHandler" parent="controllerDependencyTemplate" class="com.sitescape.ef.servlet.forum.ErrorController"/>
+	<bean id="downloadFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.sample.DownloadFileController"/>
+	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.sample.UploadFileController"/>
+	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
+	<bean id="rssFeed" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewRssController"/>
+	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
+	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
+	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>
+	<bean id="errorHandler" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
 
 </beans>

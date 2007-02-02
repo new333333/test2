@@ -15,18 +15,18 @@ import com.sitescape.ef.dao.impl.CoreDaoImpl;
 import com.sitescape.ef.dao.impl.FolderDaoImpl;
 import com.sitescape.ef.dao.impl.ProfileDaoImpl;
 import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.domain.Group;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.NoWorkspaceByTheNameException;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Attachment;
-import com.sitescape.ef.domain.Event;
-import com.sitescape.ef.domain.WorkflowState;
-import com.sitescape.ef.domain.CustomAttribute;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.Workspace;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.Workspace;
 
 /**
  * Integration unit tests for data access layer. 

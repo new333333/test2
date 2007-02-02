@@ -1,6 +1,6 @@
 package com.sitescape.ef.presence;
 
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 
 public interface PresenceService {
 

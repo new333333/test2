@@ -44,7 +44,7 @@
 				<c:if test="${!empty ssFolderList}">
 					<table cellspacing="0" cellpadding="0">
 					<c:forEach var="folder" items="${ssFolderList}">
-					<jsp:useBean id="folder" type="com.sitescape.ef.domain.Folder" />
+					<jsp:useBean id="folder" type="com.sitescape.team.domain.Folder" />
 					  <tr>
 					  <td><span id="<portlet:namespace/>_count_<c:out value="${folder.id}"/>"><font color="silver">-</font></span></td>
 					  <td>&nbsp;&nbsp;&nbsp;</td>

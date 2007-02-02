@@ -8,8 +8,8 @@ import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 
-import com.sitescape.ef.domain.WorkflowSupport;
-import com.sitescape.ef.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.util.Validator;
 
 public class DecisionAction extends AbstractActionHandler {

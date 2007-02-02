@@ -6,9 +6,9 @@ import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 /**
  *
  * @author Jong Kim

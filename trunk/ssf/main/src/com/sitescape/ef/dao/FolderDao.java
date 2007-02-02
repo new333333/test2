@@ -7,12 +7,12 @@ import org.springframework.dao.DataAccessException;
 
 import com.sitescape.ef.dao.util.FilterControls;
 import com.sitescape.ef.dao.util.OrderBy;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.domain.NoFolderByTheIdException;
-import com.sitescape.ef.domain.TitleException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryMap;
+import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.TitleException;
 
 /**
  * @author Jong Kim

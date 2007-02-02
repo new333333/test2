@@ -10,15 +10,15 @@
 <ul style="margin-left:-15px;">
 <c:if test="${!empty ssBinderConfig.parentBinder}">
 <c:set var="parentBinder" value="${ssBinderConfig.parentBinder}"/>
-<jsp:useBean id="parentBinder" type="com.sitescape.ef.domain.TemplateBinder" />
+<jsp:useBean id="parentBinder" type="com.sitescape.team.domain.TemplateBinder" />
 <%
 	Stack parentTree = new Stack();
 	while (parentBinder != null) {
 		parentTree.push(parentBinder);
-		parentBinder = (com.sitescape.ef.domain.TemplateBinder)parentBinder.getParentBinder();
+		parentBinder = (com.sitescape.team.domain.TemplateBinder)parentBinder.getParentBinder();
 	}
 	while (!parentTree.empty()) {
-		com.sitescape.ef.domain.TemplateBinder nextConfig = (com.sitescape.ef.domain.TemplateBinder) parentTree.pop();
+		com.sitescape.team.domain.TemplateBinder nextConfig = (com.sitescape.team.domain.TemplateBinder) parentTree.pop();
 %>
 <c:set var="nextConfig" value="<%= nextConfig %>"/>
 <li style="float:left;">

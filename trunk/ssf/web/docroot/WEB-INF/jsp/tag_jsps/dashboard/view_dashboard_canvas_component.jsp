@@ -1,6 +1,6 @@
 <% //View dashboard canvas component %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 String displayStyle = ssUser.getDisplayStyle();
 if (displayStyle == null || displayStyle.equals("")) {

@@ -7,7 +7,7 @@
 </c:when>
 <c:otherwise>
 <c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
-<jsp:useBean id="ev" type="com.sitescape.ef.domain.Event"  />
+<jsp:useBean id="ev" type="com.sitescape.team.domain.Event"  />
 <ssf:eventtext event="<%= ev %>" />
 </c:otherwise>
 </c:choose>

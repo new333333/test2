@@ -7,10 +7,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Workspace;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.web.WebKeys;

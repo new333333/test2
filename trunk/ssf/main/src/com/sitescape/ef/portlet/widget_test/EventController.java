@@ -22,7 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.domain.Event;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.util.cal.Duration;
 

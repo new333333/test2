@@ -7,9 +7,9 @@ import javax.mail.Message;
 import javax.mail.Session;
 
 import com.sitescape.ef.module.definition.notify.Notify;
-import com.sitescape.ef.domain.Folder;
-import com.sitescape.ef.domain.FolderEntry;
-import com.sitescape.ef.domain.PostingDef;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.PostingDef;
 /**
  * Interface to define 
  * @author Janet McCann

@@ -9,12 +9,12 @@ import com.sitescape.ef.dao.FolderDao;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
-import com.sitescape.ef.rss.RssGenerator;
-import com.sitescape.ef.search.LuceneSessionFactory;
-import com.sitescape.ef.security.AccessControlManager;
-import com.sitescape.ef.security.acl.AclManager;
-import com.sitescape.ef.security.function.FunctionManager;
-import com.sitescape.ef.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.team.rss.RssGenerator;
+import com.sitescape.team.search.LuceneSessionFactory;
+import com.sitescape.team.security.AccessControlManager;
+import com.sitescape.team.security.acl.AclManager;
+import com.sitescape.team.security.function.FunctionManager;
+import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
 
 /**
  * This abstract class provides a central place where dependent

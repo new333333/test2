@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.ChangeLog;
-import com.sitescape.ef.domain.Definition;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.FileAttachment;
 import com.sitescape.ef.module.file.WriteFilesException;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.security.AccessControlException;
 
 /**
  * <code>EntryProcessor</code> is used by model processors for binders that

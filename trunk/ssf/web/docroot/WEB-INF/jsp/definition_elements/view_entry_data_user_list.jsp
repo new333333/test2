@@ -1,6 +1,6 @@
 <% //User_list view %>
 <c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
-<jsp:useBean id="userlist_entry" type="com.sitescape.ef.domain.Entry" />
+<jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.Entry" />
 <div class="ss_entryContent">
 
 <span class="ss_labelLeft"><c:out value="${property_caption}" /></span>

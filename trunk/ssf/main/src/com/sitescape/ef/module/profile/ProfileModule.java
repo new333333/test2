@@ -11,19 +11,19 @@ import java.util.Set;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.ProfileBinder;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.Rating;
-import com.sitescape.ef.domain.SeenMap;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.domain.UserProperties;
-import com.sitescape.ef.domain.Visits;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.file.WriteFilesException;
-import com.sitescape.ef.security.AccessControlException;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.Rating;
+import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Visits;
+import com.sitescape.team.security.AccessControlException;
 
 public interface ProfileModule {
 	public void checkAccess(ProfileBinder binder, String operation) throws AccessControlException;

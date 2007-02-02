@@ -12,10 +12,10 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import java.util.Date;
 
-import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.domain.HistoryMap;
-import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.HistoryMap;
+import com.sitescape.team.domain.UserPerFolderPK;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.team.util.SpringContextUtil;
 /**

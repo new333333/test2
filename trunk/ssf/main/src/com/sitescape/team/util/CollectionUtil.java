@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
 
-import com.sitescape.ef.domain.PersistentLongId;
-import com.sitescape.ef.domain.PersistentStringId;
+import com.sitescape.team.domain.PersistentLongId;
+import com.sitescape.team.domain.PersistentStringId;
 import com.sitescape.util.StringUtil;
 /**
  * @author Janet McCann

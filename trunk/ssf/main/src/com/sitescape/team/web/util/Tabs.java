@@ -10,9 +10,9 @@ import javax.portlet.PortletSession;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.EntityIdentifier;
-import com.sitescape.ef.domain.Entry;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 /**

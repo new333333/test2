@@ -3,8 +3,8 @@ package com.sitescape.ef.jobs;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 
-import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.mail.JavaMailSender;
+import com.sitescape.team.domain.Binder;
 
 public interface FailedEmail {
     /**

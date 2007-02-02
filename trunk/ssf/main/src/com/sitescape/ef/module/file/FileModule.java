@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Set;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.domain.ReservedByAnotherUserException;
-import com.sitescape.ef.domain.VersionAttachment;
-import com.sitescape.ef.repository.RepositoryServiceException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.ReservedByAnotherUserException;
+import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.repository.RepositoryServiceException;
 
 /**
  * Provides uniform interface and integrated management for various file 

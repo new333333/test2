@@ -20,8 +20,8 @@ public class FlushController extends SAbstractController {
 	throws Exception {
 		//There is no action. Just go to the render phase
 		SessionFactory sF = (SessionFactory)SpringContextUtil.getBean("sessionFactory");
-		sF.evict(com.sitescape.ef.domain.Principal.class);
-		sF.evict(com.sitescape.ef.domain.Binder.class);
+		sF.evict(com.sitescape.team.domain.Principal.class);
+		sF.evict(com.sitescape.team.domain.Binder.class);
 		sF.evictQueries();
 		response.setRenderParameter(WebKeys.ACTION, "");
 		response.setWindowState(WindowState.NORMAL);

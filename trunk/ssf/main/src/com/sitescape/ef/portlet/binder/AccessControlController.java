@@ -15,8 +15,8 @@ import java.util.Set;
 import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;

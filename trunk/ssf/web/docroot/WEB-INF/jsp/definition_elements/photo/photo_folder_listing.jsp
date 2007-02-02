@@ -1,5 +1,5 @@
 <% //View the listing part of a photo folder %>
-<jsp:useBean id="ssUser" type="com.sitescape.ef.domain.User" scope="request" />
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 	boolean useAdaptor = true;
 	if (ssUser.getDisplayStyle() != null && 

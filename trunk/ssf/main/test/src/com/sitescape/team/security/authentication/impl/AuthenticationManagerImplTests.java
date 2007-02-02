@@ -3,10 +3,10 @@ package com.sitescape.team.security.authentication.impl;
 import org.easymock.MockControl;
 
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.NoUserByTheNameException;
-import com.sitescape.ef.domain.User;
-import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.security.authentication.impl.AuthenticationManagerImpl;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.security.authentication.UserDoesNotExistException;
+import com.sitescape.team.security.authentication.impl.AuthenticationManagerImpl;
 
 import junit.framework.TestCase;
 

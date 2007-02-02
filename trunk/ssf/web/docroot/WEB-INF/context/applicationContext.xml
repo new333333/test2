@@ -151,9 +151,9 @@
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -286,55 +286,55 @@
 
 	<!-- ============================ Indexing/Search Service =========================== -->
 	
-	<bean id="luceneSessionFactory" class = "com.sitescape.ef.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
+	<bean id="luceneSessionFactory" class = "com.sitescape.team.search.local.LocalLuceneSessionFactory" depends-on="sPropsUtil">
 		<property name="indexRootDir"><value>${data.root.dir}/lucene</value></property>
 	</bean>
 		
-	<bean id="indexSynchronizationManager" class="com.sitescape.ef.search.IndexSynchronizationManager">
+	<bean id="indexSynchronizationManager" class="com.sitescape.team.search.IndexSynchronizationManager">
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 	</bean>
 	
-	<bean id="indexSynchronizationManagerInterceptor" class="com.sitescape.ef.search.interceptor.IndexSynchronizationManagerInterceptor">
+	<bean id="indexSynchronizationManagerInterceptor" class="com.sitescape.team.search.interceptor.IndexSynchronizationManagerInterceptor">
 	</bean>	
 	
 	<!-- ============================== Document Converter ============================ -->
 	
-    <bean id="textConverter" class="com.sitescape.ef.docconverter.impl.TextOpenOfficeConverter">
+    <bean id="textConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
     </bean>
     
 	<!--  OpenOffice converter for 'view file as HTML' functionality
 			% C:\Program Files\OpenOffice.org 2.0\program\soffice.exe "-accept=socket,port=8100;urp;"
 	 -->
-    <bean id="htmlOpenOfficeConverter" class="com.sitescape.ef.docconverter.impl.HtmlOpenOfficeConverter">
+    <bean id="htmlOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.HtmlOpenOfficeConverter">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
     
-    <bean id="textOpenOfficeConverter" class="com.sitescape.ef.docconverter.impl.TextOpenOfficeConverter">
+    <bean id="textOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
 		<property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
         <property name="nullTransform"><value>config/null.xslt</value></property>
     </bean>
     
-    <bean id="imageOpenOfficeConverter" class="com.sitescape.ef.docconverter.impl.ImageOpenOfficeConverter">
+    <bean id="imageOpenOfficeConverter" class="com.sitescape.team.docconverter.impl.ImageOpenOfficeConverter">
         <property name="host"><value>localhost</value></property>
         <property name="port"><value>8100</value></property>
     </bean>
 
 	<!-- View file as HTML manager implementation -->
-    <bean id="htmlConverterManager" class="com.sitescape.ef.docconverter.impl.HtmlConverterManagerImpl">
+    <bean id="htmlConverterManager" class="com.sitescape.team.docconverter.impl.HtmlConverterManagerImpl">
     	<!-- Options 1=OpenOffice conversion implementation -->
     	<property name="active"><value>1</value></property>
     	<property name="openOfficeConverter"><ref local="htmlOpenOfficeConverter"/></property>
     </bean>
     
-    <bean id="textConverterManager" class="com.sitescape.ef.docconverter.impl.TextConverterManagerImpl">
+    <bean id="textConverterManager" class="com.sitescape.team.docconverter.impl.TextConverterManagerImpl">
     	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
     	<property name="active"><value>1</value></property>
     	<property name="openOfficeConverter"><ref local="textOpenOfficeConverter"/></property>
     </bean>
     
-    <bean id="imageConverterManager" class="com.sitescape.ef.docconverter.impl.ImageConverterManagerImpl">
+    <bean id="imageConverterManager" class="com.sitescape.team.docconverter.impl.ImageConverterManagerImpl">
     	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
     	<property name="active"><value>1</value></property>
     	<property name="openOfficeConverter"><ref local="imageOpenOfficeConverter"/></property>
@@ -342,34 +342,34 @@
     
     <!-- ============================== RSS Generator ============================ -->
 	
-    <bean id="rssGenerator" class="com.sitescape.ef.rss.RssGenerator">
+    <bean id="rssGenerator" class="com.sitescape.team.rss.RssGenerator">
     	<property name="rssRootDir"><value>${data.root.dir}/rss</value></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
     </bean>
 	
 	<!-- ================================ Security Service =============================== -->
 	
-	<bean id="accessControlManager" class="com.sitescape.ef.security.impl.AccessControlManagerImpl">
+	<bean id="accessControlManager" class="com.sitescape.team.security.impl.AccessControlManagerImpl">
 		<property name="functionManager"><ref local="functionManager"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
-	<!--<bean id="accessControlManager" class="com.sitescape.ef.security.impl.NullAccessControlManager">
+	<!--<bean id="accessControlManager" class="com.sitescape.team.security.impl.NullAccessControlManager">
 	</bean>
 	-->
 	
-	<bean id="aclManager" class="com.sitescape.ef.security.acl.impl.AclManagerImpl">
+	<bean id="aclManager" class="com.sitescape.team.security.acl.impl.AclManagerImpl">
 	</bean>
 
-	<bean id="functionManager" class="com.sitescape.ef.security.function.FunctionManagerImpl">
+	<bean id="functionManager" class="com.sitescape.team.security.function.FunctionManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>
 	</bean>
 
-	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.ef.security.function.WorkAreaFunctionMembershipManagerImpl">
+	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.team.security.function.WorkAreaFunctionMembershipManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>		
 	</bean>
 	
-	<bean id="securityDao" class="com.sitescape.ef.security.dao.SecurityDaoImpl">
+	<bean id="securityDao" class="com.sitescape.team.security.dao.SecurityDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
@@ -411,7 +411,7 @@
 				<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
 					<property name="name"><value>Third Handler</value></property>
 				</bean>-->
-				<bean class="com.sitescape.ef.docconverter.pipeline.DocConverterHandler">
+				<bean class="com.sitescape.team.docconverter.pipeline.DocConverterHandler">
 					<property name="name"><value>Doc Converter</value></property>
 					<property name="textConverter"><ref local="textConverter"/></property>
 					<property name="timeout"><value>20000</value></property>
@@ -493,9 +493,9 @@
 				<prop key="reserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -516,9 +516,9 @@
 				<prop key="modifyWorkflowState">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 				<prop key="addUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyUserFromPortal">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
@@ -573,9 +573,9 @@
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
-				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
+				<prop key="index*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>
@@ -628,7 +628,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.ef.security.AccessControlException</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 			</props>
 		</property>
 	</bean>		
@@ -749,12 +749,12 @@
 
 	<!-- ======================== File & Repository Services ====================== -->
 	
-	<bean id="simpleFileRepository" class="com.sitescape.ef.repository.file.FileRepositorySessionFactory" 
+	<bean id="simpleFileRepository" class="com.sitescape.team.repository.file.FileRepositorySessionFactory" 
 		depends-on="sPropsUtil" init-method="initialize" destroy-method="shutdown">
 		<property name="repositoryRootDir"><value>${data.root.dir}/filerepository</value></property>
 	</bean>
 
-	<bean id="webdavRepository" class="com.sitescape.ef.repository.webdav.WebdavRepositorySessionFactory"
+	<bean id="webdavRepository" class="com.sitescape.team.repository.webdav.WebdavRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">
 		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
 		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
@@ -764,7 +764,7 @@
 		<property name="versionDeletionAllowed"><value>false</value></property>
 	</bean>
 	
-	<bean id="jackrabbitRepository" class="com.sitescape.ef.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
+	<bean id="jackrabbitRepository" class="com.sitescape.team.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
 		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
 		<property name="repositoryRootDir"><value>${data.root.dir}/jackrabbit</value></property>

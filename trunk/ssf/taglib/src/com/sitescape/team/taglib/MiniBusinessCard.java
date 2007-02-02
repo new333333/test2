@@ -10,8 +10,8 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.dom4j.Document;
 
 import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.servlet.StringServletResponse;

@@ -22,7 +22,7 @@ import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.portletadapter.MultipartFileSupport;
-import com.sitescape.ef.rss.RssGenerator;
+import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.XSSCheck;
 

@@ -13,7 +13,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.rss.util.UrlUtil;
+import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DebugHelper;

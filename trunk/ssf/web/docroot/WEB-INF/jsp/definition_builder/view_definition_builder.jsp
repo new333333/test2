@@ -19,15 +19,15 @@
 <%@ page import="org.dom4j.Document" %>
 <%@ page import="org.dom4j.DocumentHelper" %>
 <%@ page import="org.dom4j.Element" %>
-<%@ page import="com.sitescape.ef.domain.DefinitionInvalidOperation" %>
+<%@ page import="com.sitescape.team.domain.DefinitionInvalidOperation" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="data" type="java.util.Map" scope="request" />
-<%@ page import="com.sitescape.ef.domain.FolderEntry" %>
-<%@ page import="com.sitescape.ef.domain.User" %>
-<%@ page import="com.sitescape.ef.domain.Folder" %>
-<%@ page import="com.sitescape.ef.domain.Workspace" %>
+<%@ page import="com.sitescape.team.domain.FolderEntry" %>
+<%@ page import="com.sitescape.team.domain.User" %>
+<%@ page import="com.sitescape.team.domain.Folder" %>
+<%@ page import="com.sitescape.team.domain.Workspace" %>
 <%
 	boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 

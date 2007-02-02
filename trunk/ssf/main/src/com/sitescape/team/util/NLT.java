@@ -10,7 +10,7 @@ import org.springframework.context.NoSuchMessageException;
 import com.sitescape.ef.SingletonViolationException;
 import com.sitescape.ef.context.request.RequestContext;
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 
 /**
  * @author hurley

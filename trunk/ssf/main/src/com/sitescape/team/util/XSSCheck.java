@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.domain.User;
+import com.sitescape.team.domain.User;
 import com.sitescape.util.StringPool;
 
 public class XSSCheck {
