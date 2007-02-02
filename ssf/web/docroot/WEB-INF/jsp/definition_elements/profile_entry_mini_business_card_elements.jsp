@@ -2,15 +2,12 @@
 <%@ page import="java.lang.reflect.Method" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<%
-		//Get the form item being displayed
-		Element item = (Element) request.getAttribute("item");
-%>
+
 <c:if test="${empty property_maxWidth}">
-  <c:set var="property_maxWidth" value="30" scope="request"/>
+  <c:set var="property_maxWidth" value="150" scope="request"/>
 </c:if>
 <c:if test="${empty property_maxHeight}">
-  <c:set var="property_maxHeight" value="30" scope="request"/>
+  <c:set var="property_maxHeight" value="100" scope="request"/>
 </c:if>
 <table width="150px">
 <tr>
@@ -45,31 +42,31 @@
 
 <c:forEach var="element" items="${propertyValues__elements}">
 
-<tr>
-<td align="right" class="ss_table_spacer_right">
-
-</td>
-<td>
-  <c:if test="${!empty ssDefinitionEntry[element]}">
-    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
-  </c:if>
-  <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
-    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
-  </c:if>
-</td>
-</tr>
-</c:forEach>
-<tr>
-	<td align="right" class="ss_table_spacer_right">
+	<c:if test="${!empty ssDefinitionEntry[element]}">
+		<tr>
+			<td>
+				<c:if test="${element == 'name'}">
+					  <div id="ss_presenceOptions_${renderResponse.namespace}"></div>
+						  <ssf:presenceInfo user="${ssDefinitionEntry}" 
+						    showOptionsInline="false" 
+						    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
+									
+				</c:if>
+			    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
+			</td>
+		</tr>
+	</c:if>
 	
-	</td>
-	<td>
-	  <div id="ss_presenceOptions_${renderResponse.namespace}"></div>
-	  <ssf:presenceInfo user="${ssDefinitionEntry}" 
-	    showOptionsInline="false" 
-	    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
-	</td>
-</tr>
+	<c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
+		<tr>
+			<td>
+			    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
+			</td>
+		</tr>
+	</c:if>
+
+</c:forEach>
+
 </table>
 <c:set var="ss_element_display_style" value="" scope="request"/>
 
@@ -99,3 +96,9 @@
 </tr>
 </table>
 </c:if>
+
+<%
+//Get the form item being displayed
+	request.removeAttribute("propertyValues__elements");
+%>
+
