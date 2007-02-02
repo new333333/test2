@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="jboss-portal/src"/>
 	<classpathentry kind="src" path="as-module/src"/>
 	<classpathentry kind="src" path="tools/src"/>
 	<classpathentry kind="src" path="ssfs/src"/>
@@ -79,5 +80,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/ridl.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/unoil.jar"/>
 	<classpathentry kind="lib" path="lib/json-lib.jar"/>
+	<classpathentry kind="lib" path="lib/jbosssx.jar"/>
+	<classpathentry kind="lib" path="lib/portal-identity-lib.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
