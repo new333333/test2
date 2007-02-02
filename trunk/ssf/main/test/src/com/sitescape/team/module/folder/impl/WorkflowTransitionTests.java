@@ -26,11 +26,11 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.ef.context.request.RequestContext;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.impl.CoreDaoImpl;
-import com.sitescape.ef.dao.impl.FolderDaoImpl;
-import com.sitescape.ef.dao.impl.ProfileDaoImpl;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.impl.CoreDaoImpl;
+import com.sitescape.team.dao.impl.FolderDaoImpl;
+import com.sitescape.team.dao.impl.ProfileDaoImpl;
 
 public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpringContextTests {
 

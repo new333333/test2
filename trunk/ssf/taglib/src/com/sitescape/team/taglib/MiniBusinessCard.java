@@ -9,7 +9,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.dom4j.Document;
 
-import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;

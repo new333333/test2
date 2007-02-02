@@ -17,9 +17,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.InvalidArgumentException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.InvalidArgumentException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;

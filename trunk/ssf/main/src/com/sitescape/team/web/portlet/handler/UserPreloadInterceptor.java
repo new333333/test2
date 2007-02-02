@@ -12,7 +12,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.InternalException;
+import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;

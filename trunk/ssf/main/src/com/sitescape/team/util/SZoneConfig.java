@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 
 /**

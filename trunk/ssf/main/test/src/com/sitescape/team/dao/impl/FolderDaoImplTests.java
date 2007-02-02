@@ -11,10 +11,10 @@ import java.util.Date;
 import org.hibernate.LazyInitializationException;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.ef.dao.impl.CoreDaoImpl;
-import com.sitescape.ef.dao.impl.FolderDaoImpl;
-import com.sitescape.ef.dao.impl.ProfileDaoImpl;
-import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.team.dao.impl.CoreDaoImpl;
+import com.sitescape.team.dao.impl.FolderDaoImpl;
+import com.sitescape.team.dao.impl.ProfileDaoImpl;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;

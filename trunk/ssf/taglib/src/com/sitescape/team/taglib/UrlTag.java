@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.ef.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 
 import javax.portlet.PortletURL;
 

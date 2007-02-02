@@ -1,4 +1,4 @@
-package com.sitescape.ef.samples.remoting.client.ws.jaxrpc;
+package com.sitescape.team.samples.remoting.client.ws.jaxrpc;
 
 import javax.xml.namespace.QName;
 import javax.xml.rpc.Service;
@@ -9,8 +9,8 @@ import org.apache.axis.encoding.ser.BeanDeserializerFactory;
 import org.apache.axis.encoding.ser.BeanSerializerFactory;
 import org.springframework.remoting.jaxrpc.JaxRpcServicePostProcessor;
 
-import com.sitescape.ef.remoting.api.Binder;
-import com.sitescape.ef.remoting.api.Folder;
+import com.sitescape.team.remoting.api.Binder;
+import com.sitescape.team.remoting.api.Folder;
 
 /**
  * Provides custom type mappings for Axis to use to serialize/deserialize

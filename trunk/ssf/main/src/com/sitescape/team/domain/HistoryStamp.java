@@ -9,7 +9,7 @@ package com.sitescape.team.domain;
 import java.util.Date;
 import org.dom4j.Element;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 
 
 /**

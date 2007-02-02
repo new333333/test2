@@ -270,12 +270,12 @@ function ss_showFileOpen(strURLValue, aHrefPos)
 				  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIETEST %>">
-			<applet name="fileopenobj" id="fileopenobj" CODE = "com.sitescape.ef.applets.fileopen.FileOpen" 
+			<applet name="fileopenobj" id="fileopenobj" CODE = "com.sitescape.team.applets.fileopen.FileOpen" 
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "fileopen/ssf-fileopen-applet.jar" 
 			  WIDTH = "0" HEIGHT = "0" MAYSCRIPT="true">
 			</c:if>
-				    <PARAM NAME="CODE" VALUE = "com.sitescape.ef.applets.fileopen.FileOpen" />
+				    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.fileopen.FileOpen" />
 				    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
 				    <PARAM NAME ="ARCHIVE" VALUE = "fileopen/ssf-fileopen-applet.jar" />
 				    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />

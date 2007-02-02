@@ -3,7 +3,7 @@ package com.sitescape.team.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sitescape.ef.InternalException;
+import com.sitescape.team.InternalException;
 
 /**
  * @hibernate.subclass discriminator-value="folder" dynamic-update="true"

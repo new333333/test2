@@ -15,7 +15,7 @@ import java.io.IOException;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.docconverter.IImageConverterManager;
 import com.sitescape.team.docconverter.ImageConverter;
 import com.sitescape.team.util.DirPath;

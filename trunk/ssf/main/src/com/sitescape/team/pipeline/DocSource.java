@@ -3,7 +3,7 @@ package com.sitescape.team.pipeline;
 import java.io.File;
 import java.io.InputStream;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 
 public interface DocSource {
 

@@ -1,7 +1,7 @@
 
 package com.sitescape.team.taglib;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;

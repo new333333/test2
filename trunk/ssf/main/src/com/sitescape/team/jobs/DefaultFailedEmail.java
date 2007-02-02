@@ -22,7 +22,7 @@ import org.quartz.Scheduler;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailSendException;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.mail.JavaMailSender;
 import com.sitescape.team.mail.MailManager;

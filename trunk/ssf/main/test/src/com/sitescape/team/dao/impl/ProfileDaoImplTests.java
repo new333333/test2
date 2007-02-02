@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import org.hibernate.LazyInitializationException;
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.ef.dao.impl.CoreDaoImpl;
-import com.sitescape.ef.dao.impl.ProfileDaoImpl;
-import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.team.dao.impl.CoreDaoImpl;
+import com.sitescape.team.dao.impl.ProfileDaoImpl;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;

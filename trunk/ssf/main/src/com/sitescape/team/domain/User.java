@@ -16,11 +16,11 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
-import com.sitescape.ef.NotSupportedException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"

@@ -88,7 +88,7 @@ return false;
 	</tr>
 	<tr>
 	<td align="center">
-		<applet archive="sample/ssf-sample-applet.jar" code="com.sitescape.ef.applets.sample.HelloWorld" codebase="<html:rootPath/>/applets" height="30" width="130">
+		<applet archive="sample/ssf-sample-applet.jar" code="com.sitescape.team.applets.sample.HelloWorld" codebase="<html:rootPath/>/applets" height="30" width="130">
 		</applet>
 	</td>
 	</tr>

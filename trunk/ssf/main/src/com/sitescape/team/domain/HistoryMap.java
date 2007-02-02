@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 
 /**
  * @hibernate.class table="SS_HistoryMap" dynamic-update="true"

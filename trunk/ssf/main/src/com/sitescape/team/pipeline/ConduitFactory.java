@@ -1,6 +1,6 @@
 package com.sitescape.team.pipeline;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 
 public interface ConduitFactory {
 

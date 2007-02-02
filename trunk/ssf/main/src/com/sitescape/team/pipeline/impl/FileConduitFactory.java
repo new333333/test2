@@ -6,8 +6,8 @@ import java.io.IOException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.Resource;
 
-import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.pipeline.Conduit;
 import com.sitescape.team.pipeline.ConduitFactory;
 

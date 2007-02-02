@@ -43,7 +43,7 @@
               user's login process and provide convenient automatic synchronization
               of Aspen user database with the information from the Portal.
          -->
-         <login-module code="com.sitescape.ef.jbossportal.jaas.SiteScapeLoginModule" flag="required">
+         <login-module code="com.sitescape.team.jbossportal.jaas.SiteScapeLoginModule" flag="required">
             <module-option name="unauthenticatedIdentity">guest</module-option>
             <module-option name="userModuleJNDIName">java:/portal/UserModule</module-option>
             <module-option name="roleModuleJNDIName">java:/portal/RoleModule</module-option>

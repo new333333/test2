@@ -16,7 +16,7 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.util.SpringContextUtil;

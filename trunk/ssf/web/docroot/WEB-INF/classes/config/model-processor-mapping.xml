@@ -31,7 +31,7 @@
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Workspace">
 			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.team.jobs.DefaultLdapSynchronization"/>
-			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.ef.ldap.DefaultLdapNameMapper"/>
+			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.team.ldap.DefaultLdapNameMapper"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
 			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>

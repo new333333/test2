@@ -1,6 +1,6 @@
 package com.sitescape.team.module.workspace.impl;
 
-import com.sitescape.ef.NotSupportedException;
+import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.impl.AbstractBinderProcessor;

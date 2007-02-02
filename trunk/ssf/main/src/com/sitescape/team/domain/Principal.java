@@ -14,7 +14,7 @@ import java.util.Set;
 
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.NotSupportedException;
+import com.sitescape.team.NotSupportedException;
 
 /**
 * @hibernate.class table="SS_Principals" dynamic-update="true" node="Principal"

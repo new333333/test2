@@ -8,7 +8,7 @@
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.ef.ObjectKeys" %>
+<%@ page import="com.sitescape.team.ObjectKeys" %>
 <%@ page import="com.sitescape.team.web.WebKeys" %>
 
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>

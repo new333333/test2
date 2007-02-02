@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.sitescape.ef.UncheckedIOException;
+import com.sitescape.team.UncheckedIOException;
 
 /**
  * Interface for specifying or transfering output data.

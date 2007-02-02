@@ -28,8 +28,8 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.ef.NoObjectByTheIdException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;

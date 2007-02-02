@@ -10,7 +10,7 @@ import java.util.Set;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WfNotify;

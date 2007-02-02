@@ -697,12 +697,12 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
   codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 </c:if>
 <c:if test="<%= !isIE %>">
-<applet CODE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" 
+<applet CODE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" 
   JAVA_CODEBASE = "<html:rootPath/>applets" 
   ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" 
   WIDTH = "100%" HEIGHT = "600">
 </c:if>
-    <PARAM NAME = CODE VALUE = "com.sitescape.ef.applets.workflowviewer.WorkflowViewer" >
+    <PARAM NAME = CODE VALUE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" >
     <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
     <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.0.jar,lib/dom4j.jar,lib/jaxen.jar" >
     <param name="type" value="application/x-java-applet;version=1.5">

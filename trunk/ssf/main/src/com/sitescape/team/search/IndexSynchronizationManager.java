@@ -10,7 +10,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.util.SimpleProfiler;
 
 /**

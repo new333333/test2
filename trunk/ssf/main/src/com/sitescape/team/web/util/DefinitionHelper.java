@@ -8,7 +8,7 @@ import java.util.Map;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;

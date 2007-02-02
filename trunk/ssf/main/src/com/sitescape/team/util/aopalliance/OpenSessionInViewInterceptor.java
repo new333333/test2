@@ -12,7 +12,7 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.orm.hibernate3.SessionHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
-import com.sitescape.ef.InternalException;
+import com.sitescape.team.InternalException;
 
 /**
  * This class implements functionality effectively identical to 

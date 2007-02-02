@@ -3,7 +3,7 @@ package com.sitescape.team.security.dao;
 import java.util.List;
 import java.util.Set;
 
-import com.sitescape.ef.NoObjectByTheIdException;
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 

@@ -24,12 +24,12 @@ function getWindowBgColor${ssEntryId}${ss_namespace}()
 			  codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
 			</c:if>
 			<c:if test="<%= !isIE %>">
-			<applet CODE = "com.sitescape.ef.applets.droptarget.TopFrame" 
+			<applet CODE = "com.sitescape.team.applets.droptarget.TopFrame" 
 			  JAVA_CODEBASE = "<html:rootPath/>applets" 
 			  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
 			  WIDTH = "20" HEIGHT = "20" MAYSCRIPT>
 			</c:if>
-			    <PARAM NAME="CODE" VALUE = "com.sitescape.ef.applets.droptarget.TopFrame" />
+			    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.droptarget.TopFrame" />
 			    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
 			    <PARAM NAME ="ARCHIVE" VALUE = "droptarget/ssf-droptarget-applet.jar" />
 			    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />

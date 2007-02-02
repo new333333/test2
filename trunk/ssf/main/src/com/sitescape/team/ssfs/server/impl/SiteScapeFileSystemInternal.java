@@ -16,8 +16,8 @@ import javax.activation.FileTypeMap;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.ef.InternalException;
-import com.sitescape.ef.ObjectKeys;
+import com.sitescape.team.InternalException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Entry;

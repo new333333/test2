@@ -1,6 +1,6 @@
 package com.sitescape.team.util;
 
-import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.ConfigurationException;
 
 public class ConfigPropertyNotFoundException extends ConfigurationException {
     public ConfigPropertyNotFoundException() {

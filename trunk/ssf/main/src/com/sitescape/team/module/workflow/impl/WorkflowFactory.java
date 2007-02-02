@@ -10,7 +10,7 @@ import org.springframework.beans.FatalBeanException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
-import com.sitescape.ef.SingletonViolationException;
+import com.sitescape.team.SingletonViolationException;
 
 public class WorkflowFactory  implements InitializingBean {
 
