@@ -20,9 +20,9 @@ span.tinyLabel {
 <span class="tinyLabel">Grid:</span>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 1; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">Single</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 3; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">3-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 5; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">5-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 7; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">7-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 14; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">14-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek');  return false;">5-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('week'); return false;">7-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="MMMM, yyyy" />
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
 <a href="${set_week_view}"><ssf:nlt tag="calendar.Week" text="Week"/></a>
@@ -70,10 +70,9 @@ span.tinyLabel {
 </div>
 </div>
 
-<div id="infoBox1" style="visibility:hidden; padding: 25px; background-color: white; border: 1px solid blue; position: absolute; top: 100px; left: 100px; width: 50px; height: 50px; z-index: 10;">I</div>
-<div id="infoLightBox" style="visibility: hidden; width: 100%; height: 100%;"></div>
+<div id="infoLightBox" style="display: none; visibility: hidden; width: 100%; height: 100%;"></div>
 
-<div id="infoBox" style="visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
+<div id="infoBox" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
         border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
   <i>Imagine if you will...</i><br/>
   A particularly stylish form will be here pertaining to the details of this event.
@@ -82,9 +81,11 @@ span.tinyLabel {
   <a href="javascript: ;" class="tinyControl" onclick="ss_ActiveGrid.deleteCurrentEvent(); ss_cancelPopupDiv('infoBox');">Cancel</a>
 </div>
 
-<div id="infoBox2" style="visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
+<div id="infoBox2" style="display: none; visibility: hidden; position: absolute; padding: 25px; background-color: #FFFFFF; z-index: 2003;
           border: 1px solid blue; width: 250px; height: 150px; left: 200px; top: 200px;">
   Information about event: <span id="ib2eid">EVENT</span>
+  <p>
+  <span id="ib2view">VIEW</span>
   <p>
   <a href="javascript: ;" class="tinyControl" onclick="ss_cancelPopupDiv('infoBox2');">Save</a>
   <a href="javascript: ;" class="tinyControl" onclick="ss_cancelPopupDiv('infoBox2');">Cancel</a>
@@ -114,7 +115,7 @@ var inputEvents = [<%--
             --%><jsp:useBean id="evim" type="java.util.Map" /><%--
             --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
             --%>
-{eventId: "${evim.entry._docId}", day: ${i}, start: 9,  dur: 30, title: "${evim.entry.title}", text: "", calsrc: "cal1",
+  {eventId: "${evim.entry._docId}", day: ${i}, start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${evim.cal_duration}, title: "${evim.entry.title}", text: "${evim.cal_endtimestring}", calsrc: "cal1",
    viewHref: "<ssf:url adapter="<%= useAdaptor %>" portletName="ss_forum" folderId="${ssFolder.id}" action="view_folder_entry" entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />",
    viewOnClick: "ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;"},<%--
           --%></c:forEach><% // end of events within a single time slot %><%--
@@ -144,4 +145,10 @@ ss_cal_CalData.monthTodayIndex = ${today};
 ss_cal_CalData.dayTodayIndex = 4;
 ss_cal_Grid.activateGrid("month");
 ss_cal_Events.redrawAll();
+ss_createOnLoadObj('ss_cal_hoverBox', function() {
+	ss_moveDivToBody("hoverBox");
+	ss_moveDivToBody("infoLightBox");
+	ss_moveDivToBody("infoBox");
+	ss_moveDivToBody("infoBox2");
+});
 </script>
