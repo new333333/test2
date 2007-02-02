@@ -1,7 +1,7 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
  * Thrown to indicate that the request to delete a version is failed

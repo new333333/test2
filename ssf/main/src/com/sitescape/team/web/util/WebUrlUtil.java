@@ -4,11 +4,11 @@ import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Http;
-import com.sitescape.ef.portletadapter.AdaptedPortletURL;
 
 public class WebUrlUtil {
 	

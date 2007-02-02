@@ -18,8 +18,8 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfNotify;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.util.Validator;
-import com.sitescape.ef.jobs.SendEmail;
 
 public class Notify extends AbstractActionHandler {
 	private static final long serialVersionUID = 1L;

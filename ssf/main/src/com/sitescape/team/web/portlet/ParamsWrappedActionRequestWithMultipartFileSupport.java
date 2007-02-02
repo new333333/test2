@@ -7,7 +7,7 @@ import javax.portlet.ActionRequest;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 
 public class ParamsWrappedActionRequestWithMultipartFileSupport 
 	extends ParamsWrappedActionRequest implements MultipartFileSupport {

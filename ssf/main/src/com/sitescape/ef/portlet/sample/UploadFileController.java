@@ -13,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
-import com.sitescape.ef.portletadapter.portlet.ActionRequestImpl;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.portletadapter.portlet.ActionRequestImpl;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 

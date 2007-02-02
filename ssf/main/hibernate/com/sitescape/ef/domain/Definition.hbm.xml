@@ -10,16 +10,16 @@
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
-      <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="readMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>
-      <property name="writeMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="writeMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_writeMembers"/>
       </property>
-      <property name="deleteMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="deleteMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_deleteMembers"/>
       </property>
-      <property name="changeAclMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="changeAclMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_changeAclMembers"/>
       </property>
     </component>

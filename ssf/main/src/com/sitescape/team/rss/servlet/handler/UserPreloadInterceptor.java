@@ -6,9 +6,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.context.request.RequestContext;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 
 public class UserPreloadInterceptor extends HandlerInterceptorAdapter {

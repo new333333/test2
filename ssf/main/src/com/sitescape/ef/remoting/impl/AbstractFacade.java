@@ -16,7 +16,6 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.dashboard.DashboardModule;
@@ -30,6 +29,7 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;

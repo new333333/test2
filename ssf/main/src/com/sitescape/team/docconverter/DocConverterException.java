@@ -7,7 +7,7 @@
 package com.sitescape.team.docconverter;
 
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 /**
  * @author Roy Klein

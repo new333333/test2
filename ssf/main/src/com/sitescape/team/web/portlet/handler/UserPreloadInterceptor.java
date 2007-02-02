@@ -13,14 +13,14 @@ import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.ef.InternalException;
-import com.sitescape.ef.context.request.RequestContext;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;

@@ -76,8 +76,8 @@
 	<bean id="handlerExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.ef.exception.CheckedCodedException">common/servlet.defCodedError</prop>
-				<prop key="com.sitescape.ef.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="com.sitescape.team.exception.CheckedCodedException">common/servlet.defCodedError</prop>
+				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/servlet.defCodedError</prop>
 			</props>
 		</property>
 		<property name="defaultErrorView"><value>common/defError</value></property>

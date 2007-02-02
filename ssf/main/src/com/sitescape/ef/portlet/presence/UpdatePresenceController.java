@@ -11,7 +11,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.FindIdsHelper;

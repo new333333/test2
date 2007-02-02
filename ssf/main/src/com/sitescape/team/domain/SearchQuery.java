@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.text.ParseException;
 
-import com.sitescape.ef.dao.IXmlPersistence;
+import com.sitescape.team.dao.IXmlPersistence;
 
 import org.jdom.Element;
 /**

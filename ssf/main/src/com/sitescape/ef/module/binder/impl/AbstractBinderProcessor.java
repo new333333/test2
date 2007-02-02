@@ -21,7 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.NotSupportedException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.binder.AccessUtils;
 import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.definition.DefinitionModule;
@@ -35,8 +34,8 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.EntryBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.module.workflow.WorkflowModule;
-import com.sitescape.ef.pipeline.Pipeline;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
@@ -52,6 +51,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.pipeline.Pipeline;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;

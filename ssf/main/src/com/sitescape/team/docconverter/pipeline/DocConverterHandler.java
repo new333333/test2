@@ -6,11 +6,11 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.pipeline.support.AbstractDocHandler;
-import com.sitescape.ef.pipeline.DocSink;
-import com.sitescape.ef.pipeline.DocSource;
-import com.sitescape.ef.pipeline.PipelineInvocation;
 import com.sitescape.team.docconverter.TextConverter;
+import com.sitescape.team.pipeline.DocSink;
+import com.sitescape.team.pipeline.DocSource;
+import com.sitescape.team.pipeline.PipelineInvocation;
+import com.sitescape.team.pipeline.support.AbstractDocHandler;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.TempFileUtil;
 

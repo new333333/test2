@@ -15,11 +15,11 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;

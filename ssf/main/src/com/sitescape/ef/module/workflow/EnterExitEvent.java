@@ -20,7 +20,7 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;

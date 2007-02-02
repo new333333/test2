@@ -12,7 +12,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.web.servlet.ModelAndView;
 import javax.activation.FileTypeMap;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;

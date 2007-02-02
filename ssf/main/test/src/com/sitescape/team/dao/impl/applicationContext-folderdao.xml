@@ -50,15 +50,15 @@
 
 	</bean>
 
-	<bean id="coreDaoImpl" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
+	<bean id="coreDaoImpl" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
-	<bean id="folderDaoImpl" class="com.sitescape.ef.dao.impl.FolderDaoImpl">
+	<bean id="folderDaoImpl" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>
-	<bean id="profileDaoImpl" class="com.sitescape.ef.dao.impl.ProfileDaoImpl">
+	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>

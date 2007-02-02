@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;

@@ -8,7 +8,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.UnauthenticatedAccessException;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;

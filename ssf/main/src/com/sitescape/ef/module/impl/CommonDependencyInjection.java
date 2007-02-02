@@ -4,11 +4,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.Scheduler;
 
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.dao.FolderDao;
-import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.modelprocessor.ProcessorManager;
 import com.sitescape.ef.presence.PresenceService;
+import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.dao.FolderDao;
+import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.search.LuceneSessionFactory;
 import com.sitescape.team.security.AccessControlManager;

@@ -22,8 +22,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.ef.module.definition.DefinitionUtils;
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SZoneConfig;

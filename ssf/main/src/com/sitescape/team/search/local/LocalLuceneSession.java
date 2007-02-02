@@ -30,7 +30,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;

@@ -17,8 +17,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
-import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;

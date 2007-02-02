@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.RequestUtils;
 
-import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;

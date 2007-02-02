@@ -5,13 +5,13 @@ import org.apache.commons.logging.LogFactory;
 import org.jbpm.context.exe.ContextInstance;
 import org.jbpm.graph.def.ActionHandler;
 
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.mail.MailManager;
+import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.util.SpringContextUtil;
 
 public abstract class AbstractActionHandler implements ActionHandler {

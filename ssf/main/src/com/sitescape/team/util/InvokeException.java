@@ -1,6 +1,6 @@
 package com.sitescape.team.util;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 /**
  *

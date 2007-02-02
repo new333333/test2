@@ -29,7 +29,7 @@ public class PersistentAclSet implements AclSet {
     protected Set changeAclMemberIds;
     
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType"
      * @hibernate.column name="readMembers"
      */
     private SSClobString getReadMembers() {
@@ -43,7 +43,7 @@ public class PersistentAclSet implements AclSet {
     }
     
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType"
      * @hibernate.column name="writeMembers"
      */
     private SSClobString getWriteMembers() {
@@ -57,7 +57,7 @@ public class PersistentAclSet implements AclSet {
     }
     
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType"
      * @hibernate.column name="deleteMembers"
      */
     private SSClobString getDeleteMembers() {
@@ -71,7 +71,7 @@ public class PersistentAclSet implements AclSet {
     }
     
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType"
      * @hibernate.column name="changeAclMembers"
      */
     private SSClobString getChangeAclMembers() {

@@ -47,7 +47,7 @@
     </bag>
     <many-to-one name="parentBinder"/>
     <component name="description">
-      <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
+      <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="title" access="field" length="256"/>

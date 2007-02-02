@@ -8,8 +8,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.ws.security.WSPasswordCallback;
 
-import com.sitescape.ef.context.request.RequestContextUtil;
-import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;

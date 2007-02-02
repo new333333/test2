@@ -6,7 +6,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.util.StringPool;
 

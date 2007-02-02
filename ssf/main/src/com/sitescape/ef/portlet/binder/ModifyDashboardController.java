@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;

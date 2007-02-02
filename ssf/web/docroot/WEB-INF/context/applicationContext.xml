@@ -119,7 +119,7 @@
 		</property>
 		<property name="jobListeners">
 			<list>
-			<bean class="com.sitescape.ef.jobs.CleanupJobListener"/>
+			<bean class="com.sitescape.team.jobs.CleanupJobListener"/>
 			</list>
 		</property>
 	</bean>
@@ -168,7 +168,7 @@
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	
-	<bean id="modelProcessorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
+	<bean id="modelProcessorManager" class="com.sitescape.team.modelprocessor.ProcessorManager">
 		<property name="config">
 			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
@@ -262,8 +262,8 @@
 		<property name="exceptionMappings">
 			<props>
 				<prop key="com.sitescape.ef.module.file.WriteFilesException">error/fileUploadError</prop>
-				<prop key="com.sitescape.ef.exception.CheckedCodedException">common/defCodedError</prop>
-				<prop key="com.sitescape.ef.exception.UncheckedCodedException">common/defCodedError</prop>
+				<prop key="com.sitescape.team.exception.CheckedCodedException">common/defCodedError</prop>
+				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>
 				<prop key="javax.portlet.UnavailableException">common/notAvailable</prop>
 			</props>
@@ -391,24 +391,24 @@
 	</bean>	
 	<!-- ============================ Document Pipeline =========================== -->
 	
-	<bean id="docPipeline" class="com.sitescape.ef.pipeline.impl.SynchronousPipeline">
+	<bean id="docPipeline" class="com.sitescape.team.pipeline.impl.SynchronousPipeline">
 		<!-- Do not share same instances -->
 		<property name="conduitFactories">
 			<list>
-				<!--<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>
-				<bean class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
+				<!--<bean class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>
+				<bean class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>-->
 			</list>
 		</property>
 		<!-- Do not share same instances -->
 		<property name="docHandlers">
 			<list>
-				<!--<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+				<!--<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
 					<property name="name"><value>First Handler</value></property>
 				</bean>
-				<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+				<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
 					<property name="name"><value>Second Handler</value></property>
 				</bean>
-				<bean class="com.sitescape.ef.pipeline.impl.NullDocHandler">
+				<bean class="com.sitescape.team.pipeline.impl.NullDocHandler">
 					<property name="name"><value>Third Handler</value></property>
 				</bean>-->
 				<bean class="com.sitescape.team.docconverter.pipeline.DocConverterHandler">
@@ -420,7 +420,7 @@
 		</property>
 	</bean>
 	
-	<!--<bean id="BasicConduitFactory" class="com.sitescape.ef.pipeline.impl.RAMConduitFactory"/>-->
+	<!--<bean id="BasicConduitFactory" class="com.sitescape.team.pipeline.impl.RAMConduitFactory"/>-->
 	
 	<!-- =========================== Business Components =========================== -->
 	
@@ -609,7 +609,7 @@
 			</bean>	
 		</property>
 	</bean>
-	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter">
+	<bean id="defaultFolderEmailFormatter" parent="moduleDependencyTemplate" class="com.sitescape.team.mail.impl.DefaultFolderEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
@@ -735,14 +735,14 @@
 
 	<!-- ========================= Data Access (DAO) Components ====================== -->
 	
-	<bean id="coreDao" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
+	<bean id="coreDao" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
-	<bean id="folderDao" class="com.sitescape.ef.dao.impl.FolderDaoImpl">
+	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
-	<bean id="profileDao" class="com.sitescape.ef.dao.impl.ProfileDaoImpl">
+	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref local="coreDao"/></property>
 	</bean>
@@ -795,13 +795,13 @@
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
-	<bean id="mailSender" class="com.sitescape.ef.mail.impl.JavaMailSenderImpl">
+	<bean id="mailSender" class="com.sitescape.team.mail.impl.JavaMailSenderImpl">
 		<property name="defaultEncoding"><value>utf-8</value></property>
 		<property name="defaultFileTypeMap"><ref local="mimeTypes"/></property>
 	</bean>
 
 
-	<bean id="mailManager" parent="moduleDependencyTemplate" class="com.sitescape.ef.mail.impl.MailManagerImpl">
+	<bean id="mailManager" parent="moduleDependencyTemplate" class="com.sitescape.team.mail.impl.MailManagerImpl">
 		<property name="mailSender"><ref local="mailSender"/></property>
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>

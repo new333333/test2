@@ -36,14 +36,13 @@ import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.jobs.WorkflowTimeout;
 import com.sitescape.ef.module.binder.EntryProcessor;
 import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.workflow.TransitionUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workflow.WorkflowUtils;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Definition;
@@ -52,6 +51,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.jobs.WorkflowTimeout;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
@@ -70,7 +70,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	   for (int i=0; i<companies.size(); ++i) {
 		   Workspace zone = (Workspace)companies.get(i);
 		   String jobClass = SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
-		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.ef.jobs.DefaultWorkflowTimeout";
+		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultWorkflowTimeout";
 		   try {
 			   Class processorClass = ReflectHelper.classForName(jobClass);
 			   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();

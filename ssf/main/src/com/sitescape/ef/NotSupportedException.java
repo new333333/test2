@@ -1,5 +1,5 @@
 package com.sitescape.ef;
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class NotSupportedException extends UncheckedCodedException {
  	private static final long serialVersionUID = 1L;

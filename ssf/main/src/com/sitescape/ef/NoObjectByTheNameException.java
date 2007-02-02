@@ -1,6 +1,6 @@
 package com.sitescape.ef;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
  * @author Jong Kim

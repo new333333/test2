@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.sitescape.ef.modelprocessor.InstanceLevelProcessorSupport;
+import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclSet;
 import com.sitescape.team.security.function.WorkArea;

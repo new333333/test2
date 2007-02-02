@@ -1,6 +1,6 @@
 package com.sitescape.team.search;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextHolder;
 
 /**
  *

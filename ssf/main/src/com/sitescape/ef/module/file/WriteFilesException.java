@@ -1,6 +1,6 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.exception.CheckedException;
+import com.sitescape.team.exception.CheckedException;
 
 public class WriteFilesException extends CheckedException {
 	

@@ -162,7 +162,7 @@ public class CustomAttribute  {
         this.dateValue = value;
     }        
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSBlobSerializableType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSBlobSerializableType"
      */
     private SSBlobSerializable getSerializedValue() {
         return this.serializedValue;
@@ -171,7 +171,7 @@ public class CustomAttribute  {
         this.serializedValue = value;
     } 
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType"
      */
     private SSClobString getXmlValue() {
         return this.xmlValue;

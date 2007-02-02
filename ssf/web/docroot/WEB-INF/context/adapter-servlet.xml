@@ -47,7 +47,7 @@
 
 	<!-- Adapted portlets: In order for a portlet to plug into the adapter
 	     environment, it must to be listed here. -->
-	<bean id="adaptedPortlets" class="com.sitescape.ef.portletadapter.support.AdaptedPortlets">
+	<bean id="adaptedPortlets" class="com.sitescape.team.portletadapter.support.AdaptedPortlets">
 		<property name="portletNames">
 			<list>
 				<value>ss_employees</value>
@@ -65,6 +65,6 @@
 
 	<!-- Controllers -->
 
-	<bean id="portletAdapter" parent="controllerDependencyTemplate" class="com.sitescape.ef.portletadapter.servlet.PortletAdapterController"/>
+	<bean id="portletAdapter" parent="controllerDependencyTemplate" class="com.sitescape.team.portletadapter.servlet.PortletAdapterController"/>
 
 </beans>

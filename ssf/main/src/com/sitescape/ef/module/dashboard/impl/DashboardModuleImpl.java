@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Iterator;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.EntityDashboard;
