@@ -1,6 +1,6 @@
 package com.sitescape.team.security.function;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class FunctionExistsException extends UncheckedCodedException {
 		private static final String FunctionExistsException_ErrorCode = "errorcode.function.exists";

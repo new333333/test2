@@ -5,7 +5,7 @@
 
 	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
 
-	<bean id="processorManager" class="com.sitescape.ef.modelprocessor.ProcessorManager">
+	<bean id="processorManager" class="com.sitescape.team.modelprocessor.ProcessorManager">
 		<property name="config">
 			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
 				<property name="configFiles">
@@ -18,9 +18,9 @@
 		</property>
 	</bean>
 
-	<bean id="myTestProcessor1" class="com.sitescape.ef.modelprocessor.ProcessorManagerTests$MyTestProcessor1" />
+	<bean id="myTestProcessor1" class="com.sitescape.team.modelprocessor.ProcessorManagerTests$MyTestProcessor1" />
 	
-	<bean id="myTestProcessor2" class="com.sitescape.ef.modelprocessor.ProcessorManagerTests$MyTestProcessor2" abstract="true">
+	<bean id="myTestProcessor2" class="com.sitescape.team.modelprocessor.ProcessorManagerTests$MyTestProcessor2" abstract="true">
 			<property name="greeting"><value>Hello</value></property>
 	</bean>
 	

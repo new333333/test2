@@ -1,6 +1,6 @@
 package com.sitescape.team.security;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
  * Thrown to indicate that access is denied.

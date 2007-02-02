@@ -12,8 +12,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;

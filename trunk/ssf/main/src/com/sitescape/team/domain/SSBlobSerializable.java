@@ -8,7 +8,8 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import com.sitescape.ef.dao.util.SSBlobSerializableType;
+
+import com.sitescape.team.dao.util.SSBlobSerializableType;
 /**
  * @author Janet McCann
  * This is an immutable object.  Its value cannot be changed.  This allows

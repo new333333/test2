@@ -4,9 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.ProfileDao;
-import com.sitescape.ef.dao.util.FilterControls;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.security.AccessControlException;

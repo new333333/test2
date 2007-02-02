@@ -1,6 +1,6 @@
 package com.sitescape.team.security.authentication;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 public class AuthenticationException extends UncheckedException {
     public AuthenticationException() {

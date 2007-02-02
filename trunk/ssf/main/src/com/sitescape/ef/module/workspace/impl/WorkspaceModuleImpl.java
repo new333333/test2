@@ -10,7 +10,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ArrayList;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.binder.BinderComparator;
@@ -20,6 +19,7 @@ import com.sitescape.ef.module.binder.BinderProcessor;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.InputDataAccessor;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;

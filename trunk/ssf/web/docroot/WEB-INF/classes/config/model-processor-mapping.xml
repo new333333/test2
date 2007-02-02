@@ -4,12 +4,12 @@
 
 <model-processor-mapping>
 	<processors>
-		<processor class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultFolderEmailFormatter"/>
-		<processor class="com.sitescape.ef.jobs.DefaultEmailNotification" spring-bean-type="none"/>
-		<processor class="com.sitescape.ef.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
-		<processor class="com.sitescape.ef.jobs.DefaultFailedEmail" spring-bean-type="none"/>
-		<processor class="com.sitescape.ef.jobs.DefaultSendEmail" spring-bean-type="none"/>
-		<processor class="com.sitescape.ef.jobs.DefaultFillEmailSubscription" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultFolderEmailFormatter"/>
+		<processor class="com.sitescape.team.jobs.DefaultEmailNotification" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.jobs.DefaultFailedEmail" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.jobs.DefaultSendEmail" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.jobs.DefaultFillEmailSubscription" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
 		<processor class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
 		<processor class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
@@ -18,22 +18,22 @@
 	<default-mappings>
 		<model-class name="com.sitescape.team.domain.ProfileBinder">
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.profile.impl.DefaultProfileCoreProcessor"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
+			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Folder">
-			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.ef.mail.impl.DefaultFolderEmailFormatter"/>
+			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.team.mail.impl.DefaultFolderEmailFormatter"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
-			<mapping processor-key="processorKey_emailNotificationJob" processor-class="com.sitescape.ef.jobs.DefaultEmailNotification"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
-			<mapping processor-key="processorKey_failedEmailJob" processor-class="com.sitescape.ef.jobs.DefaultFailedEmail"/>
-			<mapping processor-key="processorKey_fillEmailSubscriptionJob" processor-class="com.sitescape.ef.jobs.DefaultFillEmailSubscription"/>
+			<mapping processor-key="processorKey_emailNotificationJob" processor-class="com.sitescape.team.jobs.DefaultEmailNotification"/>
+			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
+			<mapping processor-key="processorKey_failedEmailJob" processor-class="com.sitescape.team.jobs.DefaultFailedEmail"/>
+			<mapping processor-key="processorKey_fillEmailSubscriptionJob" processor-class="com.sitescape.team.jobs.DefaultFillEmailSubscription"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Workspace">
-			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.ef.jobs.DefaultLdapSynchronization"/>
+			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.team.jobs.DefaultLdapSynchronization"/>
 			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.ef.ldap.DefaultLdapNameMapper"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.ef.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.ef.jobs.DefaultSendEmail"/>
+			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 	</default-mappings>
 </model-processor-mapping>

@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.dao.ProfileDao;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 

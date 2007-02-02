@@ -5,7 +5,7 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.team.domain;
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 /**
  * @author Janet McCann
  *

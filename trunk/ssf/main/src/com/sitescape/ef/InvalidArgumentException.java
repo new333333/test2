@@ -1,5 +1,5 @@
 package com.sitescape.ef;
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class InvalidArgumentException extends UncheckedCodedException {
     private static final String InvalidArgumentException_ErrorCode = "errorcode.invalid.argument";

@@ -14,10 +14,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 import com.sitescape.ef.module.shared.MapInputData;
-import com.sitescape.ef.portletadapter.MultipartFileSupport;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;

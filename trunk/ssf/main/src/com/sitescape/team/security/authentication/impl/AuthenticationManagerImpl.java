@@ -5,10 +5,10 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.dao.CoreDao;
-import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.profile.ProfileModule;
+import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -136,7 +136,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		try {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
 			User user = getProfileDao().loadUserOnlyIfEnabled(ws.getCreation().getPrincipal().getId(), zoneName);
-			com.sitescape.ef.context.request.RequestContextUtil.setThreadContext(user);
+			com.sitescape.team.context.request.RequestContextUtil.setThreadContext(user);
 			//TODO: temporary to fixup zones
 			getAdminModule().setZone1(zoneName);
 			getAdminModule().setZone2(zoneName);

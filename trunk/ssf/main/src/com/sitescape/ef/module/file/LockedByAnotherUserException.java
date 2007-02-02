@@ -1,9 +1,9 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class LockedByAnotherUserException extends UncheckedCodedException {
 	

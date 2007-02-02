@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.UnauthenticatedAccessException;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;

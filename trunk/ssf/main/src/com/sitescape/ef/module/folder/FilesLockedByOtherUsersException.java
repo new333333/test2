@@ -2,7 +2,7 @@ package com.sitescape.ef.module.folder;
 
 import java.util.List;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
  * Thrown to indicate that one or more files are locked by other user(s).

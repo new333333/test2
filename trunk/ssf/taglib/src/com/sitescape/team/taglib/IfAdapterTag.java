@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 
 public class IfAdapterTag extends TagSupport {
 

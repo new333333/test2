@@ -13,7 +13,7 @@ import javax.servlet.ServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;

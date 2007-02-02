@@ -12,8 +12,8 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.portlet.forum.ViewController;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;

@@ -4,7 +4,7 @@ package com.sitescape.ef.module.ldap;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sitescape.ef.jobs.ScheduleInfo;
+import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.util.GetterUtil;
 /**
  * @author Janet McCann

@@ -9,8 +9,8 @@
 <%
 
 //Set up the user object
-if (com.sitescape.ef.context.request.RequestContextHolder.getRequestContext() != null) {
-	com.sitescape.team.domain.User user = com.sitescape.ef.context.request.RequestContextHolder.getRequestContext().getUser();
+if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() != null) {
+	com.sitescape.team.domain.User user = com.sitescape.team.context.request.RequestContextHolder.getRequestContext().getUser();
 	request.setAttribute("ssUser", user);
 }
 

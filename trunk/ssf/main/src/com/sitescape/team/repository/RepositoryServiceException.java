@@ -1,6 +1,6 @@
 package com.sitescape.team.repository;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 public class RepositoryServiceException extends UncheckedException {
 	

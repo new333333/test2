@@ -1,6 +1,6 @@
 package com.sitescape.team.security;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 /**
  * Same as <code>AccessControlException</code> except that this is not a

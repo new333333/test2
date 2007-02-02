@@ -19,8 +19,8 @@ import javax.portlet.WindowState;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;

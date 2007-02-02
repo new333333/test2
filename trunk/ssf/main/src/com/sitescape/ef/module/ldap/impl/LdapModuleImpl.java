@@ -31,10 +31,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.ObjectKeys;
-import com.sitescape.ef.context.request.RequestContextHolder;
-import com.sitescape.ef.dao.util.FilterControls;
-import com.sitescape.ef.dao.util.ObjectControls;
-import com.sitescape.ef.jobs.LdapSynchronization;
 import com.sitescape.ef.module.definition.DefinitionModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
 import com.sitescape.ef.module.ldap.LdapConfig;
@@ -42,6 +38,9 @@ import com.sitescape.ef.module.ldap.LdapModule;
 import com.sitescape.ef.module.profile.ProfileCoreProcessor;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.module.shared.MapInputData;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
@@ -50,6 +49,7 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.jobs.LdapSynchronization;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.util.CollectionUtil;
@@ -100,7 +100,7 @@ public class LdapModuleImpl extends CommonDependencyInjection implements LdapMod
 		defaultProps.put(Context.PROVIDER_URL, "ldap://localhost:389");
 		defaultProps.put(USER_FILTER, "(|(objectClass=person)(objectClass=inetOrgPerson)(objectClass=organizationalPerson)(objectClass=residentialPerson))");
     	defaultProps.put(GROUP_FILTER, "(|(objectClass=group)(objectClass=groupOfUniqueNames)(objectClass=groupOfNames))");
-		defaultProps.put(SYNC_JOB, "com.sitescape.ef.jobs.DefaultLdapSynchronization");
+		defaultProps.put(SYNC_JOB, "com.sitescape.team.jobs.DefaultLdapSynchronization");
 	}
 	
     protected TransactionTemplate getTransactionTemplate() {

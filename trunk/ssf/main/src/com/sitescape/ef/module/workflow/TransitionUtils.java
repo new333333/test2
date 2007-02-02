@@ -20,8 +20,8 @@ import org.jbpm.graph.exe.ExecutionContext;
 import org.jbpm.graph.exe.Token;
 import org.jbpm.scheduler.exe.Timer;
 
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;

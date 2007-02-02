@@ -199,15 +199,15 @@
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 	</bean> 
 
-	<bean id="coreDao" class="com.sitescape.ef.dao.impl.CoreDaoImpl">
+	<bean id="coreDao" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 
-	<bean id="folderDao" class="com.sitescape.ef.dao.impl.FolderDaoImpl">
+	<bean id="folderDao" class="com.sitescape.team.dao.impl.FolderDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>
-	<bean id="profileDao" class="com.sitescape.ef.dao.impl.ProfileDaoImpl">
+	<bean id="profileDao" class="com.sitescape.team.dao.impl.ProfileDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDao"/></property>
 	</bean>

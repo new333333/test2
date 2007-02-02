@@ -16,7 +16,6 @@ import org.dom4j.Element;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.SingletonViolationException;
-import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.module.admin.AdminModule;
 import com.sitescape.ef.module.binder.BinderModule;
 import com.sitescape.ef.module.dashboard.DashboardModule;
@@ -30,6 +29,7 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.EntityIdentifier;

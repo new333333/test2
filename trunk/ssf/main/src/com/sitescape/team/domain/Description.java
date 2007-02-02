@@ -31,7 +31,7 @@ public class Description {
     
     
     /**
-     * @hibernate.property type="com.sitescape.ef.dao.util.SSClobStringType" column="text"
+     * @hibernate.property type="com.sitescape.team.dao.util.SSClobStringType" column="text"
      */
     protected SSClobString getHDescription() {
         if (description == null) description = new SSClobString("");

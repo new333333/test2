@@ -1,6 +1,6 @@
 package com.sitescape.team.util;
 
-import com.sitescape.ef.exception.CheckedCodedException;
+import com.sitescape.team.exception.CheckedCodedException;
 
 public class XSSCheckException extends CheckedCodedException {
 

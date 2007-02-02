@@ -1,6 +1,6 @@
 package com.sitescape.ef.module.sample;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class SalaryMaxedOutException extends UncheckedCodedException {
 	

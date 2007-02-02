@@ -1,6 +1,6 @@
 package com.sitescape.team.web;
 
-import com.sitescape.ef.exception.UncheckedCodedException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
 public class UnauthenticatedAccessException extends UncheckedCodedException {
 

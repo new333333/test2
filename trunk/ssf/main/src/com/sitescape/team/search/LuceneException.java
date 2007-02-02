@@ -1,6 +1,6 @@
 package com.sitescape.team.search;
 
-import com.sitescape.ef.exception.UncheckedException;
+import com.sitescape.team.exception.UncheckedException;
 
 /**
  * @author Jong Kim

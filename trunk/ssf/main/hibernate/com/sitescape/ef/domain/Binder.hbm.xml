@@ -71,16 +71,16 @@
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
     <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
-      <property name="readMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="readMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_readMembers"/>
       </property>
-      <property name="writeMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="writeMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_writeMembers"/>
       </property>
-      <property name="deleteMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="deleteMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_deleteMembers"/>
       </property>
-      <property name="changeAclMembers" type="com.sitescape.ef.dao.util.SSClobStringType">
+      <property name="changeAclMembers" type="com.sitescape.team.dao.util.SSClobStringType">
         <column name="acl_changeAclMembers"/>
       </property>
     </component>
@@ -93,7 +93,7 @@
     <property name="popularity"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
     <component name="description">
-      <property name="HDescription" column="description_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
+      <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="title" length="256" access="field"/>
@@ -134,7 +134,7 @@
     <subclass name="com.sitescape.team.domain.TemplateBinder" discriminator-value="template" dynamic-update="true">
   	  <property name="templateTitle" length="128"/>
 	   <component name="templateDescription">
-   	   <property name="HDescription" column="tDescription_text" type="com.sitescape.ef.dao.util.SSClobStringType"/>
+   	   <property name="HDescription" column="tDescription_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
    	   <property name="HFormat" column="tDescription_format"/>
    	 </component>
     </subclass>
