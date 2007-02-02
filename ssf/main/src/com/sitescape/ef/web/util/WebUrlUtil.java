@@ -3,11 +3,11 @@ package com.sitescape.ef.web.util;
 import javax.portlet.PortletRequest;
 import javax.servlet.http.HttpServletRequest;
 
+import com.sitescape.team.util.Constants;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Http;
 import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.portletadapter.AdaptedPortletURL;
-import com.sitescape.ef.util.Constants;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 
 public class WebUrlUtil {

@@ -11,7 +11,7 @@ import javax.portlet.PortletContext;
 import javax.portlet.PortletSession;
 import javax.servlet.http.HttpSession;
 
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 
 public class PortletSessionImpl implements PortletSession {
 

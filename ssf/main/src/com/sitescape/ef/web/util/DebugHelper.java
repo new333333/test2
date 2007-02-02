@@ -7,7 +7,7 @@ import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.team.util.SPropsUtil;
 
 public class DebugHelper {
 	

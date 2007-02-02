@@ -4,8 +4,8 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.FileAttachment;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.team.util.SPropsUtil;
 
 public class SsfsUtil {
 

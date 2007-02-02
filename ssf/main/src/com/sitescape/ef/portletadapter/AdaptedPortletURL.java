@@ -10,8 +10,8 @@ import javax.portlet.PortletSecurityException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.sitescape.ef.portletadapter.support.KeyNames;
-import com.sitescape.ef.util.Constants;
 import com.sitescape.ef.web.util.WebUrlUtil;
+import com.sitescape.team.util.Constants;
 import com.sitescape.util.Http;
 
 public class AdaptedPortletURL {

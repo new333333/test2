@@ -7,7 +7,7 @@ import java.util.List;
 import com.sitescape.ef.security.dao.SecurityDao;
 import com.sitescape.ef.NoObjectByTheIdException;
 import com.sitescape.ef.NotSupportedException;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 /**
  *
  * @author Jong Kim

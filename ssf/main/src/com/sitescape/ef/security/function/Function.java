@@ -8,7 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import com.sitescape.ef.domain.Principal;
-import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"

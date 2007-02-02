@@ -15,7 +15,6 @@ import java.util.Map;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.security.AccessControlException;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.Definition;
@@ -32,6 +31,7 @@ import com.sitescape.ef.web.util.DefinitionHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.web.util.Tabs;
 import com.sitescape.ef.web.util.Toolbar;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 
 public class ListProfilesController extends   SAbstractController {

@@ -22,8 +22,8 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.servlet.PrincipalServletRequest;
 import com.sitescape.ef.web.servlet.SAbstractController;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.FileUtil;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.repository.RepositoryUtil;
 import com.sitescape.ef.rss.RssGenerator;
 

@@ -68,10 +68,10 @@ import com.sitescape.ef.security.function.FunctionExistsException;
 import com.sitescape.ef.security.function.WorkArea;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.ReflectHelper;
-import com.sitescape.ef.util.SZoneConfig;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 
 /**

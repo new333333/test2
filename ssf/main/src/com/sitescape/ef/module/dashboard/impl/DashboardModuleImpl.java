@@ -15,8 +15,8 @@ import com.sitescape.ef.domain.HistoryStamp;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.dashboard.DashboardModule;
 import com.sitescape.ef.module.impl.CommonDependencyInjection;
-import com.sitescape.ef.util.InvokeUtil;
-import com.sitescape.ef.util.ObjectPropertyNotFoundException;
+import com.sitescape.team.util.InvokeUtil;
+import com.sitescape.team.util.ObjectPropertyNotFoundException;
 import com.sitescape.util.Validator;
 /**
  * This module gives us the transaction semantics to deal with the dashboard.  The dashboard

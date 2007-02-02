@@ -66,8 +66,8 @@ import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.search.SearchObject;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.function.WorkAreaOperation;
-import com.sitescape.ef.util.TagUtil;
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.util.Validator;
 /**
  *

@@ -12,7 +12,7 @@ import com.sitescape.ef.context.request.RequestContextUtil;
 import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  * This class implements standard <code>CallbackHandler</code> interface

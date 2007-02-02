@@ -14,7 +14,7 @@ import javax.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 import com.sitescape.util.GetterUtil;
 
 public class PortletContextImpl implements PortletContext {

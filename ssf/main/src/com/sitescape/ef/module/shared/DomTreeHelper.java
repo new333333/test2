@@ -1,5 +1,5 @@
 package com.sitescape.ef.module.shared;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 
 public interface DomTreeHelper {
 	public boolean supportsType(int type, Object source);

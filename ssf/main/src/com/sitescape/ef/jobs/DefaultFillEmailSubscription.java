@@ -17,7 +17,7 @@ import org.quartz.SimpleTrigger;
 import com.sitescape.ef.ConfigurationException;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.mail.MailManager;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  * @author Janet McCann

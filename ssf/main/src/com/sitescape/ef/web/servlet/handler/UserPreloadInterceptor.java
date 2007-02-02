@@ -15,9 +15,9 @@ import com.sitescape.ef.dao.ProfileDao;
 import com.sitescape.ef.domain.NoUserByTheNameException;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.profile.ProfileModule;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.team.util.SPropsUtil;
 
 public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 	private ProfileDao profileDao;

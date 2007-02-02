@@ -12,7 +12,7 @@ import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.PipelineInvocation;
 import com.sitescape.ef.pipeline.support.AbstractDocHandler;
-import com.sitescape.ef.util.TempFileUtil;
+import com.sitescape.team.util.TempFileUtil;
 
 public class StringConcatenatingDocHandler extends AbstractDocHandler {
 

@@ -27,11 +27,11 @@ import com.sitescape.ef.domain.EntityIdentifier.EntityType;
 import com.sitescape.ef.module.shared.DomTreeBuilder;
 import com.sitescape.ef.module.shared.DomTreeHelper;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.portlet.SAbstractController;
 import com.sitescape.ef.web.util.FindIdsHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.util.Validator;
 
 /**

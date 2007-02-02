@@ -43,7 +43,7 @@ import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 

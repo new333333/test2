@@ -21,9 +21,9 @@ import com.sitescape.ef.domain.User;
 import com.sitescape.ef.domain.NoUserByTheIdException;
 import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.WebHelper;
+import com.sitescape.team.util.SPropsUtil;
 
 public class UserPreloadInterceptor implements HandlerInterceptor {
 

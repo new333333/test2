@@ -12,7 +12,7 @@ import javax.servlet.jsp.JspWriter;
 
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
-import com.sitescape.ef.util.NLT;
+import com.sitescape.team.util.NLT;
 
 import java.util.Date;
 import java.util.Calendar;

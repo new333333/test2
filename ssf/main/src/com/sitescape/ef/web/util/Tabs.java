@@ -13,8 +13,8 @@ import org.dom4j.Document;
 import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.domain.EntityIdentifier;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.NLT;
 /**
  * @author hurley
  *

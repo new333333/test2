@@ -16,7 +16,7 @@ import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.DocSink;
-import com.sitescape.ef.util.FileHelper;
+import com.sitescape.team.util.FileHelper;
 
 public abstract class AbstractConduit implements Conduit {
 	

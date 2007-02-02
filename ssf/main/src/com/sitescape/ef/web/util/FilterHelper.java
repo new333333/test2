@@ -17,8 +17,8 @@ import com.sitescape.ef.domain.Definition;
 import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.NLT;
 
 /*********************************************************************
  * Object to hold a named search filter

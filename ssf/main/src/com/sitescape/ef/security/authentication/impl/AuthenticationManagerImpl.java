@@ -18,8 +18,8 @@ import com.sitescape.ef.module.profile.ProfileModule;
 import com.sitescape.ef.security.authentication.AuthenticationManager;
 import com.sitescape.ef.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.ef.security.authentication.UserDoesNotExistException;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.SessionUtil;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.PasswordEncryptor;
 
 public class AuthenticationManagerImpl implements AuthenticationManager {

@@ -35,11 +35,11 @@ import com.sitescape.ef.module.sample.EmployeeModule;
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.module.workspace.WorkspaceModule;
 import com.sitescape.ef.rss.RssGenerator;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.util.WebUrlUtil;
 import com.sitescape.team.remoting.api.Binder;
 import com.sitescape.team.remoting.api.Facade;
 import com.sitescape.team.remoting.api.Folder;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 
 /**
  * POJO implementation of Facade interface.

@@ -8,7 +8,7 @@ import com.sitescape.ef.domain.CustomAttribute;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Description;
 import com.sitescape.ef.domain.Entry;
-import com.sitescape.ef.util.InvokeUtil;
+import com.sitescape.team.util.InvokeUtil;
 
 /**
 *
@@ -25,7 +25,7 @@ public class NotifyBuilderDescription extends AbstractNotifyBuilder {
 		   	try {
 		   		Object obj = InvokeUtil.invokeGetter(entity, dataElemName);
 		    	doElement(element, obj);
-			} catch (com.sitescape.ef.util.ObjectPropertyNotFoundException ex) {
+			} catch (com.sitescape.team.util.ObjectPropertyNotFoundException ex) {
 		   		return false;
 		   	}
 			return true;

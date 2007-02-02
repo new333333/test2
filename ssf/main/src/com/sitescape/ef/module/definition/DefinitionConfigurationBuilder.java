@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 import org.dom4j.Element;
 
-import com.sitescape.ef.util.DefaultMergeableXmlClassPathConfigFiles;
+import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 
 public class DefinitionConfigurationBuilder extends
 		DefaultMergeableXmlClassPathConfigFiles {

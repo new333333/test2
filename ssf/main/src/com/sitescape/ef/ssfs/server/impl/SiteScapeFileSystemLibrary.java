@@ -41,9 +41,9 @@ import com.sitescape.ef.ssfs.NoSuchObjectException;
 import com.sitescape.ef.ssfs.TypeMismatchException;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.ef.ssfs.server.SiteScapeFileSystemException;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.SPropsUtil;
+import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 
 public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 

@@ -11,8 +11,8 @@ import com.sitescape.ef.pipeline.support.AbstractDocHandler;
 import com.sitescape.ef.pipeline.DocSink;
 import com.sitescape.ef.pipeline.DocSource;
 import com.sitescape.ef.pipeline.PipelineInvocation;
-import com.sitescape.ef.util.FileHelper;
-import com.sitescape.ef.util.TempFileUtil;
+import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.TempFileUtil;
 
 /**
  * This is a DocHandler wrapper around DocConverter and allows document

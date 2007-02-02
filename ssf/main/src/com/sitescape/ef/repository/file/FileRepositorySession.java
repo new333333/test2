@@ -29,7 +29,7 @@ import com.sitescape.ef.domain.Binder;
 import com.sitescape.ef.repository.RepositoryServiceException;
 import com.sitescape.ef.repository.RepositorySession;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.FileHelper;
+import com.sitescape.team.util.FileHelper;
 
 public class FileRepositorySession implements RepositorySession {
 

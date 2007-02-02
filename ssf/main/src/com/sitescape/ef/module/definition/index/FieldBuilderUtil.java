@@ -6,7 +6,7 @@ import org.apache.lucene.document.Field;
 
 import com.sitescape.ef.InternalException;
 import com.sitescape.ef.domain.DefinableEntity;
-import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.team.util.ReflectHelper;
 
 /**
  *

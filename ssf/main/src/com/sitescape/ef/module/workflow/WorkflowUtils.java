@@ -16,8 +16,8 @@ import com.sitescape.ef.domain.WfAcl;
 import com.sitescape.ef.domain.WfNotify;
 import com.sitescape.ef.module.definition.DefinitionUtils;
 import com.sitescape.ef.security.acl.AccessType;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 

@@ -18,8 +18,8 @@ import org.quartz.Trigger;
 
 import com.sitescape.ef.module.workflow.WorkflowModule;
 import com.sitescape.ef.ConfigurationException;
-import com.sitescape.ef.util.SpringContextUtil;
 import com.sitescape.ef.module.workflow.impl.WorkflowFactory;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *

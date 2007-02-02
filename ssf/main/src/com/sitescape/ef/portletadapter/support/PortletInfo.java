@@ -6,7 +6,7 @@ import javax.portlet.Portlet;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletException;
 
-import com.sitescape.ef.util.ReflectHelper;
+import com.sitescape.team.util.ReflectHelper;
 
 public class PortletInfo {
 	private String name;

@@ -46,8 +46,8 @@ import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.QueryBuilder;
 import com.sitescape.ef.security.AccessControlException;
 import com.sitescape.ef.security.acl.AclControlled;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**
  *

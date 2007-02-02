@@ -8,7 +8,7 @@ import com.sitescape.ef.pipeline.Conduit;
 import com.sitescape.ef.pipeline.Pipeline;
 import com.sitescape.ef.pipeline.PipelineException;
 import com.sitescape.ef.pipeline.impl.RAMConduit;
-import com.sitescape.ef.util.FileHelper;
+import com.sitescape.team.util.FileHelper;
 
 /**
  * Integration unit tests for data access layer. 

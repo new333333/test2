@@ -34,8 +34,8 @@ import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.LuceneException;
 import com.sitescape.ef.search.LuceneSession;
-import com.sitescape.ef.util.LuceneUtil;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.util.LuceneUtil;
 
 /**
  * This implementation provides access to local Lucene index.

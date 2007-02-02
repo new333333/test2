@@ -7,8 +7,8 @@ package com.sitescape.ef.web.util;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.User;
 import com.sitescape.ef.module.shared.InputDataAccessor;
-import com.sitescape.ef.util.NLT;
 import com.sitescape.ef.ConfigurationException;
+import com.sitescape.team.util.NLT;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;

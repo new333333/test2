@@ -38,8 +38,8 @@ import com.sitescape.ef.module.shared.InputDataAccessor;
 import com.sitescape.ef.search.BasicIndexUtils;
 import com.sitescape.ef.search.IndexSynchronizationManager;
 import com.sitescape.ef.search.QueryBuilder;
-import com.sitescape.ef.util.CollectionUtil;
 import com.sitescape.ef.web.util.FilterHelper;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  *

@@ -1,7 +1,7 @@
 package com.sitescape.ef.repository;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class RepositorySessionFactoryUtil {
 

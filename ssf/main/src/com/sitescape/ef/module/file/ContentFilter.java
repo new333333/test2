@@ -1,6 +1,6 @@
 package com.sitescape.ef.module.file;
 
-import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.team.util.FileUploadItem;
 
 public interface ContentFilter {
 	

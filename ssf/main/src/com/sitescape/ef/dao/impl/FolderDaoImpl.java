@@ -34,7 +34,7 @@ import com.sitescape.ef.domain.NoFolderEntryByTheIdException;
 import com.sitescape.ef.domain.TitleException;
 import com.sitescape.ef.domain.UserPerFolderPK;
 import com.sitescape.ef.domain.EntityIdentifier.EntityType;
-import com.sitescape.ef.util.Constants;
+import com.sitescape.team.util.Constants;
 /**
  * @author Jong Kim
  *

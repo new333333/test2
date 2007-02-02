@@ -37,10 +37,10 @@ import com.sitescape.ef.module.shared.EntityIndexUtils;
 import com.sitescape.ef.module.shared.WsDomTreeBuilder;
 import com.sitescape.ef.security.function.Function;
 import com.sitescape.ef.security.function.WorkAreaFunctionMembership;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.ResolveIds;
 import com.sitescape.ef.web.WebKeys;
+import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 
 public class BinderHelper {
 

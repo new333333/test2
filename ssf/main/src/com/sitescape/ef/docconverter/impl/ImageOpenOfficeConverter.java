@@ -18,10 +18,10 @@ import org.springframework.beans.factory.InitializingBean;
 import com.sitescape.ef.UncheckedIOException;
 import com.sitescape.ef.docconverter.IImageConverterManager;
 import com.sitescape.ef.docconverter.ImageConverter;
-import com.sitescape.ef.util.DirPath;
-import com.sitescape.ef.util.FileStore;
-import com.sitescape.ef.util.SPropsUtil;
-import com.sitescape.ef.util.Thumbnail;
+import com.sitescape.team.util.DirPath;
+import com.sitescape.team.util.FileStore;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.Thumbnail;
 
 
 /**

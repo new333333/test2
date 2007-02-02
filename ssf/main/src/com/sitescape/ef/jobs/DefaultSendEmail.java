@@ -35,8 +35,8 @@ import com.sitescape.ef.domain.FolderEntry;
 import com.sitescape.ef.mail.MailManager;
 import com.sitescape.ef.mail.MimeMessagePreparator;
 import com.sitescape.ef.repository.RepositoryUtil;
-import com.sitescape.ef.util.NLT;
-import com.sitescape.ef.util.SpringContextUtil;
+import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  * @author Janet McCann

@@ -16,11 +16,11 @@ import java.util.HashSet;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.util.AllBusinessServicesInjected;
 import com.sitescape.ef.web.WebKeys;
 import com.sitescape.ef.web.util.BinderHelper;
 import com.sitescape.ef.web.util.PortletRequestUtils;
 import com.sitescape.ef.security.function.WorkArea;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 
 /**
  * This controller/jsp is used by administration/ConfigureAccessController

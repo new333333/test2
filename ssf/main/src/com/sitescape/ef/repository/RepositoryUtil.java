@@ -12,11 +12,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.ef.UncheckedIOException;
-import com.sitescape.ef.util.SPropsUtil;
 import com.sitescape.ef.context.request.RequestContextHolder;
 import com.sitescape.ef.domain.DefinableEntity;
 import com.sitescape.ef.domain.Binder;
-import com.sitescape.ef.util.FileUploadItem;
+import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.SPropsUtil;
 
 /**
  * Convenience methods for repository service. 

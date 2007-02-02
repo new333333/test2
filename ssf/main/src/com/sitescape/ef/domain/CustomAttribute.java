@@ -12,7 +12,7 @@ import java.util.Iterator;
 
 import com.sitescape.ef.ObjectKeys;
 import com.sitescape.ef.module.shared.ChangeLogUtils;
-import com.sitescape.ef.util.CollectionUtil;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 
 import org.dom4j.Document;
