@@ -1608,7 +1608,7 @@
 	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
 		  canBeDeleted="false" multipleAllowed="false">
 		<options>
-			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_business_card_elements" 
+			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 				definitionType="7" initial="true" />
 			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
 			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
@@ -1664,14 +1664,6 @@
 				<option name="emailAddress" caption="__emailAddress" initial="true"/>
 				<option name="zonName" caption="__zonName" initial="true"/>
 		    </property>
-			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
-				characterMask="^[0-9]*$" default="100">
-				<help>__help_graphic_constraints</help>
-			</property>
-			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
-				characterMask="^[0-9]*$" default="100">
-				<help>__help_graphic_constraints</help>
-			</property>
 		</properties>
 
 		<options>
