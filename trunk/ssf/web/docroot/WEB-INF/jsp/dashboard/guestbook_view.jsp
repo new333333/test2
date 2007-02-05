@@ -23,6 +23,72 @@
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
 
+
+<script type="text/javascript">
+
+var ss_signGuestbookIframeOffset = 50;
+function ss_showSignGuestbookIframe${ssNamespace}(obj) {
+	var targetDiv = document.getElementById('${ssNamespace}_add_entry_from_iframe');
+	var iframeDiv = document.getElementById('${ssNamespace}_new_guestbook_entry_iframe');
+	if (window.frames['${ssNamespace}_new_guestbook_entry_iframe'] != null) {
+		eval("var iframeHeight = parseInt(window.${ssNamespace}_new_guestbook_entry_iframe.document.body.scrollHeight);");
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + ss_signGuestbookIframeOffset + "px"
+		}
+	}
+}
+function ss_signGuestbook${ssNamespace}(obj) {
+
+	var targetDiv = document.getElementById('${ssNamespace}_add_entry_from_iframe');
+	if (targetDiv != null) {
+		if (targetDiv.style.visibility == 'visible') {
+			targetDiv.style.visibility = 'hidden';
+			targetDiv.style.display = 'none';
+			return;
+		}
+	}
+	targetDiv.style.visibility = 'visible';
+	targetDiv.style.display = 'block';
+	var iframeDiv = document.getElementById('${ssNamespace}_new_guestbook_entry_iframe');
+	iframeDiv.src = obj.href;
+}
+
+function ss_hideAddEntryIframe${ssNamespace}() {
+	var targetDiv = document.getElementById('${ssNamespace}_add_entry_from_iframe');
+	if (targetDiv != null) {
+		targetDiv.style.visibility = 'hidden'
+		targetDiv.style.display = 'none'
+	}
+}
+
+</script>
+
+<div style="text-align: right; margin: 5px; ">
+
+
+<c:if test="${!empty ssBinder && !empty ssBinder.entryDefinitions && !empty ssBinder.entryDefinitions[0] && !empty renderResponse.namespace}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="add_folder_entry"
+		    binderId="${ssBinder.id}">
+		    <ssf:param name="entryType" value="${ssBinder.entryDefinitions[0].id}" />
+    	    <ssf:param name="newTab" value="1"/>
+    	    <ssf:param name="addEntryFromIFrame" value="1"/>
+    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
+			</ssf:url>" onClick="ss_signGuestbook${ssNamespace}(this);return false;">
+<span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
+</a>
+</c:if>
+
+</div>
+
+
+<div id="${ssNamespace}_add_entry_from_iframe" style="display:none; visibility:hidden;">
+<iframe id="${ssNamespace}_new_guestbook_entry_iframe"
+  name="${ssNamespace}_new_guestbook_entry_iframe"
+  onLoad="ss_showSignGuestbookIframe${ssNamespace}(this);" 
+  width="100%">xxx</iframe>
+</div>
+
 <div id="ss_searchResults_${ssNamespace}">
 <%@ include file="/WEB-INF/jsp/dashboard/guestbook_view2.jsp" %>
 </div>
