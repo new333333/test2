@@ -428,4 +428,9 @@ public interface RepositorySession {
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException;
+	
+	public void copy(Binder binder, DefinableEntity entity,
+			String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntity, String destRelativeFilePath)
+	throws RepositoryServiceException, UncheckedIOException;			
 }

@@ -809,5 +809,10 @@ public class FileRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
+
+	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) throws RepositoryServiceException, UncheckedIOException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }
