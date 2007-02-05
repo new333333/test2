@@ -290,5 +290,19 @@ public class RepositoryUtil {
 			session.close();
 		}
 	}
+	
+	public static void copy(String repositoryName, Binder binder, 
+			DefinableEntity entry, String relativeFilePath, Binder destBinder, 
+			DefinableEntity destEntry, String destRelativeFilePath)
+	throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+
+		try {
+			session.copy(binder, entry, relativeFilePath, destBinder, destEntry, destRelativeFilePath);
+		} finally {
+			session.close();
+		}
+	}
+
 
 }

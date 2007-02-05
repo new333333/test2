@@ -594,4 +594,9 @@ public class JCRRepositorySession implements RepositorySession {
 			return relativeFilePath;
 		}
 	}
+
+	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) throws RepositoryServiceException, UncheckedIOException {
+		// TODO Auto-generated method stub
+		
+	}
 }
