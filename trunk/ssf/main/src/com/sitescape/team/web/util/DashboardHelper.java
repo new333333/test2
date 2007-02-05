@@ -745,7 +745,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
 				ids.add(Long.valueOf((String)r.get("_docId")));
 			} else if (r.containsKey("_binderId")) {
-				ids.add(Long.valueOf((String)r.get("_binderId")));
+				Long searchResultsBinderId = Long.valueOf((String)r.get("_binderId"));
+				ids.add(searchResultsBinderId);				
+				if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) && searchSearchFormData.get(WebKeys.GUESTBOOK_BINDER) == null) {
+					Binder fBinder = getBinderModule().getBinder(searchResultsBinderId);				
+					searchSearchFormData.put(WebKeys.GUESTBOOK_BINDER, fBinder);	
+				}
 			}
 		}
 		searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));

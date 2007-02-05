@@ -22,7 +22,10 @@
 </c:if>
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
-
+<c:set var="componentId" value="${ssComponentId}"/>
+<c:if test="${empty ssComponentId}">
+<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
+</c:if>
 
 <script type="text/javascript">
 
@@ -66,11 +69,11 @@ function ss_hideAddEntryIframe${ssNamespace}() {
 <div style="text-align: right; margin: 5px; ">
 
 
-<c:if test="${!empty ssBinder && !empty ssBinder.entryDefinitions && !empty ssBinder.entryDefinitions[0] && !empty renderResponse.namespace}">
+<c:if test="${!empty ssComponentId && !empty ssDashboard.beans[componentId] && !empty ssDashboard.beans[componentId].ssSearchFormData && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0]}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="add_folder_entry"
-		    binderId="${ssBinder.id}">
-		    <ssf:param name="entryType" value="${ssBinder.entryDefinitions[0].id}" />
+		    binderId="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.id}">
+		    <ssf:param name="entryType" value="${ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0].id}" />
     	    <ssf:param name="newTab" value="1"/>
     	    <ssf:param name="addEntryFromIFrame" value="1"/>
     	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>    	        	    
@@ -78,6 +81,7 @@ function ss_hideAddEntryIframe${ssNamespace}() {
 <span class="ss_bold"><ssf:nlt tag="guestbook.addEntry"/></span>
 </a>
 </c:if>
+
 
 </div>
 
