@@ -16,7 +16,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.team.domain.User" %>
 
 <c:set var="hitCount" value="0"/>
 <c:set var="componentId" value="${ssComponentId}"/>
@@ -25,12 +24,15 @@
 </c:if>
 
 
+
+
+
 <div class="ss_blog">
 
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
 
   <c:set var="hitCount" value="${hitCount + 1}"/>
-  
+
 
   <table cellspacing="0" cellpadding="0" width="100%">
 	  <tr>
