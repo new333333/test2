@@ -195,7 +195,8 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 <table width="100%" border="0" valign="top" cellpadding="0" cellspacing="0">
 <tr>
 	<td width="40%" valign="top">
-		<span id="ss_browse_div_position${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;<ssf:nlt tag="entry.addattachments"/></span>
+		<span id="ss_browse_div_position${ssDefinitionEntry.id}<portlet:namespace/>" 
+		class="ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
 	</td>
 
 	<td width="10%" valign="top">
