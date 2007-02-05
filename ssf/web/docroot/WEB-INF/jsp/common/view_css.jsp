@@ -103,6 +103,14 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<ssf:param name="tabId" value="ss_tabid_place_holder" />
 		</ssf:url>";
 
+	ss_musterUrl = "<ssf:url 
+		adapter="true" 
+		portletName="ss_forum" 
+		action="__ajax_request" 
+		actionUrl="true" >
+		<ssf:param name="operation" value="ss_operation_place_holder" />
+		</ssf:url>";
+
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 	

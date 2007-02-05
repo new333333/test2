@@ -67,6 +67,8 @@ public class WebKeys {
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
+    public static final String URL_MUSTER_CLASS="muster_class";
+    public static final String URL_MUSTER_IDS="muster_ids";
     public static final String URL_NAMESPACE="namespace";
     public static final String URL_NEW_TAB="newTab";
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
@@ -146,6 +148,7 @@ public class WebKeys {
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
  	public static final String OPERATION_ADD_FAVORITES_CATEGORY = "add_favorites_category";
+ 	public static final String OPERATION_ADD_TO_CLIPBOARD = "add_to_clipboard";
  	public static final String OPERATION_SAVE_FAVORITES = "save_favorites";
  	public static final String OPERATION_ADMINISTRATION = "administration";
     public static final String OPERATION_ADD_FOLDER = "add_folder";
@@ -153,6 +156,7 @@ public class WebKeys {
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
+ 	public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";

@@ -85,6 +85,10 @@ public class AjaxController  extends SAbstractController {
 				ajaxChangeDashboardComponent(request, response);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				ajaxUploadImageFile(request, response);
+			} else if (op.equals(WebKeys.OPERATION_ADD_TO_CLIPBOARD)) {
+				ajaxAddToClipboard(request, response);
+			} else if (op.equals(WebKeys.OPERATION_CLEAR_CLIPBOARD)) {
+				ajaxClearClipboard(request, response);
 			}
 		}
 	}
@@ -1043,6 +1047,19 @@ public class AjaxController  extends SAbstractController {
 		// When you're done creating an entry, make sure to call 
 		// WebHelper.releaseFileHandle(fileHandle) method to release system 
 		// resources associated with the file handle. 
+	}
+	
+	private void ajaxAddToClipboard(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
+		String[] musterIds = new String[0];
+		if (PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS) != null) {
+			musterIds = PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS);
+		}
+	}
+	
+	private void ajaxClearClipboard(ActionRequest request, 
+			ActionResponse response) throws Exception {
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 

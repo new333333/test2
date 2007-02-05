@@ -3444,7 +3444,14 @@ var ss_muster = {
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
 	    var formObj = document.createElement("form");
+	    formObj.setAttribute("id", "ss_muster_form");
+	    formObj.setAttribute("name", "ss_muster_form");
 		musterDiv.appendChild(formObj);
+	    var hiddenObj = document.createElement("input");
+	    hiddenObj.setAttribute("type", "hidden");
+	    hiddenObj.setAttribute("name", "muster_class");
+	    hiddenObj.setAttribute("value", musterClass);
+	    formObj.appendChild(hiddenObj);
 		
 		//Add the items to be mustered
 		for (var i = 0; i < items.length; i++) {
@@ -3456,9 +3463,9 @@ var ss_muster = {
 			var spanObj = document.createElement("span");
 			spanObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
 			var brObj = document.createElement("br");
-			musterDiv.appendChild(inputObj);
-			musterDiv.appendChild(spanObj);
-			musterDiv.appendChild(brObj);
+			formObj.appendChild(inputObj);
+			formObj.appendChild(spanObj);
+			formObj.appendChild(brObj);
 		}
 		//Add the buttons 
 		var brObj = document.createElement("br");
@@ -3481,10 +3488,10 @@ var ss_muster = {
 		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel(this);return false;");
 		cancelBtnObj.style.marginRight = "15px"
 
-		musterDiv.appendChild(brObj);
-		musterDiv.appendChild(addBtnObj);
-		musterDiv.appendChild(clearBtnObj);
-		musterDiv.appendChild(cancelBtnObj);
+		formObj.appendChild(brObj);
+		formObj.appendChild(addBtnObj);
+		formObj.appendChild(clearBtnObj);
+		formObj.appendChild(cancelBtnObj);
 		
 		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
 	},
@@ -3495,11 +3502,42 @@ var ss_muster = {
 	},
 	
 	addToClipboard : function(obj) {
-		alert('add to clipboard '+obj)
+		ss_setupStatusMessageDiv()
+		var url = ss_musterUrl;
+		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addFormElements("ss_muster_form");
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPostRequest(ss_muster.postAddToClipboard);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	},
+	
+	postAddToClipboard : function(obj) {
+		//See if there was an error
+		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+			alert(ss_not_logged_in);
+		}
+		ss_cancelPopupDiv('ss_muster_div');
 	},
 	
 	clearClipboard : function(obj) {
-		alert('clear clipboard '+obj)
+		ss_setupStatusMessageDiv()
+		var url = ss_musterUrl;
+		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "clear_clipboard");
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPostRequest(ss_muster.postClearClipboard);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	},
+	
+	postClearClipboard : function(obj) {
+		//See if there was an error
+		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+			alert(ss_not_logged_in);
+		}
+		ss_cancelPopupDiv('ss_muster_div');
 	},
 	
 	cancel : function(obj) {
