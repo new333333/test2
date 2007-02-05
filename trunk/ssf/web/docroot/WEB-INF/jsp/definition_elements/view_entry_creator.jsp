@@ -4,7 +4,7 @@
   <c:out value="${property_caption}" />
 <c:if test="${!empty ssDefinitionEntry.creation.principal}">
   <c:if test="${ssConfigJspStyle != 'mail'}">
-    <ssf:presenceInfo user="${ssDefinitionEntry.creation.principal}" showTitle="true"/>
+    <ssf:showUser user="${ssDefinitionEntry.creation.principal}"/>
   </c:if>
   <c:if test="${ssConfigJspStyle == 'mail'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 

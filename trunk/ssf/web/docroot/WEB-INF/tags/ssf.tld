@@ -480,6 +480,11 @@
 			<type>java.lang.Boolean</type>
 		</attribute>		
 		<attribute>
+			<name>titleStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>zonName</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -568,6 +573,29 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+
+	<tag>
+		<name>showUser</name>
+		<tag-class>com.sitescape.team.taglib.ShowUser</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.Principal</type>
+		</attribute>		
+		<attribute>
+			<name>showPresence</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
+			<name>titleStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>	
 
 	<tag>
 		<name>slidingTable</name>

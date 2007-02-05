@@ -13,16 +13,23 @@
  <tr>
  	<td style="padding-left:20px;"><img class="${user.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
  	<td style="padding-left:20px;">
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	name="action" value="view_ws_listing"/><portlet:param 
-	  	name="binderId" value="${user.ssUser.parentBinder.id}"/><portlet:param 
-	  	name="entryId" value="${user.ssUser.id}"/><portlet:param 
-	  	name="newTab" value="1"/></portlet:renderURL>">
-	  	 <c:out value="${user.ssUser.title}"/>
-	  </a>
+	  <ssf:showUser user="${user.ssUser}" /> 
  	</td>
  </tr>
 </c:forEach>
 </table>
+
+<br/>
+<br/>
+<br/>
+
+<div>
+<a class="ss_linkButton ss_smallprint" 
+  href="javascript: ;" 
+  onClick="ss_muster.showForm('ss_muster_users'); return false;"><ssf:nlt tag="button.muster"/></a>
+</div>
+
+<div id="ss_musterUsersDiv" style="position:absolute;">
+</div>
 
 </div>

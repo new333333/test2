@@ -83,7 +83,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				<div style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
 				<span class="ss_light ss_fineprint">
 	
-				<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu" menuImage="pics/sym_s_down.gif">
+				<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 					<ul class="ss_actions_bar_submenu" style="width:250px;">
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;">

@@ -109,6 +109,11 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	//Global toolbar text
 	ss_nlt_navigation_normal = "<ssf:nlt tag="navigation.normal"/>";
 	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
+	
+	//Clipboard text
+	ss_addToClipboardText = "<ssf:nlt tag="button.add_to_clipboard"/>";
+	ss_clearClipboardText = "<ssf:nlt tag="button.clear_clipboard"/>";
+	ss_cancelButtonText = "<ssf:nlt tag="button.cancel"/>";
 }
 
 function ss_loadDojoFiles() {

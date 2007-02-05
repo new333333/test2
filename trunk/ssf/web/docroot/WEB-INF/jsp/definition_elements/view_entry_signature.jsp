@@ -20,7 +20,7 @@
 	<div class="ss_entryContent ss_entrySignature">
 	  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
 <c:if test="${ssConfigJspStyle != 'mail'}">
-	  <ssf:presenceInfo user="${ssDefinitionEntry.modification.principal}" showTitle="true"/>
+	  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mail'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -53,7 +53,7 @@
 		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img src="<html:imagesPath/>pics/sym_s_caution.gif"/>
 		  </span>
 		  
-		  <ssf:presenceInfo user="${ssDefinitionEntry.reservation.principal}" showTitle="true"/>
+		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 		</div>
 	  </td>
 	 </tr>

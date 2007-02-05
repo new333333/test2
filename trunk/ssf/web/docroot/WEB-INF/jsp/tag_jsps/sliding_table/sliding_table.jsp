@@ -92,7 +92,7 @@ ss_colWidthsUser[<%= String.valueOf(i) %>] = '<%= columnPositions[i] %>';
 var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
 <div id="${ss_slidingTableId}_2" 
- style="margin: 2px; border: #666666 1px solid;" width="100%"
+ style="margin:2px; padding-bottom:2px; border: #666666 1px solid;" width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0">

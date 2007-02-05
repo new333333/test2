@@ -96,7 +96,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 </script>
 <div id="<c:out value="${ss_slidingTableId}"/>" style="position:relative; 
  height:<%= slidingTableFolderHeight %>px; overflow:scroll; 
- margin:2px; border: #666666 1px solid;">
+ margin:2px; padding-bottom:2px; border: #666666 1px solid;">
 <div id="<c:out value="${ss_slidingTableId}"/>_2" style="margin:0px;" width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">

@@ -28,7 +28,7 @@
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
   <a href="#" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
   ><ssf:nlt tag="access.roles"/><img style="margin-left:4px;"
-  src="<html:imagesPath/>pics/sym_s_down.gif"/></a>
+  src="<html:imagesPath/>pics/menudown.gif"/></a>
   </c:if>
   
   <c:if test="${ssUser.displayStyle == 'accessible'}" >
@@ -108,7 +108,7 @@
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
 	      <img style="margin-left:4px;"
-	        src="<html:imagesPath/>pics/sym_s_down.gif"/>
+	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
 	  </c:if>
   
@@ -176,7 +176,7 @@
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
 	      <img style="margin-left:4px;"
-	      src="<html:imagesPath/>pics/sym_s_down.gif"/></a>
+	      src="<html:imagesPath/>pics/menudown.gif"/></a>
 	  </c:if>
   
       <c:if test="${ssUser.displayStyle == 'accessible'}" >
