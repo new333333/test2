@@ -32,7 +32,7 @@ public class FileOpen extends JApplet implements Runnable {
     final String editorType = "editorType";
     
     String strFileName = "";
-    String strEditorType = "";
+    String strEditorTypes = "";
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -43,62 +43,60 @@ public class FileOpen extends JApplet implements Runnable {
     public void run () {
     	fileOpen = this;
     	try {
-/*    		
-    	    int delay = 500;   // delay for 1/2 sec.
-    	    int period = 1000;  // repeat every sec.
-    	    java.util.Timer timer = new java.util.Timer();
-    	    
-    	    timer.scheduleAtFixedRate(new TimerTask() {
-    	            public void run() {
-    	            	*/
-    					strFileName = getParameter(fileToOpen);
-    					strEditorType = getParameter(editorType);
-    					
-    					System.out.println("FileName to open: "+strFileName + ", Editor Type: "+strEditorType);
-    					
-    	            	if (!strFileName.equals("") && !strEditorType.equals("")) {
-    	            		try {
-    	                        String[] command =  new String[4];
-    	                        command[0] = "cmd";
-    	                        command[1] = "/C";
-    	                        command[2] = "start " + strEditorType;
-    	                        
-    	                        String strURL = strFileName;
-    	                        String strReplacedURL = strURL.replaceAll(" ", "%20");
-    	                        
-    	                        command[3] = strReplacedURL;
-    	                        
-    	                        Process p = Runtime.getRuntime().exec(command);
-    	                        
-    	                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-    	                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+			strFileName = getParameter(fileToOpen);
+			strEditorTypes = getParameter(editorType);
+			
+			String [] strEditorType = strEditorTypes.split(",");
+			
+			if (!strFileName.equals("") && !strEditorType.equals("")) {
+					
+				for (int i = 0; i < strEditorType.length; i++) {
+					
+        			boolean blnEditorErrorEncountered = false;
+            		try {
+                        String[] command =  new String[4];
+                        command[0] = "cmd";
+                        command[1] = "/C";
+                        command[2] = "start " + strEditorType[i];
+                        
+                        String strURL = strFileName;
+                        String strReplacedURL = strURL.replaceAll(" ", "%20");
+                        
+                        command[3] = strReplacedURL;
+                        
+                        Process p = Runtime.getRuntime().exec(command);
+                        
+                        BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                        BufferedReader stdError = new BufferedReader(new InputStreamReader(p.getErrorStream()));
 
-    	                        // read the output from the command
-    	                        String s = null;
-    	                        while ((s = stdInput.readLine()) != null) {
-    	                            System.out.println(s);
-    	                        }
+                        // read the output from the command
+                        String s = null;
+                        while ((s = stdInput.readLine()) != null) {
+                            System.out.println("o/p: " + s);
+                        }
 
-    	                        // read any errors from the attempted command
-    	                        System.out.println("Here is the standard error of the command (if any):\n");
-    		                    while ((s = stdError.readLine()) != null) {
-    		                        System.out.println(s);
-    		                    }
-    	            		}
-    	                	catch(IOException ioe) {
-    	                		System.out.println("IO Err: "+ioe);
-    	                	}
-    	                	finally {
-    	                		strFileName = "";
-    	                	}
-    	            	}
-/*    	            	
-    	            }
-    	        }, delay, period);
-    	        */
+                        // read any errors from the attempted command
+                        System.out.println("Here is the standard error of the command (if any):\n");
+                        
+	                    while ((s = stdError.readLine()) != null) {
+	                    	blnEditorErrorEncountered = true;
+	                        System.out.println("Error: " + s);
+	                    }
+            		}
+                	catch(IOException ioe) {
+                		System.out.println("IO Err: "+ioe);
+                	}
+                	finally {
+                		if (!blnEditorErrorEncountered)  break;
+                	}
+            	}
+			}
     	}
     	catch(Exception e) {
     		System.out.println("Err: "+e);
+    	}
+    	finally {
+    		strFileName = "";
     	}
     }
 
