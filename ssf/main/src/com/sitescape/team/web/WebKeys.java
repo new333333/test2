@@ -400,6 +400,7 @@ public class WebKeys {
     public static final String PRESENCE_STATUS="ss_presence_userStatus";
     public static final String PRESENCE_SHOW_OPTIONS_INLINE="ss_presence_show_options_inline";
     public static final String PRESENCE_SHOW_TITLE="ss_presence_show_title";
+    public static final String PRESENCE_TITLE_STYLE="ss_presence_title_style";
     public static final String PRESENCE_SWEEP_TIME="ss_presence_sweep_time";
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";
@@ -442,6 +443,9 @@ public class WebKeys {
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
+    public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
+    public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
+    public static final String SHOW_USER_USER="ss_showUserUser";
     public static final String SUBSCRIPTION="ssSubscription";
     public static final String TABS="ss_tabs";
     public static final String TAB_ID="ss_tab_id";

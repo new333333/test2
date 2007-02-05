@@ -42,7 +42,7 @@ String menuDivWidth = "300px";
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
 	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
 	      ${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories}"
-	      > <img border="0" src="<html:imagesPath/>pics/downarrow.gif"/></c:if></a>
+	      > <img border="0" src="<html:imagesPath/>pics/menudown.gif"/></c:if></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
 		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>

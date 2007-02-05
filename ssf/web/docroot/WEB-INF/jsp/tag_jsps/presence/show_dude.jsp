@@ -75,7 +75,8 @@
 	    <ssf:param name="newTab" value="1" />
 		</ssf:url>"
 		onClick="self.parent.location.href = this.href;return false;"
-	  ><c:out value="${ss_presence_user.title}"/></a>
+	  ><span id="${ss_presence_user.id}" 
+	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
 	</ssf:ifadapter>
 	<ssf:ifnotadapter>
 	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
@@ -83,7 +84,8 @@
 	  	name="binderId" value="${ss_presence_user.parentBinder.id}"/><portlet:param 
 	  	name="entryId" value="${ss_presence_user.id}"/><portlet:param 
 	  	name="newTab" value="1"/></portlet:renderURL>"
-	  ><c:out value="${ss_presence_user.title}"/></a>
+	  ><span id="${ss_presence_user.id}"  
+	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
 	</ssf:ifnotadapter>
  
   </c:if>

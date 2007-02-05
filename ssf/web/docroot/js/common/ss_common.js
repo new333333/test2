@@ -3409,3 +3409,100 @@ function ss_showThisImage(obj) {
 		self.window.open(url, "_blank")
 	}
 }
+
+//Mustering routines
+var ss_muster = {
+
+	showForm : function(musterClass) {
+		this.buildDiv(musterClass);
+		this.showDiv()
+	},
+	
+	buildDiv : function(musterClass) {
+		var items = new Array();
+		var itemIds = new Array();
+		var itemTitles = new Array();
+		var itemSpans = ss_getElementsByClass(musterClass, null, 'span')
+		for (var i = 0; i < itemSpans.length; i++) {
+			var id = itemSpans[i].id;
+			if (typeof itemIds['id'+id] == "undefined") {
+				items[items.length] = id;
+				itemIds['id'+id] = id;
+				itemTitles['id'+id] = itemSpans[i].innerHTML;
+			}
+		}
+		
+		//Build the muster form
+		var musterDiv = document.getElementById('ss_muster_div');
+		if (musterDiv != null) musterDiv.parentNode.removeChild(musterDiv);
+		
+		//Build a new muster div
+		musterDiv = document.createElement("div");
+	    musterDiv.setAttribute("id", "ss_muster_div");
+	    musterDiv.setAttribute("align", "left");
+	    musterDiv.style.visibility = "hidden";
+	    musterDiv.className = "ss_muster_div";
+	    musterDiv.style.display = "none";
+	    var formObj = document.createElement("form");
+		musterDiv.appendChild(formObj);
+		
+		//Add the items to be mustered
+		for (var i = 0; i < items.length; i++) {
+			ss_debug('Muster item '+items[i]+': '+itemTitles['id'+items[i]])
+			var inputObj = document.createElement("input");
+			inputObj.setAttribute("type", "checkbox");
+			inputObj.setAttribute("name", "muster_ids");
+			inputObj.setAttribute("value", items[i]);
+			var spanObj = document.createElement("span");
+			spanObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
+			var brObj = document.createElement("br");
+			musterDiv.appendChild(inputObj);
+			musterDiv.appendChild(spanObj);
+			musterDiv.appendChild(brObj);
+		}
+		//Add the buttons 
+		var brObj = document.createElement("br");
+		var addBtnObj = document.createElement("input");
+		addBtnObj.setAttribute("type", "submit");
+		addBtnObj.setAttribute("name", "add");
+		addBtnObj.setAttribute("value", ss_addToClipboardText);
+		addBtnObj.setAttribute("onClick", "ss_muster.addToClipboard(this);return false;");
+		addBtnObj.style.marginRight = "15px"
+		var clearBtnObj = document.createElement("input");
+		clearBtnObj.setAttribute("type", "submit");
+		clearBtnObj.setAttribute("name", "clear");
+		clearBtnObj.setAttribute("value", ss_clearClipboardText);
+		clearBtnObj.setAttribute("onClick", "ss_muster.clearClipboard(this);return false;");
+		clearBtnObj.style.marginRight = "15px"
+		var cancelBtnObj = document.createElement("input");
+		cancelBtnObj.setAttribute("type", "submit");
+		cancelBtnObj.setAttribute("name", "cancel");
+		cancelBtnObj.setAttribute("value", ss_cancelButtonText);
+		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel(this);return false;");
+		cancelBtnObj.style.marginRight = "15px"
+
+		musterDiv.appendChild(brObj);
+		musterDiv.appendChild(addBtnObj);
+		musterDiv.appendChild(clearBtnObj);
+		musterDiv.appendChild(cancelBtnObj);
+		
+		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
+	},
+	
+	showDiv : function() {
+		//Show the muster form
+		ss_showPopupDivCentered('ss_muster_div');
+	},
+	
+	addToClipboard : function(obj) {
+		alert('add to clipboard '+obj)
+	},
+	
+	clearClipboard : function(obj) {
+		alert('clear clipboard '+obj)
+	},
+	
+	cancel : function(obj) {
+		ss_cancelPopupDiv('ss_muster_div');
+	}
+}

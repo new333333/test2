@@ -133,7 +133,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	</portlet:actionURL>">
     	<ssf:nlt tag="folder.column.Number"/>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'false' }">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
@@ -162,7 +162,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	</portlet:actionURL>">
       <div class="ss_title_menu"><ssf:nlt tag="folder.column.Title"/> </div>
     	<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'true'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
@@ -192,7 +192,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	</portlet:actionURL>">
     	<ssf:nlt tag="folder.column.State"/>
 	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
@@ -221,7 +221,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	</portlet:actionURL>">
 		<ssf:nlt tag="folder.column.Author"/>
 	    <c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'true'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
@@ -250,7 +250,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	</portlet:actionURL>">
 		<ssf:nlt tag="folder.column.Date"/>
 	    <c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'true'}">
-			<img border="0" src="<html:imagesPath/>pics/sym_s_down.gif"/>
+			<img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_modificationDate' && ssFolderSortDescend == 'false'}">
 			<img border="0" src="<html:imagesPath/>pics/sym_s_up.gif"/>
@@ -324,10 +324,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
   
  <c:if test="${!empty ssFolderColumns['author']}">
   <ssf:slidingTableColumn>
-	<ssf:presenceInfo user="<%=(User)entry1.get("_principal")%>"/> 
-	<span <%= seenStyle %>><c:out value="${entry1._principal.title}"/></span>
+	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyle %>"/> 
   </ssf:slidingTableColumn>
  </c:if>
+ 
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
