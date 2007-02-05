@@ -4,11 +4,6 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
-function ss_loadEntry(obj,id) {
-	ss_highlightLineById(id);
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
-	return false;
-}
 
 var ss_signGuestbookIframeOffset = 50;
 function ss_showSignGuestbookIframe<portlet:namespace/>(obj) {
