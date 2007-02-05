@@ -2084,6 +2084,13 @@ white-space: nowrap !important;
 	margin-left: 25px;
 }
 
+/* Muster div */
+.ss_muster_div {
+	position:absolute;
+	border:1px solid #000000;
+	background:#ffffff;
+	padding:8px;
+}
 
 .ss_miniBusinessCard { 
 	width: 20%;
