@@ -26,7 +26,7 @@
 	    folderId="${ssDefinitionEntry.parentBinder.id}"
 	    entryId="${ssDefinitionEntry.id}" >
 	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="viewType" value="scaled"/>
+	    <ssf:param name="viewType" value="thumbnail"/>
 	    </ssf:url>" alt="${property_caption}" /></a>
   </c:if>
   <c:set var="pictureCount" value="${pictureCount + 1}"/>
