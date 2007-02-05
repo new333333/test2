@@ -79,6 +79,8 @@ function ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(
 
     //ss_setObjectTop(divObj, (ss_getDivTop('ss_dropbox_div_position<portlet:namespace/>')+20) + "px");
     //ss_setObjectLeft(divObj, (ss_getDivLeft('ss_dropbox_div_position<portlet:namespace/>')) + "px");
+	
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 
 function ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>() {
