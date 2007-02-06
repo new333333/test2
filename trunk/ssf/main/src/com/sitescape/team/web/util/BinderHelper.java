@@ -207,15 +207,19 @@ public class BinderHelper {
 	}
   	public static SortField[] getBinderEntries_getSortFields(Map options) {
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;
-    	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY)) 
+   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;   		
+    	if (options.containsKey(ObjectKeys.SEARCH_SORT_BY))
     		sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
    		
     	boolean descend = true;
     	if (options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
     		descend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
+
+    	int sortType = SortField.AUTO;
+    	if (sortBy.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD)) 
+    		sortType = SortField.STRING;
     	
-    	fields[0] = new SortField(sortBy, descend);
+    	fields[0] = new SortField(sortBy, sortType, descend);
     	return fields;
    	}
     public static Map getCommonEntryElements() {
