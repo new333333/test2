@@ -18,6 +18,7 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.store.FSDirectory;
 
 
 public class LuceneUtil {
@@ -55,12 +56,17 @@ public class LuceneUtil {
 		try {
 			return IndexReader.open(indexPath);
 		}
-		catch(IOException e) {
+		catch(IOException ioe) {
 			if(initializeIndex(indexPath)) {
 				return IndexReader.open(indexPath);
-			}
-			else {
-				throw e;
+			} else {
+				try {
+					// force unlock of the directory
+					IndexReader.unlock(FSDirectory.getDirectory(indexPath, false));
+					return IndexReader.open(indexPath);
+				} catch (IOException e) {
+					throw e;
+				}
 			}
 		}
 	}
