@@ -639,6 +639,23 @@ public class ListFolderController extends  SAbstractController {
 			if (viewElement != null)
 				viewType = viewElement.attributeValue("value", "");
 		}
+		//	The "Display styles" menu
+		Toolbar entryToolbar = new Toolbar();
+		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
+		//Get the definitions available for use in this folder
+		List folderViewDefs = folder.getViewDefinitions();
+		for (int i = 0; i < folderViewDefs.size(); i++) {
+			Definition def = (Definition)folderViewDefs.get(i);
+			//Build a url to switch to this view
+			PortletURL url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
+			url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+			url.setParameter(WebKeys.URL_VALUE, def.getId());
+			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
+		}
+		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
+
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//Get the WebDAV URLs
 			model.put(WebKeys.FOLDER_ENTRIES_WEBDAVURLS, new HashMap());

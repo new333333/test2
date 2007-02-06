@@ -15,6 +15,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -113,6 +114,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			if (configId != null)
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString()); 
+		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
+			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), configId, 
+					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -142,11 +150,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			} else if (Validator.isNull(operation)) {
 				model.put(WebKeys.DEFINITION_ENTRY, config);
 				User user = RequestContextHolder.getRequestContext().getUser();
-				DefinitionHelper.getDefinitions(config, model, "");
 				Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 				model.put(WebKeys.USER_PROPERTIES, userProperties);
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), config.getId());
 				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+				//See if the user has selected a specific view to use
+				String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+				DefinitionHelper.getDefinitions(config, model, userDefaultDef);
 				DashboardHelper.getDashboardMap(config, userProperties, model);
 				buildToolbar(request, response, config, model);
 				if (!config.isRoot() || !config.getBinders().isEmpty()) 
