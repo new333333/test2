@@ -76,6 +76,14 @@ self.window.resizeTo(width, height);
   <ssf:nlt tag="sendMail.team"/></span>
  </td></tr>
  </c:if>
+ <c:if test="${!empty ssClipboard.users}">
+ <tr><td>
+ <c:forEach var="userId" items="${ssClipboard.users}">
+   <input type="checkbox" class="ss_style" name="clipboardUsers" value="${userId}" >&nbsp;<span class="ss_labelRight">
+    ${userId}</span><br/>
+  </c:forEach>
+ </td></tr>
+ </c:if>
 </table>
 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">

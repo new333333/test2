@@ -25,9 +25,6 @@ var ss_displayStyle = "<%= displayStyle %>";
 </script>
 
 <div class="ss_folder">
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-
 <div style="margin:0px;">
 <div class="ss_folder_border" style="position:relative; top:2; margin:2px; 
   border-top:solid #666666 1px; 

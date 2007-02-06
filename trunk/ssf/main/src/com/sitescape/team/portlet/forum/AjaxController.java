@@ -43,6 +43,7 @@ import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
@@ -1056,10 +1057,27 @@ public class AjaxController  extends SAbstractController {
 		if (PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS) != null) {
 			musterIds = PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS);
 		}
+		Clipboard clipboard = new Clipboard(request);
+		Map clipboardMap = clipboard.getClipboard();
+		if (clipboardMap.containsKey(musterClass)) {
+			List idList = (List) clipboardMap.get(musterClass);
+			for (int i = 0; i < musterIds.length; i++) {
+				if (!idList.contains(musterIds[i])) idList.add(musterIds[i]);
+			}
+		}
 	}
 	
 	private void ajaxClearClipboard(ActionRequest request, 
 			ActionResponse response) throws Exception {
+		Clipboard clipboard = new Clipboard(request);
+		Map clipboardMap = clipboard.getClipboard();
+		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
+		String[] musterClasses = musterClass.split(" ");
+		for (int i = 0; i < musterClasses.length; i++) {
+			if (!musterClasses[i].equals("")) {
+				if (clipboardMap.containsKey(musterClasses[i])) clipboardMap.remove(musterClasses[i]);
+			}
+		}
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 

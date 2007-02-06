@@ -10,13 +10,6 @@ function ss_loadEntry(obj,id) {
 	return false;
 }
 
-</script>
-<div class="folder">
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-</div>
-<br>
-<script type="text/javascript">
 var rn = Math.round(Math.random()*999999)
 function ss_blog_sidebar_date_callback() {
 	var url = "<ssf:url 

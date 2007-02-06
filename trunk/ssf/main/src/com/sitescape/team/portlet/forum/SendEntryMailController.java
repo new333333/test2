@@ -27,6 +27,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -137,6 +138,12 @@ public class SendEntryMailController extends SAbstractController {
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
+
+		//Get the clipboard data
+		Clipboard clipboard = new Clipboard(request);
+		Map clipboardMap = clipboard.getClipboard();
+		model.put(WebKeys.CLIPBOARD, clipboardMap);
+
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
 
