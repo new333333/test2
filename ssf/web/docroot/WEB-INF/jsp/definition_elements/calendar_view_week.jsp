@@ -25,10 +25,9 @@ span.tinyLabel {
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
 <ssf:nlt tag="calendar.beginning" text="Week beginning"/>
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
-<c:if test="${ssConfigJspStyle != 'template'}">
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
 <a href="${set_month_view}"><ssf:nlt tag="calendar.Month" text="Month"/></a>
-</c:if>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
 </div>
 <div style="width: 100%"><%-- IE needs this for some stupid reason --%>

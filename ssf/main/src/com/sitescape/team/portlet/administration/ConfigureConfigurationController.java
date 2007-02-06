@@ -121,6 +121,14 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+		} else if (WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE.equals(operation)) {
+			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), configId, 
+					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+		
 		} else
 			response.setRenderParameters(formData);
 	}
