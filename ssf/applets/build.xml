@@ -42,10 +42,10 @@
 	</target>
 
 	<target name="deploy">
-		<ant dir="sample" target="javadoc" />
-		<ant dir="workflow-viewer" target="javadoc" />
-		<ant dir="droptarget" target="javadoc" />
-		<ant dir="fileedit" target="javadoc" />
-		<ant dir="fileopen" target="javadoc" />
+		<ant dir="sample" target="deploy" />
+		<ant dir="workflow-viewer" target="deploy" />
+		<ant dir="droptarget" target="deploy" />
+		<ant dir="fileedit" target="deploy" />
+		<ant dir="fileopen" target="deploy" />
 	</target>
 </project>
