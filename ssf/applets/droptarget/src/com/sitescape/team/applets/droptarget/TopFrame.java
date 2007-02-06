@@ -146,6 +146,10 @@ public class TopFrame extends JApplet implements Runnable {
             if (null == paramValue) {
                 paramValue = "";
             }
+       if (paramName.equals("onCancelFunction"))
+           if (null == paramValue) {
+               paramValue = "";
+           }
        if (paramName.equals("loadDirectory"))
            if (null == paramValue) {
                paramValue = "yes";
