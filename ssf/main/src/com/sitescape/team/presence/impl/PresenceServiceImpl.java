@@ -1,15 +1,16 @@
 package com.sitescape.team.presence.impl;
 
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.net.Socket;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.lang.Integer;
-import java.util.HashMap;
-import java.util.Iterator;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.presence.PresenceService;
 
@@ -92,7 +93,8 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    private boolean reset = false;
 	    private int SLEEPINTERVAL = 2000;
         private Socket presenceSocket = null;
-        private DataInputStream dis;
+        //private DataInputStream dis;
+        private BufferedReader sis;	//socket inputstream
 
 	    /**
 	     * Constructor - Set up the time interval, and keep a pointer
@@ -122,6 +124,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    	Integer status;
 	    	int failCount = 0;
 	    	int maxFailCount = 30; //one minute
+	    	boolean dataFound = false;
 	    	while (true) {
 		    	//set up the socket listener
 	    		if ((presenceSocket == null) || (presenceSocket.isClosed())) {
@@ -146,7 +149,7 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    				failCount = 0;
 	    			}
     		        try {
-    			       dis = new DataInputStream(presenceSocket.getInputStream());
+    			       sis = new BufferedReader(new InputStreamReader(presenceSocket.getInputStream()));
     			    }
     			    catch (IOException e) {
     			        presenceSocket = null;
@@ -155,7 +158,8 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	    		}
 		        
 		        try {
-	               while ((line = dis.readLine()) != null) {
+		        	dataFound = false;
+		        	while ((line = sis.readLine()) != null) {
 	                    //System.out.println("User: " + line);
 	                    String parts[] = line.split(" ");
 	                    String addr[] = parts[0].split("@");
@@ -163,7 +167,12 @@ public class PresenceServiceImpl implements PresenceService, InitializingBean, D
 	                    status = new Integer(parts[1]);
 	                    presenceMap.remove(user);
 	                    presenceMap.put(user,status);
+	                    dataFound = true;
 	                }
+		        	if (!dataFound) {
+		        		presenceSocket.close();
+		        		presenceSocket = null;
+		        	}
 		        }catch (Exception e ){
 		        	presenceSocket = null;
 		        } 
