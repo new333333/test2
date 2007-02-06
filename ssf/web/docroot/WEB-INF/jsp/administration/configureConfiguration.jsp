@@ -17,9 +17,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style ss_portlet">
-<div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
-<div style="margin:6px;">
+
 <%
 String cTreeName = renderResponse.getNamespace() + "_cTree";
 %>
@@ -37,7 +35,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 	return false;
 } 
 </script>
-
+<div class="ss_form" style="margin:6px;">
+<div class="ss_rounded">
+<div style="margin:6px;">
 <h3><ssf:nlt tag="administration.configure_cfg" text="Configurations"/></h3>
 <ssf:expandableArea title="<%= NLT.get("administration.configure_cfg.add") %>"  initOpen="true">
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:renderURL>
@@ -47,8 +47,6 @@ function <%=cTreeName%>_showId(id, obj, action) {
 		
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace" 
 		  text="Workspace" /><br/>
-	 <input type="radio" name="cfgType" value="12"><ssf:nlt tag="general.type.userWorkspace" 
-		  text="User workspace" /><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder" 
 		  text="Folder" /><br/>
 	<br/><br/>
@@ -97,11 +95,24 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
+</div>
+</div>
+</div>
+
 </c:if>
 
 <c:if test="${!empty ssBinderConfig}">
 
 <c:if test="${empty ssOperation || ssOperation == ''}">
+<span>
+<c:if test="${ssBinderConfig.entityType == 'workspace'}">
+<ssf:nlt tag="administration.configure_cfg.workspaceTemplate.title"/>
+</c:if>
+<c:if test="${ssBinderConfig.entityType != 'workspace'}">
+<ssf:nlt tag="administration.configure_cfg.folderTemplate.title"/>
+</c:if>
+<ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></span>
+<br/>
 <script type="text/javascript">
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
@@ -121,18 +132,32 @@ function ss_confirmDeleteConfig() {
 	}
 }
 </script>
-<h3>
-<c:if test="${ssBinderConfig.entityType == 'workspace'}">
-<ssf:nlt tag="administration.configure_cfg.workspaceTemplate.title"/>
-</c:if>
-<c:if test="${ssBinderConfig.entityType != 'workspace'}">
-<ssf:nlt tag="administration.configure_cfg.folderTemplate.title"/>
-</c:if>
-<ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></h3>
-<% // manage toolbar %>
+<c:set var="showEntryCallbackRoutine" value="none" scope="request"/>
+
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+
+<% // Tabs %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+<div class="ss_clear"></div>
+<div class="ss_tab_canvas">
+<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+<div class="ss_decor-round-corners-top1"><div><div></div></div></div>
+	<div class="ss_decor-border3">
+		<div class="ss_decor-border4">
+			<div class="ss_rounden-content">
+			    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+				
+<% // Folder toolbar %>
 <c:if test="${!empty ssForumToolbar}">
+<div class="ss_content_inner">
 <ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar"/>
+</div>
 </c:if>
+
+<div class="ss_content_inner">
+<% // Navigation links %>
 <c:if test="${!empty ssNavigationLinkTree}">
 <c:set var="ss_breadcrumbsShowIdRoutine" value="<%= cTreeName + "_showId"%>" scope="request" />
 <c:set var="ss_breadcrumbsTreeName"  value="<%=cTreeName%>" scope="request" />
@@ -141,68 +166,47 @@ function ss_confirmDeleteConfig() {
 <%@ include file="/WEB-INF/jsp/administration/config_navigation_links.jsp" %>
 </div>
 </c:if>
-<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" %>
 <br/>
-
-<table>
-<tr><td>
-<c:if test="${ssBinderConfig.entityType == 'workspace'}">
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTarget.label"/></span>
+<% // Show the workspace according to its definition %>
+<c:if test="${ssBinder.entityType == 'workspace'}">
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  processThisItem="true"
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}"
+  entry="${ssBinder}" />
 </c:if>
-<c:if test="${ssBinderConfig.entityType != 'workspace'}">
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.folderTarget.label"/></span>
-</c:if>
-<ssf:nlt tag="${ssBinderConfig.title}" checkIfTag="true"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelAbove"><ssf:nlt tag="administration.configure_cfg.description"/></span>
-    <div align="left">
-    <c:if test="${!empty ssBinderConfig.description.text}">
-	<c:out value="${ssBinderConfig.description.text}" escapeXml="false"/>
-	</c:if>
-    <c:if test="${empty ssBinderConfig.description.text}">
-	<ssf:nlt tag="common.select.none"/>
-	</c:if>
-	
-  	</div>
-</td></tr>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}" />
+  </c:if>
 
-<tr><td>
+</div>
+			    </div>
+			</div>
+		</div>
+	</div>
+<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
 
-<input type="checkbox" name="defsI" <c:if test="${ssBinderConfig.definitionsInherited}">checked="checked"</c:if> disabled="disabled"/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.definitionsInherited"/></span>
-</td></tr>
-<tr><td>
-<input type="checkbox" name="funcI" <c:if test="${ssBinderConfig.functionMembershipInherited}">checked="checked"</c:if> disabled="disabled"/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.functionMembershipInherited"/></span>
-</td></tr>
 
-<c:if test="${ssBinderConfig.entityType == 'folder'}">
-<tr><td>
-<input type="checkbox" name="library" <c:if test="${ssBinderConfig.library}">checked="checked"</c:if> disabled="disabled"/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.library"/></span>
-</td></tr>
-<tr><td>
-<input type="checkbox" name="uniqueTitles" <c:if test="${ssBinderConfig.uniqueTitles}">checked="checked"</c:if> disabled="disabled"/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.uniqueTitles"/></span>
-</td></tr>
-</c:if>
-</table>
+</div>
+</div>
 
 <div class="ss_formBreak"/>
 <form method="post" action="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/>
 		</portlet:renderURL>" >
-<div class="ss_formBreak"/>
-
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
-</form
+</form>
+</div>
 </c:if>
 
-
 <c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
+<div class="ss_form" style="margin:6px;">
+<div class="ss_rounded">
+<div style="margin:6px;">
 <form method="post" action="<portlet:actionURL><portlet:param 
 		name="action" value="configure_configuration"/>
 		<portlet:param name="operation" value="${ssOperation}"/><portlet:param 
@@ -221,12 +225,13 @@ function ss_confirmDeleteConfig() {
 </div>
 
 </form>
+</div>
+</div>
+</div>
+
 </c:if>
 
 
 </c:if>
-</div>
-</div>
-</div>
 </div>
 

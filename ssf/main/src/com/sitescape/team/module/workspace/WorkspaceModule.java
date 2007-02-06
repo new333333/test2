@@ -18,7 +18,7 @@ import com.sitescape.team.security.AccessControlException;
  *
  */
 public interface WorkspaceModule {
-    public void checkAccess(Workspace workspace, String operation) throws AccessControlException;
+    public boolean testAccess(Workspace workspace, String operation);
     /**
      * 
      * @return

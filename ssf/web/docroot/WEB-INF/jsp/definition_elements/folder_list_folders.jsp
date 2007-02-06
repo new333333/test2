@@ -1,4 +1,5 @@
 <% // Folders %>
+<c:if test="${!empty ssFolderDomTree}">
 <script type="text/javascript">
 function ss_folderTree_showId(id, obj, action) {
 	//Build a url to go to
@@ -29,3 +30,4 @@ function ss_folderTree_showId(id, obj, action) {
 	    highlightNode="${ssFolder.id}" />
 </c:if>
 </div>
+</c:if>

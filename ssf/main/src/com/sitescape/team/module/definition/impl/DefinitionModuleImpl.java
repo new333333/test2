@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.TimeZone;
+import java.util.TreeMap;
 
 import org.apache.lucene.document.Field;
 import org.dom4j.Attribute;
@@ -33,7 +33,6 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
@@ -47,6 +46,7 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
@@ -78,7 +78,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 
     }
-   	public void checkAccess(String operation) {
+   	public boolean testAccess(String operation) {
+   		try {
+   			checkAccess(operation);
+   			return true;
+   		} catch (AccessControlException ac) {
+   			return false;
+   		}
+   		
+   	}
+   	protected void checkAccess(String operation) throws AccessControlException {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
         getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);        		
 

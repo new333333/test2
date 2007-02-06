@@ -27,8 +27,9 @@
 	    <br/>
 	    </c:if>
 
-	    <span class="ss_bold"><ssf:nlt tag="wiki.findPage"/>
+	    <span class="ss_bold"><ssf:nlt tag="wiki.findPage"/></span>
 	    <br/>
+	    <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" name="ss_findWikiPageForm<portlet:namespace/>"
 	    	action="<portlet:actionURL 
 	                windowState="maximized" portletMode="view"><portlet:param 
@@ -44,10 +45,11 @@
 		    clickRoutine="ss_loadWikiEntryId${renderResponse.namespace}"/> 
 	    <input type="hidden" name="searchTitle"/>
 	    </form>
-
+		</c:if>
 	  <br/>
 
 	  <span class="ss_bold">
+	    <c:if test="${ssConfigJspStyle != 'template'}">
 	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
@@ -56,10 +58,15 @@
 		<portlet:param name="ssFolderSortDescend" value="false"/>
 		</portlet:actionURL>"
 	  ><ssf:nlt tag="wiki.showAll"/></a>
+		</c:if>
+	    <c:if test="${ssConfigJspStyle == 'template'}">
+	    <ssf:nlt tag="wiki.showAll"/>
+		</c:if>
 	  </span>
 	  <br/>
 	  
 	  <span class="ss_bold">
+	    <c:if test="${ssConfigJspStyle != 'template'}">
 	  <a href="<portlet:actionURL windowState="maximized" portletMode="view">
 		<portlet:param name="action" value="${action}"/>
 		<portlet:param name="operation" value="save_folder_sort_info"/>
@@ -68,6 +75,10 @@
 		<portlet:param name="ssFolderSortDescend" value="true"/>
 		</portlet:actionURL>"
 	  ><ssf:nlt tag="wiki.showRecent"/></a>
+		</c:if>
+	    <c:if test="${ssConfigJspStyle == 'template'}">
+		<ssf:nlt tag="wiki.showRecent"/>
+		</c:if>
 	  </span>
 	  <br/>
 	  <br/>

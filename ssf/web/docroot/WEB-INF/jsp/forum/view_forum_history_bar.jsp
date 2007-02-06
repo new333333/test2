@@ -69,6 +69,7 @@ if (false) {
 <%
 }
 %>
+<c:if test="${ssConfigJspStyle != 'template'}">
      <td><a  
           href="<ssf:url
           adapter="true"
@@ -95,7 +96,14 @@ if (false) {
           onClick="ss_getPreviousEntryId('${ss_history_bar_imageId}');return false;" ><img border="0"
           alt="<ssf:nlt tag="nav.nextEntry" text="Next entry"/>" id="ss_next"
           border="0" src="<html:imagesPath/>pics/sym_s_arrow_up.gif"></a></td>
-          
+</c:if>
+<c:if test="${ssConfigJspStyle == 'template'}">
+
+     <td><img src="<html:imagesPath/>pics/sym_s_arrow_down.gif"/></td>
+    <td><span><ssf:nlt tag="nav.view"/></span></td>
+     <td><img src="<html:imagesPath/>pics/sym_s_arrow_up.gif"/></td>
+</c:if>
+         
 <%
 if (false) {
 %>

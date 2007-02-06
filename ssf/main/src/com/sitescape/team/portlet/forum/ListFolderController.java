@@ -34,6 +34,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -511,7 +512,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		String view;
-		view = getShowFolder(formData, request, response, (Folder)binder, options, model);
+		view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
 		
 		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
@@ -540,18 +541,11 @@ public class ListFolderController extends  SAbstractController {
 		
 	protected String getShowFolder(Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
-			Map<String,Object>model) throws PortletRequestBindingException {
+			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
 		String forumId = folderId.toString();
 
-		String viewType = "";
-		Element view = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (view != null) {
-			Element viewElement = (Element)view.selectSingleNode("./properties/property[@name='type']");
-			if (viewElement != null)
-				viewType = viewElement.attributeValue("value", "");
-		}
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the WebDAV URLs
@@ -635,7 +629,46 @@ public class ListFolderController extends  SAbstractController {
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp(this);
 	}
+	public static void getShowTemplate(RenderRequest req, 
+			RenderResponse response, Binder folder, Map<String,Object>model) throws PortletRequestBindingException {
 
+		String viewType = "";
+		Element elementView = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (elementView != null) {
+			Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+			if (viewElement != null)
+				viewType = viewElement.attributeValue("value", "");
+		}
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//Get the WebDAV URLs
+			model.put(WebKeys.FOLDER_ENTRIES_WEBDAVURLS, new HashMap());
+			
+			//Get the list of all entries to build the archive list
+//			buildBlogBeans(response, folder, options, model, folderEntries);
+		} else {
+			if (viewType.equals("wiki")) {
+				//Get the list of all entries to build the archive list
+//				buildBlogBeans(response, folder, options, model, folderEntries);
+				model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, "");
+			}
+		}
+		List entries = new ArrayList();
+		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		//dummy seen map
+		model.put(WebKeys.SEEN_MAP, new SeenMap(Long.valueOf(-1)));
+				
+		//See if this folder is to be viewed as a calendar
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+			//This is a calendar view, so get the event beans
+			getEvents(folder, entries, model, req, response);
+		}
+		//See if this folder is to be viewed as a blog
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//This is a blog view, so get the extra blog beans
+			model.put(WebKeys.BLOG_ENTRIES, new TreeMap());
+		}
+		
+	}
 	//Method to find the WebDAV URL for each of the Blog entries
 	public void buildWebDAVURLs(Map folderEntries, Map model, Folder folder) {
 		List folderList = (List) folderEntries.get(ObjectKeys.FULL_ENTRIES);
@@ -841,8 +874,7 @@ public class ListFolderController extends  SAbstractController {
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
-			try {
-				getFolderModule().checkAccess(folder, "addEntry");				
+			if (getFolderModule().testAccess(folder, "addEntry")) {				
 				int count = 1;
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
 				qualifiers = new HashMap();
@@ -866,21 +898,20 @@ public class ListFolderController extends  SAbstractController {
 						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 					}
 				}
-			} catch (AccessControlException ac) {};
+			}
 		}
 		//The "Administration" menu
 		qualifiers = new HashMap();
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageFolderMenu");
 		folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
-		try {
-			getFolderModule().checkAccess(folder, "addFolder");
+		if (getFolderModule().testAccess(folder, "addFolder")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
 			folderToolbar.addToolbarMenuItem("2_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
-		} catch (AccessControlException ac) {};
+		}
 		
 		//Access control
 		url = response.createRenderURL();
@@ -910,8 +941,7 @@ public class ListFolderController extends  SAbstractController {
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
 		
 		//Delete binder
-		try {
-			getBinderModule().checkAccess(folder, "deleteBinder");
+		if (getBinderModule().testAccess(folder, "deleteBinder")) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
@@ -920,29 +950,27 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
-		} catch (AccessControlException ac) {};
+		}
 
 		//Modify binder
-		try {
-			getBinderModule().checkAccess(folder, "modifyBinder");
+		if (getBinderModule().testAccess(folder, "modifyBinder")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
-		} catch (AccessControlException ac) {};
+		}
 		
 		//Move binder
-		try {
-			getBinderModule().checkAccess(folder, "moveBinder");
+		if (getBinderModule().testAccess(folder, "moveBinder")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
-		} catch (AccessControlException ac) {};
+		}
 
 		//set email
 		try {
@@ -1041,14 +1069,13 @@ public class ListFolderController extends  SAbstractController {
 				folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
 	
 				//Check the access rights of the user
-				try {
-					getBinderModule().checkAccess(folder, "setProperty");
+				if (getBinderModule().testAccess(folder, "setProperty")) {
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					url.setParameter("_scope", "binder");
 					folderToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
-				} catch(AccessControlException e) {};
+				}
 	
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
@@ -1113,14 +1140,12 @@ public class ListFolderController extends  SAbstractController {
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	protected void getEvents(Folder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		String folderId = folder.getId().toString();
+	protected static void getEvents(Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
+ 		String folderId = folder.getId().toString();
 		Iterator entryIterator = entrylist.listIterator();
 		PortletSession ps = WebHelper.getRequiredPortletSession(req);
 		// view mode is one of day, week, or month
-		UserProperties userFolderProperties = (UserProperties) getProfileModule().getUserProperties(
-				user.getId(), folder.getId());
+		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES);
 		Map userFolderPropertiesMap = userFolderProperties.getProperties();
 		String viewMode = WebKeys.CALENDAR_VIEW_WEEK;
 		if (userFolderPropertiesMap.containsKey(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE)) {
@@ -1319,7 +1344,7 @@ public class ListFolderController extends  SAbstractController {
 	 *                 endtime -- string
 	 *              
 	 */
-	private void getCalendarViewBean (Folder folder, Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
+	private static void getCalendarViewBean (Binder folder, Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
 		String folderId = folder.getId().toString();
 		HashMap monthBean = new HashMap();
 		ArrayList dayheaders = new ArrayList();
@@ -1511,8 +1536,7 @@ public class ListFolderController extends  SAbstractController {
 			Document defDoc = def.getDefinition();
 			List replyStyles = defDoc.getRootElement().selectNodes("properties/property[@name='replyStyle']");
 			if (!replyStyles.isEmpty()) {
-				try {
-					getFolderModule().checkAccess(entry, "addReply");
+				if (getFolderModule().testAccess(entry, "addReply")) {
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
 					if (!replyStyleId.equals("")) {
 						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -1524,7 +1548,7 @@ public class ListFolderController extends  SAbstractController {
 						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 						entryMap.put(WebKeys.REPLY_BLOG_URL, adapterUrl);
 					}
-				} catch(Exception e) {}
+				}
 			}
 
 			entryMap.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folder.getId(), entry.getId()));

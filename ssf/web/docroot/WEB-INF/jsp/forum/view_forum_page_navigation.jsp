@@ -1,5 +1,5 @@
 <% // Common folder page number navigation %>
-
+<c:if test="${ssConfigJspStyle != 'template'}">
 <script type="text/javascript">
 //Check the Page Number Before Submission
 function ss_goToPage_<portlet:namespace/>(formObj) {
@@ -225,3 +225,4 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			</td>
 		</tr>
 		</table>
+</c:if>

@@ -34,9 +34,18 @@
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div style="display:block">
-<input type="checkbox" name="ss_library" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}._library.value='true'; else document.${formName}._library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></input>
+<input type="checkbox" name="ss_library" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_library.checked) document.${formName}.library.value='true'; else document.${formName}.library.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isLibrary"/></span></input>
 </div>
-<input type="hidden" name="_library" value="${ssDefinitionEntry.library}"/>
+<input type="hidden" name="library" value="${ssDefinitionEntry.library}"/>
+<br/>
+<c:set var="cb_checked" value=""/>
+<c:if test="${ssDefinitionEntry.uniqueTitles}" >
+<c:set var="cb_checked" value="checked"/>
+</c:if>
+<div style="display:block">
+<input type="checkbox" name="ss_unique" <c:out value="${cb_checked}"/> onClick="if (document.${formName}.ss_unique) document.${formName}.uniqueTitles.value='true'; else document.${formName}.uniqueTitles.value='false';">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="folder.isUniqueTitles"/></span></input>
+</div>
+<input type="hidden" name="uniqueTitles" value="${ssDefinitionEntry.uniqueTitles}"/>
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" 

@@ -40,6 +40,7 @@ public class FileAttachment extends Attachment {
     public FileAttachment(String name) {
     	super(name);
     }
+ 
     /**
      * @hibernate.component
      * @return

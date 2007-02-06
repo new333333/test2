@@ -17,6 +17,10 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembership;
  *
  */
 public interface AdminModule {
+   	public boolean testAccess(String operation);
+   	public boolean testAccess(WorkArea workArea, String operation);
+
+
 	public void addZone(String zoneName);
 	//TODO: temporary
 	public void setZone1(String zoneName);
@@ -39,7 +43,6 @@ public interface AdminModule {
 	public Long addTemplate(int type, Map updates);
 	public Long addTemplate(Long parentId, Long srcConfigId);
 	public void modifyTemplate(Long id, Map updates);
-	public void deleteTemplate(Long id);
 	public TemplateBinder getTemplate(Long id); 
 	public List getTemplates();
 	public List getTemplates(int type);

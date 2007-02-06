@@ -52,13 +52,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
             
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         ((Principal)entry).setZoneId(binder.getZoneId());
-        doFillin(entry, inputData, entryData);
+        doProfileEntryFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData);
      }
        
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	//see if we have updates to fields not covered by definition build
-    	doFillin(entry, inputData, entryData);
+    	doProfileEntryFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
     }
     /**
@@ -67,7 +67,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param inputData
      * @param entryData
      */
-    protected void doFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void doProfileEntryFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
     	if (entry instanceof User) {
     		if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
     			entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
@@ -304,7 +304,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        				getCoreDao().save(obj);
 	        	}
 	        }
-	        doFillin(entry, inputData, entryData);
+	        doProfileEntryFillin(entry, inputData, entryData);
 	        boolean changed = EntryBuilder.updateEntry(entry, entryData);
 	        if (changed) {
 	 	       User user = RequestContextHolder.getRequestContext().getUser();

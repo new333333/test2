@@ -63,15 +63,6 @@ public class ModifyBinderController extends AbstractBinderController {
 					
 				}
 				getBinderModule().modifyBinder(binderId, new MapInputData(formData), fileMap, deleteAtts);
-				String val = PortletRequestUtils.getStringParameter(request, "_library");
-				if (!Validator.isNull(val)) {
-					Binder binder = getBinderModule().getBinder(binderId);
-					boolean isLibrary = GetterUtil.get(val, binder.isLibrary());
-					if (isLibrary != binder.isLibrary()) {
-						getBinderModule().setLibrary(binderId, isLibrary);
-					}
-					
-				}
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move

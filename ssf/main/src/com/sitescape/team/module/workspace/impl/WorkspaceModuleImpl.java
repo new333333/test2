@@ -45,7 +45,15 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
-	public void checkAccess(Workspace workspace, String operation) throws AccessControlException {
+	public boolean testAccess(Workspace workspace, String operation) {
+		try {
+			checkAccess(workspace, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(Workspace workspace, String operation) throws AccessControlException {
 		if ("getWorkspace".equals(operation)) {
 			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.READ_ENTRIES);
 		} else if ("addFolder".equals(operation)) {

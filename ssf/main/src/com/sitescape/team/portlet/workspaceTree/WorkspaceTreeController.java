@@ -19,11 +19,11 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
@@ -71,25 +71,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		} catch (UnsupportedOperationException us) {}
 
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
-		//see if it is a user workspace - can also get directly to user ws by a binderId
-		//so don't assume anything here.  This just allows us to handle users without a workspace.
-		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
-			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-			if (entryId != null) {
-				User entry = (User)getProfileModule().getEntry(binderId, entryId);
-				//TODO: temp - make call to fix up add one
-//				if (entry.getWorkspaceId() == null) {
-					Map data = new HashMap();
-					data.put("title", entry.getName());
-					MapInputData inputData = new MapInputData(data);
-					binderId = getProfileModule().addWorkspace(binderId, entryId, null, inputData, null);
-//				} else {
-//					binderId = entry.getWorkspaceId();
-//				}
-			}
-		}
-
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
@@ -102,10 +83,32 @@ public class WorkspaceTreeController extends SAbstractController  {
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());
 			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 		}
+		Binder binder=null;
+		//see if it is a user workspace - can also get directly to user ws by a binderId
+		//so don't assume anything here.  This just allows us to handle users without a workspace.
+		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
+			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+			if (entryId != null) {
+				User entry = (User)getProfileModule().getEntry(binderId, entryId);
+				if (entry.getWorkspaceId() == null) {
+					binder = getProfileModule().addUserWorkspace(entry);
+				} else {
+					try {
+						binder = getBinderModule().getBinder(entry.getWorkspaceId());
+					} catch (NoBinderByTheIdException nb) {
+						binder = getProfileModule().addUserWorkspace(entry);
+						
+					}
+				}
+			}
+		}
+
 		
 		Map formData = request.getParameterMap();
-		Binder binder = getBinderModule().getBinder(binderId);
+		if (binder == null) binder = getBinderModule().getBinder(binderId);
 
+ 
  		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
 		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
@@ -223,8 +226,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Binder parent = workspace.getParentBinder();
 		//Add Workspace except to top or a user workspace
 		if ((parent != null) && !parent.getEntityType().equals(EntityType.profiles)) {
-			try {
-				getWorkspaceModule().checkAccess(workspace, "addWorkspace");
+			if (getWorkspaceModule().testAccess(workspace, "addWorkspace")) {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;
 				url = response.createActionURL();
@@ -232,12 +234,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
 				toolbar.addToolbarMenuItem("1_add", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
-			} catch (AccessControlException ac) {};
+			}
 		}
 		//Add Folder except to top
 		if (parent != null) {
-			try {
-				getWorkspaceModule().checkAccess(workspace, "addFolder");
+			if (getWorkspaceModule().testAccess(workspace, "addFolder")) {
 				if (addMenuCreated == false) {
 					toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 					addMenuCreated=true;
@@ -247,7 +248,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
 				toolbar.addToolbarMenuItem("1_add", "folders", NLT.get("toolbar.menu.addFolder"), url);
-			} catch (AccessControlException ac) {};
+			}
 		}
 	
 		//The "Administration" menu
@@ -273,8 +274,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//Delete
 		if (!workspace.isReserved()) {
-			try {
-				getBinderModule().checkAccess(workspace, "deleteBinder");
+			if (getBinderModule().testAccess(workspace, "deleteBinder")) {
 				Map qualifiers = new HashMap();
 				qualifiers.put("onClick", "return ss_confirmDeleteWorkspace();");
 				url = response.createActionURL();
@@ -283,11 +283,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.delete_workspace"), url, qualifiers);
-			} catch (AccessControlException ac) {};
+			}
 		}
 		//Modify
-		try {
-			getBinderModule().checkAccess(workspace, "modifyBinder");
+		if (getBinderModule().testAccess(workspace, "modifyBinder")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
@@ -296,19 +295,18 @@ public class WorkspaceTreeController extends SAbstractController  {
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
 			toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
-		} catch (AccessControlException ac) {};
+		}
 		
 		if (!workspace.isReserved()) {
 			//Move
-			try {
-				getBinderModule().checkAccess(workspace, "moveBinder");
+			if (getBinderModule().testAccess(workspace, "moveBinder")) {
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 				toolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.move_workspace"), url);
-			} catch (AccessControlException ac) {};
+			}
 		}
 		
 		//If this is a user workspace, add the "Manage this profile" menu
@@ -319,16 +317,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 			User owner = workspace.getOwner();
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
-			try {
-				getProfileModule().checkAccess(owner, "modifyEntry");
+			if (getProfileModule().testAccess(owner, "modifyEntry")) {
 				showModifyProfileMenu = true;
-			} catch (AccessControlException ac) {};
+			}
 		
-			try {
-				getProfileModule().checkAccess(owner, "deleteEntry");
+			if (getProfileModule().testAccess(owner, "deleteEntry")) {
 				//Don't let a user delete his or her own account
 				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
-			} catch (AccessControlException ac) {};
+			}
 			
 			if (showDeleteProfileMenu) {
 				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
@@ -398,14 +394,13 @@ public class WorkspaceTreeController extends SAbstractController  {
 				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
 	
 				//Check the access rights of the user
-				try {
-					getBinderModule().checkAccess(workspace, "setProperty");
+				if (getBinderModule().testAccess(workspace, "setProperty")) {
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					url.setParameter("_scope", "binder");
 					toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
-				} catch(AccessControlException e) {};
+				};
 			
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 

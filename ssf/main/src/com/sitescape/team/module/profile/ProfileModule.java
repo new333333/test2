@@ -5,29 +5,27 @@
 package com.sitescape.team.module.profile;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Document;
 
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.Visits;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 
 public interface ProfileModule {
-	public void checkAccess(ProfileBinder binder, String operation) throws AccessControlException;
-	public void checkAccess(Principal entry, String operation) throws AccessControlException;
+	public boolean testAccess(ProfileBinder binder, String operation);
+	public boolean testAccess(Principal entry, String operation);
 
    public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
 		throws AccessControlException, WriteFilesException;
@@ -77,8 +75,7 @@ public interface ProfileModule {
     public SeenMap getUserSeenMap(Long userId);
     public void setSeen(Long userId, Entry entry);
     public void setSeen(Long userId, List entries);
-    public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
+    public Workspace addUserWorkspace(User user) throws AccessControlException;
     
 	/**
 	 * Create an user from information from the portal.
