@@ -35,50 +35,51 @@
 
 
   <table cellspacing="0" cellpadding="0" width="100%">
-	  <tr>
-		  <td valign="top"><span class="ss_bold ss_largerprint">
-		  	<c:choose>
-		  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-		    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="view_permalink"
-				    binderId="${fileEntry._binderId}"
-				    entryId="${fileEntry._docId}">
-				    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-		    	    <ssf:param name="newTab" value="1"/>
-					</ssf:url>">
-		    </c:when>
-		    <c:when test="${fileEntry._entityType == 'user'}">
-		    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					action="view_permalink"
-					binderId="${fileEntry._principal.workspaceId}">
-					<ssf:param name="entityType" value="workspace" />
-		    	    <ssf:param name="newTab" value="1"/>
-					</ssf:url>" >
-		    </c:when>
-		    <c:when test="${fileEntry._entityType == 'group'}">
-		    <a target="_blank" href="<ssf:url action="view_profile_entry" 
-		    		folderId="${fileEntry._binderId}"
-		    		entryId="${fileEntry._docId}" />" >
-		    </c:when>
-		    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
-		    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="view_permalink"
-				    binderId="${fileEntry._docId}">
-				    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-		    	    <ssf:param name="newTab" value="1"/>
-					</ssf:url>" >
-		    </c:when>
-		 	</c:choose>
+	  <tr> 	
 			<td class="ss_miniBusinessCard">
 				<ssf:miniBusinessCard user="${fileEntry._principal}"/> 
 			</td>		 	
 			<td class="ss_guestbookContainer">
+			
+				<c:choose>
+			  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
+			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					    action="view_permalink"
+					    binderId="${fileEntry._binderId}"
+					    entryId="${fileEntry._docId}">
+					    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+			    	    <ssf:param name="newTab" value="1"/>
+						</ssf:url>">
+			    </c:when>
+			    <c:when test="${fileEntry._entityType == 'user'}">
+			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+						action="view_permalink"
+						binderId="${fileEntry._principal.workspaceId}">
+						<ssf:param name="entityType" value="workspace" />
+			    	    <ssf:param name="newTab" value="1"/>
+						</ssf:url>" >
+			    </c:when>
+			    <c:when test="${fileEntry._entityType == 'group'}">
+			    <a target="_blank" href="<ssf:url action="view_profile_entry" 
+			    		folderId="${fileEntry._binderId}"
+			    		entryId="${fileEntry._docId}" />" >
+			    </c:when>
+			    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+					    action="view_permalink"
+					    binderId="${fileEntry._docId}">
+					    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+			    	    <ssf:param name="newTab" value="1"/>
+						</ssf:url>" >
+			    </c:when>
+			 	</c:choose>
+			
 				<span class="ss_entryTitle">
 					<c:if test="${empty fileEntry.title}">
 				    	<i>(no title)</i>
 				    </c:if>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
-				</span>
+				</span></a>
 				<span class="ss_entrySignature"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
 				      value="${fileEntry._modificationDate}" type="both" 
 					  timeStyle="short" dateStyle="short" /></span>

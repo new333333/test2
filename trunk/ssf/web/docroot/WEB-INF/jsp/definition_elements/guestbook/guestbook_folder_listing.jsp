@@ -12,7 +12,14 @@
 				<ssf:miniBusinessCard user="<%=(User)entry.get("_principal")%>"/> 
 			</td>
 			<td class="ss_guestbookContainer">
-				<span class="ss_entryTitle"><c:out value="${entry.title}" escapeXml="false"/></span>
+				<a href="<ssf:url adapter="true" portletName="ss_forum" 
+					    action="view_permalink"
+					    binderId="${entry._binderId}"
+					    entryId="${entry._docId}">
+					    <ssf:param name="entityType" value="${entry._entityType}" />
+			    	    <ssf:param name="newTab" value="1"/>
+						</ssf:url>">
+				<span class="ss_entryTitle"><c:out value="${entry.title}" escapeXml="false"/></span></a>
 				<span class="ss_entrySignature"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
 				      value="${entry._modificationDate}" type="both" 
 					  timeStyle="short" dateStyle="short" /></span>
