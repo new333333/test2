@@ -268,6 +268,7 @@ public class WebKeys {
 	public static final String BLOG_REPLY="ssBlogReply";
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
+	public static final String CLIPBOARD="ssClipboard";
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";
