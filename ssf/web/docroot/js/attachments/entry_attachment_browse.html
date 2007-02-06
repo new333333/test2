@@ -9,7 +9,7 @@
 <script type="text/javascript">
 var strNoFileWarningMessage = "";
 var strCloseDivFunction = "";
-function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction, strBrowseFileAddAttachment) {
+function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction, closeDivAndAjaxCallFunction, strBrowseFileAddAttachment) {
 
 	var formName = document.getElementById("browseForm");
 	formName.action = url;
@@ -21,7 +21,7 @@ function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, c
 	
 	submitControl.value = submitButtonName;
 	closeControl.value = cancelButtonName;
-	closeDivFunctionName.value = closeDivFunction;
+	closeDivFunctionName.value = closeDivAndAjaxCallFunction;
 	divObj.innerHTML = strBrowseFileAddAttachment;
 	
 	strNoFileWarningMessage = noFileWarningMessage;
