@@ -354,6 +354,18 @@ private static ArrayList xferFileList;
     return color;
   }
 
+  private void onCancelFunction()
+  {
+    try {
+      String onCancelFunction = topframe.getParameter("onCancelFunction");
+      System.out.println("Hemanth: onCancelFunction: "+onCancelFunction);
+      if (onCancelFunction.equals(null) || "".equals(onCancelFunction)) return;
+      JSObject win = JSObject.getWindow(topframe);
+      String args[] = {};
+      Object foo = win.call(onCancelFunction,args);
+    } catch (Exception ignored) { }
+  }
+  
   /**
    * Convert a "#FFFFFF" hex string to a Color.
    * If the color specification is bad, an attempt
@@ -386,6 +398,7 @@ private static ArrayList xferFileList;
       addFilesToList();
     } else if(action.equals (menuCancel) ) {
       changeIcon(StaticGif);
+      onCancelFunction();
       return;
     } else if (action.equals(menuDeactivate) ) {
       deactivateApplet();

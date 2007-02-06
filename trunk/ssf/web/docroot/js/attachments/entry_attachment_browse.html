@@ -1,17 +1,31 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{$lang_ss_addimage_insert_image_title}</title>
-	<link href="css/ss_addimage.css" rel="stylesheet" type="text/css" />
+<style>
+.ss_browseHelpText {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 0.7em;
+  }
+</style>
 <script type="text/javascript">
 var strNoFileWarningMessage = "";
 var strCloseDivFunction = "";
-function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction) {
-	browseForm.action = url;
-	browseForm.browseSubmit.value = submitButtonName;
-	browseForm.closeBrowse.value = cancelButtonName;
+function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction, strBrowseFileAddAttachment) {
+
+	var formName = document.getElementById("browseForm");
+	formName.action = url;
+	
+	var submitControl = document.getElementById("ssBrowseSubmit");
+	var closeControl = document.getElementById("ssCloseBrowse");
+	var closeDivFunctionName = document.getElementById("ssCloseDivFunctionName");
+	var divObj = document.getElementById("ssBrowseAddAttachment");
+	
+	submitControl.value = submitButtonName;
+	closeControl.value = cancelButtonName;
+	closeDivFunctionName.value = closeDivFunction;
+	divObj.innerHTML = strBrowseFileAddAttachment;
+	
 	strNoFileWarningMessage = noFileWarningMessage;
 	strCloseDivFunction = closeDivFunction;
-	browseForm.ssCloseDivFunctionName.value = closeDivFunction;
 }
 
 function ssCloseDiv() {
@@ -42,9 +56,14 @@ function checkForFile() {
 	</tr>
 	<tr>
 		<td width="100%">
-			<input type="submit" id="browseSubmit" name="browseSubmit" value="" onClick="return (checkForFile());" />&nbsp;&nbsp;
-			<input type="submit" id="closeBrowse" name="closeBrowse" value="" onClick="ssCloseDiv(); return false;" />
+			<input type="submit" id="ssBrowseSubmit" name="ssBrowseSubmit" value="" onClick="return (checkForFile());" />&nbsp;&nbsp;
+			<input type="submit" id="ssCloseBrowse" name="ssCloseBrowse" value="" onClick="ssCloseDiv(); return false;" />
 			<input type="hidden" id="ssCloseDivFunctionName" name="ssCloseDivFunctionName" value="" />
+		</td>
+	</tr>
+	<tr>
+		<td width="100%" class="ss_browseHelpText">
+			<div id="ssBrowseAddAttachment" name="ssBrowseAddAttachment"></div>
 		</td>
 	</tr>
 </tbody>

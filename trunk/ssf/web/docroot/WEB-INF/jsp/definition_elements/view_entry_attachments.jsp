@@ -29,7 +29,7 @@ function ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>()
 	frameObj.style.visibility = "visible";
 	
 	divObj.style.width = "360px";
-	divObj.style.height = "100px";
+	divObj.style.height = "120px";
 
     //ss_setObjectTop(divObj, (ss_getDivTop('ss_browse_div_position<portlet:namespace/>')+20) + "px");
 	//ss_setObjectLeft(divObj, (ss_getDivLeft('ss_browse_div_position<portlet:namespace/>')) + "px");
@@ -74,12 +74,9 @@ function ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-	divObj.style.width = "55px";
+	divObj.style.width = "300px";
 	divObj.style.height = "55px";
 
-    //ss_setObjectTop(divObj, (ss_getDivTop('ss_dropbox_div_position<portlet:namespace/>')+20) + "px");
-    //ss_setObjectLeft(divObj, (ss_getDivLeft('ss_dropbox_div_position<portlet:namespace/>')) + "px");
-	
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
 
@@ -103,20 +100,6 @@ function ss_postAttachment${ssDefinitionEntry.id}<portlet:namespace/>(obj) {
 	ss_showAddAttachments<portlet:namespace/>();
 }
 
-function resizeIFrame<portlet:namespace />() {
-/*
-	var divObj = document.getElementById("ss_add_attachment_display${ssDefinitionEntry.id}<portlet:namespace/>");
-	var iframeObj = document.getElementById("ss_iframe_add_attachment${ssDefinitionEntry.id}<portlet:namespace/>");
-	
-	var entryHeight = divObj.scrollHeight;
-	
-	entryHeight = entryHeight;
-	
-	ss_setObjectHeight(divObj, entryHeight);
-	ss_setObjectHeight(iframeObj, entryHeight);
-*/
-}
-
 function setURLInIFrame${ssDefinitionEntry.id}<portlet:namespace />() {
  	var url = "<ssf:url 
     	adapter="true"
@@ -127,7 +110,7 @@ function setURLInIFrame${ssDefinitionEntry.id}<portlet:namespace />() {
 		<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
 		<ssf:param name="operation" value="add_files_by_browse_for_entry" />
     	</ssf:url>";
-	this.frames['ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>'].setURL(url, "<ssf:nlt tag="button.ok"/>", "<ssf:nlt tag="button.cancel"/>", "<ssf:nlt tag="entry.chooseFileWarningMessage"/>", "ss_hideAddAttachmentBrowseAndAJAXCall${ssDefinitionEntry.id}<portlet:namespace/>()");
+	this.frames['ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>'].setURL(url, "<ssf:nlt tag="button.ok"/>", "<ssf:nlt tag="button.cancel"/>", "<ssf:nlt tag="entry.chooseFileWarningMessage"/>", "ss_hideAddAttachmentBrowseAndAJAXCall${ssDefinitionEntry.id}<portlet:namespace/>()", "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>");
 }
 
 function ss_selectEntryAttachmentAjax${ssDefinitionEntry.id}<portlet:namespace/>() {
@@ -205,13 +188,6 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 		<a class="ss_linkButton ss_smallprint" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 			<ssf:nlt tag="entry.AttachFilesByApplet"/>
 		</a>
-		<div id="ss_div_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
-			<div align="right">
-			<a  onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;"><img 
-			  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
-			</div>	
-			<iframe frameborder="0" scrolling="no" id="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" height="70%" width="80%" onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;">xxx</iframe>
-		</div>
 	</td>
 
 	<% if (isIE) { %>
@@ -236,7 +212,11 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 		</a>
 	</td>
 	
+	<% if (isIE) { %>
 	<td width="30%">
+	<% } else { %>
+	<td width="40%">
+	<% } %>
 		<div id="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" width="1px" height="1px" name="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" style="visibility:hidden;display:none;">
 			<div align="right">
 				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" height="100%" width="100%">xxx</iframe>
@@ -250,6 +230,14 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 			<tr>
 				<td width="40%"></td>
 				<td width="60%">
+					<div id="ss_div_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
+						<div align="right">
+						<a  onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;"><img 
+						  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+						</div>	
+						<iframe frameborder="0" scrolling="no" id="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" height="70%" width="100%" onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;">xxx</iframe>
+					</div>
+
 					<div id="ss_div_browse${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
 						<a onClick="ss_hideAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;"><img 
