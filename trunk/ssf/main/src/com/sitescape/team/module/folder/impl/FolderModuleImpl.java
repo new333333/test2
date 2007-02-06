@@ -19,7 +19,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.team.InternalException;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -56,11 +55,9 @@ import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
@@ -78,14 +75,21 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
-    protected ProfileModule profileModule;
 
 
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
-	public void checkAccess(Folder folder, String operation) throws AccessControlException {
+	public boolean testAccess(Folder folder, String operation) {
+		try {
+			checkAccess(folder, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(Folder folder, String operation) throws AccessControlException {
 		if ("getFolder".equals(operation)) {
 			getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		} else if ("addEntry".equals(operation)) {
@@ -96,7 +100,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		}
 	}
-	public void checkAccess(FolderEntry entry, String operation) throws AccessControlException {
+	public boolean testAccess(FolderEntry entry, String operation) {
+		try {
+			checkAccess(entry, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(FolderEntry entry, String operation) throws AccessControlException {
 		if ("getEntry".equals(operation)) {
 	    	AccessUtils.readCheck(entry);			
 		} else if ("addReply".equals(operation)) { 	//TODO: this check is missing workflow checks??
@@ -133,12 +145,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	public void setFileModule(FileModule fileModule) {
 		this.fileModule = fileModule;
-	}
-	public ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
 	}
 	
 	private Folder loadFolder(Long folderId)  {

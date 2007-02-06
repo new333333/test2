@@ -22,15 +22,6 @@
 <div style="margin:6px;">
 
 <c:if test="${ssOperation == 'modify'}">
-<form method="post" action="<portlet:actionURL><portlet:param 
-		name="action" value="configure_configuration"/>
-		<portlet:param name="operation" value="modify"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
-
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
 <h2>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
 <ssf:nlt tag="administration.configure_cfg.workspaceTemplate.title"/>
@@ -39,44 +30,9 @@
 <ssf:nlt tag="administration.configure_cfg.folderTemplate.title"/>
 </c:if>
 <ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></h2>
+<ssf:nlt tag="administration.configure_cfg.modifyTarget"/>
+<%@ include file="/WEB-INF/jsp/binder/modify_binder.jsp" %>
 
-<table>
-<tr><td>
-<c:if test="${ssBinderConfig.entityType == 'workspace'}">
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.workspaceTarget.label"/></span>
-</c:if>
-<c:if test="${ssBinderConfig.entityType != 'workspace'}">
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.folderTarget.label"/></span>
-</c:if>
-<input type="text" name="title" value="<ssf:nlt tag="${ssBinderConfig.title}" checkIfTag="true"/>"/>
-</td></tr>
-<tr><td>
-<span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.description"/></span>
-    <div align="left">
-    <ssf:htmleditor name="description" >
-		<c:if test="${!empty ssBinderConfig.description.text}">${ssBinderConfig.description.text}</c:if>
-  	</ssf:htmleditor>
-  	</div>
-</td></tr>
-<c:if test="${ssBinderConfig.entityType == 'folder'}">
-<tr><td>
-<input type="checkbox" name="library" <c:if test="${ssBinderConfig.library}">checked="checked"</c:if>/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.library"/></span>
-</td></tr>
-<tr><td>
-<input type="checkbox" name="uniqueTitles" <c:if test="${ssBinderConfig.uniqueTitles}">checked="checked"</c:if>/>
-<span class="ss_labelRight"><ssf:nlt tag="administration.configure_cfg.uniqueTitles"/></span>
-</td></tr>
-</c:if>
-</table>
-<div class="ss_formBreak"/>
-
-<div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
-</div>
-
-</form>
 </c:if>
 
 <c:if test="${ssOperation == 'modify_template'}">

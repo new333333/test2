@@ -34,7 +34,17 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     
     public DefinableEntity() {
     }
-
+    public DefinableEntity(DefinableEntity source) {
+    	title = source.title;
+    	normalTitle = source.normalTitle;
+    	description = new Description(source.description);
+    	parentBinder = source.parentBinder;
+    	entryDef = source.entryDef;
+    	iconName = source.iconName;
+    	definitionType = source.definitionType;
+    	//cannot copy events,customattribute and attachments, since they need a ownerId
+    	
+    }
 	public EntityIdentifier getEntityIdentifier() {
 		if (entityIdentifier == null) entityIdentifier = new EntityIdentifier(getId(), getEntityType());
 		return entityIdentifier;

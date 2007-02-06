@@ -4,9 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class TemplateBinder extends Binder implements Cloneable {
+public class TemplateBinder extends Binder {
 	protected Description tDescription;
 	protected String tTitle;
+	public TemplateBinder() {
+		super();
+	}
+	public TemplateBinder(TemplateBinder source) {
+		super(source);
+		tDescription = new Description(source.getTemplateDescription());
+		tTitle = source.tTitle;
+	}
 	public EntityIdentifier.EntityType getEntityType() {
 		if (definitionType == Definition.FOLDER_VIEW)
 			return EntityIdentifier.EntityType.folder;
@@ -70,26 +78,5 @@ public class TemplateBinder extends Binder implements Cloneable {
     	if (isRoot()) return true;  //may want config to always inherit
     	return getParentBinder().getEntityType().equals(getEntityType());
     }
-    public TemplateBinder clone() {
- 	   try {
- 		   TemplateBinder other = (TemplateBinder)super.clone();
- 		   other.setId(null);
- 		   if (definitions != null)
- 			   //can copy definitions since they are shared
- 			   other.definitions = new ArrayList(definitions);
- 		   other.parentBinder=null;
- 		   other.binders = null;
- 		   other.events = null;
- 		   other.attachments = null;
- 		   other.customAttributes = null;
- 		   other.setNotificationDef(null);
- 		   if (workflowAssociations != null)
- 			   //can copy workflow associations since they are shared
-			   other.workflowAssociations = new HashMap(workflowAssociations);
- 		   return other;
- 	   }  catch (CloneNotSupportedException e) {
- 	        // This shouldn't happen, since we are Cloneable
- 	        throw new InternalError("Clone error: " + e.getMessage());
- 	   }
-    }
+
 }

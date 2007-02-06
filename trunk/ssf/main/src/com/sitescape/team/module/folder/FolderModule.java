@@ -148,7 +148,7 @@ public interface FolderModule {
     public Set<String> getSubfoldersTitles(Folder folder);
     
     public Set<Folder> getSubfolders(Folder folder);
-    public void checkAccess(Folder folder, String operation) throws AccessControlException;
-    public void checkAccess(FolderEntry entry, String operation) throws AccessControlException;
+    public boolean testAccess(Folder folder, String operation);
+    public boolean testAccess(FolderEntry entry, String operation);
 
 }

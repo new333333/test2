@@ -352,6 +352,7 @@
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -1056,6 +1057,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
 		</jsps>
 	</item>
 	
@@ -1076,18 +1078,21 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="folderList" caption="__folder_listing">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
 		</jsps>
 	</item>
 
 	<item name="viewEntry" caption="__view_entry_selectbox">
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
 		</jsps>
 	</item>
 		
@@ -1778,7 +1783,7 @@
 			<option name="descriptionView" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="8" />
-			<option name="workspaceBinderList" initial="true" />
+			<option name="workspaceBinderList"/>
 			<option_select path="//item[@category='workspaceView']" />
 			<option_select path="//item[@category='generalLayout']" 
 				optionCaption="__layout_options" />
@@ -1837,6 +1842,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
 		</jsps>
 	</item>
 

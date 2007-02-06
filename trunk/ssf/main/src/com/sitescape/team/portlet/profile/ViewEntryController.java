@@ -70,27 +70,25 @@ public class ViewEntryController extends SAbstractController {
 		//	Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		PortletURL url;
-		try {
-			getProfileModule().checkAccess(entry, "modifyEntry");
+		if (getProfileModule().testAccess(entry, "modifyEntry")) {
 			//	The "Modify" menu
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), url);
-		} catch (AccessControlException ac) {};
+		}
 	
     
 		//	The "Delete" menu
-		try {
-			getProfileModule().checkAccess(entry, "deleteEntry");
+		if (getProfileModule().testAccess(entry, "deleteEntry")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			toolbar.addToolbarMenu("3_delete", NLT.get("toolbar.delete"), url);
-		} catch (AccessControlException ac) {};
+		}
     
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR, toolbar.getToolbar());
 //		if (operation.equals("buddy")) 

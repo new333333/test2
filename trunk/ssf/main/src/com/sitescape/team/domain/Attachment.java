@@ -28,6 +28,10 @@ public abstract class Attachment extends PersistentTimestampObject
     public Attachment(String name) {
     	this.name = name;
     }
+    public Attachment(Attachment source) {
+    	name = source.name;
+    	type = source.type;
+    }
     /**
      * @hibernate.property insert="false" update="false"
      * use in queries

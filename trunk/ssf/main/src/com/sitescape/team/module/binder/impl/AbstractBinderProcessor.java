@@ -21,7 +21,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
-
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
@@ -30,7 +29,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
@@ -260,20 +259,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	if (obj instanceof Event)
         		getCoreDao().save(obj);
         }
-   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
-   			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, inputData.getSingleObject(ObjectKeys.FIELD_BINDER_LIBRARY));
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, inputData.getSingleObject(ObjectKeys.FIELD_BINDER_UNIQUETITLES));
-   		}
-    
-   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_ICONNAME) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_ICONNAME)) {
-   			entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, inputData.getSingleObject(ObjectKeys.FIELD_ENTITY_ICONNAME));
-   		}
-   		EntryBuilder.buildEntry(binder, entryData);
+        doBinderFillin(binder, inputData, entryData);
+  		EntryBuilder.buildEntry(binder, entryData);
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
@@ -294,8 +281,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
     	indexBinder(binder, fileUploadItems, null, true);
     }
- 	
- 	
+ 	//common fillin for add/modify
+ 	protected void doBinderFillin(Binder binder, InputDataAccessor inputData, Map entryData) {  
+   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
+   			String val = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION);
+   			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, new Description(val) );
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
+   		}
+    
+   		if (inputData.exists(ObjectKeys.FIELD_ENTITY_ICONNAME) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_ICONNAME)) {
+   			entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_ICONNAME));
+   		}
+  		
+ 	}
     //***********************************************************************************************************
     public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
     		Map fileItems, final Collection deleteAttachments) 
@@ -402,7 +405,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				getCoreDao().save(obj);
         	}
         }
-        
+        doBinderFillin(binder, inputData, entryData);
+               
         EntryBuilder.updateEntry(binder, entryData);
 
     }

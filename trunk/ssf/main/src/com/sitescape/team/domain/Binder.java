@@ -44,11 +44,30 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     //uuid to identify a reserved binder
     private String internalId;
     //force attachments of all child objects to have unique names.
-    protected boolean library=false;
+    protected boolean library=true;
     //force child objects to have a unique normalized title.  This is an aide to 
     //wikis which link to titles
     protected boolean uniqueTitles=false;
-      
+    public Binder() {
+    }
+    public Binder(Binder source) {
+    	super(source);
+ 		if (source.definitions != null)
+			//can copy definitions since they are shared
+			definitions = new ArrayList(source.definitions);
+		 if (source.workflowAssociations != null)
+  			 //can copy workflow associations since they are shared
+  			 workflowAssociations = new HashMap(source.workflowAssociations);
+		 name = source.name;
+		 zoneId = source.zoneId;
+		 type = source.type;
+		 definitionsInherited=source.definitionsInherited;
+		 functionMembershipInherited=source.functionMembershipInherited;
+		 inheritAclFromParent=source.inheritAclFromParent;
+		 library=source.library;
+		 uniqueTitles = source.uniqueTitles;
+ 
+     }
     /**
      * @hibernate.property not-null="true"
      */

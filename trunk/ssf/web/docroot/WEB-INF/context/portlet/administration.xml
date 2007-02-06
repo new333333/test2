@@ -19,7 +19,6 @@
 	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
 	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
 	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
-	<bean id="binderModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyBinderController" />
 	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -42,7 +41,6 @@
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
 						<entry key="configure_definitions"><ref bean="configureController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
-						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 					</map>

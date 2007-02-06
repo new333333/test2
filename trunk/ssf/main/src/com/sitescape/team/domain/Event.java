@@ -2703,7 +2703,7 @@ public class Event extends PersistentTimestampObject implements Cloneable,Update
   public Object clone() {
     try {
       Event other = (Event)super.clone();
-
+      other.name = name;
       other.dtStart = (dtStart != null ? (Calendar)dtStart.clone() : null);
       other.duration = (duration != null ? (Duration)duration.clone() : null);
       other.frequency = frequency;

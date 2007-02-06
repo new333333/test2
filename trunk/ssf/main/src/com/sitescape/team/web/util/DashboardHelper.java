@@ -434,10 +434,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		
 		//Check the access rights of the user
-		try {
-			getInstance().getBinderModule().checkAccess(binder, "setProperty");
+		if (getInstance().getBinderModule().testAccess(binder, "setProperty")) {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(true));
-		} catch(AccessControlException e) {
+		} else {
 			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));			
 		};
 		

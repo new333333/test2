@@ -73,6 +73,8 @@ public class CustomAttribute  {
    protected AnyOwner owner;
    protected String id;
    //no versioning on custom attributes
+ 
+   
 	/**
 	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null"
 	 * @hibernate.column name="id" sql-type="char(32)"
@@ -500,4 +502,5 @@ public class CustomAttribute  {
 
 	    return element;
     }
+
 }

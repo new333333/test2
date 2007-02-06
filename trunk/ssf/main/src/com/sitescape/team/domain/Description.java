@@ -28,6 +28,13 @@ public class Description {
         setText(text);
         setFormat(format);
     }
+    public Description(Description source) {
+    	super();
+    	if (source != null) {
+    		setText(source.getText());
+    		setFormat(source.getFormat());
+    	}
+    }
     
     
     /**

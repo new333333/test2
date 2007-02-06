@@ -73,7 +73,6 @@ public interface BinderModule {
     public void modifyPosting(Long binderId, Map updates);
     public void setPosting(Long binderId, String postingId);
     public void deletePosting(Long binderId);
-    public void setLibrary(Long binderId, boolean library);
     public boolean hasBinders(Binder binder);
     public boolean hasBinders(Binder binder, EntityType binderType);
 
@@ -114,6 +113,6 @@ public interface BinderModule {
 	 */
 	public List getTeamMembers(Binder binder);
 
-	public void checkAccess(Binder binder, String operation) throws AccessControlException;
+	public boolean testAccess(Binder binder, String operation);
 	
 }

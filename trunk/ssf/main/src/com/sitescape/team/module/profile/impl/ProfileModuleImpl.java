@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
@@ -36,10 +37,12 @@ import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -84,11 +87,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		this.transactionTemplate = transactionTemplate;
 	}
     
+    protected AdminModule adminModule;
+    protected AdminModule getAdminModule() {
+    	return adminModule;
+    }
+    public void setAdminModule(AdminModule adminModule) {
+    	this.adminModule = adminModule;
+    }
+    
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
-	public void checkAccess(ProfileBinder binder, String operation) throws AccessControlException {
+	public boolean testAccess(ProfileBinder binder, String operation) {
+		try {
+			checkAccess(binder, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(ProfileBinder binder, String operation) throws AccessControlException {
 		if ("getProfileBinder".equals(operation)) {
 			getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 		} else if ("addFolder".equals(operation)) { 	
@@ -101,7 +120,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 		}
 	}
-	public void checkAccess(Principal entry, String operation) throws AccessControlException {
+	public boolean testAccess(Principal entry, String operation) {
+		try {
+			checkAccess(entry, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(Principal entry, String operation) throws AccessControlException {
 		if ("getEntry".equals(operation)) {
 	    	AccessUtils.readCheck(entry);			
 	    } else if ("deleteEntry".equals(operation)) {
@@ -375,36 +402,33 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   
     }
 
-    public Long addWorkspace(Long binderId, Long entryId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = loadBinder(binderId);
-        checkAccess(binder, "addWorkspace");
-        ProfileCoreProcessor processor=loadProcessor(binder);
-        User entry = (User)processor.getEntry(binder, entryId);
+    public Workspace addUserWorkspace(User entry) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
-        	//better not exist
-        	Long wsId = entry.getWorkspaceId();
         	try {
-        		Workspace ws = (Workspace)getCoreDao().loadBinder(wsId, binder.getZoneId());
-        		//if worked, don't create another one
-        		if (ws.getOwner() == null) ws.setOwner(entry);
-        		return ws.getId(); 
+        		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
         	} catch (Exception ex) {};
         }
-        checkAccess(entry, "modifyEntry");
-        Definition definition = null;
-        if (Validator.isNotNull(definitionId))
-        	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
-        else 
-        	definition = getDefinitionModule().createDefaultDefinition(Definition.USER_WORKSPACE_VIEW);
-        //make sure still in a transaction when return.  ApplicationContext takes care of this.
-        Workspace ws = (Workspace)processor.addBinder(binder, definition, Workspace.class, inputData, fileItems);
-        entry.setWorkspaceId(ws.getId());
-        ws.setOwner(entry);
- //       ws.setInheritAclFromParent(false);
- //       ws.setFunctionMembershipInherited(false);
-        return ws.getId();
-    }
+   		List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
+   		try {
+   			if (!templates.isEmpty()) {
+   				TemplateBinder template = (TemplateBinder)templates.get(0);
+   				Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getName());
+   				Binder ws = getCoreDao().loadBinder(wsId, entry.getZoneId());
+   				entry.setWorkspaceId(wsId);
+   				ws.setOwner(entry);
+   				return (Workspace)ws;
+   			}
+   		} catch (WriteFilesException wf) {
+   			logger.error("Cannot create user workspace: ", wf);
+   			FilterControls fc = new FilterControls();
+   			fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, entry.getParentBinder());
+   			fc.add(ObjectKeys.FIELD_PRINCIPAL_NAME, entry.getName());
+   			List results = getCoreDao().loadObjects(Workspace.class, fc);
+   			if (!results.isEmpty()) return (Workspace)results.get(0);
+   		}
+   		
+        return null;
+   }
 
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
@@ -535,6 +559,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			EntryBuilder.updateEntry(user, updates);
 			// save so we have an id to work with
 			getCoreDao().save(user);
+			addUserWorkspace(user);
 
 			// indexing needs the user
 			ProfileCoreProcessor processor = (ProfileCoreProcessor) getProcessorManager()
@@ -553,7 +578,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
 	public void modifyUserFromPortal(User user, Map updates) {
-		if(updates == null)
+		if (updates == null)
 			return; // nothing to update with
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(user);
@@ -570,6 +595,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			RequestContextHolder.setRequestContext(oldCtx);				
 		};
 	}
-	
+
 }
 

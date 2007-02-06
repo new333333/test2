@@ -35,7 +35,6 @@ public class EntityDashboard extends Dashboard {
     public EntityDashboard clone() {
     	try {
     		EntityDashboard other = (EntityDashboard)super.clone();
-    		other.setId(null);
     		other.setProperties(new HashMap(getProperties()));
  		   	return other;
  	   	}  catch (CloneNotSupportedException e) {

@@ -200,16 +200,12 @@ public class ViewEntryController extends  SAbstractController {
 		boolean isEntryReserved = false;
 		boolean isLockedByAndLoginUserSame = false;
 
-		try {
-			getFolderModule().checkAccess(entry, "reserveEntry");
+		if (getFolderModule().testAccess(entry, "reserveEntry")) {
 			reserveAccessCheck = true;
 		}
-		catch (AccessControlException ac) {};
-		try {
-			getFolderModule().checkAccess(entry, "overrideReserveEntry");
+		if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
 			isUserBinderAdministrator = true;
 		}
-		catch (AccessControlException ac) {};
 		
 		HistoryStamp historyStamp = entry.getReservation();
 		if (historyStamp != null) isEntryReserved = true;
@@ -222,8 +218,7 @@ public class ViewEntryController extends  SAbstractController {
 		}
 		
 		if (!replyStyles.isEmpty()) {
-			try {
-				getFolderModule().checkAccess(entry, "addReply");
+			if (getFolderModule().testAccess(entry, "addReply")) {
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu
 					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
@@ -270,11 +265,10 @@ public class ViewEntryController extends  SAbstractController {
 						}
 					}
 				} 
-			} catch (AccessControlException ac) {};
+			}
 		}
 	    
-		try {
-			getFolderModule().checkAccess(entry, "modifyEntry");
+		if (getFolderModule().testAccess(entry, "modifyEntry")) {
 			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
 				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
@@ -297,7 +291,7 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
 			}
-		} catch (AccessControlException ac) {};
+		}
 
 		//Does the user have access to reserve the entry
 		if (reserveAccessCheck) {
@@ -341,8 +335,7 @@ public class ViewEntryController extends  SAbstractController {
 			}
 		}
 		
-		try {
-			getFolderModule().checkAccess(entry, "deleteEntry");
+		if (getFolderModule().testAccess(entry, "deleteEntry")) {
 			//The "Delete" menu
 			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), nullPortletUrl, disabledQual);
@@ -358,7 +351,7 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
 			}
-		} catch (AccessControlException ac) {};
+		}
 	    
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();

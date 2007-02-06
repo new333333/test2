@@ -1,4 +1,3 @@
-
 package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
@@ -123,8 +122,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * This should not be called inside a transaction because it results in a rollback.
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
-	public void checkAccess(Binder binder, String operation) throws AccessControlException {
-  		if (binder instanceof TemplateBinder) {
+	public boolean testAccess(Binder binder, String operation)  {
+		try {
+			checkAccess(binder, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	protected void checkAccess(Binder binder, String operation) throws AccessControlException {
+		if (binder instanceof TemplateBinder) {
+  			//gues anyone can read a template
+  			if ("getBinder".equals(operation)) return;
 			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
   		} else {
   			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
@@ -138,7 +147,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   				getAccessControlManager().checkOperation(binder, wfo[wfo.length-1]);
   			}
 		}
-//getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
+  		
+// fall under read_entries: getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
 //addSubscription,modifySubscription,deleteSubscription (personal)
 	}
 	private Binder loadBinder(Long binderId) {
@@ -208,6 +218,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
     	Binder binder = loadBinder(binderId);
+    	//save library flag
+    	boolean library = binder.isLibrary();
 		checkAccess(binder, "modifyBinder");
     	List atts = new ArrayList();
     	if (deleteAttachments != null) {
@@ -218,43 +230,38 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		}
     	}
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
+    	//if not longer a library - clear names
+    	if (!binder.isLibrary() && library) {
+			//remove old reserved names
+			getCoreDao().clearLibraryEntries(binder);
+    	} else if (binder.isLibrary() && !library) {
+    		// make it a library
+			getCoreDao().clearLibraryEntries(binder);
+			//add new ones
+			//get all attachments in this binder
+		   	FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
+		   			new Object[] {binder.getId(), "F"});
+		   	ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
+        	SFQuery query = getCoreDao().queryObjects(objs, filter);
+	        try {
+	        	while (query.hasNext()) {
+	        		Object [] result = (Object[])query.next();
+	        		LibraryEntry le = new LibraryEntry(binder.getId(), (String)result[0]);
+	        		le.setEntityId((Long)result[1]);
+	        		getCoreDao().save(le);
+	        	}
+	        } catch (HibernateSystemException he) {
+	        	if (he.contains(NonUniqueObjectException.class)) {
+	        		throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
+	        	}
+	        	
+	        } finally {
+	        	query.close();
+	        }
+   		
+    	}
     }
-    public void setLibrary(Long binderId, boolean library) {
-    	Binder binder = loadBinder(binderId);
-		checkAccess(binder, "setLibrary");
-		if (library != binder.isLibrary()) {
-			binder.setLibrary(library);
-			if (library == false) {
-				//remove old reserved names
-				getCoreDao().clearLibraryEntries(binder);
-			} else {
-				getCoreDao().clearLibraryEntries(binder);
-				//add new ones
-				//get all attachments in this binder
-			   	FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
-			   			new Object[] {binder.getId(), "F"});
-			   	ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
-	        	SFQuery query = getCoreDao().queryObjects(objs, filter);
-		        try {
-		        	while (query.hasNext()) {
-		        		Object [] result = (Object[])query.next();
-		        		LibraryEntry le = new LibraryEntry(binder.getId(), (String)result[0]);
-		        		le.setEntityId((Long)result[1]);
-		        		getCoreDao().save(le);
-		        	}
-		        } catch (HibernateSystemException he) {
-		        	if (he.contains(NonUniqueObjectException.class)) {
-		        		throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
-		        	}
-		        	
-		        } finally {
-		        	query.close();
-		        }
-				
-			}
-		}
-
-    }
+ 
     public void setProperty(Long binderId, String property, Object value) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "setProperty");
@@ -264,6 +271,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	Binder binder = loadBinder(binderId);
     	//if can delete this binder, can delete everything under it??
 		checkAccess(binder, "deleteBinder");
+		if (binder.isReserved()) throw new NotSupportedException(
+				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
+
    		List errors = deleteChildBinders(binder);
    		if (errors.isEmpty()) loadBinderProcessor(binder).deleteBinder(binder);
    		else {

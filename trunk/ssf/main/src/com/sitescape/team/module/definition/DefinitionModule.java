@@ -20,6 +20,8 @@ import com.sitescape.team.module.shared.InputDataAccessor;
  *
  */
 public interface DefinitionModule {
+  	public boolean testAccess(String operation);
+
 	public Definition getDefinition(String id);
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
 	public String addDefinition(Document doc);

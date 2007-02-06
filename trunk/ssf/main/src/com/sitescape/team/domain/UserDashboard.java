@@ -47,7 +47,6 @@ public class UserDashboard extends Dashboard {
     public UserDashboard clone() {
     	try {
     		UserDashboard other = (UserDashboard)super.clone();
-    		other.setId(null);
     		other.setProperties(new HashMap(getProperties()));
  		   	return other;
  	   	}  catch (CloneNotSupportedException e) {

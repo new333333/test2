@@ -53,25 +53,18 @@ public class AddFolderController extends SAbstractController {
 		model.put(WebKeys.BINDER, binder); 
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-			getFolderModule().checkAccess((Folder)binder, "addFolder");
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-			if (binder.getEntityIdentifier().getEntityType().name().equals(EntityType.folder)) {
-				getFolderModule().checkAccess((Folder)binder, "addFolder");
-			} else {
-				getWorkspaceModule().checkAccess((Workspace)binder, "addFolder");
-			}
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-			getWorkspaceModule().checkAccess((Workspace)binder, "addWorkspace");
 			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
 				result.add(getAdminModule().createDefaultTemplate(Definition.WORKSPACE_VIEW));	

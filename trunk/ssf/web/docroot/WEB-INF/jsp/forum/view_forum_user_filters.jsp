@@ -43,19 +43,28 @@
 </form>
 <script type="text/javascript">
 function ss_changeUserFilter(obj, filter) {
+<c:if test="${ssConfigJspStyle != 'template'}">
 	var loading = "&nbsp;(<ssf:nlt tag="loading" text="loading"/>)&nbsp;"
 	document.getElementById('ss_filterTitle').innerHTML = "&nbsp;"+obj.innerHTML+loading;
 	document.forms.ss_filterSelect.select_filter.value = filter;
 	document.forms.ss_filterSelect.submit();
+</c:if>
 }
 </script>
 </td>
-<td valign="top" nowrap><a href="<portlet:renderURL windowState="maximized">
+<td valign="top" nowrap>
+<c:if test="${ssConfigJspStyle != 'template'}">
+<a href="<portlet:renderURL windowState="maximized">
 		<portlet:param name="action" value="build_filter"/>
 		<portlet:param name="binderId" value="${ssBinder.id}"/>
 		<portlet:param name="binderType" value="${ssBinder.entityType}"/>
 		</portlet:renderURL>"
-><span class="ss_fineprint">&nbsp;&nbsp;&nbsp;<ssf:nlt tag="edit" text="edit"/></span></a></td>
+><span class="ss_fineprint">&nbsp;&nbsp;&nbsp;<ssf:nlt tag="edit" text="edit"/></span></a>
+</c:if>
+<c:if test="${ssConfigJspStyle == 'template'}">
+<span class="ss_fineprint">&nbsp;&nbsp;&nbsp;<ssf:nlt tag="edit" text="edit"/></span>
+</c:if>
+</td>
 </tr>
 </table>
 
