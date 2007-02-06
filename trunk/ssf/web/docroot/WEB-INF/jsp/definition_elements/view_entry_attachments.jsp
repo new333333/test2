@@ -110,7 +110,11 @@ function setURLInIFrame${ssDefinitionEntry.id}<portlet:namespace />() {
 		<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
 		<ssf:param name="operation" value="add_files_by_browse_for_entry" />
     	</ssf:url>";
-	this.frames['ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>'].setURL(url, "<ssf:nlt tag="button.ok"/>", "<ssf:nlt tag="button.cancel"/>", "<ssf:nlt tag="entry.chooseFileWarningMessage"/>", "ss_hideAddAttachmentBrowseAndAJAXCall${ssDefinitionEntry.id}<portlet:namespace/>()", "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>");
+	this.frames['ss_iframe_browse${ssDefinitionEntry.id}<portlet:namespace/>'].setURL(url, "<ssf:nlt tag="button.ok"/>", 
+						"<ssf:nlt tag="button.cancel"/>", "<ssf:nlt tag="entry.chooseFileWarningMessage"/>", 
+						"ss_hideAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>()",
+						"ss_hideAddAttachmentBrowseAndAJAXCall${ssDefinitionEntry.id}<portlet:namespace/>()", 
+						"<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>");
 }
 
 function ss_selectEntryAttachmentAjax${ssDefinitionEntry.id}<portlet:namespace/>() {
