@@ -1755,16 +1755,12 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     		throw new InternalException();
     	}
     	
-		try {
-			//if we are adding a new version of an existing attachment to 
-			//a uniqueName item, set flag - (will already be set if originally added
-			//through a unique element.  In other works, once unique always unique
-			if (fui.isUniqueName()) fAtt.setUniqueName(true);
-			updateFileAttachment(fAtt, user, versionName, fui.getSize(), fui.getModDate());
-		}
-		catch(IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		//if we are adding a new version of an existing attachment to 
+		//a uniqueName item, set flag - (will already be set if originally added
+		//through a unique element.  In other works, once unique always unique
+		if (fui.isUniqueName()) fAtt.setUniqueName(true);
+		long fileSize = session.getContentLength(binder, entry, relativeFilePath);
+		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate());
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
@@ -1819,6 +1815,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 		String versionName = createVersionedWithInputData(session, binder, entry,
 				fui.getOriginalFilename(), inputData);
+		
+		long fileSize = session.getContentLength(binder, entry, fui.getOriginalFilename());
+		
+		fAtt.getFileItem().setLength(fileSize);
 
 		createVersionAttachment(fAtt, versionName);
 
@@ -1890,11 +1890,15 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	fAtt.setUniqueName(fui.isUniqueName());
     	FileItem fItem = new FileItem();
     	fItem.setName(relativeFilePath);
-    	try {
-			fItem.setLength(fui.getSize());
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+    	// Optimization: Do NOT try to get the file size directly from the 
+    	// FileUploadItem object. In the case where the content is available
+    	// only as a InputStream (as opposed to a File), getting the size 
+    	// here causes the content to be stored in a temporary file on disk
+    	// just to be able to figure out the size. This additional copy is,
+    	// not to mention, inefficient. Therefore, we will get the size 
+    	// information from the repository after the content has been actually
+    	// written to the repository.
+    	
     	fAtt.setFileItem(fItem);
 	
     	return fAtt;

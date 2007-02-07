@@ -1,12 +1,10 @@
 package com.sitescape.team.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 public class FileUploadItem {
@@ -132,19 +130,6 @@ public class FileUploadItem {
 	 */
 	public String getOriginalFilename() {
 		return mf.getOriginalFilename();
-	}
-	
-	public long getSize() throws IOException {
-		long size = mf.getSize();
-		if(size < 0) {
-			// This indicates that the underlying MultipartFile is not capable
-			// of computing the size of the data without actually reading it
-			// first. 
-			if(!ready)
-				setup();
-			size = file.length();
-		}
-		return size;
 	}
 	
 	/*
