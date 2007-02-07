@@ -7,8 +7,6 @@
 	<property file="${project.dir}/app.server.properties" />
 	<property file="${project.dir}/build.${user.name}.properties" />
 	<property file="${project.dir}/build.properties" />
-	<property file="${project.dir}/release.${user.name}.properties" />
-	<property file="${project.dir}/release.properties" />
 	<path id="project.classpath">
 		<pathelement path="${classpath}" />
 		<fileset dir="${project.dir}/lib" includes="*.jar" />

@@ -11,8 +11,6 @@
 		<property file="app.server.properties" />
   		<property file="build.${user.name}.properties" />
   		<property file="build.properties" />
-  		<property file="release.${user.name}.properties" />
-  		<property file="release.properties" />
 		<property name="temp.dir" value="${basedir}/temp" />
 		<pathconvert targetos="unix" property="temp.dir.path">
 			<path>
@@ -29,16 +27,16 @@
 		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
 	</target>
 
-	<target name="clean-build-and-full-deploy" depends="clean,build,deploy-internal" />
+	<!--<target name="clean-build-and-full-deploy" depends="clean,build,deploy-internal" />
 
-	<target name="build-and-full-deploy" depends="build,deploy-internal" />
+	<target name="build-and-full-deploy" depends="build,deploy-internal" />-->
 
-	<!-- Do NOT run the following target on its own (unless you know
-	     what you are doing). When executed on its own, it may very
-	     well be deploying an artifact built for different portal. 
-	     So when in doubt, ALWAYS run either "all" or "all-without-clean"
-	     which will re-build the artifacts before deploying them. -->
-	<target name="deploy-internal" depends="init">
+	<!-- Do NOT run the following target on its own. When executed on its own, 
+	     it may very well be deploying an artifact built for different portal. 
+	     So when in doubt, ALWAYS run either "clean-build-and-full-deploy" or 
+	     "build-and-full-deploy", which will re-build correct artifacts before 
+	     deploying them. -->
+	<target name="full-deploy-internal" depends="init">
 		<if>
 			<equals arg1="${portal.type}" arg2="liferay" />
 			<then>				
@@ -58,6 +56,12 @@
 		<antcall target="jar" />
 	</target>
 
+	<target name="clean-build" depends="clean,build" />
+	
+	<target name="clean-build-and-full-deploy" depends="clean-build,full-deploy-internal"/>
+	
+	<target name="build-and-full-deploy" depends="build,full-deploy-internal"/>
+	
 	<target name="clean">
 		<delete dir="${temp.dir}" />
 		<delete dir="${docs.api.dir}" />
@@ -130,6 +134,28 @@
 		<ant dir="ssfs" target="war" />
 	</target>
 
+	<target name="deploy">
+		<ant dir="util" target="deploy" />
+		<ant dir="indexer-lucene" target="deploy" />
+		<ant dir="remoting" target="deploy" />
+		<ant dir="as-module" target="deploy" />
+
+		<ant dir="applets" target="deploy" />
+
+		<ant dir="main" target="deploy" />
+		<ant dir="portal-module" target="deploy" />
+		<ant dir="liferay" target="deploy" />
+		<ant dir="jboss-portal" target="deploy" />
+		<ant dir="taglib" target="deploy" />
+
+		<!-- Do NOT deploy tools archive -->
+		<!--<ant dir="tools" target="deploy" />-->
+		
+		<ant dir="web" target="deploy" />
+		
+		<ant dir="ssfs" target="deploy" />
+	</target>
+
 	<target name="java2html">
 		<delete dir="${docs.api.dir}" />
 
@@ -184,25 +210,25 @@
   		<ant dir="web" target="precompile-jsp" />
 	</target>
 		
-	<target name="zip">
+	<!--<target name="zip">
 		<antcall target="zip-docs" />
-		<!--<antcall target="zip-src" />-->
+		<antcall target="zip-src" />
 		<antcall target="zip-war" />
 		<antcall target="liferay-tomcat-bundle" />
 		<antcall target="liferay-jboss-tomcat-bundle" />
 		<antcall target="jbossportal-jboss-tomcat-bundle" />
   		<ant dir="indexer-lucene" target="zip" />
   		<ant dir="stellent" target="zip" />
-	</target>
+	</target>-->
 
-	<target name="zip-docs" depends="init">
+	<!--<target name="zip-docs" depends="init">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-doc-${forum.version}.zip" failonerror="false" />
 		<zip zipfile="${dist.dir}/sitescape-forum-doc-${forum.version}.zip"
 			basedir="."
 			includes="docs/**/*.*"
 		/>
-	</target>
+	</target>-->
 
 	<!--<target name="zip-src" depends="init">
 		<delete file="${dist.dir}/sitescape-forum-src-${forum.version}.zip" failonerror="false" />
@@ -212,16 +238,16 @@
 		/>
 	</target>-->
 
-	<target name="zip-war" depends="init">
+	<!--<target name="zip-war" depends="init">
 		<mkdir dir="${dist.dir}" />
 		<delete file="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" failonerror="false" />
 		<delete file="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" failonerror="false" />
 		<copy file="war/ssf.war" tofile="${dist.dir}/sitescape-forum-ssf-${forum.version}.war" />
 		<copy file="ssfs/ssfs.war" tofile="${dist.dir}/sitescape-forum-ssfs-${forum.version}.war" />
-	</target>
+	</target>-->
 
 	<!-- Build Aspen kit bundled with Liferay-Tomcat -->
-	<target name="liferay-tomcat-bundle" depends="init">
+	<!--<target name="liferay-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
 		<unzip src="liferay/download/${liferay.tomcat.zip.file.name}" dest="${temp.dir}/" />
 		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
@@ -231,8 +257,6 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 		</echo>
 		<ant dir="liferay" target="full-deploy" inheritAll="false" />
 		
-		<!-- The following hack is needed to fix the parser-related problem
-		     reported in the Aspen issue database (issue #116). -->
 		<mkdir dir="${temp.dir}/common/endorsed" />
 		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
 		<copy file="lib/xercesImpl.jar" todir="${temp.dir}/common/endorsed" />
@@ -244,15 +268,14 @@ app.server.liferay.tomcat.dir=${temp.dir.path}
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>
+	</target>-->
 	
-	<target name="jong-copy-liferay-tomcat-bundle-archives-to-aspen-lib-for-checkin" depends="init">
+	<!--<target name="jong-copy-liferay-tomcat-bundle-archives-to-aspen-lib-for-checkin" depends="init">
 		<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/portal-ejb.jar" todir="lib"/>
-		<!--<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/util-java.jar" todir="lib"/>-->
-	</target>
+	</target>-->
 	
 	<!-- Build Aspen kit bundled with Liferay-JBoss-Tomcat -->
-	<target name="liferay-jboss-tomcat-bundle" depends="init">
+	<!--<target name="liferay-jboss-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
 		<unzip src="liferay/download/${liferay.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
 		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
@@ -267,10 +290,10 @@ app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>
+	</target>-->
 	
 	<!-- Build Aspen kit bundled with JBoss-JBoss-Tomcat -->
-	<target name="jbossportal-jboss-tomcat-bundle" depends="init">
+	<!--<target name="jbossportal-jboss-tomcat-bundle" depends="init">
 		<delete dir="${temp.dir}" />
 		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
 		<property name="aspen-jboss-portal.top.dir" value="${temp.dir}/sitescape-forum-${forum.version}-jboss-portal-${jbossportal.version.jboss.tomcat}" />
@@ -292,9 +315,9 @@ app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
 			basedir="${temp.dir}" />
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
-	</target>
+	</target>-->
 	
-	<target name="release">
+	<!--<target name="release">-->
 		<!--
 		<delete>
 			<fileset dir="${ssf.source.dir}" defaultexcludes="no">
@@ -303,17 +326,17 @@ app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
 		</delete>
 		-->
 
-		<antcall target="clean" />
+		<!--<antcall target="clean" />
 		<delete dir="dist" />
 		<antcall target="build" />
-		<ant dir="tools/sql" target="generate-create-tables-script" />
+		<ant dir="tools/sql" target="generate-create-tables-script" />-->
 		<!--  4/18/06 JK temporarily commented out (until the build is
 		      fully automated) 
 		      <antcall target="unit-test" />-->
 		<!--<antcall target="java2html" />-->
-		<antcall target="javadoc-combined" />
+		<!--<antcall target="javadoc-combined" />
 		<antcall target="zip" />
-	</target>
+	</target>-->
 
 	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
 		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
