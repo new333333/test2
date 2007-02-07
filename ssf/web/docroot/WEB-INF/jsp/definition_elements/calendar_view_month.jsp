@@ -2,7 +2,7 @@
 <style type="text/css">
 a.tinyControl {
   border: 1px solid #999999;
-  background: #f5f599;
+  background: #eeeeff;
   padding: 1px;
   font-size: 9px;
   font-family: sans-serif;
@@ -18,12 +18,15 @@ span.tinyLabel {
 <span class="tinyLabel">Hours:</span>
 <a class="tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
 <span class="tinyLabel">Grid:</span>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 1; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">Single</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 3; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">3-day</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek');  return false;">5-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('daydelta', 0); return false;">Single</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('3daydelta', 0); return false;">3-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek'); return false;">5-day</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('week'); return false;">7-day</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
-<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="MMMM, yyyy" />
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset -= ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&lt;&lt;</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset += ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&gt;&gt;</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.activateGrid('month'); ss_cal_Events.redrawAll(); return false;">MonthGrid</a>
+<fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
 <a href="${set_week_view}"><ssf:nlt tag="calendar.Week" text="Week"/></a>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
@@ -91,58 +94,9 @@ span.tinyLabel {
   <a href="javascript: ;" class="tinyControl" onclick="ss_cancelPopupDiv('infoBox2');">Cancel</a>
 </div>
 
-
 <div class="ss_cal_eventBody" id="hoverBox" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
-
 <script type="text/javascript">
-//ss_createOnLoadObj('ss_cal_hoverBox', function() {ss_moveDivToBody("hoverBox");} );
-
-ss_cal_CalData.setMap([
-  {calsrc: "cal1", box: "#8888CC", border: "#6666AA"},
-  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
-  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
-  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
-  {calsrc: "cal5", box: "#CCCC88", border: "#AAAA66"}]);
-
-var inputEvents = [<%--
---%><c:set var="i" value="-1"/><%--
---%><c:forEach var="week" items="${ssCalendarViewBean.weekList}" ><%--
-  --%><c:forEach var="daymap" items="${week.dayList}"><c:set var="i" value="${i + 1}"/><%--
-    --%><c:if test="${daymap.inView}"><% // is this day part of the month, or context at front/end? %><%--
-      --%><c:if test="${!empty daymap.cal_eventdatamap}"><%--
-        --%><c:forEach var="ev" items="${daymap.cal_eventdatamap}"><%--
-          --%><c:forEach var="evim" items="${ev.value}"><%--
-            --%><jsp:useBean id="evim" type="java.util.Map" /><%--
-            --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
-            --%>
-  {eventId: "${evim.entry._docId}", day: ${i}, start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${evim.cal_duration}, title: "${evim.entry.title}", text: "${evim.cal_endtimestring}", calsrc: "cal1",
-   viewHref: "<ssf:url adapter="<%= useAdaptor %>" portletName="ss_forum" folderId="${ssFolder.id}" action="view_folder_entry" entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />",
-   viewOnClick: "ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;"},<%--
-          --%></c:forEach><% // end of events within a single time slot %><%--
-        --%></c:forEach><% // end of time slot loop %><%--
-      --%></c:if><% // end of case where there is at least one event in a cell %><%--
-    --%></c:if><% // end of test to see if a day is in view %><%--
-  --%></c:forEach><%--
---%></c:forEach>];
-
-ss_cal_Events.clear();
-ss_cal_Events.set(inputEvents);
-ss_cal_CalData.dayHeaders = ["5-Jan","6-Jan","7-Jan","8-Jan","9-Jan","10-Jan","11-Jan","12-Jan"];
-ss_cal_CalData.monthTickList = [<%--
-
---%><c:set var="today" value="-1"/><%--
---%><c:set var="i" value="-1"/><%--
---%><c:forEach var="week" items="${ssCalendarViewBean.weekList}" ><%--
-  --%><c:forEach var="daymap" items="${week.dayList}"><%--
-    --%><c:out value="${daymap.cal_dom},"/><%--
-    --%><c:set var="i" value="${i + 1}"/><%--
-    --%><c:if test="${daymap.isToday}"><%--
-      --%><c:set var="today" value="${i}"/><%--
-    --%></c:if><%--
-  --%></c:forEach><%--
---%></c:forEach>];
-ss_cal_CalData.monthTodayIndex = ${today};
-ss_cal_CalData.dayTodayIndex = 4;
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_data.jsp" %>
 ss_cal_Grid.activateGrid("month");
 ss_cal_Events.redrawAll();
 ss_createOnLoadObj('ss_cal_hoverBox', function() {
