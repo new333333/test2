@@ -664,6 +664,7 @@
 		<property name="failedFilterTransaction"><value>CONTINUE</value></property>
 		<property name="archiveStore"><ref local="archiveStore"/></property>
 		<property name="htmlConverterManager"><ref local="htmlConverterManager"/></property>
+		<property name="imageConverterManager"><ref local="imageConverterManager"/></property>
 	</bean>
 
 	<bean id="dashboardHelper" class="com.sitescape.team.web.util.DashboardHelper" parent="controllerDependencyTemplate">
