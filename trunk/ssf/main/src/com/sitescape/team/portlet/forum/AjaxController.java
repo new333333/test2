@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -1060,9 +1061,10 @@ public class AjaxController  extends SAbstractController {
 		Clipboard clipboard = new Clipboard(request);
 		Map clipboardMap = clipboard.getClipboard();
 		if (clipboardMap.containsKey(musterClass)) {
-			List idList = (List) clipboardMap.get(musterClass);
+			Set idList = (Set) clipboardMap.get(musterClass);
 			for (int i = 0; i < musterIds.length; i++) {
-				if (!idList.contains(musterIds[i])) idList.add(musterIds[i]);
+				Long id = Long.valueOf(musterIds[i]);
+				if (!idList.contains(id)) idList.add(id);
 			}
 		}
 	}

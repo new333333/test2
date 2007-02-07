@@ -1,7 +1,9 @@
 package com.sitescape.team.portlet.binder;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -13,6 +15,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.User;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -51,6 +54,7 @@ public class SendMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
 			if (formData.containsKey("teamMembers")) {
 				try {
 					List team = getBinderModule().getTeamMembers(binderId);
@@ -103,7 +107,16 @@ public class SendMailController extends SAbstractController {
 		//Get the clipboard data
 		Clipboard clipboard = new Clipboard(request);
 		Map clipboardMap = clipboard.getClipboard();
+		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
+        Collection principals = getProfileModule().getUsersFromPrincipals(clipboardUsers);
+        Map principalMap = new HashMap();
+        Iterator itPrincipals = principals.iterator();
+        while (itPrincipals.hasNext()) {
+        	User u = (User) itPrincipals.next();
+        	principalMap.put(u.getId(), u.getTitle());
+        }
 		model.put(WebKeys.CLIPBOARD, clipboardMap);
+		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principalMap);
 		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
