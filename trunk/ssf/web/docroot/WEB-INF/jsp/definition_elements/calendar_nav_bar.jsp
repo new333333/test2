@@ -5,7 +5,6 @@
   // Expand the nav bar to all calendar nav functions: views -- today, 
   // week, month, year (as appropriate). The datepicker widget is Day View.
 %>
-<c:if test="${ssConfigJspStyle != 'template'}">
 <form name="ssCalNavBar" action="${goto_form_url}" 
   class="ss_toolbar_color"
   method="post" style="display:inline;"><div class="ss_toolbar_color" style="display:inline;">
@@ -15,4 +14,4 @@
 	 /></div></form>
 <div id="ss_calDivPopup" class="ss_calPopupDiv"></div>
 </div>
-</c:if>
+

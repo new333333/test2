@@ -45,7 +45,6 @@ public class ViewController  extends SAbstractController {
 	public static final String FORUM_PORTLET="ss_forum";
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
-	public static final String PROFILE_PORTLET="ss_profile";
 	public static final String DASHBOARD_PORTLET="ss_dashboard";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	
@@ -80,8 +79,6 @@ public class ViewController  extends SAbstractController {
 				displayType=WORKSPACE_PORTLET;
 			else if (pName.contains(PRESENCE_PORTLET))
 				displayType=PRESENCE_PORTLET;
-			else if (pName.contains(PROFILE_PORTLET))
-				displayType=PROFILE_PORTLET;
 			else if (pName.contains(DASHBOARD_PORTLET)) 
 				displayType=DASHBOARD_PORTLET;
 			else if (pName.contains(TOOLBAR_PORTLET)) {
@@ -106,22 +103,6 @@ public class ViewController  extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, getFolderModule().getFolders(binderIds));
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
-		} else if (PROFILE_PORTLET.equals(displayType)) {
-			//Get the profile binder
-			//If first time here, add a profile folder to the top workspace
-			ProfileBinder binder = getProfileModule().getProfileBinder();
-				
-			model.put(WebKeys.BINDER, binder);
-			Toolbar toolbar = new Toolbar();
-			PortletURL url;
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-			url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-			url.setWindowState(WindowState.MAXIMIZED);
-			toolbar.addToolbarMenu("listing", NLT.get("profile.list", "List users"), url);
-			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
-			
-			return new ModelAndView(WebKeys.VIEW_PROFILE, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
 			String id = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
 			Workspace binder;

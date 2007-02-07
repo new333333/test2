@@ -1,4 +1,5 @@
 package com.sitescape.team.portlet.administration;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -8,6 +9,7 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -32,10 +34,12 @@ import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {
@@ -110,10 +114,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 			getBinderModule().deleteBinder(configId);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter("redirect", "true");
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			if (configId != null)
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString()); 
+			if (configId != null) {
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
+			}
 		} else if (WebKeys.OPERATION_SET_DISPLAY_DEFINITION.equals(operation)) {
 			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			getProfileModule().setUserProperty(RequestContextHolder.getRequestContext().getUserId(), configId, 
@@ -128,6 +133,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+		} else if (WebKeys.OPERATION_CALENDAR_GOTO_DATE.equals(operation)) {
+			Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			PortletSession ps = WebHelper.getRequiredPortletSession(request);
+			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
+			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, dt);
+			response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 		
 		} else
 			response.setRenderParameters(formData);
@@ -135,9 +147,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map model = new HashMap();
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

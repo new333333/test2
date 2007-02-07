@@ -85,7 +85,7 @@
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>
@@ -143,7 +143,7 @@ function <portlet:namespace/>_onsub(obj) {
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 
 </form>
