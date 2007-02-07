@@ -4,5 +4,5 @@
 <c:out value="${property_caption}" />
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
-	 timeStyle="short" dateStyle="medium" />
+	 timeStyle="long" dateStyle="medium" />
 </div>
