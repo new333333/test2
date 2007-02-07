@@ -58,6 +58,17 @@ public class IndexSynchronizationManager {
         BasicIndexUtils.validateDocument(doc);
         getRequests().add(new Request(doc, Request.TYPE_ADD));
     }
+    /**
+     * Application calls this method to add a document.
+     * 
+     * @param doc
+     * @throws LuceneException
+     */
+    public static void addDocuments(List docs) throws LuceneException {
+        for (int i = 0; i < docs.size(); i++)
+        	BasicIndexUtils.validateDocument((Document)docs.get(i));
+        getRequests().add(new Request((List)docs, Request.TYPE_ADD_DOCS));
+    }
     
     /**
      * Application calls this method to delete a document with the uid.
@@ -192,6 +203,10 @@ public class IndexSynchronizationManager {
             		luceneSession.addDocument((Document) obj);
             		addCount++;
             	    break;
+            	}case Request.TYPE_ADD_DOCS: {
+            		luceneSession.addDocuments((List) obj);
+            		addCount++;
+            	    break;
             	}
             	case Request.TYPE_DELETE: {
             	    if(obj instanceof String) {
@@ -225,6 +240,7 @@ public class IndexSynchronizationManager {
     private static class Request {
         private static final int TYPE_ADD		= 1;
         private static final int TYPE_DELETE	= 2;
+        private static final int TYPE_ADD_DOCS	= 3;
         
         private int type;
         private Object obj;

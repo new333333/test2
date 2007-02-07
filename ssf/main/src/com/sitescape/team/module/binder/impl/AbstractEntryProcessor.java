@@ -1225,6 +1225,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      */
 	protected void indexEntryWithAttachments(Binder binder, Entry entry,
 			List fileAttachments, List fileUploadItems, boolean newEntry) {
+		List docs = new ArrayList();
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			
@@ -1236,7 +1237,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		org.apache.lucene.document.Document indexDoc;
 		indexDoc = buildIndexDocumentFromEntry(entry.getParentBinder(), entry, null);
        // Register the index document for indexing.
-        IndexSynchronizationManager.addDocument(indexDoc);        
+        docs.add(indexDoc);        
         
         //Create separate documents one for each attached file and index them.
         for(int i = 0; i < fileAttachments.size(); i++) {
@@ -1247,12 +1248,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	try {
         		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui, null);
            		// Register the index document for indexing.
-        		IndexSynchronizationManager.addDocument(indexDoc);
+        		docs.add(indexDoc);
 	        } catch (Exception ex) {
 		       		//log error but continue
 		       		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
         	}
          }
+        IndexSynchronizationManager.addDocuments(docs);
 	}
 
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
