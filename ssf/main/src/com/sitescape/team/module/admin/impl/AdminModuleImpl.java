@@ -485,7 +485,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
 		 //by default, inherit from parent
 		 getCoreDao().save(config);
-       	 getCoreDao().updateLibraryName(parentConfig, config, null, config.getTitle());
+    	 copyBinderAttributes(srcConfig, config);
+      	 getCoreDao().updateLibraryName(parentConfig, config, null, config.getTitle());
 
 		 //get childen before adding new children incase parent and source are the same
 		 List<TemplateBinder> children = new ArrayList(srcConfig.getBinders());

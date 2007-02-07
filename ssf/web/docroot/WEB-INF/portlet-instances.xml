@@ -21,12 +21,6 @@
    </deployment>
    <deployment>
       <instance>
-         <instance-id>ss_profile-instance</instance-id>
-         <portlet-ref>ss_profile</portlet-ref>
-      </instance>
-   </deployment>
-   <deployment>
-      <instance>
          <instance-id>ss_workspacetree-instance</instance-id>
          <portlet-ref>ss_workspacetree</portlet-ref>
       </instance>

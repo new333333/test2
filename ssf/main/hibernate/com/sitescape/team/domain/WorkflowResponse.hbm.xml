@@ -18,6 +18,7 @@
         <meta-value class="com.sitescape.team.domain.Folder" value="folder"/>
         <meta-value class="com.sitescape.team.domain.Workspace" value="workspace"/>
         <meta-value class="com.sitescape.team.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="com.sitescape.team.domain.TemplateBinder" value="template"/>
         <column name="ownerType" length="16"/>
         <column name="ownerId"/>
       </any>

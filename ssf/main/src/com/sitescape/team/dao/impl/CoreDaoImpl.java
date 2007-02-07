@@ -203,19 +203,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
 		   			}
-		   			session.createQuery("DELETE com.sitescape.team.domain.UserProperties where binderId=:owner")
-		   				.setLong("owner", binder.getId())
+		   			session.createQuery("DELETE com.sitescape.team.domain.UserProperties where binderId=:binderId")
+		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
 		   			//delete reserved names for entries/subfolders
 		   			session.createQuery("DELETE com.sitescape.team.domain.LibraryEntry where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
-		   			//delete reserved names for self which is registered in parent space
 		   			delete((DefinableEntity)binder);
 		   			if (!binder.isRoot()) {
-		   				session.createQuery("DELETE com.sitescape.team.domain.LibraryEntry where binderId=:binderId")
-		   				.setLong("binderId", binder.getParentBinder().getId())
-		   					.executeUpdate();
+			   			//delete reserved names for self which is registered in parent space
+		   				updateLibraryName(binder.getParentBinder(), binder, binder.getTitle(), null);
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
 		   			session.evict(binder);
@@ -238,8 +236,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     	   	new HibernateCallback() {
     	   		public Object doInHibernate(Session session) throws HibernateException {
      	   		EntityIdentifier id = entity.getEntityIdentifier();
-     	   		String whereClause = "ownerId=" + id.getEntityId() + " and ownerType='" + id.getEntityType().name() + "'";
-     	   		deleteEntityAssociations(whereClause, entity.getClass());
+     	   		if (entity instanceof TemplateBinder) {
+     	   			//these associations are based on class, which is not a what we get back with EntityType for template
+     	   			deleteEntityAssociations("ownerId=" + id.getEntityId() + " and ownerType='template'", entity.getClass());
+    	   			
+     	   		} else {
+     	   			String whereClause = "ownerId=" + id.getEntityId() + " and ownerType='" + id.getEntityType().name() + "'";
+     	   			deleteEntityAssociations(whereClause, entity.getClass());
+     	   		}
 
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId=:entityId and entityType=:entityType")
