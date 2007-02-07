@@ -26,7 +26,7 @@
 	if (height < 600) height=600;
 self.window.resizeTo(width, height);
 </script>
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet" style="padding:10px;">
 <c:choose>
 <c:when test="${!empty ssErrorList}">
 <form class="ss_style ss_form" method="post">
@@ -57,7 +57,7 @@ self.window.resizeTo(width, height);
   onSubmit="return ss_onSubmit(this);" name="<portlet:namespace />fm">
 
 <span class="ss_bold"><ssf:nlt tag="sendMail.title"/></span>
-<table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="50%">
+<table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">
  <tr><td>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="sendMail.recipients" /></legend>
@@ -76,17 +76,21 @@ self.window.resizeTo(width, height);
   <ssf:nlt tag="sendMail.team"/></span>
  </td></tr>
  </c:if>
- <c:if test="${!empty ssClipboard.users}">
+ <c:if test="${!empty ssClipboard.ss_muster_users}">
  <tr><td>
- <c:forEach var="userId" items="${ssClipboard.users}">
+ <br/>
+ <ssf:expandableArea title="<%= NLT.get("sendMail.pasteFromClipboard") %>">
+ <c:forEach var="userId" items="${ssClipboard.ss_muster_users}">
    <input type="checkbox" class="ss_style" name="clipboardUsers" value="${userId}" >&nbsp;<span class="ss_labelRight">
-    ${userId}</span><br/>
+    ${ssClipboardPrincipals[userId]}</span><br/>
   </c:forEach>
- </td></tr>
+</ssf:expandableArea>
+<br/>
+</td></tr>
  </c:if>
 </table>
 
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
 <tr>
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
@@ -108,7 +112,7 @@ self.window.resizeTo(width, height);
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="sendMail.message" /></legend>
  
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="0">
+<table class="ss_style"  border ="0" cellspacing="0" cellpadding="0" width="95%">
  <tr><td>
    <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.subject"/></span>
    <input class="ss_style" type="text" name="subject" id="subject" size="86" <c:if test="${!empty ssEntry}">value="${ssEntry.docNumber}. ${ssEntry.title}" </c:if>>

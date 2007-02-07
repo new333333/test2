@@ -159,13 +159,12 @@ function ss_clearSingleSelect(treeName) {
 	return true;
 }
 function ss_createTreeCheckbox(treeName, prefix, id) {
-	alert(treeName)
 	var divObj = document.getElementById("ss_hiddenTreeDiv"+treeName);
 	var cbObj = document.getElementById("ss_tree_checkbox" + treeName + prefix + id)
 	if (cbObj == null) {
-		alert("null: ss_tree_checkbox" + treeName + prefix + id)
+		//alert("null: ss_tree_checkbox" + treeName + prefix + id)
 	} else {
-		alert("Not null: ss_tree_checkbox" + treeName + prefix + id)
+		//alert("Not null: ss_tree_checkbox" + treeName + prefix + id)
 	}
 }
 

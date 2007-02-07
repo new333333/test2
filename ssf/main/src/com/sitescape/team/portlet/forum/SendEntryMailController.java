@@ -1,6 +1,7 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.security.AccessControlException;
@@ -58,6 +60,7 @@ public class SendEntryMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
 			if (formData.containsKey("teamMembers")) {
 				try {
 					List team = getBinderModule().getTeamMembers(folderId);
@@ -142,7 +145,16 @@ public class SendEntryMailController extends SAbstractController {
 		//Get the clipboard data
 		Clipboard clipboard = new Clipboard(request);
 		Map clipboardMap = clipboard.getClipboard();
+		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
+        Collection principals = getProfileModule().getUsersFromPrincipals(clipboardUsers);
+        Map principalMap = new HashMap();
+        Iterator itPrincipals = principals.iterator();
+        while (itPrincipals.hasNext()) {
+        	User u = (User) itPrincipals.next();
+        	principalMap.put(u.getId(), u.getTitle());
+        }
 		model.put(WebKeys.CLIPBOARD, clipboardMap);
+		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principalMap);
 
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
