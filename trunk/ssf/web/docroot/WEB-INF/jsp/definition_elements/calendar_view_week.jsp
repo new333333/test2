@@ -2,7 +2,7 @@
 <style type="text/css">
 a.tinyControl {
   border: 1px solid #999999;
-  background: #f5f599;
+  background: #eeeeff;
   padding: 1px;
   font-size: 9px;
   font-family: sans-serif;
@@ -18,11 +18,14 @@ span.tinyLabel {
 <span class="tinyLabel">Hours:</span>
 <a class="tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
 <span class="tinyLabel">Grid:</span>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 1; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">Single</a>
-<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridSize = 3; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">3-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('daydelta', 0); return false;">Single</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('3daydelta', 0); return false;">3-day</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek'); return false;">5-day</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('week'); return false;">7-day</a>
 <a class="tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset -= ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&lt;&lt;</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset += ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&gt;&gt;</a>
+<a class="tinyControl" href="javascript: ;" onclick="ss_cal_Grid.activateGrid('month'); ss_cal_Events.redrawAll(); return false;">MonthGrid</a>
 <ssf:nlt tag="calendar.beginning" text="Week beginning"/>
    <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ssCalStartDate}" pattern="EEEE, MMMM dd, yyyy" />
 <ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
@@ -142,8 +145,7 @@ ss_cal_CalData.dayHeaders = [<%--
     --%></c:if><%--
   --%></c:forEach><%--
 --%></c:forEach>];
-ss_cal_CalData.monthTodayIndex = ${today};
-ss_cal_CalData.dayTodayIndex = ${today};
+ss_cal_CalData.todayIndex = ${today};
 ss_cal_Grid.activateGrid("day");
 ss_cal_Events.redrawAll();
 ss_createOnLoadObj('ss_cal_hoverBox', function() {
