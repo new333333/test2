@@ -4,7 +4,6 @@
 <%@ page import="java.util.ArrayList" %>
 <%
 	String findUserGroupType = (String) request.getAttribute("list_type");
-	String findUserFormName = (String) request.getAttribute("form_name");
 	String findUserElementName = (String) request.getAttribute("form_element");
 	String findUserElementWidth = (String) request.getAttribute("element_width");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
@@ -169,7 +168,7 @@ function ss_findUserSelectItem${prefix}(obj) {
 		var textObj = document.getElementById(ss_findUserSearchLastTextObjId${prefix});
 		textObj.value = "";
 	if (ss_findUserClickRoutine${prefix} != "") {
-		eval(ss_findUserClickRoutine${prefix} + "('"+id+"');")
+		eval(ss_findUserClickRoutine${prefix}+"(id, obj);")
 		<% if (leaveResultsVisible) { %>
 		  setTimeout("ss_showFindUserSelections${prefix}();", 200)
 		<% } %>
