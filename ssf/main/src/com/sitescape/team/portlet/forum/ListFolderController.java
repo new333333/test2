@@ -1210,22 +1210,38 @@ public class ListFolderController extends  SAbstractController {
 		
 		// calculate the start and end of the range as defined by current date and current view
 		GregorianCalendar startViewCal = new GregorianCalendar();
+		// Allow the pruning of events to extend beyond the prescribed dates so we 
+		// can display a grid.
+		GregorianCalendar startViewExtWindow = new GregorianCalendar();
+		GregorianCalendar endViewExtWindow = new GregorianCalendar();
+
 		// this trick zeros the low order parts of the time
 		startViewCal.setTimeInMillis(0);
 		startViewCal.setTime(currentDate);
+		startViewExtWindow.setTime(startViewCal.getTime());
 		GregorianCalendar endViewCal = new GregorianCalendar();
 		endViewCal.setTimeInMillis(0);
 		endViewCal.setTime(currentDate);
+		endViewExtWindow.setTime(endViewCal.getTime());
+		
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
 			endViewCal.add(Calendar.DATE, 1);
 		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
 			startViewCal.set(Calendar.DAY_OF_WEEK, startViewCal.getFirstDayOfWeek());
+			startViewExtWindow.setTime(startViewCal.getTime());
 			endViewCal.setTime(startViewCal.getTime());
 			endViewCal.add(Calendar.DATE, 7);
+			endViewExtWindow.setTime(endViewCal.getTime());
 		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			startViewCal.set(Calendar.DAY_OF_MONTH, 1);
+			startViewExtWindow.setTime(startViewCal.getTime());
+			startViewExtWindow.set(Calendar.DAY_OF_WEEK, startViewExtWindow.getFirstDayOfWeek());	
 			endViewCal.setTime(startViewCal.getTime());
 			endViewCal.add(Calendar.MONTH, 1);
+			endViewExtWindow.setTime(endViewCal.getTime());
+			// I may only want to do this if the end of the month isn't a Sunday
+			endViewExtWindow.set(Calendar.DAY_OF_WEEK, endViewExtWindow.getFirstDayOfWeek());
+			endViewExtWindow.add(Calendar.DATE, 7);			
 		}
 		startViewCal.set(Calendar.HOUR_OF_DAY, 0);
 		startViewCal.set(Calendar.MINUTE, 0);
@@ -1236,8 +1252,8 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, startViewCal.getTime());
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, endViewCal.getTime());
 		// these two longs will be used to determine if an event is in range
-		long startMillis = startViewCal.getTime().getTime();
-		long endMillis = endViewCal.getTime().getTime();
+		long startMillis = startViewExtWindow.getTime().getTime();
+		long endMillis = endViewExtWindow.getTime().getTime();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 		HashMap results = new HashMap();  
@@ -1321,7 +1337,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			
-			getCalendarViewBean(folder, startViewCal, endViewCal, response, results, viewMode, model);
+			getCalendarViewBean(folder, startViewCal, endViewExtWindow, response, results, viewMode, model);
 		}
 	}
 	
@@ -1376,6 +1392,9 @@ public class ListFolderController extends  SAbstractController {
 		}
 		monthBean.put("dayHeaders",dayheaders);
 		loopCal.setTime(startCal.getTime());
+		// Move calendar to the beginning of the week
+		loopCal.set(Calendar.DAY_OF_WEEK, loopCal.getFirstDayOfWeek());
+
 		List weekList = new ArrayList();
 		
 		HashMap weekMap = null;
@@ -1403,36 +1422,8 @@ public class ListFolderController extends  SAbstractController {
 				String wn = sdfweeknum.format(loopCal.getTime());
 				weekMap.put("weekNum", wn);
 
-				// before starting a new dayList, check if this is the first week of a month view
-				if (dayList == null && viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-					dayList = new ArrayList();
-					GregorianCalendar gcal = new GregorianCalendar();
-					gcal.setTime(startCal.getTime());
-					// when does the week that includes the first day of the month begin?
-					gcal.set(Calendar.DAY_OF_WEEK, gcal.getFirstDayOfWeek());
-					// note that the week url must include this date instead of the startCal date
-					urldatestring = urldatesdf.format(gcal.getTime());
-					while (gcal.getTime().getTime() < startCal.getTime().getTime()) {
-						// fill in the dayList with blank days
-						HashMap emptyDayMap = new HashMap();
-						emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(gcal.get(Calendar.DAY_OF_MONTH)));
-						emptyDayMap.put("inView", new Boolean(false));
-						// because this loop is adding extra days, we need to build their URLs into the daymap here
-						// and we don't want to clobber urldatestring because it's used later for the week URL
-						urldatestring2 = urldatesdf.format(gcal.getTime());
-						url = response.createActionURL();
-						url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-						url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
-						url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
-						url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
-						emptyDayMap.put("dayURL", url.toString());
-						dayCtr++;
-						dayList.add(emptyDayMap);
-						gcal.add(Calendar.DATE, 1);
-					}
-				} else {
-					dayList = new ArrayList();
-				}
+				dayList = new ArrayList();
+
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -1444,6 +1435,7 @@ public class ListFolderController extends  SAbstractController {
 			HashMap daymap = new HashMap();
 			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
 			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
+			daymap.put("cal_dmgCalDate", loopCal.getTime());
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -1505,29 +1497,6 @@ public class ListFolderController extends  SAbstractController {
 			loopCal.add(Calendar.DATE, 1);
 			dayList.add(daymap);
 		}
-		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-			// note that the week url must include this date instead of the startCal date
-			urldatestring = urldatesdf.format(loopCal.getTime());
-			while (dayCtr++ < 6) {
-				// fill in the dayList with blank days
-				HashMap emptyDayMap = new HashMap();
-				emptyDayMap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
-				emptyDayMap.put("inView", new Boolean(false));
-				// because this loop is adding extra days, we need to build their URLs into the daymap here
-				// and we don't want to clobber urldatestring because it's used later for the week URL
-				urldatestring2 = urldatesdf.format(loopCal.getTime());
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
-				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
-				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring2);
-				emptyDayMap.put("dayURL", url.toString());
-				dayList.add(emptyDayMap);
-				loopCal.add(Calendar.DATE, 1);
-			}
-		}
-
 		
 		weekMap.put("dayList", dayList);
 		weekList.add(weekMap);
