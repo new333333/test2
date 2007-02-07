@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="liferay" basedir="." default="compile">
+<project name="liferay" basedir="." >
 	<!-- This setting will override the value in the properties file -->
 	<property name="portal.type" value="liferay"/>
 	
@@ -95,7 +95,8 @@
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 	</target>
-	<target name="deploy-jdbc-properties">
+	
+	<!--<target name="deploy-jdbc-properties">
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
@@ -107,7 +108,7 @@
 			token="@@@username" value="${jdbc.username.liferay}"/>
 		<replace file="${deploy.root.file}"
 			token="@@@password" value="${jdbc.password.liferay}"/>		
-	</target>
+	</target>-->
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
 		<copy file="${project.dir}/war/ssf.war" todir="temp" />		
@@ -143,34 +144,7 @@
 
 		<antcall target="deploy-additional-components" />
 		
-		<copy todir="${app.server.dir}" overwrite="true">
-			<fileset dir="resources/${liferay.version.tomcat}/tomcat" />
-		</copy>
-		<!-- this fixes up one of the files copied above -->
-		<antcall target="deploy-jdbc-properties">
-			<param name="deploy.root.file" value="${app.server.dir}/conf/Catalina/localhost/ROOT.xml"/>
-		</antcall>
-
-		<ant dir="${project.dir}/tomcat" target="deploy" />
-
-		<copy file="resources/${liferay.version.tomcat}/tomcat.portal.properties" tofile="temp/portal.properties" overwrite="true" />
-		<jar destfile="${deploy.liferay.lib.dir}/portal-ejb.jar" basedir="temp" 
-			includes="portal.properties" update="true" />
-		
-		<!-- Copy jdom.jar file into our lib directory because jakarta Slide 
-		     requires jdom 1.0 while the version of the Liferay we deploy
-		     onto contains earlier version (beta 8?) of jdom. We should remove
-		     this line once we upgarde to a later version of Liferay that contains
-		     v1.0 of jdom. -->
-		<!-- No longer necessary, since Liferay 4.0 changed deployment archivecture
-		     completely, and we no longer share archives with them. -->
-		<!--<copy file="${project.dir}/lib/jdom.jar" todir="${app.server.ssf.dir}/WEB-INF/lib" />-->
-		<copy file="${project.dir}/lib/xalan.jar" todir="${app.server.dir}/common/endorsed" />
-		<copy file="${project.dir}/lib/xercesImpl.jar" todir="${app.server.dir}/common/endorsed" />
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
-		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.dir}/common/lib" />
-		
-		<copy file="resources/${liferay.version.tomcat}/Language-ext.properties" todir="${app.server.dir}/webapps/ROOT/WEB-INF/classes/content" />
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">	

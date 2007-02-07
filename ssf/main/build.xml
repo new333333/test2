@@ -102,7 +102,7 @@
 -->
 	</target>
 	
-	<target name="init-database-type-script">
+	<!--<target name="init-database-type-script">
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
@@ -120,7 +120,7 @@
 			message="${line.separator}hibernate.connection.username ${jdbc.username}"/>
 		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
 			message="${line.separator}hibernate.connection.password ${jdbc.password}"/>
-	</target>
+	</target>-->
 
 <!--
 	<target name="ss-create-tables" depends="init-database-type"
@@ -155,7 +155,7 @@
 	    </target>
 -->	
 
-	<target name="ss-update-tables" 
+	<!--<target name="ss-update-tables" 
 		description="Update database tables for sitescape domain"
 		depends="ss-hib-gen, init-database-type">
 		<path id="initpath">
@@ -175,6 +175,6 @@
 	            <include name="com/sitescape/team/security/**/*hbm.xml"/>
 	        </fileset>
 	     </schemaupdate>
-	</target>
+	</target>-->
 			
 </project>
