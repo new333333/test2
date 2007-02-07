@@ -162,10 +162,9 @@ function ss_findUserSelectItem0_${prefix}() {
 //Routine called when item is clicked
 function ss_findUserSelectItem${prefix}(obj) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_ws_listing"/><portlet:param name="binderId" 
-		value="${ssUser.parentBinder.id}"/><portlet:param name="entryId" 
-		value="ss_entryIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
+	var url = "<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 
+		value="ss_entryIdPlaceholder"/><ssf:param name="newTab" value="1"/></ssf:url>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
 		var textObj = document.getElementById(ss_findUserSearchLastTextObjId${prefix});
 		textObj.value = "";
@@ -211,7 +210,7 @@ function ss_findUserPrevPage${prefix}() {
     onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_${prefix}\')', 200);"></textarea></div>
 <div id="ss_findUser_searchText_bottom_${prefix}" style="padding:0px; margin:0px;"></div>
 <div id="ss_findUserNavBarDiv_${prefix}" 
-    class="ss_findUserList" style="visibility:hidden;">
+    class="ss_findUserList" style="display:none; visibility:hidden;">
     <div id="available_${prefix}">
       <ul>
       </ul>
@@ -220,5 +219,6 @@ function ss_findUserPrevPage${prefix}() {
 <input type="hidden" name="<%= findUserElementName %><%= instanceCount %>"/>
   
 <script type="text/javascript">
-ss_createOnSubmitObj('${prefix}onSubmit', '<%= findUserFormName %>', ss_saveFindUserData_${prefix});
+if ('${form_name}' != '')
+	ss_createOnSubmitObj('${prefix}onSubmit', '${form_name}', ss_saveFindUserData_${prefix});
 </script>

@@ -695,22 +695,12 @@ function ss_getObjAbsY(obj) {
 
 function ss_getDivTop(divName) {
     var top = 0;
-    if (isNSN || isNSN6 || isMoz5) {
-        var obj = self.document.getElementById(divName)
-        while (1) {
-            if (!obj) {break}
-            top += parseInt(obj.offsetTop)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else {
-        var obj = self.document.all[divName]
-        while (1) {
-            if (!obj) {break}
-            top += obj.offsetTop
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
+    var obj = self.document.getElementById(divName)
+    while (1) {
+        if (!obj) {break}
+        top += parseInt(obj.offsetTop)
+        if (obj == obj.offsetParent) {break}
+        obj = obj.offsetParent
     }
     return parseInt(top);
 }
@@ -933,13 +923,13 @@ function ss_setObjectHeight(obj, height) {
 }
 
 function ss_setObjectLeft(obj, value) {
-    obj.style.left = value;
+    obj.style.left = parseInt(value) + "px";
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
 
 function ss_setObjectTop(obj, value) {
-    obj.style.top = value;
+    obj.style.top = parseInt(value) + "px";
     //Call the routines that want to be called on layout changes
     if (!obj.style.position || obj.style.position != "absolute") ssf_onLayoutChange();
 }
