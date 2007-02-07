@@ -35,13 +35,13 @@ var ss_cal_CalData = {
     box: function(src) { return this.map[src].box },
     border: function(src) { return this.map[src].border },
 
+    todayIndex: 0,
+
     hourTickList: ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am",
                    "12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"],
 
     monthTickList: [31,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,1,2,3],
-    monthTodayIndex: 0,
 
-    dayTodayIndex: 0,
     dayNamesShort: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
     dayHeaders: new Array(),
     shortMeridianA: 'a',
@@ -77,6 +77,7 @@ var ss_cal_Grid = {
 
     // Some defaults
     gridSize: 7,
+    gridIncr: 7,
     gridOffset: 0,
     readOnly: false,
     dayGridDrawn: false,
@@ -107,10 +108,10 @@ var ss_cal_Grid = {
             dojo.html.hide(dojo.byId("ss_cal_DayGridMaster"));
             dojo.html.show(dojo.byId("ss_cal_MonthGridMaster"));
             if (!this.monthGridDrawn) {
-                this.drawMonthGrid(true, ss_cal_CalData.monthTodayIndex, ss_cal_CalData.monthTickList);
+                this.drawMonthGrid(true, ss_cal_CalData.todayIndex, ss_cal_CalData.monthTickList);
                 this.monthGridDrawn = true;
             } else {
-                this.drawMonthGrid(false, ss_cal_CalData.monthTodayIndex, ss_cal_CalData.monthTickList);
+                this.drawMonthGrid(false, ss_cal_CalData.todayIndex, ss_cal_CalData.monthTickList);
             }
         }
     },
@@ -131,11 +132,11 @@ var ss_cal_Grid = {
         }
 
         var today = dojo.byId(containerId + "_Today")
-        if ((ss_cal_CalData.dayTodayIndex - gridOffset) < 0 || (ss_cal_CalData.dayTodayIndex - gridOffset) >= days) {
+        if ((ss_cal_CalData.todayIndex - gridOffset) < 0 || (ss_cal_CalData.todayIndex - gridOffset) >= days) {
             dojo.html.hide(today);
         } else {
             today.style.width = dayOffsetSize + "%";
-            today.style.left = ((ss_cal_CalData.dayTodayIndex - gridOffset) * dayOffsetSize) + "%";
+            today.style.left = ((ss_cal_CalData.todayIndex - gridOffset) * dayOffsetSize) + "%";
             dojo.html.show(today);
         }
 
@@ -189,7 +190,7 @@ var ss_cal_Grid = {
         for (var x = 0; x < days; x++) {
             var badge = document.createElement("div");
             badge.className = "ss_cal_gridHeaderText";
-            if ((x+gridOffset) == ss_cal_CalData.dayTodayIndex) {
+            if ((x+gridOffset) == ss_cal_CalData.todayIndex) {
                 badge.className += " ss_cal_gridHeaderTextToday";
             }
             badge.style.left = dayOffset + "%";
@@ -638,13 +639,13 @@ function ss_cal_drawMonthEventBlock(containerId, dayNumber, eventCount, eventLis
         var ebox = document.createElement("div");
         ebox.className = "ss_cal_eventBox ss_cal_monthEventBody";
 
-        ebox.style.left = (d * vOffsetSize) + "%";
+        ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
     
-        ebox.style.top = ((w * hOffsetSize) + 4.5 + (i * 5.2)) + "%";
-        ebox.style.width = "13.85%";
+        ebox.style.top = ((w * hOffsetSize) + 4.5 + (i * 5.18)) + "%";
+        ebox.style.width = "13.79%";
 
         ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
-        ebox.style.height = ((eventHeight/19) * 100) + "%";
+        ebox.style.height = ((eventHeight/19.05) * 100) + "%";
         var e = ss_cal_Events.eventData[eventList[i]];
         ebox.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
 		ebox.innerHTML = '<a href="'+e.viewHref+'" onClick="'+e.viewOnClick+'">'+e.title+'</a>';
@@ -658,14 +659,14 @@ function ss_cal_drawMonthEventBlock(containerId, dayNumber, eventCount, eventLis
         resultDisplayIds.push(ss_cal_Events.displayId);
         ebox.className = "ss_cal_eventBox ss_cal_monthEventBody";
 
-        ebox.style.left = (d * vOffsetSize) + "%";
+        ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
     
-        ebox.style.top = ((w * hOffsetSize) + 4.5 + (2 * 5.2)) + "%";
-        ebox.style.width = "13.9%";
+        ebox.style.top = ((w * hOffsetSize) + 4.5 + (2 * 5.18)) + "%";
+        ebox.style.width = "13.79%";
 
         ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
         ebox.style.backgroundColor = "#BBBBBB";
-        ebox.style.height = ((eventHeight/19) * 100) + "%";
+        ebox.style.height = ((eventHeight/19.4) * 100) + "%";
         ebox.innerHTML = "... plus " + (eventCount - 2) + " other events...";
 
         container.appendChild(ebox);
@@ -870,22 +871,32 @@ var ss_cal_Events = {
         switch (dayMode) {
             case "daydelta":
                 ss_cal_Grid.gridSize = 1;
+                ss_cal_Grid.gridIncr = 1;
                 ss_cal_Grid.gridOffset += tweak;
                 break;
             case "daydirect":
                 ss_cal_Grid.gridSize = 1;
+                ss_cal_Grid.gridIncr = 1;
                 ss_cal_Grid.gridOffset = tweak;
+                break;
+            case "3daydelta":
+                ss_cal_Grid.gridSize = 3;
+                ss_cal_Grid.gridIncr = 3;
+                ss_cal_Grid.gridOffset += tweak;
                 break;
             case "week":
                 ss_cal_Grid.gridSize = 7;
+                ss_cal_Grid.gridIncr = 7;
                 ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
                 break;
             case "fortnight":
                 ss_cal_Grid.gridSize = 14;
+                ss_cal_Grid.gridIncr = 14;
                 ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
                 break;
             case "workweek":
                 ss_cal_Grid.gridSize = 5;
+                ss_cal_Grid.gridIncr = 7;
                 ss_cal_Grid.gridOffset -= (ss_cal_Grid.gridOffset % 7);
                 ss_cal_Grid.gridOffset++;
                 break;
