@@ -2004,7 +2004,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		try
 		{
 			converter = this.imageConverterManager.getConverter();			
-			converter.convert(inFile, outFile, 30000, maxWidth, maxHeight);
+			converter.convert(inFile, outFile, 30000, maxWidth, 0);
 		}
 		catch (Exception e)
 		{
