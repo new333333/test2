@@ -29,15 +29,22 @@
 //  before the login screen appears (including the login screen itself).
 //For example, in Liferay, the user gets a general page. Then he clicks "sign-in".
 //  This takes the user to the actual login page. Thus the number of screens is 2.
-var ss_screens_to_login_screen = 2;
+var ss_screens_to_login_screen = ${ss_screens_to_login_screen};
 
 
 //This parameter counts the number of screens that come up after logging in,
 //  but before the user is actually logged in. Liferay takes 2 screens.
-var ss_screens_after_login_screen_to_logged_in = 2;
+var ss_screens_after_login_screen_to_logged_in = ${ss_screens_after_login_screen_to_logged_in};
 
 var ss_targetUrlLoadCount = 0;
 function ss_loadTargetUrl() {
+	var iframeDiv = document.getElementById('iframe_window')
+	if (window.frames['iframe_window'] != null) {
+		var iframeHeight = parseInt(window.iframe_window.document.body.scrollHeight);
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + 40 + "px"
+		}
+	}
 	ss_targetUrlLoadCount++;
 	//alert(ss_targetUrlLoadCount)
 	if (ss_targetUrlLoadCount > ss_screens_to_login_screen) {
@@ -56,7 +63,7 @@ var ss_transferUrl = self.location.href;
 <body>
  <iframe id="iframe_window" name="iframe_window" 
     style="width:100%; height:95%; display:block;"
-    src="/c" frameBorder="0" onLoad="ss_loadTargetUrl();">xxx</iframe>
+    src="${ss_portalLoginUrl}" frameBorder="0" onLoad="ss_loadTargetUrl();">xxx</iframe>
 
 </body>
 </html>

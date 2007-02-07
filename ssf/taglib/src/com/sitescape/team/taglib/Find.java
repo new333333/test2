@@ -21,7 +21,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class Find extends TagSupport {
     private Set userList;
-    private String formName;
+    private String formName = "";
     private String formElement;
     private String width = "30";
     private String type;
@@ -93,6 +93,7 @@ public class Find extends TagSupport {
 	        throw new JspException(e);
 	    }
 		finally {
+			this.formName = "";
 			this.userList = null;
 			this.singleItem = false;
 			this.width = "30";
