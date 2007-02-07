@@ -1997,24 +1997,25 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 */	
 	private void generateAndStoreThumbnailFile(Long binderId, Long entryId, String inFile, String outFile, int maxWidth, int maxHeight) 
-		throws RepositoryServiceException, FileNotFoundException, IOException
+		throws IOException, FileNotFoundException
 	{
 		ImageConverter converter = null;
 		
 		try
 		{
-			converter = imageConverterManager.getConverter();			
+			converter = this.imageConverterManager.getConverter();			
 			converter.convert(inFile, outFile, 30000, maxWidth, maxHeight);
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			throw new IOException(e.getMessage());
 		}
+		
+		return;
 	}
 	
 	private void generateAndStoreHtmlFile(String url, Long binderId, Long entryId, String fileId, String inFile, String outFile) 
-		throws RepositoryServiceException, FileNotFoundException,
-		IOException
+		throws IOException, FileNotFoundException
 	{
 		int length = 2048;
 		char[] cbuf = new char[length];
@@ -2022,38 +2023,36 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		StringBuffer buffer = null,
 					 bufferAlter = null;
 			
-			try
-			{
-				//Document document = null;
-				//Element image = null;
-				String src = "";
-				buffer = new StringBuffer();
+		String src = "";
+		buffer = new StringBuffer();
+	
+		try
+		{
+			int j = outFile.lastIndexOf(File.separator);
+			//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
 			
-				int j = outFile.lastIndexOf(File.separator);
-				//outFile = outFile.substring(0, j+1) + fileId + File.separator + outFile.substring(j+1);
-				
-				converter = htmlConverterManager.getConverter();
-				
-				converter.convert(inFile, outFile, 30000);
-				// When generating the HMTL equivalent file.
-				// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
-				// Every HTML file in directory should be related to converter process
-				File outputDir = new File(outFile.substring(0, j+1));
-				if (outputDir.isDirectory())
+			converter = htmlConverterManager.getConverter();
+			
+			converter.convert(inFile, outFile, 30000);
+			// When generating the HMTL equivalent file.
+			// Many HTML files can be generated. Open file(s) an make adjustments to image src attribute
+			// Every HTML file in directory should be related to converter process
+			File outputDir = new File(outFile.substring(0, j+1));
+			if (outputDir.isDirectory())
+			{
+				src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&fileId=" + fileId + "&viewType=XXXX&filename=";
+				File[] files = outputDir.listFiles();
+				for (int x=0; x < files.length; x++)
 				{
-					src = url + "?binderId=" + binderId + "&entryId=" + entryId + "&fileId=" + fileId + "&viewType=XXXX&filename=";
-					File[] files = outputDir.listFiles();
-					for (int x=0; x < files.length; x++)
-					{
-						if (files[x].isFile() && files[x].getName().endsWith(".html"))
-							parseHtml(files[x], files[x], src);
-					}
+					if (files[x].isFile() && files[x].getName().endsWith(".html"))
+						parseHtml(files[x], files[x], src);
 				}
 			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+		}
+		catch (Exception e)
+		{
+			throw new IOException(e.getMessage());
+		}
 	}
     
 	/*
