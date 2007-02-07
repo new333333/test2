@@ -2093,11 +2093,12 @@ white-space: nowrap !important;
 }
 
 .ss_miniBusinessCard { 
-	width: 20%;
 	vertical-align: top;
+	width: 2%;
 }
 table.ss_guestbookContainer {
 	border-spacing: 5px;
+	vertical-align: top;	
 }
 td.ss_guestbookContainer {
 	vertical-align: top;
