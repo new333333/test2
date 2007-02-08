@@ -2,6 +2,7 @@ package com.sitescape.team.web.portlet;
 
 import org.springframework.web.portlet.mvc.SimpleFormController;
 
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -31,6 +32,7 @@ implements AllBusinessServicesInjected {
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
 	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
@@ -123,5 +125,13 @@ implements AllBusinessServicesInjected {
 	
 	public DashboardModule getDashboardModule() {
 		return dashboardModule;
+	}
+
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
 	}
 }
