@@ -15,9 +15,9 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
-    <div class="ss_text_field"><c:out 
+    <div class="ss_text_field"><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
       value="${ssDefinitionEntry.customAttributes[property_name].value}" 
-      escapeXml="false"/></div>
+      escapeXml="false"/></ssf:markup></div>
   </td>
 </tr>
 </c:if>

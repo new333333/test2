@@ -340,6 +340,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
+    public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
     public static final String FILE_VIEW_TYPE_UPLOAD_FILE = "ss_viewUploadFile";
@@ -393,6 +394,7 @@ public class WebKeys {
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
+    public static final String MARKUP_VIEW="view"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
     public static final String NLT_VALUE="value";

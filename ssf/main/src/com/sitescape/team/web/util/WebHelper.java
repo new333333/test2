@@ -21,7 +21,10 @@ import javax.servlet.http.HttpSession;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
@@ -328,6 +331,38 @@ public class WebHelper {
         		description.setText(m.replaceFirst(img));
         	}
     	}
+	}
+	
+	public static String markupReplaceForView(HttpServletRequest req, 
+			DefinableEntity entity, String inputString) {
+		String outputString = new String(inputString);
+
+    	//Replace the markup urls with real urls
+    	Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
+    	Matcher m1 = p1.matcher(inputString);
+    	while (m1.find()) {
+    		String urlMarkup = m1.group(0);
+    		String url = m1.group(2);
+    		//Look for the attachment
+    		FileAttachment fa = entity.getFileAttachment(url.trim());
+    		if (fa != null) {
+				String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+				webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
+				webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+				String entityType = entity.getEntityIdentifier().getEntityType().name();
+				if (entityType.equals(EntityType.workspace.name()) ||
+						entityType.equals(EntityType.folder.name()) ||
+						entityType.equals(EntityType.profiles.name())) {
+					webUrl += "binderId=" + entity.getId().toString() + "&amp;";
+					outputString = m1.replaceFirst(webUrl);
+				} else if (entityType.equals(EntityType.folderEntry.name())) {
+					webUrl += "binderId=" + entity.getParentBinder().getId().toString() + "&amp;";
+					webUrl += "entryId=" + entity.getId().toString() + "&amp;";
+					outputString = m1.replaceFirst(webUrl);
+				}
+    		}
+    	}
+    	return outputString;
 	}
 	
 }
