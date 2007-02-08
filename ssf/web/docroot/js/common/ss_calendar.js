@@ -417,6 +417,7 @@ var ss_cal_CalAllDayEvent = {
         this.currEventData.text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam viverra pretium nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus lorem tortor, commodo vel, malesuada nec, sodales ut, ante. Duis ut leo non nisi ultricies ultrices. Vivamus vitae turpis sed justo dignissim porttitor.";
         this.currEventData.calsrc = "cal1";
         this.currEventData.eventId = "GAD" + this.currDispId;
+        this.currEventData.day += ss_cal_Grid.gridOffset;
         ss_cal_Events.set([this.currEventData]);
         ss_cal_Events.redrawAll();
     },
@@ -505,6 +506,7 @@ var ss_cal_CalEvent = {
         this.currEventData.text = " Pellentesque urna elit, lacinia sit amet, tempor a, consectetuer et, lacus. Nunc massa.";
         this.currEventData.calsrc = "cal1";
         this.currEventData.eventId = "GXX" + this.currDispId;
+        this.currEventData.day += ss_cal_Grid.gridOffset;
         ss_cal_Events.set([this.currEventData]);
         ss_cal_Events.redrawAll();
     }
@@ -591,10 +593,12 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
     e.style.backgroundColor = boxColor;
     e.style.borderColor = borderColor
     e.style.height = (((((duration <= 0) ? 30 : duration) / 60) * 42) - 4) + "px";
+    var eHtml = "";
     if (duration >= 0) {
-        e.innerHTML = ss_cal_CalData.shortTime(time);
+        eHtml = ss_cal_CalData.shortTime(time);
     }
-    e.innerHTML += '<a href="#">' + title + '</a>' + "<br/>" + text;
+    eHtml += '<a href="#">' + title + '</a>' + "<br/>" + text;
+    e.innerHTML = eHtml;
     ebox.appendChild(e);
 
     e = document.createElement("div");
@@ -690,16 +694,17 @@ var ss_cal_Events = {
         
     set: function(newEvents) {
         for (var i in newEvents) {
+            var nei = newEvents[i];
             // Normalize times
-            if (newEvents[i].start.toString().indexOf(":") > 0) {
-                var tarray = newEvents[i].start.split(":");
+            if (nei.start.toString().indexOf(":") > 0) {
+                var tarray = nei.start.split(":");
                 start = parseFloat(tarray[0]);
                 if (tarray.length > 1) { start += (parseFloat(tarray[1])/60) }
             } else {
-                start = parseFloat(newEvents[i].start);
+                start = parseFloat(nei.start);
             }
-            newEvents[i].start = start;
-            this.eventData[newEvents[i].eventId] = newEvents[i];
+            nei.start = start;
+            this.eventData[nei.eventId] = nei;
         }
     },
 
