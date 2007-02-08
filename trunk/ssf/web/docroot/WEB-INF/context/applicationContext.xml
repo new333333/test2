@@ -60,6 +60,7 @@
 		<property name="fileModule"><ref bean="fileModule"/></property>
 		<property name="rssGenerator"><ref bean="rssGenerator"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
+		<property name="icBroker"><ref bean="icBroker"/></property>			
 	</bean>
 
 	<!-- add support for lobhandler to support hibernate UserType to handle different db clob implementations -->
@@ -795,7 +796,10 @@
 		<property name="jabberServerPort"><value>${presence.service.jabber.server.port}</value></property>
 		<property name="enable"><value>${presence.service.enable}</value></property>
 	</bean>
-	<bean id="presenceBroker" class="com.sitescape.team.presence.impl.PresenceBrokerImpl">
+	
+	<!-- ================================ Instant Collaboration Support==================== -->
+	<bean id="icBroker" parent="moduleDependencyTemplate" class="com.sitescape.team.ic.impl.ICBrokerImpl">
+		<property name="coreDao"><ref local="coreDao"/></property>		
 		<property name="adminId"><value>${presence.broker.admin.id}</value></property>
 		<property name="adminPasswd"><value>${presence.broker.admin.passwd}</value></property>
 		<property name="zonUrl"><value>${presence.broker.zon.url}</value></property>

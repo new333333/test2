@@ -104,19 +104,13 @@ public class SendMailController extends SAbstractController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
 		
-		//Get the clipboard data
+		// Get the clipboard users
 		Clipboard clipboard = new Clipboard(request);
 		Map clipboardMap = clipboard.getClipboard();
 		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-        Collection principals = getProfileModule().getUsersFromPrincipals(clipboardUsers);
-        Map principalMap = new HashMap();
-        Iterator itPrincipals = principals.iterator();
-        while (itPrincipals.hasNext()) {
-        	User u = (User) itPrincipals.next();
-        	principalMap.put(u.getId(), u.getTitle());
-        }
-		model.put(WebKeys.CLIPBOARD, clipboardMap);
-		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principalMap);
+		Collection principals = getProfileModule().getUsersFromPrincipals(
+				clipboardUsers);
+		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}

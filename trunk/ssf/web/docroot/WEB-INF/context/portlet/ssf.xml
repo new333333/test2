@@ -38,6 +38,7 @@
 	<bean id="dashboardPortletModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.dashboard.ModifyDashboardController" />
 	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
 	<bean id="sendEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
+	<bean id="meetingController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 
  	<!-- Handlers -->
@@ -78,6 +79,7 @@
 						<entry key="__ajax_request"><ref bean="folderAjaxController"/></entry>
 						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 						<entry key="send_email"><ref bean="sendEmailController"/></entry>
+						<entry key="start_meeting"><ref bean="meetingController"/></entry>
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						
 					</map>

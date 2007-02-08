@@ -13,7 +13,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.shared.PresenceServiceUtils;
+import com.sitescape.team.presence.PresenceService;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -60,10 +60,12 @@ public class PresenceInfo extends BodyTagSupport {
 				catch(Exception e) {}
 			}
 
+			PresenceService presenceService = (PresenceService)SpringContextUtil.getBean("presenceService");
+			
 			if (zonName != null) {
-				userStatus = PresenceServiceUtils.getPresence(zonName);
+				userStatus = presenceService.getPresenceInfo(zonName);
 			} else if (user != null && user1 != null) {
-				userStatus = PresenceServiceUtils.getPresence(user1);
+				userStatus = presenceService.getPresenceInfo(user1);
 			} else {
 				userStatus = -99;
 			}

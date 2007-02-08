@@ -26,6 +26,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -96,6 +97,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
 	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
 	
 	public DashboardHelper() {
 		if(instance != null)
@@ -1236,6 +1238,12 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			if (wt.size() > 0 || nf.size() > 0 || nv.size() > 0 || wb.size() > 0) dashboardContentExists = true;
 		}
 		return dashboardContentExists;
+	}
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
 	}
 	
 }

@@ -79,12 +79,6 @@ self.window.resizeTo(width, height);
  <c:if test="${!empty ssClipboard.ss_muster_users}">
  <tr><td>
  <br/>
- <ssf:expandableArea title="<%= NLT.get("sendMail.pasteFromClipboard") %>">
- <c:forEach var="userId" items="${ssClipboard.ss_muster_users}">
-   <input type="checkbox" class="ss_style" name="clipboardUsers" value="${userId}" >&nbsp;<span class="ss_labelRight">
-    ${ssClipboardPrincipals[userId]}</span><br/>
-  </c:forEach>
-</ssf:expandableArea>
 <br/>
 </td></tr>
  </c:if>
@@ -95,7 +89,7 @@ self.window.resizeTo(width, height);
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}"/>
+    type="user" userList="${ssUsers}" clipboardUserList="${ssClipboardPrincipals}"/>
 </td>
 </tr>
 <tr>

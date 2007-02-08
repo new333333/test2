@@ -9,6 +9,7 @@ import javax.activation.FileTypeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -50,6 +51,7 @@ AllBusinessServicesInjected {
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;	
 	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
 
 	public SiteScapeFileSystemImpl() {
 		ssfsInt = new SiteScapeFileSystemInternal(this);
@@ -284,6 +286,14 @@ AllBusinessServicesInjected {
 			return true;
 		else
 			return false;
+	}
+
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
 	}
 	
 }

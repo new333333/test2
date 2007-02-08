@@ -23,7 +23,7 @@
 				  id="ss_profilePicture<portlet:namespace/>"
 				  border="0" 
 				  width="${property_maxWidth}"
-				  height="${property_maxHeight}"	  
+				  height="${property_maxWidth}"	  
 				  src="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${ssDefinitionEntry.parentBinder.id}"

@@ -379,6 +379,15 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
+
+		
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 

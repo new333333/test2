@@ -3450,8 +3450,11 @@ var ss_muster = {
 			inputObj.setAttribute("type", "checkbox");
 			inputObj.setAttribute("name", "muster_ids");
 			inputObj.setAttribute("value", items[i]);
+			inputObj.setAttribute("id", "muster_ids_" + items[i]);
 			var spanObj = document.createElement("span");
-			spanObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
+			var labelObj = document.createElement("label");	
+			spanObj.appendChild(labelObj);
+			labelObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
 			var brObj = document.createElement("br");
 			formObj.appendChild(inputObj);
 			formObj.appendChild(spanObj);
