@@ -1138,6 +1138,15 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
+		
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
+		
+		
 		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);

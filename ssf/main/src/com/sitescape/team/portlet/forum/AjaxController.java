@@ -1,7 +1,10 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +42,7 @@ import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -49,6 +53,7 @@ import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
 import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
@@ -252,7 +257,10 @@ public class AjaxController  extends SAbstractController {
 			return reloadEntryAttachment(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE)) {
 			return openWebDAVFile(request, response); 
+		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
+			return ajaxStartMeeting(request, response);
 		}
+
 		return ajaxReturn(request, response);
 	} 
 	
@@ -327,6 +335,32 @@ public class AjaxController  extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "entryId"));				
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "binderId"));				
 		getFolderModule().setUserRating(binderId, entryId, rating);
+	}
+	
+	private String getModelLink(ActionResponse response, Binder binder,
+			Entry entry) {
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL
+				.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+
+		if (entry == null && binder != null) {
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
+					.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder
+					.getEntityType().toString());
+		} else if (entry != null && binder != null) {
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()
+					.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId()
+					.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry
+					.getEntityType().toString());
+		} else {
+			// no model no link
+			return "";
+		}
+
+		return adapterUrl.toString();
 	}
 	
 	private void ajaxShowHideAllDashboardComponents(ActionRequest request,
@@ -1387,4 +1421,32 @@ public class AjaxController  extends SAbstractController {
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
 	}	
+
+	private ModelAndView ajaxStartMeeting(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		
+		Set<Long> memberIds = new HashSet();
+		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
+				.getParameterValues("users")));
+		
+		Binder binder = getBinderModule().getBinder(binderId);
+		Entry entry = null;
+		if (!entryId.equals("")) {
+			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
+		}
+		
+		String meetingToken = getIcBroker().addMeeting(memberIds,
+				NLT.get("meeting.forumMeetingTitle"),
+				binder, entry, "", -1, "", 0, 0, 0);
+
+		model.put(WebKeys.MEETING_TOKEN, meetingToken);
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/meeting_return", model);		
+	}	
+
 }

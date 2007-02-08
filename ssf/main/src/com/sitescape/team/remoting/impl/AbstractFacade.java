@@ -21,6 +21,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -63,6 +64,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
 	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
 
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
@@ -159,6 +161,14 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		return dashboardModule;
 	}
 
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
+	}
+	
 	public String getDefinitionAsXML(String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().asXML();
 	}

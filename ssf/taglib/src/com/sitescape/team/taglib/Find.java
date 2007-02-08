@@ -21,6 +21,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class Find extends TagSupport {
     private Set userList;
+    private Set clipboardUserList;
     private String formName = "";
     private String formElement;
     private String width = "30";
@@ -38,6 +39,8 @@ public class Find extends TagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
 			if (this.userList == null) this.userList = new HashSet();
+			if (this.clipboardUserList == null) this.clipboardUserList = new HashSet();
+			this.userList.addAll(this.clipboardUserList);
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
@@ -95,6 +98,7 @@ public class Find extends TagSupport {
 		finally {
 			this.formName = "";
 			this.userList = null;
+			this.clipboardUserList = null;
 			this.singleItem = false;
 			this.width = "30";
 			this.clickRoutine = "";
@@ -146,6 +150,10 @@ public class Find extends TagSupport {
 
 	public void setSearchSubFolders(Boolean searchSubFolders) {
 	    this.searchSubFolders = searchSubFolders;
+	}
+
+	public void setClipboardUserList(Set clipboardUserList) {
+		this.clipboardUserList = clipboardUserList;
 	}
 
 }

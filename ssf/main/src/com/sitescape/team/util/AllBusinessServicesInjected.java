@@ -1,5 +1,6 @@
 package com.sitescape.team.util;
 
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -70,4 +71,8 @@ public interface AllBusinessServicesInjected {
 	void setDashboardModule(DashboardModule dashboardModule);
 
 	DashboardModule getDashboardModule();
+	
+	void setIcBroker(ICBroker icBroker);
+
+	ICBroker getIcBroker();	
 }

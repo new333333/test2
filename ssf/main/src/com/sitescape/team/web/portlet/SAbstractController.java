@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.portlet.mvc.AbstractController;
 
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -43,6 +44,8 @@ implements AllBusinessServicesInjected {
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
 	private DashboardModule dashboardModule;
+	private ICBroker icBroker;
+
 	
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
@@ -169,5 +172,13 @@ implements AllBusinessServicesInjected {
 	protected void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 		throws Exception {
 	    throw new PortletException("This controller does not handle action requests");
+	}
+
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
 	}
 }
