@@ -124,7 +124,9 @@
 							 timeStyle="short" dateStyle="short" /></td>
 						<td class="ss_compact20" width="5%"><span class="ss_smallprint">(${fileVersion.fileItem.lengthKB}KB)</span></td>
 						<td class="ss_compact20" width="45%"><span class="ss_smallprint">
-							<a style="text-decoration: none;" href="<ssf:url 
+							<a style="text-decoration: none;" 
+							  target="_blank" 
+							  href="<ssf:url 
 							    webPath="viewFile"
 							    folderId="${ssDefinitionEntry.parentBinder.id}"
 							    entryId="${ssDefinitionEntry.id}" >
