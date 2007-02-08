@@ -316,27 +316,6 @@ app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
 		<delete file="app.server.${user.name}.properties" />
 		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
 	</target>-->
-	
-	<!--<target name="release">-->
-		<!--
-		<delete>
-			<fileset dir="${ssf.source.dir}" defaultexcludes="no">
-				<include name="**/.#*" />
-			</fileset>
-		</delete>
-		-->
-
-		<!--<antcall target="clean" />
-		<delete dir="dist" />
-		<antcall target="build" />
-		<ant dir="tools/sql" target="generate-create-tables-script" />-->
-		<!--  4/18/06 JK temporarily commented out (until the build is
-		      fully automated) 
-		      <antcall target="unit-test" />-->
-		<!--<antcall target="java2html" />-->
-		<!--<antcall target="javadoc-combined" />
-		<antcall target="zip" />
-	</target>-->
 
 	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
 		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
