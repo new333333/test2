@@ -625,11 +625,11 @@ public class AjaxController  extends SAbstractController {
 			//Add the title term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
-			filterTerm.setText(searchText.replaceFirst("\\*", ""));
+			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
 			
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
-			filterTerm.setText(searchText);
+			filterTerm.setText(searchText.trim());
 			
 			//Add terms to search folders and workspaces
 			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
@@ -644,15 +644,17 @@ public class AjaxController  extends SAbstractController {
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
-			filterTerm.setText(searchText.replaceFirst("\\*", ""));
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
 			
 			//Add a term to search the title field
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText.trim());
 			
 			//Add terms to search entries only
 			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
@@ -686,28 +688,28 @@ public class AjaxController  extends SAbstractController {
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
 			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
+			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
 		
 			//Add a term to search the title field
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
 			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText.replaceFirst("\\*", ""));
+			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
 		
 			//Add the login name term
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
 			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText);
+			filterTermValueEle.setText(searchText.trim());
 		
 			//Add a term to search the title field
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
 			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-			filterTermValueEle.setText(searchText);
+			filterTermValueEle.setText(searchText.trim());
 			
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.

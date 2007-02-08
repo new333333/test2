@@ -14,7 +14,9 @@
   </td>
   <td valign="top">
     <div class="ss_entryContent ss_entryDescription">
-    <span><c:out value="${ssDefinitionEntry.description.text}" escapeXml="false"/></span>
+    <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+      value="${ssDefinitionEntry.description.text}" 
+      escapeXml="false"/></ssf:markup></span>
     </div>
   </td>
 </tr>
