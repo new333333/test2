@@ -52,6 +52,12 @@ function ss_userListRemove${prefix}(obj) {
     clickRoutine="ss_userListSelectItem${prefix}"
     leaveResultsVisible="true"
     singleItem="true"/> 
+    <c:if test="${list_type == 'user'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
+    </c:if>
+    <c:if test="${list_type == 'group'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
+    </c:if>
 
 </td>
 <td valign="top">
