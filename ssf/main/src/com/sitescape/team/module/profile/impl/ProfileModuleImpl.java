@@ -257,7 +257,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		ProfileBinder binder = getProfileBinder();
 		checkAccess(binder, "getEntries");
 	    User user = RequestContextHolder.getRequestContext().getUser();
-        Comparator c = new UserComparator(user.getLocale());
+        Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Group> result = new TreeSet<Group>(c);
 		for (Iterator iter=entryIds.iterator(); iter.hasNext();) {
 			try {
@@ -464,7 +464,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public Collection getUsers(Set entryIds) {
 		checkAccess(getProfileBinder(), "getEntries");
         User user = RequestContextHolder.getRequestContext().getUser();
-        Comparator c = new UserComparator(user.getLocale());
+        Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<User> result = new TreeSet<User>(c);
        	result.addAll(getProfileDao().loadUsers(entryIds, user.getZoneId()));
  		return result;
@@ -476,15 +476,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set ids = getProfileDao().explodeGroups(principalIds, profile.getZoneId());
 		return getUsers(ids);
 	}
-	public class UserComparator implements Comparator {
+	public class PrincipalComparator implements Comparator {
 	   	private Collator c;
-		public UserComparator(Locale locale) {
+		public PrincipalComparator(Locale locale) {
 			c = Collator.getInstance(locale);		
 		}
 		public int compare(Object obj1, Object obj2) {
-			User f1,f2;
-			f1 = (User)obj1;
-			f2 = (User)obj2;
+			Principal f1,f2;
+			f1 = (Principal)obj1;
+			f2 = (Principal)obj2;
 					
 			if (f1 == f2) return 0;
 			if (f1==null) return -1;
