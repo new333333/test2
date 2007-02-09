@@ -82,9 +82,14 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public void setTitle(String title) {
         this.title = title;
         //compute normalized title
+        String normalTitle = title.replaceAll("[\\P{L}&&\\P{N}]", " ");
+        normalTitle = normalTitle.replaceAll(" ++","_");
+		normalTitle = normalTitle.toLowerCase();
+		setNormalTitle(normalTitle);
         
     }
     /**
+     * Normalized title for wiki links
      * @hibernate.property length="256"
      * @return
      */

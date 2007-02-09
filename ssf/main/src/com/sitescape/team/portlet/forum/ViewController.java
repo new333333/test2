@@ -19,16 +19,16 @@ import javax.portlet.WindowState;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DashboardPortlet;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -47,7 +47,10 @@ public class ViewController  extends SAbstractController {
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String DASHBOARD_PORTLET="ss_dashboard";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
-	
+	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
+	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
+	private static final String PORTLET_COMPONENT_ID =DashboardHelper.Portlet+"_0";
+
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 	}
@@ -81,9 +84,12 @@ public class ViewController  extends SAbstractController {
 				displayType=PRESENCE_PORTLET;
 			else if (pName.contains(DASHBOARD_PORTLET)) 
 				displayType=DASHBOARD_PORTLET;
-			else if (pName.contains(TOOLBAR_PORTLET)) {
+			else if (pName.contains(TOOLBAR_PORTLET)) 
 				displayType=TOOLBAR_PORTLET;
-			}
+			else if (pName.contains(BLOG_SUMMARY_PORTLET)) 
+					displayType=BLOG_SUMMARY_PORTLET;
+			else if (pName.contains(GUESTBOOK_SUMMARY_PORTLET)) 
+				displayType=GUESTBOOK_SUMMARY_PORTLET;
 		}
 			
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -176,6 +182,71 @@ public class ViewController  extends SAbstractController {
 		
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
+		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
+			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+			if (id != null) {
+				try {
+					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+					model.put(WebKeys.DASHBOARD_PORTLET, d);
+					Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+					model.put(WebKeys.USER_PROPERTIES, userProperties);
+					if (request.getWindowState().equals(WindowState.MAXIMIZED))
+						model.put(WebKeys.PAGE_SIZE, "20");
+					else
+						model.put(WebKeys.PAGE_SIZE, "5");						
+					model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
+					DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
+					Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
+					if (dataMap != null) {
+						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
+						//	Build the jsp bean (sorted by folder title)
+						Long folderId;
+						if (savedFolderIds != null && savedFolderIds.size() > 0) {
+							for (int i = 0; i < savedFolderIds.size(); i++) {
+								folderId = Long.valueOf((String)savedFolderIds.get(i));
+								Binder folder = getFolderModule().getFolder(folderId);
+								model.put(WebKeys.BINDER, folder);
+								break;
+							}
+							return new ModelAndView(WebKeys.VIEW_BLOG_SUMMARY, model);		
+						}
+					}
+
+				} catch (NoObjectByTheIdException no) {}
+			}
+			return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+			String gId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+			if (gId != null) {
+				try {
+					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(gId);
+					model.put(WebKeys.DASHBOARD_PORTLET, d);
+					Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+					model.put(WebKeys.USER_PROPERTIES, userProperties);
+					if (request.getWindowState().equals(WindowState.MAXIMIZED))
+						model.put(WebKeys.PAGE_SIZE, "20");
+					else
+						model.put(WebKeys.PAGE_SIZE, "5");						
+					model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
+					DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
+					Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
+					if (dataMap != null) {
+						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
+						//	Build the jsp bean (sorted by folder title)
+						Long folderId;
+						if (savedFolderIds != null && savedFolderIds.size() > 0) {
+							for (int i = 0; i < savedFolderIds.size(); i++) {
+								folderId = Long.valueOf((String)savedFolderIds.get(i));
+								Binder folder = getFolderModule().getFolder(folderId);
+								model.put(WebKeys.BINDER, folder);
+								break;
+							}
+							return new ModelAndView(WebKeys.VIEW_GUESTBOOK_SUMMARY, model);		
+						} 
+					}
+				} catch (NoObjectByTheIdException no) {}
+			}
+			return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
 		}
 		return null;
 	}

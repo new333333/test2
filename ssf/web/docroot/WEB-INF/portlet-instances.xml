@@ -9,8 +9,8 @@
    </deployment>
    <deployment>
       <instance>
-         <instance-id>ss_dashboard-instance</instance-id>
-         <portlet-ref>ss_dashboard</portlet-ref>
+         <instance-id>ss_guestbook-instance</instance-id>
+         <portlet-ref>ss_guestbook</portlet-ref>
       </instance>
    </deployment>
    <deployment>
@@ -23,6 +23,12 @@
       <instance>
          <instance-id>ss_workspacetree-instance</instance-id>
          <portlet-ref>ss_workspacetree</portlet-ref>
+      </instance>
+   </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_blog-instance</instance-id>
+         <portlet-ref>ss_blog</portlet-ref>
       </instance>
    </deployment>
 </deployments>

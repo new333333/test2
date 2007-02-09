@@ -20,8 +20,11 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.DomTreeBuilder;
@@ -30,6 +33,8 @@ import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -58,7 +63,6 @@ public class EditController extends SAbstractController {
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
 				List forumPrefIdList = new ArrayList();
-		
 				//	Get the forums to be displayed
 				Iterator itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
@@ -68,7 +72,31 @@ public class EditController extends SAbstractController {
 						forumPrefIdList.add(forumId);
 					}
 				}
-				prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+				if (forumPrefIdList.size() > 0) {
+					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+				}
+
+			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
+					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+				String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+				DashboardPortlet d=null;
+				if (id != null) {
+					try {
+						d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+					} catch (NoObjectByTheIdException no) {}
+				}
+				if (d == null) {
+					PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
+					d = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
+					DashboardHelper.addComponent(request, d, DashboardHelper.Wide_Top, DashboardHelper.Portlet);
+					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
+					if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) 
+						prefs.setValue(WebKeys.PORTLET_PREF_TYPE, ViewController.BLOG_SUMMARY_PORTLET);
+					else
+						prefs.setValue(WebKeys.PORTLET_PREF_TYPE, ViewController.GUESTBOOK_SUMMARY_PORTLET);
+				}
+				DashboardHelper.saveComponentData(request, d, DashboardHelper.Portlet+"_0");
+
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
 				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("groups"))); 			
@@ -97,8 +125,7 @@ public class EditController extends SAbstractController {
 			displayType = getDisplayType(request);
 			
 		}
-		if (ViewController.FORUM_PORTLET.equals(displayType)) {
-		
+		if (ViewController.FORUM_PORTLET.equals(displayType)) {		
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
 					new WsDomTreeBuilder(null, true, this, new folderTree()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
@@ -107,18 +134,41 @@ public class EditController extends SAbstractController {
 			String[] forumPrefIdList = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 		
 			//	Build the jsp bean (sorted by folder title)
-			List forumIdList = new ArrayList();
 			List folderIds = new ArrayList();
 			for (int i = 0; i < forumPrefIdList.length; i++) {
-				forumIdList.add(forumPrefIdList[i]);
-				folderIds.add(new Long(forumPrefIdList[i]));
+				folderIds.add(Long.valueOf(forumPrefIdList[i]));
 			}
 			Collection folders = getFolderModule().getFolders(folderIds);
 		
 			model.put(WebKeys.FOLDER_LIST, folders);
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
-			model.put(WebKeys.FORUM_ID_LIST, forumIdList);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
+		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
+				ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+					new WsDomTreeBuilder(null, true, this, new folderTree()),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+			if (id != null) {
+				try {
+					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+					Map dataMap = DashboardHelper.getComponentData(d, DashboardHelper.Portlet+"_0");
+					if (dataMap != null) {
+						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
+						//	Build the jsp bean (sorted by folder title)
+						Long folderId;
+						for (int i = 0; i < savedFolderIds.size(); i++) {
+							folderId = Long.valueOf((String)savedFolderIds.get(i));
+							Binder folder = getFolderModule().getFolder(folderId);
+							model.put(WebKeys.BINDER, folder);
+							break;
+						}
+					}
+				} catch (Exception no) {}
+			} 
+			return new ModelAndView(WebKeys.VIEW_BLOG_EDIT, model);
+
 		} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
@@ -156,6 +206,10 @@ public class EditController extends SAbstractController {
 			return ViewController.WORKSPACE_PORTLET;
 		else if (pName.contains(ViewController.PRESENCE_PORTLET))
 			return ViewController.PRESENCE_PORTLET;
+		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
+			return ViewController.BLOG_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
+			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
 		return null;
 
 	}

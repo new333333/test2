@@ -145,6 +145,9 @@ public interface FolderModule {
     public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
     	throws AccessControlException;
     
+    public Set getFolderEntryByNormalizedTitle(Long folderId, String title) 
+    	throws AccessControlException;
+    
     public Set<String> getSubfoldersTitles(Folder folder);
     
     public Set<Folder> getSubfolders(Folder folder);

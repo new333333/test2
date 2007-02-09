@@ -17,19 +17,21 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
-//treename must start with editWs
-String wsTreeName = "editWs_" + renderResponse.getNamespace();
+//treename must start with editForum
+String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssBinder}">
-<b><ssf:nlt tag="portlet.workspace.selected.workspace"/></b><br/><br/>
+<spane class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span><br/><br/>
 <c:out value="${ssBinder.title}" />
 <br/>
 </c:if>
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
 
-<br/>
-<span class="ss_bold"><ssf:nlt tag="portlet.workspace.select.workspace" /></span>
+
+<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+<input type="hidden" name="name" value="guestbook"/>
+<br>
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.folder"/></span>
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
@@ -48,7 +50,7 @@ function <%= wsTreeName %>_showId(forum, obj) {
 </c:if>
 <ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
  	topId="${ssWsDomTreeBinderId}" rootOpen="true"
-	 singleSelect="${singleSelect}" singleSelectName="topWorkspace" />
+	 singleSelect="${singleSelect}" singleSelectName="ss_folder_id" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

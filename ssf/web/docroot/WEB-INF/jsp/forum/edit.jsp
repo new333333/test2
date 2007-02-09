@@ -17,6 +17,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
+//treename must start with editForum
 String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>

@@ -18,14 +18,14 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.NoObjectByTheNameException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
@@ -37,7 +37,6 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
@@ -48,7 +47,6 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
 
@@ -104,7 +102,6 @@ public class ViewEntryController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-
 		Map formData = request.getParameterMap();
 		String viewPath = BinderHelper.getViewListingJsp(this);
 		Map model;
@@ -119,8 +116,22 @@ public class ViewEntryController extends  SAbstractController {
 			model.put("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
 		} else {
-			model = getShowEntry(entryId, formData, request, response, folderId);
-			
+			if (Validator.isNull(entryId)) {
+				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
+				if (entries.size() == 1) {
+					FolderEntry entry = (FolderEntry)entries.iterator().next();
+					entryId = entry.getId().toString();
+					model = getShowEntry(entryId, formData, request, response, folderId);
+				} else if (entries.size() == 0) {
+					throw new NoObjectByTheNameException("errorcode.no.entry.by.the.title", entryId);
+				} else {
+					//TODO: handle multiple matches
+					throw new NotSupportedException();
+				}
+			} else {
+				model = getShowEntry(entryId, formData, request, response, folderId);
+			}
 			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 
 			boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();

@@ -478,19 +478,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (s != null) getCoreDao().delete(s);
     }
 	public Map executeSearchQuery(Document searchQuery) {
-		Binder binder = null;
 		Map options = new HashMap();
-		return executeSearchQuery(binder, searchQuery, options);
+		return executeSearchQuery(searchQuery, options);
 	}
 	public Map executeSearchQuery(Document searchQuery, Map options) {
-		Binder binder = null;
-		return executeSearchQuery(binder, searchQuery, options);
-	}
-	public Map executeSearchQuery(Binder binder, Document searchQuery) {
-		Map options = new HashMap();
-		return executeSearchQuery(binder, searchQuery, options);
-	}
-	public Map executeSearchQuery(Binder binder, Document searchQuery, Map options) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
         
