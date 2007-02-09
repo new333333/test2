@@ -21,6 +21,9 @@
 	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
 			</fileset>
 		</jar>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
 	</target>
 	
 	<target name="deploy" depends="jar">

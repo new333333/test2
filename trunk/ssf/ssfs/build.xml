@@ -52,6 +52,9 @@
 	        	<include name="com/sitescape/util/ServerDetector.class"/>
 			</fileset>
 		</jar>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
 	</target>
 
 	<target name="unwar-original" depends="delete-temp">		
