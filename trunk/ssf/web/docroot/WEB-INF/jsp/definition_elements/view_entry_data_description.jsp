@@ -2,7 +2,8 @@
 <c:if test="${!empty ssDefinitionEntry.description}">
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent ss_entryDescription">
- <span><c:out value="${ssDefinitionEntry.description.text}" escapeXml="false"/></span>
+ <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+   value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
 </div>
 </c:if>
 
