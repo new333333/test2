@@ -343,14 +343,27 @@ public class WebHelper {
     		String img = m.group(0);
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
         	Matcher m2 = p2.matcher(img);
-        	if (m2.find() && m2.groupCount() >= 1) fileId = m2.group(1);
+        	if (m2.find() && m2.groupCount() >= 1) fileId = m2.group(1).trim();
+    		
+        	String binderId = "";
+    		img = m.group(0);
+        	Pattern p3 = Pattern.compile("binderId=([^\\&\"]*)");
+        	Matcher m3 = p3.matcher(img);
+        	if (m3.find() && m3.groupCount() >= 1) binderId = m3.group(1).trim();
+    		
+        	String entryId = "";
+    		img = m.group(0);
+        	Pattern p4 = Pattern.compile("entryId=([^\\&\"]*)");
+        	Matcher m4 = p4.matcher(img);
+        	if (m4.find() && m4.groupCount() >= 1) entryId = m4.group(1).trim();
 
 	    	if (!fileId.equals("")) {
 		    	//Now, replace the url with special markup version
-		    	Pattern p3 = Pattern.compile("src *= *\"([^\"]*)\"");
-		    	Matcher m3 = p3.matcher(img);
-	        	if (m3.find() && m3.groupCount() >= 1) {
-	        		img = m3.replaceFirst("src=\"{{attachmentFileId: " + fileId + "}}\"");
+		    	Pattern p1 = Pattern.compile("src *= *\"([^\"]*)\"");
+		    	Matcher m1 = p1.matcher(img);
+	        	if (m1.find() && m1.groupCount() >= 1) {
+	        		img = m1.replaceFirst("src=\"{{attachmentFileId: fileId=" + fileId 
+	        				+ "&amp;binderId=" + binderId + "&amp;entryId=" + entryId + "}}\"");
 	        		description.setText(m.replaceFirst(img));
 	        		m = pattern.matcher(description.getText());
 	        	}
@@ -391,28 +404,15 @@ public class WebHelper {
     	p1 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
     	m1 = p1.matcher(outputString);
     	while (m1.find()) {
-    		String fileId = m1.group(2).trim();
+    		String fileIds = m1.group(2).trim();
     		//Look for the attachment
-    		Attachment att = entity.getAttachment(fileId);
-    		if (att != null) {
-				String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
-				webUrl += WebKeys.URL_FILE_ID + "=" + fileId + "&amp;";
-				webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
-				String entityType = entity.getEntityIdentifier().getEntityType().name();
-				if (entityType.equals(EntityType.workspace.name()) ||
-						entityType.equals(EntityType.folder.name()) ||
-						entityType.equals(EntityType.profiles.name())) {
-					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
-					outputString = m1.replaceFirst(webUrl);
-				} else if (entityType.equals(EntityType.folderEntry.name())) {
-					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
-					webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
-					outputString = m1.replaceFirst(webUrl);
-				}
-				m1 = p1.matcher(outputString);
-    		}
-    	}
-    	return outputString;
+			String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+			webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+			webUrl += fileIds;
+			outputString = m1.replaceFirst(webUrl);
+			m1 = p1.matcher(outputString);
+		}
+     	return outputString;
 	}
 	
 }
