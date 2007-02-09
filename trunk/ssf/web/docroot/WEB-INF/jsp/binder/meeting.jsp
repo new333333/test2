@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <ssf:ifadapter>
 <body>
@@ -25,33 +26,6 @@
 	var height = ss_getWindowHeight();
 	if (height < 600) height=600;
 self.window.resizeTo(width, height);
-
-	var rn = Math.round(Math.random()*999999);
-	var meetingToken;
-
-	function ss_startMeeting() {
-		var a = 1;
-		ss_onSubmit(document.getElementById("startMeetingForm"));
-		var url = "<ssf:url 
-	    	adapter="true" 
-	    	portletName="ss_forum" 
-	    	action="__ajax_request" 
-	    	actionUrl="true" >
-			<ssf:param name="operation" value="start_meeting" />
-	    	</ssf:url>";
-		var ajaxRequest = new ss_AjaxRequest(url);
-		ajaxRequest.addFormElements("startMeetingForm");
-		ajaxRequest.setPostRequest(ss_launchMeeting);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
-	}	
-
-	function ss_launchMeeting() {
-		if (document.getElementById("meetingToken"))
-			self.location.href = 'iic:meetmany?meetingtoken=' + document.getElementById("meetingToken").value;
-		return false;
-	}	
-
 </script>
 
 
@@ -74,7 +48,6 @@ self.window.resizeTo(width, height);
 <c:otherwise>
 
 <form class="ss_style ss_form" method="post" id="startMeetingForm" name="startMeetingForm">
-	<input type="hidden" id="meetingToken" value="" />
 	<input type="hidden" name="binderId" value="${ssBinder.id}" />
 	<c:if test="${!empty ssEntry}">
 		<input type="hidden" name="entryId" value="${ssEntry.id}" />	
@@ -104,10 +77,10 @@ self.window.resizeTo(width, height);
 </form>
 
 <a class="ss_linkButton ss_bold ss_smallprint" href="#"
-  onClick="ss_startMeeting();"
+  onClick="ss_startMeeting(<c:if test="${action == 'start_meeting'}">ss_ostatus_start_meeting_url</c:if><c:if test="${action == 'schedule_meeting'}">ss_ostatus_schedule_meeting_url</c:if>, 'startMeetingForm');"
 ><c:if test="${action == 'start_meeting'}"><ssf:nlt tag="meeting.start"/></c:if><c:if test="${action == 'schedule_meeting'}"><ssf:nlt tag="meeting.schedule"/></c:if></a>
 
-<br/>
+<br/><br/>
 
 <div class="ss_buttonBarLeft">
 	<form class="ss_style ss_form" method="post" 

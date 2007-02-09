@@ -22,6 +22,7 @@ import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.ic.ICException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
 public class ICBrokerImpl extends CommonDependencyInjection implements
@@ -618,14 +619,25 @@ public class ICBrokerImpl extends CommonDependencyInjection implements
 		}
 	}
 
-	public String addMeeting(Set memberIds, String title, Binder binder,
+	public String addMeeting(Set memberIds, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken,
 			int[] meetingType)
 			throws ICException {
-		return addMeeting(memberIds, title,
+		return addMeeting(memberIds, getMeetingTitle(binder, entry),
 				getMeetingDescription(binder, entry), getModelLink(binder,
 						entry), password, scheduleTime, forumToken,
 						meetingType);
+	}
+	
+	
+
+	private String getMeetingTitle(Binder binder, Entry entry) {
+		if (entry != null || binder != null) {
+			return NLT.get("meeting.forumMeetingTitle");
+		} 
+		
+		// no model no meeeting title
+		return "";
 	}
 
 	private String getModelLink(Binder binder, Entry entry) {

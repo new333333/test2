@@ -27,7 +27,7 @@ public interface ICBroker {
 			String description, String message, String password,
 			int scheduleTime, String forumToken, int[] meetingType) throws ICException;
 
-	public String addMeeting(Set memberIds, String title, Binder binder,
+	public String addMeeting(Set memberIds, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken, int[] meetingType) throws ICException;
 
 }
