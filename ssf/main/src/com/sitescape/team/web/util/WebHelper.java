@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FileAttachment;
@@ -298,8 +299,8 @@ public class WebHelper {
 	 */
 	public static void scanDescriptionForUploadFiles(Description description, List fileData) {
     	String fileHandle = "";
-    	Pattern pattern = Pattern.compile("(<img src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
-    	Matcher m =pattern.matcher(description.getText());
+    	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
+    	Matcher m = pattern.matcher(description.getText());
     	while (m.find()) {
     		String img = m.group(0);
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
@@ -329,7 +330,31 @@ public class WebHelper {
         	if (m3.find() && m3.groupCount() >= 1) {
         		img = m3.replaceFirst("src=\"{{attachmentUrl: " + WebHelper.getFileName(fileHandle) + "}}\"");
         		description.setText(m.replaceFirst(img));
+        		m = pattern.matcher(description.getText());
         	}
+    	}
+	}
+	
+	public static void scanDescriptionForAttachmentFileUrls(Description description) {
+    	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
+    	Matcher m = pattern.matcher(description.getText());
+    	while (m.find()) {
+    		String fileId = "";
+    		String img = m.group(0);
+        	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
+        	Matcher m2 = p2.matcher(img);
+        	if (m2.find() && m2.groupCount() >= 1) fileId = m2.group(1);
+
+	    	if (!fileId.equals("")) {
+		    	//Now, replace the url with special markup version
+		    	Pattern p3 = Pattern.compile("src *= *\"([^\"]*)\"");
+		    	Matcher m3 = p3.matcher(img);
+	        	if (m3.find() && m3.groupCount() >= 1) {
+	        		img = m3.replaceFirst("src=\"{{attachmentFileId: " + fileId + "}}\"");
+	        		description.setText(m.replaceFirst(img));
+	        		m = pattern.matcher(description.getText());
+	        	}
+	    	}
     	}
 	}
 	
@@ -341,7 +366,6 @@ public class WebHelper {
     	Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
     	Matcher m1 = p1.matcher(inputString);
     	while (m1.find()) {
-    		String urlMarkup = m1.group(0);
     		String url = m1.group(2);
     		//Look for the attachment
     		FileAttachment fa = entity.getFileAttachment(url.trim());
@@ -353,13 +377,39 @@ public class WebHelper {
 				if (entityType.equals(EntityType.workspace.name()) ||
 						entityType.equals(EntityType.folder.name()) ||
 						entityType.equals(EntityType.profiles.name())) {
-					webUrl += "binderId=" + entity.getId().toString() + "&amp;";
+					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
 					outputString = m1.replaceFirst(webUrl);
 				} else if (entityType.equals(EntityType.folderEntry.name())) {
-					webUrl += "binderId=" + entity.getParentBinder().getId().toString() + "&amp;";
-					webUrl += "entryId=" + entity.getId().toString() + "&amp;";
+					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
+					webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
 					outputString = m1.replaceFirst(webUrl);
 				}
+    		}
+    	}
+    	
+    	//Replace the markup attachmentFileIds with real urls
+    	p1 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
+    	m1 = p1.matcher(outputString);
+    	while (m1.find()) {
+    		String fileId = m1.group(2).trim();
+    		//Look for the attachment
+    		Attachment att = entity.getAttachment(fileId);
+    		if (att != null) {
+				String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+				webUrl += WebKeys.URL_FILE_ID + "=" + fileId + "&amp;";
+				webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+				String entityType = entity.getEntityIdentifier().getEntityType().name();
+				if (entityType.equals(EntityType.workspace.name()) ||
+						entityType.equals(EntityType.folder.name()) ||
+						entityType.equals(EntityType.profiles.name())) {
+					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
+					outputString = m1.replaceFirst(webUrl);
+				} else if (entityType.equals(EntityType.folderEntry.name())) {
+					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
+					webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
+					outputString = m1.replaceFirst(webUrl);
+				}
+				m1 = p1.matcher(outputString);
     		}
     	}
     	return outputString;

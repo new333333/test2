@@ -44,5 +44,6 @@
 <div class="ss_entryContent">
   <span class="ss_labelLeft"><%= caption %><%= required %></span>
 <div>
-<ssf:htmleditor name="${property_name}"><c:out value="${textValue}"/></ssf:htmleditor>
+<ssf:htmleditor name="${property_name}"><ssf:markup type="view" 
+  entity="${ssDefinitionEntry}"><c:out value="${textValue}"/></ssf:markup></ssf:htmleditor>
 </div>

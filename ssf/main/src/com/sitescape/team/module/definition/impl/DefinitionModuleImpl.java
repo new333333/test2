@@ -1432,7 +1432,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Description description = new Description();
 							if (inputData.exists(nameValue)) {
 								description.setText(inputData.getSingleValue(nameValue));
+								//Deal with any markup language transformations before storing the description
 								WebHelper.scanDescriptionForUploadFiles(description, fileData);
+								WebHelper.scanDescriptionForAttachmentFileUrls(description);
 								entryData.put(nameValue, description);
 							}
 						} else if (itemName.equals("date")) {
