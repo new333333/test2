@@ -34,6 +34,7 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -258,7 +259,9 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE)) {
 			return openWebDAVFile(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
-			return ajaxStartMeeting(request, response);
+			return ajaxStartMeeting(request, response, ICBroker.REGULAR_MEETING);
+		} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
+			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
 		}
 
 		return ajaxReturn(request, response);
@@ -1427,9 +1430,9 @@ public class AjaxController  extends SAbstractController {
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
 	}	
-
+	
 	private ModelAndView ajaxStartMeeting(RenderRequest request, 
-			RenderResponse response) throws Exception {
+			RenderResponse response, int[] meetingType) throws Exception {
 		Map model = new HashMap();
 		
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
@@ -1447,7 +1450,7 @@ public class AjaxController  extends SAbstractController {
 		
 		String meetingToken = getIcBroker().addMeeting(memberIds,
 				NLT.get("meeting.forumMeetingTitle"),
-				binder, entry, "", -1, "", 0, 0, 0);
+				binder, entry, "", -1, "", meetingType);
 
 		model.put(WebKeys.MEETING_TOKEN, meetingToken);
 		

@@ -565,8 +565,7 @@ public class ICBrokerImpl extends CommonDependencyInjection implements
 
 	public String addMeeting(Set participantsLongIds, String title,
 			String description, String message, String password,
-			int scheduleTime, String forumToken, int forumOptions,
-			int optionMaskSet, int optionMaskClear) throws ICException {
+			int scheduleTime, String forumToken, int[] meetingType) throws ICException {
 
 		// HashMap participant = null;
 		// String[] participantFields = { "zonScreenName", "displayName",
@@ -601,9 +600,9 @@ public class ICBrokerImpl extends CommonDependencyInjection implements
 		params.addElement(password);
 		params.addElement(new Integer(scheduleTime));
 		params.addElement(forumToken);
-		params.addElement(new Integer(forumOptions));
-		params.addElement(new Integer(optionMaskSet));
-		params.addElement(new Integer(optionMaskClear));
+		params.addElement(new Integer(meetingType[0]));
+		params.addElement(new Integer(meetingType[1]));
+		params.addElement(new Integer(meetingType[2]));
 
 		List result = null;
 		try {
@@ -621,12 +620,12 @@ public class ICBrokerImpl extends CommonDependencyInjection implements
 
 	public String addMeeting(Set memberIds, String title, Binder binder,
 			Entry entry, String password, int scheduleTime, String forumToken,
-			int forumOptions, int optionMaskSet, int optionMaskClear)
+			int[] meetingType)
 			throws ICException {
 		return addMeeting(memberIds, title,
 				getMeetingDescription(binder, entry), getModelLink(binder,
 						entry), password, scheduleTime, forumToken,
-				forumOptions, optionMaskSet, optionMaskClear);
+						meetingType);
 	}
 
 	private String getModelLink(Binder binder, Entry entry) {

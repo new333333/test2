@@ -80,6 +80,9 @@ public class MeetingController  extends SAbstractController {
 		
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
 		
+		model.put(WebKeys.ACTION, PortletRequestUtils.getStringParameter(request,
+				WebKeys.ACTION));
+		
 		return new ModelAndView(WebKeys.VIEW_BINDER_MEETING, model);
 	}
 

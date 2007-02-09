@@ -146,6 +146,7 @@ public class WebKeys {
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_START_MEETING="start_meeting";
+	public static final String ACTION_SCHEDULE_MEETING="schedule_meeting";
 	
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
@@ -214,6 +215,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
 	public static final String OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String OPERATION_START_MEETING = "start_meeting";
+	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
 	public static final String OPERATION_GET_SEARCH_FORM_FILTER_TYPE = "get_search_form_filter_type";
 	public static final String OPERATION_GET_SEARCH_FORM_ENTRY_ELEMENTS = "get_searchForm_entry_elements";
 	public static final String OPERATION_GET_SEARCH_FORM_ELEMENT_VALUES = "get_searchForm_element_values";
