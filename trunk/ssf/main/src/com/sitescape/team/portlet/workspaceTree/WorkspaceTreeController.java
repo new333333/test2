@@ -1,8 +1,10 @@
 package com.sitescape.team.portlet.workspaceTree;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -434,6 +436,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(workspace));
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
@@ -441,6 +444,13 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 	}
-		
+	private String[] collectCreatorAndMoficationIds(Workspace workspace) {
+		Set principals = new HashSet();
+		principals.add(workspace.getCreation().getPrincipal().getId().toString());
+		principals.add(workspace.getModification().getPrincipal().getId().toString());
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
 
 }

@@ -92,7 +92,7 @@ self.window.resizeTo(width, height);
 	<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 	<td valign="top">
 	  <ssf:find formName="startMeetingForm" formElement="users" 
-	    type="user" userList="${users}" clipboardUserList="${ssClipboardPrincipals}"/>
+	    type="user" userList="${ssUsers}" clipboardUserList="${ssClipboardPrincipals}"/>
 	</td>
 	</tr>
 	</table>

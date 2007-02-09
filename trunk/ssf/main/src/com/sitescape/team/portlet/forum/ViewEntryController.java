@@ -2,6 +2,7 @@ package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -394,6 +396,7 @@ public class ViewEntryController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(entry));
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
@@ -405,6 +408,23 @@ public class ViewEntryController extends  SAbstractController {
 		return toolbar;
 	}
 
+	private String[] collectCreatorAndMoficationIds(FolderEntry entry) {		
+		Set principals = new HashSet();
+		collectCreatorAndMoficationIdsRecursive(entry, principals);
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
+		
+	private void collectCreatorAndMoficationIdsRecursive(FolderEntry entry, Set principals) {		
+		principals.add(entry.getCreation().getPrincipal().getId().toString());
+		principals.add(entry.getModification().getPrincipal().getId().toString());
+		Iterator repliesIt = entry.getReplies().iterator();
+		while (repliesIt.hasNext()) {
+			collectCreatorAndMoficationIdsRecursive((FolderEntry)repliesIt.next(), principals);
+		}
+	}
+	
 	protected Map getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
 		Map model = new HashMap();
 		Folder folder = null;

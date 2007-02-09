@@ -1,5 +1,9 @@
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javax.portlet.PortletRequest;
 
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
@@ -135,6 +139,20 @@ public abstract class PortletRequestUtils {
 		catch (PortletRequestBindingException ex) {
 			return new long[0];
 		}
+	}
+	
+	/**
+	 * Get an list of long parameters, return an empty list if not found.
+	 * @param request current HTTP request
+	 * @param name the name of the parameter with multiple possible values
+	 */
+	public static List getLongListParameters(PortletRequest request, String name) {
+		long[] values = getLongParameters(request, name);
+		List result = new ArrayList();
+		for (int i = 0; i < values.length; i++) {
+			result.add(new Long(values[i]));
+		}
+		return result;
 	}
 
 	/**

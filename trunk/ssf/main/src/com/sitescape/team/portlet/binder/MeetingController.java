@@ -1,6 +1,7 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +59,9 @@ public class MeetingController  extends SAbstractController {
 				WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_ENTRY_ID);
-
+		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
+ 
+		
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
 		
@@ -75,8 +78,9 @@ public class MeetingController  extends SAbstractController {
 				clipboardUsers);
 		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 		
+		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
+		
 		return new ModelAndView(WebKeys.VIEW_BINDER_MEETING, model);
 	}
-
 
 }

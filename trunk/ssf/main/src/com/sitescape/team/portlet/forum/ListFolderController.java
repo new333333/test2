@@ -3,9 +3,12 @@ package com.sitescape.team.portlet.forum;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -47,6 +50,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
@@ -1142,6 +1146,7 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorsAndMoficatsIds((List)model.get(WebKeys.FOLDER_ENTRIES)));
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
@@ -1159,6 +1164,20 @@ public class ListFolderController extends  SAbstractController {
 	}
 	
 
+	private String[] collectCreatorsAndMoficatsIds(List entries) {
+		Set principals = new HashSet();
+		Iterator entriesIt = entries.iterator();
+		while (entriesIt.hasNext()) {
+			Map entry = (Map)entriesIt.next();
+			String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
+			String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
+			principals.add(creatorId);
+			principals.add(modificationId);
+		}	
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
 	/* 
 	 * getEvents ripples through all the entries in the current entry list, finds their
 	 * associated events, checks each event against the session's current calendar view mode
