@@ -2994,11 +2994,11 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         m += '<td><a class="ss_graymenu" href="iic:meetone?screenName=' + screenName + '">'+ss_ostatus_startIm+'</a></td></tr>';
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgsched'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting schedule\',\'' + userId + '\', \'\', \'\', \'\');">'+ss_ostatus_schedIm+'</a></td></tr>';
+        m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_schedIm+'</a></td></tr>';
         m += '<tr>';
         if (ssPresenceZonBridge == 'enabled') {
         	m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgphone'+ssNamespace+'"></td>';
-        	m += '<td><a class="ss_graymenu" href="javascript:quickMeetingRPC(\'??? addMeeting call\',\'' + userId + '\', \'\', \'\', \'\');">'+ss_ostatus_call+'</a></td></tr>';
+        	m += '<td><a class="ss_graymenu" href="javascript:ss_startMeeting(\'' + ss_ostatus_schedule_meeting_url + '&users=' + userId + '\');">'+ss_ostatus_call+'</a></td></tr>';
         }
 	}
 	if (userId != '' && current == '') {
@@ -3533,4 +3533,23 @@ var ss_muster = {
 	cancel : function(obj) {
 		ss_cancelPopupDiv('ss_muster_div');
 	}
+}
+
+function ss_launchMeeting() {
+	if (document.getElementById("meetingToken"))
+		self.location.href = 'iic:meetmany?meetingtoken=' + document.getElementById("meetingToken").value;
+	return false;
+}
+
+function ss_startMeeting(url, formId) {
+	if (formId && formId != "")
+		ss_onSubmit(document.getElementById(formId));// TODO: remove this?
+	var ajaxRequest = new ss_AjaxRequest(url);
+	if (formId && formId != "")
+		ajaxRequest.addFormElements(formId);
+	ajaxRequest.setPostRequest(ss_launchMeeting);
+	ajaxRequest.setUseGET();	
+	if (formId && formId != "")
+		ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();
 }

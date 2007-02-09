@@ -1435,21 +1435,23 @@ public class AjaxController  extends SAbstractController {
 			RenderResponse response, int[] meetingType) throws Exception {
 		Map model = new HashMap();
 		
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		
 		Set<Long> memberIds = new HashSet();
 		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
 				.getParameterValues("users")));
 		
-		Binder binder = getBinderModule().getBinder(binderId);
+		Binder binder = null;
+		if (binderId != null) {
+			getBinderModule().getBinder(binderId);
+		}
 		Entry entry = null;
-		if (!entryId.equals("")) {
+		if (Validator.isNotNull(entryId)) {
 			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
 		}
 		
 		String meetingToken = getIcBroker().addMeeting(memberIds,
-				NLT.get("meeting.forumMeetingTitle"),
 				binder, entry, "", -1, "", meetingType);
 
 		model.put(WebKeys.MEETING_TOKEN, meetingToken);
