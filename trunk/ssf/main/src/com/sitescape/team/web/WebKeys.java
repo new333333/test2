@@ -62,6 +62,7 @@ public class WebKeys {
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
+    public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
@@ -145,7 +146,6 @@ public class WebKeys {
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_START_MEETING="start_meeting";
-	
 	
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
@@ -301,6 +301,7 @@ public class WebKeys {
     public static final String DASHBOARD_INCLUDE_BINDER_TITLE="includeBinderTitle";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH2="narrowFixedWidth2";
+    public static final String DASHBOARD_PORTLET="ssDashboardPortlet";
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SHOW_ALL="ss_show_all_dashboard_components";
@@ -541,6 +542,8 @@ public class WebKeys {
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
     public static final String VIEW_BINDER_SENDMAIL="binder/sendMail";
     public static final String VIEW_BINDER_MEETING="binder/meeting";
+    public static final String VIEW_BLOG_EDIT="blog_summary/edit";
+    public static final String VIEW_BLOG_SUMMARY="blog_summary/view";
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
@@ -552,6 +555,8 @@ public class WebKeys {
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
+    public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
+    public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
@@ -563,6 +568,7 @@ public class WebKeys {
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_ENTRY="entry/view_no_entry";
+    public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
     public static final String VIEW_PRESENCE="presence/view";
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";

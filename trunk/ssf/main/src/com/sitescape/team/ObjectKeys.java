@@ -145,6 +145,7 @@ public interface ObjectKeys {
     public static final String FIELD_INTERNALID="internalId";
 
     public static final String FIELD_ENTITY_TITLE="title";
+    public static final String FIELD_ENTITY_NORMALIZED_TITLE="normalTitle";
     public static final String FIELD_ENTITY_DESCRIPTION="description";
     public static final String FIELD_ENTITY_PARENTBINDER="parentBinder";
     public static final String FIELD_ENTITY_DEFTYPE="definitionType";

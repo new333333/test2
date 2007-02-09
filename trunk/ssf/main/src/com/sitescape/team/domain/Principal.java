@@ -135,6 +135,11 @@ public abstract class Principal extends Entry  {
         this.name = name;
     }
  
+    public String getNormalTitle() {
+        String val = super.getNormalTitle();
+       	if (Validator.isNotNull(val)) return val;
+       	return getName();		
+    }
     /**
      * @hibernate.property length="256"
      * @return

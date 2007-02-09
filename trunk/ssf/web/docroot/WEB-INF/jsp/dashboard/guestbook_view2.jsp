@@ -41,39 +41,15 @@
 			</td>		 	
 			<td class="ss_guestbookContainer">
 			
-				<c:choose>
-			  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
 			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 					    action="view_permalink"
 					    binderId="${fileEntry._binderId}"
 					    entryId="${fileEntry._docId}">
 					    <ssf:param name="entityType" value="${fileEntry._entityType}" />
 			    	    <ssf:param name="newTab" value="1"/>
-						</ssf:url>">
-			    </c:when>
-			    <c:when test="${fileEntry._entityType == 'user'}">
-			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-						action="view_permalink"
-						binderId="${fileEntry._principal.workspaceId}">
-						<ssf:param name="entityType" value="workspace" />
-			    	    <ssf:param name="newTab" value="1"/>
-						</ssf:url>" >
-			    </c:when>
-			    <c:when test="${fileEntry._entityType == 'group'}">
-			    <a target="_blank" href="<ssf:url action="view_profile_entry" 
-			    		folderId="${fileEntry._binderId}"
-			    		entryId="${fileEntry._docId}" />" >
-			    </c:when>
-			    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
-			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					    action="view_permalink"
-					    binderId="${fileEntry._docId}">
-					    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-			    	    <ssf:param name="newTab" value="1"/>
-						</ssf:url>" >
-			    </c:when>
-			 	</c:choose>
-			
+						</ssf:url>"
+						 onClick="if (${ss_divId}_guestbookUrl) ${ss_divId}_guestbookUrl('${fileEntry._binderId}','${fileEntry._docId}');return false;">
+		
 				<span class="ss_entryTitle">
 					<c:if test="${empty fileEntry.title}">
 				    	<i>(no title)</i>
@@ -116,15 +92,21 @@
 </c:if>
 	</td>
 	<td align="right">
+	<c:if test="${ssDashboard.scope != 'portlet'}">
+		<c:set var="binderId" value="${ssBinder.id}"/>
+	</c:if>
+	<c:if test="${ssDashboard.scope == 'portlet'}">
+		<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+	</c:if>
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber - 1}', '10', '${ss_divId}', '${componentId}', 'guestbook'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'guestbook'); return false;"
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
 	  <c:if test="${(ss_pageNumber * 10 + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber + 1}', '10', '${ss_divId}', '${componentId}', 'guestbook'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'guestbook'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>

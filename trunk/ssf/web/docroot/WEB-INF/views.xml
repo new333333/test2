@@ -7,7 +7,7 @@
 
 	<!-- ========================= View Definitions ========================= -->
 
-<-- EXAMPLE:
+<!-- EXAMPLE:
 	<bean name="administration/view" class="org.springframework.web.servlet.view.JstlView">
 		<property name="url"><value>/WEB-INF/jsp/mycustimizations/admin_view.jsp</value></property>
 	</bean>

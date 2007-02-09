@@ -6,7 +6,7 @@ import com.sitescape.team.exception.UncheckedCodedException;
  * @author Jong Kim
  *
  */
-public abstract class NoObjectByTheNameException extends UncheckedCodedException {
+public class NoObjectByTheNameException extends UncheckedCodedException {
     public NoObjectByTheNameException(String errorCode, String objName) {
         super(errorCode, new Object[] {objName});
     }

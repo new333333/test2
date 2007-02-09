@@ -20,7 +20,9 @@
 <c:if test="${!empty ssComponentId}">
 <c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
 </c:if>
+<c:if test="${empty ss_divId}">
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
+</c:if>
 <c:set var="ss_pageNumber" value="0"/>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
@@ -68,7 +70,6 @@ function ss_hideAddEntryIframe${ssNamespace}() {
 
 <div style="text-align: right; margin: 5px; ">
 
-
 <c:if test="${!empty ssComponentId && !empty ssDashboard.beans[componentId] && !empty ssDashboard.beans[componentId].ssSearchFormData && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder && !empty ssDashboard.beans[componentId].ssSearchFormData.ssGuestbookBinder.entryDefinitions[0]}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="add_folder_entry"
@@ -93,6 +94,6 @@ function ss_hideAddEntryIframe${ssNamespace}() {
   width="100%">xxx</iframe>
 </div>
 
-<div id="ss_searchResults_${ssNamespace}">
+<div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/guestbook_view2.jsp" %>
 </div>

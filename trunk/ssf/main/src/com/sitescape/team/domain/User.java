@@ -138,7 +138,7 @@ public class User extends Principal {
      */
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-        title = setupTitle();
+        super.setTitle(setupTitle());
     }
 
     
@@ -153,7 +153,7 @@ public class User extends Principal {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
-        title = setupTitle();
+        super.setTitle(setupTitle());
    }
  
     /**
@@ -167,7 +167,7 @@ public class User extends Principal {
      */
     public void setMiddleName(String middleName) {
         this.middleName = middleName;
-        title = setupTitle();
+        super.setTitle(setupTitle());
     }
     
 

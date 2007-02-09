@@ -12,7 +12,6 @@ import javax.portlet.ActionRequest;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.SingletonViolationException;
@@ -242,6 +241,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			}
 		}
     }
+    //used by Penlets
     protected static void getDashboardBean(Binder binder, Map ssDashboard, Map model, String id) {
 		String componentScope = "";
 		if (id.contains("_")) componentScope = id.split("_")[0];
@@ -255,73 +255,56 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			} else if (componentScope.equals(DashboardHelper.Binder)) {
 				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
 			}
-			if (dashboard.containsKey(Dashboard.Components)) {
-				Map components = (Map) dashboard.get(Dashboard.Components);
-				if (components.containsKey(id)) {
-					Map component = (Map) components.get(id);
-					//See if this component needs a bean
-					if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
-						//Set up the buddy list bean
-						getInstance().getBuddyListBean(ssDashboard, 
-								id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
-						//Set up the workspace tree bean
-						getInstance().getWorkspaceTreeBean(binder, 
-								ssDashboard, model, id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_SEARCH)  ||
-							component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
-						//Set up the search results bean
-						getInstance().getSearchResultsBean(binder, ssDashboard, 
-								model, id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
-						//Set up the search results bean
-						getInstance().getSearchResultsBean(binder, ssDashboard, 
-								model, id, component);
-						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
-						//Set up the search results bean
-						getInstance().getSearchResultsBean(binder, ssDashboard, 
-								model, id, component);
-						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
-					}
+			doComponentSetup(ssDashboard, dashboard, binder, model, id);
+		}
+    }
+    private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
+		if (dashboard.containsKey(Dashboard.Components)) {
+			Map components = (Map) dashboard.get(Dashboard.Components);
+			if (components.containsKey(id)) {
+				Map component = (Map) components.get(id);
+				//See if this component needs a bean
+				if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
+					//Set up the buddy list bean
+					getInstance().getBuddyListBean(ssDashboard, 
+							id, component);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
+					//Set up the workspace tree bean
+					getInstance().getWorkspaceTreeBean(binder, 
+							ssDashboard, model, id, component);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_SEARCH)  ||
+						component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+					//Set up the search results bean
+					getInstance().getSearchResultsBean(binder, ssDashboard, 
+							model, id, component);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
+					//Set up the search results bean
+					getInstance().getSearchResultsBean(binder, ssDashboard, 
+							model, id, component);
+					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+					//Set up the search results bean
+					getInstance().getSearchResultsBean(binder, ssDashboard, 
+							model, id, component);
+					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 				}
 			}
 		}
+   	
     }
+    //used by portlets
     protected static void getDashboardBean(Map ssDashboard, Map model, String id) {
 		String componentScope = "";
 		if (id.contains("_")) componentScope = id.split("_")[0];
 		if (!componentScope.equals("")) {
 			//Get the component from the appropriate scope
 			Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
-			if (dashboard.containsKey(Dashboard.Components)) {
-				Map components = (Map) dashboard.get(Dashboard.Components);
-				if (components.containsKey(id)) {
-					Map component = (Map) components.get(id);
-					//See if this component needs a bean
-					if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
-						//Set up the buddy list bean
-						getInstance().getBuddyListBean(ssDashboard, 
-								id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
-						//Set up the workspace tree bean
-						getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
-					} else if (component.get(Name).equals(
-							ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
-							component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
-						//Set up the search results bean
-						getInstance().getSearchResultsBean(null, ssDashboard, 
-								model, id, component);
-					}
-				}
-			}
+			doComponentSetup(ssDashboard, dashboard, null, model, id);
 		}
     }
     
@@ -690,11 +673,23 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     		idData = new HashMap();
         	beans.put(id, idData);
     	}
-
+    	Map searchSearchFormData = doSearchQuery(data, model);
+		idData.put(WebKeys.SEARCH_FORM_DATA,searchSearchFormData);
+		if (component.get(Name).equals(
+				ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) && searchSearchFormData.get(WebKeys.GUESTBOOK_BINDER) == null &&
+				component.get(Data) != null && ((Map)component.get(Data)).get(SearchFormSavedFolderIdList) != null) {
+			
+			List folderIds = (List)(((Map)component.get(Data)).get(SearchFormSavedFolderIdList));
+			if (folderIds != null && folderIds.size() > 0) {
+				Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)folderIds.get(0)));				
+				searchSearchFormData.put(WebKeys.GUESTBOOK_BINDER, fBinder);					
+			}
+		}
+		
+    }
+    public static Map doSearchQuery(Map data, Map model) {
 		Map searchSearchFormData = new HashMap();
 		searchSearchFormData.put("searchFormTermCount", new Integer(0));
-		idData.put(WebKeys.SEARCH_FORM_DATA, searchSearchFormData);
-		
 		Document searchQuery = null;
 		if (data.containsKey(DashboardHelper.SearchFormSavedSearchQuery)) {
 			// Retrieve and parse the saved search query.  If it fails for some
@@ -703,7 +698,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				searchQuery = DocumentHelper.parseText((String)data.get(DashboardHelper.SearchFormSavedSearchQuery));
 			} catch (Exception e) {
 				searchQuery = DocumentHelper.createDocument();
-				Element sfRoot = searchQuery.addElement(FilterHelper.FilterRootName);		
+				searchQuery.addElement(FilterHelper.FilterRootName);		
 			}
 		}
 		Map elementData = BinderHelper.getCommonEntryElements();
@@ -731,7 +726,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		searchSearchFormData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
 		searchSearchFormData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-		Map retMap = getBinderModule().executeSearchQuery(binder, searchQuery, options);
+		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
@@ -750,21 +745,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			}
 		}
 		
-		if (component.get(Name).equals(
-				ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) && searchSearchFormData.get(WebKeys.GUESTBOOK_BINDER) == null &&
-				component.get(Data) != null && ((Map)component.get(Data)).get(SearchFormSavedFolderIdList) != null) {
-			
-			List folderIds = (List)(((Map)component.get(Data)).get(SearchFormSavedFolderIdList));
-			if (folderIds != null && folderIds.size() > 0) {
-				Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)folderIds.get(0)));				
-				searchSearchFormData.put(WebKeys.GUESTBOOK_BINDER, fBinder);					
-			}
-		}
-
 		
 		searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
+		return searchSearchFormData;
+    	
     }
-    
     public static void setTitle(ActionRequest request, Binder binder, String scope) {
 		Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
 		Map updates = new HashMap();
@@ -797,7 +782,18 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		return id;
 	}
-	
+	public static Map getComponentData(Dashboard dashboard, String component) {
+		Map components = (Map)dashboard.getProperty(Dashboard.Components);
+		if (components != null) {
+			Map componentMap = (Map) components.get(DashboardHelper.Portlet+"_0");
+			if (componentMap != null) {
+				Map dataMap = (Map)componentMap.get(DashboardHelper.Data);
+				return dataMap;
+			}
+		}
+		return null;
+
+	}
 	public static void saveComponentData(ActionRequest request, Binder binder, String scope) {
 		//Get the dashboard component
 		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
@@ -867,7 +863,12 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						String key = (String)itFormData.next();
 						if (key.matches("^ss_folder_id_[0-9]+$")) {
 							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
+						} else if (key.equals("ss_folder_id")) {
+							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
+							//single select
+							if (id != null) folderIds.add(id); 
 						}
+
 					}
 					if (folderIds.size() == 0 && 
 							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {
@@ -890,6 +891,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						String key = (String)itFormData.next();
 						if (key.matches("^ss_folder_id_[0-9]+$")) {
 							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
+						} else if (key.equals("ss_folder_id")) {
+							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
+							//single select
+							if (id != null) folderIds.add(id); 
 						}
 					}
 					if (folderIds.size() == 0 && 

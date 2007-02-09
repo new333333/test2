@@ -1163,20 +1163,24 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.PAGE_SIZE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_SIZE, "10"));
 		model.put(WebKeys.PAGE_NUMBER, PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0"));
 	
-		if (!componentId.equals("")) {
-			try {
+		if (Validator.isNotNull(componentId)) {
+			String scope = PortletRequestUtils.getStringParameter(request, "_scope", null);
+			if (Validator.isNull(scope)) {
+				if (componentId.contains("_")) scope = componentId.split("_")[0];
+			}
+			if (!DashboardHelper.Portlet.equals(scope)) {
 				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 				Binder binder = getBinderModule().getBinder(binderId);
 				model.put(WebKeys.BINDER, binder);
-				String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-				if (scope.equals("")) scope = DashboardHelper.Local;
 				User user = RequestContextHolder.getRequestContext().getUser();
+				if (Validator.isNull(scope)) scope = DashboardHelper.Local;
 				DashboardHelper.getDashboardMap(binder, 
 					getProfileModule().getUserProperties(user.getId()).getProperties(), 
 					model, scope, componentId);
-			} catch (Exception ex) {
-				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
+			} else {
+				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
 				Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
+				model.put(WebKeys.DASHBOARD_PORTLET, dashboard);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				DashboardHelper.getDashboardMap(dashboard, 
 					getProfileModule().getUserProperties(user.getId()).getProperties(), 

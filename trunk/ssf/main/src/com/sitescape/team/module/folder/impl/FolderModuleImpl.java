@@ -848,7 +848,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		}
     	}
     }
-
+    //this is for webdav - where the title's are unqiue
     public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
@@ -858,7 +858,23 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		return null;
     	}
     }
- 
+    //this is for wiki links where normalize title is used
+    public Set getFolderEntryByNormalizedTitle(Long folderId, String title)
+	throws AccessControlException {
+    	Folder folder = getFolder(folderId);
+    	FilterControls fc = new FilterControls();
+    	fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
+    	fc.add(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, title);
+   		List<FolderEntry> results = getCoreDao().loadObjects(FolderEntry.class, fc);
+   		Set views = new HashSet();
+   		for (FolderEntry entry: results) {
+   			try {
+   				AccessUtils.readCheck(entry);
+   				views.add(entry);
+   			} catch (AccessControlException ac) {}
+   		}
+   		return views;
+    }
     public Set<String> getSubfoldersTitles(Folder folder) {
     	//already have access to folder
     	TreeSet<String> titles = new TreeSet<String>();
