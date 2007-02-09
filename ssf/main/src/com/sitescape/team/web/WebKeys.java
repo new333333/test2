@@ -475,6 +475,7 @@ public class WebKeys {
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
     public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";
     public static final String USERS="ssUsers";
+    public static final String USER_IDS_TO_ADD="ssUsersIdsToAdd";
     public static final String USER_IDS_TO_SKIP="ssUserIdsToSkip";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "ssUser";
