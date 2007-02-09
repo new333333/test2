@@ -124,7 +124,14 @@ public class ImageOpenOfficeConverter
 				Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 			}
 
-			os = new FileOutputStream(ofp + IImageConverterManager.IMG_EXTENSION);
+			if (!(ofp.toLowerCase().endsWith(".gif")
+			|| ofp.toLowerCase().endsWith(".jpg")
+			|| ofp.toLowerCase().endsWith(".jpeg")
+			|| ofp.toLowerCase().endsWith(".png")))
+				os = new FileOutputStream(ofp + IImageConverterManager.IMG_EXTENSION);
+			else
+				os = new FileOutputStream(ofp);
+			
 			os.write(baos.toByteArray());				
 		}
 		catch (IOException e)
