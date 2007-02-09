@@ -36,6 +36,10 @@
 			<fileset dir="${classes.dir}" includes="**/*.gif" />
 		</jar>
 		
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+
 		<delete failonerror="false">
 			<fileset dir="${classes.dir}" includes="**/*.gif"/>
 		</delete>

@@ -26,6 +26,10 @@
 	<target name="jar" depends="compile">
 		<jar basedir="${classes.dir}" jarfile="${jar.file}" />
 		
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+
 		<signjar jar="${jar.file}" alias="myKey" 
 		keystore="sitescape.keystore" storepass="spDJOQ"/>
 	</target>

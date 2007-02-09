@@ -7,6 +7,8 @@
 	<property file="${project.dir}/app.server.properties" />
 	<property file="${project.dir}/build.${user.name}.properties" />
 	<property file="${project.dir}/build.properties" />
+	<property file="${project.dir}/release.${user.name}.properties" />
+	<property file="${project.dir}/release.properties" />
 	<path id="project.classpath">
 		<pathelement path="${classpath}" />
 		<fileset dir="${project.dir}/lib" includes="*.jar" />
@@ -53,8 +55,24 @@
 			basedir="${classes.dir}"
 			jarfile="${jar.file}"
 		/>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
 	</target>
-
+	
+	<target name="jar-manifest">
+    	<tstamp>
+	    	<format property="timestamp.isoformat" pattern="yyyy-MM-dd' 'HH:mm:ss" />
+        </tstamp>
+		<jar jarfile="${jar-manifest.jar.file}" update="true">
+	        <manifest>
+	            <attribute name="Implementation-Title" value="${product.name}"/>
+	            <attribute name="Implementation-Version" value="${product.version}"/>
+	            <attribute name="Built-On" value="${timestamp.isoformat}"/>
+	        </manifest>
+		</jar>
+	</target>
+	
 	<target name="java2html">
 		<java
 			classname="com.sitescape.util.Java2Html"
