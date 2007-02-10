@@ -22,7 +22,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%
 //Color theme: "debug"
 %>
-<c:set var="ss_style_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
+<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
 <c:set var="ss_style_font_size" value="12px" scope="request"/>
 <c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 <c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -33,7 +33,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_style_font_largestprint" value="1.3em" scope="request"/>
 <c:set var="ss_style_font_input_size" value="0.8em" scope="request"/>
 
-<c:set var="ss_table_font_family" value="Verdana, Arial, Helvetica, sans-serif" scope="request"/>
+<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 <c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
 <c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
 <c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
@@ -49,6 +49,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_portlet_style_text_color" value="#000099" scope="request"/>
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
+
+<c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
+<c:set var="ss_style_header_bar_title_color" value="#8838AF" scope="request"/>
+<c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_component_background_color" value="#FFFFAA" scope="request"/>
@@ -67,8 +71,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_folder_border_color" value="#CC6666" scope="request"/>
 <c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 <c:set var="ss_entry_border_color" value="#CC0000" scope="request"/>
-<c:set var="ss_entry_description_background_color" value="#EEEEEE" scope="request"/>
-<c:set var="ss_entry_description_border_color" value="#E2E2E2" scope="request"/>
+<c:set var="ss_entry_description_background_color" value="#CCD583" scope="request"/>
+<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
 <c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 <c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 <c:set var="edit_text_color" value="#3333FF" scope="request"/>
@@ -84,7 +88,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
 <c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 
-<c:set var="ss_toolbar_background_color" value="#CECECE" scope="request"/>
+<c:set var="ss_toolbar_background_color" value="#DBDBDB" scope="request"/>
 <c:set var="ss_toolbar_text_color" value="#000000" scope="request"/>
 <c:set var="ss_toolbar_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 <c:set var="ss_toolbar_border_color" value="#3366CC" scope="request"/>
@@ -98,7 +102,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
-<c:set var="ss_blog_title_background_color" value="#AAAAFF" scope="request"/>
 <c:set var="ss_blog_summary_title_background_color" value="#cceeff" scope="request"/>
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
@@ -140,7 +143,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 //Color theme: "black and white"
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
-	<c:set var="ss_style_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
+	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
 	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -161,6 +164,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
+    <c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
+    <c:set var="ss_style_header_bar_title_color" value="#000000" scope="request"/>
+    <c:set var="ss_style_header_bar_title_link_color" value="#8838AF" scope="request"/>
+    <c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
+
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
@@ -175,7 +183,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	
-	<c:set var="ss_table_font_family" value="Verdana, Arial, Helvetica, sans-serif" scope="request"/>
+	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_table_background_color_head" value="#D6D6D6" scope="request"/>
 	<c:set var="ss_table_background_color_odd_row" value="#E9E9E9" scope="request"/>
@@ -185,8 +193,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_entry_description_background_color" value="#EEEEEE" scope="request"/>
-	<c:set var="ss_entry_description_border_color" value="#DEDEDE" scope="request"/>
+	<c:set var="ss_entry_description_background_color" value="#CCD583" scope="request"/>
+	<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
@@ -216,7 +224,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
-	<c:set var="ss_blog_title_background_color" value="#AACCFF" scope="request"/>
 	<c:set var="ss_blog_summary_title_background_color" value="#cceeff" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
@@ -446,8 +453,14 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   font-size: ${ss_style_font_smallprint};
   }
 .ss_entryDescription {
-  border:1px solid ${ss_entry_description_border_color};
+  border-left:    2px solid ${ss_entry_description_border_color};
+  border-right:   2px solid ${ss_entry_description_border_color};
+  border-top:    20px solid ${ss_entry_description_border_color};
+  border-bottom: 20px solid ${ss_entry_description_border_color};
   background-color: ${ss_entry_description_background_color};
+  font-size: 13px;
+  letter-spacing: 1px;
+  color: #333333;
   }
       
 /* Text styled as buttons */
@@ -567,8 +580,36 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 }
 
 .ss_blog_title, .ss_blog_title table {
-  background-color:${ss_blog_title_background_color};
+  background-color:${ss_style_header_bar_background};
+  height: 25px;
 }
+
+div.ss_header_bar_timestamp {
+	font-family: Arial, sans-serif;
+	font-size: 11px;
+	color: ${ss_style_header_bar_timestamp_color};
+	margin-top: 5px;
+	margin-right: 10px;
+	float: right;
+	position: relative;
+}
+
+span.ss_header_bar_title_text {
+	color: ${ss_style_header_bar_title_color};
+	font-size: 17px;
+	margin-left: 5px;
+}
+
+a.ss_header_bar_title_link {
+	color: ${ss_style_header_bar_title_link_color};
+	text-decoration: none;
+}
+
+a.ss_header_bar_title_link:visited {
+	color: ${ss_style_header_bar_title_link_color};
+	text-decoration: none;
+}
+
 
 .ss_blog_sidebar, .ss_blog_sidebar table, .ss_blog_sidebar form {
   background-color:${ss_blog_sidebar_background_color};
@@ -1569,13 +1610,15 @@ a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
 
+
+
 /* titlebar */
 .ss_title_bar {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border1.gif) repeat-x top !important;
-	color:#FFF;
-	height:24px;
+	background: ${ss_style_header_bar_background};
+	color: ${ss_style_header_bar_title_color};
+	height:21px;
 	margin:0px;
-	padding:0px;
+	padding-bottom: 3px;
 }
 .ss_title_bar * {
 	background:transparent;

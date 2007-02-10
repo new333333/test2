@@ -19,14 +19,20 @@
 %>
 
 <div class="ss_blog_title">
+<div class="ss_header_bar_timestamp">
+<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+     value="${ssDefinitionEntry.creation.date}" type="both" 
+	 timeStyle="short" dateStyle="medium" />
+ by <c:out value="${ssDefinitionEntry.creation.principal.title}"/>
+</div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		ssSeenMap.setSeen(title_entry);
 		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
-<span class="ss_bold <%= fontSize %>">
- <a style="text-decoration: none;" 
+<span class="ss_header_bar_title_text">
+ <a class="ss_header_bar_title_link" 
    href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
 		    binderId="${ssDefinitionEntry.parentFolder.id}"
@@ -56,11 +62,3 @@
 </tr>
 </table>
 </c:if>
-<span class="ss_italic ss_smallprint">
-<fmt:formatDate timeZone="${ssUser.timeZone.ID}"
-     value="${ssDefinitionEntry.creation.date}" type="both" 
-	 timeStyle="short" dateStyle="medium" />
- by <c:out value="${ssDefinitionEntry.creation.principal.title}"/>
-</span>
-<br>
-<br>
