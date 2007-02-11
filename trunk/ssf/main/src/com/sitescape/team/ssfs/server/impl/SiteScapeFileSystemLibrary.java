@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
@@ -30,6 +31,7 @@ import com.sitescape.team.module.file.LockIdMismatchException;
 import com.sitescape.team.module.file.LockedByAnotherUserException;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
+import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
@@ -55,8 +57,6 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private static final String PARENT_BINDER 		= "pb";
 	private static final String FILE_ATTACHMENT 	= "fa"; 
 
-	private static final String ITEM_NAME = "attachFiles";
-		
 	private AllBusinessServicesInjected bs;
 	private FileTypeMap mimeTypes;
 	
@@ -704,32 +704,16 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void createLibraryFolderEntry(Folder folder, String fileName, 
 			InputStream content, Date modDate)
 	throws NoAccessException {
-		Definition def = getFolderEntryDefinition(folder);
-		if(def == null)
-			throw new SiteScapeFileSystemException("There is no folder entry definition to use");
-		
-		String elementName = getLibraryElementName(def);
-		
-		// Wrap the input stream in a datastructure suitable for our business module.
-		SsfsMultipartFile mf = new SsfsMultipartFile(fileName, content, modDate);
-		
-		Map fileItems = new HashMap(); // Map of element names to file items	
-		fileItems.put(elementName, mf); // single file item
-		
-		Map data = new HashMap(); // Input data
-		data.put("title", fileName);
-		
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			data.put("_lastModifiedDate", modDate);
-		}
-		
 		try {
-			bs.getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
-		} catch (AccessControlException e) {
+			FolderUtils.createLibraryFolderEntry(bs, folder, fileName, content, modDate);
+		}
+		catch(ConfigurationException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		}
+		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
-		} catch (WriteFilesException e) {
+		} 
+		catch (WriteFilesException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
 		}
 	}
@@ -737,40 +721,18 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private void modifyLibraryFolderEntry(FolderEntry entry, String fileName, 
 			InputStream content, Date modDate) 
 	throws NoAccessException {
-		Folder folder = entry.getParentFolder();
-		Definition def = getFolderEntryDefinition(folder);
-		if(def == null)
-			throw new SiteScapeFileSystemException("There is no folder entry definition to use");
-		
-		String elementName = getLibraryElementName(def);
-		
-		// Wrap the input stream in a datastructure suitable for our business module.
-		SsfsMultipartFile mf = new SsfsMultipartFile(fileName, content, modDate);
-		
-		Map fileItems = new HashMap(); // Map of names to file items	
-		fileItems.put(elementName, mf); // single file item
-		
-		InputDataAccessor inputData;
-		
-		if(modDate != null) {
-			// We need to tell the system to use this client-supplied mod date
-			// for the newly created entry (instead of current time). 
-			Map data = new HashMap();
-			data.put("_lastModifiedDate", modDate);
-			inputData = new MapInputData(data);
-		}
-		else {
-			inputData = new EmptyInputData(); // No non-file input data
-		}
-
 		try {
-			bs.getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-					inputData, fileItems, null, null);
-		} catch (AccessControlException e) {
-			throw new NoAccessException(e.getLocalizedMessage());			
-		} catch (WriteFilesException e) {
+			FolderUtils.modifyLibraryFolderEntry(bs, entry, fileName, content, modDate);
+		}
+		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
-		}	
+		}
+		catch (AccessControlException e) {
+			throw new NoAccessException(e.getLocalizedMessage());			
+		} 
+		catch (WriteFilesException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		}
 	}
 	
 	private void writeResource(Map uri, Map objMap, InputStream content, boolean isNew) 
@@ -827,25 +789,16 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	
 	private Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws NoAccessException {
-		Definition def = getFolderDefinition(parentBinder);
-		if(def == null)
-			throw new SiteScapeFileSystemException("There is no folder definition to use");
-		
-		Map data = new HashMap(); // Input data
-		// Title field, not name, is used as the name of the folder. Weird...
-		data.put("title", folderName); 
-		//data.put("description", "This folder was created through WebDAV");
-		data.put("library", Boolean.TRUE.toString());
 		try {
-			if(parentBinder instanceof Workspace)
-				return bs.getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap());
-			else
-				return bs.getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
-						new MapInputData(data), new HashMap());
-		} catch (AccessControlException e) {
+			return FolderUtils.createLibraryFolder(bs, parentBinder, folderName);
+		}
+		catch(ConfigurationException e) {
+			throw new SiteScapeFileSystemException(e.getMessage());
+		}
+		catch (AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());			
-		} catch (WriteFilesException e) {
+		} 
+		catch (WriteFilesException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
 		}
 	}
@@ -925,64 +878,6 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		} 
 	}
 	
-	private Definition getFolderEntryDefinition(Folder folder) {
-		Definition def = folder.getDefaultEntryDef();
-		if(def == null)
-			def = getZoneWideDefaultFolderEntryDefinition();
-		return def;
-	}
-	
-	private Definition getZoneWideDefaultFolderEntryDefinition() {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
-	}
-	
-	private Definition getFolderDefinition(Binder parentBinder) {
-		if(parentBinder instanceof Folder) {
-			// If the parent binder in which to create a new library folder
-			// happens to be a folder itself, simply re-use the folder
-			// definition of the parent. That is, make the sub-directory
-			// the same type as its parent.
-			return parentBinder.getEntryDef();
-		}
-		else {
-			// The binder must be a workspace.
-			return getZoneWideDefaultFolderDefinition();
-		}
-	}
-	
-	private Definition getZoneWideDefaultFolderDefinition() {
-		List defs = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
-	}
-		
-	private String getLibraryElementName(Definition definition) {
-		Document defDoc = definition.getDefinition();
-		Element root = defDoc.getRootElement();
-		Element item = (Element) root.selectSingleNode("//item[@name='" + ITEM_NAME
-				+ "' and @type='data']");
-		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
-		String elementName = nameProperty.attributeValue("value");
-		
-		if(ITEM_NAME.equals("attachFiles")) {
-			// Since attachment element allows uploading multiple files at the
-			// same (when done through Aspen UI), each file is identified 
-			// uniquely by appending numeric number (1-based) to the element
-			// name. When uploaded through WebDAV, there is always exactly one
-			// file involed. So we use "1".
-			return elementName + "1";
-		}
-		else {		
-			return elementName;
-		}
-	}
-
 	private InputStream getResource(Map uri, Map objMap) {
 		FileAttachment fa = getFileAttachment(objMap);
 		

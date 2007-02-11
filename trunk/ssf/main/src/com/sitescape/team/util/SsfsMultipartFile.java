@@ -1,10 +1,8 @@
-package com.sitescape.team.ssfs.server.impl;
+package com.sitescape.team.util;
 
 import java.io.InputStream;
 import java.util.Date;
 
-import com.sitescape.team.util.FileModDateSupport;
-import com.sitescape.team.util.SimpleMultipartFile;
 
 public class SsfsMultipartFile extends SimpleMultipartFile implements FileModDateSupport {
 
