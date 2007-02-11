@@ -584,10 +584,10 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 						if(isLibraryFolder(parentBinder)) {
 							// Since the parent folder is of library folder type, we can
 							// check to see if the path refers to a file.
-							// Try locating library folder entry
+							// Try locating library folder entry by the file name.
 							// Note: This method performs access check!
 							FolderEntry entry = 
-								bs.getFolderModule().getFileFolderEntryByTitle((Folder)parentBinder, lastElemName);
+								bs.getFolderModule().getLibraryFolderEntryByFileName((Folder)parentBinder, lastElemName);
 							if(entry != null) {
 								// The path refers to an existing file
 								objMap.put(LEAF_FOLDER_ENTRY, entry);

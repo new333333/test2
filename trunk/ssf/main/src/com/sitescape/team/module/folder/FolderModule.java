@@ -133,16 +133,16 @@ public interface FolderModule {
 		throws AccessControlException, ReservedByAnotherUserException;
     
     /**
-     * Finds file folder entry by title. If no matching entry is found
-     * it returns <code>null</code>. If matching entry is found but the
+     * Finds library folder entry by the file name. If no matching entry is 
+     * found it returns <code>null</code>. If matching entry is found but the
      * user has no access to it, it throws <code>AccessControlException</code>.
      *  
-     * @param fileFolder
-     * @param title
+     * @param libraryFolder
+     * @param fileName
      * @return
      * @throws AccessControlException
      */
-    public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
+    public FolderEntry getLibraryFolderEntryByFileName(Folder libraryFolder, String fileName)
     	throws AccessControlException;
     
     public Set getFolderEntryByNormalizedTitle(Long folderId, String title) 
