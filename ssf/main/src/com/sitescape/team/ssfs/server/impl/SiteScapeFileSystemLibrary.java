@@ -705,7 +705,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate)
 	throws NoAccessException {
 		try {
-			FolderUtils.createLibraryFolderEntry(bs, folder, fileName, content, modDate);
+			FolderUtils.createFolderEntry(bs, folder, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
@@ -722,7 +722,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate) 
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyLibraryFolderEntry(bs, entry, fileName, content, modDate);
+			FolderUtils.modifyFolderEntry(bs, entry, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());

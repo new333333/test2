@@ -27,10 +27,10 @@ public class FolderUtils {
 	private static final String ITEM_NAME = "attachFiles";
 	
 	/**
-	 * Creates a new library folder entry with an attachment file.
+	 * Creates a new folder entry with an attachment file.
 	 * 
 	 * @param bs
-	 * @param folder must be a libray folder
+	 * @param folder 
 	 * @param fileName file name
 	 * @param content file content
 	 * @param modDate (optional) file mod date or <code>null</code> 
@@ -38,14 +38,14 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static void createLibraryFolderEntry(AllBusinessServicesInjected bs,
+	public static void createFolderEntry(AllBusinessServicesInjected bs,
 			Folder folder, String fileName, InputStream content, Date modDate)
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Definition def = getFolderEntryDefinition(bs, folder);
 		if(def == null)
 			throw new ConfigurationException("There is no folder entry definition to use");
 		
-		String elementName = getLibraryElementName(def);
+		String elementName = getDefaultElementName(def);
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
@@ -70,11 +70,11 @@ public class FolderUtils {
 	}
 
 	/**
-	 * Modifies an existing library folder entry with new file content for the
+	 * Modifies an existing folder entry with new file content for the
 	 * attachment.
 	 * 
 	 * @param bs
-	 * @param entry must be a libray folder entry
+	 * @param entry 
 	 * @param fileName file name
 	 * @param content file content
 	 * @param modDate (optional) file mod date or <code>null</code> 
@@ -82,7 +82,7 @@ public class FolderUtils {
 	 * @throws AccessControlException
 	 * @throws WriteFilesException
 	 */
-	public static void modifyLibraryFolderEntry(AllBusinessServicesInjected bs,
+	public static void modifyFolderEntry(AllBusinessServicesInjected bs,
 			FolderEntry entry, String fileName, InputStream content, Date modDate) 
 	throws ConfigurationException, AccessControlException, WriteFilesException {
 		Folder folder = entry.getParentFolder();
@@ -91,7 +91,7 @@ public class FolderUtils {
 		if(def == null)
 			throw new ConfigurationException("There is no folder entry definition to use");
 		
-		String elementName = getLibraryElementName(def);
+		String elementName = getDefaultElementName(def);
 		
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
@@ -152,7 +152,7 @@ public class FolderUtils {
 					new MapInputData(data), new HashMap());
 	}
 
-	private static String getLibraryElementName(Definition definition) {
+	private static String getDefaultElementName(Definition definition) {
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
 		Element item = (Element) root.selectSingleNode("//item[@name='" + ITEM_NAME
