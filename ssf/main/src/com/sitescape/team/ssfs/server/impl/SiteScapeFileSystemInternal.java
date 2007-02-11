@@ -44,6 +44,7 @@ import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.SsfsMultipartFile;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
