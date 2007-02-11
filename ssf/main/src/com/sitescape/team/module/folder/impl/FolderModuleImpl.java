@@ -848,8 +848,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     		}
     	}
     }
-    //this is for webdav - where the title's are unqiue
-    public FolderEntry getFileFolderEntryByTitle(Folder fileFolder, String title)
+    //this is for webdav - where the file names are unqiue within a library folder
+    public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
     		Long id = getCoreDao().findLibraryEntryId(fileFolder, title);
