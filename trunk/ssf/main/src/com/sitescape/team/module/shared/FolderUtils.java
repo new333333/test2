@@ -20,7 +20,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.SimpleMultipartFile;
-import com.sitescape.team.util.SsfsMultipartFile;
+import com.sitescape.team.util.DatedMultipartFile;
 
 public class FolderUtils {
 
@@ -50,7 +50,7 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null)
-			mf = new SsfsMultipartFile(fileName, content, modDate);
+			mf = new DatedMultipartFile(fileName, content, modDate);
 		else
 			mf = new SimpleMultipartFile(fileName, content); 
 		
@@ -96,7 +96,7 @@ public class FolderUtils {
 		// Wrap the input stream in a datastructure suitable for our business module.
 		MultipartFile mf;
 		if(modDate != null)
-			mf = new SsfsMultipartFile(fileName, content, modDate);
+			mf = new DatedMultipartFile(fileName, content, modDate);
 		else
 			mf = new SimpleMultipartFile(fileName, content); 
 		

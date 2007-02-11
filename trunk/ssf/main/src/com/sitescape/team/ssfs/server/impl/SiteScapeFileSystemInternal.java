@@ -44,7 +44,7 @@ import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
-import com.sitescape.team.util.SsfsMultipartFile;
+import com.sitescape.team.util.DatedMultipartFile;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
@@ -541,7 +541,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	private void writeResourceInternal(Map uri, Map objMap, InputStream in) 
 		throws NoAccessException {
 		// Wrap the input stream in a datastructure suitable for our business module. 
-		SsfsMultipartFile mf = new SsfsMultipartFile(getFilePath(uri), in);
+		DatedMultipartFile mf = new DatedMultipartFile(getFilePath(uri), in);
 		
 		Map fileItems = new HashMap(); // Map of names to file items
 		InputDataAccessor inputData;   // Input data other than file
