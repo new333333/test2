@@ -193,12 +193,6 @@ public class TextOpenOfficeConverter
 			propertyValues[0].Name = "Hidden";
 			propertyValues[0].Value = new Boolean(true);
 			
-			// Get the default context from the office server.
-			//objectDefaultContext = xpropertysetMultiComponentFactory.getPropertyValue("DefaultContext");
-	      
-			// Query for the interface XComponentContext.
-			//xcomponentcontext = (XComponentContext) UnoRuntime.queryInterface(XComponentContext.class, objectDefaultContext);
-	      
 			// Loading the wanted document
 			url = convertToUrl(ifile, xcomponentcontext);
 			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
