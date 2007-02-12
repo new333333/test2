@@ -96,18 +96,18 @@ public class FileHelper {
 		}
 	}
 
-    public static boolean deleteRecursively(File dir) {
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
+    public static void deleteRecursively(File file) {
+    	if(!file.exists())
+    		return;
+    	
+        if (file.isDirectory()) {
+            String[] children = file.list();
             for (int i=0; i<children.length; i++) {
-                boolean success = deleteRecursively(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
+                deleteRecursively(new File(file, children[i]));
             }
         }
     
-        // The directory is now empty so delete it
-        return dir.delete();
+        // We can now safely delete it.
+        file.delete();
     }		
 }

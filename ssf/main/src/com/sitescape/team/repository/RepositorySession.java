@@ -177,6 +177,29 @@ public interface RepositorySession {
 			UncheckedIOException;
 		
 	/**
+	 * Deletes all files that belong to the entity. 
+	 * If a file is versioned all its versions are also deleted.  
+	 * 
+	 * @param session
+	 * @param binder
+	 * @param entity
+	 * @throws RepositoryServiceException
+	 */
+	public void delete(Binder binder, DefinableEntity entity) 
+	throws RepositoryServiceException, UncheckedIOException;
+		
+	/**
+	 * Deletes all files that are under the binder. 
+	 * If a file is versioned all its versions are also deleted.  
+	 * 
+	 * @param session
+	 * @param binder
+	 * @throws RepositoryServiceException
+	 */
+	public void delete(Binder binder) 
+	throws RepositoryServiceException, UncheckedIOException;
+			
+	/**
 	 * Reads the content of the specified file resource from the repository 
 	 * system. 
 	 * <p>

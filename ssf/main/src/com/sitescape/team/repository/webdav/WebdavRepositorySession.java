@@ -108,7 +108,27 @@ public class WebdavRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}		
 	}
-	
+
+	public void delete(Binder binder, DefinableEntity entity) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			deleteResource(wdr, binder, entity);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new UncheckedIOException(e);
+		}		
+	}
+
+	public void delete(Binder binder) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			deleteResource(wdr, binder);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new UncheckedIOException(e);
+		}		
+	}
+
 	public void read(Binder binder, DefinableEntity entry, String relativeFilePath, 
 			OutputStream out) throws RepositoryServiceException, UncheckedIOException {	
 		InputStream is = read(binder, entry, relativeFilePath);
@@ -124,7 +144,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public InputStream read(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {	
 		try {
-			return wdr.getMethodData(getResourcePath(binder, entry, relativeFilePath));
+			return wdr.getMethodData(getFileResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
 			logError(wdr);
 			throw new UncheckedIOException(e);
@@ -161,7 +181,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public List<String> getVersionNames(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
-			return WebdavUtil.getVersionNames(wdr, getResourcePath(binder, entry, relativeFilePath));
+			return WebdavUtil.getVersionNames(wdr, getFileResourcePath(binder, entry, relativeFilePath));
 		} catch (IOException e) {
 			logError(wdr);
 			throw new UncheckedIOException(e);
@@ -171,7 +191,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public DataSource getDataSource(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, FileTypeMap fileTypeMap)		
 		throws RepositoryServiceException, UncheckedIOException {
-		return new WebDavDataSource(wdr, getResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
+		return new WebDavDataSource(wdr, getFileResourcePath(binder, entry, relativeFilePath), relativeFilePath, fileTypeMap);
 	}
 	public DataSource getDataSourceVersion(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, String versionName, FileTypeMap fileTypeMap)		
@@ -190,7 +210,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public List fileVersionsURIs(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 			
 			String value = WebdavUtil.getSingleHrefValue(wdr, 
 					resourcePath, "version-history");
@@ -209,7 +229,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public void checkout(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 
 			// Since we always put file resource under version control as
 			// soon as it is created, it's largely unnecessary to do it
@@ -237,7 +257,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public void uncheckout(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 			if(isCheckedOut(wdr, resourcePath)) {
 				boolean result = wdr.uncheckoutMethod(resourcePath);
 				if(!result)
@@ -252,7 +272,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public String checkin(Binder binder, DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 			String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr, resourcePath);
 			String versionResourcePath = null;
 			String versionName = null;
@@ -312,7 +332,7 @@ public class WebdavRepositorySession implements RepositorySession {
 			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 		
 			wdr.setPath(resourcePath);
 			
@@ -362,7 +382,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	public int fileInfo(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 		
 			if(WebdavUtil.exists(wdr, resourcePath)) {
 				String checkedInVersionResourcePath = getCheckedInVersionResourcePath(wdr,resourcePath);
@@ -386,8 +406,8 @@ public class WebdavRepositorySession implements RepositorySession {
 			DefinableEntity destEntity, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entity, relativeFilePath);
-			String newResourcePath = getResourcePath(destBinder, destEntity, destRelativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entity, relativeFilePath);
+			String newResourcePath = getFileResourcePath(destBinder, destEntity, destRelativeFilePath);
 			
 			moveResource(wdr, resourcePath, newResourcePath);
 		} catch (IOException e) {
@@ -400,8 +420,8 @@ public class WebdavRepositorySession implements RepositorySession {
 			Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) 
 	throws RepositoryServiceException, UncheckedIOException {
 		try {
-			String resourcePath = getResourcePath(binder, entity, relativeFilePath);
-			String newResourcePath = getResourcePath(destBinder, destEntity, destRelativeFilePath);
+			String resourcePath = getFileResourcePath(binder, entity, relativeFilePath);
+			String newResourcePath = getFileResourcePath(destBinder, destEntity, destRelativeFilePath);
 			
 			copyResource(wdr, resourcePath, newResourcePath);
 		} catch (IOException e) {
@@ -465,7 +485,7 @@ public class WebdavRepositorySession implements RepositorySession {
 	protected String getVersionResourcePath(SWebdavResource wdr, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException, HttpException, IOException {
-		return getVersionResourcePath(wdr, getResourcePath(binder, entry, relativeFilePath),
+		return getVersionResourcePath(wdr, getFileResourcePath(binder, entry, relativeFilePath),
 				versionName);
 	}
 	
@@ -536,7 +556,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		boolean result = false;
 
 		// Get the path for the file resource.
-		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+		String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 
 		/*
 		 * boolean b = wdr.headMethod("/slide/files");
@@ -549,7 +569,7 @@ public class WebdavRepositorySession implements RepositorySession {
 
 		// If necessary, create containing collections (recursively) before
 		// writing the file itself.
-		WebdavUtil.createCollectionIfNecessary(wdr, getResourceDirPath(resourcePath));
+		WebdavUtil.createCollectionIfNecessary(wdr, getFileResourceParentPath(resourcePath));
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, is);
@@ -604,7 +624,7 @@ public class WebdavRepositorySession implements RepositorySession {
 		 */
 
 		// Get the path for the file resource.
-		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+		String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 
 		// Write the file.
 		result = wdr.putMethod(resourcePath, in);
@@ -617,9 +637,34 @@ public class WebdavRepositorySession implements RepositorySession {
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, IOException {
 		// Get the path for the file resource.
-		String resourcePath = getResourcePath(binder, entry, relativeFilePath);
+		String resourcePath = getFileResourcePath(binder, entry, relativeFilePath);
 
 		// Delete the file.
+		boolean result = wdr.deleteMethod(resourcePath);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to delete [" + resourcePath + "]");
+	}
+	
+	private void deleteResource(SWebdavResource wdr, Binder binder,
+			DefinableEntity entry)
+			throws RepositoryServiceException, IOException {
+		// Get the path for the file resource.
+		String resourcePath = getEntityResourcePath(binder, entry);
+
+		// Delete the directory.
+		boolean result = wdr.deleteMethod(resourcePath);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to delete [" + resourcePath + "]");
+	}
+	
+	private void deleteResource(SWebdavResource wdr, Binder binder)
+			throws RepositoryServiceException, IOException {
+		// Get the path for the file resource.
+		String resourcePath = getBinderResourcePath(binder);
+
+		// Delete the directory.
 		boolean result = wdr.deleteMethod(resourcePath);
 		
 		if(!result)
@@ -670,11 +715,15 @@ public class WebdavRepositorySession implements RepositorySession {
 		// The exception object associated with the error will be logged higher up.		
 	}
 
-	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
+	private String getEntityResourcePath(Binder binder, DefinableEntity entry) {
 		return docRootPath + RepositoryUtil.getEntityPath(binder, entry, Constants.SLASH);
 	}
 	
-	private String getResourcePath(String entryDirPath, String relativeFilePath) {
+	private String getBinderResourcePath(Binder binder) {
+		return docRootPath + RepositoryUtil.getBinderPath(binder, Constants.SLASH);
+	}
+	
+	private String getFileResourcePath(String entryDirPath, String relativeFilePath) {
 		// Because entryDirPath always ends with slash, we must ensure that
 		// no extra slash is put in between. 
 		if(relativeFilePath.startsWith(Constants.SLASH))
@@ -683,13 +732,13 @@ public class WebdavRepositorySession implements RepositorySession {
 		return entryDirPath + relativeFilePath;
 	}
 	
-	private String getResourcePath(Binder binder, DefinableEntity entry, 
+	private String getFileResourcePath(Binder binder, DefinableEntity entry, 
 			String relativeFilePath) {
-		return getResourcePath(getEntityDirPath(binder, entry), relativeFilePath);
+		return getFileResourcePath(getEntityResourcePath(binder, entry), relativeFilePath);
 	}
 	
-	private String getResourceDirPath(String resourcePath) {
-		return resourcePath.substring(0, resourcePath.lastIndexOf(Constants.SLASH) + 1);
+	private String getFileResourceParentPath(String fileResourcePath) {
+		return fileResourcePath.substring(0, fileResourcePath.lastIndexOf(Constants.SLASH) + 1);
 	}
 	
 	public class WebDavDataSource implements DataSource {
