@@ -252,7 +252,6 @@ public class FileOpen extends JApplet implements Runnable {
     {
       try {
         String onLoadFunction = fileOpen.getParameter("onLoadFunction");
-        System.out.println("Hemanth: onLoadFunction: "+onLoadFunction);
         if (onLoadFunction.equals(null) || "".equals(onLoadFunction)) return;
         JSObject win = JSObject.getWindow(fileOpen);
         String args[] = {};
