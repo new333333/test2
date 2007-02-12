@@ -27,9 +27,8 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <br/>
 </c:if>
 
-
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-<input type="hidden" name="componentName" value="blog"/>
+<input type="hidden" name="componentName" value="wiki"/>
 <br>
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.select.folder"/></span>
 <br>

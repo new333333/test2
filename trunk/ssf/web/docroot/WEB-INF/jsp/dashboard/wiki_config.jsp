@@ -36,7 +36,7 @@ function t_wikiFolder_wsTree_showId(forum, obj) {
   treeName="<%= "t_wikiFolder_wsTree" %>" 
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="false" 
-  singleSelect="1" 
+  singleSelect="" 
   singleSelectName="ss_folder_id"
 />
 </div>

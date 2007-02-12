@@ -45,11 +45,12 @@ public class ViewController  extends SAbstractController {
 	public static final String FORUM_PORTLET="ss_forum";
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
-	public static final String DASHBOARD_PORTLET="ss_dashboard";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
-	private static final String PORTLET_COMPONENT_ID =DashboardHelper.Portlet+"_0";
+	public static final String WIKI_PORTLET="ss_wiki";
+	public static final String SEARCH_PORTLET="ss_search";
+	public static final String PORTLET_COMPONENT_ID =DashboardHelper.Portlet+"_0";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -82,14 +83,16 @@ public class ViewController  extends SAbstractController {
 				displayType=WORKSPACE_PORTLET;
 			else if (pName.contains(PRESENCE_PORTLET))
 				displayType=PRESENCE_PORTLET;
-			else if (pName.contains(DASHBOARD_PORTLET)) 
-				displayType=DASHBOARD_PORTLET;
 			else if (pName.contains(TOOLBAR_PORTLET)) 
 				displayType=TOOLBAR_PORTLET;
 			else if (pName.contains(BLOG_SUMMARY_PORTLET)) 
 					displayType=BLOG_SUMMARY_PORTLET;
 			else if (pName.contains(GUESTBOOK_SUMMARY_PORTLET)) 
 				displayType=GUESTBOOK_SUMMARY_PORTLET;
+			else if (pName.contains(SEARCH_PORTLET)) 
+				displayType=SEARCH_PORTLET;
+			else if (pName.contains(WIKI_PORTLET)) 
+				displayType=WIKI_PORTLET;
 		}
 			
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -146,112 +149,55 @@ public class ViewController  extends SAbstractController {
   				model.put(WebKeys.URL_BINDER_ID, binderId);
   				model.put(WebKeys.URL_ENTRY_ID, entryId);
   			}
- 			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);		
-		} else if (DASHBOARD_PORTLET.equals(displayType)) {
-			DashboardPortlet d=null;
-			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
-			if (id != null) {
-				d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-			}
-			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
-			DashboardHelper.getDashboardMap(d, userProperties, model);
-			Toolbar toolbar = new Toolbar();
-			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
-			toolbar.addToolbarMenu("1_manageDashboard", NLT.get("toolbar.manageDashboard"));
-			Map qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			toolbar.addToolbarMenuItem("1_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-			if (d != null) {
-				qualifiers = new HashMap();
-				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
-				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				toolbar.addToolbarMenuItem("1_manageDashboard", "2dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
-
-				qualifiers = new HashMap();
-				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
-					response.getNamespace() + "_dashboardComponentCanvas', 'dashboardId="+d.getId()+"');return false;");
-				if (DashboardHelper.checkIfShowingAllComponents(d)) {
-					toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
-				} else {
-					toolbar.addToolbarMenu("2_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
-				}
-				model.put(WebKeys.DASHBOARD_ID, d.getId());
-			}
-			return new ModelAndView(WebKeys.VIEW_DASHBOARD, model);		
-		
+ 			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
-			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
-			if (id != null) {
-				try {
-					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-					model.put(WebKeys.DASHBOARD_PORTLET, d);
-					Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-					model.put(WebKeys.USER_PROPERTIES, userProperties);
-					if (request.getWindowState().equals(WindowState.MAXIMIZED))
-						model.put(WebKeys.PAGE_SIZE, "20");
-					else
-						model.put(WebKeys.PAGE_SIZE, "5");						
-					model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
-					DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
-					Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
-					if (dataMap != null) {
-						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
-						//	Build the jsp bean (sorted by folder title)
-						Long folderId;
-						if (savedFolderIds != null && savedFolderIds.size() > 0) {
-							for (int i = 0; i < savedFolderIds.size(); i++) {
-								folderId = Long.valueOf((String)savedFolderIds.get(i));
-								Binder folder = getFolderModule().getFolder(folderId);
-								model.put(WebKeys.BINDER, folder);
-								break;
-							}
-							return new ModelAndView(WebKeys.VIEW_BLOG_SUMMARY, model);		
-						}
-					}
-
-				} catch (NoObjectByTheIdException no) {}
-			}
-			return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY, true);		
+		} else if (WIKI_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_WIKI, true);		
 		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
-			String gId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
-			if (gId != null) {
-				try {
-					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(gId);
-					model.put(WebKeys.DASHBOARD_PORTLET, d);
-					Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-					model.put(WebKeys.USER_PROPERTIES, userProperties);
-					if (request.getWindowState().equals(WindowState.MAXIMIZED))
-						model.put(WebKeys.PAGE_SIZE, "20");
-					else
-						model.put(WebKeys.PAGE_SIZE, "5");						
-					model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
-					DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
-					Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
-					if (dataMap != null) {
-						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
-						//	Build the jsp bean (sorted by folder title)
-						Long folderId;
-						if (savedFolderIds != null && savedFolderIds.size() > 0) {
-							for (int i = 0; i < savedFolderIds.size(); i++) {
-								folderId = Long.valueOf((String)savedFolderIds.get(i));
-								Binder folder = getFolderModule().getFolder(folderId);
-								model.put(WebKeys.BINDER, folder);
-								break;
-							}
-							return new ModelAndView(WebKeys.VIEW_GUESTBOOK_SUMMARY, model);		
-						} 
-					}
-				} catch (NoObjectByTheIdException no) {}
-			}
-			return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY, true);		
+		} else if (SEARCH_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_SEARCH, false);		
 		}
 		return null;
 	}
-
-
+	protected ModelAndView setupSummaryPortlets(RenderRequest request, PortletPreferences prefs, Map model, String view, boolean hasBinders) {
+		String gId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+		if (gId != null) {
+			try {
+				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(gId);
+				model.put(WebKeys.DASHBOARD_PORTLET, d);
+				Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
+				model.put(WebKeys.USER_PROPERTIES, userProperties);
+				if (request.getWindowState().equals(WindowState.MAXIMIZED))
+					model.put(WebKeys.PAGE_SIZE, "20");
+				else
+					model.put(WebKeys.PAGE_SIZE, "5");						
+				model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
+				DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
+				if (!hasBinders) return new ModelAndView(view, model);
+				Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
+				if (dataMap != null) {
+					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
+					//	Build the jsp bean (sorted by folder title)
+					Long folderId;
+					if (savedFolderIds != null && savedFolderIds.size() > 0) {
+						for (int i = 0; i < savedFolderIds.size(); i++) {
+							folderId = Long.valueOf((String)savedFolderIds.get(i));
+							Binder folder = getFolderModule().getFolder(folderId);
+							model.put(WebKeys.BINDER, folder);
+							break;
+						}
+						return new ModelAndView(view, model);		
+					} 
+				}
+			} catch (NoObjectByTheIdException no) {}
+		}
+		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+		
+	}
 	protected void buildForumToolbar(String prefix, Map<String,Object> model) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();

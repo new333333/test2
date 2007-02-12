@@ -1145,7 +1145,7 @@ public class AjaxController  extends SAbstractController {
 					User user = RequestContextHolder.getRequestContext().getUser();
 					DashboardHelper.getDashboardMap(binder, 
 						getProfileModule().getUserProperties(user.getId()).getProperties(), 
-						model, scope, componentId);
+						model, scope, componentId, false);
 				} catch (Exception ex) {
 					String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
 					Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
@@ -1185,7 +1185,7 @@ public class AjaxController  extends SAbstractController {
 				if (Validator.isNull(scope)) scope = DashboardHelper.Local;
 				DashboardHelper.getDashboardMap(binder, 
 					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, scope, componentId);
+					model, scope, componentId, false);
 			} else {
 				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
 				Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);

@@ -75,24 +75,6 @@
         <resource-bundle>content.forum</resource-bundle>
     </portlet>
 
-    <portlet>
-        <description xml:lang="en">SiteScape Guestbook Portlet</description>
-        <portlet-name>ss_guestbook</portlet-name>
-        <display-name xml:lang="en">Guestbook</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/ssf.xml</value>
-		</init-param>
-        <expiration-cache>300</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>edit</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.guestbook</resource-bundle>
-    </portlet>
 
      <portlet>
         <description xml:lang="en">SiteScape Administration</description>
@@ -165,6 +147,60 @@
         </supports>
         <supported-locale>en</supported-locale>
         <resource-bundle>content.blog</resource-bundle>
+    </portlet>
+     <portlet>
+        <description xml:lang="en">SiteScape Guestbook Portlet</description>
+        <portlet-name>ss_guestbook</portlet-name>
+        <display-name xml:lang="en">Guestbook</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.guestbook</resource-bundle>
+    </portlet>
+     <portlet>
+        <description xml:lang="en">SiteScape Wiki Portlet</description>
+        <portlet-name>ss_wiki</portlet-name>
+        <display-name xml:lang="en">Wiki</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.wiki</resource-bundle>
+    </portlet>
+     <portlet>
+        <description xml:lang="en">SiteScape Search Portlet</description>
+        <portlet-name>ss_search</portlet-name>
+        <display-name xml:lang="en">Search</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.search</resource-bundle>
     </portlet>
  
     <user-attribute>

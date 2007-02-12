@@ -31,4 +31,16 @@
          <portlet-ref>ss_blog</portlet-ref>
       </instance>
    </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_search-instance</instance-id>
+         <portlet-ref>ss_search</portlet-ref>
+      </instance>
+   </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_wiki-instance</instance-id>
+         <portlet-ref>ss_wiki</portlet-ref>
+      </instance>
+   </deployment>
 </deployments>

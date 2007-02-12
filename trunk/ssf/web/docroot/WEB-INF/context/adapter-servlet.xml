@@ -55,9 +55,11 @@
 				<value>ss_forum</value>
 				<value>ss_workspacetree</value>
 				<value>ss_administration</value>
-				<value>ss_profile</value>
+				<value>ss_blog</value>
 				<value>ss_presence</value>
-				<value>ss_dashboard</value>
+				<value>ss_wiki</value>
+				<value>ss_search</value>
+				<value>ss_guestbook</value>
 				<value>ss_toolbar</value>
 			</list>
 		</property>

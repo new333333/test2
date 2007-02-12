@@ -19,7 +19,7 @@
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
-           <input type="radio" name="name" value="${component}">
+           <input type="radio" name="componentName" value="${component}">
              <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
            <br>
         </c:forEach>
@@ -46,7 +46,7 @@
  	  <div style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">
-           <input type="radio" name="name" value="${component}">
+           <input type="radio" name="componentName" value="${component}">
              <ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[component]}"/>
            <br>
         </c:forEach>

@@ -17,7 +17,15 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-
+<script type="text/javascript">
+//generic url for ajax
+	var ss_dashboardAjaxUrl = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true"/>";
+    	
+</script>
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/>
 	<a href="<portlet:renderURL><portlet:param 
 		name="action" value="view_folder_listing"/><portlet:param 
@@ -27,6 +35,6 @@
   <div class="ss_decor-border6">
     <div class="ss_content_window">
 
-<%@ include file="/WEB-INF/jsp/dashboard/guestbook_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/dashboard/wiki_view.jsp" %>
 
 </div></div></div>

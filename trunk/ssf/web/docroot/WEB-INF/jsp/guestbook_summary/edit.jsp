@@ -22,20 +22,20 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssBinder}">
-<spane class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span><br/><br/>
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span><br/><br/>
 <c:out value="${ssBinder.title}" />
 <br/>
 </c:if>
 
 
 <form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-<input type="hidden" name="name" value="blog"/>
+<input type="hidden" name="componentName" value="guestbook"/>
 <br>
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.select.folder"/></span>
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
-	var r = self.document.<portlet:namespace />fm.topWorkspace;
+	var r = self.document.<portlet:namespace />fm.ss_folder_id;
     for (var b = 0; b < r.length; b++) {
       if (r[b].value == forum) 	r[b].checked=true;
 	}
