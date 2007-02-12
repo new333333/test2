@@ -23,8 +23,6 @@
 </c:if>
 
 <c:set var="wikiEntry" value="${ssDashboard.beans[componentId].wikiHomepageEntry}" />
-${wikiEntry.id}<br/>
-${wikiEntry.parentFolder.id}<br/>
 <div>
 <span class="ss_entryTitle">
   <a style="text-decoration: none;" href="<ssf:url 
