@@ -121,7 +121,7 @@ private static ArrayList xferFileList;
           if (topDir == null) topDir = "/";
           if ( f.isDirectory() ) {
         	  if (!loadDirectory) {
-        		  errorMsgOnDirectoryLoad(topframe);
+        		  errorMsgOnDirectoryLoad();
             	  changeIcon(StaticGif);
             	  return;
         	  }
@@ -138,20 +138,30 @@ private static ArrayList xferFileList;
         try {
           //Thread.sleep(3000);
         } catch (Exception e) {}
+      } else {
+    	  informNoFilesCopied();
+    	  changeIcon(StaticGif);
       }
     }
     catch (UnsupportedFlavorException ex) { this.getToolkit().beep(); }
     catch (IOException ex) { this.getToolkit().beep(); }
   }
 
-  private void errorMsgOnDirectoryLoad(TopFrame topFrame)
-  {
-    try {
-      String onLoadFunction = "alert";
-      JSObject win = JSObject.getWindow(topFrame);
-      String args[] = {topframe.getParameter("directoryLoadErrorMessage")};
-      Object foo = win.call(onLoadFunction,args);
-    } catch (Exception ignored) { }
+  private void informNoFilesCopied() {
+	makeJSCallWithAppletParam("noFileAlertMessage");
+  }
+  
+  private void errorMsgOnDirectoryLoad() {
+	makeJSCallWithAppletParam("directoryLoadErrorMessage");
+  }
+  
+  private void makeJSCallWithAppletParam(String strAppletParam) {
+	try {
+	  String onLoadFunction = "alert";
+	  JSObject win = JSObject.getWindow(topframe);
+	  String args[] = {topframe.getParameter(strAppletParam)};
+	  Object foo = win.call(onLoadFunction,args);
+	} catch (Exception ignored) { }
   }
   
   /**
@@ -179,10 +189,13 @@ private static ArrayList xferFileList;
         for (int i = 0; i < files.size(); i++) {
           File f = (File) files.get(i);
           topDir = f.getParent();
+          
+          System.out.println("Hemanth: drop: topDir: "+topDir + ", filename: " + f.getName());
+          
           if (topDir == null) topDir = "/";
           if ( f.isDirectory() ) {
         	  if (!loadDirectory) {
-        		  errorMsgOnDirectoryLoad(topframe);
+        		  errorMsgOnDirectoryLoad();
             	  changeIcon(StaticGif);
             	  return;
         	  }
@@ -196,6 +209,10 @@ private static ArrayList xferFileList;
         if (xferFileList.size() > 0) {
           PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
         }
+        else {
+      	  informNoFilesCopied();
+      	  changeIcon(StaticGif);
+        }        
       }
       catch (Exception ex) { e.dropComplete(false); }
     } else {  // If it wasn't a file list, reject it
@@ -256,8 +273,6 @@ private static ArrayList xferFileList;
   public void changeIcon(final String imageName)
   {
       String color = getBackgroundColor();
-      
-      System.out.println("Hemanth: color: "+color);
       
       if (color.equals("")) {
         BGColor = null;
@@ -358,7 +373,6 @@ private static ArrayList xferFileList;
   {
     try {
       String onCancelFunction = topframe.getParameter("onCancelFunction");
-      System.out.println("Hemanth: onCancelFunction: "+onCancelFunction);
       if (onCancelFunction.equals(null) || "".equals(onCancelFunction)) return;
       JSObject win = JSObject.getWindow(topframe);
       String args[] = {};

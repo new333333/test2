@@ -61,6 +61,7 @@ public interface ObjectKeys {
     public static final String TOTAL_SEARCH_COUNT="totalSearchCount";
     public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
     public static final String FILES_FROM_APPLET_FOR_BINDER="filesFromApplet";
+    public static final String FILES_FROM_APPLET_FOLDER_INFO_FOR_BINDER="filesFromAppletFolderInfo";
     
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";

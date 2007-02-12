@@ -36,7 +36,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 	<table border="0" cellspacing="0" cellpadding="0" valign="top" height="100%" width="100%">
 		<tr><td align="center">
 			<div id="ss_divDropTargetLoading${ssEntryId}${ss_namespace}">
-			Loading....
+				<ssf:nlt tag="Loading"/>
 			</div>
 			<c:if test="<%= isIE %>">
 			<object id="dropboxobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
@@ -62,7 +62,7 @@ function ss_showLoadingDropTargetDiv${ssEntryId}${ss_namespace}() {
 			    <PARAM NAME = "fileReceiverURL" VALUE="${ssAttachmentFileReceiverURL}" />
 			    <PARAM NAME = "deactivationUrl" VALUE=""/>
 			    <PARAM NAME = "displayUrl" VALUE="0"/>
-			    <PARAM NAME = "loadDirectory" VALUE="no" />
+			    <PARAM NAME = "loadDirectory" VALUE="yes" />
 			    <PARAM NAME = "onLoadFunction" VALUE="ss_hideLoadingDropTargetDiv${ssEntryId}${ss_namespace}" />
 			    <PARAM NAME = "onCancelFunction" VALUE="ss_hideDropTarget${ssEntryId}${ss_namespace}" />
 			    <PARAM NAME = "menuLabelPaste" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />

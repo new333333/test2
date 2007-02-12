@@ -44,6 +44,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
     public static final String URL_BLOG_REPLY="blogReply";
@@ -114,6 +115,7 @@ public class WebKeys {
     public static final String ACTION_CONFIG_EMAIL="config_email";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
  	public static final String ACTION_ADD_ENTRY_ATTACHMENT = "add_entry_attachment";
+ 	public static final String ACTION_ADD_FOLDER_ATTACHMENT = "add_folder_attachment";
 	public static final String ACTION_ACCESS_CONTROL = "configure_access_control";
 	public static final String ACTION_CLOSE_WINDOW="close_window"; 
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
@@ -167,6 +169,7 @@ public class WebKeys {
     public static final String OPERATION_UNLOCK="unlock";
     public static final String OPERATION_MODIFY_TEMPLATE="modify_template";
     public static final String OPERATION_ADD_FILES_FROM_APPLET="add_files_from_applet";
+    public static final String OPERATION_ADD_FOLDER_FILES_FROM_APPLET="add_folder_files_from_applet";
     public static final String OPERATION_ADD_FILES_BY_BROWSE_FOR_ENTRY="add_files_by_browse_for_entry";
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
     public static final String OPERATION_ADD_TAB="add_tab";
@@ -183,6 +186,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
+	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_RELOAD_ENTRY_ATTACHMENTS = "reload_entry_attachments";
 	public static final String OPERATION_ADD_ENTRY_ATTACHMENT_BY_BROWSE = "add_entry_attachment_by_browse";
@@ -257,6 +261,7 @@ public class WebKeys {
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
+	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
     public static final String BINDER_ID_LIST = "ssBinderIdList";
 	public static final String BINDER_CONFIG="ssBinderConfig";
 	public static final String BINDER_CONFIGS="ssBinderConfigs";
@@ -347,6 +352,8 @@ public class WebKeys {
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
+    public static final String FOLDER_ATTACHMENT_FILE_RECEIVER_URL = "ssFolderAttachmentFileReceiverURL";
+    public static final String FOLDER_ATTACHMENT_APPLET_REFRESH_URL = "ssFolderAttachmentAppletRefereshURL";
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
@@ -372,6 +379,7 @@ public class WebKeys {
     public static final String FOLDER_ENTRY_TOP="folderEntryTop";
     public static final String FOLDER_ENTRY_LEFT="folderEntryLeft";
     public static final String FOLDER_ENTRY_HEIGHT="folderEntryHeight";
+    public static final String FOLDER_APPLET_RELOAD="appletReload";
     public static final String FOLDER_LIST = "ssFolderList";
     public static final String FOLDERS = "ssFolders";
     public static final String FOLDER_DOM_TREE="ssFolderDomTree";

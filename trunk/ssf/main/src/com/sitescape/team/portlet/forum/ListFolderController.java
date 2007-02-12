@@ -698,10 +698,8 @@ public class ListFolderController extends  SAbstractController {
 		
 		for (Iterator iter= folderList.iterator(); iter.hasNext();) {
 			Object itrObj = iter.next();
-			System.out.println("Hemanth: itrObj: "+itrObj);
 			FolderEntry folderEntry = (FolderEntry) itrObj;
 			String strWebDAVURL = DefinitionUtils.getWebDAVURL(folder, folderEntry);
-			System.out.println("Hemanth: strWebDAVURL: "+strWebDAVURL);
 			Long lngFolderEntry = folderEntry.getId();
 			hmWebDAVURLs.put(lngFolderEntry, strWebDAVURL);
 		}
@@ -1164,8 +1162,10 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers = new HashMap();
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
-
 		
+		qualifiers = new HashMap();
+		qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
+		footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());

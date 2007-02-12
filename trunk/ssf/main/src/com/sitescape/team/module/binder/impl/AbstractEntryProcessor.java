@@ -82,16 +82,32 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
 	private static final int DEFAULT_MAX_CHILD_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	//***********************************************************************************************************	
-    public Entry addEntry(final Binder binder, Definition def, Class clazz, 
+    
+	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
     		final InputDataAccessor inputData, Map fileItems) 
+    	throws WriteFilesException {
+		Boolean filesFromApplet = new Boolean (false);
+		return addEntry(binder, def, clazz, inputData, fileItems, filesFromApplet);
+	}
+	
+	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
+    		final InputDataAccessor inputData, Map fileItems, Boolean filesFromApplet) 
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
     	SimpleProfiler sp = new SimpleProfiler(false);
-    	
-    	sp.reset("addEntry_toEntryData").begin();
-        Map entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
-        sp.end().print();
+        
+    	Map entryDataAll;
+    	if (!filesFromApplet) {
+        	sp.reset("addEntry_toEntryData").begin();
+            entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
+            sp.end().print();
+    	}
+    	else {
+	    	sp.reset("createNewEntryWithAttachmentAndTitle").begin();
+	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems);
+		    sp.end().print();
+    	}        
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
@@ -152,7 +168,59 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            	cleanupFiles(fileUploadItems);       	
         }
     }
-   
+	
+    //Method Used to get the files uploaded by the Applet and title information from the entry
+    protected Map createNewEntryWithAttachmentAndTitle(Definition def, InputDataAccessor inputData, Map fileItems)
+    {
+    	List fileData = new ArrayList();
+    	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
+
+    	Map entryDataAll = new HashMap();
+    	Map entryData = new HashMap();
+        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA,  entryData);    	
+
+		if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_TITLE));
+        
+        if (def != null) {
+        	boolean blnCheckForAppletFile = true;
+        	int intFileCount = 1;
+
+        	while (blnCheckForAppletFile) {
+        		String fileEleName = nameValue + Integer.toString(intFileCount);
+        		if (fileItems.containsKey(fileEleName)) {
+        	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
+        	    	String fileName = myFile.getOriginalFilename();
+        	    	
+        	    	System.out.println("Hemanth: AbstractEntryProcessor.getFilesUploadedByApplet: fileName: "+fileName);
+        	    	
+        	    	if (fileName != null && !fileName.equals("")) {
+            	    	// Different repository can be specified for each file uploaded.
+            	    	// If not specified, use the statically selected one.  
+            	    	String repositoryName = null;
+            	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
+            	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
+            	    	if (repositoryName == null) {
+            		    	repositoryName = "simpleFileRepository";
+            		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
+            	    	}
+            	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
+            	    	fileData.add(fui);
+        	    	}
+        	    	intFileCount++;
+        		}
+        		else {
+        			blnCheckForAppletFile = false;
+        		}
+        	}
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  fileData);
+            
+        } else {
+	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  new ArrayList());
+        }
+    	
+        return entryDataAll;
+    }
+
     protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
     		Map entryData, List fileUploadItems) throws FilterException {
    		FilesErrors nameErrors = new FilesErrors();
@@ -404,6 +472,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
         	    	String fileName = myFile.getOriginalFilename();
         	    	
+        	    	System.out.println("Hemanth: AbstractEntryProcessor.getFilesUploadedByApplet: fileName: "+fileName);
+        	    	
+        	    	
         	    	if (fileName != null && !fileName.equals("")) {
             	    	// Different repository can be specified for each file uploaded.
             	    	// If not specified, use the statically selected one.  
@@ -422,7 +493,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		else {
         			blnCheckForAppletFile = false;
         		}
-        	}        	
+        	}
 	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA,  fileData);
             
         } else {

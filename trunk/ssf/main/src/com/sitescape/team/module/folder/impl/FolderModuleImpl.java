@@ -172,7 +172,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		// Check if the user has "read" access to the folder.
 		checkAccess(folder, "getFolder");		
 		return folder;        
-	} 
+	}
+	
 	public Collection getFolders(List folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale());
@@ -188,7 +189,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		return result;
 	}
    
-
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
         Folder parentFolder = loadFolder(parentFolderId);
@@ -206,6 +206,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
  
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
+		Boolean filesFromApplet = new Boolean (false);
+		return addEntry(folderId, definitionId, inputData, fileItems, filesFromApplet);    	
+    }
+    
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
         checkAccess(folder, "addEntry");
         Definition def = null;
@@ -215,7 +221,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         	def = folder.getDefaultEntryDef();
         }
         
-        return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems).getId();
+        return loadProcessor(folder).addEntry(folder, def, FolderEntry.class, inputData, fileItems, filesFromApplet).getId();
     }
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 

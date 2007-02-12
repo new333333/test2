@@ -44,6 +44,8 @@ public interface FolderModule {
      */
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
     /**
