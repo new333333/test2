@@ -14,6 +14,7 @@ import com.sun.star.comp.helper.Bootstrap;
 import com.sun.star.bridge.XUnoUrlResolver;
 import com.sun.star.uno.XComponentContext;
 import com.sun.star.uno.UnoRuntime;
+import com.sun.star.uri.ExternalUriReferenceTranslator;
 import com.sun.star.frame.XComponentLoader;
 import com.sun.star.frame.XStorable;
 import com.sun.star.beans.PropertyValue;
@@ -74,6 +75,17 @@ public class HtmlOpenOfficeConverter
 	public void setPort(int port_in) {
 		_port = port_in;
 	}
+	
+	public String convertToUrl(File f, XComponentContext xComponentContext)
+		throws java.net.MalformedURLException 
+	{
+		String returnUrl = null;
+	
+		java.net.URL u = f.toURL();
+		returnUrl =  ExternalUriReferenceTranslator.create(xComponentContext).translateToInternal(u.toExternalForm());
+	
+		return returnUrl;
+	}
 
 	public void convert(File ifp, File ofp, long timeout)
 		throws Exception
@@ -105,20 +117,11 @@ public class HtmlOpenOfficeConverter
 			   objectInitial = null,
 			   objectDocumentToStore = null,
 			   objectDefaultContext = null;
-		String url = "file://",
-	    	   convertType = "";
+		String url = "",
+			   convertType = "";
 	    
 		try
 		{
-			// Are we dealing with Windows
-			if (ifp.indexOf("\\") > 0)
-				url = "file:///";
-			
-			ifp = ifp.replace('\\', '/');
-			ofp = ofp.replace('\\', '/');
-			ifp = url + ifp;
-			ofp = "file:///" + ofp;
-			
 			/**
 			 * If the output file exist an has a modified date equal or greating than incoming file
 			 * do not perform any conversion. 
@@ -126,9 +129,10 @@ public class HtmlOpenOfficeConverter
 			ifile = new File(ifp);
 			ofile = new File(ofp);
 			
-			if (ofile != null
+			if (!ifile.exists()
+			|| (ofile != null
 			&& ofile.exists()
-			&& ofile.lastModified() >= ifile.lastModified())
+			&& ofile.lastModified() >= ifile.lastModified()))
 				return;
 				
 			/* Bootstraps a component context with the jurt base components
@@ -178,8 +182,14 @@ public class HtmlOpenOfficeConverter
 			propertyValues[0].Value = new Boolean(true);
 	      
 			// Loading the wanted document
-			objectDocumentToStore = xcomponentloader.loadComponentFromURL(ifp, "_blank", 0, propertyValues);
-	      
+			url = convertToUrl(ifile, xcomponentcontext);
+			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
+			if (objectDocumentToStore == null)
+			{
+				logger.error("OpenOffice Html Converter, could not load file: " + url);
+				return;
+			}
+			
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
@@ -206,16 +216,20 @@ public class HtmlOpenOfficeConverter
 			propertyValues[1].Value = convertType;
 	      
 			// Storing and converting the document
-			xstorable.storeToURL(ofp, propertyValues);
-	      
-			// Getting the method dispose() for closing the document
-			xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
+			url = convertToUrl(ofile, xcomponentcontext);
+			xstorable.storeToURL(url, propertyValues);
 		}
 		finally
 		{
-			// Closing the converted document
-			if (xcomponent != null)
-				xcomponent.dispose();
+			//	Getting the method dispose() for closing the document
+			if (xstorable != null)
+			{
+				xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
+				
+				// Closing the converted document
+				if (xcomponent != null)
+					xcomponent.dispose();
+			}
 		}
 	    
 	    return;
