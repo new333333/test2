@@ -576,12 +576,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			}
 		}		
 	}
-	
-	public void readHtmlViewFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, OutputStream out) throws  
-			UncheckedIOException, RepositoryServiceException {
-		// TODO - To be written
-	}
 
 	public void generateScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, int maxWidth, int maxHeight) {
