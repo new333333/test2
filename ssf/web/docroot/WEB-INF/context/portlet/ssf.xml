@@ -35,7 +35,6 @@
 	<bean id="listWSController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.workspaceTree.WorkspaceTreeController" />
 
 	<bean id="updatePresenceController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.presence.UpdatePresenceController" />
-	<bean id="dashboardPortletModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.dashboard.ModifyDashboardController" />
 	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
 	<bean id="sendEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
 	<bean id="meetingController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
@@ -55,7 +54,6 @@
 						<entry key="definition_builder"><ref bean="definitionController"/></entry>
 						<entry key="modify_binder"><ref bean="binderModifyController"/></entry>
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
-						<entry key="modify_dashboard_portlet"><ref bean="dashboardPortletModifyController"/></entry>
 						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
 						<entry key="search"><ref bean="searchController"/></entry>
 

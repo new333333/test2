@@ -4,11 +4,13 @@
 <display>
 	<category name="category.sitescape">
 		<portlet id="ss_forum" />
-		<portlet id="ss_blog" />
 		<portlet id="ss_administration" />
 		<portlet id="ss_workspacetree" />
 		<portlet id="ss_presence" />
+		<portlet id="ss_blog" />
 		<portlet id="ss_guestbook" />
+		<portlet id="ss_wiki" />
+		<portlet id="ss_search" />
 		<portlet id="ss_toolbar" />
 	</category>
 </display>

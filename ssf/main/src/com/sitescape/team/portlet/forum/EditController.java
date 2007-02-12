@@ -77,7 +77,9 @@ public class EditController extends SAbstractController {
 				}
 
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
-					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType) ||
+					ViewController.WIKI_PORTLET.equals(displayType) ||
+					ViewController.SEARCH_PORTLET.equals(displayType)) {
 				String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
 				DashboardPortlet d=null;
 				if (id != null) {
@@ -90,12 +92,9 @@ public class EditController extends SAbstractController {
 					d = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
 					DashboardHelper.addComponent(request, d, DashboardHelper.Wide_Top, DashboardHelper.Portlet);
 					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
-					if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) 
-						prefs.setValue(WebKeys.PORTLET_PREF_TYPE, ViewController.BLOG_SUMMARY_PORTLET);
-					else
-						prefs.setValue(WebKeys.PORTLET_PREF_TYPE, ViewController.GUESTBOOK_SUMMARY_PORTLET);
+					prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 				}
-				DashboardHelper.saveComponentData(request, d, DashboardHelper.Portlet+"_0");
+				DashboardHelper.saveComponentData(request, d, ViewController.PORTLET_COMPONENT_ID);
 
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
@@ -143,32 +142,25 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, folders);
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
-		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
-				ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new folderTree()),1);
-			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT);
+		} else if (ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GUESTBOOK_EDIT);			
+		} else if (ViewController.WIKI_PORTLET.equals(displayType)) {
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_WIKI_EDIT);
+		} else if (ViewController.SEARCH_PORTLET.equals(displayType)) {
 			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
 			if (id != null) {
 				try {
 					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-					Map dataMap = DashboardHelper.getComponentData(d, DashboardHelper.Portlet+"_0");
-					if (dataMap != null) {
-						List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
-						//	Build the jsp bean (sorted by folder title)
-						Long folderId;
-						for (int i = 0; i < savedFolderIds.size(); i++) {
-							folderId = Long.valueOf((String)savedFolderIds.get(i));
-							Binder folder = getFolderModule().getFolder(folderId);
-							model.put(WebKeys.BINDER, folder);
-							break;
-						}
-					}
+					Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
+					model.put(WebKeys.USER_PROPERTIES, userProperties);
+					DashboardHelper.getDashboardMap(d, userProperties, model, ViewController.PORTLET_COMPONENT_ID);
+					//make sure it works, before setting up model
+					model.put(WebKeys.DASHBOARD_PORTLET, d);
 				} catch (Exception no) {}
-			} 
-			return new ModelAndView(WebKeys.VIEW_BLOG_EDIT, model);
-
+			}
+			return new ModelAndView(WebKeys.VIEW_SEARCH_EDIT, model);
 		} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
@@ -197,6 +189,34 @@ public class EditController extends SAbstractController {
 		}
 		return null;
 	}
+	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view) {
+		Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+				new WsDomTreeBuilder(null, true, this, new folderTree()),1);
+		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+		String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+		if (id != null) {
+			try {
+				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+				Map dataMap = DashboardHelper.getComponentData(d, DashboardHelper.Portlet+"_0");
+				if (dataMap != null) {
+					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
+					//	Build the jsp bean (sorted by folder title)
+					Long folderId;
+					if (savedFolderIds != null && savedFolderIds.size() > 0) {
+						for (int i = 0; i < savedFolderIds.size(); i++) {
+							folderId = Long.valueOf((String)savedFolderIds.get(i));
+							Binder folder = getFolderModule().getFolder(folderId);
+							model.put(WebKeys.BINDER, folder);
+							break;
+						}
+					}
+				}
+			} catch (Exception no) {}
+		} 
+		return new ModelAndView(view, model);
+		
+	}
 	private String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();
@@ -210,6 +230,10 @@ public class EditController extends SAbstractController {
 			return ViewController.BLOG_SUMMARY_PORTLET;
 		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
 			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.SEARCH_PORTLET))
+			return ViewController.SEARCH_PORTLET;
+		else if (pName.contains(ViewController.WIKI_PORTLET))
+			return ViewController.WIKI_PORTLET;
 		return null;
 
 	}

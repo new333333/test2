@@ -16,6 +16,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+
 <span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/>
 	<a href="<portlet:renderURL><portlet:param 
 		name="action" value="view_folder_listing"/><portlet:param 
@@ -24,24 +25,8 @@
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
-<%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
-<c:set var="ssNamespace" value="${renderResponse.namespace}"/>
-<c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 
-<script type="text/javascript">
-function ${ss_divId}_blogUrl(binderId, entryId) {
-	//Build a url to go to
-	var url = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_entry"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	self.location.href = url;
-	return false;
-}
-</script>
+
 <%@ include file="/WEB-INF/jsp/dashboard/blog_view.jsp" %>
 
 </div></div></div>

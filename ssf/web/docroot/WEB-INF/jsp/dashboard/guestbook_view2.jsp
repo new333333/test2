@@ -14,6 +14,8 @@
  *
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
+  //this is used by penlets and portlets
+ 
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
@@ -22,10 +24,6 @@
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
-
-
-
-
 
 <div class="ss_blog">
 
@@ -41,14 +39,14 @@
 			</td>		 	
 			<td class="ss_guestbookContainer">
 			
-			    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					    action="view_permalink"
-					    binderId="${fileEntry._binderId}"
-					    entryId="${fileEntry._docId}">
-					    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-			    	    <ssf:param name="newTab" value="1"/>
-						</ssf:url>"
-						 onClick="if (${ss_divId}_guestbookUrl) ${ss_divId}_guestbookUrl('${fileEntry._binderId}','${fileEntry._docId}');return false;">
+    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="view_permalink"
+		    binderId="${fileEntry._binderId}"
+		    entryId="${fileEntry._docId}">
+		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+    	    <ssf:param name="newTab" value="1"/>
+			</ssf:url>"
+			onClick="if (${ss_divId}_guesturl) ${ss_divId}_guesturl('${fileEntry._binderId}','${fileEntry._docId}'); return false;">
 		
 				<span class="ss_entryTitle">
 					<c:if test="${empty fileEntry.title}">
@@ -79,8 +77,8 @@
 <c:if test="${hitCount > 0}">
       <span class="ss_light ss_fineprint">
 	    [<ssf:nlt tag="search.results">
-	    <ssf:param name="value" value="${ss_pageNumber * 10 + 1}"/>
-	    <ssf:param name="value" value="${ss_pageNumber * 10 + hitCount}"/>
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
 	    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
 	    </ssf:nlt>]
 	  </span>
@@ -104,7 +102,7 @@
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
-	  <c:if test="${(ss_pageNumber * 10 + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
 	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'guestbook'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>

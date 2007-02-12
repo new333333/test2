@@ -20,9 +20,10 @@
 <c:if test="${!empty ssComponentId}">
 <c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
 </c:if>
+
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
 
-<div id="ss_searchResults_${ssNamespace}">
+<div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/search_view2.jsp" %>
 </div>

@@ -16,7 +16,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="componentId" value="${ssComponentId}"/>
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
@@ -30,7 +29,10 @@
     action="view_folder_entry"
     entryId="${wikiEntry.id}">
 	<ssf:param name="newTab" value="1"/>
-    </ssf:url>">
+    </ssf:url>"
+	onClick="if (${ss_divId}_wikiurl) ${ss_divId}_wikiurl('${wikiEntry.parentFolder.id}','${wikiEntry.id}'); return false;">
+
+
 <c:if test="${empty wikiEntry.title}">
   <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
 </c:if><c:out value="${wikiEntry.title}"/></a></span>

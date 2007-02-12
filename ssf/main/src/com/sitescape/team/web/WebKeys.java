@@ -565,7 +565,6 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER = "binder/build_filter";
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
-    public static final String VIEW_DASHBOARD="dashboard/view";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";
@@ -591,9 +590,12 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
-    public static final String VIEW_SEARCH_RESULTS="binder/view_search_results";
+    public static final String VIEW_SEARCH="search/view";
+    public static final String VIEW_SEARCH_EDIT="search/edit";
     public static final String VIEW_TEMPLATE="administration/configureConfiguration";
     public static final String VIEW_TOOLBAR="toolbar/view";
+    public static final String VIEW_WIKI="wiki/view";
+    public static final String VIEW_WIKI_EDIT="wiki/edit";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     

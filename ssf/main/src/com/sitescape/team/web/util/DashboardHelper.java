@@ -222,7 +222,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				Map component = (Map) componentList.get(j);
 				if ((Boolean)component.get(Dashboard.Visible)) {
 					//Set up the bean for this component
-					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.Id));
+					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.Id), false);
 				}
 			}
 		}
@@ -243,7 +243,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
     }
     //used by Penlets
-    protected static void getDashboardBean(Binder binder, Map ssDashboard, Map model, String id) {
+    protected static void getDashboardBean(Binder binder, Map ssDashboard, Map model, String id, boolean isConfig) {
 		String componentScope = "";
 		if (id.contains("_")) componentScope = id.split("_")[0];
 		if (!componentScope.equals("")) {
@@ -256,10 +256,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			} else if (componentScope.equals(DashboardHelper.Binder)) {
 				dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
 			}
-			doComponentSetup(ssDashboard, dashboard, binder, model, id);
+			doComponentSetup(ssDashboard, dashboard, binder, model, id, isConfig);
 		}
     }
-    private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
+    private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id, boolean isConfig) {
 		if (dashboard.containsKey(Dashboard.Components)) {
 			Map components = (Map) dashboard.get(Dashboard.Components);
 			if (components.containsKey(id)) {
@@ -286,17 +286,17 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component);
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					if (isConfig) getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					if (isConfig) getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component);
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					if (isConfig) getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
 				}
 			}
 		}
@@ -309,7 +309,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		if (!componentScope.equals("")) {
 			//Get the component from the appropriate scope
 			Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
-			doComponentSetup(ssDashboard, dashboard, null, model, id);
+			doComponentSetup(ssDashboard, dashboard, null, model, id, false);
 		}
     }
     
@@ -330,13 +330,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model) {
 		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local);
 	}
-	static protected Map getDashboardMap(Binder binder, Map userProperties, String scope) {
-		return getDashboardMap(binder, userProperties, new HashMap(), scope);
-	}
 	static protected Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope) {
-		return getDashboardMap(binder, userProperties, model, scope, "");
+		return getDashboardMap(binder, userProperties, model, scope, "", false);
 	}
-	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId) {
+	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
 		//Users dashboard settings for this binder		
 		Map dashboard = getInstance().getDashboard(binder, DashboardHelper.Local);
 		//Users global dashboard settings
@@ -419,7 +416,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		if (componentId.equals("")) {
 			getDashboardBeans(binder, ssDashboard, model);
 		} else {
-			getDashboardBean(binder, ssDashboard, model, componentId);
+			getDashboardBean(binder, ssDashboard, model, componentId, isConfig);
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
 		}
 		
@@ -724,7 +721,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		
     }
-    public static Map doSearchQuery(Map data, Map model) {
+    protected static Map doSearchQuery(Map data, Map model) {
 		Map searchSearchFormData = new HashMap();
 		searchSearchFormData.put("searchFormTermCount", new Integer(0));
 		Document searchQuery = null;
@@ -808,7 +805,8 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			String listName, String scope) {
 		String id = "";
 		//Get the name of the component to be added
-		String componentName = PortletRequestUtils.getStringParameter(request, "name", "");
+		//cannot use "name" as the name of a form element,  IE gets confused if you later want the form.name attribute
+		String componentName = PortletRequestUtils.getStringParameter(request, "componentName", "");
 		if (Validator.isNotNull(componentName)) {
 			Map component = new HashMap();
 			component.put(DashboardHelper.Name, componentName);
@@ -954,7 +952,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			String scope, String action) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getInstance().getProfileModule().getUserProperties(user.getId()).getProperties();
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userProperties, new HashMap(), scope, componentId);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userProperties, new HashMap(), scope, componentId, false);
 
 		//Get the dashboard component
 		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
@@ -1014,7 +1012,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) getInstance().getProfileModule().getUserProperties(user.getId()).getProperties();
-		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userProperties, new HashMap(), scope, componentId);
+		Map ssDashboard = DashboardHelper.getDashboardMap(binder, userProperties, new HashMap(), scope, componentId, false);
 
 		if (Validator.isNotNull(dashboardListKey) && ssDashboard.containsKey(dashboardListKey)) {
 			List dashboardList = (List) ssDashboard.get(dashboardListKey);
