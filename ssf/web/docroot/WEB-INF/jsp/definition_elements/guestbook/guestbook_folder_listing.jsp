@@ -26,7 +26,8 @@
 				
 				<c:if test="${!empty entry._desc}">
 				<div class="ss_entryContent ss_entryDescription">
-					<span><c:out value="${entry._desc}" escapeXml="false"/></span>
+					<span><ssf:markup type="view"><c:out 
+					  value="${entry._desc}" escapeXml="false"/></ssf:markup></span>
 				</div>
 				</c:if>
 			</td>

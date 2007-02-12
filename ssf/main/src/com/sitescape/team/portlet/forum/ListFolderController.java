@@ -410,6 +410,7 @@ public class ListFolderController extends  SAbstractController {
 			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		}
+
 		//Saving the Sort Option in the Tab
 		tabOptions.put(Tabs.SORTBY, (String) options.get(ObjectKeys.SEARCH_SORT_BY));
 		tabOptions.put(Tabs.SORTDESCEND, ((Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND)).toString());
@@ -812,7 +813,7 @@ public class ListFolderController extends  SAbstractController {
 
 	//Routine to build the beans for the blog archives list
 	public void buildWikiBeans(RenderResponse response, Folder folder, Map options, Map model, Map folderEntries) {
-		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, "");
+		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,

@@ -62,7 +62,7 @@
 				
 				<c:if test="${!empty fileEntry._desc}">
 				<div class="ss_entryContent ss_entryDescription">
-					<span><c:out value="${fileEntry._desc}" escapeXml="false"/></span>
+					<span><ssf:markup type="view"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
 				</div>
 				</c:if>
 			</td>					 	

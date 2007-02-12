@@ -99,7 +99,9 @@ function ss_findTagSearch_${prefix}(textObjId, elementName, findTagType) {
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
-	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findTag_pageNumber${prefix})
@@ -200,6 +202,10 @@ function ss_findTagPrevPage${prefix}() {
 	ss_findTag_pageNumber${prefix}--;
 	if (ss_findTag_pageNumber${prefix} < 0) ss_findTag_pageNumber${prefix} = 0;
 	ss_findTagSearch_${prefix}(ss_findTagSearchLastTextObjId${prefix}, ss_findTagSearchLastElement${prefix}, ss_findTagSearchLastfindTagType${prefix});
+}
+
+function ss_findTagClose${prefix}() {
+	document.getElementById('ss_findTag_searchText_${prefix}').focus();
 }
 
 </script>

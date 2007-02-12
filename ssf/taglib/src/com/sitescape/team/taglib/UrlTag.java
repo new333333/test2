@@ -143,9 +143,17 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 					portletURL = renderResponse.createRenderURL();
 				}
 				portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
-				portletURL.setParameters(params);
+				Iterator it = params.entrySet().iterator();
+				while (it.hasNext()) {
+					Map.Entry me = (Map.Entry) it.next();
+					portletURL.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+				}
 				if (_params != null) {
-					portletURL.setParameters(_params);
+					it = _params.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry me = (Map.Entry) it.next();
+						portletURL.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+					}
 				}
 				if (!Validator.isNull(action)) {
 					portletURL.setParameter("action", new String[] {this.action});

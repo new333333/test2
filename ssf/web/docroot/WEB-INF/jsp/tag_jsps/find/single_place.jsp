@@ -95,7 +95,9 @@ function ss_findPlacesSearch_${prefix}(textObjId, elementName, findPlacesType) {
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
-	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findPlaces_pageNumber)
@@ -180,6 +182,10 @@ function ss_findPlacesPrevPage<portlet:namespace/>() {
 	ss_findPlaces_pageNumber--;
 	if (ss_findPlaces_pageNumber < 0) ss_findPlaces_pageNumber = 0;
 	ss_findPlacesSearch_${prefix}(ss_findPlacesSearchLastTextObjId, ss_findPlacesSearchLastElement, ss_findPlacesSearchLastfindPlacesType);
+}
+
+function ss_findPlacesClose<portlet:namespace/>() {
+	document.getElementById('ss_findPlaces_searchText_<portlet:namespace/>').focus();
 }
 
 </script>

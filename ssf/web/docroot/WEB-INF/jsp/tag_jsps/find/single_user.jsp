@@ -98,7 +98,9 @@ function ss_findUserSearch_${prefix}(textObjId, elementName, findUserGroupType) 
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
-	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber${prefix})
@@ -197,6 +199,10 @@ function ss_findUserPrevPage${prefix}() {
 	ss_findUser_pageNumber${prefix}--;
 	if (ss_findUser_pageNumber${prefix} < 0) ss_findUser_pageNumber${prefix} = 0;
 	ss_findUserSearch_${prefix}(ss_findUserSearchLastTextObjId${prefix}, ss_findUserSearchLastElement${prefix}, ss_findUserSearchLastfindUserGroupType${prefix});
+}
+
+function ss_findUserClose${prefix}() {
+	document.getElementById('ss_findUser_searchText_${prefix}').focus();
 }
 
 </script>

@@ -39,8 +39,13 @@
             </c:if>
            </td>
            </tr>
-           </tbody>
-           </table>
+	      <tr><td width="150" align="center">
+             <a href="#" onClick="ss_findPlacesClose${ss_namespace}();return false;"
+             ><ssf:nlt tag="button.close"/></a>
+	      </td><td></td>
+	      </tr>
+          </tbody>
+          </table>
 		</c:if>
 		<c:if test="${empty ssEntries}">
 		 <ul>
@@ -48,7 +53,14 @@
 		    <table cellspacing="0" cellpadding="0"><tbody><tr>
 		    <td nowrap="nowrap" style="white-space:nowrap;">
 		      <ssf:nlt tag="findUser.noneFound"/>
-		    </td></tr></tbody></table>
+		    </td></tr>
+	        <tr><td align="center">
+              <br/>
+              <a href="#" onClick="ss_findPlacesClose${ss_namespace}();return false;"
+              ><ssf:nlt tag="button.close"/></a>
+	        </td>
+	        </tr>
+		    </tbody></table>
 		  </li>
 		 </ul>
 		</c:if>

@@ -34,7 +34,7 @@ import javax.portlet.PortletURL;
 public class MarkupTag extends BodyTagSupport {
 	private String _bodyContent;
 	private DefinableEntity entity = null;
-	private String type = "";
+	private String type = WebKeys.MARKUP_VIEW;
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -65,7 +65,8 @@ public class MarkupTag extends BodyTagSupport {
 	        throw new JspException(e); 
 	    }
 		finally {
-			this.type = "";
+			this.type = WebKeys.MARKUP_VIEW;
+			this.entity = null;
 		}
 	}
 

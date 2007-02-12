@@ -54,6 +54,7 @@ public class FilterHelper {
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
    	public final static String FilterTypeEntityTypes = "entityTypes";
+   	public final static String FilterTypeElement = "element";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	
@@ -473,6 +474,14 @@ public class FilterHelper {
 	    					child2.setText(entityTypeName);
 	    				}
 	    			}
+	    		} else if (filterType.equals(FilterTypeElement)) {
+	    	    	//Search for an element value
+	    			String elementName = filterTerm.attributeValue(FilterHelper.FilterElementName, "");
+					Element andField = orField.addElement(QueryBuilder.AND_ELEMENT);
+		    		Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
+		    	    Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		    	    child.setText(filterTerm.getText());
 	    		} else if (filterType.equals(FilterTypeCommunityTagSearch)) {
 	    			Element field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
 	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
