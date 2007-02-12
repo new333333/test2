@@ -75,4 +75,58 @@
     </c:if>
 </c:forEach>
 </div>
+
+<div id="ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
+	<div align="right">
+	<a  onClick="ss_hideFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace />(); return false;"><img 
+	  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+	</div>	
+	<iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" name="ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>" height="80%" width="100%">xxx</iframe>
+</div>
+
 </c:if>
+
+<script language="JavaScript">
+var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "false"
+function getWindowBgColor() {
+	return "#ffffff";
+}
+function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
+ 	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="false" >
+		<ssf:param name="binderId" value="${ssFolder.id}" />
+		<ssf:param name="operation" value="add_folder_attachment_options" />
+		<ssf:param name="namespace" value="${renderResponse.namespace}" />
+		<ssf:param name="library" value="${ssFolder.library}" />
+    	</ssf:url>"
+
+	var divId = 'ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>';
+	var divObj = document.getElementById(divId);
+	
+	var frameId = 'ss_iframe_folder_dropbox${ssFolder.id}<portlet:namespace/>';	
+	var frameObj = document.getElementById(frameId);
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
+
+	if (iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> == "false") {
+		frameObj.src = url;
+		iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "true";
+	}
+
+	divObj.style.width = "350px";
+	divObj.style.height = "100px";
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+}
+
+function ss_hideFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
+	var divId = 'ss_div_folder_dropbox${ssFolder.id}<portlet:namespace/>';
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+</script>

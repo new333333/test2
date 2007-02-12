@@ -267,7 +267,6 @@ public class TopFrame extends JApplet implements Runnable {
     {
       try {
         String onLoadFunction = topFrame.getParameter("onLoadFunction");
-        System.out.println("Hemanth: onLoadFunction: "+onLoadFunction);
         if (onLoadFunction.equals(null) || "".equals(onLoadFunction)) return;
         JSObject win = JSObject.getWindow(topFrame);
         String args[] = {};

@@ -61,6 +61,9 @@
 
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
+						
+						<entry key="add_folder_attachment"><ref bean="folderAddEntryController"/></entry>
+						
 						<entry key="add_profile_entry"><ref bean="profileAddEntryController"/></entry>
 						<entry key="add_binder"><ref bean="folderAddFolderController"/></entry>
 						<entry key="modify_folder_entry"><ref bean="folderModifyEntryController"/></entry>

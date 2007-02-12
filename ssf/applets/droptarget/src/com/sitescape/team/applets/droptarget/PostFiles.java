@@ -40,12 +40,51 @@ public class PostFiles extends Thread {
         }
     }
     
+    private static void writeFolderAndFileName(String localFileName, String topDir, TopFrame topFrame, String name, OutputStream out, String boundary) {
+        String localfn;
+        String localRelFileName;
+        try {
+            // replace any backslashes with slashes (backslashes are special in Java strings)
+            String lfn = localFileName.replace('\\','/');
+            String td = topDir.replace('\\','/');
+            // clip off the topDir
+            String relFileName = lfn.replaceFirst(td,"");
+
+            // Drop the initial file separator
+            if (relFileName.startsWith("/")) {
+              localRelFileName = relFileName.substring(1);
+            } else {
+              localRelFileName = relFileName;
+            }
+            String localf = new String(topFrame.getParameter("startingDir")).replace('\\','/');
+            
+            if (localf.equals("")) {
+              localfn = localRelFileName;
+            } else {
+              localfn = new String(localf + "/" + localRelFileName);
+            }
+            
+            String strFolderName = "";
+            if (localfn.lastIndexOf("/") != -1) {
+            	strFolderName = localfn.substring(0, localfn.lastIndexOf("/"));
+            }
+            
+            System.out.println("Hemanth: localfn: "+ localfn + ", strFolderName: "+strFolderName);
+            
+            out.write(new String("content-disposition: form-data; name=\"" + name + "\"\r\n\r\n").getBytes());
+            out.write(strFolderName.getBytes());
+            out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
+        } catch (Exception e) {
+        }
+    }
+    
     private  void writeFile(String localFileName, OutputStream out, String boundary, TopFrame topFrame, String topDir, String strFormFieldName) {
         String localfn;
         String localRelFileName;
         try {
           System.gc();
           File localFile = new File(localFileName);
+          
           // Get the path relative to the topDir, and then prepend it with the starting dir if
           // necessary. We need to strip off the topDir, so we can make the path relative to
           // the document we're attaching to.
@@ -56,6 +95,8 @@ public class PostFiles extends Thread {
           // clip off the topDir
           String relFileName = lfn.replaceFirst(td,"");
 
+          
+          
           // Drop the initial file separator
           if (relFileName.startsWith("/")) {
             localRelFileName = relFileName.substring(1);
@@ -69,6 +110,7 @@ public class PostFiles extends Thread {
           } else {
             localfn = new String(localf + "/" + localRelFileName);
           }
+                    
           //out.write(new String("content-disposition: attachment; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
           out.write(new String("content-disposition: form-data; name=\""+strFormFieldName+"\"; filename=\"" + localfn + "\"\r\n\r\n").getBytes());
 
@@ -162,6 +204,9 @@ public class PostFiles extends Thread {
       toAddr = ta;
       fileList = fl;
       topDir = td;
+      
+      System.out.println("Hemanth: topDir:"+ topDir);
+      
       start();
     }
 
@@ -175,6 +220,8 @@ public class PostFiles extends Thread {
       // Figure out the total number of bytes to send to the server
       totalBytes = countem(fileList);
         try {
+        	System.out.println("Hemanth: PostFiles.......");
+            
             URL postTo = new URL(toAddr);
             conn= (HttpURLConnection)postTo.openConnection();
             conn.setDoOutput(true);
@@ -187,8 +234,6 @@ public class PostFiles extends Thread {
             conn.setRequestProperty("Accept", "text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2");
             conn.setRequestProperty("Connection", "keep-alive");
             conn.connect();
-            
-            System.out.println("Hemanth: conn: "+ conn);
             
             OutputStream out = conn.getOutputStream();
             //ChunkedOutputStream out = new ChunkedOutputStream(conn.getOutputStream());
@@ -203,9 +248,12 @@ public class PostFiles extends Thread {
               }
               filename = f.getName();
               
+              System.out.println("Hemanth: filename: "+filename + ", localFilePath: "+localFilePath);
+              
               writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
               writeParam("startingDir", filename, out, boundary);
               writeParam("savePreviousVersions", topFrame.getParameter("savePreviousVersions"), out, boundary);
+              writeFolderAndFileName(localFilePath, topDir, topFrame, "filesFromAppletFolderInfo"+(i+1), out, boundary);              
             }
             
             writeParam("lastDummyParam", "dummy", out, boundary+"--");
@@ -221,7 +269,7 @@ public class PostFiles extends Thread {
         } catch (java.lang.OutOfMemoryError oome) {
           String jsfunc = new String("memoryError");
         } catch (Exception e) {
-        	System.out.println("Hemanth: Exception e: "+e);
+        	System.out.println("Exception e: "+e);
             displayResponse(topFrame, conn);
         }
     }
@@ -233,23 +281,18 @@ public class PostFiles extends Thread {
      */
     public void displayResponse( TopFrame topFrame, HttpURLConnection conn) {
         try {
-        	System.out.println("Hemanth: Inside displayResponse...."+conn);
             InputStream httpStream = conn.getInputStream();
-            System.out.println("Hemanth: After Getting InputStream");
-            
+           
             boolean writing = false;
             String url = "";
             String jsfunc = "";
 
             String du = new String(topFrame.getParameter("displayUrl"));
             
-            System.out.println("Hemanth: du:"+du);
-            
             if (!du.equals("1")) {
               topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
 			  try {
 				  String reloadFunction = topFrame.getParameter("reloadFunctionName");
-				  System.out.println("Hemanth: Reload function to be called: "+reloadFunction);
 				  if (reloadFunction.equals(null)) return;
 				  JSObject win = JSObject.getWindow(topFrame);
 				  String args[] = {url};
@@ -269,6 +312,9 @@ public class PostFiles extends Thread {
 					writing = true;
 				}
 				url += new String(bytes).toString().trim();
+				
+				System.out.println("Hemanth: url: "+url);
+				
             }
             
             System.out.println("Hemanth: Before the writing loop");
@@ -278,9 +324,6 @@ public class PostFiles extends Thread {
 				url = url.substring(4);
 				try {
 					String reloadFunction = topFrame.getParameter("reloadFunctionName");
-					
-					System.out.println("Hemanth: Reload function to be called: "+reloadFunction);
-					
 					if (reloadFunction.equals(null)) return;
 					JSObject win = JSObject.getWindow(topFrame);
 					String args[] = {url};
@@ -293,7 +336,6 @@ public class PostFiles extends Thread {
         	return;
         }
         finally {
-        	System.out.println("Hemanth: Exception conn: "+conn);
         	conn.disconnect();
         	conn = null;
         }

@@ -258,6 +258,8 @@ public class AjaxController  extends SAbstractController {
 			return reloadEntryAttachment(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_OPEN_WEBDAV_FILE)) {
 			return openWebDAVFile(request, response); 
+		} else if (op.equals(WebKeys.OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS)) {
+			return addFolderAttachmentOptions(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
 			return ajaxStartMeeting(request, response, ICBroker.REGULAR_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
@@ -1376,7 +1378,7 @@ public class AjaxController  extends SAbstractController {
 		//response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/entry_attachment_options", model);
 	}
-
+	
 	private ModelAndView reloadEntryAttachment(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
@@ -1433,7 +1435,44 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
-	}	
+	}
+	
+	private ModelAndView addFolderAttachmentOptions(RenderRequest request, 
+			RenderResponse response) throws Exception {
+	
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		String library = PortletRequestUtils.getStringParameter(request, "library", "");
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ATTACHMENT);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		adapterUrl.setParameter(WebKeys.URL_IS_LIBRARY_BINDER, library);
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER_FILES_FROM_APPLET);
+
+		AdaptedPortletURL adapterFolderRefreshUrl = new AdaptedPortletURL(request, "ss_forum", Boolean.parseBoolean("true"));
+		adapterFolderRefreshUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		adapterFolderRefreshUrl.setParameter(WebKeys.FOLDER_APPLET_RELOAD, "yes");
+		
+		//This replace has been done AJAX does not allow "&"
+		String strURL = adapterUrl.toString();
+		strURL = strURL.replaceAll("&", "&amp;");
+
+		//This replace has been done AJAX does not allow "&"
+		String strRefreshURL = adapterFolderRefreshUrl.toString();
+		//strRefreshURL = strRefreshURL.replaceAll("&", "&amp;");
+		
+		Tabs tabs = new Tabs(request);
+		Map model = new HashMap();
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.BINDER_IS_LIBRARY, library);
+		model.put(WebKeys.BINDER_ID, binderId);
+		model.put(WebKeys.FOLDER_ATTACHMENT_FILE_RECEIVER_URL, strURL);
+		model.put(WebKeys.FOLDER_ATTACHMENT_APPLET_REFRESH_URL, strRefreshURL);
+		
+		//response.setContentType("text/xml");
+		return new ModelAndView("definition_elements/folder_dropbox_add_attachments", model);
+	}
 	
 	private ModelAndView ajaxStartMeeting(RenderRequest request, 
 			RenderResponse response, int[] meetingType) throws Exception {
