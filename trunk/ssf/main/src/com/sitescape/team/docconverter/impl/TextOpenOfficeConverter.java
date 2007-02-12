@@ -93,7 +93,6 @@ public class TextOpenOfficeConverter
 	public String convert(String ifp, String ofp, long timeout)
 		throws Exception
 	{
-		File f = null;
 		org.dom4j.Document doc = null;
 		XStorable xstorable = null;
 		XComponent xcomponent = null;
@@ -102,6 +101,8 @@ public class TextOpenOfficeConverter
 		XComponentLoader xcomponentloader = null;
 		XPropertySet xpropertysetMultiComponentFactory = null;
 		XMultiComponentFactory xmulticomponentfactory = null;
+		File ifile = null,
+			 ofile = null;
 		Object objectUrlResolver = null,
 			   objectInitial = null,
 			   objectDocumentToStore = null,
@@ -126,7 +127,21 @@ public class TextOpenOfficeConverter
 			
 			ifp = ifp.replace('\\', '/');
 			ofp = ofp.replace('\\', '/');
-			f = new File(ofp);
+
+			ifp = url + ifp;
+			ofp = "file:///" + ofp;
+			
+			/**
+			 * If the output file exist an has a modified date equal or greating than incoming file
+			 * do not perform any conversion. 
+			 */
+			ifile = new File(ifp);
+			ofile = new File(ofp);
+			
+			if (ofile != null
+			&& ofile.exists()
+			&& ofile.lastModified() >= ifile.lastModified())
+				return "";
 				
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
@@ -175,7 +190,7 @@ public class TextOpenOfficeConverter
 			propertyValues[0].Value = new Boolean(true);
 	      
 			// Loading the wanted document
-			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url + ifp, "_blank", 0, propertyValues);
+			objectDocumentToStore = xcomponentloader.loadComponentFromURL(ifp, "_blank", 0, propertyValues);
 	      
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
@@ -216,10 +231,10 @@ public class TextOpenOfficeConverter
 			propertyValues[1].Value = convertType;
 	      
 			// Storing and converting the document
-			xstorable.storeToURL("file:///" + ofp, propertyValues);
-			if (f.exists() && f.length() > 0)
+			xstorable.storeToURL(ofp, propertyValues);
+			if (ofile.exists() && ofile.length() > 0)
 			{
-				doc = getDomDocument(f);
+				doc = getDomDocument(ofile);
 				if(doc != null)
 				{
 					// Run the stylesheet to extract text from the xml. 
