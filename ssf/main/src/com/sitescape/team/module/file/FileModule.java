@@ -40,9 +40,35 @@ import com.sitescape.team.repository.RepositoryServiceException;
 public interface FileModule {
 	
 	/**
+	 * Delete all files attached to any entity contained in the binder
+	 * or in any of the sub-binders. If applicable, also delete 
+	 * generated files (scaled files and thumbnail files) associated with 
+	 * the primary files. This method does NOT remove corresponding
+	 * FileAttachment objects from the entities so as to allow for a bulk
+	 * delete of Hibernate objects.
+	 * <p>
+	 * If any of the files is currently locked by anyone, this forcefully 
+	 * unlocks it before deleting it.
+	 * <p>
+	 * This method differs from other methods in that it returns accumulated
+	 * error information in FilesErrors object rather than throwing an 
+	 * exception. The operation does not necessarily stop upon the first
+	 * error encountered (depending on the nature of the error). Instead
+	 * it continues with processing (when possible), accumulates all errors,
+	 * and then returns. 
+	 * 
+	 * @param binder
+	 * @param errors errors object or <code>null</code>
+	 * @return
+	 */
+	public FilesErrors deleteFiles(Binder binder, FilesErrors errors);
+	
+	/**
 	 * Delete all files attached to the entity. If applicable, also delete 
 	 * generated files (scaled files and thumbnail files) associated with 
-	 * the primary files. 
+	 * the primary files. This method does NOT remove corresponding
+	 * FileAttachment objects from the entity so as to allow for a bulk
+	 * delete of Hibernate objects.
 	 * <p>
 	 * If any of the files is currently locked by anyone, this forcefully 
 	 * unlocks it before deleting it.
@@ -56,25 +82,15 @@ public interface FileModule {
 	 * 
 	 * @param binder
 	 * @param entity
-	 * metadata on the <code>entity</code>. 
+	 * @param errors errors object or <code>null</code>
 	 */
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
 			FilesErrors errors);
-	/**
-	 * see <code>deleteFiles</code>.  If deleteAttachments is false,
-	 * the fileAttachment object is not removed from the entry collection.
-	 * This allows for a bulk delete of hibernate objects.
-	 * @param binder
-	 * @param entity
-	 * @param errors
-	 * @param deleteAttachments
-	 * @return
-	 */
-	public FilesErrors deleteFiles(Binder binder, DefinableEntity entity,
-			FilesErrors errors, boolean deleteAttachments);
+
 	/**
 	 * Deletes the specified file. If applicable, also delete generated files
 	 * (scaled file and thumbnail file) associated with the primary file. 
+	 * This method also removes the FileAttachment from the entity.
 	 * <p>
 	 * If the file is currently locked by anyone, this forcefully unlocks 
 	 * it before deleting it.
@@ -89,6 +105,7 @@ public interface FileModule {
 	 * @param binder
 	 * @param entity
 	 * @param fa
+	 * @param errors errors object or <code>null</code>
 	 */
 	public FilesErrors deleteFile(Binder binder, DefinableEntity entity, 
 			FileAttachment fa, FilesErrors errors); 

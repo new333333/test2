@@ -260,13 +260,17 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
 	
+	public FilesErrors deleteFiles(Binder binder, FilesErrors errors) {
+		return null;// TODO 
+	}
+
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
 			FilesErrors errors) {
-		return deleteFiles(binder, entry, errors, true);
+		return deleteFiles(binder, entry, errors, false);
 	}
 	// optimization : don't delete attachments, only delete the actual file
 	//this allows bulk deletes of attachments
-	public FilesErrors deleteFiles(final Binder binder, final DefinableEntity entry,
+	private FilesErrors deleteFiles(final Binder binder, final DefinableEntity entry,
 			FilesErrors errors, boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();

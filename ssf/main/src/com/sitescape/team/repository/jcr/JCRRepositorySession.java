@@ -255,9 +255,7 @@ public class JCRRepositorySession implements RepositorySession {
 			String absFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + fileNodePath;
 			String newAbsFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + newFileNodePath;
 			
-			session.move(absFileNodePath, newAbsFileNodePath);
-			
-			session.save();
+			session.getWorkspace().move(absFileNodePath, newAbsFileNodePath);
 		} catch (ItemExistsException e) {
 			throw new RepositoryServiceException(e);
 		} catch (PathNotFoundException e) {
@@ -273,6 +271,34 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 	}
 
+
+	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, 
+			Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		String fileNodePath = getFileNodePath(binder, entity, relativeFilePath);
+		String newFileNodePath = getFileNodePath(destBinder, destEntity, destRelativeFilePath);
+
+		try {
+			Node dirNode = getRootNode();
+			String absFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + fileNodePath;
+			String newAbsFileNodePath = dirNode.getCorrespondingNodePath(workspaceName) + "/" + newFileNodePath;
+			
+			session.getWorkspace().copy(absFileNodePath, newAbsFileNodePath);
+		} catch (ItemExistsException e) {
+			throw new RepositoryServiceException(e);
+		} catch (PathNotFoundException e) {
+			throw new RepositoryServiceException(e);
+		} catch (VersionException e) {
+			throw new RepositoryServiceException(e);
+		} catch (ConstraintViolationException e) {
+			throw new RepositoryServiceException(e);
+		} catch (LockException e) {
+			throw new RepositoryServiceException(e);
+		} catch (RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+	
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -595,8 +621,4 @@ public class JCRRepositorySession implements RepositorySession {
 		}
 	}
 
-	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		// TODO Auto-generated method stub
-		
-	}
 }

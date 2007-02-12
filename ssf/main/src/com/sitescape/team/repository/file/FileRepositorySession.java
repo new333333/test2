@@ -520,6 +520,36 @@ public class FileRepositorySession implements RepositorySession {
 		}
 	}
 
+
+	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, 
+			Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		File tempFile = getTempFile(binder, entity, relativeFilePath);
+		
+		if(tempFile.exists()) {
+			File newTempFile = getTempFile(destBinder, destEntity, destRelativeFilePath);			
+			copy(tempFile, newTempFile);
+		}
+		
+		String[] versionFileNames = getVersionFileNames(binder, entity, relativeFilePath);
+		
+		String versionName;
+		File versionFile, newVersionFile;
+		for(int i = 0; i < versionFileNames.length; i++) {
+			versionName = getVersionName(versionFileNames[i]);
+			versionFile = getVersionFileFromVersionFileName(binder, entity, relativeFilePath, versionFileNames[i]);
+			newVersionFile = getVersionFile(destBinder, destEntity, destRelativeFilePath, versionName);
+			copy(versionFile, newVersionFile);
+		}
+		
+		File unversionedFile = getUnversionedFile(binder, entity, relativeFilePath);
+
+		if(unversionedFile.exists()) {
+			File newUnversionedFile = getUnversionedFile(destBinder, destEntity, destRelativeFilePath);
+			copy(unversionedFile, newUnversionedFile);
+		}
+	}
+
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -809,10 +839,14 @@ public class FileRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
-
-	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		// TODO Auto-generated method stub
-		
+	
+	private void copy(File source, File target) throws UncheckedIOException {
+		try {
+			FileCopyUtils.copy(source, target);
+		} catch (IOException e) {
+			logger.error("Error copyiing file [" + source.getAbsolutePath() + "] to [" + target.getAbsolutePath() + "]");			
+			throw new UncheckedIOException(e);
+		}
 	}
 	
 }
