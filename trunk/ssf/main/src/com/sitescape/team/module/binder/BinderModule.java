@@ -70,9 +70,9 @@ public interface BinderModule {
 	public Subscription getSubscription(Long binderId);
 	public void deleteSubscription(Long binderId);
 	
-    public void modifyPosting(Long binderId, Map updates);
-    public void setPosting(Long binderId, String postingId);
-    public void deletePosting(Long binderId);
+    public void setPosting(Long binderId, Map updates);
+    public void setPosting(Long binderId, String emailAddress);
+    
     public boolean hasBinders(Binder binder);
     public boolean hasBinders(Binder binder, EntityType binderType);
 
@@ -112,5 +112,5 @@ public interface BinderModule {
 	public List getTeamMembers(Binder binder);
 
 	public boolean testAccess(Binder binder, String operation);
-	
+
 }

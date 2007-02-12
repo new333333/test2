@@ -81,17 +81,11 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <tr><td> 
 <span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span>
 
-<select name="alias" id="alias">
-<option value=""><ssf:nlt tag="selected.none"/></option>
-<c:forEach var="opt" items="${ssPostings}">
-<c:if test="${empty opt.binder}">
-		<option value="${opt.id}">${opt.emailAddress}</option>
-</c:if>
-<c:if test="${ssBinder.posting.id == opt.id}">
-<option value="${opt.id}" selected="selected">${opt.emailAddress}</option>
-</c:if>
-</c:forEach>
-</select>
+<input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"
+<c:if test="${!showPosting}">
+disabled="disabled"
+</c:if>/>
+
 </td>
 <td class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">

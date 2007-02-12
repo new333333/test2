@@ -36,11 +36,18 @@ public class EmailConfigController extends  AbstractBinderController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		if (formData.containsKey("okBtn")) {
+		if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
+			if (folderId != null) {
+				Binder binder = getBinderModule().getBinder(folderId);
+				setupViewBinder(response, binder);
+				response.setRenderParameter("ssReloadUrl", "");
+			} else {
+				response.setRenderParameter("redirect", "true");
+			}
+		} else  {
 			if (formData.containsKey("alias")) {
 				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
-				if (!Validator.isNull(alias)) getBinderModule().setPosting(folderId, alias);
-				else getBinderModule().deletePosting(folderId);
+				getBinderModule().setPosting(folderId, alias);
 			}
 			//sub-folders don't have a schedule, use addresses to figure it out
 			if (formData.containsKey("addresses")) {
@@ -53,17 +60,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
 			}
 			response.setRenderParameters(formData);
-		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			if (folderId != null) {
-				Binder binder = getBinderModule().getBinder(folderId);
-				setupViewBinder(response, binder);
-				response.setRenderParameter("ssReloadUrl", "");
-			} else {
-				response.setRenderParameter("redirect", "true");
-			}
-		} else {
-			response.setRenderParameters(formData);
-		}
+		} 
 	}
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -96,7 +93,11 @@ public class EmailConfigController extends  AbstractBinderController  {
 				model.put(WebKeys.USERS, uList);
 				model.put(WebKeys.GROUPS, gList);
 			}
-			model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
+			//only show posting if access allowed
+			if (getBinderModule().testAccess(folder, "setPosting"))
+				model.put(WebKeys.SHOW_POSTING, Boolean.TRUE);
+			else
+				model.put(WebKeys.SHOW_POSTING, Boolean.FALSE);
 			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);		
 		} catch (Exception e) {
 			//assume not selected yet - first time through from admin menu

@@ -18,6 +18,7 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
@@ -82,6 +83,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	public final static String Global = "global";
 	public final static String Portlet = "portlet";
 	
+	//only has one
+	public static final String PORTLET_COMPONENT_ID =Portlet+"_0";
+
 	//Form keys
 	public final static String ElementNamePrefix = "data_";
 
@@ -228,20 +232,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
     }
     
-    protected static void getDashboardBeans(Map ssDashboard, Map model) {
-		//Go through each list and build the needed beans
-    	List componentList = new ArrayList();
-    	for (int i = 0; i < ComponentLists.length; i++) {
-			componentList = (List) ssDashboard.get(ComponentLists[i]);
-			for (int j = 0; j < componentList.size(); j++) {
-				Map component = (Map) componentList.get(j);
-				if ((Boolean)component.get(Dashboard.Visible)) {
-					//Set up the bean for this component
-					getDashboardBean(ssDashboard, model, (String)component.get(Dashboard.Id));
-				}
-			}
-		}
-    }
+
     //used by Penlets
     protected static void getDashboardBean(Binder binder, Map ssDashboard, Map model, String id, boolean isConfig) {
 		String componentScope = "";
@@ -302,17 +293,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
    	
     }
-    //used by portlets
-    protected static void getDashboardBean(Map ssDashboard, Map model, String id) {
-		String componentScope = "";
-		if (id.contains("_")) componentScope = id.split("_")[0];
-		if (!componentScope.equals("")) {
-			//Get the component from the appropriate scope
-			Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_MAP);
-			doComponentSetup(ssDashboard, dashboard, null, model, id, false);
-		}
-    }
-    
+ 
    
     public static Map getNewDashboardMap() {
     	Map dashboard =  new HashMap();
@@ -328,10 +309,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	}
 	
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model) {
-		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local);
-	}
-	static protected Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope) {
-		return getDashboardMap(binder, userProperties, model, scope, "", false);
+		return getDashboardMap(binder, userProperties, model, DashboardHelper.Local, "", false);
 	}
 	static public Map getDashboardMap(Binder binder, Map userProperties, Map model, String scope, String componentId, boolean isConfig) {
 		//Users dashboard settings for this binder		
@@ -436,72 +414,33 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 		return ssDashboard;
 	}
-
-	static public Map getDashboardMap(Dashboard d, Map userProperties, Map model) {
-		return DashboardHelper.getDashboardMap(d, userProperties, model, "");
-	}
-	static public Map getDashboardMap(Dashboard dashboard, Map userProperties, Map model, String componentId) {
+	//setup for portlet where only 1 element is allowed.  Don't need all the other stuff
+	static public Map getDashboardMap(DashboardPortlet dashboard, Map userProperties, Map model) {
 
 		Map ssDashboard = new HashMap();
 		model.put(WebKeys.DASHBOARD, ssDashboard);
 		ssDashboard.put(WebKeys.DASHBOARD_SCOPE, DashboardHelper.Portlet);
+		Map dashboardProps = new HashMap(dashboard.getProperties());
+		ssDashboard.put(WebKeys.DASHBOARD_MAP, dashboardProps);	
 		
-		//Get the lists of dashboard components that are supported
-		String[] components_list = SPropsUtil.getCombinedPropertyList(
-				"dashboard.components.list", ObjectKeys.CUSTOM_PROPERTY_PREFIX);
-		
-		List cw = new ArrayList();
-		Map componentTitles = new HashMap();
-		for (int i = 0; i < components_list.length; i++) {
-			if (!components_list[i].trim().equals("")) {
-				String component = components_list[i].trim();
-				cw.add(component);
-				String componentTitle = SPropsUtil.getString("dashboard.title." + component, component);
-				componentTitles.put(component, componentTitle);
+		Map<String, Map> components = (Map) dashboardProps.get(Dashboard.Components);
+		//should only be one
+		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();			
+			Map component = (Map)me.getValue();
+			String key = Portlet + "_" + me.getKey();
+			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, key);
+			//See if this component needs a bean
+			//buddy list and workspace tree portlets implemented differently
+			if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
+				getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, key, component);
+			} else {
+				//Set up the search results bean
+				getInstance().getSearchResultsBean(null, ssDashboard, 
+						model, key, component);
 			}
-		}
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENTS_LIST, cw);
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_TITLES, componentTitles);
-		if (dashboard == null) return ssDashboard;
-		ssDashboard.put(WebKeys.DASHBOARD_MAP, new HashMap(dashboard.getProperties()));
-		int narrowFixedWidth = new Integer(SPropsUtil.getString("dashboard.size.narrowFixedWidth"));
-		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH, 
-				String.valueOf(narrowFixedWidth));
-		ssDashboard.put(WebKeys.DASHBOARD_NARROW_FIXED_WIDTH2, 
-				String.valueOf(narrowFixedWidth / 2));
-
-		//Get the title for this page
-		String title = (String) dashboard.getProperty(Title);
-		Boolean includeBinderTitle = (Boolean) dashboard.getProperty(IncludeBinderTitle);
-		ssDashboard.put(WebKeys.DASHBOARD_TITLE, title);
-		ssDashboard.put(WebKeys.DASHBOARD_INCLUDE_BINDER_TITLE, includeBinderTitle);
-
-		//Build the lists of components
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_TOP, new ArrayList((List)dashboard.getProperty(DashboardHelper.Wide_Top)));
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_FIXED, new ArrayList((List)dashboard.getProperty(DashboardHelper.Narrow_Fixed)));
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_NARROW_VARIABLE, new ArrayList((List)dashboard.getProperty(DashboardHelper.Narrow_Variable)));
-		ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_LIST_WIDE_BOTTOM, new ArrayList((List)dashboard.getProperty(DashboardHelper.Wide_Bottom)));
+ 		}
 		
-
-		//Set up the beans
-		if (componentId.equals("")) {
-			getDashboardBeans(ssDashboard, model);
-		} else {
-			getDashboardBean( ssDashboard, model, componentId);
-			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
-		}
-		
-		//Check the access rights of the user
-		try {
-			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(true));
-		} catch(AccessControlException e) {
-			ssDashboard.put(WebKeys.DASHBOARD_SHARED_MODIFICATION_ALLOWED, new Boolean(false));			
-		};
-		
-
-		//See if the components are shown or hidden
-		model.put(WebKeys.DASHBOARD_SHOW_ALL, Boolean.valueOf(dashboard.isShowComponents()));
-
 		return ssDashboard;
 	}
 	private List buildLocalDashboardList(String listName, Map ssDashboard) {
@@ -817,10 +756,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		return id;
 	}
-	public static Map getComponentData(Dashboard dashboard, String component) {
+	public static Map getComponentData(DashboardPortlet dashboard) {
 		Map components = (Map)dashboard.getProperty(Dashboard.Components);
 		if (components != null) {
-			Map componentMap = (Map) components.get(DashboardHelper.Portlet+"_0");
+			Map componentMap = (Map) components.get(PORTLET_COMPONENT_ID);
 			if (componentMap != null) {
 				Map dataMap = (Map)componentMap.get(DashboardHelper.Data);
 				return dataMap;
@@ -841,8 +780,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	}
 	public static void saveComponentData(ActionRequest request, Dashboard d) {
 		//Get the dashboard component
-		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		DashboardHelper.saveComponentData(request, d, componentId);
+		DashboardHelper.saveComponentData(request, d, PORTLET_COMPONENT_ID);
 	}
 	public static void saveComponentData(ActionRequest request, Dashboard d, String componentId) {
 
@@ -943,11 +881,6 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 	}
 
-	public static void deleteComponent(ActionRequest request, Dashboard dashboard, String componentId) { 
-		//Get the dashboard component
-		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
-		getInstance().getDashboardModule().deleteComponent(dashboard.getId(), dashboardListKey, componentId);
-	}
 	public static void showHideComponent(ActionRequest request, Binder binder, String componentId, 
 			String scope, String action) {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -977,33 +910,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			}
 		}
 	}
-	public static void showHideComponent(ActionRequest request, Dashboard d, String componentId, String action) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) getInstance().getProfileModule().getUserProperties(user.getId()).getProperties();
-		Map ssDashboard = DashboardHelper.getDashboardMap(d, userProperties, new HashMap(), componentId);
 
-		//Get the dashboard component
-		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
-
-		if (Validator.isNotNull(dashboardListKey) & ssDashboard.containsKey(dashboardListKey)) {
-			List dashboardList = (List) ssDashboard.get(dashboardListKey);
-			for (int i = 0; i < dashboardList.size(); i++) {
-				Map component = (Map) dashboardList.get(i);
-				String id = (String) component.get(Dashboard.Id);
-				if (id.equals(componentId)) {
-					//We have found the component to be shown or hidden
-					if (action.equals("show")) {
-						component.put(Dashboard.Visible, new Boolean(true));
-					} else if (action.equals("hide")) {
-						component.put(Dashboard.Visible, new Boolean(false));
-					}
-					//Make sure the list also gets saved (in case it was a generated list)
-					getInstance().getDashboardModule().setProperty(d.getId(), dashboardListKey, dashboardList);
-					break;
-				}
-			}
-		}
-	}
 	public static void moveComponent(ActionRequest request, Binder binder, String scope, 
 			String direction) {
 		//Get the dashboard component
