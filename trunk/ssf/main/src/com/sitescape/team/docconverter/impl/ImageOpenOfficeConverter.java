@@ -98,9 +98,23 @@ public class ImageOpenOfficeConverter
 		FileInputStream is = null;
 		FileOutputStream os = null;
 		byte[] inputData = null;
+		File ifile = null,
+			 ofile = null;
 		
 		try
 		{
+			/**
+			 * If the output file exist an has a modified date equal or greating than incoming file
+			 * do not perform any conversion. 
+			 */
+			ifile = new File(ifp);
+			ofile = new File(ofp);
+			
+			if (ofile != null
+			&& ofile.exists()
+			&& ofile.lastModified() >= ifile.lastModified())
+				return "";
+				
 			// Can not handle anything other than JPEG
 			if (ifp.toLowerCase().endsWith(".jpg")
 			|| ifp.toLowerCase().endsWith(".jpeg"))
