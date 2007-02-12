@@ -243,6 +243,19 @@ public class FileRepositorySession implements RepositorySession {
 		}			
 	}
 
+
+	public void delete(Binder binder, DefinableEntity entity) 
+	throws RepositoryServiceException, UncheckedIOException {
+		File dir = new File(getEntityDirPath(binder, entity));
+		FileHelper.deleteRecursively(dir);
+	}
+
+	public void delete(Binder binder) 
+	throws RepositoryServiceException, UncheckedIOException {
+		File dir = new File(getBinderDirPath(binder));
+		FileHelper.deleteRecursively(dir);
+	}
+	
 	public void read(Binder binder, DefinableEntity entry, 
 			String relativeFilePath, OutputStream out) throws RepositoryServiceException, UncheckedIOException {
 		File file = getFileForRead(binder, entry, relativeFilePath);
@@ -733,6 +746,10 @@ public class FileRepositorySession implements RepositorySession {
 		return file.getParentFile();
 	}
 	
+	private String getBinderDirPath(Binder binder) {
+		return repositoryRootDir + RepositoryUtil.getBinderPath(binder, File.separator);
+	}
+	
 	private String getEntityDirPath(Binder binder, DefinableEntity entry) {
 		return repositoryRootDir + RepositoryUtil.getEntityPath(binder, entry, File.separator);
 	}
@@ -848,5 +865,4 @@ public class FileRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
 }

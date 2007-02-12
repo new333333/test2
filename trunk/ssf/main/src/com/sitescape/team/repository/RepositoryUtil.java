@@ -126,6 +126,29 @@ public class RepositoryUtil {
 		}		
 	}
 
+	public static void delete(String repositoryName, Binder binder,
+			DefinableEntity entry) 
+		throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+
+		try {
+			session.delete(binder, entry);
+		} finally {
+			session.close();
+		}		
+	}
+
+	public static void delete(String repositoryName, Binder binder) 
+		throws RepositoryServiceException, UncheckedIOException {
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+
+		try {
+			session.delete(binder);
+		} finally {
+			session.close();
+		}		
+	}
+
 	public static void read(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
@@ -232,6 +255,23 @@ public class RepositoryUtil {
 	public static String getDefaultRepositoryName() {
 		return SPropsUtil.getString("repository.default",
 				"simpleFileRepository");
+	}
+	
+	/**
+	 * Returns binder path. The returned path does not contain root path and
+	 * it always ends with a separator character.  
+	 * 
+	 * @param binder
+	 * @param separator
+	 * @return
+	 */
+	public static String getBinderPath(Binder binder, String separator) {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		
+		return new StringBuffer(zoneName).
+			append(separator).
+			append(binder.getId()).
+			append(separator).toString();
 	}
 	
 	/**

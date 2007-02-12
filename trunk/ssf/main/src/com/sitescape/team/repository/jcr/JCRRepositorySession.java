@@ -33,8 +33,6 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.repository.webdav.SWebdavResource;
-import com.sitescape.team.repository.webdav.WebdavRepositorySession.WebDavDataSource;
 import com.sitescape.team.util.Constants;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
@@ -128,6 +126,26 @@ public class JCRRepositorySession implements RepositorySession {
 		throws RepositoryServiceException, UncheckedIOException {
 		try {
 			deleteFile(binder, entity, relativeFilePath);
+		}
+		catch(RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}
+	}
+
+	public void delete(Binder binder, DefinableEntity entity) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			deleteDir(binder, entity);
+		}
+		catch(RepositoryException e) {
+			throw new RepositoryServiceException(e);
+		}	
+	}
+
+	public void delete(Binder binder) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			deleteDir(binder);
 		}
 		catch(RepositoryException e) {
 			throw new RepositoryServiceException(e);
@@ -397,6 +415,10 @@ public class JCRRepositorySession implements RepositorySession {
 		return RepositoryUtil.getEntityPath(binder, entity, Constants.SLASH);
 	}
 	
+	private String getBinderNodePath(Binder binder) {
+		return RepositoryUtil.getBinderPath(binder, Constants.SLASH);
+	}
+	
 	private String createFile(Binder binder, DefinableEntity entity,
 			String relativeFilePath, InputStream is, boolean versioned) 
 		throws RepositoryException {
@@ -441,6 +463,24 @@ public class JCRRepositorySession implements RepositorySession {
 		return rootNode.getNode(fileNodePath);
 	}
 	
+	private Node getEntityNode(Binder binder, DefinableEntity entity) 
+	throws RepositoryException {
+		String entityNodePath = getEntityNodePath(binder, entity);
+		
+		Node rootNode = getRootNode();
+		
+		return rootNode.getNode(entityNodePath);
+	}
+	
+	private Node getBinderNode(Binder binder) 
+	throws RepositoryException {
+		String binderNodePath = getBinderNodePath(binder);
+		
+		Node rootNode = getRootNode();
+		
+		return rootNode.getNode(binderNodePath);
+	}
+	
 	private void updateFile(Binder binder, DefinableEntity entity,
 			String relativeFilePath, InputStream is) throws RepositoryException {
 		String fileName = getFileName(relativeFilePath);
@@ -461,6 +501,24 @@ public class JCRRepositorySession implements RepositorySession {
 		Node fileNode = getFileNode(binder, entity, relativeFilePath);
 		
 		fileNode.remove();
+		
+		session.save();
+	}
+	
+	private void deleteDir(Binder binder, DefinableEntity entity) 
+	throws RepositoryException {
+		Node entityNode = getEntityNode(binder, entity);
+		
+		entityNode.remove();
+		
+		session.save();
+	}
+	
+	private void deleteDir(Binder binder) 
+	throws RepositoryException {
+		Node binderNode = getBinderNode(binder);
+		
+		binderNode.remove();
 		
 		session.save();
 	}
@@ -620,5 +678,4 @@ public class JCRRepositorySession implements RepositorySession {
 			return relativeFilePath;
 		}
 	}
-
 }

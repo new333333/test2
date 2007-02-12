@@ -261,7 +261,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 	
 	public FilesErrors deleteFiles(Binder binder, FilesErrors errors) {
-		return null;// TODO 
+		
 	}
 
 	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
