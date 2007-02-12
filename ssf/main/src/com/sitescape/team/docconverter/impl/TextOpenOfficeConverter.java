@@ -20,6 +20,7 @@ import com.sun.star.beans.PropertyValue;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
+import com.sun.star.uri.ExternalUriReferenceTranslator;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -82,6 +83,18 @@ public class TextOpenOfficeConverter
 		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
 	}
 	
+	public String convertToUrl(File f, XComponentContext xComponentContext)
+		throws java.net.MalformedURLException 
+	{
+		String returnUrl = null;
+		
+		java.net.URL u = f.toURL();
+		returnUrl =  ExternalUriReferenceTranslator.create(xComponentContext).translateToInternal(u.toExternalForm());
+		
+		return returnUrl;
+	}
+
+	
 	/**
 	 *  Run the conversion using the given input path, output path.
 	 *
@@ -107,8 +120,8 @@ public class TextOpenOfficeConverter
 			   objectInitial = null,
 			   objectDocumentToStore = null,
 			   objectDefaultContext = null;
-		String url = "file://",
-	    	   convertType = "";
+		String url = "",
+			   convertType = "";
 	    
 		try
 		{
@@ -120,17 +133,7 @@ public class TextOpenOfficeConverter
 			|| ifp.endsWith(".gif")
 			|| ifp.endsWith(".GIF"))
 				return "";
-				
-			// Are we dealing with Windows
-			if (ifp.indexOf("\\") > 0)
-				url = "file:///";
-			
-			ifp = ifp.replace('\\', '/');
-			ofp = ofp.replace('\\', '/');
 
-			ifp = url + ifp;
-			ofp = "file:///" + ofp;
-			
 			/**
 			 * If the output file exist an has a modified date equal or greating than incoming file
 			 * do not perform any conversion. 
@@ -138,9 +141,10 @@ public class TextOpenOfficeConverter
 			ifile = new File(ifp);
 			ofile = new File(ofp);
 			
-			if (ofile != null
+			if (!ifile.exists()
+			|| (ofile != null
 			&& ofile.exists()
-			&& ofile.lastModified() >= ifile.lastModified())
+			&& ofile.lastModified() >= ifile.lastModified()))
 				return "";
 				
 			/* Bootstraps a component context with the jurt base components
@@ -165,10 +169,10 @@ public class TextOpenOfficeConverter
 			objectInitial = xurlresolver.resolve("uno:socket,host=" + _host + ",port=" + _port + ";urp;StarOffice.ServiceManager");
 	      
 			// Create a service manager from the initial object
-			xmulticomponentfactory = (XMultiComponentFactory)UnoRuntime.queryInterface( XMultiComponentFactory.class, objectInitial);
+			xmulticomponentfactory = (XMultiComponentFactory)UnoRuntime.queryInterface(XMultiComponentFactory.class, objectInitial);
 	      
 			// Query for the XPropertySet interface.
-			xpropertysetMultiComponentFactory = (XPropertySet)UnoRuntime.queryInterface( XPropertySet.class, xmulticomponentfactory);
+			xpropertysetMultiComponentFactory = (XPropertySet)UnoRuntime.queryInterface(XPropertySet.class, xmulticomponentfactory);
 	      
 			// Get the default context from the office server.
 			objectDefaultContext = xpropertysetMultiComponentFactory.getPropertyValue("DefaultContext");
@@ -181,22 +185,33 @@ public class TextOpenOfficeConverter
 			 * environment for components which can instanciate within frames.
 			 */
 			xcomponentloader = (XComponentLoader) UnoRuntime.queryInterface(XComponentLoader.class, xmulticomponentfactory.createInstanceWithContext("com.sun.star.frame.Desktop", xcomponentcontext));
-	      
+
 			// Preparing properties for loading the document
 			PropertyValue propertyValues[] = new PropertyValue[1];
 			// Setting the flag for hidding the open document
 			propertyValues[0] = new PropertyValue();
 			propertyValues[0].Name = "Hidden";
 			propertyValues[0].Value = new Boolean(true);
+			
+			// Get the default context from the office server.
+			//objectDefaultContext = xpropertysetMultiComponentFactory.getPropertyValue("DefaultContext");
+	      
+			// Query for the interface XComponentContext.
+			//xcomponentcontext = (XComponentContext) UnoRuntime.queryInterface(XComponentContext.class, objectDefaultContext);
 	      
 			// Loading the wanted document
-			objectDocumentToStore = xcomponentloader.loadComponentFromURL(ifp, "_blank", 0, propertyValues);
-	      
+			url = convertToUrl(ifile, xcomponentcontext);
+			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url, "_blank", 0, propertyValues);
+			if (objectDocumentToStore == null)
+			{
+				logger.error("OpenOffice Text Converter, could not load file: " + url);
+				return "";
+			}
+			
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
 			// Determine convert type based on input file name extension
-
 			if (ifp.endsWith(".odp")
 			|| ifp.endsWith(".ppt"))
 				convertType = "XHTML Draw File";
@@ -231,7 +246,8 @@ public class TextOpenOfficeConverter
 			propertyValues[1].Value = convertType;
 	      
 			// Storing and converting the document
-			xstorable.storeToURL(ofp, propertyValues);
+			url = convertToUrl(ofile, xcomponentcontext);
+			xstorable.storeToURL(url, propertyValues);
 			if (ofile.exists() && ofile.length() > 0)
 			{
 				doc = getDomDocument(ofile);
@@ -247,11 +263,14 @@ public class TextOpenOfficeConverter
 		finally
 		{
 			// Getting the method dispose() for closing the document
-			xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
-			
-			// Closing the converted document
-			if (xcomponent != null)
-				xcomponent.dispose();
+			if (xstorable != null)
+			{
+				xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
+				
+				// Closing the converted document
+				if (xcomponent != null)
+					xcomponent.dispose();
+			}
 		}
 	    
 		return "";
