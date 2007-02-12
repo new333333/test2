@@ -183,20 +183,6 @@ public interface FileModule {
 	public void readCacheUrlReferenceFile(
 			Binder binder, DefinableEntity entity, FileAttachment fa, OutputStream out, String urlFileName) 
 		throws UncheckedIOException, RepositoryServiceException;
-	
-    /**
-     * Reads the specified html view file into the output stream.
-     * 
-     * @param fa
-     * @param binder
-     * @param entity
-     * @param out
-	 * @throws UncheckedIOException
-	 * @throws RepositoryServiceException
-     */
-	public void readHtmlViewFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, OutputStream out) throws  
-			UncheckedIOException, RepositoryServiceException;
 
 	/**
 	 * (Re)generate scaled file from the specified primary file.
