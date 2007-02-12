@@ -99,6 +99,8 @@ public class HtmlOpenOfficeConverter
 		XComponentLoader xcomponentloader = null;
 		XPropertySet xpropertysetMultiComponentFactory = null;
 		XMultiComponentFactory xmulticomponentfactory = null;
+		File ofile = null,
+			 ifile = null;
 		Object objectUrlResolver = null,
 			   objectInitial = null,
 			   objectDocumentToStore = null,
@@ -114,6 +116,20 @@ public class HtmlOpenOfficeConverter
 			
 			ifp = ifp.replace('\\', '/');
 			ofp = ofp.replace('\\', '/');
+			ifp = url + ifp;
+			ofp = "file:///" + ofp;
+			
+			/**
+			 * If the output file exist an has a modified date equal or greating than incoming file
+			 * do not perform any conversion. 
+			 */
+			ifile = new File(ifp);
+			ofile = new File(ofp);
+			
+			if (ofile != null
+			&& ofile.exists()
+			&& ofile.lastModified() >= ifile.lastModified())
+				return;
 				
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
@@ -162,7 +178,7 @@ public class HtmlOpenOfficeConverter
 			propertyValues[0].Value = new Boolean(true);
 	      
 			// Loading the wanted document
-			objectDocumentToStore = xcomponentloader.loadComponentFromURL(url + ifp, "_blank", 0, propertyValues);
+			objectDocumentToStore = xcomponentloader.loadComponentFromURL(ifp, "_blank", 0, propertyValues);
 	      
 			// Getting an object that will offer a simple way to store a document to a URL.
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
@@ -190,7 +206,7 @@ public class HtmlOpenOfficeConverter
 			propertyValues[1].Value = convertType;
 	      
 			// Storing and converting the document
-			xstorable.storeToURL("file:///" + ofp, propertyValues);
+			xstorable.storeToURL(ofp, propertyValues);
 	      
 			// Getting the method dispose() for closing the document
 			xcomponent = (XComponent) UnoRuntime.queryInterface(XComponent.class, xstorable);
