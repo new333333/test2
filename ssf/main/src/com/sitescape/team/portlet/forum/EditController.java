@@ -94,7 +94,7 @@ public class EditController extends SAbstractController {
 					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
 					prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 				}
-				DashboardHelper.saveComponentData(request, d, ViewController.PORTLET_COMPONENT_ID);
+				DashboardHelper.saveComponentData(request, d, DashboardHelper.PORTLET_COMPONENT_ID);
 
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, FindIdsHelper.getIdsAsString(request.getParameterValues("users")));
@@ -155,7 +155,7 @@ public class EditController extends SAbstractController {
 					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
 					Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
 					model.put(WebKeys.USER_PROPERTIES, userProperties);
-					DashboardHelper.getDashboardMap(d, userProperties, model, ViewController.PORTLET_COMPONENT_ID);
+					DashboardHelper.getDashboardMap(d, userProperties, model);
 					//make sure it works, before setting up model
 					model.put(WebKeys.DASHBOARD_PORTLET, d);
 				} catch (Exception no) {}
@@ -198,7 +198,7 @@ public class EditController extends SAbstractController {
 		if (id != null) {
 			try {
 				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-				Map dataMap = DashboardHelper.getComponentData(d, DashboardHelper.Portlet+"_0");
+				Map dataMap = DashboardHelper.getComponentData(d);
 				if (dataMap != null) {
 					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
 					//	Build the jsp bean (sorted by folder title)

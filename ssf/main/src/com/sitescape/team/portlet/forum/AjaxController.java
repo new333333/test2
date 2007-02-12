@@ -1,8 +1,6 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,7 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
@@ -41,11 +39,9 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -374,16 +370,9 @@ public class AjaxController  extends SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		Boolean showAllComponents = Boolean.TRUE;
 		if (op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) showAllComponents = Boolean.FALSE;
-		try {
-			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			getProfileModule().setUserProperty(user.getId(), binderId, 
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, showAllComponents);
-		} catch (Exception ex) {
-			String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
-			Map updates = new HashMap();
-			updates.put("showComponents", showAllComponents);
-			getDashboardModule().modifyDashboard(dashboardId, updates);
-		}
 	}
 	private void ajaxSaveDashboardLayout(ActionRequest request, 
 			ActionResponse response) throws Exception {
@@ -1043,31 +1032,16 @@ public class AjaxController  extends SAbstractController {
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String componentId = op2;
 		String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-		try {
-			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-			Binder binder = getBinderModule().getBinder(binderId);
-			if (scope.equals("")) scope = DashboardHelper.Local;
+		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		if (scope.equals("")) scope = DashboardHelper.Local;
 	
-			if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
-				DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
-			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
-				DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
-			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-				DashboardHelper.deleteComponent(request, binder, componentId, scope);
-			}
-		} catch (Exception ex) {
-			String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
-			Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
-			scope = DashboardHelper.Portlet;
-	
-			if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
-				DashboardHelper.showHideComponent(request, dashboard, componentId, "show");
-			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
-				DashboardHelper.showHideComponent(request, dashboard, componentId, "hide");
-			} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
-				DashboardHelper.deleteComponent(request, dashboard, componentId);
-			}
-			
+		if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
+		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
+			DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
+		} else if (!componentId.equals("") && op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
+			DashboardHelper.deleteComponent(request, binder, componentId, scope);
 		}
 	}
 	
@@ -1136,25 +1110,15 @@ public class AjaxController  extends SAbstractController {
 
 		if (op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 			if (!componentId.equals("")) {
-				try {
-					Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-					Binder binder = getBinderModule().getBinder(binderId);
-					model.put(WebKeys.BINDER, binder);
-					String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
-					if (scope.equals("")) scope = DashboardHelper.Local;
-					User user = RequestContextHolder.getRequestContext().getUser();
-					DashboardHelper.getDashboardMap(binder, 
-						getProfileModule().getUserProperties(user.getId()).getProperties(), 
-						model, scope, componentId, false);
-				} catch (Exception ex) {
-					String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DASHBOARD_ID);				
-					Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
-					User user = RequestContextHolder.getRequestContext().getUser();
-					DashboardHelper.getDashboardMap(dashboard, 
-						getProfileModule().getUserProperties(user.getId()).getProperties(), 
-						model, componentId);
-					
-				}
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+				Binder binder = getBinderModule().getBinder(binderId);
+				model.put(WebKeys.BINDER, binder);
+				String scope = PortletRequestUtils.getStringParameter(request, "_scope", "");
+				if (scope.equals("")) scope = DashboardHelper.Local;
+				User user = RequestContextHolder.getRequestContext().getUser();
+				DashboardHelper.getDashboardMap(binder, 
+					getProfileModule().getUserProperties(user.getId()).getProperties(), 
+					model, scope, componentId, false);
 			}
 		} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) ||
 				op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
@@ -1188,12 +1152,12 @@ public class AjaxController  extends SAbstractController {
 					model, scope, componentId, false);
 			} else {
 				String dashboardId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID);				
-				Dashboard dashboard = getDashboardModule().getDashboard(dashboardId);
+				DashboardPortlet dashboard = (DashboardPortlet)getDashboardModule().getDashboard(dashboardId);
 				model.put(WebKeys.DASHBOARD_PORTLET, dashboard);
 				User user = RequestContextHolder.getRequestContext().getUser();
 				DashboardHelper.getDashboardMap(dashboard, 
 					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model, componentId);
+					model);
 				
 			}
 		}

@@ -50,7 +50,6 @@ public class ViewController  extends SAbstractController {
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String SEARCH_PORTLET="ss_search";
-	public static final String PORTLET_COMPONENT_ID =DashboardHelper.Portlet+"_0";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
@@ -175,10 +174,9 @@ public class ViewController  extends SAbstractController {
 					model.put(WebKeys.PAGE_SIZE, "20");
 				else
 					model.put(WebKeys.PAGE_SIZE, "5");						
-				model.put(WebKeys.DASHBOARD_COMPONENT_ID, PORTLET_COMPONENT_ID);
-				DashboardHelper.getDashboardMap(d, userProperties, model, PORTLET_COMPONENT_ID);
+				DashboardHelper.getDashboardMap(d, userProperties, model);
 				if (!hasBinders) return new ModelAndView(view, model);
-				Map dataMap = DashboardHelper.getComponentData(d, PORTLET_COMPONENT_ID);
+				Map dataMap = DashboardHelper.getComponentData(d);
 				if (dataMap != null) {
 					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
 					//	Build the jsp bean (sorted by folder title)

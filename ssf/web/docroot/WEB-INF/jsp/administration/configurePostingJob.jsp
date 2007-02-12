@@ -38,7 +38,7 @@ function <portlet:namespace/>_modifyAlias() {
 			<portlet:param name="action" value="configure_posting_job"/>
 		</portlet:actionURL>">
 
-<table class="ss_style"  border="1" cellspacing="0" cellpadding="3">
+<table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
 <tr>
 <th><ssf:nlt tag="incoming.job_title"/></th>
 <th><ssf:nlt tag="incoming.aliases"/></th>
@@ -54,13 +54,11 @@ function <portlet:namespace/>_modifyAlias() {
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 </td></tr></table>
 </td><td valign="top">
-   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.addresses"/></span>
-   <input type="text" class="ss_style" name="addresses" id="addresses" size="86" value="">
-<br/>
+ <br/>
 <table border="0" cellspacing="0" cellpadding="0" class="ss_style ss_borderTable" >
   <tr class="ss_headerRow">
   <td class="ss_bold" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete"/></td>
-  <td class="ss_bold" align="left" scope="col"><ssf:nlt tag="incoming.alias" /></td>
+  <td class="ss_bold" align="left" colspan="2" scope="col"><ssf:nlt tag="incoming.alias" /></td>
   <td class="ss_bold" align="left" scope="col"><ssf:nlt tag="incoming.folder" /></td>
 </tr>
 
@@ -71,6 +69,7 @@ function <portlet:namespace/>_modifyAlias() {
 <input type="checkbox" class="ss_normal" id="delete${status.index}" name="delete${status.index}">
 </td><td>
 <span class="ss_normal" id="aliasSpan${status.index}" name="aliasSpan${status.index}">${alias.emailAddress}</span>
+</td><td>
 <input type="button" value="Edit" onClick="<portlet:namespace/>_showAliasDiv('${status.index}'); return false"/>
 </td><td>
 <c:if test="${!empty alias.binder}">

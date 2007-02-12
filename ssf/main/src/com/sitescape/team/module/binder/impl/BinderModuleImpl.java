@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -56,7 +55,6 @@ import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -69,6 +67,7 @@ import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -91,13 +90,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("setDefinitions", new WorkAreaOperation[]{WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS});
 		operations.put("modifyTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("modifyPosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("deletePosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("setPosting", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setNotificationConfig", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setLibrary", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
+		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
 
 	}
  
@@ -693,39 +690,55 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
 		
 	}
-	public void modifyPosting(Long binderId, Map updates) {
-	   	//posting defs are defined by admin
-	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-		checkAccess(binder, "modifyPosting"); 
-	   	//Locate the posting
-		PostingDef post = binder.getPosting(); 
-		//cannot modify address through this interface
-		updates.remove("emailAddress");
-	   	if (post != null) ObjectBuilder.updateObject(post, updates);
-	}
-	public void setPosting(Long binderId, String postingId) {
-	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-		checkAccess(binder, "modifyPosting"); 
-		PostingDef post = getCoreDao().loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
-		Binder oldBinder = post.getBinder();
-		if ((oldBinder != null) && !oldBinder.equals(binder)) {
-			if (getAccessControlManager().testOperation(oldBinder, WorkAreaOperation.BINDER_ADMINISTRATION) == false)
-				throw new NotSupportedException(NLT.get("errorcode.posting.in.use",new Object[] {post.getEmailAddress()}));
-			oldBinder.setPosting(null);
-		}
-		binder.setPosting(post);
-		post.setBinder(binder);
-		post.setEnabled(true);
-		post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
-	}    	
-	public void deletePosting(Long binderId) {
-	   	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-		checkAccess(binder, "modifyPosting"); 
-		PostingDef post = binder.getPosting(); 
-	   	if (post != null) {
-    		post.setBinder(null);
-    		binder.setPosting(null);
-    	}
+
+    public void setPosting(Long binderId, String emailAddress) {
+    	Map updates = new HashMap();
+    	updates.put("emailAddress", emailAddress);
+    	setPosting(binderId, updates);
+    }
+    public void setPosting(Long binderId, Map updates) {
+        Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
+        checkAccess(binder, "setPosting");
+        PostingDef post = binder.getPosting();
+        String email = (String)updates.get("emailAddress");
+        if (Validator.isNull(email)) {
+        	//if posting exists for this binder, remove it
+        	if (post == null) return;
+        	getCoreDao().delete(post);
+        	return;
+        } else {
+            //see if it exists already
+        	email = email.toLowerCase();
+        	//see if assigned to someone else
+        	if ((post == null) || !email.equals(post.getEmailAddress())) {
+        		FilterControls fc = new FilterControls();
+        		fc.add("emailAddress", email);
+        		fc.add("zoneId", binder.getZoneId());
+        		List results = getCoreDao().loadObjects(PostingDef.class, fc);
+        		if (!results.isEmpty()) {
+        			//exists, see if it is assigned
+        			PostingDef oldPost = (PostingDef)results.get(0);
+        			//if address is assigned, cannot continue
+        			if (oldPost.getBinder() != null) {
+        				if (!oldPost.getBinder().equals(binder)) {
+        					throw new NotSupportedException(NLT.get("errorcode.posting.assigned", new String[]{email}));
+        				}
+        			}
+        			if (post != null) getCoreDao().delete(post);
+        			post = oldPost;
+        		}
+            }
+        }
+        if (post == null) {
+        	post = new PostingDef();
+        	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+        }
+        post.setBinder(binder);
+        post.setEnabled(true);
+        post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
+       	ObjectBuilder.updateObject(post, updates);
+      	post.setEmailAddress(email);
+      	binder.setPosting(post);
     }
 	/**
      * Do actual work to either enable or disable email notification.
@@ -775,4 +788,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		current.setDistribution(notifyUsers);
     }
     
+
+
 }
