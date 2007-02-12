@@ -101,7 +101,9 @@ function ss_findEntriesSearch_${prefix}(textObjId, elementName, findEntriesType)
     	</ssf:url>"
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	var searchText = text;
-	if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
 	ajaxRequest.addKeyValue("searchText", searchText)
 	ajaxRequest.addKeyValue("maxEntries", "10")
 	ajaxRequest.addKeyValue("pageNumber", ss_findEntries_pageNumber)
@@ -198,6 +200,10 @@ function ss_findEntriesPrevPage<portlet:namespace/>() {
 	ss_findEntries_pageNumber--;
 	if (ss_findEntries_pageNumber < 0) ss_findEntries_pageNumber = 0;
 	ss_findEntriesSearch_${prefix}(ss_findEntriesSearchLastTextObjId, ss_findEntriesSearchLastElement, ss_findEntriesSearchLastfindEntriesType);
+}
+
+function ss_findEntriesClose<portlet:namespace/>() {
+	document.getElementById('ss_findEntries_searchText_<portlet:namespace/>').focus();
 }
 
 </script>

@@ -19,6 +19,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
@@ -286,6 +287,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component);
 					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
+					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Set up the search results bean
@@ -657,6 +662,38 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     }	 
 	
+    protected void getWikiHomepageEntryBean(Binder binder, Map ssDashboard, Map model, 
+    		String id, Map component) {
+    	Map data = (Map)component.get(DashboardHelper.Data);
+    	if (data == null) data = new HashMap();
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+    	}
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
+		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) &&
+				component.get(Data) != null && 
+				((Map)component.get(Data)).get(SearchFormSavedFolderIdList) != null) {
+			List folderIds = (List)(((Map)component.get(Data)).get(SearchFormSavedFolderIdList));
+			if (folderIds != null && folderIds.size() > 0) {
+				Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)folderIds.get(0)));				
+				Long folderId = Long.valueOf((String)folderIds.get(0));
+				String entryId = (String) fBinder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE);
+				if (entryId != null) {
+					Entry entry = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
+					idData.put(WebKeys.DASHBOARD_WIKI_HOMEPAGE_ENTRY, entry);
+				}
+			}
+		}
+    }
+    
     protected void getSearchResultsBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component) {
     	Map data = (Map)component.get(DashboardHelper.Data);
@@ -854,8 +891,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					if (componentData.containsKey("groups")) {
 					componentData.put("groups", FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 					}
-				} else if (componentMap.get(DashboardHelper.Name).
-						equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY)) {
+				} else if (componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
+						componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) ||
+						componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
 					List folderIds = new ArrayList();
@@ -869,33 +907,6 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 							if (id != null) folderIds.add(id); 
 						}
 
-					}
-					if (folderIds.size() == 0 && 
-							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {
-						//There was a list saved in a prior configuration, use it
-						folderIds = (List)originalComponentData.get(DashboardHelper.SearchFormSavedFolderIdList);
-					}
-					if (folderIds.size() > 0) {
-						try {
-							Document query = FilterHelper.getFolderListQuery(request, folderIds);
-							componentData.put(DashboardHelper.SearchFormSavedSearchQuery, query.asXML());
-							componentData.put(DashboardHelper.SearchFormSavedFolderIdList, folderIds);
-						} catch(Exception ex) {}
-					}
-				} else if (componentMap.get(DashboardHelper.Name).
-						equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
-					//Get the folderIds out of the formData
-					Iterator itFormData = formData.keySet().iterator();
-					List folderIds = new ArrayList();
-					while (itFormData.hasNext()) {
-						String key = (String)itFormData.next();
-						if (key.matches("^ss_folder_id_[0-9]+$")) {
-							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
-						} else if (key.equals("ss_folder_id")) {
-							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
-							//single select
-							if (id != null) folderIds.add(id); 
-						}
 					}
 					if (folderIds.size() == 0 && 
 							originalComponentData.containsKey(DashboardHelper.SearchFormSavedFolderIdList)) {

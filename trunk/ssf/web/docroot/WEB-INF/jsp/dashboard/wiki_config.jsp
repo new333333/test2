@@ -22,12 +22,6 @@
 
 <script type="text/javascript">
 function t_wikiFolder_wsTree_showId(forum, obj) {
-	var formObj = ss_getContainingForm(obj);
-	if (formObj["ss_folder_id_"+forum] && formObj["ss_folder_id_"+forum].checked) {
-		formObj["ss_folder_id_"+forum].checked=false
-	} else {
-		formObj["ss_folder_id_"+forum].checked=true
-	}
 	return false
 }
 </script>
@@ -42,8 +36,8 @@ function t_wikiFolder_wsTree_showId(forum, obj) {
   treeName="<%= "t_wikiFolder_wsTree" %>" 
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="false" 
-  singleSelect="" 
-  singleSelectName="wikiFolder"
+  singleSelect="1" 
+  singleSelectName="ss_folder_id"
 />
 </div>
 

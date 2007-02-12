@@ -150,7 +150,19 @@
         <div id="ss_wikiEntryDiv<portlet:namespace/>">
           <iframe id="ss_wikiIframe<portlet:namespace/>" name="ss_wikiIframe<portlet:namespace/>" style="width:100%; 
     		display:block; position:relative; left:5px;"
-    		src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
+    		<c:if test="${empty ss_wikiHomepageEntryId}">
+    		  src="<html:rootPath/>js/forum/null.html" 
+    		</c:if>
+    		<c:if test="${!empty ss_wikiHomepageEntryId}">
+    		  src="<ssf:url     
+		    		adapter="<%= useAdaptor %>" 
+		    		portletName="ss_forum" 
+		    		folderId="${ssFolder.id}" 
+		    		action="view_folder_entry" 
+		    		entryId="${ss_wikiHomepageEntryId}" 
+		    		actionUrl="true" />" 
+    		</c:if>
+    		height="95%" width="100%" 
     		onLoad="ss_setWikiIframeSize<portlet:namespace/>();" frameBorder="0" >xxx</iframe>
         </div>
 	  </td>

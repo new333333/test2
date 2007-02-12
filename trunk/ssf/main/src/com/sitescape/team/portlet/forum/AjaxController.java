@@ -627,11 +627,15 @@ public class AjaxController  extends SAbstractController {
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			//Add the title term
 			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
 			
 			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeSearchText);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 			filterTerm.setText(searchText.trim());
 			
 			//Add terms to search folders and workspaces
@@ -1193,10 +1197,10 @@ public class AjaxController  extends SAbstractController {
 		}
 		String view = "dashboard/search_view2";
 		String displayType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DISPLAY_TYPE, "search");
-		if (displayType.equals("search")) view = "dashboard/search_view2";
-		if (displayType.equals("gallery")) view = "dashboard/gallery_view2";
-		if (displayType.equals("blog")) view = "dashboard/blog_view2";
-		if (displayType.equals("guestbook")) view = "dashboard/guestbook_view2";
+		if (displayType.equals(WebKeys.DISPLAY_STYLE_SEARCH)) view = "dashboard/search_view2";
+		if (displayType.equals(WebKeys.DISPLAY_STYLE_GALLERY)) view = "dashboard/gallery_view2";
+		if (displayType.equals(WebKeys.DISPLAY_STYLE_BLOG)) view = "dashboard/blog_view2";
+		if (displayType.equals(WebKeys.DISPLAY_STYLE_GUESTBOOK)) view = "dashboard/guestbook_view2";
 		if (displayType.equals("comments")) view = "dashboard/comments_view2";
 		return new ModelAndView(view, model);
 	}

@@ -38,6 +38,10 @@ function ss_setWikiIframeSize<portlet:namespace/>() {
 	}
 }
 
+function ss_confirmSetWikiHomepage() {
+	return confirm("<ssf:nlt tag="wiki.confirmSetHomepage"/>");
+}
+
 </script>
 <div style="margin:0px;">
 

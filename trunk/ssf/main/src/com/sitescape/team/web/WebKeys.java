@@ -201,6 +201,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
 	public static final String OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
+	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
 	public static final String OPERATION_UNSEEN_COUNTS = "unseen_counts";
@@ -308,6 +309,7 @@ public class WebKeys {
     public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SHOW_ALL="ss_show_all_dashboard_components";
     public static final String DASHBOARD_TITLE="title";
+    public static final String DASHBOARD_WIKI_HOMEPAGE_ENTRY="wikiHomepageEntry";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
     public static final String DASHBOARD_WORKSPACE_TOPID="topId";
     public static final String DEBUG_ON="on";
@@ -317,6 +319,11 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DISPLAY_STYLE_BLOG="blog";
+    public static final String DISPLAY_STYLE_SEARCH="search";
+    public static final String DISPLAY_STYLE_GALLERY="gallery";
+    public static final String DISPLAY_STYLE_GUESTBOOK="guestbook";
+    public static final String DISPLAY_STYLE_WIKI="wiki";
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String ERROR_LIST="ssErrorList";

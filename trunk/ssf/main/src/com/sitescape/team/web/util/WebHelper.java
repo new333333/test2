@@ -376,41 +376,43 @@ public class WebHelper {
 		String outputString = new String(inputString);
 
     	//Replace the markup urls with real urls
-    	Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
-    	Matcher m1 = p1.matcher(inputString);
-    	while (m1.find()) {
-    		String url = m1.group(2);
-    		//Look for the attachment
-    		FileAttachment fa = entity.getFileAttachment(url.trim());
-    		if (fa != null) {
-				String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
-				webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
-				webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
-				String entityType = entity.getEntityIdentifier().getEntityType().name();
-				if (entityType.equals(EntityType.workspace.name()) ||
-						entityType.equals(EntityType.folder.name()) ||
-						entityType.equals(EntityType.profiles.name())) {
-					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
-					outputString = m1.replaceFirst(webUrl);
-				} else if (entityType.equals(EntityType.folderEntry.name())) {
-					webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
-					webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
-					outputString = m1.replaceFirst(webUrl);
-				}
-    		}
+    	if (entity != null) {
+    		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
+	    	Matcher m1 = p1.matcher(inputString);
+	    	while (m1.find()) {
+	    		String url = m1.group(2);
+	    		//Look for the attachment
+	    		FileAttachment fa = entity.getFileAttachment(url.trim());
+	    		if (fa != null) {
+					String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+					webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
+					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+					String entityType = entity.getEntityIdentifier().getEntityType().name();
+					if (entityType.equals(EntityType.workspace.name()) ||
+							entityType.equals(EntityType.folder.name()) ||
+							entityType.equals(EntityType.profiles.name())) {
+						webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
+						outputString = m1.replaceFirst(webUrl);
+					} else if (entityType.equals(EntityType.folderEntry.name())) {
+						webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
+						webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
+						outputString = m1.replaceFirst(webUrl);
+					}
+	    		}
+	    	}
     	}
     	
     	//Replace the markup attachmentFileIds with real urls
-    	p1 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
-    	m1 = p1.matcher(outputString);
-    	while (m1.find()) {
-    		String fileIds = m1.group(2).trim();
+    	Pattern p2 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
+    	Matcher m2 = p2.matcher(outputString);
+    	while (m2.find()) {
+    		String fileIds = m2.group(2).trim();
     		//Look for the attachment
 			String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
 			webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
 			webUrl += fileIds;
-			outputString = m1.replaceFirst(webUrl);
-			m1 = p1.matcher(outputString);
+			outputString = m2.replaceFirst(webUrl);
+			m2 = p2.matcher(outputString);
 		}
      	return outputString;
 	}

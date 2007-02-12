@@ -32,6 +32,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -58,6 +59,7 @@ public class ViewEntryController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
 		//See if the user asked to change state
 		if (formData.containsKey("changeStateBtn")) {
@@ -98,6 +100,12 @@ public class ViewEntryController extends  SAbstractController {
 				else getFolderModule().addSubscription(folderId, entryId, style.intValue());
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
 			} 
+		} else if (op.equals(WebKeys.OPERATION_SET_WIKI_HOMEPAGE)) {
+			Binder binder = getBinderModule().getBinder(folderId);
+			//Check the access rights of the user
+			if (getBinderModule().testAccess(binder, "setProperty")) {
+				getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, entryId.toString());
+			}
 		} 
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -363,6 +371,37 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
+			}
+		}
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		//Check the access rights of the user
+		if (getBinderModule().testAccess(binder, "setProperty")) {
+			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
+			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			Definition displayDef = binder.getDefaultViewDef();
+			if (displayDefId != null && !displayDefId.equals("")) {
+				displayDef = DefinitionHelper.getDefinition(displayDefId);
+			}
+			Document defDoc = displayDef.getDefinition();
+			String viewType = "";
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+				}
+			}
+			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
+				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+				url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+				toolbar.addToolbarMenu("6_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 			}
 		}
 	    

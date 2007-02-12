@@ -79,6 +79,7 @@ public interface ObjectKeys {
     public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
     
     public static final String BINDER_PROPERTY_DASHBOARD = "dashboard";
+    public static final String BINDER_PROPERTY_WIKI_HOMEPAGE = "wikiHomepage";
 
     public static final String CONFIG_PROPERTY_REPOSITORY = "repository";
     public static final String CONFIG_PROPERTY_REPOSITORIES = "repositories";
@@ -89,6 +90,7 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
     public static final String DASHBOARD_COMPONENT_SEARCH = "search";
     public static final String DASHBOARD_COMPONENT_GALLERY = "gallery";    
+    public static final String DASHBOARD_COMPONENT_WIKI_SUMMARY = "wiki";    
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
     
     public static final String SEARCH_OFFSET = "offset";
