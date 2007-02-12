@@ -395,7 +395,21 @@ public class WebdavRepositorySession implements RepositorySession {
 			throw new UncheckedIOException(e);
 		}
 	}
-	
+
+	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, 
+			Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) 
+	throws RepositoryServiceException, UncheckedIOException {
+		try {
+			String resourcePath = getResourcePath(binder, entity, relativeFilePath);
+			String newResourcePath = getResourcePath(destBinder, destEntity, destRelativeFilePath);
+			
+			copyResource(wdr, resourcePath, newResourcePath);
+		} catch (IOException e) {
+			logError(wdr);
+			throw new UncheckedIOException(e);
+		}		
+	}
+
 	public void deleteVersion(Binder binder, DefinableEntity entity, 
 			String relativeFilePath, String versionName) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -565,6 +579,15 @@ public class WebdavRepositorySession implements RepositorySession {
 		if(!result)
 			throw new RepositoryServiceException("Failed to move [" + resourcePath + "] to [" + newResourcePath + "]");
 	}
+
+	private void copyResource(SWebdavResource wdr, String resourcePath, 
+			String newResourcePath) throws RepositoryServiceException, 
+			IOException {
+		boolean result = wdr.copyMethod(resourcePath, newResourcePath);
+		
+		if(!result)
+			throw new RepositoryServiceException("Failed to copy [" + resourcePath + "] to [" + newResourcePath + "]");
+	}
 	
 	private void updateResource(SWebdavResource wdr, Binder binder,
 			DefinableEntity entry, String relativeFilePath, InputStream in)
@@ -693,10 +716,5 @@ public class WebdavRepositorySession implements RepositorySession {
 			return name;
 			
 		}
-	}
-
-	public void copy(Binder binder, DefinableEntity entity, String relativeFilePath, Binder destBinder, DefinableEntity destEntity, String destRelativeFilePath) throws RepositoryServiceException, UncheckedIOException {
-		// TODO Auto-generated method stub
-		
 	}
 }

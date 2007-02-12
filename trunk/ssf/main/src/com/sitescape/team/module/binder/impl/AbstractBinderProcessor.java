@@ -524,7 +524,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   
     //TODO: delete all files under binder
     protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-//    	getFileModule().deleteFiles(binder);
+    	getFileModule().deleteFiles(binder, null);
     	return ctx;
     }
     
