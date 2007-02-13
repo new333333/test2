@@ -2300,12 +2300,12 @@ function ss_showHideAllDashboardComponents(obj, divId, idStr) {
 	var canvas = document.getElementById(divId);
 	if (canvas && canvas.style && canvas.style.visibility == 'visible') {
 		url = ss_dashboardAjaxUrl + "\&operation=hide_all_dashboard_components\&" + idStr;
-	    obj.innerHTML = ss_componentTextShow;
+	    obj.innerHTML = "<span><img src='"+ss_imagesPath+"skins/"+ss_userSkin+"/iconset/showDashboard.gif' alt='"+ss_componentTextShow+"'></span>";
 		canvas.style.visibility = 'hidden';
 		canvas.style.display = 'none';
 	} else if (canvas && canvas.style) { 
 		url = ss_dashboardAjaxUrl + "\&operation=show_all_dashboard_components\&" + idStr;
-	    obj.innerHTML = ss_componentTextHide;
+	    obj.innerHTML = "<span><img src='"+ss_imagesPath+"skins/"+ss_userSkin+"/iconset/hideDashboard.gif' alt='"+ss_componentTextHide+"'></span>";
 		canvas.style.visibility = 'visible';
 		canvas.style.display = 'block';
 	}
