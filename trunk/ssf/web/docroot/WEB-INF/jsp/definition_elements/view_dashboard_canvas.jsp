@@ -64,7 +64,14 @@
   </div>
   </c:if>
   <!-- End of dashboard "add penlet" form -->
-  
+<c:if test="${!empty ssDashboardToolbar}">  
+<div class="ss_dashboardContainer" >
+	<div class="ss_utils_bar" >
+	<ssf:toolbar toolbar="${ssDashboardToolbar}" style="ss_utils_bar" />
+	</div>
+	<div class="ss_clear"></div>
+</c:if>
+
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
   <div id="<portlet:namespace/>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
@@ -91,8 +98,8 @@
 	</ul>
   </div>
 
-<!-- Start of dashboard canvas -->
- <div id="<portlet:namespace/>_dashboardComponentCanvas"
+ <!-- Start of dashboard canvas -->
+  <div id="<portlet:namespace/>_dashboardComponentCanvas"
 	<c:if test="${ss_show_all_dashboard_components}">
 	  style="visibility:visible; display:block;"
 	</c:if>
@@ -100,16 +107,13 @@
 	  style="visibility:hidden; display:none;"
 	</c:if>
  >
- <div class="ss_decor-round-corners-top2 ss_innerContentBegins" ><div><div>
- </div></div></div>
-<div class="ss_decor-border5">
-  <div class="ss_decor-border6">
-    <div class="ss_content_window">
-		    <span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
-		      <c:if test="${ssDashboard.includeBinderTitle}">
-		        <c:out value="${ssBinder.title}"/>
-		      </c:if>
-		    </span>
+
+	<div class="ss_content_window">
+		<span class="ss_bold"><c:out value="${ssDashboard.title}"/> 
+		  <c:if test="${ssDashboard.includeBinderTitle}">
+		    <c:out value="${ssBinder.title}"/>
+		  </c:if>
+		</span>
 
 		<div id="<portlet:namespace/>_dashboard_toolbar_${ss_toolbar_count}"
 		   style="visibility:hidden; display:none;">
@@ -125,15 +129,11 @@
 
 	  	</div>
 		<!-- End of dashboard components -->
-
-    </div>
+	</div>
   </div>
-</div>
-<div class="ss_decor-round-corners-bottom2"><div><div></div></div></div>
-</div>
 <!-- End of dashboard canvas -->
 
 </c:if>
-<c:if test="${!ss_show_all_dashboard_components}">
-<br/>
+<c:if test="${!empty ssDashboardToolbar}">
+</div>
 </c:if>
