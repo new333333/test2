@@ -71,10 +71,7 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <td valign="top" style="padding-right:2px;">
 <a href="#" 
   onClick="ss_showTags<portlet:namespace/>('${ss_tagDivNumber}', '${ssDefinitionEntry.id}'); return false;"
-><span class="ss_fineprint"><ssf:nlt tag="tags.tags"/></span></a></td>
-<td valign="top"><a href="#" 
-  onClick="ss_showTags<portlet:namespace/>('${ss_tagDivNumber}', '${ssDefinitionEntry.id}'); return false;"
-><img border="0" src="<html:imagesPath/>pics/red_tag.gif"></a></td><td></td>
+><div class="ss_iconed_label ss_add_tag"><ssf:nlt tag="tags.addtag"/></div></a></td>
 </tr>
 <tr><td colspan="2"></td><td>
   <div id="ss_tags_anchor<portlet:namespace/>_${ss_tagDivNumber}">

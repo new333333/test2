@@ -631,9 +631,7 @@ div.ss_calPopupDiv {
   }
 
 .ss_cpYearNavigation,
-.ss_cpMonthNavigation
-	{
-	background-color:#cecece;
+.ss_cpMonthNavigation {
 	text-align:center;
 	vertical-align:middle;
 	text-decoration:none;
