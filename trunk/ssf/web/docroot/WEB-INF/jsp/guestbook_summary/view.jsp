@@ -16,17 +16,19 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
-
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/>
-	<a href="<portlet:renderURL><portlet:param 
+<table class="ss_style" width="100%"><tr><td>
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
+<a href="<portlet:renderURL><portlet:param 
 		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/></portlet:renderURL>">
-		&nbsp;${ssBinder.title}</a></span><br/><br/>
+		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.id}"/></portlet:renderURL>">
+		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}</a>
+</c:if>
+
+<br/><br/>
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
-
 <%@ include file="/WEB-INF/jsp/dashboard/guestbook_view.jsp" %>
-
 </div></div></div>
+</td></tr></table>

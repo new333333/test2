@@ -16,21 +16,26 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="java.util.ArrayList" %>
-<br/>
-<br/>
-
+<c:set var="treeName" value="editForum_${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
-function t_guestbookFolder_wsTree_showId(forum, obj) {
+function ${treeName}_showId(forum, obj) {
 	var formObj = ss_getContainingForm(obj);
-	if (formObj["ss_folder_id_"+forum] && formObj["ss_folder_id_"+forum].checked) {
-		formObj["ss_folder_id_"+forum].checked=false
-	} else {
-		formObj["ss_folder_id_"+forum].checked=true
+	var r = formObj.ss_folder_id;
+    for (var b = 0; b < r.length; b++) {
+      if (r[b].value == forum) 	r[b].checked=true;
 	}
-	return false
+	ss_clearSingleSelect('${treeName}');
+	
+	return false;
 }
 </script>
+
+<br/>
+<table class="ss_style" width="100%"><tr><td>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}
+</c:if>
+<br/><br/>
 
 <span class="ss_bold">
   <ssf:nlt tag="dashboard.guestbook.selectGuestbookFolder"/>
@@ -39,11 +44,11 @@ function t_guestbookFolder_wsTree_showId(forum, obj) {
 <br>
 <div class="ss_indent_large">
 <ssf:tree 
-  treeName="<%= "t_guestbookFolder_wsTree" %>" 
+  treeName="${treeName}"
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
-  rootOpen="false" 
-  multiSelect="<%= new ArrayList() %>" 
-  multiSelectPrefix="ss_folder_id_"
+  rootOpen="true" 
+  singleSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList[0]}" 
+  singleSelectName="ss_folder_id"
 />
 </div>
 

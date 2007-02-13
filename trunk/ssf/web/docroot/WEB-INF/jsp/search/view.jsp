@@ -16,7 +16,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<table class="ss_style" width="100%"><tr><td>
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
@@ -24,3 +24,4 @@
 <%@ include file="/WEB-INF/jsp/dashboard/search_view.jsp" %>
 
 </div></div></div>
+</td></tr></table>

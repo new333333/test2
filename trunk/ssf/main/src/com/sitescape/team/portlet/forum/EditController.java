@@ -143,24 +143,13 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
-			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT);
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
 		} else if (ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
-			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GUESTBOOK_EDIT);			
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GUESTBOOK_EDIT, "guestbook");			
 		} else if (ViewController.WIKI_PORTLET.equals(displayType)) {
-			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_WIKI_EDIT);
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_WIKI_EDIT, "wiki");
 		} else if (ViewController.SEARCH_PORTLET.equals(displayType)) {
-			String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
-			if (id != null) {
-				try {
-					DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-					Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
-					model.put(WebKeys.USER_PROPERTIES, userProperties);
-					DashboardHelper.getDashboardMap(d, userProperties, model);
-					//make sure it works, before setting up model
-					model.put(WebKeys.DASHBOARD_PORTLET, d);
-				} catch (Exception no) {}
-			}
-			return new ModelAndView(WebKeys.VIEW_SEARCH_EDIT, model);
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_SEARCH_EDIT, "search");
 		} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 			//This is the portlet view; get the configured list of principals to show
 			Set<Long> userIds = new HashSet<Long>();
@@ -189,31 +178,19 @@ public class EditController extends SAbstractController {
 		}
 		return null;
 	}
-	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view) {
-		Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-				new WsDomTreeBuilder(null, true, this, new folderTree()),1);
-		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view, String componentName) {
+		Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (id != null) {
 			try {
 				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
-				Map dataMap = DashboardHelper.getComponentData(d);
-				if (dataMap != null) {
-					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
-					//	Build the jsp bean (sorted by folder title)
-					Long folderId;
-					if (savedFolderIds != null && savedFolderIds.size() > 0) {
-						for (int i = 0; i < savedFolderIds.size(); i++) {
-							folderId = Long.valueOf((String)savedFolderIds.get(i));
-							Binder folder = getFolderModule().getFolder(folderId);
-							model.put(WebKeys.BINDER, folder);
-							break;
-						}
-					}
-				}
+				DashboardHelper.getDashboardMap(d, userProperties, model, true);
 			} catch (Exception no) {}
-		} 
+		} else {
+			//setup dummy dashboard for config
+			DashboardHelper.initDashboardComponent(userProperties, model, componentName);
+		}
 		return new ModelAndView(view, model);
 		
 	}

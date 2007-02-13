@@ -99,6 +99,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 					try {
 						binder = getBinderModule().getBinder(entry.getWorkspaceId());
 					} catch (NoBinderByTheIdException nb) {
+						//reload entry
+						entry = (User)getProfileModule().getEntry(binderId, entryId);
 						binder = getProfileModule().addUserWorkspace(entry);
 						
 					}

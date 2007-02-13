@@ -152,17 +152,17 @@ public class ViewController  extends SAbstractController {
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
-			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY, true);		
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
 		} else if (WIKI_PORTLET.equals(displayType)) {
-			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_WIKI, true);		
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_WIKI);		
 		} else if (GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
-			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY, true);		
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY);		
 		} else if (SEARCH_PORTLET.equals(displayType)) {
-			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_SEARCH, false);		
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_SEARCH);		
 		}
 		return null;
 	}
-	protected ModelAndView setupSummaryPortlets(RenderRequest request, PortletPreferences prefs, Map model, String view, boolean hasBinders) {
+	protected ModelAndView setupSummaryPortlets(RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		String gId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (gId != null) {
 			try {
@@ -174,23 +174,8 @@ public class ViewController  extends SAbstractController {
 					model.put(WebKeys.PAGE_SIZE, "20");
 				else
 					model.put(WebKeys.PAGE_SIZE, "5");						
-				DashboardHelper.getDashboardMap(d, userProperties, model);
-				if (!hasBinders) return new ModelAndView(view, model);
-				Map dataMap = DashboardHelper.getComponentData(d);
-				if (dataMap != null) {
-					List savedFolderIds = (List)dataMap.get(DashboardHelper.SearchFormSavedFolderIdList);
-					//	Build the jsp bean (sorted by folder title)
-					Long folderId;
-					if (savedFolderIds != null && savedFolderIds.size() > 0) {
-						for (int i = 0; i < savedFolderIds.size(); i++) {
-							folderId = Long.valueOf((String)savedFolderIds.get(i));
-							Binder folder = getFolderModule().getFolder(folderId);
-							model.put(WebKeys.BINDER, folder);
-							break;
-						}
-						return new ModelAndView(view, model);		
-					} 
-				}
+				DashboardHelper.getDashboardMap(d, userProperties, model, false);
+				return new ModelAndView(view, model);		
 			} catch (NoObjectByTheIdException no) {}
 		}
 		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);

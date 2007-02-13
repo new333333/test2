@@ -14,14 +14,13 @@
  *
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
+//use editForum in tree name as prefix for domHelper
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="java.util.ArrayList" %>
-<br/>
-<br/>
 
+<c:set var="treeName" value="editForum_${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
-function t_blogFolder_wsTree_showId(forum, obj) {
+function ${treeName}_showId(forum, obj) {
 	var formObj = ss_getContainingForm(obj);
 	if (formObj["ss_folder_id_"+forum] && formObj["ss_folder_id_"+forum].checked) {
 		formObj["ss_folder_id_"+forum].checked=false
@@ -31,6 +30,17 @@ function t_blogFolder_wsTree_showId(forum, obj) {
 	return false
 }
 </script>
+<br/>
+<table class="ss_style" width="100%"><tr><td>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums"/></th></tr>
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr><td><c:out value="${folder.title}" /></td></tr>
+</c:forEach>
+</table>
+</c:if>
+<br/>
 
 <span class="ss_bold">
   <ssf:nlt tag="dashboard.blog.selectBlogFolder"/>
@@ -39,10 +49,10 @@ function t_blogFolder_wsTree_showId(forum, obj) {
 <br>
 <div class="ss_indent_large">
 <ssf:tree 
-  treeName="<%= "t_blogFolder_wsTree" %>" 
+  treeName="${treeName}" 
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="false" 
-  multiSelect="<%= new ArrayList() %>" 
+  multiSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList}" 
   multiSelectPrefix="ss_folder_id_"
 />
 </div>

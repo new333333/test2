@@ -785,9 +785,6 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
-		model.put(WebKeys.BINDER, binder);
 			
 		String filterTermNumber = PortletRequestUtils.getStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, "");
 		model.put(WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER, filterTermNumber);
@@ -827,6 +824,10 @@ public class AjaxController  extends SAbstractController {
 		
 		response.setContentType("text/xml");
 		if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE)) {
+			//don't always have a binder
+			Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.FILTER_TYPE, op2);
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINTION_MAP, defaultEntryDefinitions);
@@ -1163,7 +1164,7 @@ public class AjaxController  extends SAbstractController {
 				User user = RequestContextHolder.getRequestContext().getUser();
 				DashboardHelper.getDashboardMap(dashboard, 
 					getProfileModule().getUserProperties(user.getId()).getProperties(), 
-					model);
+					model, false);
 				
 			}
 		}
