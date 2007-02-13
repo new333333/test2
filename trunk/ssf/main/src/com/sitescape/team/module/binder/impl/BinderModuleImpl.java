@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
@@ -127,6 +128,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			return false;
 		}
 	}
+	
+	/*
+	 * Check access to binder.  If operation not listed, assume read_entries needed
+	 * This should not be called inside a transaction because it results in a rollback.
+	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
+	 */
+	public boolean testAccess(Long binderId, String operation)  {
+		return testAccess(loadBinder(binderId), operation);
+	}
+
+	public boolean testAccessGetTeamMembers(Long binderId)  {
+		return testAccess(loadBinder(binderId), "getTeamMembers");
+	}
+		
 	protected void checkAccess(Binder binder, String operation) throws AccessControlException {
 		if (binder instanceof TemplateBinder) {
   			//gues anyone can read a template
@@ -664,12 +679,84 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	}
 	 }
 
+	public boolean hasTeamMembers(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		//give access to team members OR binder Admins.
+		checkAccess(binder, "getTeamMembers");
+		return hasTeamMembers(binder);
+	}
+
+	public boolean hasTeamUserMembers(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		//give access to team members OR binder Admins.
+		checkAccess(binder, "getTeamMembers");
+		return hasTeamUserMembers(binder);
+	}
+
+	public boolean hasTeamMembers(Binder binder) {
+		List <WorkAreaFunctionMembership> wfms=null;
+		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
+		} else {
+	    	WorkArea source = binder.getParentWorkArea();
+	    	
+	    	while (source.isFunctionMembershipInherited()) {
+		    	source = source.getParentWorkArea();
+		    }
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
+	    }
+		for (WorkAreaFunctionMembership fm: wfms) {
+			// don't explode groups
+			if (fm.getMemberIds() != null && fm.getMemberIds().size() > 0) {
+				return true;
+			}
+		}
+	    return false;
+	}
+	
+	public boolean hasTeamUserMembers(Binder binder) {
+		List <WorkAreaFunctionMembership> wfms=null;
+		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
+		} else {
+	    	WorkArea source = binder.getParentWorkArea();
+	    	
+	    	while (source.isFunctionMembershipInherited()) {
+		    	source = source.getParentWorkArea();
+		    }
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
+	    }
+		Set ids = new HashSet();
+		for (WorkAreaFunctionMembership fm: wfms) {
+			ids.addAll(fm.getMemberIds());
+		}
+		
+	    // explode groups
+		return getProfileDao().explodeGroups(ids, binder.getZoneId()).size() > 0;	
+	}
+	
+
 	public List getTeamMembers(Long binderId) {
 		Binder binder = loadBinder(binderId);
 		//give access to team members  or binder Admins.
 		checkAccess(binder, "getTeamMembers");
 		return getTeamMembers(binder);
 	}
+	
+	public List getTeamUserMembers(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		//give access to team members  or binder Admins.
+		checkAccess(binder, "getTeamMembers");
+		return getTeamUserMembers(binder);
+	}
+	
+	public Set getTeamUserMembersIds(Long binderId) {
+		Binder binder = loadBinder(binderId);
+		//give access to team members  or binder Admins.
+		checkAccess(binder, "getTeamMembers");
+		return getTeamUserMembersIds(binder);
+	}
+	
 	public List getTeamMembers(Binder binder) {
 		List <WorkAreaFunctionMembership> wfms=null;
 		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
@@ -688,7 +775,48 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	    //don't explode groups
 	    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
+	}
+	
+	public List getTeamUserMembers(Binder binder) {
+		List <WorkAreaFunctionMembership> wfms=null;
+		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
+		} else {
+	    	WorkArea source = binder.getParentWorkArea();
+	    	
+	    	while (source.isFunctionMembershipInherited()) {
+		    	source = source.getParentWorkArea();
+		    }
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
+	    }
+		Set ids = new HashSet();
+		for (WorkAreaFunctionMembership fm: wfms) {
+			ids.addAll(fm.getMemberIds());
+		}
 		
+	    // explode groups
+		return getProfileDao().loadPrincipals(getProfileDao().explodeGroups(ids, binder.getZoneId()), binder.getZoneId());		
+	}
+	
+	public Set getTeamUserMembersIds(Binder binder) {
+		List <WorkAreaFunctionMembership> wfms=null;
+		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
+		} else {
+	    	WorkArea source = binder.getParentWorkArea();
+	    	
+	    	while (source.isFunctionMembershipInherited()) {
+		    	source = source.getParentWorkArea();
+		    }
+	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
+	    }
+		Set ids = new HashSet();
+		for (WorkAreaFunctionMembership fm: wfms) {
+			ids.addAll(fm.getMemberIds());
+		}
+		
+	    // explode groups
+		return getProfileDao().explodeGroups(ids, binder.getZoneId());
 	}
 
     public void setPosting(Long binderId, String emailAddress) {
@@ -788,6 +916,4 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		current.setDistribution(notifyUsers);
     }
     
-
-
 }
