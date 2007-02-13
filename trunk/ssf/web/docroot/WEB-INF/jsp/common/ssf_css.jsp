@@ -183,7 +183,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
-
+	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_tags_color" value="#666666" scope="request"/>
 	
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
@@ -476,7 +476,7 @@ div.ss_replies div.ss_entryDescription {
   padding-bottom: 15px;
   background-color: ${ss_entry_description_background_color};
   font-size: 13px;
-  color: ${ss_muted_label_color};
+  color: ${ss_style_muted_foreground_color};
   }
 
 .ss_replies .ss_entryDescription {
@@ -546,11 +546,11 @@ div.ss_iconed_label {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 11px;
-  color: ${ss_muted_label_color};
+  color: ${ss_style_muted_foreground_color};
 }
 div.ss_iconed_label a {
   font-size: 11px;
-  color: ${ss_muted_label_color};
+  color: ${ss_style_muted_foreground_color};
 }
 
 div.ss_add_tag {
