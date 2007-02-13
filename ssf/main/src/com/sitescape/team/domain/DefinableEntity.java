@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.web.util.WebHelper;
 
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title=""; //initialized by hibernate access=field
@@ -81,12 +82,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     }
     public void setTitle(String title) {
         this.title = title;
-        //compute normalized title
-        String normalTitle = title.replaceAll("[\\P{L}&&\\P{N}]", " ");
-        normalTitle = normalTitle.replaceAll(" ++","_");
-		normalTitle = normalTitle.toLowerCase();
-		setNormalTitle(normalTitle);
-        
+        //set the normalized title
+		setNormalTitle(WebHelper.getNormalizedTitle(title));
     }
     /**
      * Normalized title for wiki links

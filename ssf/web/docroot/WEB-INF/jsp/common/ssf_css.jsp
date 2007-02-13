@@ -306,6 +306,9 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   color: ${ss_style_link_hover_color};
   text-decoration:underline;
 }
+.ss_title_link {
+  text-decoration:underline;
+}
 .ss_largestprint {
   font-size: ${ss_style_font_largestprint} !important; 
 }  

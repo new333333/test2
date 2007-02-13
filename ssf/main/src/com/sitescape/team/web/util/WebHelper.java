@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -15,7 +17,12 @@ import java.util.regex.Pattern;
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
+import javax.portlet.PortletURL;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.util.FileCopyUtils;
@@ -27,6 +34,7 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
@@ -371,9 +379,21 @@ public class WebHelper {
     	}
 	}
 	
-	public static String markupReplaceForView(HttpServletRequest req, 
-			DefinableEntity entity, String inputString) {
+	public static String markupStringReplacement(RenderRequest req, RenderResponse res, 
+			HttpServletRequest httpReq, HttpServletResponse httpRes,
+			DefinableEntity entity, String inputString, String type) {
 		String outputString = new String(inputString);
+		Long binderId = null;
+		if (entity != null) {
+			String entityType = entity.getEntityIdentifier().getEntityType().name();
+			if (entityType.equals(EntityType.workspace.name()) ||
+					entityType.equals(EntityType.folder.name()) ||
+					entityType.equals(EntityType.profiles.name())) {
+				binderId = entity.getId();
+			} else if (entityType.equals(EntityType.folderEntry.name())) {
+				binderId = entity.getParentBinder().getId();
+			}
+		}
 
     	//Replace the markup urls with real urls
     	if (entity != null) {
@@ -384,7 +404,7 @@ public class WebHelper {
 	    		//Look for the attachment
 	    		FileAttachment fa = entity.getFileAttachment(url.trim());
 	    		if (fa != null) {
-					String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+					String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
 					webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
 					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
 					String entityType = entity.getEntityIdentifier().getEntityType().name();
@@ -408,13 +428,87 @@ public class WebHelper {
     	while (m2.find()) {
     		String fileIds = m2.group(2).trim();
     		//Look for the attachment
-			String webUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_VIEW_FILE + "?";
+			String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
 			webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
 			webUrl += fileIds;
 			outputString = m2.replaceFirst(webUrl);
 			m2 = p2.matcher(outputString);
 		}
+    	
+    	//When viewing the string, replace the markup title links with real links
+		if (type.equals(WebKeys.MARKUP_VIEW)) {
+			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
+	    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
+	    	Matcher m3 = p3.matcher(outputString);
+	    	while (m3.find()) {
+	    		//Get the title
+	    		String title = m3.group(2).trim();
+	    		String normalizedTitle = getNormalizedTitle(title);
+	    		if (!normalizedTitle.equals("")) {
+	    			//Build the url to that entry
+	    			Map params = new HashMap();
+	    			params.put(WebKeys.URL_BINDER_ID, binderId.toString());
+	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+	    			String webUrl = getPortletUrl(req, res, action, false, params);
+	    			String titleLink = "<a href=\"" + webUrl + "\"><span class=\"ss_title_link\">" + title + "</span></a>";
+	    			outputString = m3.replaceFirst(titleLink);
+	    			m3 = p3.matcher(outputString);
+	    		}
+			}
+		}
+    	
      	return outputString;
 	}
 	
+	//Routine to compute a normalized title
+	public static String getNormalizedTitle(String title) {
+        //compute normalized title
+        String normalTitle = title.replaceAll("[\\P{L}&&\\P{N}]", " ");
+        normalTitle = normalTitle.replaceAll(" ++","_");
+		normalTitle = normalTitle.toLowerCase();
+		return normalTitle;
+	}
+	
+	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
+			String action, boolean actionUrl, Map params) {
+		return getPortletUrl(req, res, action, actionUrl, params, false, "ss_forum");
+	}
+	public static String getPortletUrl(RenderRequest req, RenderResponse res, String action, 
+			boolean actionUrl, Map params, boolean forceAdapter, String portletName) {
+		if (forceAdapter) {
+			if (!Validator.isNull(action)) {
+				params.put("action", new String[] {action});
+			}
+			
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, portletName, actionUrl);
+			Iterator it = params.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry me = (Map.Entry) it.next();
+				adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+			}
+			return adapterUrl.toString();
+		
+		} else {
+			PortletURL portletURL = null;
+			if (actionUrl) {
+				portletURL = res.createActionURL();
+			} else {
+				portletURL = res.createRenderURL();
+			}
+			try {
+				portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
+			} catch(Exception e) {}
+			
+			Iterator it = params.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry me = (Map.Entry) it.next();
+				portletURL.setParameter((String) me.getKey(), (String)me.getValue());
+			}
+			if (!Validator.isNull(action)) {
+				portletURL.setParameter("action", new String[] {action});
+			}
+	
+			return portletURL.toString();
+		}
+	}
 }
