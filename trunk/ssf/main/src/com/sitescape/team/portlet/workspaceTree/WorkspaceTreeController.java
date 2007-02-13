@@ -222,6 +222,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			String forumId) {
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
+		Toolbar dashboardToolbar = new Toolbar();
 		//	The "Add" menu
 		PortletURL url;
 		boolean addMenuCreated=false;
@@ -371,29 +372,29 @@ public class WorkspaceTreeController extends SAbstractController  {
 					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
 				}
 			}
-			toolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
+			dashboardToolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			Map qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 			
 			if (dashboardContentExists) {
 				qualifiers = new HashMap();
 				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
 				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
-				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
 	
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter("_scope", "local");
-				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
 	
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter("_scope", "global");
-				toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+				dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
 	
 				//Check the access rights of the user
 				if (getBinderModule().testAccess(workspace, "setProperty")) {
@@ -401,17 +402,20 @@ public class WorkspaceTreeController extends SAbstractController  {
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					url.setParameter("_scope", "binder");
-					toolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+					dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
 				};
 			
 				qualifiers = new HashMap();
 				qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
 						response.getNamespace() + "_dashboardComponentCanvas', 'binderId=" +
 						workspace.getId().toString()+"');return false;");
+				
 				if (DashboardHelper.checkIfShowingAllComponents(workspace)) {
-					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+					qualifiers.put("icon", "hideDashboard.gif");
+					dashboardToolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
 				} else {
-					toolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+					qualifiers.put("icon", "showDashboard.gif");
+					dashboardToolbar.addToolbarMenu("6_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
 				}
 			}
 		}
@@ -451,6 +455,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
+		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 	}
 	private String[] collectCreatorAndMoficationIds(Workspace workspace) {
 		Set principals = new HashSet();
