@@ -99,7 +99,7 @@
 		}
 %>
     <div class="ss_smallprint ss_indent_medium">  
-      <c:out value="<%= summary %>" escapeXml="false"/>
+      <ssf:markup><c:out value="<%= summary %>" escapeXml="false"/></ssf:markup>
     </div>
 <%
 	}

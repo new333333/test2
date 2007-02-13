@@ -210,7 +210,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		return dashboardModule;
 	}
 
-    protected static void getDashboardBeans(Binder binder, Map ssDashboard, Map model) {
+    protected static void getDashboardBeans(Binder binder, Map ssDashboard, Map model, boolean isConfig) {
 		//Go through each list and build the needed beans
     	List componentList = new ArrayList();
     	for (int i = 0; i < ComponentLists.length; i++) {
@@ -226,7 +226,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 				Map component = (Map) componentList.get(j);
 				if ((Boolean)component.get(Dashboard.Visible)) {
 					//Set up the bean for this component
-					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.Id), false);
+					getDashboardBean(binder, ssDashboard, model, (String)component.get(Dashboard.Id), isConfig);
 				}
 			}
 		}
@@ -392,7 +392,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 		//Set up the beans
 		if (componentId.equals("")) {
-			getDashboardBeans(binder, ssDashboard, model);
+			getDashboardBeans(binder, ssDashboard, model, isConfig);
 		} else {
 			getDashboardBean(binder, ssDashboard, model, componentId, isConfig);
 			ssDashboard.put(WebKeys.DASHBOARD_COMPONENT_ID, componentId);
