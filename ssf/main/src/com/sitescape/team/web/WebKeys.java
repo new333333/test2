@@ -314,6 +314,7 @@ public class WebKeys {
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SHOW_ALL="ss_show_all_dashboard_components";
+    public static final String DASHBOARD_TOOLBAR="ssDashboardToolbar";
     public static final String DASHBOARD_TITLE="title";
     public static final String DASHBOARD_WIKI_HOMEPAGE_ENTRY="wikiHomepageEntry";
     public static final String DASHBOARD_WORKSPACE_TREE="workspaceTree";
