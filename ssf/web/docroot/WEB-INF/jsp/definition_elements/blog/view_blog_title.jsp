@@ -23,7 +23,13 @@
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
 	 timeStyle="short" dateStyle="medium" />
- by <c:out value="${ssDefinitionEntry.creation.principal.title}"/>
+ by <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	    action="view_permalink"
+	    binderId="${ssDefinitionEntry.creation.principal.parentBinder.id}"
+	    entryId="${ssDefinitionEntry.creation.principal.id}">
+	    <ssf:param name="entityType" value="workspace" />
+	    <ssf:param name="newTab" value="1" />
+		</ssf:url>"><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
 </div>
 <div class="ss_header_bar_burst"><img src="<html:imagesPath/>icons/new_burst.gif"></div>
 <%
@@ -32,6 +38,7 @@
 		%><img border="0" src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 	}
 %>
+<div class="ss_header_bar_title_text">
 <span class="ss_header_bar_title_text">
  <a class="ss_header_bar_title_link" 
    href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -49,6 +56,7 @@
 </c:if>
 <c:out value="${ssDefinitionEntry.title}"/></a>
 </span>
+</div>
 </div>
 <%-- Subscribe, Ratings bar, visits --%>
 <c:if test="${empty ssDefinitionEntry.parentEntry}">

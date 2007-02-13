@@ -13,19 +13,18 @@
 <div style="padding-bottom: 2px;">
 
 <c:if test="${!empty ss_blog_reply_url}">
-<div class="ss_iconed_label ss_add_comment">
 <a href="${ss_blog_reply_url}" 
   onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;">
-<ssf:nlt tag="blog.addComment"/>
+<div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
 </a>
-</div>
 </c:if>
 
-<div class="ss_iconed_label ss_view_something">
 <a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}');return false;">
+<div class="ss_iconed_label ss_view_something">
 <ssf:nlt tag="blog.viewComments"/> [<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
-</a>
 </div>
+</a>
+
 </div>
 
 

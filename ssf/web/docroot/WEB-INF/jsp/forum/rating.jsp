@@ -37,14 +37,14 @@
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
 <td>
 <c:if test="${ssDefinitionEntry.averageRating.count == 1}">
-  <span class="ss_italic ss_smallprint"> (<ssf:nlt tag="popularity.rating.average">
+  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.average">
     <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
     <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
     </ssf:nlt>)
   </span>
 </c:if>
 <c:if test="${ssDefinitionEntry.averageRating.count != 1}">
-  <span class="ss_italic ss_smallprint"> (<ssf:nlt tag="popularity.rating.averages">
+  <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.averages">
     <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
     <ssf:param name="value" value="${ssDefinitionEntry.averageRating.count}"/>
     </ssf:nlt>)
@@ -53,7 +53,7 @@
 </td>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.averageRating}">
-<td><span class="ss_italic ss_smallprint"> (<ssf:nlt 
+<td><span class="ss_muted_label_small"> (<ssf:nlt 
   tag="popularity.rating.none" />)</span></td>
 </c:if>
 </tr></tbody></table>

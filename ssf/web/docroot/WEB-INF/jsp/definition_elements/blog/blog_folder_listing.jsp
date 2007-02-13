@@ -1,6 +1,6 @@
 <% //View the listing part of a blog folder %>
 
-  <table class="ss_blog" width="100%">
+  <table class="ss_blog" cellspacing="0" cellpadding="0" width="100%">
     <tr>
       <td class="ss_blog_content" width="80%" valign="top">
 		  <c:forEach var="entry" items="${ssFolderEntries}" >

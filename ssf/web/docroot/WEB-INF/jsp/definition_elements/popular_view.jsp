@@ -39,13 +39,12 @@ ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 </td>
 <td>&nbsp;&nbsp;&nbsp;</td>
 <td valign="middle" nowrap>
-<span class="ss_bold ss_smallprint">
-<ssf:nlt tag="popularity.visits" text="Visits"/>:</span>
 <c:if test="${!empty ssDefinitionEntry.popularity}">
-<span class="ss_smallprint"><c:out value="${ssDefinitionEntry.popularity}"/></span>
+<span class="ss_muted_label_small"><c:out value="${ssDefinitionEntry.popularity}"/> 
+<ssf:nlt tag="popularity.visits" text="visits"/></span>
 </c:if>
 <c:if test="${empty ssDefinitionEntry.popularity}">
-<span class="ss_smallprint"><ssf:nlt tag="popularity.visits.none" /></span>
+<span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
 </c:if>
 </td>
 </tr>

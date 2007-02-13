@@ -2715,10 +2715,8 @@ function ss_toggleShowHidePortal(obj) {
 	var spanObj = document.getElementById('ss_navbarHideShowPortalText');
     if (divObj && divObj.parentNode.tagName.toLowerCase() == 'body') {
     	obj.className = "ss_global_toolbar_show_portal";
-    	spanObj.innerHTML = ss_nlt_navigation_normal;
     } else {
     	obj.className = "ss_global_toolbar_hide_portal";
-    	spanObj.innerHTML = ss_nlt_navigation_maximize;
     }
 }
 //show a div as a popup - no ajax

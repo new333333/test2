@@ -10,7 +10,7 @@
 <p><ssf:nlt tag="help.on.help.graphicIntro"/></p>
 
 <div align="center">
-<img border="0" alt="" src="<html:imagesPath/>skins/${ss_user_skin}/toolbar/help_choices.gif" />
+<img border="0" alt="" src="<html:imagesPath/>icons/toolbar_help.gif" />
 </div>
 
 <p><ssf:nlt tag="help.helpicon.stepThroughIcons.content.intro"/></p>
