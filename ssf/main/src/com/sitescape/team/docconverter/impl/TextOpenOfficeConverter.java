@@ -21,6 +21,7 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.XComponent;
 import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uri.ExternalUriReferenceTranslator;
+import com.sun.star.connection.NoConnectException;
 
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -206,12 +207,12 @@ public class TextOpenOfficeConverter
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
 			// Determine convert type based on input file name extension
-			if (ifp.endsWith(".odp")
-			|| ifp.endsWith(".ppt"))
+			if (ifp.toLowerCase().endsWith(".odp")
+			|| ifp.toLowerCase().endsWith(".ppt"))
 				convertType = "XHTML Draw File";
 			else
-			if (ifp.endsWith(".ods")
-			|| ifp.endsWith(".xls"))
+			if (ifp.toLowerCase().endsWith(".ods")
+			|| ifp.toLowerCase().endsWith(".xls"))
 				convertType = "XHTML Calc File";
 			else
 				convertType = "XHTML Writer File";
@@ -253,6 +254,17 @@ public class TextOpenOfficeConverter
 					// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
 				}
 			}
+		}
+		catch (Exception e)
+		{
+			// Create empty file if exception is for unable to transform the document
+			if (!(e instanceof NoConnectException))
+			{
+				if (!ofile.exists())
+					ofile.createNewFile();
+			}
+				
+			throw e;
 		}
 		finally
 		{
