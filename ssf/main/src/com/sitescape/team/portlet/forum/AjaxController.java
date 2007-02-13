@@ -3,6 +3,7 @@ package com.sitescape.team.portlet.forum;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
@@ -40,6 +42,8 @@ import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -260,6 +264,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxStartMeeting(request, response, ICBroker.REGULAR_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
 			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
+		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
+			return ajaxGetTeamMembers(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1448,10 +1454,27 @@ public class AjaxController  extends SAbstractController {
 		Set<Long> memberIds = new HashSet();
 		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
 				.getParameterValues("users")));
-		
+				
 		Binder binder = null;
 		if (binderId != null) {
-			getBinderModule().getBinder(binderId);
+			binder = getBinderModule().getBinder(binderId);
+						
+			Boolean teamMembers = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_TEAM_MEMBERS);
+			List teamMembersIds = PortletRequestUtils.getLongListParameters(request, WebKeys.URL_TEAM_MEMBER_IDS);
+
+			if (teamMembers != null && teamMembers) {
+				try {
+					memberIds.addAll(getBinderModule().getTeamUserMembersIds(binderId));
+				} catch (AccessControlException ax) {
+					//don't use teamMembership if not a member
+				}
+			} else if (!teamMembersIds.isEmpty()) {
+				if (getBinderModule().testAccessGetTeamMembers(binderId)) {
+					// don't use teamMembership if not a member
+					memberIds.addAll(teamMembersIds);
+				}
+			}
+			
 		}
 		Entry entry = null;
 		if (Validator.isNotNull(entryId)) {
@@ -1466,5 +1489,23 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/meeting_return", model);		
 	}	
+	
+	private ModelAndView ajaxGetTeamMembers(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		
+			
+		String divId = PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID);
+		model.put(WebKeys.DIV_ID, divId);
+		
+		model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamUserMembers(binderId));
+		model.put("formElementName", PortletRequestUtils.getStringParameter(request, "formElementName"));
+		model.put("prefix", PortletRequestUtils.getStringParameter(request, "prefix"));
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/team_members", model);
+	}
 
 }
