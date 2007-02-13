@@ -23,8 +23,8 @@ public class WebKeys {
 	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";	
 	public static final String CALENDAR_EVENTDATAMAP = "cal_eventdatamap";	
 	public static final String CALENDAR_URL_VIEWMODE = "cal_url_viewmode";	
-	public static final String CALENDAR_URL_NEWVIEWDATE = "cal_url_newviewdate";	
-	
+	public static final String CALENDAR_URL_NEWVIEWDATE = "cal_url_newviewdate";
+		
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
@@ -68,6 +68,7 @@ public class WebKeys {
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
+	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MUSTER_CLASS="muster_class";
     public static final String URL_MUSTER_IDS="muster_ids";
@@ -91,6 +92,8 @@ public class WebKeys {
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
+	public static final String URL_TEAM_MEMBERS="teamMembers";
+	public static final String URL_TEAM_MEMBER_IDS="team_member_ids";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -238,6 +241,7 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
 	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
+	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -345,6 +349,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE="ssEntryAttachmentEditTypeForNonIE";
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
     public static final String MEETING_TOKEN="ssMeetingToken";
+    public static final String TEAM_MEMBERS="ssTeamMembers";
     
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";

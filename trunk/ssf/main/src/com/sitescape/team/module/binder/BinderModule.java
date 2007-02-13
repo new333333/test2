@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.Document;
 
@@ -104,6 +105,7 @@ public interface BinderModule {
  
     
 	public List getTeamMembers(Long binderId);
+	
 	/**
 	 * Same as <code>getTeamMembers</code> except to access checks
 	 * @param binder
@@ -111,6 +113,26 @@ public interface BinderModule {
 	 */
 	public List getTeamMembers(Binder binder);
 
+	public List getTeamUserMembers(Long binderId);
+	
+	public List getTeamUserMembers(Binder binder);
+	
+	public Set getTeamUserMembersIds(Long binderId);
+	
+	public Set getTeamUserMembersIds(Binder binder);
+
+	public boolean hasTeamMembers(Long binderId);
+	
+	public boolean hasTeamMembers(Binder binder);
+
+	public boolean hasTeamUserMembers(Long binderId);
+	
+	public boolean hasTeamUserMembers(Binder binder);
+
 	public boolean testAccess(Binder binder, String operation);
 
+	public boolean testAccess(Long binderId, String operation);
+	
+	public boolean testAccessGetTeamMembers(Long binderId);
+	
 }

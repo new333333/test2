@@ -541,8 +541,34 @@
 			<type>com.sitescape.team.domain.Principal</type>
 		</attribute>		
 	</tag>	
-
-
+	
+	<tag>
+		<name>teamMembers</name>
+		<tag-class>com.sitescape.team.taglib.TeamMembers</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>noTeamMembers</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>				
+		<attribute>
+			<name>formNameAllTeamMembers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>formNameTeamMemberIds</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
 	<tag>
 		<name>param</name>
 		<tag-class>com.sitescape.team.taglib.ParamTag</tag-class>

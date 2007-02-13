@@ -390,7 +390,10 @@ public class BinderHelper {
 		    	String strTag = strTagArray[j].trim();
 		    	if (strTag.equals("")) continue;
 		    	
-		    	String strFirstSixChars = strTag.substring(0, 6);
+		    	String strFirstSixChars = "";
+		    	if (strTag.length() >= 6) {
+		    		strFirstSixChars = strTag.substring(0, 6);
+		    	}
 		    	//Ignore these entries as they refer to community entries.
 		    	if (strFirstSixChars.equals("allTAG")) continue;
 
