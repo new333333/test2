@@ -170,6 +170,14 @@ public class TopFrame extends JApplet implements Runnable {
            if (null == paramValue) {
                paramValue = "";
            }
+       if (paramName.equals("fileLoadingInProgress"))
+           if (null == paramValue) {
+               paramValue = "";
+           }
+       if (paramName.equals("fileLoadingEnded"))
+           if (null == paramValue) {
+               paramValue = "";
+           }
        return paramValue;
     }
 
