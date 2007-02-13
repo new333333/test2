@@ -13,7 +13,7 @@ var ss_helpInstructions ="<ssf:nlt tag="help.instructions"/>";
 var ss_helpManualsButtonText ="<ssf:nlt tag="help.button.viewBooks"/>"
 ss_helpSystem.outputHelpWelcomeHtml();
 
-var ss_helpSpotGifSrc = "<html:imagesPath/>skins/${ss_user_skin}/toolbar/help_choices.gif";
+var ss_helpSpotGifSrc = "<html:imagesPath/>icons/toolbar_help.gif";
 
 </script>
 

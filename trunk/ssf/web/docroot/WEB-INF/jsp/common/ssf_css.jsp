@@ -184,6 +184,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
+	<c:set var="ss_style_muted_label_color" value="#666666" scope="request"/>
 	<c:set var="ss_style_tags_color" value="#666666" scope="request"/>
 	
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
@@ -546,15 +547,28 @@ div.ss_iconed_label {
   padding-left: 16px;
   padding-right: 16px;
   font-size: 11px;
-  color: ${ss_style_muted_foreground_color};
+  line-height: 20px;
+  color: ${ss_style_muted_label_color};
 }
+
 div.ss_iconed_label a {
   font-size: 11px;
-  color: ${ss_style_muted_foreground_color};
+  color: ${ss_style_muted_label_color};
+}
+
+.ss_muted_label_small {
+  font-size: 11px;
+  color: ${ss_style_muted_label_color};
+}
+
+a:hover div.ss_iconed_label , a:visited:hover div.ss_iconed_label  {
+  font-size: 11px;
+  color: ${ss_style_muted_label_color};
+  text-decoration: underline;
 }
 
 div.ss_add_tag {
-  background-image: url(<html:imagesPath/>icons/add_tag.png);
+  background-image: url(<html:imagesPath/>icons/add_tag.gif);
 }
 
 div.ss_add_comment {
@@ -642,11 +656,15 @@ div.ss_send_friend {
 
 /* Blogs */
 .ss_blog {
-  border: ${ss_sliding_table_border_color} 1px solid;
+ 
 }
 
 .ss_blog_content, .ss_blog_content table {
   background-color:${ss_blog_content_background_color};
+}
+
+td.ss_blog_content {
+	padding-right: 5px;
 }
 
 div.ss_blog_content {
@@ -656,20 +674,39 @@ div.ss_blog_content {
   background-color:${ss_blog_summary_title_background_color};
 }
 
-.ss_blog_title, .ss_blog_title table {
+table.ss_blog_title table {
   background-color:${ss_style_header_bar_background};
-  height: 25px;
+}
+
+div.ss_blog_title  {
+  background-color:${ss_style_header_bar_background};
+  height: 21px;
+  overflow: hidden;
+  border-top: 2px solid ${ss_style_header_bar_background};
+  border-bottom: 2px solid ${ss_style_header_bar_background};
+  border-left: 3px solid ${ss_style_header_bar_background};
+  border-right: 3px solid ${ss_style_header_bar_background};
 }
 
 div.ss_header_bar_timestamp {
 	font-family: Arial, sans-serif;
 	font-size: 11px;
 	color: ${ss_style_header_bar_timestamp_color};
-	margin-top: 5px;
-	margin-right: 10px;
+	margin-top: 3px;
+	margin-right: 5px;
 	float: right;
 	position: relative;
 }
+
+div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
+	color: ${ss_style_header_bar_timestamp_color};
+}
+
+div.ss_header_bar_timestamp a:hover, div.ss_header_bar_timestamp a:visited:hover {
+	color: ${ss_style_header_bar_timestamp_color};
+	text-decoration: underline;
+}
+
 
 div.ss_header_bar_burst {
     display: inline;
@@ -681,9 +718,13 @@ div.ss_replies div.ss_header_bar_burst {
 	padding-left: 30px;
 }
 
+div.ss_header_bar_title_text {
+    display: inline;
+}
+
 span.ss_header_bar_title_text {
 	color: ${ss_style_header_bar_title_color};
-	font-size: 17px;
+	font-size: 15px;
 	margin-left: 5px;
 }
 
@@ -697,6 +738,10 @@ a.ss_header_bar_title_link:visited {
 	text-decoration: none;
 }
 
+a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
+	color: ${ss_style_header_bar_title_link_color};
+	text-decoration: underline;
+}
 
 .ss_blog_sidebar,  .ss_blog_sidebar form {
   background-color:${ss_blog_sidebar_background_color};
@@ -1558,7 +1603,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar_links {
 	float:right;
 	margin-top:0px;
-	margin-right:50px;
+	margin-right:20px;
+	margin-left: 5px;
 	background:inherit !important;
 }
 * html .ss_global_toolbar_links {
@@ -1580,6 +1626,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
+	margin-left: 10px;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
@@ -1587,14 +1634,27 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar_clipboard div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
 }
-.ss_global_toolbar_show_portal div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/show_portal.gif) no-repeat top;
+
+div.ss_global_toolbar_show_portal {
+    float: right;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
+	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 }
-.ss_global_toolbar_hide_portal div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/hide_portal.gif) no-repeat top;
+div.ss_global_toolbar_hide_portal {
+    float: right;
+    height: 20px;
+    width: 20px;
+    margin-right: 3px;
+	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 }
-.ss_global_toolbar_help div {
-	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top;
+div.ss_global_toolbar_help {
+    float: right;
+	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat right top;
+	padding-right: 20px;
+	margin-right: 10px;
+	color: #484848;
 }
 .ss_global_toolbar_findUser {
 	background:inherit !important;
@@ -1793,7 +1853,6 @@ a.ss_breadcrumb {
 	background-color: #CECECE;
 	height:23px;
 	line-height:23px;
-	border-left:1px solid #9687A7;
 }
 .ss_actions_bar_background {
 	margin:0px;
@@ -1816,8 +1875,7 @@ a.ss_breadcrumb {
 	font-weight:bold;
 	font-size: 11px;
 	letter-spacing: -0.25px;
-	border-right:1px solid #9687A7;
-	border-left:1px solid #FFF;
+	border-right: 1px solid #333333;
 	background:inherit;
 }
 .ss_actions_bar li * {
