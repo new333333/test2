@@ -451,7 +451,7 @@ public class WebHelper {
 	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
 	    			String webUrl = getPortletUrl(req, res, action, false, params);
 	    			String titleLink = "<a href=\"" + webUrl + "\"><span class=\"ss_title_link\">" + title + "</span></a>";
-	    			outputString = m3.replaceFirst(titleLink);
+	    			outputString = outputString.substring(0, m3.start(0)) + titleLink + outputString.substring(m3.end(), outputString.length());
 	    			m3 = p3.matcher(outputString);
 	    		}
 			}
