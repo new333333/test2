@@ -26,9 +26,74 @@ function ss_hideLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 	ss_hideDiv(divId);
 }
 
+//Function to be Called when Applet is loaded
+function ss_onAppletLoad${ssBinderId}${ss_namespace}() {
+	ss_hideLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}();
+	ss_showFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}();
+	ss_showFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}();
+}
+
+//Function to be called when the files start loading
+function ss_startLoadingFiles${ssBinderId}${ss_namespace}(fileNames) {
+	ss_showLoadingFolderDiv${ssBinderId}${ss_namespace}(fileNames);
+	ss_hideFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}();
+	ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}();
+}
+
+//Function to be called when the files have completed loading
+function ss_endLoadingFiles${ssBinderId}${ss_namespace}() {
+	ss_hideLoadingFolderDiv${ssBinderId}${ss_namespace}();
+	ss_showFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}();
+	ss_showFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}();
+}
+
 function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 	var divId = 'ss_divFolderDropTargetLoading${ssBinderId}${ss_namespace}';
 	ss_showDiv(divId);
+}
+
+//Show Files Loading Div Tag
+function ss_showLoadingFolderDiv${ssBinderId}${ss_namespace}(fileNames) {
+	var divId = 'ss_divFolderFilesLoading${ssBinderId}${ss_namespace}';
+	var divObj = document.getElementById(divId);
+	divObj.innerHTML = '<span class="ss_bold"><ssf:nlt tag="loading.files"/></span>: ' + fileNames
+	ss_showDiv(divId);
+}
+
+//Hide Files Loading Div Tag
+function ss_hideLoadingFolderDiv${ssBinderId}${ss_namespace}() {
+	var divId = 'ss_divFolderFilesLoading${ssBinderId}${ss_namespace}';
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+
+//Show Folder Attachment Help Text Div
+function ss_showFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}() {
+	var divId = 'ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}';
+	ss_showDiv(divId);
+}
+
+//Hide Folder Attachment Help Text Div
+function ss_hideFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}() {
+	var divId = 'ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}';
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+
+//Show Folder Library/Non-Library Attachment Help Text
+function ss_showFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
+	var divId = 'ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}';
+	ss_showDiv(divId);
+}
+
+//Hide Folder Library/Non-Library Attachment Help Text
+function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
+	var divId = 'ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}';
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
 }
 </script>
 
@@ -39,7 +104,7 @@ function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 	<table border="0" cellspacing="0" cellpadding="0" valign="top" height="100%" width="100%">
 		<tr><td align="center">
 			<div id="ss_divFolderDropTargetLoading${ssBinderId}${ss_namespace}">
-				<ssf:nlt tag="Loading"/>
+				<ssf:nlt tag="loading.applet"/>
 			</div>
 			
 			<c:if test="<%= isIE %>">
@@ -72,16 +137,15 @@ function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 				<c:if test="${ssBinderIsLibrary == 'true'}">
 					<PARAM NAME = "loadDirectory" VALUE="yes" />
 				</c:if>
-			    <PARAM NAME = "onLoadFunction" VALUE="ss_hideLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}" />
+			    <PARAM NAME = "onLoadFunction" VALUE="ss_onAppletLoad${ssBinderId}${ss_namespace}" />
 			    <PARAM NAME = "onCancelFunction" VALUE="" />
 			    <PARAM NAME = "menuLabelPaste" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
 			    <PARAM NAME = "menuLabelCancel" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
 			    <PARAM NAME = "menuLabelDeactivate" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
 			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory.for.nonlibrary.folder" />" />
 			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
-			    
-			    
-			    
+			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
+			    <PARAM NAME = "fileLoadingEnded" value="ss_endLoadingFiles${ssBinderId}${ss_namespace}" />
 			<c:if test="<%= !isIE %>">
 			</applet>
 			</c:if>
@@ -92,7 +156,12 @@ function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 		</td></tr>
 		<tr>
 			<td class="ss_entrySignature">
-				<ssf:nlt tag="folder.dropboxAddFolderAttachmentHelpText"/>
+				<div id="ss_divFolderFilesLoading${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
+					<ssf:nlt tag="loading.files"/>
+				</div>
+				<div id="ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
+					<ssf:nlt tag="folder.dropboxAddFolderAttachmentHelpText"/>
+				</div>
 			</td>
 		</tr>
 		<tr>
@@ -100,12 +169,14 @@ function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 		</tr>
 		<tr>
 			<td class="ss_entrySignature">
+				<div id="ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}" style="visibility:hidden;display:none;">
 				<c:if test="${ssBinderIsLibrary == 'false'}">
 					<ssf:nlt tag="note"/>: <ssf:nlt tag="folder.dropboxAddNonLibraryFolderHelpText"/>
 				</c:if>
 				<c:if test="${ssBinderIsLibrary == 'true'}">
 					<ssf:nlt tag="note"/>: <ssf:nlt tag="folder.dropboxAddLibraryFolderHelpText"/>
 				</c:if>
+				</div>
 			</td>
 		</tr>
 	</table>

@@ -282,6 +282,7 @@ public class PostFiles extends Thread {
             
             if (!du.equals("1")) {
               topFrame.dataSink.changeIcon(topFrame.dataSink.StaticGif);
+              topFrame.dataSink.fileLoadingEnded();
 			  try {
 				  String reloadFunction = topFrame.getParameter("reloadFunctionName");
 				  if (reloadFunction.equals(null)) return;

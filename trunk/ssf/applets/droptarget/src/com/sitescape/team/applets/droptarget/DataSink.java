@@ -35,6 +35,8 @@ static boolean GotColor = false;
 static Color BGColor = null;
 
 private static ArrayList xferFileList;
+private static ArrayList xferFileListNames;
+
   /** Create a new DataSink object */
   public DataSink(TopFrame topFrame) {
     this.topframe = topFrame;
@@ -99,6 +101,7 @@ private static ArrayList xferFileList;
     Clipboard c = this.getToolkit().getSystemClipboard();
     Transferable t = c.getContents(this);
     xferFileList = new ArrayList();
+    xferFileListNames = new ArrayList();
     String topDir = "";
     changeIcon(AnimGif);
     
@@ -117,6 +120,7 @@ private static ArrayList xferFileList;
         List files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
         for (int i = 0; i < files.size(); i++) {
           File f = (File) files.get(i);
+          String strFileName = f.getName();
           topDir = f.getParent();
           if (topDir == null) topDir = "/";
           if ( f.isDirectory() ) {
@@ -128,12 +132,14 @@ private static ArrayList xferFileList;
             traverseDir(f);
           } else {
             xferFileList.add(f);
+            xferFileListNames.add(strFileName);
           }
         }
       // Otherwise, we don't know how to paste the data, so just beep
       } else this.getToolkit().beep();
       Iterator fileIter = xferFileList.iterator();
       if (xferFileList.size() > 0) {
+    	fileLoadingInProgress();
         PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
         try {
           //Thread.sleep(3000);
@@ -171,6 +177,8 @@ private static ArrayList xferFileList;
     this.setBorder(null);                  // Restore the default border
     Transferable t = e.getTransferable();  // Get the data that was dropped
     xferFileList = new ArrayList();
+    xferFileListNames = new ArrayList();
+    
     String topDir = "";
     changeIcon(AnimGif);
 
@@ -188,6 +196,7 @@ private static ArrayList xferFileList;
         List files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
         for (int i = 0; i < files.size(); i++) {
           File f = (File) files.get(i);
+          String strFileName = f.getName();
           topDir = f.getParent();
           
           if (topDir == null) topDir = "/";
@@ -200,11 +209,13 @@ private static ArrayList xferFileList;
             traverseDir(f);
           } else {
             xferFileList.add(f);
+            xferFileListNames.add(strFileName);
           }
         }
         e.dropComplete(true);
         Iterator fileIter = xferFileList.iterator();
         if (xferFileList.size() > 0) {
+          fileLoadingInProgress();
           PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
         }
         else {
@@ -230,7 +241,9 @@ private static ArrayList xferFileList;
               traverseDir(new File(file, children[i]));
           }
       } else {
+    	  String strFileName = file.getName();
           xferFileList.add(file);
+          xferFileListNames.add(strFileName);
       }
   }
   // These are unused DropTargetListener methods
@@ -377,6 +390,43 @@ private static ArrayList xferFileList;
       Object foo = win.call(onCancelFunction,args);
     } catch (Exception ignored) { }
   }
+  
+  public void fileLoadingInProgress()
+  {
+    try {
+      String strFileLoadingInProgress = topframe.getParameter("fileLoadingInProgress");
+      if (strFileLoadingInProgress.equals(null) || "".equals(strFileLoadingInProgress)) return;
+
+      String strFileNames = "";
+      
+      if (xferFileListNames != null) {
+          for (int i = 0; i < xferFileListNames.size(); i++) {
+        	  if (!strFileNames.equals("")) {
+        		  strFileNames += ", " + (String) xferFileListNames.get(i);
+        	  } else {
+        		  strFileNames += (String) xferFileListNames.get(i);
+        	  }
+          }
+      }
+      
+      System.out.println("Hemanth: filesLoadingInProgress: strFileNames: "+strFileNames);
+      
+      JSObject win = JSObject.getWindow(topframe);
+      String args[] = {strFileNames};
+      Object foo = win.call(strFileLoadingInProgress,args);
+    } catch (Exception ignored) { }
+  }
+
+  public void fileLoadingEnded()
+  {
+    try {
+      String strFileLoadingEnded = topframe.getParameter("fileLoadingEnded");
+      if (strFileLoadingEnded.equals(null) || "".equals(strFileLoadingEnded)) return;
+      JSObject win = JSObject.getWindow(topframe);
+      String args[] = {};
+      Object foo = win.call(strFileLoadingEnded,args);
+    } catch (Exception ignored) { }
+  }  
   
   /**
    * Convert a "#FFFFFF" hex string to a Color.

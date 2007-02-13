@@ -118,7 +118,7 @@ function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
 	}
 
 	divObj.style.width = "350px";
-	divObj.style.height = "100px";
+	divObj.style.height = "125px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }
