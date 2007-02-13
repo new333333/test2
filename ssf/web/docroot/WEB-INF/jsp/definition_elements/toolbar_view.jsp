@@ -16,6 +16,10 @@ String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 String menuDivWidth = "300px";
 
 %>
+<script type="text/javascript">
+var ss_userSkin = "${ss_user_skin}";
+</script>
+
 <c:if test="${empty ss_toolbar_style}">
   <c:set var="ss_toolbar_style" value="ss_toolbar"/>
 </c:if>
@@ -41,8 +45,8 @@ String menuDivWidth = "300px";
      	<c:when test="${empty toolbarMenu.value.qualifiers.disabled}">
 	      <a id="toolbar_${toolbarMenu.key}" href="javascript: ;" 
 	      onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><portlet:namespace/>', 'parent_<%= menuTagDivId %><portlet:namespace/>');">
-	      ${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories}"
-	      > <img border="0" src="<html:imagesPath/>pics/menudown.gif"/></c:if></a>
+	      <span>${toolbarMenu.value.title}<c:if test="${!empty toolbarMenu.value.categories && ss_toolbar_style != 'ss_utils_bar'}"
+	      > <img border="0" src="<html:imagesPath/>pics/menudown.gif"/></c:if></span></a>
 		</c:when>
      	<c:when test="${!empty toolbarMenu.value.qualifiers.disabled}">
 		 <span class="ss_toolbar_inactive">&nbsp;&nbsp;&nbsp;&nbsp;${toolbarMenu.value.title}&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -168,8 +172,14 @@ String menuDivWidth = "300px";
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
 	        id="${toolbarMenu.value.qualifiers.textId}"
 	      </c:if>
-	      ><c:out 
-	        value="${toolbarMenu.value.title}" /></span></a></li>
+	      >
+	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
+	      	<img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" alt="<c:out value="${toolbarMenu.value.title}" />" >
+	      </c:if>
+	      <c:if test="${empty toolbarMenu.value.qualifiers.icon}">
+		      	<c:out value="${toolbarMenu.value.title}" />
+		  </c:if>
+	        </span></a></li>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <li><a href="<ssf:url>
