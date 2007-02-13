@@ -455,7 +455,8 @@ public class LocalLuceneSession implements LuceneSession {
 				Directory indDir = FSDirectory.getDirectory(indexPath, false);
 				updater = new IndexUpdater(indDir);
 				DocumentSelection docsel = updater.createDocSelection(q);
-				updater.updateField(new Field(fieldname, fieldvalue,
+				if (docsel.size() != 0)
+					updater.updateField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
 				updater.close();
