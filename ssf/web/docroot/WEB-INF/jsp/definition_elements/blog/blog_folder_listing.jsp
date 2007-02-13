@@ -4,7 +4,7 @@
     <tr>
       <td class="ss_blog_content" width="80%" valign="top">
 		  <c:forEach var="entry" items="${ssFolderEntries}" >
-			<div class="ss_blog_content" style="margin:2px 8px 20px 2px;">
+			<div class="ss_blog_content">
 			  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
 			  <c:set var="ss_blog_workflowStateCaption" value="" scope="request"/>
 			  <c:set var="ss_blog_reply_url" value="${ssBlogEntries[entry._docId].replyBlogUrl}" scope="request"/>
@@ -20,22 +20,20 @@
 			</div>
 		  </c:forEach>
 	  </td>
-	  <td class="ss_blog_sidebar" width="20%" valign="top">
-		<span class="ss_bold"><ssf:nlt tag="blog.calendar"/></span>
+	  <td class="ss_blog_sidebar" valign="top">
+		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.calendar"/></div>
 		<br>
+		<div class="ss_blog_sidebar_hole">
 		<div id="ss_blog_sidebar_date_popup"></div>
-		<form name="ss_blog_sidebar_date_form" style="display:inline;">
+ 		 <form name="ss_blog_sidebar_date_form" style="display:inline;">
 		  <ssf:datepicker id="ss_blog_sidebar_date" 
             calendarDivId="ss_blog_sidebar_date_popup"
             formName="ss_blog_sidebar_date_form"
             immediateMode="true" initDate="${ssFolderEndDate}"
 			callbackRoutine="ss_blog_sidebar_date_callback" />
-        </form>
-        
-        <br>
-        <br>
-		<span class="ss_bold ss_underline"><ssf:nlt tag="blog.archives"/></span>
-		<br/>
+          </form>
+         </div>
+		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.archives"/></div>
 		<table>
 		<c:forEach var="monthYear" items="${ssBlogMonthHits}">
 		  <tr>
@@ -47,29 +45,24 @@
 		</c:forEach>
 		</table>
 		
-        <br>
-        <br>
-		<span class="ss_bold ss_underline"><ssf:nlt tag="tags.community"/></span>
-		<br/>
+		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
 					name="binderId" value="${ssBinder.id}"/><portlet:param 
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-					class="${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		
-        <br>
-        <br>
-		<span class="ss_bold ss_underline"><ssf:nlt tag="tags.personal"/></span>
-		<br/>
+		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
+
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		
 		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="view_folder_listing"/><portlet:param 
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
+				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
 	  </td>

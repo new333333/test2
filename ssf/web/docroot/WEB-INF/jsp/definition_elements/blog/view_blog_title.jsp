@@ -25,6 +25,7 @@
 	 timeStyle="short" dateStyle="medium" />
  by <c:out value="${ssDefinitionEntry.creation.principal.title}"/>
 </div>
+<div class="ss_header_bar_burst"><img src="<html:imagesPath/>icons/new_burst.gif"></div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		ssSeenMap.setSeen(title_entry);
@@ -49,16 +50,19 @@
 <c:out value="${ssDefinitionEntry.title}"/></a>
 </span>
 </div>
-
+<%-- Subscribe, Ratings bar, visits --%>
 <c:if test="${empty ssDefinitionEntry.parentEntry}">
-<table cellspacing="0" cellpadding="0" width="100%">
-<tr>
-<td valign="top"><%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %></td>
-<td valign="top" align="right">
-<c:set var="ssPersonalTags" value="${ssBlogEntries[ss_blog_docId].ssPersonalTags}" scope="request"/>
-<c:set var="ssCommunityTags" value="${ssBlogEntries[ss_blog_docId].ssCommunityTags}" scope="request"/>
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-</td>
-</tr>
-</table>
+<div style="height: 20px;">
+<div style="float:right; padding-top: 2px;">
+<a href="javascript: ;" 
+  onClick="return false;"
+><div class="ss_iconed_label ss_send_friend"><ssf:nlt tag="entry.sendtofriend"/></div></a>
+<a href="javascript: ;" 
+  onClick="return false;"
+><div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div></a>
+</div>
+</div>
+<div>
+<%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
+</div>
 </c:if>

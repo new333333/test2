@@ -3,26 +3,32 @@
 
 <% // Only show the replies if this is the top entry %>
 <c:if test="${empty ssDefinitionEntry.topEntry}" >
-<table cellpadding="0" cellspacing="0" width="100%">
-<tr>
-<td valign="top" nowrap="nowrap">
-<div>
-<a href="#" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}');return false;">
-<span class="ss_bold"><ssf:nlt tag="blog.replyCount"/>: </span>
-<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>
-</a>
-</div>
-</td>
-<td align="right" valign="top" nowrap="nowrap">
+
+<c:set var="ssPersonalTags" value="${ssBlogEntries[ss_blog_docId].ssPersonalTags}" scope="request"/>
+<c:set var="ssCommunityTags" value="${ssBlogEntries[ss_blog_docId].ssCommunityTags}" scope="request"/>
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+<br/>
+
+
+<div style="padding-bottom: 2px;">
+
 <c:if test="${!empty ss_blog_reply_url}">
+<div class="ss_iconed_label ss_add_comment">
 <a href="${ss_blog_reply_url}" 
   onClick="ss_addBlogReply<portlet:namespace/>(this, '${ssDefinitionEntry.id}');return false;">
-<span class="ss_bold"><ssf:nlt tag="blog.addReply"/></span>
+<ssf:nlt tag="blog.addComment"/>
 </a>
+</div>
 </c:if>
-</td>
-</tr>
-</table>
+
+<div class="ss_iconed_label ss_view_something">
+<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}');return false;">
+<ssf:nlt tag="blog.viewComments"/> [<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
+</a>
+</div>
+</div>
+
+
 <div id="<portlet:namespace/>ss_blog_replies_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;"></div>
 <div id="<portlet:namespace/>ss_blog_add_reply_${ssDefinitionEntry.id}" 

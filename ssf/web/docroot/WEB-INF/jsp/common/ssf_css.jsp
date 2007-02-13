@@ -51,7 +51,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 
 <c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
-<c:set var="ss_style_header_bar_title_color" value="#8838AF" scope="request"/>
+<c:set var="ss_style_header_bar_title_color" value="#000000" scope="request"/>
 <c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
@@ -106,10 +106,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
-<c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
-<c:set var="ss_linkbutton_text_color" value="#009900" scope="request"/>
-<c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-<c:set var="ss_linkbutton_border_color_in" value="#d5d5d5" scope="request"/>
+<c:set var="ss_linkbutton_background_color" value="#CEFF63" scope="request"/>
+<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
+<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
+<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
 <c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
 
 <c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
@@ -144,6 +144,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
 	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
+	<c:set var="ss_style_folder_view_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
 	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -164,9 +165,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
-    <c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
-    <c:set var="ss_style_header_bar_title_color" value="#000000" scope="request"/>
-    <c:set var="ss_style_header_bar_title_link_color" value="#8838AF" scope="request"/>
+    <c:set var="ss_style_header_bar_background" value="#60644D" scope="request"/>
+    <c:set var="ss_style_header_bar_title_color" value="#CEFF63" scope="request"/>
+    <c:set var="ss_style_header_bar_title_link_color" value="#CEFF63" scope="request"/>
     <c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
 
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
@@ -182,6 +183,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_text_field_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
+
+	<c:set var="ss_style_tags_color" value="#666666" scope="request"/>
 	
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
@@ -193,7 +196,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_entry_description_background_color" value="#CCD583" scope="request"/>
+	<c:set var="ss_entry_description_background_color" value="#CCCC99" scope="request"/>
 	<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
@@ -224,15 +227,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
-	<c:set var="ss_blog_summary_title_background_color" value="#cceeff" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#CCCC99" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
-	<c:set var="ss_linkbutton_background_color" value="#FFFFE8" scope="request"/>
-	<c:set var="ss_linkbutton_text_color" value="#666666" scope="request"/>
-	<c:set var="ss_linkbutton_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_in" value="#dddddd" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#CCCC99" scope="request"/>
+	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
+	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
+
 	
 	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 	
@@ -384,14 +388,20 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
   }
     
 .ss_replies {
-  color: ${ss_replies_text_color};
-  background-color: ${ss_replies_background_color};
-  padding:0px 6px 2px 6px;
-  }
+}
 .ss_replies_background {
   background-color: ${ss_replies_background_color} !important;
   }
       
+div.ss_replies div.ss_entryContent {
+	margin-left: 30px;
+}
+
+div.ss_replies div.ss_entryDescription {
+	background-color: #C6C7AD;
+}
+
+
 .ss_style_color, .ss_style_color table, .ss_style form {
   color: ${ss_style_text_color};
   background-color: ${ss_style_background_color};
@@ -455,13 +465,38 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 .ss_entryDescription {
   border-left:    2px solid ${ss_entry_description_border_color};
   border-right:   2px solid ${ss_entry_description_border_color};
-  border-top:    20px solid ${ss_entry_description_border_color};
-  border-bottom: 20px solid ${ss_entry_description_border_color};
+  border-top:     5px solid ${ss_entry_description_border_color};
+  border-bottom:  5px solid ${ss_entry_description_border_color};
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   background-color: ${ss_entry_description_background_color};
   font-size: 13px;
-  letter-spacing: 1px;
-  color: #333333;
+  color: ${ss_muted_label_color};
   }
+
+.ss_replies .ss_entryDescription {
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+   
+.ss_entryDescriptionLead {
+	display: inline;
+}
+
+.ss_replies .ss_entryDescriptionLead {
+	display: inline;
+	background-image: url(<html:imagesPath/>icons/comment.png);
+	height: 16px;
+	width: 16px;
+	float: left;
+	margin-left: 11px;
+	margin-top: 3px;
+}
+
       
 /* Text styled as buttons */
 a.ss_linkButton:link, a.ss_linkButton:visited {
@@ -499,6 +534,42 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   text-decoration: none;
   display: inline;
   }
+
+
+div.ss_iconed_label {
+  display: inline;
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-size: 11px;
+  color: ${ss_muted_label_color};
+}
+div.ss_iconed_label a {
+  font-size: 11px;
+  color: ${ss_muted_label_color};
+}
+
+div.ss_add_tag {
+  background-image: url(<html:imagesPath/>icons/add_tag.png);
+}
+
+div.ss_add_comment {
+  background-image: url(<html:imagesPath/>icons/add_comment.gif);
+}
+
+div.ss_view_something {
+  background-image: url(<html:imagesPath/>icons/view_something.gif);
+}
+
+div.ss_subscribe {
+  background-image: url(<html:imagesPath/>icons/subscribe.gif);
+}
+
+div.ss_send_friend {
+  background-image: url(<html:imagesPath/>icons/send_friend.gif);
+  padding-left: 19px;
+}
 
 .ss_popupMenu {
   position:absolute;
@@ -575,6 +646,9 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   background-color:${ss_blog_content_background_color};
 }
 
+div.ss_blog_content {
+	padding-bottom: 30px;
+}
 .ss_blog_summary_title, .ss_blog_summary_title table {
   background-color:${ss_blog_summary_title_background_color};
 }
@@ -594,6 +668,16 @@ div.ss_header_bar_timestamp {
 	position: relative;
 }
 
+div.ss_header_bar_burst {
+    display: inline;
+	padding-left: 3px;
+}
+
+div.ss_replies div.ss_header_bar_burst {
+    display: inline;
+	padding-left: 30px;
+}
+
 span.ss_header_bar_title_text {
 	color: ${ss_style_header_bar_title_color};
 	font-size: 17px;
@@ -611,8 +695,36 @@ a.ss_header_bar_title_link:visited {
 }
 
 
-.ss_blog_sidebar, .ss_blog_sidebar table, .ss_blog_sidebar form {
+.ss_blog_sidebar,  .ss_blog_sidebar form {
   background-color:${ss_blog_sidebar_background_color};
+}
+
+.ss_blog_sidebar table {
+	background-color: transparent;
+}
+
+div.ss_blog_sidebar_hole {
+	background-color: ${ss_entry_description_background_color};
+}
+
+
+td.ss_blog_sidebar {
+	width: 200px;
+	background-image: url(<html:imagesPath/>pics/background_sidebar.jpg);
+	padding-left: 5px;
+	padding-right: 5px;
+	border-left: 1px ${ss_style_header_bar_background} solid;
+}
+
+a.ss_displaytag {
+	color: ${ss_style_tags_color};
+}
+
+div.ss_blog_sidebar_subhead {
+	padding-top: 20px;
+	padding-bottom: 5px;
+	font-size: 13px;
+	font-weight: bold;
 }
 
 /* Sliding tables */
@@ -654,14 +766,17 @@ div.ss_sliding_table_column {
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 
   line-height:14px;
+  font-family: ${ss_style_folder_view_font_family};
 }
 .ss_sliding_table_row1 {
   background-color: ${ss_sliding_table_row1_background_color}; 
   line-height:14px;
+  font-family: ${ss_style_folder_view_font_family};
 }
 .ss_highlightEntry {
   background-color: ${ss_folder_line_highlight_color};
   line-height:14px;
+  font-family: ${ss_style_folder_view_font_family};
 }
 .ss_sliding_table_info_popup * {
   color: ${ss_sliding_table_text_color};
