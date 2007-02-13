@@ -46,15 +46,7 @@
 </c:if>
 <c:if test="${!ss_presence_show_options_inline}">
 <a href="javascript: ;"
- style="background:url(<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>) no-repeat left;
- padding-left:10px; 
- <c:if test="${ss_presence_show_title}">
-   padding-right:2px; 
- </c:if>
- <c:if test="${!ss_presence_show_title}">
-   padding-right:2px; 
- </c:if>
- text-decoration:none;"
+ style="padding-right:2px; text-decoration:none;"
  onClick="ss_popupPresenceMenu(this, 
     '${ss_presence_user.id}', 
     '<%= presenceUserTitle %>', 
@@ -64,7 +56,8 @@
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
     '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
-><img border="0" width="1" height="12" src="<html:imagesPath/>pics/1pix.gif"/></a>
+><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
+ alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
