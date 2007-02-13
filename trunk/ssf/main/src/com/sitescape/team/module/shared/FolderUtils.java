@@ -68,7 +68,7 @@ public class FolderUtils {
 		
 		bs.getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
 	}
-
+	
 	/**
 	 * Modifies an existing folder entry with new file content for the
 	 * attachment.

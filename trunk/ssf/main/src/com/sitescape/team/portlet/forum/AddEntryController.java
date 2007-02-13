@@ -1,5 +1,7 @@
 package com.sitescape.team.portlet.forum;
 
+import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -19,11 +21,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -93,7 +98,6 @@ public class AddEntryController extends SAbstractController {
 				setupCloseWindow(response);
 			}
 		} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
-			String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 			String isLibraryBinder = PortletRequestUtils.getStringParameter(request, WebKeys.URL_IS_LIBRARY_BINDER, "");
 			
 			Map fileMap = null;
@@ -103,73 +107,94 @@ public class AddEntryController extends SAbstractController {
 				fileMap = new HashMap();
 			}
 			
+			//If the folder is a Library Folder 
 			if (isLibraryBinder.equalsIgnoreCase("true")) {
-				//Library Binder/Folder - Need to use WebDav Code that Jong will be providing
-				System.out.println("Hemanth : This is a Library Folder, need to use the same functionality as WebDAV\n\n");
-				
 				//We need to get the name of the files and the path information
-				//Based on the path information, we need to see if the folder is already present or now 
+				//Based on the path information, we need to see if the folder is already present or not 
 				//If the folder is already present, we will use it, if not we will create the folder
 				//Then we will check if the file we are trying to place in the folder is already present
 				//If they are already present, then we will create a new version of the file
 				//If they are not already present, we will have to create a new entry and associate the entry with 
 				//the new attachment.
-				
 				String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
 				String folderNameValue = ObjectKeys.FILES_FROM_APPLET_FOLDER_INFO_FOR_BINDER;
 	        	boolean blnCheckForAppletFile = true;
 	        	int intFileCount = 1;
 
+	        	//Looping through each of the uploaded file
 	        	while (blnCheckForAppletFile) {
-	        		Map oneFileMap = new HashMap();
-	        		Map entryNameOnly = new HashMap();
 	        		
+	        		//Get File Name Identifier
 	        		String fileEleName = nameValue + Integer.toString(intFileCount);
+	        		//Get Folder Name Identifier
 	        		String fileFolderName = folderNameValue + Integer.toString(intFileCount);
 	        		
+	        		//Checking if the file with name is present 
 	        		if (fileMap.containsKey(fileEleName)) {
-	        	    	MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
-	        	    	String orginalFileName = myFile.getOriginalFilename();
-	        	    	String fileName = myFile.getName();
-	        	    	String fileFolderNameVal = PortletRequestUtils.getStringParameter(request, fileFolderName, "");
-	        	    	
+	        	    	//Setting the parent folder to be used first
 	        	    	Long lngFolderIdToUse = folderId;
+	        			
+	        			//Getting the file information
+	        			MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
+	        	    	String orginalFileName = myFile.getOriginalFilename();
+	        	    	
+	        	    	//Getting the file folder information
+	        	    	String fileFolderNameVal = PortletRequestUtils.getStringParameter(request, fileFolderName, "");
+	        	    	//Getting the list of folders as a arraylist
 	        	    	ArrayList folderArrayList = getFolderList(fileFolderNameVal);
+	        	    	
+	        	    	//Looping through the folder name to identify under which folder we need to add the attachment
 	        	    	for (int i = 0; i < folderArrayList.size(); i++) {
 	        	    		String strFolderName = (String) folderArrayList.get(i);
-	        	    		
-	        	    		System.out.println("Hemanth: Check if Folder Exists: "+strFolderName+"\n");
-	        	    		
-	        	    		//Make Call to check if folder exists, if not create the folder and then, get the id for the folder
-	        	    		//Long newFolderId = JongsWebDAVMethod.checkAndCreateFolder(currentFolderId, strFolderName);
-	        	    		
-	        	    		//After getting the new folder id, we need to set that to the value lngFolderIdToUse
-	        	    		//lngFolderIdToUse = newFolderId;
+	        	    		if (!strFolderName.equals("")) {
+	        	    			Folder folderObj = getFolderModule().getFolder(lngFolderIdToUse);
+	        	    			
+	        	    			//Getting the sub-folders that have been created under the current folder
+			        	    	java.util.List arrSubFolders = (java.util.List) folderObj.getFolders();
+			        	    	boolean doesFolderExist = false;
+			        	    	
+			        	    	//Looping through the sub-folders that have already been created
+			        	    	for (int j = 0; j < arrSubFolders.size(); j++) {
+			        	    		Binder subFolder = (Binder) arrSubFolders.get(j);
+			        	    		String strSubFolderName = subFolder.getTitle();
+			        	    		//Checking to see if the sub-folder already created matches with the folder that has been dragged & dropped
+			        	    		if (strSubFolderName.equals(strFolderName)) {
+			        	    			doesFolderExist = true;
+			        	    			//Since the folder exists, we will use this folder
+			        	    			lngFolderIdToUse = subFolder.getId();
+			        	    			break;
+			        	    		}
+			        	    	}
+			        	    	
+			        	    	//Create a sub folder, if it does not exist
+			        	    	if (!doesFolderExist) {
+			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(this, folderObj, strFolderName);
+			        	    	}
+	        	    		}
 	        	    	}
 	        	    	
-	        	    	System.out.println("Hemanth: AddEntryController: fileName: "+fileName + ", orginalFileName: "+orginalFileName + ", fileFolderNameVal:" +fileFolderNameVal);
+	        	    	//Using the Folder object that was already present or that was recently created 
+	        	    	Folder entryCreationFolder = getFolderModule().getFolder(lngFolderIdToUse);
+	        	    	//Checking to see if the folder already contains the file that we are trying to create
+	        	    	FolderEntry preExistingEntry = getFolderModule().getLibraryFolderEntryByFileName(entryCreationFolder, orginalFileName);
+	        	    	
+	        	    	//If there is not pre-existing entry - we create a new entry
+	        	    	//If there is a pre-existing entry - we modify the entry
+	        	    	if (preExistingEntry == null) {
+	        	    		FolderUtils.createFolderEntry(this, entryCreationFolder, orginalFileName, myFile.getInputStream(), null);
+	        	    	} else {
+	        	    		FolderUtils.modifyFolderEntry(this, preExistingEntry, orginalFileName, myFile.getInputStream(), null);
+	        	    	}
 	        	    	intFileCount++;
-	        	    	
-	        	    	//Once the new folderId is obtained we need to pass that folderId along with the below call, new file and filename
-	        	    	//if the filename we have specified already exists in the repository for the folder, it will create a new version of the file
-	        	    	//if the filename we have specified does not exist, then we will create a new entry with the filename as the name of the entry,
-	        	    	//and the adding the file as an attachment to the entry. For this we will be using Jong's code.
-	        	    	
-	        	    	//oneFileMap.put(nameValue+"1", myFile);
-	        	    	//entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
-	        	    	//MapInputData inputData = new MapInputData(entryNameOnly);
-	        	    	//entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, new Boolean(true));
-	        	    	//System.out.println("Hemanth: entryId: "+entryId);
-	        	    	
 	        		} else {
+	        			//We will set this boolean value to false to exit from the while loop
 	        			blnCheckForAppletFile = false;
 	        		}
 	        	}
 				
 			} else if (isLibraryBinder.equalsIgnoreCase("false")) {
-				//Non-Library Binder/Folder
-				//We need to take one attached file at a time and try to save that, 
-				//instead of sending the whole list of files.
+				//If the folder is a non-library folder, we need to take one attached file at a time and 
+				//for each attached file we will create a entry and add the attached file to the entry. 
 				String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
 	        	boolean blnCheckForAppletFile = true;
 	        	int intFileCount = 1;
@@ -182,7 +207,6 @@ public class AddEntryController extends SAbstractController {
 	        		if (fileMap.containsKey(fileEleName)) {
 	        	    	MultipartFile myFile = (MultipartFile)fileMap.get(fileEleName);
 	        	    	String fileName = myFile.getOriginalFilename();
-	        	    	System.out.println("Hemanth: AddEntryController: fileName: "+fileName);
 	        	    	intFileCount++;
 	        	    	
 	        	    	oneFileMap.put(nameValue+"1", myFile);
@@ -190,8 +214,6 @@ public class AddEntryController extends SAbstractController {
 	        	    	
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
 	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, new Boolean(true));
-	        	    	
-	        	    	System.out.println("Hemanth: entryId: "+entryId);
 	        		} else {
 	        			blnCheckForAppletFile = false;
 	        		}

@@ -69,8 +69,6 @@ public class PostFiles extends Thread {
             	strFolderName = localfn.substring(0, localfn.lastIndexOf("/"));
             }
             
-            System.out.println("Hemanth: localfn: "+ localfn + ", strFolderName: "+strFolderName);
-            
             out.write(new String("content-disposition: form-data; name=\"" + name + "\"\r\n\r\n").getBytes());
             out.write(strFolderName.getBytes());
             out.write(new String("\r\n" + "--" + boundary + "\r\n").getBytes());
@@ -204,9 +202,6 @@ public class PostFiles extends Thread {
       toAddr = ta;
       fileList = fl;
       topDir = td;
-      
-      System.out.println("Hemanth: topDir:"+ topDir);
-      
       start();
     }
 
@@ -220,8 +215,6 @@ public class PostFiles extends Thread {
       // Figure out the total number of bytes to send to the server
       totalBytes = countem(fileList);
         try {
-        	System.out.println("Hemanth: PostFiles.......");
-            
             URL postTo = new URL(toAddr);
             conn= (HttpURLConnection)postTo.openConnection();
             conn.setDoOutput(true);
@@ -247,8 +240,6 @@ public class PostFiles extends Thread {
                  continue;
               }
               filename = f.getName();
-              
-              System.out.println("Hemanth: filename: "+filename + ", localFilePath: "+localFilePath);
               
               writeFile(localFilePath, out, boundary, topFrame, topDir, "filesFromApplet"+(i+1));
               writeParam("startingDir", filename, out, boundary);
@@ -312,12 +303,7 @@ public class PostFiles extends Thread {
 					writing = true;
 				}
 				url += new String(bytes).toString().trim();
-				
-				System.out.println("Hemanth: url: "+url);
-				
             }
-            
-            System.out.println("Hemanth: Before the writing loop");
             
             if (writing) {
 				writing = false;

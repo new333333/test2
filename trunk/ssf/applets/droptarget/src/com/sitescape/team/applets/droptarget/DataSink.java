@@ -190,8 +190,6 @@ private static ArrayList xferFileList;
           File f = (File) files.get(i);
           topDir = f.getParent();
           
-          System.out.println("Hemanth: drop: topDir: "+topDir + ", filename: " + f.getName());
-          
           if (topDir == null) topDir = "/";
           if ( f.isDirectory() ) {
         	  if (!loadDirectory) {
