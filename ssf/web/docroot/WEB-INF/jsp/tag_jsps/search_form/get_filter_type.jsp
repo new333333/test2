@@ -23,8 +23,7 @@
     	  <option value="_common"><ssf:nlt 
     	    tag="searchForm.commonElements" text="--common elements (e.g., title)--"/></option>
 		    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-		        <option value="<c:out value="${item.value.id}"/>"><c:out 
-		          value="${item.value.title}"/></option>
+		        <option value="${item.value.id}"><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></option>
 		    </c:forEach>
     	</select>
 	  </c:if>
@@ -34,8 +33,7 @@
     	  onChange="ss_getFilterSelectionBox(this, 'ss_workflow_def_id', 'get_workflow_states', '${ss_filterType}')">
     	  <option value="" selected="selected"><ssf:nlt tag="filter.selectWorkflow"/></option>
 		  <c:forEach var="item" items="${ssWorkflowDefinitionMap}">
-		    <option value="<c:out value="${item.value.id}"/>"><c:out 
-		      value="${item.value.title}"/></option>
+		    <option value="${item.value.id}"><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></option>
 		  </c:forEach>
     	</select>
 	  </c:if>

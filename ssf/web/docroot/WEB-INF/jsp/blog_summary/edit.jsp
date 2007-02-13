@@ -13,49 +13,52 @@
  *
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
+ //only implementing single select, so don't use dashboard/blog_config 
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-//treename must start with editForum
-String wsTreeName = "editForum_" + renderResponse.getNamespace();
-%>
-<table class="ss_style" width="100%"><tr><td>
-<c:if test="${!empty ssBinder}">
-<spane class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span><br/><br/>
-<c:out value="${ssBinder.title}" />
-<br/>
-</c:if>
-
-
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-<input type="hidden" name="componentName" value="blog"/>
-<br>
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.folder"/></span>
-<br>
+<c:set var="treeName" value="editForum_${renderResponse.namespace}"/>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(forum, obj) {
-	var r = self.document.<portlet:namespace />fm.ss_folder_id;
+<script type="text/javascript">
+function ${treeName}_showId(forum, obj) {
+	var formObj = ss_getContainingForm(obj);
+	var r = formObj.ss_folder_id;
     for (var b = 0; b < r.length; b++) {
       if (r[b].value == forum) 	r[b].checked=true;
 	}
-	ss_clearSingleSelect('<%= wsTreeName %>');
+	ss_clearSingleSelect('${treeName}');
 	
 	return false;
 }
 </script>
-<c:set var="singleSelect" value=""/>
-<c:if test="${!empty ssBinder}">
-	<c:set var="singleSelect" value="${ssBinder.id}"/>
+<form class="ss_style ss_form" action="<portlet:actionURL/>" 
+	method="post" name="<portlet:namespace />fm"
+	onSubmit="return ss_onSubmit(this);">
+<input type="hidden" name="componentName" value="blog"/>
+
+<table class="ss_style" width="100%"><tr><td>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.folder"/></th></tr>
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr><td><c:out value="${folder.title}" /></td></tr>
+</c:forEach>
+</table>
 </c:if>
-<ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
- 	topId="${ssWsDomTreeBinderId}" rootOpen="true"
-	 singleSelect="${singleSelect}" singleSelectName="ss_folder_id" />
+
+<br>
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.folder"/></span>
+<br>
+<ssf:tree treeName="${treeName}"
+	treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
+ 	rootOpen="true"
+	singleSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList[0]}" 
+	singleSelectName="ss_folder_id" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
+</td></tr></table>
 </form>
 <br>
 
-</td></tr></table>
 

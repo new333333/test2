@@ -53,7 +53,7 @@
 	<portlet>
 		<portlet-name>ss_search</portlet-name>
 		<restore-current-view>false</restore-current-view>
-		<maximize-edit>false</maximize-edit>
+		<maximize-edit>true</maximize-edit>
 		<instanceable>true</instanceable>
 	</portlet>
 </liferay-portlet-app>

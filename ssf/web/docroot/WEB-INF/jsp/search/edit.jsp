@@ -28,15 +28,9 @@
 <br/>
 <br/>
 
-<c:if test="${!empty ssDashboard}">
-<c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 <ssf:searchForm form="${formName}" element="data.query" 
-   data="${ssDashboard.beans[componentId].ssSearchFormData}" />
-</c:if>
-<c:if test="${empty ssDashboard}">
-<ssf:searchForm form="${formName}" element="data.query" 
-  data="<%= new java.util.HashMap() %>"/>
-</c:if>
+   data="${ssDashboard.beans[ssComponentId].ssSearchFormData}" />
+
 <br/>
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

@@ -120,7 +120,7 @@ public class ModifyDashboardController extends AbstractBinderController {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map ssDashboard = DashboardHelper.getDashboardMap(binder, 
 				getProfileModule().getUserProperties(user.getId()).getProperties(), model, scope, cId, true);
-
+		
 		DashboardHelper.checkDashboardLists(binder, ssDashboard);
 		
 		ssDashboard.put(WebKeys.DASHBOARD_LIST, dashboardList);

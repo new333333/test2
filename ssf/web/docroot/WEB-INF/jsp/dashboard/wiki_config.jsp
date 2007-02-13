@@ -16,29 +16,36 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="java.util.ArrayList" %>
 <br/>
-<br/>
-
+<c:set var="treeName" value="editForum_${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
-function t_wikiFolder_wsTree_showId(forum, obj) {
-	return false
+function ${treeName}_showId(forum, obj) {
+	var formObj = ss_getContainingForm(obj);
+	var r = formObj.ss_folder_id;
+    for (var b = 0; b < r.length; b++) {
+      if (r[b].value == forum) 	r[b].checked=true;
+	}
+	ss_clearSingleSelect('${treeName}');
+	
+	return false;
 }
 </script>
-
+<table class="ss_style" width="100%"><tr><td>
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>${ssDashboard.beans[ssComponentId].ssBinder.title}
+</c:if>
+<br/><br/>
 <span class="ss_bold">
   <ssf:nlt tag="dashboard.wiki.selectWikiFolder"/>
 </span>
-<br>
-<br>
+<br/>
 <div class="ss_indent_large">
-<ssf:tree 
-  treeName="<%= "t_wikiFolder_wsTree" %>" 
-  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
-  rootOpen="false" 
-  singleSelect="" 
-  singleSelectName="ss_folder_id"
-/>
+<ssf:tree treeName="${treeName}"
+	treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
+ 	rootOpen="true"
+	singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
+	singleSelectName="ss_folder_id" />
+
 </div>
 
 <br/>
