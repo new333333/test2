@@ -61,7 +61,7 @@ public class SendEntryMailController extends SAbstractController {
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
-			if (formData.containsKey("teamMembers")) {
+			if (formData.containsKey(WebKeys.URL_TEAM_MEMBERS)) {
 				try {
 					List team = getBinderModule().getTeamMembers(folderId);
 					for (int i=0; i<team.size();++i) {
@@ -70,7 +70,13 @@ public class SendEntryMailController extends SAbstractController {
 				} catch (AccessControlException ax) {
 					//don't use teamMembership if not a member
 				}
+			} else if (formData.containsKey(WebKeys.URL_TEAM_MEMBER_IDS)) {
+				if (getBinderModule().testAccessGetTeamMembers(folderId)) {
+					memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_TEAM_MEMBER_IDS)));
+				}
 			}
+			
+			
 			List entries = null;
 			//if want attachments load entries
 			if (PortletRequestUtils.getBooleanParameter(request, "attachments", false)) {
@@ -119,7 +125,7 @@ public class SendEntryMailController extends SAbstractController {
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.BINDER, folder);
 		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(folderId));
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(folderId));
 		} catch (AccessControlException ax) {
 			//don't display membership
 		}

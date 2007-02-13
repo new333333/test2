@@ -55,7 +55,7 @@ public class SendMailController extends SAbstractController {
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
-			if (formData.containsKey("teamMembers")) {
+			if (formData.containsKey(WebKeys.URL_TEAM_MEMBERS)) {
 				try {
 					List team = getBinderModule().getTeamMembers(binderId);
 					for (int i=0; i<team.size();++i) {
@@ -64,8 +64,15 @@ public class SendMailController extends SAbstractController {
 				} catch (AccessControlException ax) {
 					//don't use teamMembership if not a member
 				}
+			} else if (formData.containsKey(WebKeys.URL_TEAM_MEMBER_IDS)) {
+				if (getBinderModule().testAccessGetTeamMembers(binderId)) {
+					memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_TEAM_MEMBER_IDS)));
+				}
 			}
+			
+			
 			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML), null);
+			int i = 0;
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);
@@ -97,7 +104,7 @@ public class SendMailController extends SAbstractController {
 		}
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binderId));
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(binderId));
 		} catch (AccessControlException ax) {
 			//don't display membership
 		}

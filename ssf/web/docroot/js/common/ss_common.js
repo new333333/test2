@@ -3450,8 +3450,15 @@ var ss_muster = {
 			inputObj.setAttribute("type", "checkbox");
 			inputObj.setAttribute("name", "muster_ids");
 			inputObj.setAttribute("value", items[i]);
+			inputObj.setAttribute("id", "muster_ids_" + i);
+						
+			var labelObj = document.createElement("label");
+			labelObj.setAttribute("for", "muster_ids_" + i);
+			labelObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
+			
 			var spanObj = document.createElement("span");
-			spanObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
+			spanObj.appendChild(labelObj);
+						
 			var brObj = document.createElement("br");
 			formObj.appendChild(inputObj);
 			formObj.appendChild(spanObj);
@@ -3535,15 +3542,29 @@ var ss_muster = {
 	}
 }
 
+/*
+	Starts a Zon meeting. The meeting id is taken from value of "meetingToken"-HTML element.
+*/
 function ss_launchMeeting() {
-	if (document.getElementById("meetingToken"))
-		self.location.href = 'iic:meetmany?meetingtoken=' + document.getElementById("meetingToken").value;
+	if ($("meetingToken"))
+		ss_launchMeetingWithId($("meetingToken").value);
 	return false;
 }
 
+/*
+	Starts a Zon meeting with given id;
+*/
+function ss_launchMeetingWithId(id) {
+	self.location.href = 'iic:meetmany?meetingtoken=' + id;
+	return false;
+}
+
+/*
+	Creates a new Zon meeting and launch it now.
+*/
 function ss_startMeeting(url, formId) {
 	if (formId && formId != "")
-		ss_onSubmit(document.getElementById(formId));// TODO: remove this?
+		ss_onSubmit($(formId));
 	var ajaxRequest = new ss_AjaxRequest(url);
 	if (formId && formId != "")
 		ajaxRequest.addFormElements(formId);
@@ -3552,4 +3573,34 @@ function ss_startMeeting(url, formId) {
 	if (formId && formId != "")
 		ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();
+}
+
+/*
+	Show/Hide ajax loading animated icon. Icon displays in given HTML-Element as child.
+*/
+function toggleAjaxLoadingIndicator(objId) {
+	var imgObj = document.createElement("img");
+	imgObj.setAttribute("src", "/ssf/images/pics/ajax-loader.gif");
+	imgObj.setAttribute("border", "0");
+
+	var divObj = $(objId);
+	if (!divObj) return;
+
+	var wasAjaxLoaderThere = false;
+	for (var i = divObj.childNodes.length; i > 0; --i) {
+		if (divObj.childNodes[i -1] && divObj.childNodes[i -1].src && divObj.childNodes[i -1].src.indexOf("ajax-loader.gif") > -1) {
+			divObj.removeChild(divObj.childNodes[i -1]);
+			wasAjaxLoaderThere = true;
+		}
+	}
+	
+	if (!wasAjaxLoaderThere)
+		divObj.appendChild(imgObj);		
+}
+
+/* 
+	== document.getElementById(id) 
+*/
+function $(id) {
+	return document.getElementById(id);
 }

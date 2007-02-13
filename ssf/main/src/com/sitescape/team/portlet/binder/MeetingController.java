@@ -61,7 +61,11 @@ public class MeetingController  extends SAbstractController {
 				WebKeys.URL_ENTRY_ID);
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
  
-		
+		try {
+			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(binderId));
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
 		
