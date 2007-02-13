@@ -1542,8 +1542,8 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 
 /* global toolbar: */
 .ss_global_toolbar{
-	background:${ss_style_background_color} url(<html:imagesPath/>skins/${ss_user_skin}/back2.gif) repeat-x;
-	height:34px;
+	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
+	height:45px;
 	padding-top:4px;
 <c:if test="<%= isIE %>">
 	margin-bottom:6px;
@@ -1566,7 +1566,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_links li {
 	float:left;
-	margin-left:19px;
+	margin-left:5px;
 	background:inherit !important;
 }
 .ss_global_toolbar_links li:hover div:hover {
@@ -1574,15 +1574,15 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_links li div {
 	display:block;
-	padding-top:20px;
-	color:#484848;
+	padding-top:25px;
+	color:#666666;
 	text-align:center;
 }
 .ss_global_toolbar_favs div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/favorites.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
 }
 .ss_global_toolbar_myworkspace div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/workspace.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
 }
 .ss_global_toolbar_clipboard div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
@@ -1594,10 +1594,11 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/hide_portal.gif) no-repeat top;
 }
 .ss_global_toolbar_help div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/help.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top;
 }
 .ss_global_toolbar_findUser {
 	background:inherit !important;
+	margin-top: 3px;
 }
 .ss_global_toolbar_findUser form {
 	background:transparent;
@@ -1621,6 +1622,7 @@ div.ss_global_toolbar_findUser_text span {
 }
 .ss_global_toolbar_search {
 	background:inherit !important;
+	margin-top: 3px;
 }
 .ss_global_toolbar_search form {
 	background:transparent;
@@ -1788,7 +1790,7 @@ a.ss_breadcrumb {
 	width:100%;
 	margin:0px;
 	padding:0px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+	background-color: #CECECE;
 	height:23px;
 	line-height:23px;
 	border-left:1px solid #9687A7;
@@ -1796,12 +1798,12 @@ a.ss_breadcrumb {
 .ss_actions_bar_background {
 	margin:0px;
 	padding:0px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+	background-color: #CECECE;
 }
 .ss_actions_bar_history_bar {
 	height:23px;
 	line-height:23px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back3.gif) repeat-x;
+	background-color: #CECECE;
 }
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
@@ -1812,6 +1814,8 @@ a.ss_breadcrumb {
 .ss_actions_bar li {
 	float:left;
 	font-weight:bold;
+	font-size: 11px;
+	letter-spacing: -0.25px;
 	border-right:1px solid #9687A7;
 	border-left:1px solid #FFF;
 	background:inherit;
@@ -1824,20 +1828,20 @@ a.ss_breadcrumb {
 	border-right:none;
 }
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color:#5A3C68 !important;
+	color:#333333 !important;
 	display:block;
 	padding:0px 15px;
 	background:inherit;
 }
 .ss_actions_bar li a:hover {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/back4.gif) repeat-x !important;
+	background-color: #DFDFDF;
 	text-decoration:none;
 }
 .ss_actions_bar.ss_actions_bar_lower {
 	margin:0px 3px;
 }
 div.ss_actions_bar_submenu {
-	background:#EFEEF3;
+	background:#CECECE;
 	margin:0px;
 	padding:0px;
 	text-align:left;
@@ -1849,7 +1853,7 @@ div.ss_actions_bar_submenu {
 	position:absolute;
 	top:-10px;
 	left:-20px;
-	background:#EFEEF3;
+	background:#CECECE;
 	border:1px solid #907FA3;
 	border-top:none;
 	padding:4px;
@@ -1858,6 +1862,8 @@ div.ss_actions_bar_submenu {
 	float:none;
 	padding:0px 15px;
 	font-weight:bold;
+	font-size: 11px;
+	letter-spacing: -0.25px;
 	border-bottom:1px solid #E0DFEF;
 	border-right-style:none;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/bullet1.gif) no-repeat 5px 5px;
@@ -1866,13 +1872,13 @@ div.ss_actions_bar_submenu {
 .ss_actions_bar_submenu div {
 	background:none;
 }
-.ss_actions_bar_submenu li:hover .ss_actions_bar_submenu a:hover {
+.ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
 	text-decoration:underline;
-	background-color:#FBFAFF;
-	color:#5A3C68;
+	background-color:#DFDFDF;
+	color:#333333;
 }
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
-	color:#5A3C68;
+	color:#333333;
 }
 
 /* Search results selection */
