@@ -191,8 +191,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
         	    	String fileName = myFile.getOriginalFilename();
         	    	
-        	    	System.out.println("Hemanth: AbstractEntryProcessor.getFilesUploadedByApplet: fileName: "+fileName);
-        	    	
         	    	if (fileName != null && !fileName.equals("")) {
             	    	// Different repository can be specified for each file uploaded.
             	    	// If not specified, use the statically selected one.  
@@ -471,9 +469,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		if (fileItems.containsKey(fileEleName)) {
         	    	MultipartFile myFile = (MultipartFile)fileItems.get(fileEleName);
         	    	String fileName = myFile.getOriginalFilename();
-        	    	
-        	    	System.out.println("Hemanth: AbstractEntryProcessor.getFilesUploadedByApplet: fileName: "+fileName);
-        	    	
         	    	
         	    	if (fileName != null && !fileName.equals("")) {
             	    	// Different repository can be specified for each file uploaded.
