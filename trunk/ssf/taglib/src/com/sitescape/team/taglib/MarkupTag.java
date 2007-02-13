@@ -51,12 +51,14 @@ public class MarkupTag extends BodyTagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
+			RenderRequest renderRequest = (RenderRequest) httpReq.getAttribute("javax.portlet.request");
+			RenderResponse renderResponse = (RenderResponse) httpReq.getAttribute("javax.portlet.response");
+			
 			// Transform the body
 			String translatedString = _bodyContent;
-			if (type.equals(WebKeys.MARKUP_VIEW)) { 
-				//This page is being viewed. Transform markup into view html
-				translatedString = WebHelper.markupReplaceForView(httpReq, entity, _bodyContent);
-			}
+			//Transform the markup 
+			translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
+					httpReq, httpRes, entity, _bodyContent, type);
 			pageContext.getOut().print(translatedString);
 
 			return EVAL_PAGE;

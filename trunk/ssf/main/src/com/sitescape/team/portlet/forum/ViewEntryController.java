@@ -114,8 +114,18 @@ public class ViewEntryController extends  SAbstractController {
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map formData = request.getParameterMap();
 		String viewPath = BinderHelper.getViewListingJsp(this);
-		Map model;
+		Map model = new HashMap();
 
+		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+
+		boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
+		String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
+		String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
+
+		model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
+		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
+		
 		if (formData.containsKey("ssReloadUrl")) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
@@ -132,26 +142,18 @@ public class ViewEntryController extends  SAbstractController {
 				if (entries.size() == 1) {
 					FolderEntry entry = (FolderEntry)entries.iterator().next();
 					entryId = entry.getId().toString();
-					model = getShowEntry(entryId, formData, request, response, folderId);
+					getShowEntry(entryId, formData, request, response, folderId, model);
 				} else if (entries.size() == 0) {
-					throw new NoObjectByTheNameException("errorcode.no.entry.by.the.title", entryId);
+					Folder folder = getFolderModule().getFolder(folderId);
+					buildNoEntryToolbar(request, response, folder, model);
+					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
 				} else {
 					//TODO: handle multiple matches
 					throw new NotSupportedException();
 				}
 			} else {
-				model = getShowEntry(entryId, formData, request, response, folderId);
+				getShowEntry(entryId, formData, request, response, folderId, model);
 			}
-			model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-
-			boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
-			String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
-			String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
-
-			model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
-			model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
-			model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
-			
 			FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
 			
 			//Set up the tabs
@@ -454,6 +456,41 @@ public class ViewEntryController extends  SAbstractController {
 
 		return toolbar;
 	}
+	
+	protected void buildNoEntryToolbar(RenderRequest request, 
+			RenderResponse response, Folder folder, Map model) {
+		//Build the toolbar arrays
+		Toolbar entryToolbar = new Toolbar();
+		Map qualifiers;
+		//	The "Add" menu
+		List defaultEntryDefinitions = folder.getEntryDefinitions();
+		if (!defaultEntryDefinitions.isEmpty()) {
+			if (getFolderModule().testAccess(folder, "addEntry")) {				
+				int count = 1;
+				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					String title = NLT.getDef(def.getTitle());
+					if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+						title = title + " (" + String.valueOf(count++) + ")";
+					}
+					entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+					if (i == 0) {
+						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+					}
+				}
+			}
+		}
+		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
+	}
 
 	private String[] collectCreatorAndMoficationIds(FolderEntry entry) {		
 		Set principals = new HashSet();
@@ -472,8 +509,8 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	}
 	
-	protected Map getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, Long folderId)  {
-		Map model = new HashMap();
+	protected void getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
+			Long folderId, Map model)  {
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -506,7 +543,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(folderId,Long.valueOf(entryId)));
 		if (entry == null) {
 			DefinitionHelper.getDefinition(null, model, "//item[@name='entryView']");
-			return model;
+			return;
 		}
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
@@ -555,7 +592,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		
-		return model;
+		return;
 	}
 	
 	

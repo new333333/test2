@@ -74,6 +74,7 @@ public class WebKeys {
     public static final String URL_NAMESPACE="namespace";
     public static final String URL_NEW_TAB="newTab";
     public static final String URL_NEW_TAB_PLACE_HOLDER="ss_new_tab_place_holder";
+    public static final String URL_NORMALIZED_TITLE="title";
     public static final String URL_OPERATION="operation";
     public static final String URL_OPERATION2="operation2";
     public static final String URL_PAGE_NUMBER="pageNumber";
@@ -412,6 +413,7 @@ public class WebKeys {
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
+    public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_VIEW="view"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -585,7 +587,7 @@ public class WebKeys {
     public static final String VIEW_MODIFY_BINDER="binder/modify_binder";
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
-    public static final String VIEW_NO_ENTRY="entry/view_no_entry";
+    public static final String VIEW_NO_TITLE_ENTRY="entry/view_no_title_entry";
     public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
     public static final String VIEW_PRESENCE="presence/view";
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";
