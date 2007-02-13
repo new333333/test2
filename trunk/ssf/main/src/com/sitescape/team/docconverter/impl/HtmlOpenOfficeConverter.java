@@ -194,12 +194,12 @@ public class HtmlOpenOfficeConverter
 			xstorable = (XStorable) UnoRuntime.queryInterface(XStorable.class, objectDocumentToStore);
 	      
 			// Determine convert type based on input file name extension
-			if (ifp.endsWith(".odp")
-			|| ifp.endsWith(".ppt"))
+			if (ifp.toLowerCase().endsWith(".odp")
+			|| ifp.toLowerCase().endsWith(".ppt"))
 				convertType = "impress_html_Export";
 			else
-			if (ifp.endsWith(".ods")
-			|| ifp.endsWith(".xls"))
+			if (ifp.toLowerCase().endsWith(".ods")
+			|| ifp.toLowerCase().endsWith(".xls"))
 				convertType = "scalc: HTML (StarCalc)";
 			else
 				convertType = "HTML (StarWriter)";
