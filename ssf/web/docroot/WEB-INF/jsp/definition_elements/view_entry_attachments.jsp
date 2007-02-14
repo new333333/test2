@@ -145,6 +145,8 @@ function ss_postSelectEntryAttachment${ssDefinitionEntry.id}<portlet:namespace/>
 	var s = divObj.innerHTML;
 }
 
+var editClicked = "false";
+
 function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValue) {
  	var url = "<ssf:url 
     	adapter="true" 
@@ -160,22 +162,28 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
     url = url + "&ssURLValue="+strURLValue;
 
 	var divId = "ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>";
-	var divObj = document.getElementById(divId);	
+	var divObj = document.getElementById(divId);
 	
 	var frameId = 'ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>';	
 	var frameObj = document.getElementById(frameId);
 	
+	editClicked = "true";
+	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
-	//if (iFrameFileOpenInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> == "false") {
-		frameObj.src = url;
-		//iFrameFileOpenInvokedOnce${ssDefinitionEntry.id}<portlet:namespace/> = "true";
-	//}
+	frameObj.src = url;
 	
 	divObj.style.width = "1px";
 	divObj.style.height = "1px";
-	//this.frames['ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>'].setFileName${ssDefinitionEntry.id}<portlet:namespace/>(strURLValue);
+}
+function ss_checkEditClicked${ssDefinitionEntry.id}<portlet:namespace/>() 
+{
+	return editClicked;
+}
+function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
+{
+	editClicked = "false";
 }
 </script>
 

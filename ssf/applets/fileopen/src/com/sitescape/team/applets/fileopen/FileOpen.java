@@ -31,6 +31,9 @@ public class FileOpen extends JApplet implements Runnable {
     final String fileToOpen = "fileToOpen";
     final String editorType = "editorType";
     
+    final String checkEditClicked = "checkEditClicked";
+    final String resetEditClicked = "resetEditClicked";
+    
     String strFileName = "";
     String strEditorTypes = "";
 
@@ -41,14 +44,18 @@ public class FileOpen extends JApplet implements Runnable {
     //
     ////////////////////////////////////////////////////////////////////////
     public void run () {
+    	
     	fileOpen = this;
     	try {
 			strFileName = getParameter(fileToOpen);
 			strEditorTypes = getParameter(editorType);
 			
+			boolean ifEditIsClicked = checkEditClicked();
+			resetEditClicked();
+			
 			String [] strEditorType = strEditorTypes.split(",");
 			
-			if (!strFileName.equals("") && !strEditorType.equals("")) {
+			if (!strFileName.equals("") && !strEditorType.equals("") && ifEditIsClicked) {
 					
 				for (int i = 0; i < strEditorType.length; i++) {
 					
@@ -259,6 +266,28 @@ public class FileOpen extends JApplet implements Runnable {
       } catch (Exception ignored) { }
     }
     
+    private boolean checkEditClicked() {
+        try {
+          String strCheckEditClicked = fileOpen.getParameter(checkEditClicked);
+          if (strCheckEditClicked.equals("")) return false;
+          String jsfunc = strCheckEditClicked;
+          JSObject win = JSObject.getWindow(fileOpen);
+          String strEditClicked = (String)win.call(jsfunc,null);
+          if (strEditClicked.equalsIgnoreCase("true")) return true;
+        } catch (Exception ignored) { }
+        return false;
+      }    
+    
+    private void resetEditClicked() {
+        try {
+          String strResetEditClicked = fileOpen.getParameter(resetEditClicked);
+          if (strResetEditClicked.equals("")) return;
+          String jsfunc = strResetEditClicked;
+          JSObject win = JSObject.getWindow(fileOpen);
+          win.call(jsfunc,null);
+        } catch (Exception ignored) { }
+      }    
+
     public void setFileToBeOpened(String strInputURL)
     {
       try {

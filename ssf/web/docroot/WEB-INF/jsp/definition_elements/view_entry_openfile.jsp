@@ -3,11 +3,20 @@
 <script>
 function setFileName${ssEntryId}${ss_namespace}(strURLValue)
 {
-	var fileOpenAppletObject =  document.getElementById("fileopenobj${ssEntryId}${ss_namespace}");
-	fileOpenAppletObject.setFileToBeOpened(strURLValue);
+	//var fileOpenAppletObject =  document.getElementById("fileopenobj${ssEntryId}${ss_namespace}");
+	//fileOpenAppletObject.setFileToBeOpened(strURLValue);
 }
 function fileName() {
 	//alert("${ssEntryAttachmentURL}");
+}
+
+function ss_checkEditClickLocal${ssEntryId}${ss_namespace}() {
+	var strEditClickValue = parent.ss_checkEditClicked${ssEntryId}${ss_namespace}();
+	return strEditClickValue;
+}
+
+function ss_resetEditClickLocal${ssEntryId}${ss_namespace}() {
+	parent.ss_resetEditClicked${ssEntryId}${ss_namespace}();
 }
 </script>
 
@@ -38,6 +47,8 @@ OpenFile Applet
 	    <PARAM NAME = "startingDir" VALUE=""/>
 	    <PARAM NAME = "fileToOpen" VALUE="${ssEntryAttachmentURL}"/>
 	    <PARAM NAME = "editorType" VALUE="${ssEntryAttachmentEditorType}"/>
+	    <PARAM NAME = "checkEditClicked" VALUE="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
+	    <PARAM NAME = "resetEditClicked" VALUE="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
 	<c:if test="<%= !isIE %>">
 	</applet>
 	</c:if>
