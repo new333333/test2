@@ -153,13 +153,17 @@
     		<c:if test="${empty ss_wikiHomepageEntryId}">
     		  src="<html:rootPath/>js/forum/null.html" 
     		</c:if>
-    		<c:if test="${!empty ss_wikiHomepageEntryId}">
+    		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">
+    		  <c:set var="entryId" value="${ss_wikiHomepageEntryId}"/>
+    		  <c:if test="${!empty ssEntryIdToBeShown}">
+    		    <c:set var="entryId" value="${ssEntryIdToBeShown}"/>
+    		  </c:if>
     		  src="<ssf:url     
 		    		adapter="<%= useAdaptor %>" 
 		    		portletName="ss_forum" 
 		    		folderId="${ssFolder.id}" 
 		    		action="view_folder_entry" 
-		    		entryId="${ss_wikiHomepageEntryId}" 
+		    		entryId="${entryId}" 
 		    		actionUrl="true" />" 
     		</c:if>
     		height="95%" width="100%" 

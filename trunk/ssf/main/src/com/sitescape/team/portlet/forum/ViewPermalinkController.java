@@ -10,8 +10,11 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -29,6 +32,7 @@ public class ViewPermalinkController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
+        User user = RequestContextHolder.getRequestContext().getUser();
  		
  		String url = BinderHelper.getBinderPermaLink(this);
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
@@ -50,7 +54,12 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
 			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
+			String displayStyle = user.getDisplayStyle();
+			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
+			} else {
+				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+			}
 		}
  		
 		model.put(WebKeys.PERMALINK, url);

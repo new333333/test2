@@ -82,6 +82,7 @@ public class WebKeys {
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_PAGE_SIZE="pageSize";
 	public static final String URL_RANDOM = "random";
+	public static final String URL_RANDOM_PLACEHOLDER = "ss_randomPlaceholder";
 	public static final String URL_TAB_ID = "tabId";
 	public static final String URL_TAG_COMMUNITY = "cTag";
 	public static final String URL_TAG_PERSONAL = "pTag";
@@ -264,6 +265,9 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
 	public static final String ACTION = "action";
+	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
+	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
+	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
@@ -344,6 +348,7 @@ public class WebKeys {
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
+    public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
     public static final String ENTRY_ATTACHMENT_URL="ssEntryAttachmentURL";
     public static final String ENTRY_ATTACHMENT_ALLOW_EDIT="ssEntryAttachmentAllowEdit";
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE="ssEntryAttachmentEditTypeForIE";

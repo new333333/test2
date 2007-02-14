@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -145,7 +146,7 @@ public class ViewEntryController extends  SAbstractController {
 					getShowEntry(entryId, formData, request, response, folderId, model);
 				} else if (entries.size() == 0) {
 					Folder folder = getFolderModule().getFolder(folderId);
-					buildNoEntryToolbar(request, response, folder, model);
+					buildNoEntryBeans(request, response, folder, model);
 					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
 				} else {
 					//TODO: handle multiple matches
@@ -457,30 +458,25 @@ public class ViewEntryController extends  SAbstractController {
 		return toolbar;
 	}
 	
-	protected void buildNoEntryToolbar(RenderRequest request, 
+	protected void buildNoEntryBeans(RenderRequest request, 
 			RenderResponse response, Folder folder, Map model) {
-		//Build the toolbar arrays
-		Toolbar entryToolbar = new Toolbar();
-		Map qualifiers;
-		//	The "Add" menu
+		//Build the "add entry" beans
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
+		Map urls = new HashMap();
+		Map titles = new TreeMap();
+		model.put(WebKeys.ADD_ENTRY_DEFINITIONS,  defaultEntryDefinitions);
+		model.put(WebKeys.ADD_ENTRY_URLS,  urls);
+		model.put(WebKeys.ADD_ENTRY_TITLES,  titles);
 		if (!defaultEntryDefinitions.isEmpty()) {
 			if (getFolderModule().testAccess(folder, "addEntry")) {				
-				int count = 1;
-				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
-				qualifiers = new HashMap();
-				qualifiers.put("popup", new Boolean(true));
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
 					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.getDef(def.getTitle());
-					if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-						title = title + " (" + String.valueOf(count++) + ")";
-					}
-					entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+					urls.put(def.getId(), adapterUrl.toString());
+					titles.put(NLT.getDef(def.getTitle()), def.getId());
 					if (i == 0) {
 						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
 						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
@@ -489,7 +485,6 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			}
 		}
-		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
 	}
 
 	private String[] collectCreatorAndMoficationIds(FolderEntry entry) {		

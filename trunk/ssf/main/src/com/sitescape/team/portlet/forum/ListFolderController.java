@@ -261,6 +261,11 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
+		
+		//See if the entry to be shown is also included
+		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
+		model.put(WebKeys.ENTRY_ID_TO_BE_SHOWN, entryIdToBeShown);
 
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
@@ -296,6 +301,8 @@ public class ListFolderController extends  SAbstractController {
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 	
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();

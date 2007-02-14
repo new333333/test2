@@ -118,11 +118,11 @@ type="time" /></span>
 					  </ssf:ifnotadapter>
 					  </td>							
 					  </tr>
-					</c:if>
 					  <%
 					  	if (!userIdList.equals("")) userIdList += " ";
 					  	userIdList += u2.getId().toString();
 					  %>
+					</c:if>
 					</c:forEach>
 					</c:forEach>
 					</table>

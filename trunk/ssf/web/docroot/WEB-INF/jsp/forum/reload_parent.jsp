@@ -21,8 +21,12 @@ if (self.parent.ss_hideAddEntryIframe${ss_namespace}) {
 	self.parent.ss_hideAddEntryIframe${ss_namespace}();
 }
 
-if (self.parent) {
-	self.parent.location.reload(true);
+if (self.parent && self.parent.ss_reloadUrl) {
+	var url = self.parent.ss_reloadUrl;
+	ss_random++;
+	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+	self.parent.location.href = url;
 	self.parent.focus();
 }
 
