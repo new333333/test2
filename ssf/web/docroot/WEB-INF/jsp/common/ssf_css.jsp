@@ -561,6 +561,13 @@ div.ss_iconed_label a {
   color: ${ss_style_muted_label_color};
 }
 
+.ss_muted_cloud_tag {
+  color: ${ss_style_muted_label_color};
+}
+.ss_muted_tag_cloud {
+  width: 70%;
+}
+
 a:hover div.ss_iconed_label , a:visited:hover div.ss_iconed_label  {
   font-size: 11px;
   color: ${ss_style_muted_label_color};
