@@ -38,31 +38,7 @@ import com.sitescape.team.repository.RepositoryServiceException;
  *
  */
 public interface FileModule {
-	
-	/**
-	 * Delete all files attached to any entity contained in the binder
-	 * or in any of the sub-binders. If applicable, also delete 
-	 * generated files (scaled files and thumbnail files) associated with 
-	 * the primary files. This method does NOT remove corresponding
-	 * FileAttachment objects from the entities so as to allow for a bulk
-	 * delete of Hibernate objects.
-	 * <p>
-	 * If any of the files is currently locked by anyone, this forcefully 
-	 * unlocks it before deleting it.
-	 * <p>
-	 * This method differs from other methods in that it returns accumulated
-	 * error information in FilesErrors object rather than throwing an 
-	 * exception. The operation does not necessarily stop upon the first
-	 * error encountered (depending on the nature of the error). Instead
-	 * it continues with processing (when possible), accumulates all errors,
-	 * and then returns. 
-	 * 
-	 * @param binder
-	 * @param errors errors object or <code>null</code>
-	 * @return
-	 */
-	public FilesErrors deleteFiles(Binder binder, FilesErrors errors);
-	
+		
 	/**
 	 * Delete all files attached to the entity. If applicable, also delete 
 	 * generated files (scaled files and thumbnail files) associated with 
