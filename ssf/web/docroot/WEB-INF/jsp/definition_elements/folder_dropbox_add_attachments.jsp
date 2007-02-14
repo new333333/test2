@@ -11,7 +11,7 @@ function ss_hideFolderDropTarget${ssBinderId}${ss_namespace}()
 	if (self.parent) {
 		self.parent.location.reload(true);
 		self.parent.focus();
-	}	
+	}
 }
 
 function getFolderAppletBgColor${ssBinderId}${ss_namespace}()

@@ -197,9 +197,11 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	</td>
 
 	<td width="10%" valign="top">
-		<a class="ss_linkButton ss_smallprint" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
-			<ssf:nlt tag="entry.AttachFilesByApplet"/>
-		</a>
+		<c:if test="${ssIsAppletSupported == 'true'}">
+			<a class="ss_linkButton ss_smallprint" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
+				<ssf:nlt tag="entry.AttachFilesByApplet"/>
+			</a>
+		</c:if>
 	</td>
 
 	<% if (isIE) { %>
