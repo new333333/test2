@@ -45,6 +45,9 @@ public class ReloadOpenerController  extends SAbstractController {
 			model.put(WebKeys.NAMESPACE, namespace);
 			model.put(WebKeys.ENTRY_ID, entryId);
 			return new ModelAndView("forum/reload_parent", model);
+		} else {
+			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			model.put(WebKeys.ENTRY_ID, entryId);
 		}
 		
 	    return new ModelAndView("forum/reload_opener", model);

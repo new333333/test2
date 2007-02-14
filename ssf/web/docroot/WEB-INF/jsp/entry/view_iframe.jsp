@@ -114,7 +114,8 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
   <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
     display:block; position:relative; left:5px;"
-    src="<html:rootPath/>js/forum/null.html" height="95%" width="100%" 
+    src="<html:rootPath/>js/forum/null.html" 
+    height="95%" width="100%" 
     onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
   </ssf:box>
 </div>
@@ -125,3 +126,20 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 <input type="hidden" name="entry_top">
 <input type="hidden" name="entry_left">
 </form>
+
+<c:if test="${!empty ssEntryIdToBeShown}">
+<script type="text/javascript">
+function ss_showEntryToBeShown<portlet:namespace/>() {
+    var url = "<ssf:url     
+		adapter="true" 
+		portletName="ss_forum" 
+		folderId="${ssBinder.id}" 
+		action="view_folder_entry" 
+		entryId="${ssEntryIdToBeShown}" 
+		actionUrl="true" />" 
+	ss_showForumEntryInIframe(url);
+}
+ss_createOnLoadObj('ss_showEntryToBeShown<portlet:namespace/>', ss_showEntryToBeShown<portlet:namespace/>);
+</script>
+</c:if>
+

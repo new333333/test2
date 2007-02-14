@@ -125,3 +125,19 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 </div>
 </div>
 
+<c:if test="${!empty ssEntryIdToBeShown}">
+<script type="text/javascript">
+function ss_showEntryToBeShown<portlet:namespace/>() {
+    var url = "<ssf:url     
+		adapter="true" 
+		portletName="ss_forum" 
+		folderId="${ssBinder.id}" 
+		action="view_folder_entry" 
+		entryId="${ssEntryIdToBeShown}" 
+		actionUrl="true" />" 
+	ss_showForumEntryInIframe(url);
+}
+ss_createOnLoadObj('ss_showEntryToBeShown<portlet:namespace/>', ss_showEntryToBeShown<portlet:namespace/>);
+</script>
+</c:if>
+

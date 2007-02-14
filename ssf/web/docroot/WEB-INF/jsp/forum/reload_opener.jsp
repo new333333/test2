@@ -17,10 +17,25 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 
-if (self.opener) {
+if (self.opener && self.opener.ss_reloadUrl) {
+	var url = self.opener.ss_reloadUrl;
+	ss_random++;
+	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+	self.opener.location.href = url;
+	self.opener.focus();
+} else if (self.opener) {
 	self.opener.location.reload(true);
 	self.opener.focus();
+} else if (self.parent && self.parent.ss_reloadUrl) {
+	var url = self.parent.ss_reloadUrl;
+	ss_random++;
+	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
+	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
+	self.parent.location.href = url;
+	self.parent.focus();
 }
+
 setTimeout("self.window.close();", 500);
 
 </script>

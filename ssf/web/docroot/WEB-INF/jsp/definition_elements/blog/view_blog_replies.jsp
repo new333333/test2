@@ -35,7 +35,7 @@
 <iframe 
   id="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   name="<portlet:namespace/>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
-  onLoad="ss_showBlogReplyIframe<portlet:namespace/>(this, '${ssDefinitionEntry.id}');" 
+  onLoad="if (parent.ss_showBlogReplyIframe<portlet:namespace/>) parent.ss_showBlogReplyIframe<portlet:namespace/>(this, '${ssDefinitionEntry.id}');" 
   width="100%">xxx</iframe>
 </div>
 </c:if>
