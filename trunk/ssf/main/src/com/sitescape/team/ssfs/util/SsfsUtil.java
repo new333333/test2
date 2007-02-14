@@ -122,5 +122,9 @@ public class SsfsUtil {
 
 	public static String attachmentEditTypeForNonIE() {
 		return SPropsUtil.getString("edit.in.place.for.nonie");
-	}	
+	}
+	
+	public static boolean supportApplets() {
+		return SPropsUtil.getBoolean("applet.support.in.application", false);
+	}
 }

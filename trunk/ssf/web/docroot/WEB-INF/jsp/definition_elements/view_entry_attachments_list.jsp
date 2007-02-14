@@ -28,16 +28,17 @@
 				<td width="40%" align="left">
 				
 					<c:if test="${ssConfigJspStyle != 'mail'}">
-					
 						<c:if test="${ssEntryAttachmentAllowEdit == 'true'}">
 							<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
 								<% if (isIECheck) { %>
 									<c:choose>
 									<c:when test="${ssEntryAttachmentEditTypeForIE == 'applet'}">
-										<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
-												binder="${ssDefinitionEntry.parentBinder}"
-												entity="${ssDefinitionEntry}"
-												fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+										<c:if test="${ssIsAppletSupported == 'true'}">
+											<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
+													binder="${ssDefinitionEntry.parentBinder}"
+													entity="${ssDefinitionEntry}"
+													fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+										</c:if>
 									</c:when>
 									<c:otherwise>
 										<a href="<ssf:ssfsInternalAttachmentUrl 
@@ -57,10 +58,12 @@
 												<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
 									</c:when>
 									<c:otherwise>
-										<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
-												binder="${ssDefinitionEntry.parentBinder}"
-												entity="${ssDefinitionEntry}"
-												fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+										<c:if test="${ssIsAppletSupported == 'true'}">
+											<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
+													binder="${ssDefinitionEntry.parentBinder}"
+													entity="${ssDefinitionEntry}"
+													fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="Edit"/>]</span></a>
+										</c:if>
 									</c:otherwise>
 									</c:choose>							
 								<% } %>

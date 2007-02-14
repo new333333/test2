@@ -524,11 +524,15 @@ public class ViewEntryController extends  SAbstractController {
 			folder = getFolderModule().getFolder(folderId);
 		}
 		
+		boolean isAppletSupported = SsfsUtil.supportApplets();
+		
 		String strEntryURL = DefinitionUtils.getWebDAVURL(folder, entry);
 		//String strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
 		//String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
 		
 		SeenMap seen = getProfileModule().getUserSeenMap(null);
+		
+		model.put(WebKeys.IS_APPLET_SUPPORTED, isAppletSupported);
 		model.put(WebKeys.SEEN_MAP, seen);
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);

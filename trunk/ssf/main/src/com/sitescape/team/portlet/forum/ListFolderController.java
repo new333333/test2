@@ -1167,9 +1167,13 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("folder", webdavUrl);
 		footerToolbar.addToolbarMenu("webdavUrl", NLT.get("toolbar.menu.webdavUrl"), webdavUrl, qualifiers);
 		
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
-		footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
+		boolean isAppletSupported = SsfsUtil.supportApplets();
+		
+		if (isAppletSupported) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
+			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
+		}
 		
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());

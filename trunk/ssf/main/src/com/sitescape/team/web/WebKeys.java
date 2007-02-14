@@ -35,6 +35,7 @@ public class WebKeys {
     public static final String SEARCH_TAG_ID = "_tagField";
     public static final String SEARCH_TITLE = "searchTitle";
     public static final String SEARCH_ACL_TAG_ID = "_aclTagField";
+    public static final String IS_APPLET_SUPPORTED = "ssIsAppletSupported";
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
