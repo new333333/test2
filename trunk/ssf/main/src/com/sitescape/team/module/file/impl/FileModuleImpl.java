@@ -259,19 +259,15 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
-	
-	public FilesErrors deleteFiles(Binder binder, FilesErrors errors) {
-		return null;
-	}
 
-	public FilesErrors deleteFiles(Binder binder, DefinableEntity entry,
-			FilesErrors errors) {
+	public FilesErrors deleteFiles(final Binder binder, 
+			final DefinableEntity entry, FilesErrors errors) {
 		return deleteFiles(binder, entry, errors, false);
 	}
-	// optimization : don't delete attachments, only delete the actual file
-	//this allows bulk deletes of attachments
-	private FilesErrors deleteFiles(final Binder binder, final DefinableEntity entry,
-			FilesErrors errors, boolean deleteAttachment) {
+	
+	private FilesErrors deleteFiles(final Binder binder, 
+			final DefinableEntity entry, FilesErrors errors,
+			boolean deleteAttachment) {
 		if(errors == null)
 			errors = new FilesErrors();
 		
@@ -296,9 +292,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 		
 		if(!updateMetadata) {
-			// No in-line transaction for updating metadata.
-			// In this case, we must run a separate transaction to record the 
-			// change logs. 
+			// Since there was no in-line transaction for updating metadata,
+			// we must run a separate transaction to record the change logs. 
 			// The following call also ensures that, even in the situation where
 			// the operation was not entirely successful, we still reflect the
 			// correponding metadata changes back to the database. 
