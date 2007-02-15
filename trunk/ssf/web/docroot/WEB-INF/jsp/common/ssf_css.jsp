@@ -4,6 +4,7 @@
 <% // Define the user's choice of skins (right now there is only one) %>
 <c:set var="ss_user_skin" value="r1" scope="request"/>
 
+
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
@@ -106,7 +107,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_blog_content_background_color" value="#FFFFAA" scope="request"/>
 <c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
-<c:set var="ss_linkbutton_background_color" value="#CEFF63" scope="request"/>
+<c:set var="ss_linkbutton_background_color" value="#DDDD77" scope="request"/>
 <c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 <c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
 <c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
@@ -166,8 +167,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
     <c:set var="ss_style_header_bar_background" value="#60644D" scope="request"/>
-    <c:set var="ss_style_header_bar_title_color" value="#CEFF63" scope="request"/>
-    <c:set var="ss_style_header_bar_title_link_color" value="#CEFF63" scope="request"/>
+    <c:set var="ss_style_header_bar_title_color" value="#DDDD77" scope="request"/>
+    <c:set var="ss_style_header_bar_title_link_color" value="#DDDD77" scope="request"/>
     <c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
 
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
@@ -232,7 +233,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
-	<c:set var="ss_linkbutton_background_color" value="#CCCC99" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#DDDD77" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
@@ -666,13 +667,74 @@ div.ss_send_friend {
  
 }
 
+<c:set var="ss_sidebar_side" value="right" scope="request"/>
+
+div.ss_blog_content_container1 {
+	width: 100%;
+	background-repeat: repeat-y;
+}
+
+div.ss_blog_sidebar_container {
+	width: 185px;
+	background-repeat: repeat-y;
+}
+<c:if test="${ss_sidebar_side == 'left'}">
+
+div.ss_blog_content_container1 {
+	margin-left: -192px;
+	float: right;
+	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
+	background-position: left;
+}
+
+div.ss_blog_content_container2 {
+	margin-left: 192px;
+}
+
+div.ss_blog_sidebar_container {
+	float: left;
+	padding-right: 5px;
+	background-image: url(<html:imagesPath/>pics/background_sidebar_lhs.jpg);
+	background-position: left;
+}
+
+</c:if>
+
+<c:if test="${ss_sidebar_side == 'right'}">
+
+div.ss_blog_content_container1 {
+	margin-right: -192px;
+	float: left;
+	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
+	background-position: right;
+}
+
+div.ss_blog_content_container2 {
+	margin-right: 192px;
+}
+
+div.ss_blog_sidebar_container {
+	float: right;
+	padding-left: 5px;
+	background-image: url(<html:imagesPath/>pics/background_sidebar_rhs.jpg);
+	background-position: right;
+}
+</c:if>
+
+div.ss_blog_sidebar {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+div.ss_clear_float {
+	height: 0px;
+	clear: both;
+}
+
 .ss_blog_content, .ss_blog_content table {
   background-color:${ss_blog_content_background_color};
 }
 
-td.ss_blog_content {
-	padding-right: 5px;
-}
 
 div.ss_blog_content {
 	padding-bottom: 30px;
@@ -750,10 +812,6 @@ a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
 	text-decoration: underline;
 }
 
-.ss_blog_sidebar,  .ss_blog_sidebar form {
-  background-color:${ss_blog_sidebar_background_color};
-}
-
 .ss_blog_sidebar table {
 	background-color: transparent;
 }
@@ -762,14 +820,6 @@ div.ss_blog_sidebar_hole {
 	background-color: ${ss_entry_description_background_color};
 }
 
-
-td.ss_blog_sidebar {
-	width: 200px;
-	background-image: url(<html:imagesPath/>pics/background_sidebar.jpg);
-	padding-left: 5px;
-	padding-right: 5px;
-	border-left: 1px ${ss_style_header_bar_background} solid;
-}
 
 a.ss_displaytag {
 	color: ${ss_style_tags_color};
@@ -1593,7 +1643,7 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 
 /* global toolbar: */
-.ss_global_toolbar{
+.ss_global_toolbar {
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
 	padding-top:4px;
@@ -1604,6 +1654,12 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	margin-bottom:4px;
 </c:if>
 }
+
+.ss_global_toolbar.ss_in_portlet {
+	background: transparent;
+}
+
+
 .ss_global_toolbar a span, .ss_global_toolbar div span {
 	background:transparent;
 }

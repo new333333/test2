@@ -32,10 +32,14 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 </c:if>
 
 <!-- Start of global toolbar -->
-<div class="ss_global_toolbar">
+
+<c:if test="${ss_navbar_style == 'portlet'}">
+<div class="ss_global_toolbar ss_in_portlet">
+</c:if>
 
 <!-- Show/hide portal -->
 <c:if test="${ss_navbar_style != 'portlet'}">
+<div class="ss_global_toolbar">
 	  <ssHelpSpot helpId="personal_toolbar/maximize_button" offsetX="-10" offsetY="10"
 	      title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
 	<div class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;"
@@ -58,7 +62,6 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 
   <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
 
-<c:if test="${ss_navbar_style != 'portlet'}">
 
 <!-- My workspace -->
 	<li class="ss_global_toolbar_myworkspace" 
@@ -93,7 +96,6 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 	</li>
 
 
-</c:if>
 
 <!-- Search form -->
 	<li class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>"
@@ -182,47 +184,6 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 		</form>
 	</li>
 
-<c:if test="${ss_navbar_style == 'portlet'}">
-  </ul>
-</div>
-<div class="ss_global_toolbar">
-  <ul class="ss_global_toolbar_links ss_font-x-small" style="float:left;">
-
-<!-- My workspace -->
-	<li class="ss_global_toolbar_myworkspace" 
-      onClick="self.location.href='<portlet:renderURL 
-      	windowState="maximized"><portlet:param 
-      	name="action" value="view_ws_listing"/><portlet:param 
-      	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
-      	name="entryId" value="${ssUser.id}"/><portlet:param 
-      	name="newTab" value="1"/></portlet:renderURL>';"
-     onMouseOver="this.style.cursor = 'pointer';"
-    >
-	  <ssHelpSpot helpId="personal_toolbar/my_workspace_button" offsetY="10"
-	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-	    <div id="ss_navbarMyWorkspaceButton">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.myWorkspace"/></span>
-	    </div>
-	  </ssHelpSpot>
-	</li>
-
-<!-- Favorites -->
-    <li class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
-      onMouseOver="this.style.cursor = 'pointer';"
-    >
-      <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
-          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	    <div id="ss_navbarFavoritesButton<portlet:namespace/>">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
-	    </div>
-	    <div id="ss_navbar_favorites<portlet:namespace/>" style="visibility:hidden;margin:0px;padding:0px;"
-	    ><img border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
-	  </ssHelpSpot>
-	</li>
-
-
-
-</c:if>
 
 <!-- Clipboard -->
 <c:if test="">
