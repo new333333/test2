@@ -279,7 +279,13 @@ public class Tabs {
     	
 		tab.put(BINDER_ID, binder.getId());
 		tab.put(PAGE, page);
-		tab.put(TITLE, binder.getTitle());
+		
+		if (options.containsKey(TITLE)) {
+			tab.put(TITLE, new String((String) options.get(TITLE)));
+		} else {
+			tab.put(TITLE, binder.getTitle());
+		}
+		
 		tab.put(ICON, binder.getIconName());
     	tab.put(END_DATE, strEndDate);
     	tab.put(YEAR_MONTH, strYearMonth);		
