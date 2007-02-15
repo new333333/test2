@@ -16,20 +16,13 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="formName" value="<%= renderResponse.getNamespace() + "searchfm" %>"/>
+<c:set var="ss_dashboard_config_form_name" value="<%= renderResponse.getNamespace() + "searchfm" %>"/>
 
-<form method="post" class="ss_style ss_form"  name="${formName}" id="${formName}"
+<form method="post" class="ss_style ss_form"  name="${ss_dashboard_config_form_name}" id="${ss_dashboard_config_form_name}"
 	action="<portlet:actionURL/>"  onSubmit="return ss_onSubmit(this);">
 
 <input type="hidden" name="componentName" value="search"/>
-<br/>
-<br/>
-<ssf:nlt tag="dashboard.config.search"/>
-<br/>
-<br/>
-
-<ssf:searchForm form="${formName}" element="data.query" 
-   data="${ssDashboard.beans[ssComponentId].ssSearchFormData}" />
+<%@ include file="/WEB-INF/jsp/dashboard/search_config.jsp" %>
 
 <br/>
 <br>

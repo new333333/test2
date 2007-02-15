@@ -31,16 +31,16 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.DomTreeBuilder;
-import com.sitescape.team.module.shared.DomTreeHelper;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.tree.DomTreeHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 
 public class BinderHelper {
 

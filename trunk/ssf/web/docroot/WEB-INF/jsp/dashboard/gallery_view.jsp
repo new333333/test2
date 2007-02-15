@@ -17,7 +17,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ssComponentId}">
 <c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
@@ -25,6 +24,25 @@
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
 
-<div id="ss_searchResults_${ssNamespace}">
+<c:if test="${ssDashboard.scope == 'portlet'}">
+<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+<script type="text/javascript">
+function ${ss_divId}_galleryurl(binderId, entryId, type) {
+	//Build a url to go to
+	ss_dashboardPorletUrlSupport(binderId, entryId, type);
+	return false;
+}
+</script>
+</c:if>
+
+<c:if test="${ssConfigJspStyle == 'template'}">
+<script type="text/javascript">
+function ${ss_divId}_galleryurl(binderId, entryId, type) {
+	return false;
+}
+</script>
+</c:if>
+
+<div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/gallery_view2.jsp" %>
 </div>

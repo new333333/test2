@@ -31,29 +31,24 @@
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
 <c:if test="${ssDashboard.scope == 'portlet'}">
-
-<script type="text/javascript">
-//generic url for ajax
-	var ss_dashboardAjaxUrl = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true"/>";
-    	
-function ${ss_divId}_guesturl(binderId, entryId) {
+<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+<script type="text/javascript">    	
+function ${ss_divId}_guestbookurl(binderId, entryId, type) {
 	//Build a url to go to
-	var url = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_entry"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	self.location.href = url;
+	ss_dashboardPorletUrlSupport(binderId, entryId, type);
 	return false;
 }
 </script>
 </c:if>
+
+<c:if test="${ssConfigJspStyle == 'template'}">
+<script type="text/javascript">
+function ${ss_divId}_guestbookurl(binderId, entryId, type) {
+	return false;
+}
+</script>
+</c:if>
+
 <script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
 
 

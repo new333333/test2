@@ -105,6 +105,9 @@ public class TreeTag extends TagSupport {
 		    
 			JspWriter jspOut = pageContext.getOut();
 			StringBuffer sb = new StringBuffer();
+			//Get the starting point of the tree
+			Element treeRoot = null;
+			if (tree != null) treeRoot = (Element)tree.getRootElement();
 			if (!this.noInit && Validator.isNull(startingId) || this.initOnly) {
 				sb.append("<script type=\"text/javascript\" src=\"").append(contextPath).append("/js/tree/tree_widget.js\"></script>\n");
 				sb.append("<script type=\"text/javascript\">\n");
@@ -112,6 +115,10 @@ public class TreeTag extends TagSupport {
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
 				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
 				sb.append("var ss_treeShowIdRoutine_"+this.treeName+" = '" + this.showIdRoutine + "';\n");
+				//used to match up treehelper on ajax callbacks
+				String treeKey="";
+				if (treeRoot != null) treeKey = treeRoot.attributeValue("treeKey", "");
+				sb.append("var ss_treeKey_"+this.treeName+" = '" + treeKey + "';\n");					
 				if (multiSelect != null) {
 					//
 				} 
@@ -135,8 +142,6 @@ public class TreeTag extends TagSupport {
 			} else {
 				List recursedNodes = new ArrayList();
 	
-				//Get the starting point of the tree
-				Element treeRoot = (Element)tree.getRootElement();
 				//Mark that the root is the last item in its list
 				treeRoot.addAttribute("treeLS","1");
 				if (this.rootOpen || this.allOpen || treeRoot.attributeValue("id", "-1").equals(this.nodeOpen)) {

@@ -43,4 +43,10 @@
          <portlet-ref>ss_wiki</portlet-ref>
       </instance>
    </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_gallery-instance</instance-id>
+         <portlet-ref>ss_gallery</portlet-ref>
+      </instance>
+   </deployment>
 </deployments>

@@ -14,11 +14,11 @@
  *
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
-//use editForum in tree name as prefix for domHelper
+
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
-<c:set var="treeName" value="editForum_${ssComponentId}${renderResponse.namespace}"/>
+<c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
 	var formObj = ss_getContainingForm(obj);

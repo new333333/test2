@@ -30,7 +30,7 @@
     entryId="${wikiEntry.id}">
 	<ssf:param name="newTab" value="1"/>
     </ssf:url>"
-	onClick="if (${ss_divId}_wikiurl) ${ss_divId}_wikiurl('${wikiEntry.parentFolder.id}','${wikiEntry.id}'); return false;">
+	onClick="if (${ss_divId}_wikiurl) ${ss_divId}_wikiurl('${wikiEntry.parentFolder.id}','${wikiEntry.id}', '${wikiEntry.entityType}'); return false;">
 
 
 <c:if test="${empty wikiEntry.title}">

@@ -1,5 +1,5 @@
 <%
-// The dashboard "search" component
+// The dashboard "gallery" component
 /**
  * Copyright (c) 2006 SiteScape, Inc. All rights reserved.
  *

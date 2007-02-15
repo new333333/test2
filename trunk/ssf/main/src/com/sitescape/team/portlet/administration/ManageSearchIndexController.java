@@ -17,15 +17,13 @@ import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.module.shared.DomTreeBuilder;
-import com.sitescape.team.module.shared.DomTreeHelper;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
-import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.tree.SearchTreeHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 public class ManageSearchIndexController extends  SAbstractController {
 	
@@ -94,7 +92,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 		}
 		users.addAttribute("url", "");
     	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-				new WsDomTreeBuilder(null, true, this, new SearchTree()),1);
+				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
     	//merge the trees
     	rootElement.appendAttributes(wsTree.getRootElement());
     	rootElement.appendContent(wsTree.getRootElement());
@@ -102,32 +100,6 @@ public class ManageSearchIndexController extends  SAbstractController {
 		model.put(WebKeys.WORKSPACE_DOM_TREE, pTree);		
 			
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_SEARCH_INDEX, model);
-	}
-	public static class SearchTree implements DomTreeHelper {
-		public boolean supportsType(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
-			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
-			return false;
-		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
-			return bs.getBinderModule().hasBinders((Binder)source);
-		}
-
-		public String getAction(int type, Object source) {
-			//use action to indicate type of name that is choose.  This allows us to 
-			//determine the name of the checkbox.  We use variable names so the
-			//profile binder can show up as the parent of the users/groups and 
-			//as the parent of user workspaces. 
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return DomTreeBuilder.NODE_TYPE_WORKSPACE;}
-			if (type == DomTreeBuilder.TYPE_FOLDER) {return DomTreeBuilder.NODE_TYPE_FOLDER;}
-			if (type == DomTreeBuilder.TYPE_PEOPLE) {return DomTreeBuilder.NODE_TYPE_PEOPLE;}
-			
-			return null;
-		}
-		public String getURL(int type, Object source) {return "";}
-		public String getDisplayOnly(int type, Object source) {return "false";}
-		public String getTreeNameKey() {return "search";}
-		
 	}
 
 }

@@ -46,7 +46,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-			onClick="if (${ss_divId}_guesturl) ${ss_divId}_guesturl('${fileEntry._binderId}','${fileEntry._docId}'); return false;">
+			onClick="if (${ss_divId}_guestbookurl) ${ss_divId}_guestbookurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 		
 				<span class="ss_entryTitle">
 					<c:if test="${empty fileEntry.title}">

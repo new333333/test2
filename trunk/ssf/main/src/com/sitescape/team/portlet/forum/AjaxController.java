@@ -36,9 +36,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.QueryBuilder;
@@ -48,6 +46,8 @@ import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
@@ -966,11 +966,7 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		if (binderId != null) {
 			String treeName = PortletRequestUtils.getStringParameter(request, "treeName", "");
-			String treeKey = null; 
-			int pos = treeName.indexOf("_");
-			if (pos != -1)  {
-				treeKey = treeName.substring(0, pos);
-			}
+			String treeKey = PortletRequestUtils.getStringParameter(request, "treeKey", "");
 			model.put("ss_tree_treeName", treeName);
 			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
 			model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));

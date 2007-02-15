@@ -18,10 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 
 

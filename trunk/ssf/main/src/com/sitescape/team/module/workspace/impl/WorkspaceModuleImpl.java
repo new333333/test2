@@ -23,11 +23,11 @@ import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 
 import org.dom4j.Document;

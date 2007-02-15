@@ -34,6 +34,7 @@
 <c:set var="resultCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
   <c:set var="resultCount" value="${resultCount + 1}"/>
+
   <c:if test="${not empty fileEntry._fileID}">
 
   <c:set var="hitCount" value="${hitCount + 1}"/>
@@ -46,7 +47,9 @@
 		    entryId="${fileEntry._docId}">
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>">
+			</ssf:url>"
+		onClick="if (${ss_divId}_galleryurl) ${ss_divId}_galleryurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+
     </c:when>
     <c:when test="${fileEntry._entityType == 'user'}">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -54,7 +57,9 @@
 			binderId="${fileEntry._principal.workspaceId}">
 			<ssf:param name="entityType" value="workspace" />
     	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" >
+			</ssf:url>" 
+		onClick="if (${ss_divId}_galleryurl) ${ss_divId}_galleryurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+
     </c:when>
     <c:when test="${fileEntry._entityType == 'group'}">
     <a target="_blank" href="<ssf:url action="view_profile_entry" 
@@ -67,7 +72,9 @@
 		    binderId="${fileEntry._docId}">
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" >
+			</ssf:url>" 
+		onClick="if (${ss_divId}_galleryurl) ${ss_divId}_galleryurl('${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
+
     </c:when>
  	</c:choose>
     <img border="0" src="<ssf:url 
@@ -91,8 +98,8 @@
 <c:if test="${hitCount > 0}">
       <span class="ss_light ss_fineprint">
 	    [<ssf:nlt tag="search.results">
-	    <ssf:param name="value" value="${ss_pageNumber * 10 + 1}"/>
-	    <ssf:param name="value" value="${ss_pageNumber * 10 + hitCount}"/>
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
+	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
 	    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
 	    </ssf:nlt>]
 	  </span>
@@ -104,15 +111,21 @@
 </c:if>
 	</td>
 	<td align="right">
+	<c:if test="${ssDashboard.scope != 'portlet'}">
+		<c:set var="binderId" value="${ssBinder.id}"/>
+	</c:if>
+	<c:if test="${ssDashboard.scope == 'portlet'}">
+		<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+	</c:if>
 	  <c:if test="${ss_pageNumber > 0}">
 	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber - 1}', '10', '${ss_divId}', '${componentId}', 'gallery'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
 	    </span>
 	  </c:if>
-	  <c:if test="${(ss_pageNumber * 10 + resultCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+	  <c:if test="${(ss_pageNumber * ss_pageSize + resultCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${ssBinder.id}', '${ss_pageNumber + 1}', '10', '${ss_divId}', '${componentId}', 'gallery'); return false;"
+	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'gallery'); return false;"
 	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>
