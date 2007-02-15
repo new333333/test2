@@ -40,7 +40,7 @@
 	<bean id="meetingController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 	
-	<bean id="teamMembersController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.team.TeamMemebersController" />	
+	<bean id="teamMembersController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.team.TeamMembersController" />	
 
  	<!-- Handlers -->
 
