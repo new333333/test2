@@ -137,9 +137,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public boolean testAccess(Long binderId, String operation)  {
 		return testAccess(loadBinder(binderId), operation);
 	}
+	
+	public boolean testAccessGetTeamMembers(Binder binder)  {
+		try {
+			checkAccess(binder, "getTeamMembers");
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
 
 	public boolean testAccessGetTeamMembers(Long binderId)  {
-		return testAccess(loadBinder(binderId), "getTeamMembers");
+		return testAccessGetTeamMembers(loadBinder(binderId));
 	}
 		
 	protected void checkAccess(Binder binder, String operation) throws AccessControlException {

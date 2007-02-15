@@ -60,7 +60,8 @@ public class SendEntryMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
+			// TODO: refactor clipboard
+//			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
 			if (formData.containsKey(WebKeys.URL_TEAM_MEMBERS)) {
 				try {
 					List team = getBinderModule().getTeamMembers(folderId);
@@ -156,6 +157,9 @@ public class SendEntryMailController extends SAbstractController {
 				clipboardUsers);
 		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 
+		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
+		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
+		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
 

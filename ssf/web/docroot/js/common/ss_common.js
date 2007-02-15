@@ -3628,3 +3628,30 @@ function toggleAjaxLoadingIndicator(objId) {
 function $(id) {
 	return document.getElementById(id);
 }
+
+/*
+  Those two methods synchronize checkbox "select all" with a group of checkboxes with the same name.
+  Method 'selectUnselectSynchronizedCheckboxes' schould be defined "onChange" event of  "select all"-checkbox.
+  Method 'adjustSynchronizedCheckbox' schould be defined "onChange" event of named checkboxes.
+ */
+function selectUnselectSynchronizedCheckboxes(checkboxId, checkboxesName) {
+	var checkboxObj = $(checkboxId);
+	var checked = checkboxObj && checkboxObj.checked;
+	var checkboxes = document.getElementsByName(checkboxesName);
+	for (var i = 0; i < checkboxes.length; i++) {
+		checkboxes[i].checked = checked;
+	}
+}
+
+/* Look at "selectUnselectSynchronizedCheckboxes" method for description. */
+function adjustSynchronizedCheckbox(checkboxId, checkboxesName) {
+	var checkboxObj = $(checkboxId);
+	var checkboxes = document.getElementsByName(checkboxesName);
+	for (var i = 0; i < checkboxes.length; i++) {
+		if (!checkboxes[i].checked) {
+			checkboxObj.checked = false;
+			return;
+		}
+	}
+	checkboxObj.checked = true;
+}

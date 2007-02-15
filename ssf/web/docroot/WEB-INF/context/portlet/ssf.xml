@@ -39,6 +39,8 @@
 	<bean id="sendEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SendMailController" />
 	<bean id="meetingController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
+	
+	<bean id="teamMembersController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.team.TeamMemebersController" />	
 
  	<!-- Handlers -->
 
@@ -56,7 +58,7 @@
 						<entry key="modify_dashboard"><ref bean="dashboardModifyController"/></entry>
 						<entry key="reload_opener"><ref bean="reloadOpenerController"/></entry>
 						<entry key="search"><ref bean="searchController"/></entry>
-
+												
 						<entry key="add_folder_entry"><ref bean="folderAddEntryController"/></entry>
 						<entry key="add_folder_reply"><ref bean="folderAddEntryController"/></entry>
 						
@@ -83,6 +85,7 @@
 						<entry key="start_meeting"><ref bean="meetingController"/></entry>
 						<entry key="schedule_meeting"><ref bean="meetingController"/></entry>						
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
+						<entry key="view_team_members"><ref bean="teamMembersController"/></entry>
 						
 					</map>
 				</entry>

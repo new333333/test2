@@ -156,6 +156,7 @@ public class WebKeys {
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_START_MEETING="start_meeting";
 	public static final String ACTION_SCHEDULE_MEETING="schedule_meeting";
+	public static final String ACTION_VIEW_TEAM_MEMBERS = "view_team_members";
 	
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
@@ -359,6 +360,7 @@ public class WebKeys {
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String TEAM_MEMBERS="ssTeamMembers";
+    public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
     
     public static final String ENTRIES="ssEntries";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
@@ -619,6 +621,7 @@ public class WebKeys {
     public static final String VIEW_WIKI_EDIT="wiki/edit";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
+    public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";
     
     //servlet paths
     public static final String SERVLET_VIEW_FILE="viewFile";
