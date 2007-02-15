@@ -262,18 +262,24 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			Map components = (Map) dashboard.get(Dashboard.Components);
 			if (components.containsKey(id)) {
 				Map component = (Map) components.get(id);
+				String componentName = (String)component.get(Name);
 				//See if this component needs a bean
-				if (component.get(Name).equals(
+				if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_BUDDY_LIST)) {
 					//Set up the buddy list bean
 					getInstance().getBuddyListBean(ssDashboard, 
 							id, component, false);
-				} else if (component.get(Name).equals(
+				} else if (componentName.equals(
+						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
+					//Set up the team members bean
+					getInstance().getTeamMembersBean(binder, 
+							ssDashboard, model, id, component);					
+				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean
 					getInstance().getWorkspaceTreeBean(binder, 
 							ssDashboard, model, id, component, new WorkspaceConfigHelper());
-				} else if (component.get(Name).equals(
+				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
 				} else {
@@ -296,6 +302,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					//Set up the buddy list bean
 					getInstance().getBuddyListBean(ssDashboard, 
 							id, component, true);
+				} else if (component.get(Name).equals(
+						ObjectKeys.DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST)) {
+					//Set up the team members list bean,
+					getInstance().getTeamMembersBean(binder, 
+							ssDashboard, model, id, component);					
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean,
@@ -558,6 +569,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  	   	}
 	}
+	
 	private Set getIds(Object ids) {
 		//handle bad data
 		if (ids instanceof String) {
@@ -614,7 +626,28 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     			
     	}
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
-    }	 
+    }
+	
+	protected void getTeamMembersBean(Binder binder, Map ssDashboard, Map model, String id, Map component) {
+    	Map data = (Map)component.get(DashboardHelper.Data);
+    	if (data == null) data = new HashMap();
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+    	}
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
+
+		List users = getBinderModule().getTeamUserMembers(binder);
+		idData.put(WebKeys.TEAM_MEMBERS, users);
+		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+	}
 	
     protected void getWikiHomepageEntryBean(Binder binder, Map ssDashboard, Map model, 
     		String id, Map component, boolean isConfig) {

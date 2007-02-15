@@ -88,6 +88,7 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_BLOG_SUMMARY = "blog";
     public static final String DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY = "guestbook";
     public static final String DASHBOARD_COMPONENT_BUDDY_LIST = "buddyList";
+    public static final String DASHBOARD_COMPONENT_TEAM_MEMBERS_LIST = "teamMembersList";
     public static final String DASHBOARD_COMPONENT_FOLDER = "folder";
     public static final String DASHBOARD_COMPONENT_SEARCH = "search";
     public static final String DASHBOARD_COMPONENT_GALLERY = "gallery";    
