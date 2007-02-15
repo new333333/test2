@@ -603,6 +603,7 @@ public class WebKeys {
     public static final String VIEW_MOVE_ENTRY="entry/move_entry";
     public static final String VIEW_MODIFY_BINDER="binder/modify_binder";
     public static final String VIEW_MOVE_BINDER="binder/move_binder";
+    public static final String VIEW_MULTIPLE_TITLE_ENTRIES="entry/view_multiple_title_entries";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_TITLE_ENTRY="entry/view_no_title_entry";
     public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
