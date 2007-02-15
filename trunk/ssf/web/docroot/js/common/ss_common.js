@@ -211,13 +211,15 @@ function ss_openTitleUrl(obj) {
 	    formObj.setAttribute("name", "ss_title_url_form");
 	    var hiddenObj = document.createElement("input");
 	    hiddenObj.setAttribute("type", "hidden");
+	    hiddenObj.setAttribute("id", "ss_page_title");
 	    hiddenObj.setAttribute("name", "page_title");
 	    formObj.appendChild(hiddenObj);
 		document.getElementsByTagName( "body" ).item(0).appendChild(formObj);
 	}
 	formObj.action = obj.href;
 	formObj.method = "post"
-	formObj.page_title.value = titleText;
+	var pageTitleObj = document.getElementById('ss_page_title');
+	pageTitleObj.value = titleText;
 	formObj.submit();
 	return false;
 }
