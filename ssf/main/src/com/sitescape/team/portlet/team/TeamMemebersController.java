@@ -134,7 +134,9 @@ public class TeamMemebersController extends SAbstractController  {
 		if (newTab.equals("1")) {
 			tabs.setCurrentTab(tabs.findTab(binder));
 		} else if (newTab.equals("2")) {
-			tabs.setCurrentTab(tabs.addTab(binder));
+			Map options = new HashMap();
+			options.put(Tabs.TITLE, binder.getTitle() + ": " + NLT.get("tabs.teamMembers"));
+			tabs.setCurrentTab(tabs.addTab(binder, options));
 		} else if (tabId != null) {
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {
@@ -227,6 +229,14 @@ public class TeamMemebersController extends SAbstractController  {
 		boolean addMenuCreated=false;
 		Binder parent = workspace.getParentBinder();
 		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		Map qualifiers = new HashMap();
+//		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("onClick", "appendUserIdsToURL(this); ss_toolbarPopupUrl(this.href);return false;");
+		toolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		
 		//	The "Manage dashboard" menu
 		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
 			boolean dashboardContentExists = false;
@@ -238,7 +248,7 @@ public class TeamMemebersController extends SAbstractController  {
 				}
 			}
 			dashboardToolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
-			Map qualifiers = new HashMap();
+			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
 			dashboardToolbar.addToolbarMenuItem("5_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
 			
@@ -288,35 +298,35 @@ public class TeamMemebersController extends SAbstractController  {
 		//The "Footer" menu
 		//RSS link 
 		Toolbar footerToolbar = new Toolbar();
-		
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
-		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
-
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		Map qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
-
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(workspace));
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
-
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(workspace));
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
+//		
+//		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+//		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+//		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+//		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
+//		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), adapterUrl.toString());
+//
+//		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+//		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+//		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+//		Map qualifiers = new HashMap();
+//		qualifiers.put("popup", Boolean.TRUE);
+//		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+//
+//		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+//		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+//		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+//		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(workspace));
+//		qualifiers = new HashMap();
+//		qualifiers.put("popup", Boolean.TRUE);
+//		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
+//
+//		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+//		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
+//		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+//		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(workspace));
+//		qualifiers = new HashMap();
+//		qualifiers.put("popup", Boolean.TRUE);
+//		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
