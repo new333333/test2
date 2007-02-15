@@ -39,21 +39,19 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <div class="ss_rounded">
 <div style="margin:6px;">
 <h3><ssf:nlt tag="administration.configure_cfg" text="Configurations"/></h3>
-<ssf:expandableArea title="<%= NLT.get("administration.configure_cfg.add") %>"  initOpen="true">
+<h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
 <form class="ss_style ss_form" name="<portlet:namespace/>fm" method="post" action="<portlet:renderURL>
 			<portlet:param name="action" value="configure_configuration"/>
 			<portlet:param name="operation" value="add"/>
 		</portlet:renderURL>" >
 		
-	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace" 
-		  text="Workspace" /><br/>
-	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder" 
-		  text="Folder" /><br/>
+	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
+	 <input type="radio" name="cfgType" value="5" ><ssf:nlt tag="general.type.folder"/><br/>
+	 <input type="radio" name="cfgType" value="-1" checked><ssf:nlt tag="administration.configure_cfg.clone"/><br/>
 	<br/><br/>
 
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
-</ssf:expandableArea>
 
 <br>
 <hr>

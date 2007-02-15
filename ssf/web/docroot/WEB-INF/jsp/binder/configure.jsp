@@ -16,12 +16,60 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<script type="text/javascript">
+function ss_treeShowIdConfig<portlet:namespace/>(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
 
-<div class="ss_style ss_portlet">
-<div class="ss_form" style="margin:6px;">
-<div class="ss_rounded">
-<div style="margin:6px;">
-<h3><ssf:nlt tag="binder.configure.definitions" text="Configure views/entries/workflows"/></h3>
+	//Build a url to go to
+	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="configure_definitions"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	self.location.href = url;
+	return false;
+}
+</script>
+
+<div class="ss_portlet">
+<div class="ss_style ss_form" style="margin:0px; padding:10px 16px 10px 10px;">
+<div style="margin:6px; width:100%;">
+<table cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td valign="top">
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="binder.configure.definitions"/></span>
+<br/>
+<br/>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <span><ssf:nlt tag="access.currentFolder"/></span>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <span><ssf:nlt tag="access.currentWorkspace"/></span>
+</c:if>
+<% //need to check tags for templates %>
+<span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+</td>
+<td align="right" valign="top">
+<form class="ss_form" method="post" style="display:inline;" 
+	action="<portlet:actionURL><portlet:param 
+	name="action" value="configure_definitions"/><portlet:param 
+	name="binderId" value="${ssBinder.id}"/><portlet:param 
+	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
+  <input type="submit" class="ss_submit" name="closeBtn" 
+    value="<ssf:nlt tag="button.close" text="Close"/>">
+</form>
+</td>
+</tr>
+</table>
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeShowIdConfig${renderResponse.namespace}" 
+  scope="request" />
+<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.definitions.inheritance" 
@@ -69,10 +117,7 @@
 		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" >
 
-<div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</div>
- 
+
 <c:if test="${ssBinder.entityType == 'workspace'}">
     <fieldset class="ss_fieldset">
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/></legend>
@@ -260,5 +305,5 @@
 </div>
 </div>
 </div>
-</div>
+
 

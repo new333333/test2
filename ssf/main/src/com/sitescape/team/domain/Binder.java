@@ -66,6 +66,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 inheritAclFromParent=source.inheritAclFromParent;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
+		 defaultPostingDef = source.defaultPostingDef;
+		 if (source.properties != null)
+			 properties = new HashMap(source.properties);
+		 //don't copy postingDef, notificationDef, internalId, binders, owner or pathName
  
      }
     /**

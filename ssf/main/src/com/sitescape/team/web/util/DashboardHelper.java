@@ -550,17 +550,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	    	}
 	    	Map idData = new HashMap();
 	    	beans.put(id, idData);
-	    	if (data.containsKey("users")) {
-	    		Set ids = getIds(data.get("users"));
-				//Get the configured list of principals to show
-				idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
-	    	}
+	    	Set ids = getIds(data.get("users"));
 		
 	    	if (data.containsKey("groups")) {
-	    		Set ids = getIds(data.get("groups"));
-				idData.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));
+	    		ids.addAll(getIds(data.get("groups")));
 	    	}
-	   	}
+			idData.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
+ 	   	}
 	}
 	private Set getIds(Object ids) {
 		//handle bad data

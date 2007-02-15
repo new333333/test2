@@ -232,7 +232,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		boolean addMenuCreated=false;
 		Binder parent = workspace.getParentBinder();
 		//Add Workspace except to top or a user workspace
-		if ((parent != null) && !parent.getEntityType().equals(EntityType.profiles)) {
+		if (parent != null) {
 			if (getWorkspaceModule().testAccess(workspace, "addWorkspace")) {
 				toolbar.addToolbarMenu("1_add", NLT.get("toolbar.add"));
 				addMenuCreated=true;

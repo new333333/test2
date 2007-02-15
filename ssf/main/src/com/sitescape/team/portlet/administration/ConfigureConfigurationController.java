@@ -27,11 +27,12 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DateHelper;
@@ -51,18 +52,24 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			if (WebKeys.OPERATION_ADD.equals(operation)) {
 				//adding top level config
 				int type = PortletRequestUtils.getIntParameter(request, "cfgType");
-				Map updates = new HashMap();
-				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
-				updates.put("templateTitle", sVal);
-				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-				updates.put("templateDescription", new Description(sVal));
-				sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
-				updates.put("iconName", sVal);
-				Long configId = getAdminModule().addTemplate(type, updates);
-				TemplateBinder config = getAdminModule().getTemplate(configId);
-				//	redirect to modify binder
-				response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				if (type == -1) {
+					Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+					Long configId = getAdminModule().addTemplateFromBinder(binderId);
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
+				} else {
+					Map updates = new HashMap();
+					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
+					updates.put("templateTitle", sVal);
+					sVal = PortletRequestUtils.getStringParameter(request, "description", null);
+					updates.put("templateDescription", new Description(sVal));
+					sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
+					updates.put("iconName", sVal);
+					Long configId = getAdminModule().addTemplate(type, updates);
+					TemplateBinder config = getAdminModule().getTemplate(configId);
+					//	redirect to modify binder
+					response.setRenderParameter(WebKeys.URL_BINDER_ID, config.getId().toString());
+					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				}
 			} else if (WebKeys.OPERATION_MODIFY.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//	The modify form was submitted. Go process it
@@ -239,8 +246,13 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			}
 			
 		} else if (WebKeys.OPERATION_ADD.equals(operation)) {
-				model.put(WebKeys.OPERATION, operation);				
-				model.put("cfgType", PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW)));
+				model.put(WebKeys.OPERATION, operation);
+				String cfgType = PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW));
+				if (cfgType.equals("-1")) {
+					Document wsTree = getWorkspaceModule().getDomWorkspaceTree(null, new WsDomTreeBuilder(null, true, this), 1);									
+					model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+				}
+				model.put("cfgType", cfgType);
 				path = WebKeys.VIEW_MODIFY_TEMPLATE;
 		} else {
 			List<TemplateBinder> configs = getAdminModule().getTemplates();

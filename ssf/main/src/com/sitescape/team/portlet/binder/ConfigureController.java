@@ -18,6 +18,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -58,9 +59,13 @@ public class ConfigureController extends AbstractBinderController {
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 
 		setupDefinitions(binder, model);
+		//Build the navigation beans
+		model.put(WebKeys.DEFINITION_ENTRY, binder);
+		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}
-	public static void getDefinitions(ActionRequest request, List definitions, Map workflowAssociations) {
+	protected void getDefinitions(ActionRequest request, List definitions, Map workflowAssociations) {
 		//	Get the default binder view
 		String defBinderId = PortletRequestUtils.getStringParameter(request, "binderDefinition", "");
 		String[] defBinderIds = PortletRequestUtils.getStringParameters(request, "binderDefinitions");
@@ -95,7 +100,7 @@ public class ConfigureController extends AbstractBinderController {
 		}
 
 	}
-	public static void setupDefinitions(Binder binder, Map model) {
+	protected void setupDefinitions(Binder binder, Map model) {
 
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");

@@ -39,10 +39,10 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	title = source.title;
     	normalTitle = source.normalTitle;
     	description = new Description(source.description);
-    	parentBinder = source.parentBinder;
     	entryDef = source.entryDef;
     	iconName = source.iconName;
     	definitionType = source.definitionType;
+    	//don't copy parentBinder, 
     	//cannot copy events,customattribute and attachments, since they need a ownerId
     	
     }

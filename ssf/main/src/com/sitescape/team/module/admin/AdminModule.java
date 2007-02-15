@@ -42,6 +42,7 @@ public interface AdminModule {
     public TemplateBinder createDefaultTemplate(int type);
 	public Long addTemplate(int type, Map updates);
 	public Long addTemplate(Long parentId, Long srcConfigId);
+	public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
 	public void modifyTemplate(Long id, Map updates);
 	public TemplateBinder getTemplate(Long id); 
 	public List getTemplates();

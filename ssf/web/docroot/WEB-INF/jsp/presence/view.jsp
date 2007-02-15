@@ -89,44 +89,6 @@ type="time" /></span>
 					</c:forEach>
 					</table>
 				 </c:if>
-				<c:if test="${!empty ssGroups}">
-					<table cellspacing="0" cellpadding="0">
-					<c:forEach var="group" items="${ssGroups}">
-					<c:forEach var="u2" items="${group.members}">
-					<jsp:useBean id="u2" type="com.sitescape.team.domain.Principal" />
-					<c:if test="<%= u2 instanceof com.sitescape.team.domain.User %>">
-					  <tr>
-					  <td><span id="${ssNamespace}_user_<c:out value="${u2.id}"/>"
-					  ><ssf:presenceInfo user="<%=(com.sitescape.team.domain.User)u2%>"
-					    componentId="${ssNamespace}"/> </span></td>
-					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td>&nbsp;&nbsp;&nbsp;</td>
-					  <td>
-					  <ssf:ifadapter>
-					  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-					    action="view_permalink"
-						binderId="${u2.parentBinder.id}"
-						entryId="${u2.id}">
-						<ssf:param name="entityType" value="workspace" />
-						</ssf:url>"><c:out value="${u2.title}"/></a>
-					  </ssf:ifadapter>
-					  <ssf:ifnotadapter>
-					  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-					  	name="action" value="view_ws_listing"/><portlet:param 
-					  	name="binderId" value="${u2.parentBinder.id}"/><portlet:param 
-					  	name="entryId" value="${u2.id}"/></portlet:renderURL>"><c:out value="${u2.title}"/></a>
-					  </ssf:ifnotadapter>
-					  </td>							
-					  </tr>
-					  <%
-					  	if (!userIdList.equals("")) userIdList += " ";
-					  	userIdList += u2.getId().toString();
-					  %>
-					</c:if>
-					</c:forEach>
-					</c:forEach>
-					</table>
-				 </c:if>
 				<br>
 			</td>
 		</tr>

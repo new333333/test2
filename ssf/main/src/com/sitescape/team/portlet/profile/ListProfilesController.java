@@ -196,6 +196,17 @@ public class ListProfilesController extends   SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
 		
+		//Modify
+		if (getBinderModule().testAccess(binder, "modifyBinder")) {
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+		}
 		//	The "Display styles" menu
 		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
 		//vertical

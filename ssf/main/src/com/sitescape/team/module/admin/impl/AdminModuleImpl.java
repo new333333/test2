@@ -384,8 +384,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return config;
 	 }
 	protected Binder copyBinderAttributes(Binder source, Binder destination) {
-		//copy all events
+		//need read id for linkage
 		if (destination.getId() == null) getCoreDao().save(destination);
+		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
+		if (dashboard != null) {
+			EntityDashboard myDashboard = dashboard.clone();
+			myDashboard.setId(null);
+			myDashboard.setOwnerIdentifier(destination.getEntityIdentifier());
+			getCoreDao().save(myDashboard);
+		  }
+		//TODO: copy all attachments
 		Set<Attachment> atts = source.getAttachments();
 		if (atts != null) {
 			for (Attachment at:atts) {
@@ -484,8 +492,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 if (Validator.isNull(config.getTitle())) config.setTitle(config.getTemplateTitle());
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
 		 //by default, inherit from parent
-		 getCoreDao().save(config);
-    	 copyBinderAttributes(srcConfig, config);
+     	 copyBinderAttributes(srcConfig, config);
       	 getCoreDao().updateLibraryName(parentConfig, config, null, config.getTitle());
 
 		 //get childen before adding new children incase parent and source are the same
@@ -510,6 +517,51 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 }
 		 return config.getId();
 	 }
+	   public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
+		   checkAccess("addTemplate");
+		   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
+		   Binder binder = (Binder)getCoreDao().loadBinder(binderId, zoneId);
+		   TemplateBinder config = templateFromBinder(null, binder);
+		   return config.getId();
+		}
+		protected TemplateBinder templateFromBinder(TemplateBinder parent, Binder binder) {
+			//get binder setup
+			if (binder.getDefinitionType() == null) {
+				getDefinitionModule().setDefaultBinderDefinition(binder);
+			}	
+			TemplateBinder config = new TemplateBinder(binder);
+			config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+			config.setModification(config.getCreation());
+			if (parent == null) {
+				config.setPathName("/" + config.getTitle());				
+			} else {
+				config.setPathName(parent.getPathName() + "/" + config.getTitle());				
+			}
+			copyBinderAttributes(binder, config);
+	      	if (parent != null) {
+				parent.addBinder(config);
+	      		getCoreDao().updateLibraryName(parent, config, null, config.getTitle());
+	      	}
+			if (!config.isFunctionMembershipInherited()) {
+				//copy binders memberships to new Template
+				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(binder);
+				for (WorkAreaFunctionMembership fm: wfms) {
+					WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+					membership.setZoneId(fm.getZoneId());
+					membership.setWorkAreaId(config.getWorkAreaId());
+					membership.setWorkAreaType(config.getWorkAreaType());
+					membership.setFunctionId(fm.getFunctionId());
+					membership.setMemberIds(new HashSet(fm.getMemberIds()));
+					getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);	
+				}	    		
+			}
+			List<Binder> children = binder.getBinders();    
+			for (Binder child: children) {
+				templateFromBinder(config, child);	    	
+			}
+			return config;
+			
+	}
 	public void modifyTemplate(Long id, Map updates) {
 		checkAccess("modifyTemplate");
 		TemplateBinder config = (TemplateBinder)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
@@ -527,36 +579,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//TODO: is there access
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
-	public void addFunction(String name, Set operations) {
-		checkAccess("addFunction");
-		Function function = new Function();
-		function.setName(name);
-		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		function.setOperations(operations);
-		
-		List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
-		if (zoneFunctions.contains(function)) {
-			//Role already exists
-			throw new FunctionExistsException(function.getName());
-		}
-		functionManager.addFunction(function);
-	 
-    }
-    public void modifyFunction(Long id, Map updates) {
-		checkAccess("modifyFunction");
-		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
-		ObjectBuilder.updateObject(function, updates);
-		functionManager.updateFunction(function);			
-    }
-    public void deleteFunction(Long id) {
-		checkAccess("deleteFunction");
-		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
-		functionManager.deleteFunction(f);
-    }
-    public List getFunctions() {
-		//TODO: any access?			
-        return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
-    }
+
     public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title) throws AccessControlException, WriteFilesException {
     	//modules do the access checking
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
@@ -592,13 +615,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinderId, def.getId(), inputData, fileItems), zoneId);
 	   }
 
-	   EntityDashboard dashboard = getCoreDao().loadEntityDashboard(cfg.getEntityIdentifier());
-	   if (dashboard != null) {
-		   EntityDashboard myDashboard = dashboard.clone();
-		   myDashboard.setId(null);
-		   myDashboard.setOwnerIdentifier(binder.getEntityIdentifier());
-		   getCoreDao().save(myDashboard);
-	   }
 	   copyBinderAttributes(cfg, binder);
 	   if (!cfg.isDefinitionsInherited()) {
 	    	binder.setDefinitionsInherited(false);
@@ -635,7 +651,37 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    return binder.getId();
 	}
 	
-
+ 
+	public void addFunction(String name, Set operations) {
+		checkAccess("addFunction");
+		Function function = new Function();
+		function.setName(name);
+		function.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		function.setOperations(operations);
+		
+		List zoneFunctions = functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+		if (zoneFunctions.contains(function)) {
+			//Role already exists
+			throw new FunctionExistsException(function.getName());
+		}
+		functionManager.addFunction(function);
+	 
+    }
+    public void modifyFunction(Long id, Map updates) {
+		checkAccess("modifyFunction");
+		Function function = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		ObjectBuilder.updateObject(function, updates);
+		functionManager.updateFunction(function);			
+    }
+    public void deleteFunction(Long id) {
+		checkAccess("deleteFunction");
+		Function f = functionManager.getFunction(RequestContextHolder.getRequestContext().getZoneId(), id);
+		functionManager.deleteFunction(f);
+    }
+    public List getFunctions() {
+		//TODO: any access?			
+        return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
+    }
     public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
 		List folderIds = new ArrayList();
 		
