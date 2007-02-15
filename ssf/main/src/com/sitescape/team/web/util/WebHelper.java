@@ -466,6 +466,13 @@ public class WebHelper {
 	//Routine to compute a normalized title
 	public static String getNormalizedTitle(String title) {
         //compute normalized title
+		//Start by removing all quoted characters (e.g., &QUOT;)
+		Pattern p1 = Pattern.compile("(\\&[^;]*;)");
+    	Matcher m1 = p1.matcher(title);
+    	while (m1.find()) {
+			title = m1.replaceFirst(" ");
+			m1 = p1.matcher(title);
+    	}
         String normalTitle = title.replaceAll("[\\P{L}&&\\P{N}]", " ");
         normalTitle = normalTitle.replaceAll(" ++","_");
 		normalTitle = normalTitle.toLowerCase();

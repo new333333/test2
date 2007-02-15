@@ -148,12 +148,14 @@ public class ViewEntryController extends  SAbstractController {
 					entryId = entry.getId().toString();
 					getShowEntry(entryId, formData, request, response, folderId, model);
 				} else if (entries.size() == 0) {
+					//There are no entries by this title
 					Folder folder = getFolderModule().getFolder(folderId);
 					buildNoEntryBeans(request, response, folder, entryId, model);
 					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
 				} else {
-					//TODO: handle multiple matches
-					throw new NotSupportedException();
+					//There are multiple matches
+					model.put(WebKeys.FOLDER_ENTRIES, entries);
+					return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
 				}
 			} else {
 				getShowEntry(entryId, formData, request, response, folderId, model);

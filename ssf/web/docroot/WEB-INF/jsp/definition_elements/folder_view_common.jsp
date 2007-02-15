@@ -366,6 +366,7 @@ function ss_initLinkMenu() {
 }
 ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
 </script>
+<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
 
 
 

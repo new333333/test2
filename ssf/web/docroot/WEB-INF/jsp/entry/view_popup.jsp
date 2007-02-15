@@ -75,7 +75,7 @@ function ss_showForumEntryInIframe(url) {
 </div>
 </div>
 
-<c:if test="${!empty ssEntryIdToBeShown}">
+<c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
 function ss_showEntryToBeShown<portlet:namespace/>() {
     var url = "<ssf:url     
