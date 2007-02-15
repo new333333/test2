@@ -59,55 +59,57 @@ public class ViewEntryController extends  SAbstractController {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
-		//See if the user asked to change state
-		if (formData.containsKey("changeStateBtn")) {
-			//Change the state
-			//Get the workflow process to change and the name of the new state
-			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
-			if (replyId == null) replyId = entryId;
-	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
-			String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
-			getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		} else if (formData.containsKey("changeRatingBtn")) {
-			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
-			if (replyId == null) replyId = entryId;
-			long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
-			getFolderModule().setUserRating(folderId, replyId, rating);
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		} else if (formData.containsKey("changeTags")) {
-			boolean community = true;
-			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
-			if (replyId == null) replyId = entryId;
-			String tag = PortletRequestUtils.getRequiredStringParameter(request, "tag");
-			String scope = PortletRequestUtils.getRequiredStringParameter(request,"scope");
-			if (scope.equalsIgnoreCase("Personal")) community = false;
-			getFolderModule().setTag(folderId, replyId, tag, community);
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		} else if (formData.containsKey("respondBtn")) {
-			Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
-			if (replyId == null) replyId = entryId;
-	        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
-	        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
-	        //force reload of listing for state change
-			response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-		} else if (formData.containsKey("subscribeBtn")) {
-			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
-			if (style != null) {
-				if (style.intValue() == -1) getFolderModule().deleteSubscription(folderId, entryId);
-				else getFolderModule().addSubscription(folderId, entryId, style.intValue());
+		if (entryId != null) {
+			//See if the user asked to change state
+			if (formData.containsKey("changeStateBtn")) {
+				//Change the state
+				//Get the workflow process to change and the name of the new state
+				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+				if (replyId == null) replyId = entryId;
+		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
+				String toState = PortletRequestUtils.getRequiredStringParameter(request, "toState");
+				getFolderModule().modifyWorkflowState(folderId, replyId, tokenId, toState);
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+			} else if (formData.containsKey("changeRatingBtn")) {
+				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+				if (replyId == null) replyId = entryId;
+				long rating = PortletRequestUtils.getRequiredLongParameter(request, "rating");
+				getFolderModule().setUserRating(folderId, replyId, rating);
+				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+			} else if (formData.containsKey("changeTags")) {
+				boolean community = true;
+				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+				if (replyId == null) replyId = entryId;
+				String tag = PortletRequestUtils.getRequiredStringParameter(request, "tag");
+				String scope = PortletRequestUtils.getRequiredStringParameter(request,"scope");
+				if (scope.equalsIgnoreCase("Personal")) community = false;
+				getFolderModule().setTag(folderId, replyId, tag, community);
+				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+			} else if (formData.containsKey("respondBtn")) {
+				Long replyId = new Long(PortletRequestUtils.getLongParameter(request, "replyId"));
+				if (replyId == null) replyId = entryId;
+		        Long tokenId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "tokenId"));	
+		        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
+		        //force reload of listing for state change
+				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+			} else if (formData.containsKey("subscribeBtn")) {
+				Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
+				if (style != null) {
+					if (style.intValue() == -1) getFolderModule().deleteSubscription(folderId, entryId);
+					else getFolderModule().addSubscription(folderId, entryId, style.intValue());
+					response.setRenderParameter(WebKeys.IS_REFRESH, "1");
+				} 
+			} else if (op.equals(WebKeys.OPERATION_SET_WIKI_HOMEPAGE)) {
+				Binder binder = getBinderModule().getBinder(folderId);
+				//Check the access rights of the user
+				if (getBinderModule().testAccess(binder, "setProperty")) {
+					getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, entryId.toString());
+				}
 			} 
-		} else if (op.equals(WebKeys.OPERATION_SET_WIKI_HOMEPAGE)) {
-			Binder binder = getBinderModule().getBinder(folderId);
-			//Check the access rights of the user
-			if (getBinderModule().testAccess(binder, "setProperty")) {
-				getBinderModule().setProperty(folderId, ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE, entryId.toString());
-			}
-		} 
+		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -139,6 +141,7 @@ public class ViewEntryController extends  SAbstractController {
 		} else {
 			if (Validator.isNull(entryId)) {
 				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
 				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
 				if (entries.size() == 1) {
 					FolderEntry entry = (FolderEntry)entries.iterator().next();
@@ -146,7 +149,7 @@ public class ViewEntryController extends  SAbstractController {
 					getShowEntry(entryId, formData, request, response, folderId, model);
 				} else if (entries.size() == 0) {
 					Folder folder = getFolderModule().getFolder(folderId);
-					buildNoEntryBeans(request, response, folder, model);
+					buildNoEntryBeans(request, response, folder, entryId, model);
 					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
 				} else {
 					//TODO: handle multiple matches
@@ -459,7 +462,7 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	
 	protected void buildNoEntryBeans(RenderRequest request, 
-			RenderResponse response, Folder folder, Map model) {
+			RenderResponse response, Folder folder, String entryTitle, Map model) {
 		//Build the "add entry" beans
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		Map urls = new HashMap();
@@ -467,20 +470,23 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ADD_ENTRY_DEFINITIONS,  defaultEntryDefinitions);
 		model.put(WebKeys.ADD_ENTRY_URLS,  urls);
 		model.put(WebKeys.ADD_ENTRY_TITLES,  titles);
-		if (!defaultEntryDefinitions.isEmpty()) {
-			if (getFolderModule().testAccess(folder, "addEntry")) {				
-				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					urls.put(def.getId(), adapterUrl.toString());
-					titles.put(NLT.getDef(def.getTitle()), def.getId());
-					if (i == 0) {
-						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+		model.put(WebKeys.ADD_ENTRY_TITLE,  entryTitle);
+		if (getFolderModule().testAccess(folder, "addEntry")) {				
+			if (!defaultEntryDefinitions.isEmpty()) {
+				if (getFolderModule().testAccess(folder, "addEntry")) {				
+					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+						Definition def = (Definition) defaultEntryDefinitions.get(i);
+						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+						urls.put(def.getId(), adapterUrl.toString());
+						titles.put(NLT.getDef(def.getTitle()), def.getId());
+						if (i == 0) {
+							adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+							adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+							model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+						}
 					}
 				}
 			}

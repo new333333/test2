@@ -196,6 +196,32 @@ function ss_openUrlInNewTab(url) {
 	self.location.href = url + "&newTab=1";
 }
 
+//Routine to open a page by following a "title" markup link
+function ss_openTitleUrl(obj) {
+	//Get the title text
+	var spanObj = obj.getElementsByTagName('span').item(0);
+	var titleText = ss_replaceSubStrAll(spanObj.innerHTML, "\"", "\&quot;");
+	
+	//See if the form exists already
+	var formObj = document.getElementById('ss_title_url_form');
+	if (formObj == null) {
+		//Create the form
+	    formObj = document.createElement("form");
+	    formObj.setAttribute("id", "ss_title_url_form");
+	    formObj.setAttribute("name", "ss_title_url_form");
+	    var hiddenObj = document.createElement("input");
+	    hiddenObj.setAttribute("type", "hidden");
+	    hiddenObj.setAttribute("name", "page_title");
+	    formObj.appendChild(hiddenObj);
+		document.getElementsByTagName( "body" ).item(0).appendChild(formObj);
+	}
+	formObj.action = obj.href;
+	formObj.method = "post"
+	formObj.page_title.value = titleText;
+	formObj.submit();
+	return false;
+}
+
 //Routine to close a pop-up form window if the cancel button is clicked
 //  This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {

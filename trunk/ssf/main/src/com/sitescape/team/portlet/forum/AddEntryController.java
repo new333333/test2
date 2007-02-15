@@ -251,6 +251,8 @@ public class AddEntryController extends SAbstractController {
 		Map model = new HashMap();
 			
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
+		String title = PortletRequestUtils.getStringParameter(request, "title", "");
+		model.put(WebKeys.ENTRY_TITLE, title);
 		model.put(WebKeys.OPERATION, action);
 		String path = WebKeys.VIEW_ADD_ENTRY;
 		

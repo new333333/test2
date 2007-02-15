@@ -449,8 +449,11 @@ public class WebHelper {
 	    			Map params = new HashMap();
 	    			params.put(WebKeys.URL_BINDER_ID, binderId.toString());
 	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-	    			String webUrl = getPortletUrl(req, res, action, false, params);
-	    			String titleLink = "<a href=\"" + webUrl + "\"><span class=\"ss_title_link\">" + title + "</span></a>";
+	    			String webUrl = getPortletUrl(req, res, action, true, params);
+	    			String titleLink = "<a href=\"" + webUrl + "\" ";
+	    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
+	    			titleLink += "<span class=\"ss_title_link\">";
+	    			titleLink += title + "</span></a>";
 	    			outputString = outputString.substring(0, m3.start(0)) + titleLink + outputString.substring(m3.end(), outputString.length());
 	    			m3 = p3.matcher(outputString);
 	    		}
