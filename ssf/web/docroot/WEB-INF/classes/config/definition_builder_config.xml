@@ -114,7 +114,7 @@
 		
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail_entry_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/entry_view.jsp" />
 		</jsps>
 	</item>
 	
@@ -167,7 +167,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 		
@@ -188,7 +188,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_workflow.jsp" />
 		</jsps>
 	</item>
 		
@@ -789,6 +789,7 @@
 		
 	<item name="expandableDiv" caption="__expandable_div" category="generalLayout">
 		<properties>
+			<property name="caption" caption="__text" type="text"/>
 			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
 				<option name="rounded" caption="__box_rounded" />
 				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
@@ -1779,8 +1780,8 @@
 		multipleAllowed="false" >		
 		<options>
 			<option name="workspaceTitleView" />
-			<option name="dashboardCanvas" initial="true" />
 			<option name="descriptionView" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="8" />
 			<option name="workspaceBinderList"/>
@@ -1861,6 +1862,7 @@
 		multipleAllowed="false" >		
 		<options>
 			<option name="userWorkspaceBusinessCard" initial="true"/>
+			<option name="descriptionView" initial="true" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="workspaceBinderList" />
 		</options>

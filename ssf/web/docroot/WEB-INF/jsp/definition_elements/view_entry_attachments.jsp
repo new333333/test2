@@ -272,3 +272,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
 
 </div>
+
+<c:if test="${ssConfigJspStyle == 'mail'}">
+<% // The mail support is in "definition_elements/mail" %>
+</c:if>
