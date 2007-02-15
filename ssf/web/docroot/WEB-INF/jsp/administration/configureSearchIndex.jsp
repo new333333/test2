@@ -64,9 +64,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 		}
 	} else {
 		self.document.<portlet:namespace />fm[name].checked=true
-		alert(self.parent.frames['ss_treeIframeDiv'])
 		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
-			alert("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
 			cbObj.checked = true;
 		}

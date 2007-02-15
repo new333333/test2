@@ -635,7 +635,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    return binder.getId();
 	}
 	
-	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
+
+    public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
 		List folderIds = new ArrayList();
 		
 		checkAccess(workArea, "setWorkAreaFunctionMembership");

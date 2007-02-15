@@ -11,6 +11,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -25,10 +26,10 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -42,16 +43,23 @@ import com.sitescape.util.Validator;
  *
  */
 public class ViewController  extends SAbstractController {
-	public static final String FORUM_PORTLET="ss_forum";
-	public static final String PRESENCE_PORTLET="ss_presence";
-	public static final String WORKSPACE_PORTLET="ss_workspacetree";
-	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
+	public static final String FORUM_PORTLET="ss_forum";
+	public static final String GALLERY_PORTLET="ss_gallery";
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
-	public static final String WIKI_PORTLET="ss_wiki";
+	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String SEARCH_PORTLET="ss_search";
+	public static final String TOOLBAR_PORTLET="ss_toolbar";
+	public static final String WIKI_PORTLET="ss_wiki";
+	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			prefs.store();
+		}
 		response.setRenderParameters(request.getParameterMap());
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -60,38 +68,18 @@ public class ViewController  extends SAbstractController {
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
 			
 			PortletURL url;
-			url = response.createRenderURL();
+			//need action URL to set initialized flag in preferences
+			url = response.createActionURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			prefs.store();
 		}
 
 		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
-			PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
-			String pName = pConfig.getPortletName();
-			//For liferay we use instances and the name will be changed slightly
-			//That is why we check for the name with contains
-			if (pName.contains(FORUM_PORTLET))
-				displayType=FORUM_PORTLET;
-			else if (pName.contains(WORKSPACE_PORTLET))
-				displayType=WORKSPACE_PORTLET;
-			else if (pName.contains(PRESENCE_PORTLET))
-				displayType=PRESENCE_PORTLET;
-			else if (pName.contains(TOOLBAR_PORTLET)) 
-				displayType=TOOLBAR_PORTLET;
-			else if (pName.contains(BLOG_SUMMARY_PORTLET)) 
-					displayType=BLOG_SUMMARY_PORTLET;
-			else if (pName.contains(GUESTBOOK_SUMMARY_PORTLET)) 
-				displayType=GUESTBOOK_SUMMARY_PORTLET;
-			else if (pName.contains(SEARCH_PORTLET)) 
-				displayType=SEARCH_PORTLET;
-			else if (pName.contains(WIKI_PORTLET)) 
-				displayType=WIKI_PORTLET;
+			displayType = getDisplayType(request);
 		}
 			
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -159,7 +147,10 @@ public class ViewController  extends SAbstractController {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GUESTBOOK_SUMMARY);		
 		} else if (SEARCH_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_SEARCH);		
+		} else if (GALLERY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_GALLERY);		
 		}
+
 		return null;
 	}
 	protected ModelAndView setupSummaryPortlets(RenderRequest request, PortletPreferences prefs, Map model, String view) {
@@ -194,6 +185,29 @@ public class ViewController  extends SAbstractController {
 
 		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
 	}
+	protected static String getDisplayType(PortletRequest request) {
+		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
+		String pName = pConfig.getPortletName();
+		//For liferay we use instances and the name will be changed slightly
+		//That is why we check for the name with contains
+		if (pName.contains(ViewController.FORUM_PORTLET))
+			return ViewController.FORUM_PORTLET;
+		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
+			return ViewController.WORKSPACE_PORTLET;
+		else if (pName.contains(ViewController.PRESENCE_PORTLET))
+			return ViewController.PRESENCE_PORTLET;
+		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
+			return ViewController.BLOG_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.GALLERY_PORTLET))
+			return ViewController.GALLERY_PORTLET;
+		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
+			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
+		else if (pName.contains(ViewController.SEARCH_PORTLET))
+			return ViewController.SEARCH_PORTLET;
+		else if (pName.contains(ViewController.WIKI_PORTLET))
+			return ViewController.WIKI_PORTLET;
+		return null;
 
+	}
 
 }

@@ -1,7 +1,6 @@
 <%
-// The search portlet
 /**
- * Copyright (c) 2006 SiteScape, Inc. All rights reserved.
+ * Copyright (c) 2005 SiteScape, Inc. All rights reserved.
  *
  * The information in this document is subject to change without notice 
  * and should not be construed as a commitment by SiteScape, Inc.  
@@ -15,13 +14,17 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<table class="ss_style" width="100%"><tr><td>
-<div class="ss_decor-border5">
-  <div class="ss_decor-border6">
-    <div class="ss_content_window">
+<c:set var="ss_dashboard_config_form_name" value="<%= renderResponse.getNamespace() + "searchfm" %>"/>
 
-<%@ include file="/WEB-INF/jsp/dashboard/search_view.jsp" %>
+<form method="post" class="ss_style ss_form"  name="${ss_dashboard_config_form_name}" id="${ss_dashboard_config_form_name}"
+	action="<portlet:actionURL/>"  onSubmit="return ss_onSubmit(this);">
 
-</div></div></div>
-</td></tr></table>
+<input type="hidden" name="componentName" value="gallery"/>
+<%@ include file="/WEB-INF/jsp/dashboard/gallery_config.jsp" %>
+<br/>
+<br>
+<input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
+
+</form>

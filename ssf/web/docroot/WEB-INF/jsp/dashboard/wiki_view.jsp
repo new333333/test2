@@ -26,29 +26,24 @@
 <c:set var="ss_pageNumber" value="0"/>
 
 <c:if test="${ssDashboard.scope == 'portlet'}">
-
-<script type="text/javascript">
-//generic url for ajax
-	var ss_dashboardAjaxUrl = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true"/>";
-    	
-function ${ss_divId}_wikiurl(binderId, entryId) {
+<%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+<script type="text/javascript">	
+function ${ss_divId}_wikiurl(binderId, entryId, type) {
 	//Build a url to go to
-	var url = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_entry"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
-	self.location.href = url;
+	ss_dashboardPorletUrlSupport(binderId, entryId, type);
 	return false;
 }
 </script>
 </c:if>
+
+<c:if test="${ssConfigJspStyle == 'template'}">
+<script type="text/javascript">
+function ${ss_divId}_wikiurl(binderId, entryId, type) {
+	return false;
+}
+</script>
+</c:if>
+
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/wiki_view2.jsp" %>
 </div>

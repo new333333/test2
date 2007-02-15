@@ -8,6 +8,7 @@
 		<portlet id="ss_workspacetree" />
 		<portlet id="ss_presence" />
 		<portlet id="ss_blog" />
+		<portlet id="ss_gallery"/>
 		<portlet id="ss_guestbook" />
 		<portlet id="ss_wiki" />
 		<portlet id="ss_search" />

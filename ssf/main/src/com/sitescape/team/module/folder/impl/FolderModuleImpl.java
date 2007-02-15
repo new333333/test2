@@ -55,7 +55,6 @@ import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workflow.WorkflowUtils;
@@ -65,6 +64,7 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.TagUtil;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 /**
  *

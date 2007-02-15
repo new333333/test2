@@ -20,11 +20,9 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.module.shared.DomTreeBuilder;
-import com.sitescape.team.module.shared.DomTreeHelper;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
-import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.MailTreeHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -75,7 +73,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			model.put(WebKeys.BINDER, folder);
 			model.put(WebKeys.DEFINITION_ENTRY, folder);
 			//	Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, folder, model, new mailTree());
+			BinderHelper.buildNavigationLinkBeans(this, folder, model, new MailTreeHelper());
 
 			if (folder.isTop()) {
 				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
@@ -102,7 +100,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		} catch (Exception e) {
 			//assume not selected yet - first time through from admin menu
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new mailTree()),1);
+					new WsDomTreeBuilder(null, true, this, new MailTreeHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 			return new ModelAndView(WebKeys.VIEW_BINDER_CONFIGURE_EMAIL, model);
@@ -123,25 +121,5 @@ public class EmailConfigController extends  AbstractBinderController  {
 		config.setSchedule(ScheduleHelper.getSchedule(request));
 
 	}
-	public static class mailTree implements DomTreeHelper {
-		public boolean supportsType(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
-			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
-			return false;
-		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
-			return bs.getBinderModule().hasBinders((Binder)source);
-		}
-	
-		public String getAction(int type, Object source) {
-			return WebKeys.ACTION_CONFIG_EMAIL;
-		}
-		public String getURL(int type, Object source) {return "";}
-		public String getDisplayOnly(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
-			return "true";
-		}
-		public String getTreeNameKey() {return "email";}
-		
-	}	
+
 }

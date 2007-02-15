@@ -16,7 +16,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:set var="treeName" value="editForum_${ssComponentId}${renderResponse.namespace}"/>
+<c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
 	var formObj = ss_getContainingForm(obj);

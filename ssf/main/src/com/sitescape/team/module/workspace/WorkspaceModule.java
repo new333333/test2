@@ -10,9 +10,9 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 /**
  * @author Jong Kim
  *

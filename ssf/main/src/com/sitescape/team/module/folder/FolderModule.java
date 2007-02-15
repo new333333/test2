@@ -13,9 +13,9 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.shared.DomTreeBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller

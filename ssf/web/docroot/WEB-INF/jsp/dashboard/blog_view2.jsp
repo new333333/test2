@@ -39,7 +39,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-			onClick="if (${ss_divId}_blogurl) ${ss_divId}_blogurl('${fileEntry._binderId}','${fileEntry._docId}'); return false;">
+			onClick="if (${ss_divId}_blogurl) ${ss_divId}_blogurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 
      <c:if test="${empty fileEntry.title}">
     <span class="ss_fineprint"><i>(no title)</i></span>
@@ -68,7 +68,9 @@
 				    <ssf:param name="entityType" value="folder" />
 		    	    <ssf:param name="newTab" value="1"/>
 					</ssf:url>" 
-		  >${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
+					onClick="if (${ss_divId}_blogurl) ${ss_divId}_blogurl('${fileEntry._binderId}','', 'folder'); return false;">
+					
+		  ${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
 		  </ul>
 		</ssf:menu>
      </c:if>

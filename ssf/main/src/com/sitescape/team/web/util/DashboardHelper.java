@@ -39,7 +39,6 @@ import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.rss.RssGenerator;
@@ -48,6 +47,10 @@ import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.DomTreeHelper;
+import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.WorkspaceConfigHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.Validator;
 
 public class DashboardHelper implements AllBusinessServicesInjected {
@@ -269,7 +272,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
 					//Set up the workspace tree bean
 					getInstance().getWorkspaceTreeBean(binder, 
-							ssDashboard, model, id, component);
+							ssDashboard, model, id, component, new WorkspaceConfigHelper());
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
@@ -295,9 +298,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 							id, component, true);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE)) {
-					//Set up the workspace tree bean
+					//Set up the workspace tree bean,
 					getInstance().getWorkspaceTreeBean(binder, 
-							ssDashboard, model, id, component);
+							ssDashboard, model, id, component, new WorkspaceConfigHelper());
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_SEARCH)  ||
 						component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
@@ -306,13 +309,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 							model, id, component, true);
 				} else if (component.get(Name).equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, true);
 				} else  {
 					//Set up the search results bean
 					getInstance().getSearchResultsBean(binder, ssDashboard, 
 							model, id, component, true);
-					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component);
+					getInstance().getWorkspaceTreeBean(null, ssDashboard, model, id, component, new FolderConfigHelper());
 				}
 			}
 		}
@@ -567,7 +570,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 	}
 	protected void getWorkspaceTreeBean(Binder binder, Map ssDashboard, Map model, 
-	    		String id, Map component) {
+	    		String id, Map component, DomTreeHelper helper) {
     	Map data = (Map)component.get(DashboardHelper.Data);
     	if (data == null) data = new HashMap();
     	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
@@ -588,16 +591,16 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     	if (binder != null && !(binder instanceof TemplateBinder)) {
     		if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
     			if (model.containsKey(WebKeys.WORKSPACE_DOM_TREE)) {	
-				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
+    				tree = (Document) model.get(WebKeys.WORKSPACE_DOM_TREE);
     			} else {
-    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this),1);
+    				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, helper),1);
     				idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, binder.getId().toString());
     			}
     		} else if (binder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
     			Folder topFolder = ((Folder)binder).getTopFolder();
     			if (topFolder == null) topFolder = (Folder)binder;
     			Binder workspace = (Binder)topFolder.getParentBinder();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(workspace.getId(), new WsDomTreeBuilder(workspace, true, this, helper),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, workspace.getId().toString());
 			
     		}
@@ -605,11 +608,11 @@ public class DashboardHelper implements AllBusinessServicesInjected {
     		Long topId = (Long)data.get(WebKeys.DASHBOARD_WORKSPACE_TOPID);
     		if (topId == null) {
     			Workspace ws = getWorkspaceModule().getWorkspace();
-    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, helper),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID,ws.getId().toString());
     		} else {
     			Workspace ws = getWorkspaceModule().getWorkspace(topId);
-    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsDomTreeBuilder(ws, true, this),1);
+    			tree = getWorkspaceModule().getDomWorkspaceTree(topId, new WsDomTreeBuilder(ws, true, this, helper),1);
     			idData.put(WebKeys.DASHBOARD_WORKSPACE_TOPID, topId.toString());			
     		}
     			

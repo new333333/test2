@@ -1,5 +1,5 @@
 <%
-// The search portlet
+// The gallery portlet
 /**
  * Copyright (c) 2006 SiteScape, Inc. All rights reserved.
  *
@@ -21,7 +21,7 @@
   <div class="ss_decor-border6">
     <div class="ss_content_window">
 
-<%@ include file="/WEB-INF/jsp/dashboard/search_view.jsp" %>
+<%@ include file="/WEB-INF/jsp/dashboard/gallery_view.jsp" %>
 
 </div></div></div>
 </td></tr></table>

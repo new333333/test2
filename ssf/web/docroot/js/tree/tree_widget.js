@@ -22,16 +22,19 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
 		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
-		ajaxRequest.setData("treeName", treeName)
-		ajaxRequest.setData("id", id)
-		ajaxRequest.setData("parentId", parentId)
-		ajaxRequest.setData("bottom", bottom)
-		ajaxRequest.setData("type", type)
+ 		eval("var treeKey = ss_treeKey_"+treeName);
+		if (treeKey != null)
+			ajaxRequest.addKeyValue("treeKey", treeKey);
 	    eval("var seObj = ss_treeSelected_"+treeName); 	    
 	    //add single select id
 	    if (seObj != null) {
 	    	ajaxRequest.addKeyValue("select", seObj);
 	    }
+		ajaxRequest.setData("treeName", treeName)
+		ajaxRequest.setData("id", id)
+		ajaxRequest.setData("parentId", parentId)
+		ajaxRequest.setData("bottom", bottom)
+		ajaxRequest.setData("type", type)
 		//ajaxRequest.setEchoDebugInfo();
 		//ajaxRequest.setPreRequest(ss_preRequest);
 		ajaxRequest.setPostRequest(ss_postTreeDivRequest);
@@ -147,7 +150,10 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type) {
 	if (seObj != null) {
 	   	url += "&select=" + seObj;
 	}
-	
+	eval("var treeKey = ss_treeKey_"+treeName);
+	if (treeKey != null) {
+		url += "&treeKey=" + treeKey;
+	}
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {

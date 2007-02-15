@@ -13,7 +13,6 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
-import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -22,19 +21,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.DomTreeBuilder;
-import com.sitescape.team.module.shared.DomTreeHelper;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
-import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.FolderConfigHelper;
+import com.sitescape.team.web.tree.WorkspaceConfigHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
@@ -50,15 +44,17 @@ public class EditController extends SAbstractController {
         //Make the prefs available to the jsp
 		Map formData = request.getParameterMap();
 		PortletPreferences prefs= request.getPreferences();
-		String title = PortletRequestUtils.getStringParameter(request, "title", null);
-		if (title != null) prefs.setValue(WebKeys.PORTLET_PREF_TITLE, title); 
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+		}
 		//see if type is being set
 		if (formData.containsKey("applyBtn") || 
 				formData.containsKey("okBtn")) {
 			String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
 			if (Validator.isNull(displayType)) { 
-				displayType = getDisplayType(request);
+				displayType = ViewController.getDisplayType(request);
 				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
@@ -79,7 +75,8 @@ public class EditController extends SAbstractController {
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.WIKI_PORTLET.equals(displayType) ||
-					ViewController.SEARCH_PORTLET.equals(displayType)) {
+					ViewController.SEARCH_PORTLET.equals(displayType) ||
+					ViewController.GALLERY_PORTLET.equals(displayType)) {
 				String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
 				DashboardPortlet d=null;
 				if (id != null) {
@@ -115,20 +112,16 @@ public class EditController extends SAbstractController {
         //Make the prefs available to the jsp
 		PortletPreferences prefs= request.getPreferences();
         Map model = new HashMap();
-		String title = (String)prefs.getValue(WebKeys.PORTLET_PREF_TITLE, null);
-		if (title != null) response.setTitle(title);
-		else title="";
-		model.put("portletTitle", prefs.getValue(WebKeys.PORTLET_PREF_TITLE, ""));
 		String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
 		if (Validator.isNull(displayType)) {
-			displayType = getDisplayType(request);
+			displayType = ViewController.getDisplayType(request);
 			
 		}
-		if (ViewController.FORUM_PORTLET.equals(displayType)) {		
+		if (ViewController.FORUM_PORTLET.equals(displayType)) {	
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new folderTree()),1);
+					new WsDomTreeBuilder(null, true, this, new FolderConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
-			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
 		
 			String[] forumPrefIdList = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 		
@@ -144,6 +137,8 @@ public class EditController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
+		} else if (ViewController.GALLERY_PORTLET.equals(displayType)) {
+			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GALLERY_EDIT, "gallery");			
 		} else if (ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_GUESTBOOK_EDIT, "guestbook");			
 		} else if (ViewController.WIKI_PORTLET.equals(displayType)) {
@@ -163,7 +158,7 @@ public class EditController extends SAbstractController {
 		} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
-					new WsDomTreeBuilder(null, true, this, new wsTree()),1);
+					new WsDomTreeBuilder(null, true, this, new WorkspaceConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 			
@@ -194,65 +189,5 @@ public class EditController extends SAbstractController {
 		return new ModelAndView(view, model);
 		
 	}
-	private String getDisplayType(PortletRequest request) {
-		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
-		String pName = pConfig.getPortletName();
-		if (pName.contains(ViewController.FORUM_PORTLET))
-			return ViewController.FORUM_PORTLET;
-		else if (pName.contains(ViewController.WORKSPACE_PORTLET))
-			return ViewController.WORKSPACE_PORTLET;
-		else if (pName.contains(ViewController.PRESENCE_PORTLET))
-			return ViewController.PRESENCE_PORTLET;
-		else if (pName.contains(ViewController.BLOG_SUMMARY_PORTLET))
-			return ViewController.BLOG_SUMMARY_PORTLET;
-		else if (pName.contains(ViewController.GUESTBOOK_SUMMARY_PORTLET))
-			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
-		else if (pName.contains(ViewController.SEARCH_PORTLET))
-			return ViewController.SEARCH_PORTLET;
-		else if (pName.contains(ViewController.WIKI_PORTLET))
-			return ViewController.WIKI_PORTLET;
-		return null;
 
-	}
-	public static class wsTree implements DomTreeHelper {
-		public boolean supportsType(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
-			return false;
-		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
-			return bs.getBinderModule().hasBinders((Binder)source, EntityType.workspace);
-		}
-		
-	
-		public String getAction(int type, Object source) {
-			return null;
-		}
-		public String getURL(int type, Object source) {return null;}
-		public String getDisplayOnly(int type, Object source) {
-			return "false";
-		}
-		public String getTreeNameKey() {return "editWs";}
-		
-	}	
-	public static class folderTree implements DomTreeHelper {
-		public boolean supportsType(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
-			if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
-			return false;
-		}
-		public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
-			return bs.getBinderModule().hasBinders((Binder)source);
-		}
-	
-		public String getAction(int type, Object source) {
-			return null;
-		}
-		public String getURL(int type, Object source) {return null;}
-		public String getDisplayOnly(int type, Object source) {
-			if (type == DomTreeBuilder.TYPE_FOLDER) return "false";
-			return "true";
-		}
-		public String getTreeNameKey() {return "editForum";}
-		
-	}	
 }
