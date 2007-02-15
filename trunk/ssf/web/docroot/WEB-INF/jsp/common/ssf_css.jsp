@@ -2213,6 +2213,10 @@ div.ss_thumbnail_small_no_text img {
     width: 50px;
     height: 50px;
 }
+div.ss_thumbnail_small_buddies_list img {
+    width: 35px;
+    height: 35px;
+}
 div.ss_thumbnail_big div {
     width: 152px;
     height: 180px;
@@ -2739,6 +2743,50 @@ span.ss_cal_eventTime {
   padding-right: 3px;
 }
 
+div.ss_buddiesListHeader {
+	padding: 5px;
+}
+
+div.ss_buddiesListHeader img {
+	vertical-align: text-bottom;
+}
+
+table.ss_buddiesList {
+	width: 100%; 
+	padding: 0px; 
+	border-top: 1px solid #333333;
+}
+
+table.ss_buddiesList td {
+	border-bottom: 1px solid #333;
+	padding: 6px 0 7px 0px;
+}
+
+table.ss_buddiesList td.selectable {
+	width: 9px;
+	padding-left: 15px;
+	padding-right: 15px;
+	border: 0;
+}
+
+table.ss_buddiesList td.picture {
+	border-bottom: 1px solid #333333;
+	padding: 6px 15px 7px 8px; 
+	width: 35px;
+}
+
+table.ss_buddiesList tr.options td {
+	border: 0;
+}
+
+table.ss_buddiesList tr.options td.selectall {
+	height: 50px;
+	text-align: center;
+}
+
+div.ss_buddiesListFooter {
+	text-align: right;
+}
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

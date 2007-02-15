@@ -135,4 +135,6 @@ public interface BinderModule {
 	
 	public boolean testAccessGetTeamMembers(Long binderId);
 	
+	public boolean testAccessGetTeamMembers(Binder binder);
+	
 }
