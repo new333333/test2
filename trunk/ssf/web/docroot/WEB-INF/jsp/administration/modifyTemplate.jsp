@@ -92,6 +92,51 @@
 </c:if>
 
 <c:if test="${ssOperation == 'add'}">
+<c:if test="${cfgType == '-1'}">
+<%
+String wsTreeName = "cfg_" + renderResponse.getNamespace();
+%>
+<script type="text/javascript">
+function <%= wsTreeName %>_showId(id, obj, action) {
+	return false;
+}
+</script>
+<div class="ss_style ss_portlet">
+
+<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
+<form class="ss_style ss_form" name="<portlet:namespace/>fm" 
+    id="<portlet:namespace/>fm" method="post" 
+    action="<portlet:actionURL><portlet:param 
+		name="action" value="configure_configuration"/>
+		<portlet:param name="operation" value="add"/></portlet:actionURL>" >
+<input type="hidden" name="cfgType" value="-1"/>
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+	<table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="95%">
+	<tr align="left"><td><ssf:nlt tag="tree.choose_folder"/></td></tr>
+	<tr>
+		<td align="left">
+			<div>
+			<ssf:tree treeName="<%= wsTreeName %>"  
+			  treeDocument="${ssWsDomTree}" 
+			  rootOpen="true" showImages="true" 
+			  singleSelectName="binderId"/>
+			</div>
+		</td>
+	</tr>
+	</table>
+	<br/>
+<div class="ss_buttonBarLeft">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+</form>
+
+
+</c:if>
+<c:if test="${cfgType != '-1'}">
+
 <script type="text/javascript">
 
 function <portlet:namespace/>_onsub(obj) {
@@ -148,7 +193,7 @@ function <portlet:namespace/>_onsub(obj) {
 
 </form>
 </c:if>
-
+</c:if>
 </div>
 </div>
 </div>

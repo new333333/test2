@@ -15,6 +15,12 @@ public class TemplateBinder extends Binder {
 		tDescription = new Description(source.getTemplateDescription());
 		tTitle = source.tTitle;
 	}
+	public TemplateBinder(Binder source) {
+		super(source);
+		tDescription = new Description(source.getDescription());
+		tTitle = source.getTitle();
+		
+	}
 	public EntityIdentifier.EntityType getEntityType() {
 		if (definitionType == Definition.FOLDER_VIEW)
 			return EntityIdentifier.EntityType.folder;
