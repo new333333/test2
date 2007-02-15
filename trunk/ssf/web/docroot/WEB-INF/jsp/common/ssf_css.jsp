@@ -198,9 +198,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_entry_description_background_color" value="#CCCC99" scope="request"/>
+	<c:set var="ss_entry_description_background_color" value="#DEE7C6" scope="request"/>
 	<c:set var="ss_entry_description_border_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_replies_background_color" value="#FFEECC" scope="request"/>
+	<c:set var="ss_replies_background_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_replies_text_color" value="#009900" scope="request"/>
 	<c:set var="edit_text_color" value="#3333FF" scope="request"/>
 	
@@ -229,11 +229,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
-	<c:set var="ss_blog_summary_title_background_color" value="#CCCC99" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#DEE7C6" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
-	<c:set var="ss_linkbutton_background_color" value="#DDDD77" scope="request"/>
+	<c:set var="ss_linkbutton_background_color" value="#CFDF8F" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
 	<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
@@ -403,7 +403,7 @@ div.ss_replies div.ss_entryContent {
 }
 
 div.ss_replies div.ss_entryDescription {
-	background-color: #C6C7AD;
+	background-color: ${ss_replies_background_color};
 }
 
 
@@ -504,12 +504,22 @@ div.ss_replies div.ss_entryDescription {
 
       
 /* Text styled as buttons */
+
+
+.ss_tinyControl {
+  font-size: 9px !important;
+  font-family: sans-serif;
+  padding: 1px 1px 1px 1px !important;
+  margin: 1px 2px 1px 2px !important;
+  line-height: 100% !important;
+}
+
 a.ss_linkButton:link, a.ss_linkButton:visited {
   color: ${ss_linkbutton_text_color};
   border-top: 1px solid ${ss_linkbutton_border_color_in};
   border-left: 1px solid ${ss_linkbutton_border_color_in};
-  border-right: 1px solid ${ss_linkbutton_border_color_out};
-  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
+  border-right: 2px solid ${ss_linkbutton_border_color_out};
+  border-bottom: 2px solid ${ss_linkbutton_border_color_out};
   background-color: ${ss_linkbutton_background_color};
   padding-left: 3px;
   padding-right: 3px;
@@ -526,8 +536,8 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
   border-top: 1px solid ${ss_linkbutton_border_color_out};
   border-left: 1px solid ${ss_linkbutton_border_color_out};
-  border-right: 1px solid ${ss_linkbutton_border_color_in};
-  border-bottom: 1px solid ${ss_linkbutton_border_color_in};
+  border-right: 2px solid ${ss_linkbutton_border_color_in};
+  border-bottom: 2px solid ${ss_linkbutton_border_color_in};
   background-color: ${ss_linkbutton_background_color};
   padding-left: 3px;
   padding-right: 3px;
@@ -2532,7 +2542,7 @@ div.ss_cal_gridHeader {
   position: relative;
   width: 100%;
   height: 20px;
-  background-color: #DDDDFF;
+  background-color: ${ss_entry_description_background_color};
 }
 
 div.ss_cal_gridHeaderText {
@@ -2591,7 +2601,7 @@ div.ss_cal_dayGridAllDay {
 div.ss_cal_dayGridDivider {
   height: 3px;
   width: 100%;
-  background-color: #DDDDFF;
+  background-color: ${ss_entry_description_background_color};
 }
 
 
