@@ -869,6 +869,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         if (post == null) {
         	post = new PostingDef();
         	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+        	getCoreDao().save(post);
         }
         post.setBinder(binder);
         post.setEnabled(true);
