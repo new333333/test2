@@ -21,7 +21,12 @@
 		<div class="ss_entryContent">
 		<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 		<input type="text" class="ss_text" name="title" <%= width %>
-		 value="<c:out value="${ssDefinitionEntry.title}"/>" />
+		 <c:if test="${empty ssDefinitionEntry.title}">
+		   value="<c:out value="${ssEntryTitle}"/>" />
+		 </c:if>
+		 <c:if test="${!empty ssDefinitionEntry.title}">
+		   value="<c:out value="${ssDefinitionEntry.title}"/>" />
+		 </c:if>
 		 <c:if test="${property_generated}">&nbsp;(<ssf:nlt tag="entry.titleGenerated"/>)</c:if>
 		</div>
   </c:otherwise>

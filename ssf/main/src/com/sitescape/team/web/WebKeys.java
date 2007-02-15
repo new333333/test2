@@ -64,6 +64,7 @@ public class WebKeys {
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
+    public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
@@ -266,6 +267,7 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
 	public static final String ACTION = "action";
 	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
+	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
 	public static final String ADMIN_TREE="ssAdminDomTree";
@@ -354,6 +356,7 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE="ssEntryAttachmentEditTypeForIE";
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE="ssEntryAttachmentEditTypeForNonIE";
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
+    public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String TEAM_MEMBERS="ssTeamMembers";
     
