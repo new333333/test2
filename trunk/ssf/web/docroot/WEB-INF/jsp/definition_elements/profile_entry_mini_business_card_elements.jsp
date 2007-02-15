@@ -3,43 +3,30 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<c:if test="${empty property_maxWidth}">
-  <c:set var="property_maxWidth" value="80" scope="request"/>
-</c:if>
-<c:if test="${empty property_maxHeight}">
-  <c:set var="property_maxHeight" value="80" scope="request"/>
-</c:if>
-<table <c:if test="${!empty propertyValues__elements}">width="100px;"</c:if><c:if test="${empty propertyValues__elements}">style="width: ${property_maxWidth}px;"</c:if>>
+
+<table>
 	<tr>
-		<td valign="top" 
-			<c:if test="${!empty propertyValues__elements}">width="${property_maxWidth}px;"</c:if><c:if test="${empty propertyValues__elements}">style="width: 100px;"</c:if>		>
-			<div style="width:${property_maxWidth}px; height:${property_maxHeight}px;">
-			<c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
-			<c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-			<c:set var="pictureCount" value="0"/>
-			<c:forEach var="selection" items="${selections}">
-			  <c:if test="${pictureCount == 0}">
-				<a href="#" onClick="ss_showThisImage(this);return false;"><img 
-				  id="ss_profilePicture<portlet:namespace/>"
-				  border="0" 
-				  width="${property_maxWidth}"
-				  height="${property_maxWidth}"	  
-				  src="<ssf:url 
-				    webPath="viewFile"
-				    folderId="${ssDefinitionEntry.parentBinder.id}"
-				    entryId="${ssDefinitionEntry.id}" >
-				    <ssf:param name="fileId" value="${selection.id}"/>
-				    <ssf:param name="viewType" value="thumbnail"/>
-				    </ssf:url>" alt="${property_caption}" /></a>
-			  </c:if>
-			  <c:set var="pictureCount" value="${pictureCount + 1}"/>
-			</c:forEach>
-			</c:if>
-			</div>
+		<td style="padding: 10px 0 10px 0;"> 
+		  <div class="ss_thumbnail_gallery ss_thumbnail_small_no_text"><div>
+			  <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
+			  <c:set var="pictureCount" value="0"/>
+			  <c:forEach var="selection" items="${selections}">
+			  	<c:if test="${pictureCount == 0}">
+					<img border="0" src="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    <ssf:param name="viewType" value="scaled"/>
+					    </ssf:url>" />
+				</c:if>
+				<c:set var="pictureCount" value="${pictureCount + 1}"/>
+			  </c:forEach>
+		  </div></div>
 		</td>
-	
+
 		<c:if test="${!empty propertyValues__elements}">
-			<td valign="top">
+			<td style="padding: 10px 0 10px 0;" valign="top">
 			
 				<c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
 				<table>
@@ -78,29 +65,6 @@
 		</c:if>
 	</tr>
 </table>
-
-<c:if test="${pictureCount > 1}">
-<table>
-<tr>
-<td align="left">
-  <div class="ss_thumbnail_gallery ss_thumbnail_small_no_text">
-  <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-  <c:forEach var="selection" items="${selections}">
-	<div><a href="#" onClick="ss_showThisImage(this);return false;"
-	  onMouseover="ss_showProfileImg(this, 'ss_profilePicture<portlet:namespace/>'); return false;">
-	<img border="0" src="<ssf:url 
-	    webPath="viewFile"
-	    folderId="${ssDefinitionEntry.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.id}" >
-	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="viewType" value="scaled"/>
-	    </ssf:url>" /></a></div>
-  </c:forEach>
-  </div>
-</td>
-</tr>
-</table>
-</c:if>
 
 <%
 //Get the form item being displayed
