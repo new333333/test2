@@ -1,8 +1,9 @@
 <% //View the listing part of a blog folder %>
 
-  <table class="ss_blog" cellspacing="0" cellpadding="0" width="100%">
-    <tr>
-      <td class="ss_blog_content" width="80%" valign="top">
+  <div class="ss_blog">
+
+      <div class="ss_blog_content_container1">
+      <div class="ss_blog_content_container2">
 		  <c:forEach var="entry" items="${ssFolderEntries}" >
 			<div class="ss_blog_content">
 			  <c:set var="ss_blog_docId" value="${entry._docId}" scope="request"/>
@@ -19,8 +20,11 @@
 			    entry="${ssBlogEntries[entry._docId].entry}" />
 			</div>
 		  </c:forEach>
-	  </td>
-	  <td class="ss_blog_sidebar" valign="top">
+	  </div>
+	  </div>
+
+     <div class="ss_blog_sidebar_container">
+	  <div class="ss_blog_sidebar">
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.calendar"/></div>
 		<br>
 		<div class="ss_blog_sidebar_hole">
@@ -65,6 +69,9 @@
 				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
-	  </td>
-    </tr>
-  </table>
+	  </div>
+     </div>
+
+
+	  <div class="ss_clear_float"></div>
+   </div>
