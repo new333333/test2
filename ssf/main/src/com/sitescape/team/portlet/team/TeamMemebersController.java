@@ -26,8 +26,6 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.WsDomTreeBuilder;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
