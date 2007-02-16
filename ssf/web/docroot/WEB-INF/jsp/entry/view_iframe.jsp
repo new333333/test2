@@ -70,6 +70,10 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
+<div align="right" width="100%">
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</div>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 
   configJspStyle="${ssConfigJspStyle}" />

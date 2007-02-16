@@ -40,6 +40,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 <br/>
+<div align="right" width="100%">
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</div>
 
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssConfigElement}" 

@@ -314,15 +314,30 @@ public class AjaxController  extends SAbstractController {
 		//Add or delete tags
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entityType = "";
+		if (binderId != null && entryId.equals(binderId.toString())) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			entityType = binder.getEntityIdentifier().getEntityType().name();
+		}
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
 		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
 		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
-		if (!entryId.equals("") && operation2.equals("delete")) {
-			getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
-		} else if (!entryId.equals("") && operation2.equals("add")) {
-			if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
-			if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
+		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
+				entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+			if (!entryId.equals("") && operation2.equals("delete")) {
+				getBinderModule().deleteTag(binderId, tagToDelete);
+			} else if (!entryId.equals("") && operation2.equals("add")) {
+				if (!communityTag.equals("")) getBinderModule().setTag(binderId, communityTag, true);
+				if (!personalTag.equals("")) getBinderModule().setTag(binderId, personalTag, false);
+			}
+		} else {
+			if (!entryId.equals("") && operation2.equals("delete")) {
+				getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
+			} else if (!entryId.equals("") && operation2.equals("add")) {
+				if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
+				if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
+			}
 		}
 	}
 	
@@ -521,8 +536,24 @@ public class AjaxController  extends SAbstractController {
 		String tagDivNumber = PortletRequestUtils.getStringParameter(request, "tagDivNumber", "");
 	
 		Map model = new HashMap();
-		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
-		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+		
+		String entityType = "";
+		if (binderId != null && entryId.toString().equals(binderId.toString())) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			entityType = binder.getEntityIdentifier().getEntityType().name();
+		}
+		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
+		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
+		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
+		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
+				entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+		} else {
+			model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
+			model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+		}
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
 		model.put(WebKeys.ENTRY_ID, entryId.toString());
