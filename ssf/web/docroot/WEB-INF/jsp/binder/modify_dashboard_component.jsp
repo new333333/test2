@@ -41,7 +41,6 @@
 </div>
 
 <br/>
-
 <c:set var="ss_dashboard_config_form_name" value="${renderResponse.namespace}form1" scope="request"/>
 <form method="post" name="${ss_dashboard_config_form_name}" 
   id="${ss_dashboard_config_form_name}" 
@@ -52,65 +51,48 @@
   onSubmit="return ss_onSubmit(this);">
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
-	<br/>
-	<br/>
 	<c:set var="id" value="${ssDashboard.ssComponentId}"/>
 	<div class="ss_dashboard_config">
-		<span class="ss_bold"><ssf:nlt checkIfTag="true"
-		  tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></span>
-		<br/>
-		<br/>
+		<p class="ss_bold"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></p>
 		<div style="margin:5px;">
-		<span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span>
-		<br/>
-		<input type="text" name="title" size="80" 
-		  value="${ssDashboard.dashboard.components[id].title}"/>
-		<br/>
-		<br/>
-		<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span>
-		<br/>
-		<div class="ss_indent_medium">
-		<table cellspacing="0" cellpadding="0">
-		<tr>
-		<td valign="top" nowrap>
-		<c:set var="checked" value=""/>
-		<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
-		              ssDashboard.dashboard.components[id].displayStyle != 'none'}">
-		  <c:set var="checked" value="checked=\"checked\""/>
-		</c:if>
-		<input type="radio" name="displayStyle" value="border" ${checked}>
-		<span><ssf:nlt tag="dashboard.componentStyle.border"/></span>
-		<br>
-		<c:set var="checked" value=""/>
-		<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'none'}">
-		  <c:set var="checked" value="checked=\"checked\""/>
-		</c:if>
-		<input type="radio" name="displayStyle" value="none" ${checked}>
-		<span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span>
-		</td>
-		</tr>
-		</table>
+			<span class="ss_bold"><ssf:nlt tag="dashboard.componentTitle"/></span><br/>
+			<input type="text" name="title" size="80" value="${ssDashboard.dashboard.components[id].title}"/><br/>
+			<span class="ss_bold"><ssf:nlt tag="dashboard.componentStyle"/></span><br/>
+			<div class="ss_indent_medium">
+				<c:set var="checked" value=""/>
+				<c:if test="${empty ssDashboard.dashboard.components[id].displayStyle || 
+				              ssDashboard.dashboard.components[id].displayStyle != 'none'}">
+				  <c:set var="checked" value="checked=\"checked\""/>
+				</c:if>
+				<input type="radio" name="displayStyle" value="border" ${checked}>
+				<span><ssf:nlt tag="dashboard.componentStyle.border"/></span>
+				<br>
+				<c:set var="checked" value=""/>
+				<c:if test="${ssDashboard.dashboard.components[id].displayStyle == 'none'}">
+				  <c:set var="checked" value="checked=\"checked\""/>
+				</c:if>
+				<input type="radio" name="displayStyle" value="none" ${checked}>
+				<span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span>
+			</div>
+			<!-- BEFORE DASHBOARD TAG -->
+			<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
+			<!-- AFTER DASHBOARD TAG -->
+			<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}"/>
+			<input type="hidden" name="_componentId" value="${id}"/>
+			<input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
+			<input type="hidden" name="_returnView" value="${ssDashboard.returnView}"/>
 		</div>
-		<br/>
-		<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
-		<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}"/>
-		<input type="hidden" name="_componentId" value="${id}"/>
-		<input type="hidden" name="_scope" value="${ssDashboard.scope}"/>
-		<input type="hidden" name="_returnView" value="${ssDashboard.returnView}"/>
 	</div>
-	</div>
-
 </div>
 
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>">
-&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="cancelBtn" 
-  value="<ssf:nlt tag="button.cancel" text="Cancel"/>"/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
+	<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>" />
+	&nbsp;&nbsp;
+	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"/>
+	&nbsp;&nbsp;
+	<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
 </form>
 </div>
 
