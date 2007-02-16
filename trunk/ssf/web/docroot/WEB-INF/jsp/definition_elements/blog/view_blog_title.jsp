@@ -23,13 +23,13 @@
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
 	 timeStyle="short" dateStyle="medium" />
- <ssf:nlt tag="general.title.timestamp.by"/> <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="view_permalink"
-	    binderId="${ssDefinitionEntry.creation.principal.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.creation.principal.id}">
-	    <ssf:param name="entityType" value="workspace" />
+ <ssf:nlt tag="general.title.timestamp.by"/> <a 
+ 	href="<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+			value="${ssDefinitionEntry.creation.principal.parentBinder.id}"/><ssf:param name="entryId" 
+			value="${ssDefinitionEntry.creation.principal.id}"/>
 	    <ssf:param name="newTab" value="1" />
-		</ssf:url>"><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
+		</ssf:url>"
+ ><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
 </div>
 <div class="ss_header_bar_burst"><img src="<html:imagesPath/>icons/new_burst.gif"></div>
 <%
@@ -41,13 +41,11 @@
 <div class="ss_header_bar_title_text">
 <span class="ss_header_bar_title_text">
  <a class="ss_header_bar_title_link" 
-   href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${ssDefinitionEntry.parentFolder.id}"
-		    entryId="${ssDefinitionEntry.id}">
-		    <ssf:param name="entityType" value="${ssDefinitionEntry.entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>">
+   href="<ssf:url action="view_folder_entry" 
+		binderId="${ssDefinitionEntry.parentFolder.id}"
+		entryId="${ssDefinitionEntry.id}" >
+    	<ssf:param name="newTab" value="1"/>
+		</ssf:url>">
 <%= docNumber %>
 <c:if test="${empty ssDefinitionEntry.title}">
   <span class="ss_light">

@@ -58,6 +58,9 @@ var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
 <c:if test="${!ss_showSearchResults}">
 <% // Navigation links %>
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<div align="right" width="100%">
+<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</div>
 
 <div id="ss_folder">
   <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
