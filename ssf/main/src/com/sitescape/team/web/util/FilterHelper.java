@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.portlet.PortletRequest;
+import javax.portlet.RenderRequest;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -53,6 +54,7 @@ public class FilterHelper {
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
+   	public final static String FilterTypeTags = "tags";
    	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterTypeElement = "element";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
@@ -70,6 +72,8 @@ public class FilterHelper {
    	public final static String FilterElementNameField = "elementName";
    	public final static String FilterElementNameCaptionField = "elementNameCaption";
    	public final static String FilterElementValueField = "elementValue";
+   	public final static String FilterCommunityTagsField = "searchCommunityTags";
+   	public final static String FilterPersonalTagsField = "searchPersonalTags";
    	public final static String FilterElementValueTypeField = "elementValueType";
    	public final static String FilterWorkflowDefIdField = "ss_workflow_def_id";
    	public final static String FilterWorkflowDefIdCaptionField = "ss_workflow_def_id_caption";
@@ -121,6 +125,11 @@ public class FilterHelper {
 		Integer maxTermNumber = new Integer(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX));
 		for (int i = 1; i <= maxTermNumber.intValue(); i++) {
 			String filterType = PortletRequestUtils.getStringParameter(request, FilterTypeField + String.valueOf(i), "");
+			
+			// TODO: temporary, remove later
+//			System.out.println("FILTERTYPE: "+filterType);
+			
+			
 			if (filterType != null && !filterType.equals("")) {
 				//Found a possible term
 				if (formData.containsKey("deleteTerm")) {
@@ -198,9 +207,42 @@ public class FilterHelper {
 						filterTerm.addAttribute(FilterType, filterType);
 						filterTerm.addAttribute(FilterFolderId, (String)id);
 					}
+				} else if (filterType.equals(FilterTypeTags)) {
+					// TODO: temporary, remove later
+					// System.out.println("FILTER TYPE TAG! ");
+					String searchTags = PortletRequestUtils.getStringParameter(request, FilterCommunityTagsField + String.valueOf(i), "");
+					if (!searchTags.equals("")) {
+						Element filterTerm = filterTerms.addElement(FilterTerm);
+						filterTerm.addAttribute(FilterType, FilterTypeCommunityTagSearch);
+						filterTerm.addText(searchTags);
+						// TODO: temporary, remove later
+						// System.out.println("FILTER TERM"+filterTerm.asXML());
+					}
+					
+					String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterPersonalTagsField + String.valueOf(i), "");
+					if (!searchPersonalTags.equals("")) {
+						Element filterTerm = filterTerms.addElement(FilterTerm);
+						filterTerm.addAttribute(FilterType, FilterTypePersonalTagSearch);
+						filterTerm.addText(searchPersonalTags);
+						// TODO: temporary, remove later
+						// System.out.println("FILTER TERM"+filterTerm.asXML());
+					}
+					
+					
+					
+					
+					// createAndSearchQuery(request, searchFilter);
+					
+					
+					
+
+					
 				}
 			}
+			
 		}
+		// TODO: temporary, remove later
+		// System.out.println("AFTER ADD TAGS: "+searchFilter.asXML());
 		//searchFilter.asXML();
 		return searchFilter;
 	}
@@ -301,6 +343,9 @@ public class FilterHelper {
     			searchFilterData.put(FilterWorkflowDefIdField+ String.valueOf(i+1), defId);
     			searchFilterData.put(FilterWorkflowDefIdCaptionField+ String.valueOf(i+1), defIdCaption);
     			searchFilterData.put(FilterWorkflowStateNameField+ String.valueOf(i+1), stateNameMap);
+    		} else if (filterType.equals(FilterTypeTags)) {
+    			searchFilterData.put(FilterTypeField + String.valueOf(i+1), FilterTypeTags);
+    			searchFilterData.put(FilterElementValueField + String.valueOf(i+1), filterTerm.getText());
     		}
     	}
    		
@@ -584,4 +629,5 @@ public class FilterHelper {
 		return filterName.getText();
 	}
 
+	
 }
