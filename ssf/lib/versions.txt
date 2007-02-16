@@ -40,7 +40,7 @@ Liferay portal-ejb.jar 3.6.1 (modified portal.properties)
 Log4j 1.2.8
 Lucene 1.9.1+indexupdater
 md5crypt.jar
-mysql-connector-java-5.0.3-bin.jar
+mysql-connector-java-5.0.4-bin.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
 Portlet 1.0
 Quartz 1.4.5
