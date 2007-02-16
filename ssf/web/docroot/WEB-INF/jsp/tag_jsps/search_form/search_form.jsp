@@ -19,7 +19,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="java.util.ArrayList" %>
 <jsp:useBean id="ssSearchFormData" type="java.util.Map" scope="request" />
-
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/CalendarPopup.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/AnchorPosition.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
@@ -144,7 +143,7 @@ function t_searchForm_wsTree_showId(forum, obj) {
 }
 
 </script>
-
+<!-- p> TAG SSF:TREE START</p -->
 <ssf:tree 
   treeName="t_searchForm_wsTree" 
   treeDocument="${ssDomTree}"  
@@ -152,6 +151,8 @@ function t_searchForm_wsTree_showId(forum, obj) {
   multiSelect="<%= new ArrayList() %>" 
   multiSelectPrefix="ss_sf_id_" 
   initOnly="true" />
+
+<!-- p>AFTER TAG SSF TREE</p -->
 
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="searchForm.terms"/></legend>
@@ -183,6 +184,13 @@ function t_searchForm_wsTree_showId(forum, obj) {
 	      <li><a href="#" 
 	        onClick="ss_getFilterTypeSelection(this, 'folders');return false;">
 	          <ssf:nlt tag="filter.folders"/>
+	      </a></li>
+
+	      <li><a href="#" onClick="ss_getFilterTypeSelection(this, 'tags');return false;">
+	          <ssf:nlt tag="filter.tags"/>
+	         
+	          <!-- ssf:find formName="_ss_workspacetree_WAR_ssf_INSTANCE_UIT9_form1" 
+    			  formElement="searchPersonalTags" type="tags" width="70px" singleItem="true"/ -->
 	      </a></li>
 
 	    </div>
@@ -359,4 +367,5 @@ ss_filterTermNumberMax++;
 <input type="hidden" name="ss_filterTermNumber"/>
 <input type="hidden" name="ss_filterTermNumberMax"/>
 <input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
-
+<input type="hidden" name="ss_filterTags" />
+<!-- p> AFTER SEARCH FORM</p -->
