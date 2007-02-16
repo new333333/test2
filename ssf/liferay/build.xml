@@ -99,6 +99,7 @@
 	<!--<target name="deploy-jdbc-properties">
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
 		<replace file="${deploy.root.file}"
 			token="@@@driverClassName" value="${jdbc.driver.liferay}"/>

@@ -108,6 +108,7 @@
 	<!--<target name="init-database-type-script">
 		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
 		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
 		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
 		<copy file="${project.dir}/tools/sql/hibernate-${database.type}.properties" 
 			todir="${hibernate.dir}" 
