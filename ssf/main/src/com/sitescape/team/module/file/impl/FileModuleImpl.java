@@ -687,28 +687,31 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			if(!parentDir.exists())
 				parentDir.mkdirs();
 			
-			try
+			if (htmlfile.lastModified() < fa.getModification().getDate().getTime())
 			{
-				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
-				byte[] bbuf = new byte[is.available()];
-				is.read(bbuf);
-				filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + relativeFilePath);
-				originalFile = cacheFileStore.getFile(filePath);
-				fos = new FileOutputStream(originalFile);
-				fos.write(bbuf);
-				fos.flush();
+				try
+				{
+					is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+					byte[] bbuf = new byte[is.available()];
+					is.read(bbuf);
+					filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + relativeFilePath);
+					originalFile = cacheFileStore.getFile(filePath);
+					fos = new FileOutputStream(originalFile);
+					fos.write(bbuf);
+					fos.flush();
+				}
+				catch(Exception e)
+				{
+					if (is != null)
+						is.close();
+					if (fos != null)
+						fos.close();
+				}
+				
+				outFile = htmlfile.getAbsolutePath();
+				outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
+				generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), originalFile.getAbsolutePath(), outFile);
 			}
-			catch(Exception e)
-			{
-				if (is != null)
-					is.close();
-				if (fos != null)
-					fos.close();
-			}
-			
-			outFile = htmlfile.getAbsolutePath();
-			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
-			generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), originalFile.getAbsolutePath(), outFile);
 		}
 		catch(FileNotFoundException e) {
 			throw new UncheckedIOException(e);
@@ -1583,11 +1586,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	        			 */
 	        			InputStream is = null;
 	        			FileOutputStream fos = null;
+	        			String filePath = "";
 	        			File thumbfile = null,
 	        			 	 originalFile = null;
-	        			String filePath = "",
-	        				   outFile = "";
-
+	        			
 	        			try 
 	        			{
 	        				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
@@ -1597,27 +1599,29 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	        				if(!parentDir.exists())
 	        					parentDir.mkdirs();
 	        				
-	        				try
-	        				{
-	        					is = RepositoryUtil.read(fui.getRepositoryName(), binder, entry, relativeFilePath);
-	        					byte[] bbuf = new byte[is.available()];
-	        					is.read(bbuf);
-	        					filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
-	        					originalFile = cacheFileStore.getFile(filePath);
-	        					fos = new FileOutputStream(originalFile);
-	        					fos.write(bbuf);
-	        					fos.flush();
-	        				}
-	        				catch(Exception e)
-	        				{
-	        					if (is != null)
-	        						is.close();
-	        					if (fos != null)
-	        						fos.close();
-	        				}
-	        				
-	        				outFile = thumbfile.getAbsolutePath();			
-	        				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), outFile, fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight());
+	        				if (thumbfile.lastModified() < fui.getFile().lastModified())
+        					{
+		        				try
+		        				{	        					
+		        					is = RepositoryUtil.read(fui.getRepositoryName(), binder, entry, relativeFilePath);
+		        					byte[] bbuf = new byte[is.available()];
+		        					is.read(bbuf);
+		        					
+		        					originalFile = cacheFileStore.getFile(filePath);
+		        					fos = new FileOutputStream(originalFile);
+		        					fos.write(bbuf);
+		        					fos.flush();
+		        				}
+		        				catch(Exception e)
+		        				{
+		        					if (is != null)
+		        						is.close();
+		        					if (fos != null)
+		        						fos.close();
+		        				}
+		        						
+		        				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), thumbfile.getAbsolutePath(), fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight());
+        					}
 	        			}
 	        			catch(FileNotFoundException e) {
 	        				throw new UncheckedIOException(e);
