@@ -421,11 +421,7 @@ public class ViewEntryController extends  SAbstractController {
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-			//If this is being shown in an adaptor, open link in parent
-			qualifiers.put("onClick", "self.parent.location.href = this.href;return false;");
-			adapterUrl.setParameter(WebKeys.URL_NEW_TAB, "1");
-		}
+		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");

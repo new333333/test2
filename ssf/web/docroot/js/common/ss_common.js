@@ -224,6 +224,31 @@ function ss_openTitleUrl(obj) {
 	return false;
 }
 
+//Routine to show the permalink url so it can by cut/pasted
+function ss_showPermalink(obj) {
+	//See if the div exists already
+	var divObj = document.getElementById('ss_permalink_display_div');
+	if (divObj == null) {
+		//Create the div
+	    divObj = document.createElement("div");
+	    divObj.setAttribute("id", "ss_permalink_display_div");
+	    divObj.className = "ss_popupMenu";
+		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
+	}
+	divObj.innerHTML = obj.href;
+	ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
+	divObj.style.top = parseInt(ss_getClickPositionY() + 10) + "px";
+	var x = parseInt(ss_getClickPositionX());
+	x = x - parseInt(ss_getObjectWidth(divObj) / 2);
+	if (x < 0) x = 0;
+	divObj.style.left = x + "px";
+	if (divObj.style && divObj.style.visibility && divObj.style.visibility == 'visible') {
+		divObj.style.visibility = 'hidden';
+	} else {
+		divObj.style.visibility = 'visible';
+	}
+}
+
 //Routine to close a pop-up form window if the cancel button is clicked
 //  This routine checks to see if it is in a pop-up or in an iframe
 function ss_cancelButtonCloseWindow() {
