@@ -38,10 +38,18 @@
     	</select>
 	  </c:if>
 	  
+	  <c:if test="${ss_filterType == 'tags'}">
+    	<ssf:nlt tag="tags.personalTags"/>: <input type="text" name="searchPersonalTags<c:out value="${ss_filterTermNumber}"/>"/>
+    	<!-- ssf:find formName="_ss_workspacetree_WAR_ssf_INSTANCE_UIT9_form1" 
+    			  formElement="searchPersonalTags${ss_filterTermNumber}" type="tags" width="70px" singleItem="true" leaveResultsVisible="true" / -->
+    			  
+    	<ssf:nlt tag="tags.communityTags"/>: <input type="text" name="searchCommunityTags<c:out value="${ss_filterTermNumber}"/>"/>
+	  </c:if>
+	  	  
 	  <c:if test="${ss_filterType == 'folders'}">
 <jsp:useBean id="ss_filterTermNumber" type="String" scope="request" />
 		<ssf:tree 
-		  treeName="<%= "t_searchForm_wsTree" %>" 
+		  treeName="t_searchForm_wsTree"
 		  treeDocument="${ssDomTree}"  
 		  rootOpen="false" 
 		  multiSelect="<%= new ArrayList() %>" 
