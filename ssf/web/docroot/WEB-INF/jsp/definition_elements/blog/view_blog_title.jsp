@@ -23,7 +23,7 @@
 <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
 	 timeStyle="short" dateStyle="medium" />
- by <a href="<ssf:url adapter="true" portletName="ss_forum" 
+ <ssf:nlt tag="general.title.timestamp.by"/> <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
 	    binderId="${ssDefinitionEntry.creation.principal.parentBinder.id}"
 	    entryId="${ssDefinitionEntry.creation.principal.id}">
