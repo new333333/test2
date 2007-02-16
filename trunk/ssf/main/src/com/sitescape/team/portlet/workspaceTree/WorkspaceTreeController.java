@@ -52,6 +52,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
  		Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		BinderHelper.setBinderPermaLink(this, request, response);
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {

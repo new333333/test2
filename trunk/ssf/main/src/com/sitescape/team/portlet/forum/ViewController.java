@@ -65,6 +65,7 @@ public class ViewController  extends SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
@@ -85,8 +86,6 @@ public class ViewController  extends SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
 
 		if (FORUM_PORTLET.equals(displayType)) {
-			//Build the toolbar and add it to the model
-			buildForumToolbar(response.getNamespace(), model);
 		
 			//This is the portlet view; get the configured list of folders to show
 			String[] preferredBinderIds = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
@@ -172,19 +171,7 @@ public class ViewController  extends SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
 		
 	}
-	protected void buildForumToolbar(String prefix, Map<String,Object> model) {
-		//Build the toolbar array
-		Toolbar toolbar = new Toolbar();
 
-		//The "Show unseen" menu
-		String url = "javascript: ;";
-		Map<String,Object> qualifiers = new HashMap<String,Object>();
-		String name= prefix + "_getUnseenCounts";
-		qualifiers.put("onClick", "if (" + name+ ") {" + name + "()};return false;");
-		toolbar.addToolbarMenu("1_showunseen", NLT.get("toolbar.showUnseen"), url, qualifiers);
-
-		model.put(WebKeys.FORUM_TOOLBAR, toolbar.getToolbar());
-	}
 	protected static String getDisplayType(PortletRequest request) {
 		PortletConfig pConfig = (PortletConfig)request.getAttribute("javax.portlet.config");
 		String pName = pConfig.getPortletName();

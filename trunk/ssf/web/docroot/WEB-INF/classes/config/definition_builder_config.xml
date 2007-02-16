@@ -1411,7 +1411,7 @@
 		</operations>
 		
 		<options>
-			<option name="title" />
+			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="textarea" />
@@ -1419,6 +1419,9 @@
 			<option_select path="//item[@category='profileForm']" />
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="profileView" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		

@@ -261,6 +261,7 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
