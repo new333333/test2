@@ -530,6 +530,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_ENTRIES="entries";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
+    public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";

@@ -18,6 +18,11 @@
 <c:if test="${empty ss_portletInitialization}">
 <div class="ss_portlet_style ss_portlet">
 
+<c:if test="${ss_windowState == 'maximized'}">
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+</c:if>
+
 <%
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
@@ -69,11 +74,13 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 			</div>
 		</td>
-		<td align="right" width="30" valign="top">
-		<a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
-  		  src="<html:imagesPath/>icons/help.png" 
-  		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-		</td>
+		<c:if test="${ss_windowState != 'maximized'}">
+		  <td align="right" width="30" valign="top">
+		  <a href="#" onClick="ss_helpSystem.run();return false;"><img border="0" 
+  		    src="<html:imagesPath/>icons/help.png" 
+  		    alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
+		  </td>
+		</c:if>
 	</tr>
 </table>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
