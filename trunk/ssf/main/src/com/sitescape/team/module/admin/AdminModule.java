@@ -55,6 +55,7 @@ public interface AdminModule {
     public List getWorkAreaFunctionMemberships(WorkArea workArea);
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea);
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
+    public void setWorkAreaOwner(WorkArea workArea, Long userId);
     public List getTeamMemberships(Long id);
     
     public List getChanges(Long binderId, String operation);

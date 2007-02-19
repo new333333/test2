@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sitescape.team.domain.User;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
@@ -21,6 +22,7 @@ import com.sitescape.util.Validator;
  */
 public class Group extends Principal implements WorkArea {
     private List members;  //initialized by hibernate access=field  
+    private User owner; //initialized by hibernate access=field  
     
     private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
       
@@ -124,14 +126,22 @@ public class Group extends Principal implements WorkArea {
 		// TODO Then where should we inherit the function membership from?
 		return null; // For now
 	}
-	public Long getOwnerId() {
+	public User getOwner() {
+		if (owner != null) return owner;
 	   	HistoryStamp creation = getCreation();
     	if(creation != null) {
-    		Principal principal = creation.getPrincipal();
-    		if(principal != null)
-    			return principal.getId();
+    		return (User)creation.getPrincipal();
     	}
     	return null;
+		
+	}
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
+	public Long getOwnerId() {
+		Principal owner = getOwner();
+		if (owner == null)	return null;
+		return owner.getId();
  
 	}
 	

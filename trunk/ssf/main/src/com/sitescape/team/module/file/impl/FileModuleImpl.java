@@ -818,7 +818,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     				//	only advance on success
     				++i;
     			} else {//error handled
-	    			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
+	    			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				fileUploadItems.remove(i);
     			}
     		} catch (TitleException lx) {
@@ -826,7 +826,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     			throw lx;
     		}
     		catch(Exception e) {
-    			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
+    			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     			logger.error("Error writing file " + fui.getOriginalFilename(), e);
     			errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
@@ -880,7 +880,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 					}
     			}
     			if(errors != null) {
-        			if (fui.isRegistered()) getCoreDao().unRegisterLibraryEntry(binder, fui.getOriginalFilename());
+        			if (fui.isRegistered()) getCoreDao().unRegisterFileName(binder, fui.getOriginalFilename());
     				errors.addProblem(new FilesErrors.Problem
     					(fui.getRepositoryName(),  fui.getOriginalFilename(), 
     							FilesErrors.Problem.PROBLEM_FILTERING, e));
@@ -890,7 +890,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
    					for (int j=0; j< fileUploadItems.size(); ++j) {
    						FileUploadItem fu = (FileUploadItem) fileUploadItems.get(j);
    		       			if (fu.isRegistered()) { 
- 	    					getCoreDao().unRegisterLibraryEntry(binder, fu.getOriginalFilename());
+ 	    					getCoreDao().unRegisterFileName(binder, fu.getOriginalFilename());
    						}  		       		     	
     				}
     				throw e;
@@ -1004,11 +1004,15 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				fa.getFileItem().getName(), binder, entity, newName);
 		// Change our metadata - note that all that needs to change is the
 		// file name. Other things such as mod date, etc., remain unchanged.
-		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateLibraryName(binder, entity, fa.getFileItem().getName(), newName);
+		//binder files are not registered
+		if (binder.isLibrary() && !binder.equals(entity)) getCoreDao().updateFileName(binder, entity, fa.getFileItem().getName(), newName);
         if ((entity.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entity.getEntryDef().getDefinition(), fa.getName(), "title")) {
-        	//check title
+          	//if tracking unique titles, remove old title
+        	String oldTitle = entity.getNormalTitle();
+            //check title
         	entity.setTitle(newName);			   			   
-		}
+           	if ((entity.getParentBinder() != null) && entity.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entity.getParentBinder(), entity, oldTitle, entity.getNormalTitle());
+        }
 		fa.getFileItem().setName(newName);
 		
 		for(Iterator i = fa.getFileVersionsUnsorted().iterator(); i.hasNext();) {
@@ -1029,9 +1033,9 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				fa.getFileItem().getName());
 		
 		if (binder.isLibrary() && !binder.equals(entity))
-			getCoreDao().unRegisterLibraryEntry(binder, fa.getFileItem().getName());
+			getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
 		if (destBinder.isLibrary() && !destBinder.equals(entity))
-			getCoreDao().registerLibraryEntry(destBinder, entity, fa.getFileItem().getName());
+			getCoreDao().registerFileName(destBinder, entity, fa.getFileItem().getName());
 
 
 		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
@@ -1324,11 +1328,13 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	       	public Object doInTransaction(TransactionStatus status) {  
 	       		getCoreDao().save(changeLog);
 				entry.removeAttachment(fAtt);
-				//if we are deleteing a binder, the the libary names will be deleted elsewhere
-				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateLibraryName(binder, entry, fAtt.getFileItem().getName(), null);
-		        if (!binder.equals(entry) && (entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), ObjectKeys.FIELD_ENTITY_TITLE)) {
+				//file names on binders are not registered
+				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateFileName(binder, entry, fAtt.getFileItem().getName(), null);
+		        if ((entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), ObjectKeys.FIELD_ENTITY_TITLE)) {
+		        	//if tracking unique titles, remove old title
+		        	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, entry.getNormalTitle(), null);
 		        	//check title for entries
-		        	entry.getEntryDef().setTitle("");			   			   
+		        	entry.setTitle("");			   			   
 				}
 			        
 	            return null;
@@ -1438,7 +1444,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
         				fAtts.add(fAtt);
         				entry.addCustomAttribute(fui.getName(), fAtts);
         			}
-        			entry.setTitle(title);
+                	//if tracking unique titles, remove old title and add new
+                 	String oldTitle = entry.getNormalTitle();
+           			entry.setTitle(title);
+           		   	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, oldTitle, entry.getNormalTitle());
         		}
         		ChangeLog changes;
             	if (isNew)

@@ -212,8 +212,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.executeUpdate();
 		   			delete((DefinableEntity)binder);
 		   			if (!binder.isRoot()) {
-			   			//delete reserved names for self which is registered in parent space
-		   				updateLibraryName(binder.getParentBinder(), binder, binder.getTitle(), null);
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
 		   			session.evict(binder);
@@ -245,6 +243,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      	   			deleteEntityAssociations(whereClause, entity.getClass());
      	   		}
 
+     	   		//delete dashboard
+     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id=:entityId and owner_type=:entityType")
+     	   			.setLong("entityId", entity.getId())
+     	   			.setParameter("entityType", entity.getEntityType().getValue())
+     	   			.executeUpdate();
 	   			//delete ratings/visits for these entries
 	   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
@@ -464,89 +467,157 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
     // This code is used to reserve a name.  The binder field is used to check
 	// uniqueness within a binder so it can be viewed by webdav.  The name is either an attachment
 	// name belonging to an entry in the binder, or the title of a sub-folder.  Note, attachments on
-	// the binder itself are not visible hear and not visible through webdav.
-	// the entity field combined with the binder field lets us get the the entry that
+	// the binder itself are not visible here and not visible through webdav.
+	// the entity field combined with the binder field lets us get to the entry that
 	// owns the attachment.  (also allows cleanup on delete entries)
 	// Create our own session cause failures clear the existing session and don't want to 
 	// necessarily cancel the running transaction.
 	// It assumes the combination of binderId and entityId is enough to identify an entry
-    public void registerLibraryEntry(Binder binder, DefinableEntity entity, String name) throws TitleException {
+    public void registerFileName(Binder binder, DefinableEntity entity, String name) throws TitleException {
+    	//Folderentries or binders only
         if (Validator.isNull(name)) throw new TitleException("");
+  		LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, name);
+		if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
+  		registerLibraryEntry(le);
+   }
+    // This code is used to reserve a name.  The binder field is used to check
+	// uniqueness within a binder so it can be viewed as a wiki.  The name is the normalized title
+	//  belonging to an entry in the binder, or the title of a sub-folder.  
+	// Create our own session cause failures clear the existing session and don't want to 
+	// necessarily cancel the running transaction.
+	// It assumes the combination of binderId and entityId is enough to identify an entry
+    public void registerTitle(Binder binder, DefinableEntity entity) throws TitleException {
+    	//Folderentries or binders only
+    	String name = entity.getNormalTitle();
+   		LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.TITLE, name);
+		if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
+   		registerLibraryEntry(le);
+    }
+    protected void registerLibraryEntry(LibraryEntry le) {
       	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
-    		LibraryEntry le = new LibraryEntry(binder.getId(), name);
-    		if (entity != null) le.setEntityId(entity.getId());
     		s.save(le);
     		s.flush();
     	} catch (Exception ex) {
-    		throw new TitleException(name, ex);
+    		throw new TitleException(le.getName(), ex);
     	} finally {
     		s.close();
     	}    	
+    	
+    }
+    //attachments or foldernames
+    public void unRegisterFileName(Binder binder, String name) {
+    	try {
+    		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.FILE, name));
+    	} catch (Exception ex) {
+				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
+	   	}    	
+    }
+    //normalized titles in parentbinder
+    public void unRegisterTitle(Binder binder, String name) {
+    	try {
+    		unRegisterLibraryEntry(new LibraryEntry(binder.getId(), LibraryEntry.TITLE, name));
+    	} catch (Exception ex) {
+			logger.error("Error removeing library entry for: " + binder + " title" +  ex.getMessage());
+	   	}   	
     }
     //create our own session cause failures clear the existing session
-    public void unRegisterLibraryEntry(Binder binder, String name) {
-      	SessionFactory sf = getSessionFactory();
+    protected void unRegisterLibraryEntry(LibraryEntry le) {
+     	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
-    		LibraryEntry le = new LibraryEntry(binder.getId(), name);
 			LibraryEntry exist = (LibraryEntry)s.get(LibraryEntry.class, le);
 			if (exist != null) s.delete(exist);
     		s.flush();
-    	} catch (Exception ex) {
-				logger.error("Error removeing library entry for: " + binder + " file" +  ex.getMessage());
 	   	} finally {
     		s.close();
     	}    	
+     	
     }
- 
-    //done in the current transaction on a title rename or remove attachment
-    public void updateLibraryName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
-        if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
-        LibraryEntry le=null;
+    //done in the current transaction on a binder title rename or remove attachment
+    public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
+    	//Folderentries or binders only
+       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
  		if (oldName != null) {
-	        LibraryEntry oldLe = new LibraryEntry(binder.getId(), oldName);
-			le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
-			if (le != null) {
-				//it exists, is it ours?
-				if (!(entity instanceof Binder)) {
-					if (entity.getId().equals(le.getEntityId())) {
-						//delete the old one; delete cause changing primary key
-						delete(le);
-						flush();
-					}
-				} else if (le.getEntityId() == null) {
-					//belongs to this binder; delete cause changing primary key
-					delete(le);
-					flush();
-				}
-			}
-		}
+	        LibraryEntry oldLe = new LibraryEntry(binder.getId(), LibraryEntry.FILE, oldName);
+			if (!(entity instanceof Binder)) oldLe.setEntityId(entity.getId());
+	        removeOldName(oldLe, entity);
+ 		}
+ 		//this was a remove
+		if (Validator.isNull(newName)) return;
+		//register new name
+		LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, newName);
+		if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
+		addNewName(le, entity);
+     }
+    //done in the current transaction on a binder title rename or remove attachment
+    public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName) throws TitleException {
+    	//Folderentries or binders only
+       if (Validator.isNotNull(newName) && newName.equalsIgnoreCase(oldName)) return;
+        if (entity instanceof Entry) {
+        	//replies are not registered
+        	if (!((Entry)entity).isTop()) return;
+        }
+        if (oldName != null) {
+	        LibraryEntry oldLe = new LibraryEntry(binder.getId(), LibraryEntry.TITLE, oldName);
+			if (!(entity instanceof Binder)) oldLe.setEntityId(entity.getId());
+	        removeOldName(oldLe, entity);
+ 		}
 		//this was a remove
 		if (Validator.isNull(newName)) return;
 		//register new name
-		try {
-			le = new LibraryEntry(binder.getId(), newName);
-			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
-			if (exist == null) {
-				if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
-				save(le);
-			}
-			else throw new TitleException(newName);
-		} catch (Exception ex) {
-			throw new TitleException(newName);
-		}  	
+		LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.TITLE, newName);
+		if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
+		addNewName(le, entity);
     }
-    public  Long findLibraryEntryId(Binder binder, String name) {
-    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(), name));
+    protected void removeOldName(LibraryEntry oldLe, DefinableEntity entity) {
+		LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
+		if (le != null) {
+			//it exists, is it ours?
+			if (le.getEntityId() == null) {
+				//found a sub-folder - is it mine?
+				if (oldLe.getEntityId() == null) {
+					//delete the old one; delete cause changing primary key
+					delete(le);
+					flush();
+				}			
+			} else if (le.getEntityId().equals(oldLe.getEntityId())) {
+				//belongs to this entry; delete cause changing primary key
+				delete(le);
+				flush();
+			}
+		}
+    	
+    }
+    protected void addNewName(LibraryEntry newLe, DefinableEntity entity) {
+		try {
+			LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, newLe);
+			if (exist == null) {
+				save(newLe);
+			}
+			else throw new TitleException(newLe.getName());
+		} catch (Exception ex) {
+			throw new TitleException(newLe.getName());
+		}  	
+    	
+    }
+    public  Long findFileNameEntryId(Binder binder, String name) {
+    	LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, new LibraryEntry(binder.getId(),LibraryEntry.FILE, name));
     	if (le == null) throw new NoObjectByTheIdException("errorcode.no.library.entry.by.the.id", new Object[]{binder.getId(), name});
     	return le.getEntityId();
 
     }
-    public void clearLibraryEntries(Binder binder) {
+	//Clears only folderentries. sub-folder remain since they must always be unique for webdav to traverse the tree
+    public void clearFileNames(Binder binder) {
     	executeUpdate("delete from com.sitescape.team.domain.LibraryEntry where binderId=" +
-    			binder.getId() + " and not entityId is null");
+    			binder.getId() + " and type=" + LibraryEntry.FILE.toString() + " and not entityId is null");
+    	
+    }
+    //Clear all titles, don't need if uniqueTitles not enabled.
+    public void clearTitles(Binder binder) {
+    	executeUpdate("delete from com.sitescape.team.domain.LibraryEntry where binderId=" +
+    			binder.getId() + " and type=" + LibraryEntry.TITLE.toString());
     	
     }
     public List findCompanies() {

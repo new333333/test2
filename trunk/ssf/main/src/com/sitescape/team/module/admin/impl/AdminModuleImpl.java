@@ -138,13 +138,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		} else if (operation.startsWith("deleteWorkAreaFunctionMembership")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("getWorkAreaFunctionMembership")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("getWorkAreaFunctionMemberships")) {
-			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		} else if (operation.startsWith("setWorkAreaFunctionMembershipInherited")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
-		} else if (operation.startsWith("getWorkAreaFunctionMembershipInherited")) {
+		} else if (operation.startsWith("setWorkAreaOwner")) {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.CHANGE_ACCESS_CONTROL);        
 		} else {
 			accessControlManager.checkOperation(workArea, WorkAreaOperation.READ_ENTRIES);
@@ -493,7 +489,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
 		 //by default, inherit from parent
      	 copyBinderAttributes(srcConfig, config);
-      	 getCoreDao().updateLibraryName(parentConfig, config, null, config.getTitle());
+      	 getCoreDao().updateFileName(parentConfig, config, null, config.getTitle());
 
 		 //get childen before adding new children incase parent and source are the same
 		 List<TemplateBinder> children = new ArrayList(srcConfig.getBinders());
@@ -540,7 +536,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			copyBinderAttributes(binder, config);
 	      	if (parent != null) {
 				parent.addBinder(config);
-	      		getCoreDao().updateLibraryName(parent, config, null, config.getTitle());
+	      		getCoreDao().updateFileName(parent, config, null, config.getTitle());
 	      	}
 			if (!config.isFunctionMembershipInherited()) {
 				//copy binders memberships to new Template
@@ -828,23 +824,30 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
         }
     }
-    
+    public void setWorkAreaOwner(WorkArea workArea, Long userId) {
+    	checkAccess(workArea, "setWorkAreaOwner");
+    	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+   		workArea.setOwner(user);
+    }
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
-		checkAccess(workArea, "getWorkAreaFunctionMembership");
+		// open to anyone - only way to get parentMemberships
+    	// checkAccess(workArea, "getWorkAreaFunctionMembership");
 
         return getWorkAreaFunctionMembershipManager().getWorkAreaFunctionMembership
        		(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
     }
     
 	public List getWorkAreaFunctionMemberships(WorkArea workArea) {
-		checkAccess(workArea, "getWorkAreaFunctionMemberships");
+		// open to anyone - only way to get parentMemberships
+		//checkAccess(workArea, "getWorkAreaFunctionMemberships");
 
         return getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(
         		RequestContextHolder.getRequestContext().getZoneId(), workArea);
 	}
 
 	public List getWorkAreaFunctionMembershipsInherited(WorkArea workArea) {
-		checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
+		// open to anyone - only way to get parentMemberships
+		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
 	    WorkArea source = workArea;
 	    if (!workArea.isFunctionMembershipInherited()) return new ArrayList();
 	    while (source.isFunctionMembershipInherited()) {
@@ -859,7 +862,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 	//Routine to return the workarea that access control is being inherited from
 	public WorkArea getWorkAreaFunctionInheritance(WorkArea workArea) {
-		checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
+		// open to anyone - only way to get parentMemberships
+		// checkAccess(workArea, "getWorkAreaFunctionMembershipsInherited");
 	    WorkArea source = workArea;
 	    if (!workArea.isFunctionMembershipInherited()) return source;
 	    while (source != null && source.isFunctionMembershipInherited()) {
@@ -1164,7 +1168,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
 		//generate id for top and profiles
 		getCoreDao().save(team);
-		getCoreDao().updateLibraryName(top, team, null, team.getTitle());
+		getCoreDao().updateFileName(top, team, null, team.getTitle());
 		return team;
 		
 	}
@@ -1183,7 +1187,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
 		//generate id for top and profiles
 		getCoreDao().save(global);
-		getCoreDao().updateLibraryName(top, global, null, global.getTitle());
+		getCoreDao().updateFileName(top, global, null, global.getTitle());
 		return global;
 	}
 	private ProfileBinder addPersonalRoot(Workspace top) {
@@ -1197,7 +1201,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		
 		//generate id for top and profiles
 		getCoreDao().save(profiles);
-		getCoreDao().updateLibraryName(top, profiles, null, profiles.getTitle());
+		getCoreDao().updateFileName(top, profiles, null, profiles.getTitle());
 		return profiles;
 	}
 	

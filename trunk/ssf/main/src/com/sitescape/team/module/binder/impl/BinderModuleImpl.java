@@ -19,6 +19,9 @@ import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateSystemException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
@@ -32,6 +35,8 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
@@ -93,7 +98,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("deleteTag", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setNotificationConfig", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
-		operations.put("setLibrary", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
 
@@ -114,6 +118,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	public void setProfileModule(ProfileModule profileModule) {
 		this.profileModule = profileModule;
+	}
+	private TransactionTemplate transactionTemplate;
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
 	}
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
@@ -238,9 +249,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
-    	Binder binder = loadBinder(binderId);
+    	final Binder binder = loadBinder(binderId);
     	//save library flag
-    	boolean library = binder.isLibrary();
+    	boolean oldLibrary = binder.isLibrary();
+    	boolean oldUnique = binder.isUniqueTitles();
+    	
 		checkAccess(binder, "modifyBinder");
     	List atts = new ArrayList();
     	if (deleteAttachments != null) {
@@ -251,36 +264,92 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     		}
     	}
     	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
-    	//if not longer a library - clear names
-    	if (!binder.isLibrary() && library) {
-			//remove old reserved names
-			getCoreDao().clearLibraryEntries(binder);
-    	} else if (binder.isLibrary() && !library) {
-    		// make it a library
-			getCoreDao().clearLibraryEntries(binder);
-			//add new ones
-			//get all attachments in this binder
-		   	FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
-		   			new Object[] {binder.getId(), "F"});
-		   	ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
-        	SFQuery query = getCoreDao().queryObjects(objs, filter);
-	        try {
-	        	while (query.hasNext()) {
-	        		Object [] result = (Object[])query.next();
-	        		LibraryEntry le = new LibraryEntry(binder.getId(), (String)result[0]);
-	        		le.setEntityId((Long)result[1]);
-	        		getCoreDao().save(le);
-	        	}
-	        } catch (HibernateSystemException he) {
-	        	if (he.contains(NonUniqueObjectException.class)) {
-	        		throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
-	        	}
-	        	
-	        } finally {
-	        	query.close();
-	        }
-   		
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY)) {
+   			final boolean newLibrary = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
+   			if (oldLibrary != newLibrary) {
+   				//wrap in a transaction
+   		        getTransactionTemplate().execute(new TransactionCallback() {
+   		        	public Object doInTransaction(TransactionStatus status) {
+	        			//remove old reserved names
+	        			getCoreDao().clearFileNames(binder);
+  		        		if (newLibrary) {
+   		        			//add new ones
+   		        			//get all attachments in this binder
+   		        			FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
+   		        					new Object[] {binder.getId(), "F"});
+   		        			ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
+   		        			SFQuery query = getCoreDao().queryObjects(objs, filter);
+   		        			try {
+   		        				while (query.hasNext()) {
+   		        					Object [] result = (Object[])query.next();
+   		        					LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.FILE, (String)result[0]);
+   		        					le.setEntityId((Long)result[1]);
+   		        					getCoreDao().save(le);
+   		        				} 
+   		        			} catch (HibernateSystemException he) {
+   		        				if (he.contains(NonUniqueObjectException.class)) {
+   		        					throw new ConfigurationException(NLT.get("errorcode.cannot.make.library"));
+   		        				}
+   		        			} finally {
+   		        				query.close();
+   		        			}
+   		        		}
+   		        		binder.setLibrary(newLibrary);
+   		        		return null;
+	        	}});
+
+   			}
     	}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
+   			final boolean newUnique = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES));
+  			if (newUnique != oldUnique) {
+   				//wrap in a transaction
+   		        getTransactionTemplate().execute(new TransactionCallback() {
+   		        	public Object doInTransaction(TransactionStatus status) {
+	        			//remove old reserved names
+	        			getCoreDao().clearTitles(binder);
+  		        		if (newUnique) {
+   		        			List<Binder> binders = binder.getBinders();
+   		        			//first add subfolder titles
+   		        			try {
+   		        				for (Binder b:binders) {
+   		        					getCoreDao().updateTitle(binder, b, null, b.getNormalTitle());   		        				
+   		        				}
+  		        			} catch (HibernateSystemException he) {
+   		        				if (he.contains(NonUniqueObjectException.class)) {
+   		        					throw new ConfigurationException(NLT.get("errorcode.cannot.make.unique"));
+   		        				}
+  		        			}
+   		        			//add entry titles
+  		        			if (binder instanceof Folder) {
+  		        				Folder parentFolder = (Folder)binder;
+  		        				SFQuery query = (SFQuery)getFolderDao().queryChildEntries(parentFolder); 
+  		        				try {
+  		        					while (query.hasNext()) {
+  	  		        					Object obj = query.next();
+  	   		        					if (obj instanceof Object[])
+  	   		        						obj = ((Object [])obj)[0];
+  	   		     		        		FolderEntry entry = (FolderEntry)obj;
+  	   		        					LibraryEntry le = new LibraryEntry(binder.getId(), LibraryEntry.TITLE, entry.getNormalTitle());
+  	   		        					le.setEntityId(entry.getId());
+  		        						getCoreDao().save(le);
+  		        					}
+  		        				} catch (HibernateSystemException he) {
+  		        					if (he.contains(NonUniqueObjectException.class)) {
+  		        						throw new ConfigurationException(NLT.get("errorcode.cannot.make.unique"));
+  		        					}
+   		        				
+  		        				} finally {
+  		        					query.close();
+  		        				}
+  		        			}
+   		        		}
+   		        		binder.setUniqueTitles(newUnique);
+   		        		return null;
+	        	}});
+
+   			}
+  		}
     }
  
     public void setProperty(Long binderId, String property, Object value) {

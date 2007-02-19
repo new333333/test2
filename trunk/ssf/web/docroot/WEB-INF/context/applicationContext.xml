@@ -564,6 +564,7 @@
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.binder.impl.BinderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>
 				<property name="profileModule"><ref local="profileModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
 		<!-- modifyBinder provide transaction semantics at a finer

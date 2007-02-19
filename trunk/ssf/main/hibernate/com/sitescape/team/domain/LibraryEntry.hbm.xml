@@ -5,7 +5,8 @@
   <class table="SS_LibraryEntries" lazy="false" name="com.sitescape.team.domain.LibraryEntry">
     <composite-id >
       <key-property name="binderId" />
-      <key-property name="name" access="field"/>
+      <key-property name="type"/>
+      <key-property name="name" length="255"/>
     </composite-id>
     <property name="entityId"/>
 </class>

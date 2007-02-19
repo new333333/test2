@@ -130,6 +130,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
                    	//After the entry is successfully added, start up any associated workflows
                 	addEntry_startWorkflow(entry);
          			addEntry_postSave(binder, entry, inputData, entryData);
+         			if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
        			return null;
         		}
         	});
@@ -241,7 +242,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		for (int i=0; i<fileUploadItems.size(); ) {
     			FileUploadItem fui = (FileUploadItem)fileUploadItems.get(i);
     			try {
-    				getCoreDao().registerLibraryEntry(binder, entry, fui.getOriginalFilename());
+    				getCoreDao().registerFileName(binder, entry, fui.getOriginalFilename());
     				fui.setRegistered(true);
     				++i;
     			} catch (TitleException te) {
@@ -398,10 +399,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	// The following part requires update database transaction.
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
+	    			String oldNormalTitle = entry.getNormalTitle();
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
 	    	    	modifyEntry_startWorkflow(entry);
+	    	  		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, oldNormalTitle, entry.getNormalTitle());		
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
-	    			return null;
+ 	    			return null;
 	    		}});
 	    	sp.end().print();
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
@@ -497,7 +500,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
         return entryDataAll;
     }
-    
     protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();
@@ -523,7 +525,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     			FileAttachment fa = entry.getFileAttachment(name);
     			if (fa == null) {
     		   		if (binder.isLibrary()) {
-    		   			getCoreDao().registerLibraryEntry(binder, entry, fui.getOriginalFilename());
+    		   			getCoreDao().registerFileName(binder, entry, fui.getOriginalFilename());
     		   			fui.setRegistered(true);
     		   		}
     		   		++i;
@@ -607,6 +609,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		String toName = fileRenamesTo.get(fa);
 	    		getFileModule().renameFile(binder, entry, fa, toName);
 	    	}
+    	
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
@@ -640,6 +643,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.reset("deleteEntry_processFiles").begin();
         ctx = deleteEntry_processFiles(parentBinder, entry, ctx);
         sp.end().print();
+   		if (entry.isTop() && parentBinder.isUniqueTitles()) 
+   			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
         
         sp.reset("deleteEntry_delete").begin();
         ctx = deleteEntry_delete(parentBinder, entry, ctx);

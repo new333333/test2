@@ -14,5 +14,8 @@ public abstract class Entry extends DefinableEntity  {
     	if (entryDef != null) return entryDef;
     	return getParentBinder().getDefaultEntryDef();
     }
+    public boolean isTop() {
+    	return true;
+    }
 
 }
