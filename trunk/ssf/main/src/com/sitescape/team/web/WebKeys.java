@@ -420,6 +420,7 @@ public class WebKeys {
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String FUNCTIONS="ssFunctions";
     public static final String FUNCTION_MAP="ssFunctionMap";
+    public static final String FUNCTIONS_ALLOWED="ssFunctionsAllowed";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";

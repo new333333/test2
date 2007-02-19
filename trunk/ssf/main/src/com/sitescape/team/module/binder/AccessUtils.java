@@ -1,6 +1,7 @@
 package com.sitescape.team.module.binder;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import com.sitescape.team.ObjectKeys;
@@ -18,8 +19,10 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
+import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;
@@ -246,5 +249,19 @@ public class AccessUtils  {
     	 //see if user can transition
 		getAccessManager().testAcl(user, entry, acl.getPrincipals());
      }
+     
+  	public static boolean checkIfAllOperationsAllowed(Long functionId, WorkArea workArea) {
+      	User user = RequestContextHolder.getRequestContext().getUser();
+  		Function f = getInstance().functionManager.getFunction(user.getZoneId(), functionId);
+  		return checkIfAllOperationsAllowed(f, workArea);
+  	}
+  	public static boolean checkIfAllOperationsAllowed(Function f, WorkArea workArea) {
+		Iterator itOperations = f.getOperations().iterator();
+		while (itOperations.hasNext()) {
+			WorkAreaOperation o = (WorkAreaOperation) itOperations.next();
+			if (!getAccessManager().testOperation((WorkArea) workArea, o)) return false;
+		}
+		return true;
+	}
     	    
 }

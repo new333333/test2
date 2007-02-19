@@ -307,7 +307,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 
 <c:if test="${!ssBinder.functionMembershipInherited && !empty ss_accessParent.ssBinder}">
 <div>
-<img src="<html:imagesPath/>pics/sym_s_checkmark.gif"/> 
+<img src="<html:imagesPath/>pics/sym_s_checkmark.gif"/>&nbsp;
 <span class="ss_italic">
 <c:if test="${ss_accessParent.ssBinder.entityType == 'folder'}">
   <ssf:nlt tag="access.designatesFolder"/>
@@ -316,6 +316,9 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
   <ssf:nlt tag="access.designatesWorkspace"/>
 </c:if>
 </span>
+<br/>
+*&nbsp;&nbsp;&nbsp;
+<span class="ss_italic"><ssf:nlt tag="access.cannotChangeRoleMembership"/></span>
 <br/>
 <br/>
 </div>
@@ -331,7 +334,13 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
     </a>
   </div>
   <div style="padding:0px 10px 10px 10px;">
-  <span class="ss_bold"><ssf:nlt tag="access.changeOwner"/></span><br/>
+  <c:if test="${ssBinder.entityType == 'folder'}">
+    <span class="ss_bold"><ssf:nlt tag="access.changeFolderOwner"/></span>
+  </c:if>
+  <c:if test="${ssBinder.entityType != 'folder'}">
+    <span class="ss_bold"><ssf:nlt tag="access.changeWorkspaceOwner"/></span>
+  </c:if>
+  <br/>
   <ssf:find formName="${renderResponse.namespace}changeOwnerForm" 
     formElement="changeOwnerText${renderResponse.namespace}" 
     type="user"
