@@ -332,7 +332,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	// Move files in the entries
     	moveFiles(binder, entries, destination);
     	//finally remove from index and reAdd.
-    	reindexEntries(entries);
+    	indexEntries(entries);
     }
     
     //***********************************************************************************************************

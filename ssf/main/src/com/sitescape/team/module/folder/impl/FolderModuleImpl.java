@@ -595,7 +595,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
 	   		tag.setName(newtag);
 	   	}
-	   	reindex(binderId,entryId);
+ 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	   	//TODO: what access is needed?
 	   	//checkAccess(entry, "deleteTag");
 	}
@@ -621,7 +621,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		   	tags.add(tag);
 	   	}
 		coreDao.save(tags);
-		reindex(binderId,entryId);
+ 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
 	public void setTagDelete(Long binderId, Long entryId, String tagId) {
@@ -638,17 +638,11 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   			tag.getEntityIdentifier().equals(entry.getEntityIdentifier())) {
 		   	getCoreDao().delete(tag);
 	   	}
-	   	reindex(binderId,entryId);
+ 	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	   	//TODO: what access is needed?
 	   	//checkAccess(entry, "deleteTag");
 	}
 	
-	public void reindex(Long folderId, Long entryId) {	
-		Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        processor.reindexEntry(entry);
-	}
 	
 	public void setUserRating(Long folderId, Long entryId, long value) {
 		//getEntry does read check

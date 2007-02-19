@@ -22,10 +22,10 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
@@ -171,7 +171,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-			model.put(WebKeys.PROFILE_CONFIG_ENTRY, binder.getOwner());
+			Principal owner = binder.getOwner();
+			//turn owner into real object = not hibernate proxy
+			model.put(WebKeys.PROFILE_CONFIG_ENTRY, 
+					getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId()));
 		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -326,7 +329,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				workspace.getOwner() != null) {
 			User user = RequestContextHolder.getRequestContext().getUser();
-			User owner = workspace.getOwner();
+			Principal owner = workspace.getOwner();
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
 			if (getProfileModule().testAccess(owner, "modifyEntry")) {

@@ -22,7 +22,7 @@ import com.sitescape.util.Validator;
  */
 public class Group extends Principal implements WorkArea {
     private List members;  //initialized by hibernate access=field  
-    private User owner; //initialized by hibernate access=field  
+    private Principal owner; //initialized by hibernate access=field  
     
     private Boolean functionMembershipInherited = Boolean.TRUE;//initialized by hibernate access=field
       
@@ -126,16 +126,16 @@ public class Group extends Principal implements WorkArea {
 		// TODO Then where should we inherit the function membership from?
 		return null; // For now
 	}
-	public User getOwner() {
+	public Principal getOwner() {
 		if (owner != null) return owner;
 	   	HistoryStamp creation = getCreation();
-    	if(creation != null) {
-    		return (User)creation.getPrincipal();
+    	if ((creation != null) && creation.getPrincipal() != null) {
+    		return creation.getPrincipal();
     	}
     	return null;
 		
 	}
-	public void setOwner(User owner) {
+	public void setOwner(Principal owner) {
 		this.owner = owner;
 	}
 	public Long getOwnerId() {

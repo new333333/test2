@@ -707,13 +707,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
     	indexEntries_deleteEntries(binder);
-    	IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+		// Since all matches will be deleted, this will also delete the attachments 
+		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+		IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
        	return ctx;
     }
 	    
     //***********************************************************************************************************
-    public void indexBinder(Binder binder) {
-   		indexEntries(binder);    	
+    public void indexBinder(Binder binder, boolean includeEntries) {
+    	if (includeEntries == true) indexEntries(binder);
+    	else  indexBinder(binder, null, null, false);
+
     }
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
@@ -897,24 +901,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
     }
     protected void indexEntries_deleteEntries(Binder binder) {
-        //iterate through results
-       	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        try {	            
-	        logger.info("Indexing (" + binder.getId().toString() + ") ");
-	        
-	        // Delete the document that's currently in the index.
-	        Term delTerm = indexEntries_getDeleteEntriesTerm(binder);
-	        luceneSession.deleteDocuments(delTerm);
-	            
-        } finally {
-	        luceneSession.close();
-	    }
- 
+		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
     }
     
-    protected Term indexEntries_getDeleteEntriesTerm(Binder binder) {
-        return new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
-    }
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
@@ -931,13 +920,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
  
     //***********************************************************************************************************
-   	public void reindexEntry(Entry entry) {
-   		indexEntry(entry.getParentBinder(), entry, null, null, false);
-   	}
-   	public void reindexEntries(Collection entries) {
+   	public void indexEntries(Collection entries) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
-   			reindexEntry(entry);
+   			indexEntry(entry);
    		}
    	}
    	public void moveFiles(Binder binder, Collection entries, Binder destination) {

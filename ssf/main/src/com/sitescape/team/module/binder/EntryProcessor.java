@@ -40,8 +40,7 @@ public interface EntryProcessor extends BinderProcessor {
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
-	public void reindexEntry(Entry entry); 
-  	public void reindexEntries(Collection entries);
+  	public void indexEntries(Collection entries);
   	public void indexEntry(Entry entry);
     public void moveEntry(Binder binder, Entry entry, Binder destination);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);

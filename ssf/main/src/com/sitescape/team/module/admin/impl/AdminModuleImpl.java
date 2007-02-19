@@ -1082,16 +1082,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			createDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
 			
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(top);
+			processor.indexBinder(top, true);
 			processor = (BinderProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(profiles);
+			processor.indexBinder(profiles, true);
 
 			Workspace global = addGlobalRoot(top, stamp);		
 			processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(global);
+			processor.indexBinder(global, true);
 			Workspace team = addTeamRoot(top, stamp);		
 			processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(team);
+			processor.indexBinder(team, true);
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 		} finally  {
@@ -1254,7 +1254,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			
 			global = addGlobalRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(global);
+			processor.indexBinder(global, true);
 			IndexSynchronizationManager.applyChanges();
 		}
 		try {
@@ -1262,7 +1262,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		} catch (NoBinderByTheNameException nb) {
 			team = addTeamRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(team);
+			processor.indexBinder(team, true);
 			IndexSynchronizationManager.applyChanges();
 		}
 		List binders = top.getBinders();

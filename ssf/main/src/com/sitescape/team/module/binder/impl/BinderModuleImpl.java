@@ -238,9 +238,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return loadBinderProcessor(binder).indexTree(binder, exclusions);
 	}    
     public void indexBinder(Long binderId) {
+    	indexBinder(binderId, false);
+    }
+    public void indexBinder(Long binderId, boolean includeEntries) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "indexBinder");
- 	    loadBinderProcessor(binder).indexBinder(binder);
+ 	    loadBinderProcessor(binder).indexBinder(binder, includeEntries);
     }
 
     public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
@@ -494,7 +497,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "modifyTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	tag.setName(newTag);
-	   	reindex(binderId);
+ 	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
 	/**
 	 * Add a new tag, owned by this binder
@@ -519,7 +522,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   		tags.add(tag);
 	   	}
 	   	coreDao.save(tags);
-	   	reindex(binderId);   	
+ 	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
 	
 	/**
@@ -530,16 +533,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "deleteTag"); 
 	   	Tag tag = coreDao.loadTagById(tagId);
 	   	getCoreDao().delete(tag);
-	   	reindex(binderId);
+	   	indexBinder(binderId);
 	}
 	
-	// this should just reindex the binder, and not the entries associated with it.
-	public void reindex(Long binderId) {	
-		Binder binder = loadBinder(binderId);
-        BinderProcessor processor = loadBinderProcessor(binder);
-        processor.indexBinder(binder);
-	}
-
     public void addSubscription(Long binderId, int style) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);

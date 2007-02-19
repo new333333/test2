@@ -25,7 +25,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
 	protected String name="";
-    protected User owner; //initialized by hibernate access=field  
+    protected Principal owner; //initialized by hibernate access=field  
     protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
@@ -214,18 +214,19 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     /**
      * @hibernate.many-to-one
      */
- 	public User getOwner() {
+ 	public Principal getOwner() {
 		if (owner != null) return owner;
 	   	HistoryStamp creation = getCreation();
-    	if(creation != null) {
-    		return (User)creation.getPrincipal();
+    	if ((creation != null) && creation.getPrincipal() != null) {
+    		return creation.getPrincipal();
     	}
     	return null;
 		
 	}
-	public void setOwner(User owner) {
+	public void setOwner(Principal owner) {
 		this.owner = owner;
 	}
+
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
      * @return

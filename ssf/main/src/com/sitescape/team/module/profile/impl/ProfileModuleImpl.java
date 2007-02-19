@@ -567,7 +567,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 							profiles,
 							profiles
 									.getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-			processor.reindexEntry(user);
+			processor.indexEntry(user);
 			// do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 			return user;
@@ -586,7 +586,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			if (EntryBuilder.updateEntry(user, updates) == true) {
 				ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
 						user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-				processor.reindexEntry(user);
+				processor.indexEntry(user);
 				//do now, with request context set
 				IndexSynchronizationManager.applyChanges();
 			}

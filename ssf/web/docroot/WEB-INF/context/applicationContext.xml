@@ -571,18 +571,12 @@
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
-				<prop key="deleteBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="moveBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deleteConfiguration">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="modifyConfiguration">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="addSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deleteSubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="modifySubscription">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="deletePosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modifyPosting">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
-				<prop key="modifyNotification">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modifyTag">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="create*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="move*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="show*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException</prop>
