@@ -214,12 +214,18 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     /**
      * @hibernate.many-to-one
      */
-    public User getOwner() {
-        return owner;
-    }
-    public void setOwner(User owner) {
-        this.owner = owner;
-    }
+ 	public User getOwner() {
+		if (owner != null) return owner;
+	   	HistoryStamp creation = getCreation();
+    	if(creation != null) {
+    		return (User)creation.getPrincipal();
+    	}
+    	return null;
+		
+	}
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
     /**
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
      * @return
@@ -317,14 +323,9 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
 
     public Long getOwnerId() {
-    	if (owner != null) return owner.getId();
-    	HistoryStamp creation = getCreation();
-    	if(creation != null) {
-    		Principal principal = creation.getPrincipal();
-    		if(principal != null)
-    			return principal.getId();
-    	}
-    	return null;
+    	Principal owner = getOwner();
+    	if (owner == null)	return null;
+    	return owner.getId();
     }
 
     public String getProcessorClassName(String processorKey) {
