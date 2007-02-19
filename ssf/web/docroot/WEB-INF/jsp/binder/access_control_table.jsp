@@ -27,7 +27,7 @@
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
   <a href="#" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
-  ><ssf:nlt tag="access.roles"/><img style="margin-left:4px;"
+  ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;"
   src="<html:imagesPath/>pics/menudown.gif"/></a>
   </c:if>
   
@@ -55,7 +55,11 @@
 <TR>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <input type="hidden" name="roleIds" value="${function.id}"/>
-<TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}</span></TH>
+<TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+<c:if test="${empty ssFunctionsAllowed[function.id]}">
+*
+</c:if>
+</span></TH>
 </c:forEach>
 </TR>
 </THEAD>
@@ -82,7 +86,7 @@
 
 <c:if test="${!empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
-  <c:if test="${ssBinder.functionMembershipInherited}">
+  <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner" 
@@ -90,7 +94,7 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssOwner}">
 <input type="checkbox" 
-  <c:if test="${ssBinder.functionMembershipInherited}">
+  <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
     disabled="disabled"
   </c:if>
   name="role_id${function.id}_owner" />
@@ -119,7 +123,11 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}</span></TH>
+  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+  <c:if test="${empty ssFunctionsAllowed[function.id]}">
+  *
+  </c:if>
+  </span></TH>
 </c:forEach>
 </TR>
 </THEAD>
@@ -149,7 +157,7 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssGroups[group.id]}">
     <input type="checkbox" 
-    <c:if test="${ssBinder.functionMembershipInherited}">
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" 
@@ -157,7 +165,7 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssGroups[group.id]}">
     <input type="checkbox" 
-    <c:if test="${ssBinder.functionMembershipInherited}">
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${group.id}" />
@@ -186,7 +194,11 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}</span></TH>
+  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+  <c:if test="${empty ssFunctionsAllowed[function.id]}">
+  *
+  </c:if>
+  </span></TH>
 </c:forEach>
 </TR>
 </THEAD>
@@ -216,7 +228,7 @@
 </c:if>
 <c:if test="${!empty ssFunctionMap[function].ssUsers[user.id]}">
     <input type="checkbox" 
-    <c:if test="${ssBinder.functionMembershipInherited}">
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}" 
@@ -224,7 +236,7 @@
 </c:if>
 <c:if test="${empty ssFunctionMap[function].ssUsers[user.id]}">
     <input type="checkbox" 
-    <c:if test="${ssBinder.functionMembershipInherited}">
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
       disabled="disabled"
     </c:if>
     name="role_id${function.id}_${user.id}" />

@@ -31,9 +31,12 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.security.function.Function;
+import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ResolveIds;
@@ -508,6 +511,7 @@ public class BinderHelper {
 		String principalId = "";
 		
 		Map functionMap = new HashMap();
+		Map allowedFunctions = new HashMap();
 		Map sortedGroupsMap = new TreeMap();
 		Map sortedUsersMap = new TreeMap();
 
@@ -676,9 +680,17 @@ public class BinderHelper {
 		while (itUsers.hasNext()) {
 			sortedUsers.add(sortedUsersMap.get((String) itUsers.next()));
 		}
-
+		
+		//Build list of allowed roles
+		for (int i=0; i<functions.size(); ++i) {
+			Function f = (Function)functions.get(i);
+			if (AccessUtils.checkIfAllOperationsAllowed(f, (WorkArea) binder)) 
+				allowedFunctions.put(f.getId(), f);
+		}
+		
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FUNCTION_MAP, functionMap);
+		model.put(WebKeys.FUNCTIONS_ALLOWED, allowedFunctions);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS, sortedFunctions);
 		model.put(WebKeys.ACCESS_SORTED_FUNCTIONS_MAP, sortedFunctionsMap);
 		model.put(WebKeys.ACCESS_FUNCTIONS_COUNT, Integer.valueOf(functionMap.size()));
@@ -761,5 +773,6 @@ public class BinderHelper {
 		}
 		public String getTreeNameKey() {return null;}
 		
-	}	
+	}
+	
 }
