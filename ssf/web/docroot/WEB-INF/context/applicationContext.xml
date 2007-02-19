@@ -592,6 +592,7 @@
 
 	<bean id="binderAccessUtils" class="com.sitescape.team.module.binder.AccessUtils">
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
+		<property name="functionManager"><ref bean="functionManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
 	<bean id="definitionBuilderConfig" class="com.sitescape.team.module.definition.DefinitionConfigurationBuilder">
