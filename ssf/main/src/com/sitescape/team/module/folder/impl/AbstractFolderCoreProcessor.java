@@ -213,7 +213,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     
      //***********************************************************************************************************
    
- 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
+	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
  			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
  		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
@@ -292,9 +292,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
-    	from.removeEntry(fEntry);
+    	//only log top leve titles
+   		if (from.isUniqueTitles()) getCoreDao().updateTitle(from, entry, entry.getNormalTitle(), null);		
+   	    from.removeEntry(fEntry);
     	to.addEntry(fEntry);
-        User user = RequestContextHolder.getRequestContext().getUser();
+   		if (to.isUniqueTitles()) getCoreDao().updateTitle(to, entry, null, entry.getNormalTitle());		
+
+    	User user = RequestContextHolder.getRequestContext().getUser();
 
         fEntry.setModification(new HistoryStamp(user));
         fEntry.incrLogVersion();
@@ -422,11 +426,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     public void moveFolderToFolder(Folder source, Folder destination) {
     	HKey oldKey = source.getFolderHKey();
     	//first remove name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
+    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
     	source.getParentBinder().removeBinder(source);
     	destination.addFolder(source);
     	//now add name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
+		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
+		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
      	//create history - using timestamp and version from fillIn
@@ -476,11 +482,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
       		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
       	HKey oldKey = source.getFolderHKey();
        	//first remove name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
+    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
      	source.getParentBinder().removeBinder(source);
     	destination.addFolder(source);
     	//now add name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
+		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
+		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
 		// The path changes since its parent changed.    	
  		source.setPathName(destination.getPathName() + "/" + source.getTitle());
      	//create history - using timestamp and version from fillIn

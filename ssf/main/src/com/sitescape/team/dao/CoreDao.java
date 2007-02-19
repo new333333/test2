@@ -76,11 +76,6 @@ public interface CoreDao {
 	 * @return
 	 */
 	public List loadObjects(Collection ids, Class className, Long zoneId, List collections);
-    public void updateLibraryName(Binder binder, DefinableEntity entity, String oldName, String newName);
-    public void registerLibraryEntry(Binder binder, DefinableEntity entity, String name);
-    public void unRegisterLibraryEntry(Binder binder, String name);
-    public  Long findLibraryEntryId(Binder binder, String name);
-    public void clearLibraryEntries(Binder binder);
     public List findCompanies();
 	public int countObjects(Class clazz, FilterControls filter);
 	public float averageColumn(Class clazz, String column, FilterControls filter);
@@ -122,4 +117,17 @@ public interface CoreDao {
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
 	public Dashboard loadDashboard(String id);
- }
+ 
+
+    public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName);
+    public void registerFileName(Binder binder, DefinableEntity entity, String name);
+    public void unRegisterFileName(Binder binder, String name);
+    public void clearFileNames(Binder binder);
+    public  Long findFileNameEntryId(Binder binder, String name);
+
+    public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName);
+    public void registerTitle(Binder binder, DefinableEntity entity);
+    public void unRegisterTitle(Binder binder, String name);
+    public void clearTitles(Binder binder);
+
+}

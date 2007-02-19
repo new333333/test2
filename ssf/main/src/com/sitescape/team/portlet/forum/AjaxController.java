@@ -43,6 +43,7 @@ import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
@@ -1146,12 +1147,8 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
 		if (!ownerId.equals("")) {
-			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			User owner = (User)getProfileModule().getEntry(profiles.getId(), Long.valueOf(ownerId));
-			if (owner != null) {
-				Binder binder = getBinderModule().getBinder(binderId);
-				binder.setOwner(owner);
-			}
+			Binder binder = getBinderModule().getBinder(binderId);
+			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId));
 		}
 	}
 	
@@ -1566,10 +1563,8 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.BINDER, binder);
 			Long ownerId = binder.getOwnerId();
 			if (ownerId != null) {
-				Set ids = new HashSet();
-				ids.add(ownerId);
-				Object[] owners = getProfileModule().getUsersFromPrincipals(ids).toArray();
-				if (owners.length > 0) model.put(WebKeys.BINDER_OWNER, owners[0]);
+				Principal owner = getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), ownerId);
+				model.put(WebKeys.BINDER_OWNER, owner);
 			}
 		}
 			

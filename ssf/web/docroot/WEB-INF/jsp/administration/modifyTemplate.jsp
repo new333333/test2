@@ -43,7 +43,7 @@
 
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.cancel"/>">
 </div>
 <h2>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
@@ -66,19 +66,6 @@
 		<c:if test="${!empty ssBinderConfig.templateDescription.text}">${ssBinderConfig.templateDescription.text}</c:if>
   	</ssf:htmleditor>
   	</div>
-</td></tr>
-<tr><td>
-<c:if test="${ssBinderConfig.entityType == 'workspace'}">
-<c:set var="iconListPath" value="icons.workspace" scope="request"/>
-</c:if>
-<c:if test="${ssBinderConfig.entityType == 'folder'}">
-<c:set var="iconListPath" value="icons.folder" scope="request"/>
-</c:if>
-<c:set var="iconValue" value="${ssBinderConfig.iconName}" scope="request"/>
-<c:set var="property_name" value="iconName" scope="request"/>
-<c:set var="property_caption" value="<%= NLT.get("__icon") %>" scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/iconForm.jsp" %>
-
 </td></tr>
 </table>
 <div class="ss_formBreak"/>

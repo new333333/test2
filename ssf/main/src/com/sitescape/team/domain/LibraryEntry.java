@@ -7,14 +7,18 @@ public class LibraryEntry implements Serializable {
 	protected Long binderId;
 	protected String name=""; //set by hibernate access=Field
 	protected Long entityId;
+	protected Long type=FILE;
+	public static Long FILE=Long.valueOf(1);
+	public static Long TITLE=Long.valueOf(2);
 	
 	//used only by hibernate
 	protected LibraryEntry() {
 		
 	}
-	public LibraryEntry(Long binderId, String name) {
+	public LibraryEntry(Long binderId, Long type, String name) {
 		this.binderId = binderId;
-		setName(name);
+		if (type == FILE) setFileName(name);
+		else setTitle(name);
 	}
 	/**
  	 * @hibernate.key-property 
@@ -26,13 +30,36 @@ public class LibraryEntry implements Serializable {
 		this.binderId = binderId;
 	}
 	/**
- 	 * @hibernate.key-property access="field"
+ 	 * @hibernate.key-property 
+ 	 */
+	public Long getType() {
+		return type;
+	}
+	protected void setType(Long type) {
+		this.type = type;
+	}
+	/**
+ 	 * @hibernate.key-property 
  	 */
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		if (name != null) this.name = name.toLowerCase();
+	protected void setName(String name) {
+		this.name = name;
+	}
+	public String getFileName() {
+		return name;
+	}
+	public void setFileName(String fileName) {
+		setType(FILE);
+		if (fileName != null) setName(fileName.toLowerCase());
+	}
+	public String getTitle() {
+		return name;
+	}
+	public void setTitle(String title) {
+		setName(title);
+		setType(TITLE);
 	}
 	/**
 	 * @hibernate.property

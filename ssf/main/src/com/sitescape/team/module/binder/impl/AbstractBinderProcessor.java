@@ -172,8 +172,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	                addBinder_save(parent, binder, inputData, entryData);      
 	                
 	                addBinder_postSave(parent, binder, inputData, entryData);
-	                
-	                getCoreDao().updateLibraryName(binder.getParentBinder(), binder, null, binder.getTitle());
+	                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
+	                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
+	                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
 	                return null;
 	        	}
 	        });
@@ -262,7 +263,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         		getCoreDao().save(obj);
         }
         doBinderFillin(binder, inputData, entryData);
-  		EntryBuilder.buildEntry(binder, entryData);
+        //can add these fields, by on modify ensure they are safe
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
+   		}
+ 		EntryBuilder.buildEntry(binder, entryData);
     }
 
     protected void addBinder_preSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData) {
@@ -288,12 +296,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    		if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
    			String val = inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION);
    			entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, new Description(val) );
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
-   		}
-   		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
-   			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
    		}
     
    		if (inputData.exists(ObjectKeys.FIELD_ENTITY_ICONNAME) && !entryData.containsKey(ObjectKeys.FIELD_ENTITY_ICONNAME)) {
@@ -326,6 +328,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		String oldTitle = binder.getTitle();
+	        		String oldNormalTitle = binder.getNormalTitle();
 	        		modifyBinder_fillIn(binder, inputData, entryData);
 	        		modifyBinder_postFillIn(binder, inputData, entryData);
 	        		//if title changed, must update path infor for all child folders
@@ -336,8 +339,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	        			fixupPath(binder);
 	        		}
 	        		if (!binder.isRoot()) {
-	        			getCoreDao().updateLibraryName(binder.getParentBinder(), binder, oldTitle, newTitle);
-	        			if (binder.getParentBinder().isUniqueTitles()) {}
+	        			getCoreDao().updateFileName(binder.getParentBinder(), binder, oldTitle, newTitle);
+	        			if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, oldNormalTitle, binder.getNormalTitle());
+
         			}
         			return null;
 	        	}});
@@ -488,11 +492,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.reset("deleteBinder_processFiles").begin();
         ctx = deleteBinder_processFiles(binder, ctx);
         sp.end().print();
+       	if (!binder.isRoot()) {
+   			//delete reserved names for self which is registered in parent space
+    		getCoreDao().updateFileName(binder.getParentBinder(), binder, binder.getTitle(), null);
+   			if (binder.getParentBinder().isUniqueTitles()) 
+   				getCoreDao().updateTitle(binder.getParentBinder(), binder, binder.getNormalTitle(), null);
+    	}
         
         sp.reset("deleteBinder_delete").begin();
         ctx = deleteBinder_delete(binder, ctx);
         sp.end().print();
-        
+       
         sp.reset("deleteBinder_postDelete").begin();
         ctx = deleteBinder_postDelete(binder, ctx);
         sp.end().print();
@@ -535,7 +545,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	return ctx;
     }
     protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
-    	if (!binder.isRoot()) binder.getParentBinder().removeBinder(binder);
+    	if (!binder.isRoot()) {
+    		binder.getParentBinder().removeBinder(binder);
+    	}
+    	//core will delete all LibraryEntries
        	return ctx;
     }
 
@@ -555,11 +568,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       		throw new NotSupportedException(NLT.get("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()}));
 
     	//first remove name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, source.getTitle(), null);
+    	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
+		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);
     	source.getParentBinder().removeBinder(source);
     	destination.addBinder(source);
     	//now add name
-    	getCoreDao().updateLibraryName(source.getParentBinder(), source, null, source.getTitle());
+		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
+		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
  		// The path changes since its parent changed.    	
  		fixupPath(source);
      	//create history - using timestamp and version from fillIn

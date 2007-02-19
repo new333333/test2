@@ -25,7 +25,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
 	protected String name="";
-    protected User owner;
+    protected User owner; //initialized by hibernate access=field  
     protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;

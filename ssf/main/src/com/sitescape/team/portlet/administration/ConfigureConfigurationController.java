@@ -62,8 +62,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					updates.put("templateTitle", sVal);
 					sVal = PortletRequestUtils.getStringParameter(request, "description", null);
 					updates.put("templateDescription", new Description(sVal));
-					sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
-					updates.put("iconName", sVal);
 					Long configId = getAdminModule().addTemplate(type, updates);
 					TemplateBinder config = getAdminModule().getTemplate(configId);
 					//	redirect to modify binder
