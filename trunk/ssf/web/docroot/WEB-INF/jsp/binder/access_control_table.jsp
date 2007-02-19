@@ -107,16 +107,20 @@
 
 <THEAD>
 <TR>
-  <TH class="ss_table_paragraph_bld"><ssf:nlt tag="access.groups"/>
+  <TH class="ss_table_paragraph_bld">
+	<c:if test="${ssBinder.functionMembershipInherited}">
+	  <ssf:nlt tag="access.groups"/>
+	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
-	      <img style="margin-left:4px;"
+	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;"
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
 	  </c:if>
   
       <c:if test="${ssUser.displayStyle == 'accessible'}" >
+        <ssf:nlt tag="access.groups"/>
       </c:if>
     </c:if>
   </TH>
@@ -179,15 +183,19 @@
 
 <THEAD>
 <TR>
-  <TH class="ss_table_paragraph_bld"><ssf:nlt tag="access.users"/>
+  <TH class="ss_table_paragraph_bld">
+	<c:if test="${ssBinder.functionMembershipInherited}">
+	  <ssf:nlt tag="access.users"/>
+	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <c:if test="${ssUser.displayStyle != 'accessible'}" >
 	    <a href="#" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
-	      <img style="margin-left:4px;"
+	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;"
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
 	  </c:if>
   
       <c:if test="${ssUser.displayStyle == 'accessible'}" >
+        <ssf:nlt tag="access.users"/>
       </c:if>
     </c:if>
   </TH>
