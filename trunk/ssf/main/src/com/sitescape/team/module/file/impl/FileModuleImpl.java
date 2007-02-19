@@ -581,7 +581,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 		RepositoryUtil.read(repositoryName, binder, entry, relativeFilePath, baos);
 		
-		generateAndStoreScaledFile(binder, entry, relativeFilePath, 
+		generateAndStoreScaledFile(binder, entry, fa, 
 				baos.toByteArray(), maxWidth, maxHeight);
 	}
 	
@@ -740,7 +740,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
 		// Generate and store scaled file.
 		generateAndStoreScaledFile(binder, entry, 
-				relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
+				fa, baos.toByteArray(), maxWidth, maxHeight);
 		
 		// Generate and store thumbnail file.
 		// generateAndStoreThumbnailFile(binder, entry, relativeFilePath, baos.toByteArray(), maxWidth, maxHeight);
@@ -1555,7 +1555,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	            	// Generate scaled file which goes into the same repository as
 	        		// the primary file except that the generated file is not versioned.
 	        		try {
-	        			generateAndStoreScaledFile(binder, entry, relativeFilePath,
+	        			generateAndStoreScaledFile(binder, entry, fAtt,
 	        				primaryContent, fui.getMaxWidth(),fui.getMaxWidth());
 	        		}
 	        		catch(ThumbnailException e) {
@@ -1956,19 +1956,68 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 
 	private void generateAndStoreScaledFile(
-			Binder binder, DefinableEntity entry, String relativeFilePath, 
+			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			byte[] inputData, int maxWidth, int maxHeight) 
-		throws ThumbnailException, UncheckedIOException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		throws ThumbnailException, UncheckedIOException
+	{
+		File originalFile = null;
+		String relativeFilePath = fa.getFileItem().getName();
 		
-		Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
+		if (!(relativeFilePath.toLowerCase().endsWith(".gif")
+		|| relativeFilePath.toLowerCase().endsWith(".jpg")
+		|| relativeFilePath.toLowerCase().endsWith(".jpeg")
+		|| relativeFilePath.toLowerCase().endsWith(".png")))
+		{
+			String filePath = "";
+			InputStream is = null;
+			FileOutputStream fos = null;
+			
+			filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+			
+			try
+			{	
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+				byte[] bbuf = new byte[is.available()];
+				is.read(bbuf);
+				
+				originalFile = cacheFileStore.getFile(filePath);
+				fos = new FileOutputStream(originalFile);
+				fos.write(bbuf);
+				fos.flush();
+			}
+			catch(Exception e)
+			{
+				try
+				{
+					if (is != null)
+						is.close();
+					if (fos != null)
+						fos.close();
+				}
+				catch (IOException eio) {
+					throw new UncheckedIOException(eio);
+				}
+			}
+			
+			try
+			{
+				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), originalFile.getAbsolutePath() + com.sitescape.team.docconverter.IImageConverterManager.IMG_EXTENSION, 900, 900);
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		else
+		{
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 
-		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
+			String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
 
-		try {
-			cacheFileStore.writeFile(filePath, baos.toByteArray());
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			try {
+				cacheFileStore.writeFile(filePath, baos.toByteArray());
+			} catch (IOException e) {
+				throw new UncheckedIOException(e);
+			}
 		}
 	}
 	
