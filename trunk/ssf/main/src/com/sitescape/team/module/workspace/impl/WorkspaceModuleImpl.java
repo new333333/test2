@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
@@ -254,8 +255,6 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-//        } else {
-//        	def = parentWorkspace.getFolderDef();
         }
         
         Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
@@ -265,13 +264,19 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
      public Long addWorkspace(Long parentWorkspaceId,String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-    	checkAccess(parentWorkspace, "addWorkspace");
+ 
     	Definition def = null;
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-//        } else {
-//        	def = parentWorkspace.getDefaultWorkspaceDef();
         }
+        //allow users workspace to be created for all users
+    	if (parentWorkspace.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentWorkspace.getInternalId())) { 
+    		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
+        		checkAccess(parentWorkspace, "addWorkspace");
+    		}
+    	} else {
+    		checkAccess(parentWorkspace, "addWorkspace");
+    	}
         
         return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
     }

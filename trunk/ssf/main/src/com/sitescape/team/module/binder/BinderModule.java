@@ -90,7 +90,7 @@ public interface BinderModule {
     public Map executePeopleSearchQuery(Binder binder, Document searchQuery);
     public ArrayList getSearchTags(String wordroot); 
     /**
-     * Index a binder and its child binders.
+     * Index a binder and its child binders.  Include entries
      * @param binderId
      * @param exclusions
      * @return Collection binderIds indexed
@@ -98,6 +98,7 @@ public interface BinderModule {
     public Collection indexTree(Long binderId, Collection exclusions);
     public Collection indexTree(Long binderId);
     public void indexBinder(Long binderId);
+    public void indexBinder(Long binderId, boolean includeEntries);
 
     public void modifyNotification(Long binderId, Map updates, Collection principals); 
     public ScheduleInfo getNotificationConfig(Long binderId);

@@ -1,5 +1,5 @@
 package com.sitescape.team.security.function;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Principal;
 /**
  * 
  * @author Jong Kim
@@ -24,7 +24,7 @@ public interface WorkArea {
     public void setFunctionMembershipInherited(boolean functionMembershipInherited);
 
     public Long getOwnerId();
-    public User getOwner();
-    public void setOwner(User owner);
+    public Principal getOwner();
+    public void setOwner(Principal owner);
 
 }

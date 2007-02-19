@@ -60,6 +60,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public void indexBinder(Binder binder) {
 	
 	}
+	public void indexBinder(Binder binder, boolean includeEntries) {
+		
+	}
 	//nothing to index
 	public Collection indexTree(Binder binder, Collection exclusions) {
 		return new ArrayList();

@@ -524,7 +524,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
     		if (binder.getOwner() != null) {
-    			User owner = binder.getOwner();
+    			Principal owner = binder.getOwner();
     			if (binder.getId().equals(owner.getWorkspaceId()))
     				owner.setWorkspaceId(null);
     		}
@@ -590,7 +590,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     
     //***********************************************************************************************************
-    public void indexBinder(Binder binder) {
+    public void indexBinder(Binder binder, boolean includeEntries) {
    		indexBinder(binder, null, null, false);    	
     }
     //***********************************************************************************************************
@@ -599,7 +599,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	if (exclusions == null) exclusions = new TreeSet();
        	if (!exclusions.contains(binder.getId())) {
         	//index self.
-        	indexBinder(binder);
+        	indexBinder(binder, true);
         	indexedIds.add(binder.getId());
         }
        	List binders = binder.getBinders();

@@ -1561,9 +1561,8 @@ public class AjaxController  extends SAbstractController {
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
-			Long ownerId = binder.getOwnerId();
-			if (ownerId != null) {
-				Principal owner = getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), ownerId);
+			Principal owner = binder.getOwner(); 
+			if (owner != null) {
 				model.put(WebKeys.BINDER_OWNER, owner);
 			}
 		}
