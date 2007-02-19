@@ -436,7 +436,7 @@ public class WebHelper {
 		}
     	
     	//When viewing the string, replace the markup title links with real links
-		if (type.equals(WebKeys.MARKUP_VIEW)) {
+		if (binderId != null && type.equals(WebKeys.MARKUP_VIEW)) {
 			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 	    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	    	Matcher m3 = p3.matcher(outputString);

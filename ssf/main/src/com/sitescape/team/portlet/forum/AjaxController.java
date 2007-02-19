@@ -1147,10 +1147,10 @@ public class AjaxController  extends SAbstractController {
 		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
 		if (!ownerId.equals("")) {
 			ProfileBinder profiles = getProfileModule().getProfileBinder();
-			Principal owner = getProfileModule().getEntry(profiles.getId(), Long.valueOf(ownerId));
+			User owner = (User)getProfileModule().getEntry(profiles.getId(), Long.valueOf(ownerId));
 			if (owner != null) {
 				Binder binder = getBinderModule().getBinder(binderId);
-				//Need to set the owner of the binder
+				binder.setOwner(owner);
 			}
 		}
 	}
