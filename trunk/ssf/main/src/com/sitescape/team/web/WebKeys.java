@@ -208,6 +208,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
+	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
@@ -281,6 +282,7 @@ public class WebKeys {
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
+	public static final String BINDER_OWNER="ssBinderOwner";
 	public static final String GUESTBOOK_BINDER="ssGuestbookBinder";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 

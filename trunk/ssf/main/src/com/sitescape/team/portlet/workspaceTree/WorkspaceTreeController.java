@@ -196,7 +196,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 		String userDefaultDef = (String)uProps.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
 		getShowWorkspace(formData, request, response, (Workspace)binder, searchFilter, model);
-			
+
+		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);

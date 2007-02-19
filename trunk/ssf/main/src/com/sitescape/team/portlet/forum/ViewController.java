@@ -191,6 +191,8 @@ public class ViewController  extends SAbstractController {
 			return ViewController.GUESTBOOK_SUMMARY_PORTLET;
 		else if (pName.contains(ViewController.SEARCH_PORTLET))
 			return ViewController.SEARCH_PORTLET;
+		else if (pName.contains(ViewController.TOOLBAR_PORTLET))
+			return ViewController.TOOLBAR_PORTLET;
 		else if (pName.contains(ViewController.WIKI_PORTLET))
 			return ViewController.WIKI_PORTLET;
 		return null;

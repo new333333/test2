@@ -531,7 +531,10 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
-			
+
+		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);

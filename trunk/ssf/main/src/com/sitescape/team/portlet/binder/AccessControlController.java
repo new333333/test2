@@ -16,6 +16,7 @@ import java.util.HashSet;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
@@ -66,6 +67,13 @@ public class AccessControlController extends AbstractBinderController {
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
+		Long ownerId = binder.getOwnerId();
+		if (ownerId != null) {
+			Set ids = new HashSet();
+			ids.add(ownerId);
+			Object[] owners = getProfileModule().getUsersFromPrincipals(ids).toArray();
+			if (owners.length > 0) model.put(WebKeys.BINDER_OWNER, owners[0]);
+		}
 		
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
