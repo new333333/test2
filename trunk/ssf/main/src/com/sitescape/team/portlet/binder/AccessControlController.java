@@ -69,10 +69,8 @@ public class AccessControlController extends AbstractBinderController {
 		model.put(WebKeys.ENTRY, binder);
 		Long ownerId = binder.getOwnerId();
 		if (ownerId != null) {
-			Set ids = new HashSet();
-			ids.add(ownerId);
-			Object[] owners = getProfileModule().getUsersFromPrincipals(ids).toArray();
-			if (owners.length > 0) model.put(WebKeys.BINDER_OWNER, owners[0]);
+			User owner = (User) getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), ownerId);
+			model.put(WebKeys.BINDER_OWNER, owner);
 		}
 		
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
