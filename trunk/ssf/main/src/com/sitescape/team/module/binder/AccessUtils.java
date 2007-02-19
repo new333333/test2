@@ -18,6 +18,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.CollectionUtil;
@@ -26,6 +27,7 @@ import com.sitescape.team.util.SPropsUtil;
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
 	protected AccessControlManager accessControlManager;
+	protected FunctionManager functionManager;
 	protected ProfileDao profileDao;
 	public AccessUtils() {
 		if(instance != null)
@@ -45,6 +47,13 @@ public class AccessUtils  {
 	protected static AccessControlManager getAccessManager() {
 		return getInstance().accessControlManager;
 	}
+	public void setFunctionManager(FunctionManager functionManager) {
+		this.functionManager = functionManager;
+	}
+	protected FunctionManager getFunctionManager() {
+		return functionManager;
+	}
+
 	public void setProfileDao(ProfileDao profileDao) {
 		this.profileDao = profileDao;
 	}
