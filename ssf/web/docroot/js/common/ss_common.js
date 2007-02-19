@@ -1099,7 +1099,7 @@ function ss_activateMenuLayerClone(divId, parentDivId, offsetLeft, offsetTop, op
 		ss_menuDivClones[divId] = divId;
 		var tempNode = divObj.cloneNode( true );
 		tempNode.id = divId;
-		tempNode.style.zIndez = ssMenuZ;
+		tempNode.style.zIndex = ssMenuZ;
 		divObj.parentNode.removeChild(divObj)
 		document.getElementsByTagName( "body" ).item(0).appendChild( tempNode );
 		divObj = document.getElementById(divId);

@@ -29,6 +29,8 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
@@ -97,6 +99,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxAddToClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_CLEAR_CLIPBOARD)) {
 				ajaxClearClipboard(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
+				ajaxSetBinderOwnerId(request, response);
 			}
 		}
 	}
@@ -266,6 +270,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
+			return ajaxGetBinderOwner(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1135,6 +1141,20 @@ public class AjaxController  extends SAbstractController {
 		}
 	}
 	
+	private void ajaxSetBinderOwnerId(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
+		if (!ownerId.equals("")) {
+			ProfileBinder profiles = getProfileModule().getProfileBinder();
+			Principal owner = getProfileModule().getEntry(profiles.getId(), Long.valueOf(ownerId));
+			if (owner != null) {
+				Binder binder = getBinderModule().getBinder(binderId);
+				//Need to set the owner of the binder
+			}
+		}
+	}
+	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1524,7 +1544,6 @@ public class AjaxController  extends SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
-			
 		String divId = PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID);
 		model.put(WebKeys.DIV_ID, divId);
 		
@@ -1534,6 +1553,28 @@ public class AjaxController  extends SAbstractController {
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/team_members", model);
+	}
+
+	private ModelAndView ajaxGetBinderOwner(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		model.put(WebKeys.NAMESPACE, namespace);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+			Long ownerId = binder.getOwnerId();
+			if (ownerId != null) {
+				Set ids = new HashSet();
+				ids.add(ownerId);
+				Object[] owners = getProfileModule().getUsersFromPrincipals(ids).toArray();
+				if (owners.length > 0) model.put(WebKeys.BINDER_OWNER, owners[0]);
+			}
+		}
+			
+		response.setContentType("text/xml");
+		return new ModelAndView("binder/access_control_binder_owner", model);
 	}
 
 }

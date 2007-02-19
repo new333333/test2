@@ -10,6 +10,7 @@ function ss_showTags<portlet:namespace/>(divNumber, entryId) {
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "block";
 	divObj.visibility = "visible";
+	divObj.style.zIndex = ssMenuZ;
 	var anchorObj = document.getElementById('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber));
 	ss_setObjectTop(divObj, ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + "px");
 	var rightEdge = parseInt(ss_getDivLeft('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)));

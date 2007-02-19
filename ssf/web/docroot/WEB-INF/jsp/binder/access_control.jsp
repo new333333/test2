@@ -55,6 +55,34 @@ function ss_addAccessControlRole<portlet:namespace/>(id) {
 	ss_hideDiv('ss_addRolesMenu<portlet:namespace/>');
 }
 
+function ss_selectOwnerAjax<portlet:namespace/>(ownerId) {
+	ss_setupStatusMessageDiv()
+ 	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="true" >
+		<ssf:param name="binderId" value="${ssBinder.id}" />
+		<ssf:param name="operation" value="set_binder_owner_id" />
+    	</ssf:url>"
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
+	ajaxRequest.addKeyValue("ownerId", ownerId);
+	//ajaxRequest.addKeyValue("random", ss_random++);
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postSelectOwner<portlet:namespace/>);
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_postSelectOwner<portlet:namespace/>(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+	ss_hideDiv('ss_changeOwnerMenu<portlet:namespace/>')
+}
+
 function ss_selectPrincipalAjax<portlet:namespace/>() {
 	ss_setupStatusMessageDiv()
  	var url = "<ssf:url 
@@ -84,7 +112,6 @@ function ss_postSelectPrincipal<portlet:namespace/>(obj) {
 		alert(ss_not_logged_in);
 	}
 	var divObj = document.getElementById('ss_accessControlDiv${renderResponse.namespace}');
-	var s = divObj.innerHTML;
 }
 
 function ss_selectRole<portlet:namespace/>() {
@@ -108,6 +135,20 @@ function ss_treeShowIdAccessControl<portlet:namespace/>(id, obj, action) {
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
 	return false;
+}
+
+function ss_showChangeOwnerMenu<portlet:namespace/>(obj) {
+	var divObj = document.getElementById('ss_changeOwnerMenu<portlet:namespace/>');
+	ss_moveObjectToBody(divObj)
+	var objTopOffset = 10;
+	var objLeftOffset = -10;
+	ss_setObjectTop(divObj, parseInt(ss_getClickPositionY() + objTopOffset))
+	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX(obj) + objLeftOffset))
+	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
+		ss_hideDiv('ss_changeOwnerMenu<portlet:namespace/>')
+	} else {
+		ss_showDiv('ss_changeOwnerMenu<portlet:namespace/>')
+	}
 }
 
 function ss_showAddRolesMenu<portlet:namespace/>(obj) {
@@ -176,6 +217,20 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 </c:if>
 <% //need to check tags for templates %>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+<br/>
+<form name="<portlet:namespace/>changeOwnerForm" id="<portlet:namespace/>changeOwnerForm" 
+  class="ss_form" method="post" style="display:inline;" action="" >
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <span><ssf:nlt tag="access.folderOwner"/></span>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <span><ssf:nlt tag="access.workspaceOwner"/></span>
+</c:if>
+<span id="ss_accessControlOwner<portlet:namespace/>"
+  class="ss_bold">${ssBinderOwner.title} (${ssBinderOwner.name})</span>
+<span class="ss_fineprint"><a href="javascript: ;" 
+  onClick="ss_showChangeOwnerMenu<portlet:namespace/>(this);return false;">[<ssf:nlt tag="edit"/>]</a></span>
+</form>
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
@@ -267,6 +322,25 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 </c:if>
 
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
+
+<div id="ss_changeOwnerMenu<portlet:namespace/>" 
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  <div align="right">
+    <a href="#" onClick="ss_hideDiv('ss_changeOwnerMenu<portlet:namespace/>');return false;">
+      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+    </a>
+  </div>
+  <div style="padding:0px 10px 10px 10px;">
+  <span class="ss_bold"><ssf:nlt tag="access.changeOwner"/></span><br/>
+  <ssf:find formName="${renderResponse.namespace}changeOwnerForm" 
+    formElement="changeOwnerText${renderResponse.namespace}" 
+    type="user"
+    leaveResultsVisible="false"
+    clickRoutine="ss_selectOwnerAjax${renderResponse.namespace}"
+    width="100px" singleItem="true"/> 
+  </div>
+</div>
+
 <c:if test="${!ssBinder.functionMembershipInherited}">
 <div id="ss_addGroupsMenu<portlet:namespace/>" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
