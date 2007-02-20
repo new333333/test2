@@ -26,7 +26,7 @@ function ss_loadWikiEntryId<portlet:namespace/>(id) {
 	iframeDiv.src = url;
 }
 
-var ss_wikiIframeOffset = 20;
+var ss_wikiIframeOffset = 60;
 function ss_setWikiIframeSize<portlet:namespace/>() {
 	var targetDiv = document.getElementById('ss_wikiEntryDiv<portlet:namespace/>')
 	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
