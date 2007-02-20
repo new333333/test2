@@ -1431,23 +1431,18 @@ public class AjaxController  extends SAbstractController {
 
 	private ModelAndView openWebDAVFile(RenderRequest request, 
 			RenderResponse response) throws Exception {
-	
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
-		String strURLValue = PortletRequestUtils.getStringParameter(request, "ssURLValue", "");
-		
-		System.out.println("strURLValue: "+strURLValue);
-		
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		String strURLValue = PortletRequestUtils.getStringParameter(request, WebKeys.ENTRY_ATTACHMENT_URL, "");
+		String strOSInfo = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OS_INFO, "");
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		String strOpenInEditor = SsfsUtil.openInEditor(strURLValue, strOSInfo);
 		
-		String strOpenInEditor = SsfsUtil.openInEditor(strURLValue);
-		
-		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_URL, strURLValue);
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDITOR_TYPE, strOpenInEditor);
+		model.put(WebKeys.URL_OS_INFO, strOSInfo);
 
 		return new ModelAndView("definition_elements/view_entry_openfile", model);
 	}

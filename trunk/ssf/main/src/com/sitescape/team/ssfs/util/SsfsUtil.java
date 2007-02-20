@@ -100,14 +100,15 @@ public class SsfsUtil {
 		return false;
 	}
 	
-	public static String openInEditor(String relativeFilePath) {
+	public static String openInEditor(String relativeFilePath, String operatingSystem) {
+		if (operatingSystem == null || operatingSystem.equals("")) return "";
 		String extension = null;
 		int index = relativeFilePath.lastIndexOf(".");
 		if(index < 0)
 			return ""; // No extension. can not support edit-in-place
 		else {
 			extension = relativeFilePath.substring(index).toLowerCase();
-			String strEditor = SPropsUtil.getString("edit.in.place.editor"+extension, "");
+			String strEditor = SPropsUtil.getString("edit.in.place."+operatingSystem+".editor"+extension, "");
 			return strEditor;
 		}
 	}

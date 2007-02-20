@@ -91,6 +91,7 @@ var iFrameFolderAttachmentInvokedOnce${ssFolder.id}<portlet:namespace/> = "false
 function getWindowBgColor() {
 	return "#ffffff";
 }
+
 function ss_showFolderAddAttachmentDropbox${ssFolder.id}<portlet:namespace/>() {
  	var url = "<ssf:url 
     	adapter="true" 

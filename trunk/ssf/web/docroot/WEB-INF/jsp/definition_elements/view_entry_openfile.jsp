@@ -49,6 +49,7 @@ OpenFile Applet
 	    <PARAM NAME = "editorType" VALUE="${ssEntryAttachmentEditorType}"/>
 	    <PARAM NAME = "checkEditClicked" VALUE="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
 	    <PARAM NAME = "resetEditClicked" VALUE="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
+	    <PARAM NAME = "operatingSystem" VALUE="${ssOSInfo}"/>
 	<c:if test="<%= !isIE %>">
 	</applet>
 	</c:if>
