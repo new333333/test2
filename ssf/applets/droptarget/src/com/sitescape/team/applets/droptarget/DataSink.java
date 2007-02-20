@@ -109,50 +109,103 @@ private static ArrayList xferFileListNames;
     boolean loadDirectory = true;
     String strLoadDirectory = topframe.getParameter("loadDirectory");
     if ("no".equalsIgnoreCase(strLoadDirectory)) loadDirectory = false;
-    
+
     if (t == null) {             // If nothing to paste
       this.getToolkit().beep();  // then beep and do nothing
       return;
     }
+    
+    DataFlavor [] dataFlavor = t.getTransferDataFlavors();
+    
     try {
-      // If the clipboard contained a color, use it as the background color
-      if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-        List files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-        for (int i = 0; i < files.size(); i++) {
-          File f = (File) files.get(i);
-          String strFileName = f.getName();
-          topDir = f.getParent();
-          if (topDir == null) topDir = "/";
-          if ( f.isDirectory() ) {
-        	  if (!loadDirectory) {
-        		  errorMsgOnDirectoryLoad();
-            	  changeIcon(StaticGif);
-            	  return;
-        	  }
-            traverseDir(f);
-          } else {
-            xferFileList.add(f);
-            xferFileListNames.add(strFileName);
-          }
+    	DataFlavor copiedFilesListFlavor = new DataFlavor("x-special/gnome-copied-files;class=java.io.InputStream");
+    	
+	    List files = new ArrayList();
+	    // Code Got from Java Bug Database Bug Id: 4899516
+	    // Check for types of data that we support
+	    
+	    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+	      System.out.println("Hemanth: DataFlavor.javaFileListFlavor supported...........");
+	      files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+	    } else if (t.isDataFlavorSupported(copiedFilesListFlavor)) {
+        	System.out.println("Hemanth: copiedFilesListFlavor supported...........");
+	    	InputStream ips = (InputStream)t.getTransferData(copiedFilesListFlavor);
+	    	ByteArrayOutputStream ops = new ByteArrayOutputStream();
+            
+	    	int intReadValue;
+            while ((intReadValue = ips.read()) != -1) {
+            	ops.write(intReadValue);
+            }
+            
+            String strFilesCopiedInformation = ops.toString();
+            files = xSpecialListToFileList(strFilesCopiedInformation);
+        } else {
+        	System.out.println("File Upload Not supported...........");
+            return;
         }
-      // Otherwise, we don't know how to paste the data, so just beep
-      } else this.getToolkit().beep();
-      Iterator fileIter = xferFileList.iterator();
-      if (xferFileList.size() > 0) {
-    	fileLoadingInProgress();
-        PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
-        try {
-          //Thread.sleep(3000);
-        } catch (Exception e) {}
-      } else {
-    	  informNoFilesCopied();
-    	  changeIcon(StaticGif);
-      }
+	    
+        for (int i = 0; i < files.size(); i++) {
+            File f = (File) files.get(i);
+            String strFileName = f.getName();
+            topDir = f.getParent();
+            
+            if (topDir == null) topDir = "/";
+            if ( f.isDirectory() ) {
+          	  if (!loadDirectory) {
+          		  errorMsgOnDirectoryLoad();
+              	  changeIcon(StaticGif);
+              	  return;
+          	  }
+              traverseDir(f);
+            } else {
+              xferFileList.add(f);
+              xferFileListNames.add(strFileName);
+            }
+          }
+          //e.dropComplete(true);
+          Iterator fileIter = xferFileList.iterator();
+          if (xferFileList.size() > 0) {
+            fileLoadingInProgress();
+            PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
+          }
+          else {
+        	  informNoFilesCopied();
+        	  changeIcon(StaticGif);
+          }
     }
-    catch (UnsupportedFlavorException ex) { this.getToolkit().beep(); }
-    catch (IOException ex) { this.getToolkit().beep(); }
+    catch(Exception ex) {
+    	System.out.println("Hemanth addFilesToList: Error: " + ex);
+    	ex.printStackTrace();
+    }
   }
 
+  private static java.util.List xSpecialListToFileList(String data) {
+	  int intTokenCount = 0;
+      java.util.List list = new java.util.ArrayList(1);
+      for (java.util.StringTokenizer st = new java.util.StringTokenizer(data, "\r\n"); st.hasMoreTokens();) {
+    	  String s = st.nextToken();
+    	  
+    	  if (intTokenCount == 0) {
+    		  intTokenCount++;
+    		  continue;
+    	  }
+          if (s.startsWith("#")) {
+              // the line is a comment (as per the RFC 2483)
+              continue;
+          }
+          try {
+              java.net.URI uri = new java.net.URI(s);
+              java.io.File file = new java.io.File(uri);
+              list.add(file);
+          } catch (java.net.URISyntaxException e) {
+              // malformed URI
+          } catch (IllegalArgumentException e) {
+              // the URI is not a valid 'file:' URI
+          }
+      }
+      return list;
+  }  
+  
   private void informNoFilesCopied() {
 	makeJSCallWithAppletParam("noFileAlertMessage");
   }
@@ -169,7 +222,7 @@ private static ArrayList xferFileListNames;
 	  Object foo = win.call(onLoadFunction,args);
 	} catch (Exception ignored) { }
   }
-  
+
   /**
    * This method is invoked when the user drops something on us
    */
@@ -186,51 +239,89 @@ private static ArrayList xferFileListNames;
     boolean loadDirectory = true;
     String strLoadDirectory = topframe.getParameter("loadDirectory");
     if ("no".equalsIgnoreCase(strLoadDirectory)) loadDirectory = false;
-
-    // Check for types of data that we support
-    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-      // If it was a file list, accept it, read the first file in the list
-      // and display the file contents
-      e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-      try {
-        List files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+    
+    try {
+    	DataFlavor uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
+    	
+	    List files = new ArrayList();
+	    // Code Got from Java Bug Database Bug Id: 4899516
+	    // Check for types of data that we support
+	    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+	      // If it was a file list, accept it, read the first file in the list
+	      // and display the file contents
+	      e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+	      files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+	    } else if (t.isDataFlavorSupported(uriListFlavor)) {
+	    	e.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+            String data = (String)t.getTransferData(uriListFlavor);
+            files = textURIListToFileList(data);
+        } else {  // If it wasn't a file list, reject it
+            e.rejectDrop();
+            return;
+        }
+	    
         for (int i = 0; i < files.size(); i++) {
-          File f = (File) files.get(i);
-          String strFileName = f.getName();
-          topDir = f.getParent();
-          
-          if (topDir == null) topDir = "/";
-          if ( f.isDirectory() ) {
-        	  if (!loadDirectory) {
-        		  errorMsgOnDirectoryLoad();
-            	  changeIcon(StaticGif);
-            	  return;
-        	  }
-            traverseDir(f);
-          } else {
-            xferFileList.add(f);
-            xferFileListNames.add(strFileName);
+            File f = (File) files.get(i);
+            String strFileName = f.getName();
+            topDir = f.getParent();
+            
+            if (topDir == null) topDir = "/";
+            if ( f.isDirectory() ) {
+          	  if (!loadDirectory) {
+          		  errorMsgOnDirectoryLoad();
+              	  changeIcon(StaticGif);
+              	  return;
+          	  }
+              traverseDir(f);
+            } else {
+              xferFileList.add(f);
+              xferFileListNames.add(strFileName);
+            }
           }
-        }
-        e.dropComplete(true);
-        Iterator fileIter = xferFileList.iterator();
-        if (xferFileList.size() > 0) {
-          fileLoadingInProgress();
-          PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
-        }
-        else {
-      	  informNoFilesCopied();
-      	  changeIcon(StaticGif);
-        }        
-      }
-      catch (Exception ex) { e.dropComplete(false); }
-    } else {  // If it wasn't a file list, reject it
-      e.rejectDrop();
-      return;
+          e.dropComplete(true);
+          Iterator fileIter = xferFileList.iterator();
+          if (xferFileList.size() > 0) {
+            fileLoadingInProgress();
+            PostFiles poster = new PostFiles(topframe,topframe.getParameter("fileReceiverUrl"),xferFileList, topDir);
+          }
+          else {
+        	  informNoFilesCopied();
+        	  changeIcon(StaticGif);
+          }
     }
-
+    catch(Exception ex) {
+    	System.out.println("Hemanth drop: Error: " + ex);
+    	ex.printStackTrace();
+    	e.dropComplete(false);
+    }
   }
-
+  
+  /*
+   * Code Got from Java Bug Database Bug Id: 4899516
+   */
+  private static java.util.List textURIListToFileList(String data) {
+      java.util.List list = new java.util.ArrayList(1);
+      for (java.util.StringTokenizer st = new java.util.StringTokenizer(data, "\r\n");
+              st.hasMoreTokens();) {
+          String s = st.nextToken();
+          
+          if (s.startsWith("#")) {
+              // the line is a comment (as per the RFC 2483)
+              continue;
+          }
+          try {
+              java.net.URI uri = new java.net.URI(s);
+              java.io.File file = new java.io.File(uri);
+              list.add(file);
+          } catch (java.net.URISyntaxException e) {
+              // malformed URI
+          } catch (IllegalArgumentException e) {
+              // the URI is not a valid 'file:' URI
+          }
+      }
+      return list;
+  }
+  
   /**
    * Recursive routine to find all the files under a dir
    */
@@ -408,8 +499,6 @@ private static ArrayList xferFileListNames;
         	  }
           }
       }
-      
-      System.out.println("Hemanth: filesLoadingInProgress: strFileNames: "+strFileNames);
       
       JSObject win = JSObject.getWindow(topframe);
       String args[] = {strFileNames};

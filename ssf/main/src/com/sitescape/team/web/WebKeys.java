@@ -97,6 +97,7 @@ public class WebKeys {
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
 	public static final String URL_TEAM_MEMBERS="teamMembers";
 	public static final String URL_TEAM_MEMBER_IDS="team_member_ids";
+	public static final String URL_OS_INFO="ssOSInfo";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";

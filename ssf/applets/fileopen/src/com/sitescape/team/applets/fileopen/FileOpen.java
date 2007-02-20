@@ -33,9 +33,11 @@ public class FileOpen extends JApplet implements Runnable {
     
     final String checkEditClicked = "checkEditClicked";
     final String resetEditClicked = "resetEditClicked";
+    final String operatingSystem = "operatingSystem";
     
     String strFileName = "";
     String strEditorTypes = "";
+    String strOperatingSystem = "";
 
     ////////////////////////////////////////////////////////////////////////
     //
@@ -49,6 +51,7 @@ public class FileOpen extends JApplet implements Runnable {
     	try {
 			strFileName = getParameter(fileToOpen);
 			strEditorTypes = getParameter(editorType);
+			strOperatingSystem = getParameter(operatingSystem);
 			
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
@@ -61,15 +64,48 @@ public class FileOpen extends JApplet implements Runnable {
 					
         			boolean blnEditorErrorEncountered = false;
             		try {
-                        String[] command =  new String[4];
+                        String strURL = strFileName;
+                        String strReplacedURL = strURL.replaceAll(" ", "%20");
+            			
+            			/*
+            			 * Windows
+            			String[] command =  new String[4];
                         command[0] = "cmd";
                         command[1] = "/C";
                         command[2] = "start " + strEditorType[i];
-                        
-                        String strURL = strFileName;
-                        String strReplacedURL = strURL.replaceAll(" ", "%20");
-                        
                         command[3] = strReplacedURL;
+                        */
+                        
+                        /*
+                         * Linux
+            			String[] command =  new String[3];
+                        command[0] = "bash";
+                        command[1] = "-c";
+                        command[2] = "ooffice " + "'"+strReplacedURL+"'";
+                        */
+                        
+                        String [] command;
+                        //String strOperSystem = "windows";
+                        
+                        if (strOperatingSystem.equalsIgnoreCase("windows")) {
+                       	 	command =  new String[4];
+                            command[0] = "cmd";
+                            command[1] = "/C";
+                            command[2] = "start " + strEditorType[i];
+                            command[3] = strReplacedURL;
+                            
+                            System.out.println("Hemanth: "+command[0] + " " + command[1] + " " +  command[2] + " " +  command[3]);
+                        } else if (strOperatingSystem.equalsIgnoreCase("linux")) {
+                        	command =  new String[3];
+                            command[0] = "bash";
+                            command[1] = "-c";
+                            command[2] = "ooffice " + "'"+strReplacedURL+"'";
+                        	
+                            System.out.println("Hemanth: "+command[0] + " " + command[1] + " " +  command[2]);
+                        } else {
+                        	System.out.println("Operating System " + strOperatingSystem + " not Handled!");
+                        	return;
+                        }
                         
                         Process p = Runtime.getRuntime().exec(command);
                         

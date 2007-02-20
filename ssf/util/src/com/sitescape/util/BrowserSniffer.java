@@ -240,5 +240,25 @@ public class BrowserSniffer {
 			return false;
 		}
 	}
+	
+	public static String getOSInfo(HttpServletRequest req) {
+		if (req == null) {
+			return "";
+		}
 
+		String agent = req.getHeader(USER_AGENT);
+
+		if (agent == null) {
+			return "";
+		}
+
+		agent = agent.toLowerCase();
+		
+		System.out.println("Hemanth: Agent: "+agent);
+
+		if ((agent.indexOf("windows") != -1)) return "windows";
+		else if ((agent.indexOf("linux") != -1)) return "linux";
+		else if ((agent.indexOf("mac") != -1)) return "mac";		
+		else return "";
+	}
 }

@@ -4,6 +4,7 @@
 
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
+String operatingSystem = BrowserSniffer.getOSInfo(request);
 %>
 
 <script language="JavaScript">
@@ -157,9 +158,10 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 		<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
 		<ssf:param name="operation" value="open_webdav_file" />
 		<ssf:param name="namespace" value="${renderResponse.namespace}" />
+		<ssf:param name="ssOSInfo" value="<%= operatingSystem %>" />
     	</ssf:url>"
     	
-    url = url + "&ssURLValue="+strURLValue;
+    url = url + "&ssEntryAttachmentURL="+strURLValue;
 
 	var divId = "ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>";
 	var divObj = document.getElementById(divId);
