@@ -167,7 +167,7 @@ function <portlet:namespace/>_onsub(obj) {
 <c:set var="iconValue" value="" scope="request"/>
 <c:set var="property_name" value="iconName" scope="request"/>
 <c:set var="property_caption" value="<%= NLT.get("__icon") %>" scope="request"/>
-<%@ include file="/WEB-INF/jsp/common/iconForm.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/iconForm.jsp" %>
 
 </td></tr>
 </table>
