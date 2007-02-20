@@ -110,7 +110,7 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 		  <ssHelpSpot helpId="personal_toolbar/search_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 			  <input name="searchText" type="text" class="form-text" /> 
-			  <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
+			  <a class="ss_linkButton" href="javascript: ;" 
 			    onClick="document.ss_simpleSearchForm<portlet:namespace/>.submit();return false;"
 			  ><ssf:nlt tag="button.go"/></a>
 			    <input type="hidden" name="searchBtn" value="searchBtn"/>

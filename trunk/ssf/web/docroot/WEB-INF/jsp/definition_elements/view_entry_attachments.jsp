@@ -200,7 +200,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 
 	<td width="10%" valign="top">
 		<c:if test="${ssIsAppletSupported == 'true'}">
-			<a class="ss_linkButton ss_smallprint" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
+			<a class="ss_linkButton" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 				<ssf:nlt tag="entry.AttachFilesByApplet"/>
 			</a>
 		</c:if>
@@ -210,12 +210,12 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	<td width="10%" valign="top">
 		<c:if test="${ss_folderViewStyle == 'blog'}">
 			<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-			<a class="ss_linkButton ss_smallprint" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
+			<a class="ss_linkButton" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
 				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
 			</a>		
 		</c:if>
 		<c:if test="${ss_folderViewStyle != 'blog'}">
-			<a class="ss_linkButton ss_smallprint" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
+			<a class="ss_linkButton" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
 				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
 			</a>		
 		</c:if>
@@ -223,7 +223,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	<% } %>
 	
 	<td width="10%" valign="top">
-		<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
+		<a class="ss_linkButton" href="javascript: ;" onClick="ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 			<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
 		</a>
 	</td>

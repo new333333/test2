@@ -5,5 +5,6 @@
 <div class="ss_entryContent ss_entryDescription">
  <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
    value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+      <div style="display: inline; float: right; margin-left: 5px;">[EDIT]</div>   
 </div>
 </c:if>

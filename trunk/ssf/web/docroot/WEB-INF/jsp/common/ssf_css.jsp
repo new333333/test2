@@ -236,8 +236,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_linkbutton_background_color" value="#CFDF8F" scope="request"/>
 	<c:set var="ss_linkbutton_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_linkbutton_link_hover_color" value="#666666" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_in" value="#333333" scope="request"/>
-	<c:set var="ss_linkbutton_border_color_out" value="#666666" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_in" value="#60644D" scope="request"/>
+	<c:set var="ss_linkbutton_border_color_out" value="#60644D" scope="request"/>
 
 	
 	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
@@ -439,10 +439,6 @@ div.ss_replies div.ss_entryDescription {
   background-color: ${ss_form_element_readonly_color};
   }
     
-.ss_form input.ss_submit {}
-
-.ss_form input.ss_submit:hover {}
-
 .ss_text_field {
   border:1px solid ${ss_style_text_field_border_color} !important;
   background-color: ${ss_style_text_field_background_color};
@@ -514,40 +510,49 @@ div.ss_replies div.ss_entryDescription {
   line-height: 100% !important;
 }
 
-a.ss_linkButton:link, a.ss_linkButton:visited {
+
+
+input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visited {
   color: ${ss_linkbutton_text_color};
+  font: normal 9px Lucida Sans Unicode;
+  letter-spacing: 0.25px;
   border-top: 1px solid ${ss_linkbutton_border_color_in};
   border-left: 1px solid ${ss_linkbutton_border_color_in};
-  border-right: 2px solid ${ss_linkbutton_border_color_out};
-  border-bottom: 2px solid ${ss_linkbutton_border_color_out};
+  border-right: 1px solid ${ss_linkbutton_border_color_out};
+  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
   background-color: ${ss_linkbutton_background_color};
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom: 2px;
-  margin-top: 2px;
-  line-height: 200%;
+  background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
+  background-repeat: repeat-x;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 1px;
+  vertical-align: middle;
   text-decoration: none;
-  display: inline;
+  cursor: pointer;
   }
+
+a.ss_linkButton {
+    padding-bottom: 2px;
+    padding-top: 1px;
+}
 
 a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
-  border-top: 1px solid ${ss_linkbutton_border_color_out};
-  border-left: 1px solid ${ss_linkbutton_border_color_out};
-  border-right: 2px solid ${ss_linkbutton_border_color_in};
-  border-bottom: 2px solid ${ss_linkbutton_border_color_in};
+  font: normal 9px Lucida Sans Unicode;
+  letter-spacing: 0.25px;
+  border-top: 1px solid ${ss_linkbutton_border_color_in};
+  border-left: 1px solid ${ss_linkbutton_border_color_in};
+  border-right: 1px solid ${ss_linkbutton_border_color_out};
+  border-bottom: 1px solid ${ss_linkbutton_border_color_out};
   background-color: ${ss_linkbutton_background_color};
-  padding-left: 3px;
-  padding-right: 3px;
-  margin-left: 0px;
-  margin-right: 6px;
-  margin-bottom: 2px;
-  margin-top: 2px;
-  line-height: 200%;
+  background-image: url(<html:imagesPath/>pics/background_linkbutton.jpg);
+  background-repeat: repeat-x;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 1px;
+  vertical-align: middle;
   text-decoration: none;
-  display: inline;
+  cursor: pointer;
   }
 
 
@@ -828,6 +833,8 @@ a.ss_header_bar_title_link:hover, a.ss_header_bar_title_link:visited:hover {
 
 div.ss_blog_sidebar_hole {
 	background-color: ${ss_entry_description_background_color};
+	margin-left: 8px;
+	margin-right: 9px;
 }
 
 
