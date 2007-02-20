@@ -901,9 +901,25 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
     }
     protected void indexEntries_deleteEntries(Binder binder) {
-		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
+        //need to use session directly, cause index_entries does.
+    	//make sure this gets out first
+       	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        try {	            
+	        logger.info("Indexing (" + binder.getId().toString() + ") ");
+	        
+	        // Delete the document that's currently in the index.
+	        Term delTerm = indexEntries_getDeleteEntriesTerm(binder);
+	        luceneSession.deleteDocuments(delTerm);
+	            
+        } finally {
+	        luceneSession.close();
+	    }
+ 
     }
     
+    protected Term indexEntries_getDeleteEntriesTerm(Binder binder) {
+        return new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
+    }
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
