@@ -18,6 +18,7 @@
     <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
       value="${ssDefinitionEntry.description.text}" 
       escapeXml="false"/></ssf:markup></span>
+      <div style="float: right; margin-left: 5px;">[EDIT]</div>
     </div>
   </td>
 </tr>

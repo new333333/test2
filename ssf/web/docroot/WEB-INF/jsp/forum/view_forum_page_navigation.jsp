@@ -135,7 +135,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				&nbsp;&nbsp;
 			    <span class="ss_light ss_fineprint"><ssf:nlt tag="folder.GoToPage"/></span>
 			    <input name="ssGoToPage" size="1" type="text" class="form-text" />
-				<a class="ss_linkButton ss_smallprint" href="javascript: ;" onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
+				<a class="ss_linkButton" href="javascript: ;" onClick="ss_clickGoToPage_<portlet:namespace/>('ss_goToPageForm_<portlet:namespace/>'); return false;"><ssf:nlt tag="button.go"/></a>
 			</td>
 
 			</form>
