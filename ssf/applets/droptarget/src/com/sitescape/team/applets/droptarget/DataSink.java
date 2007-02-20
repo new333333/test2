@@ -158,6 +158,7 @@ private static ArrayList xferFileListNames;
           	  }
               traverseDir(f);
             } else {
+              if (strFileName.endsWith("~")) continue;
               xferFileList.add(f);
               xferFileListNames.add(strFileName);
             }
@@ -274,6 +275,7 @@ private static ArrayList xferFileListNames;
           	  }
               traverseDir(f);
             } else {
+              if (strFileName.endsWith("~")) continue;
               xferFileList.add(f);
               xferFileListNames.add(strFileName);
             }
@@ -333,6 +335,7 @@ private static ArrayList xferFileListNames;
           }
       } else {
     	  String strFileName = file.getName();
+    	  if (strFileName.endsWith("~")) return;
           xferFileList.add(file);
           xferFileListNames.add(strFileName);
       }

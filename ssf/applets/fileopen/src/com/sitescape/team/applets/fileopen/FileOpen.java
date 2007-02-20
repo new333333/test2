@@ -66,23 +66,6 @@ public class FileOpen extends JApplet implements Runnable {
             		try {
                         String strURL = strFileName;
                         String strReplacedURL = strURL.replaceAll(" ", "%20");
-            			
-            			/*
-            			 * Windows
-            			String[] command =  new String[4];
-                        command[0] = "cmd";
-                        command[1] = "/C";
-                        command[2] = "start " + strEditorType[i];
-                        command[3] = strReplacedURL;
-                        */
-                        
-                        /*
-                         * Linux
-            			String[] command =  new String[3];
-                        command[0] = "bash";
-                        command[1] = "-c";
-                        command[2] = "ooffice " + "'"+strReplacedURL+"'";
-                        */
                         
                         String [] command;
                         //String strOperSystem = "windows";
