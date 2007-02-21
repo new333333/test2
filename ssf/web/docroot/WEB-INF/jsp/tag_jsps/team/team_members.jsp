@@ -94,7 +94,7 @@
 	<img id="teamIcon_${prefix}" src="<html:imagesPath/>icons/group.gif" onmouseover="displayTeamMembersMenu_${prefix}();" />
 	<div id="teamMenu_${prefix}" class="teamIconMenuPane" style="visibility: hidden; display: none; position: absolute;">
 		<ul id="teamMembersListUL_${prefix}" class="ss_finestprint">
-			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" onclick="loadTeamMembers_${prefix}(addAllUsersFromTeam_${prefix});">Add all (<strong id="teamMembersAmount_${prefix}">${teamMembersCount}</strong>)</li>	
+			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" onclick="loadTeamMembers_${prefix}(addAllUsersFromTeam_${prefix});"><ssf:nlt tag="teamMembers.addAll"/> (<strong id="teamMembersAmount_${prefix}">${teamMembersCount}</strong>)</li>	
 		</ul>
 	</div>	
 </div>
