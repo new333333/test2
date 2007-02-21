@@ -19,6 +19,7 @@
 			displayTeamMembersMenu_postRequest_${prefix}();
 			return;
 		}		
+		
 		var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members_count" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>";
 		url += "&ss_divId=teamMembersAmount_${prefix}";
 		
@@ -38,6 +39,7 @@
 		if (teamMembersLoaded_${prefix} || teamMembersCountLoaded_${prefix}) 
 			return;
 		
+		teamMembersCountLoaded_${prefix} = true;
 		var ulObj = $("teamMembersListUL_${prefix}");
 		if (ulObj) {
 			var getAllLIObj = document.createElement("li");
