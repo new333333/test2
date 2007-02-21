@@ -56,13 +56,13 @@ function <portlet:namespace/>_getUnseenCounts() {
 <tr>
 <td align="left">
 <c:if test="${!empty ssFolderList}">
-  <a class="ss_linkButton ss_smallprint" 
+  <a class="ss_linkButton ss_bold ss_smallprint" 
     href="javascript: ;" onClick="<portlet:namespace/>_getUnseenCounts();return false;"
     ><ssf:nlt tag="portlet.showUnread"/></a>
 </c:if>
 </td>
 <td align="right">
-  <a class="ss_linkButton ss_smallprint" 
+  <a class="ss_linkButton ss_bold ss_smallprint" 
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
