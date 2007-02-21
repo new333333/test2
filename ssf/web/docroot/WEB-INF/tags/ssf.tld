@@ -406,6 +406,16 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>binderId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>entryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	
 	<tag>
@@ -465,6 +475,18 @@
 	</tag>
 	
 	<tag>
+		<name>miniBusinessCard</name>
+		<tag-class>com.sitescape.team.taglib.MiniBusinessCard</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>user</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.Principal</type>
+		</attribute>		
+	</tag>	
+	
+	<tag>
 		<name>nlt</name>
 		<tag-class>com.sitescape.team.taglib.Nlt</tag-class>
 		<body-content>JSP</body-content>
@@ -486,6 +508,28 @@
 		</attribute>		
 	</tag>
 	
+	<tag>
+		<name>param</name>
+		<tag-class>com.sitescape.team.taglib.ParamTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>useBody</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
+	</tag>
+
 	<tag>
 		<name>presenceInfo</name>
 		<tag-class>com.sitescape.team.taglib.PresenceInfo</tag-class>
@@ -529,67 +573,6 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>	
-
-	<tag>
-		<name>miniBusinessCard</name>
-		<tag-class>com.sitescape.team.taglib.MiniBusinessCard</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>user</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Principal</type>
-		</attribute>		
-	</tag>	
-	
-	<tag>
-		<name>teamMembers</name>
-		<tag-class>com.sitescape.team.taglib.TeamMembers</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>noTeamMembers</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>				
-		<attribute>
-			<name>formNameAllTeamMembers</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>formNameTeamMemberIds</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-	
-	<tag>
-		<name>param</name>
-		<tag-class>com.sitescape.team.taglib.ParamTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>name</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>value</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>useBody</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>
-	</tag>
 
 	<tag>
 		<name>searchForm</name>
@@ -800,6 +783,33 @@
 		</attribute>		
 	</tag>	
 
+	<tag>
+		<name>teamMembers</name>
+		<tag-class>com.sitescape.team.taglib.TeamMembers</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>noTeamMembers</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>				
+		<attribute>
+			<name>formNameAllTeamMembers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>formNameTeamMemberIds</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>label</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+	
 	<tag>
 		<name>timepicker</name>
 		<tag-class>com.sitescape.team.taglib.Timepicker</tag-class>

@@ -382,8 +382,8 @@ public class WebHelper {
 	public static String markupStringReplacement(RenderRequest req, RenderResponse res, 
 			HttpServletRequest httpReq, HttpServletResponse httpRes,
 			DefinableEntity entity, String inputString, String type) {
-		String outputString = new String(inputString);
 		Long binderId = null;
+		Long entryId = null;
 		if (entity != null) {
 			String entityType = entity.getEntityIdentifier().getEntityType().name();
 			if (entityType.equals(EntityType.workspace.name()) ||
@@ -392,13 +392,25 @@ public class WebHelper {
 				binderId = entity.getId();
 			} else if (entityType.equals(EntityType.folderEntry.name())) {
 				binderId = entity.getParentBinder().getId();
+				entryId = entity.getId();
 			}
 		}
+		return markupStringReplacement(req, res, httpReq, httpRes,
+				entity, inputString, type, binderId, entryId);
+	}
+	public static String markupStringReplacement(RenderRequest req, RenderResponse res, 
+			HttpServletRequest httpReq, HttpServletResponse httpRes,
+			DefinableEntity entity, String inputString, String type, 
+			Long binderId, Long entryId) {
+		String outputString = new String(inputString);
+		outputString = outputString.replaceAll("%20", " ");
+		outputString = outputString.replaceAll("%7B", "{");
+		outputString = outputString.replaceAll("%7D", "}");
 
-    	//Replace the markup urls with real urls
-    	if (entity != null) {
+    	//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
+    	if (entity != null && httpReq != null) {
     		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
-	    	Matcher m1 = p1.matcher(inputString);
+	    	Matcher m1 = p1.matcher(outputString);
 	    	while (m1.find()) {
 	    		String url = m1.group(2);
 	    		//Look for the attachment
@@ -407,36 +419,70 @@ public class WebHelper {
 					String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
 					webUrl += WebKeys.URL_FILE_ID + "=" + fa.getId().toString() + "&amp;";
 					webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
-					String entityType = entity.getEntityIdentifier().getEntityType().name();
-					if (entityType.equals(EntityType.workspace.name()) ||
-							entityType.equals(EntityType.folder.name()) ||
-							entityType.equals(EntityType.profiles.name())) {
-						webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getId().toString() + "&amp;";
-						outputString = m1.replaceFirst(webUrl);
-					} else if (entityType.equals(EntityType.folderEntry.name())) {
-						webUrl += WebKeys.URL_BINDER_ID + "=" + entity.getParentBinder().getId().toString() + "&amp;";
-						webUrl += WebKeys.URL_ENTRY_ID + "=" + entity.getId().toString() + "&amp;";
-						outputString = m1.replaceFirst(webUrl);
+					webUrl += WebKeys.URL_BINDER_ID + "=" + binderId.toString() + "&amp;";
+					if (entryId != null) {
+						webUrl += WebKeys.URL_ENTRY_ID + "=" + entryId.toString() + "&amp;";
 					}
+					outputString = m1.replaceFirst(webUrl);
 	    		}
 	    	}
     	}
     	
-    	//Replace the markup attachmentFileIds with real urls
-    	Pattern p2 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
-    	Matcher m2 = p2.matcher(outputString);
-    	while (m2.find()) {
-    		String fileIds = m2.group(2).trim();
-    		//Look for the attachment
-			String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
-			webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
-			webUrl += fileIds;
-			outputString = m2.replaceFirst(webUrl);
-			m2 = p2.matcher(outputString);
-		}
+    	//Replace the markup attachmentFileIds with real urls {{attachmentFileId: binderId=xxx entryId=xxx fileId=xxx}}
+    	if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FORM)) {
+	    	Pattern p2 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
+	    	Matcher m2 = p2.matcher(outputString);
+	    	while (m2.find()) {
+	    		String fileIds = m2.group(2).trim();
+	    		//Look for the attachment
+				String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
+				webUrl += WebKeys.URL_FILE_VIEW_TYPE + "=" + WebKeys.FILE_VIEW_TYPE_ATTACHMENT_FILE + "&amp;";
+				webUrl += fileIds;
+				outputString = m2.replaceFirst(webUrl);
+				m2 = p2.matcher(outputString);
+			}
+    	}
     	
-    	//When viewing the string, replace the markup title links with real links
-		if (binderId != null && type.equals(WebKeys.MARKUP_VIEW)) {
+    	//Replace the markup {{titleUrl}} with real urls {{titleUrl: binderId=xxx title=xxx}}
+    	if (type.equals(WebKeys.MARKUP_VIEW)) {
+	    	Pattern p2 = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
+	    	Matcher m2 = p2.matcher(outputString);
+	    	while (m2.find()) {
+	    		String urlParts = m2.group(2).trim();
+	        	String s_binderId = "";
+	        	Pattern p3 = Pattern.compile("binderId=([^ ]*)");
+	        	Matcher m3 = p3.matcher(urlParts);
+	        	if (m3.find() && m3.groupCount() >= 1) s_binderId = m3.group(1).trim();
+	    		
+	        	String normalizedTitle = "";
+	        	Pattern p4 = Pattern.compile("title=([^ ]*)");
+	        	Matcher m4 = p4.matcher(urlParts);
+	        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
+	        	
+	        	String title = "";
+	        	Pattern p5 = Pattern.compile("text=(.*)$");
+	        	Matcher m5 = p5.matcher(urlParts);
+	        	if (m5.find() && m5.groupCount() >= 1) title = m5.group(1).trim();
+	        	
+	    		//build the link
+	        	String titleLink = "";
+    			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
+    			Map params = new HashMap();
+    			params.put(WebKeys.URL_BINDER_ID, new String[] {s_binderId});
+    			params.put(WebKeys.URL_NORMALIZED_TITLE, new String[] {normalizedTitle});
+    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
+    			titleLink = "<a href=\"" + webUrl + "\" ";
+    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
+    			titleLink += "<span class=\"ss_title_link\">";
+    			titleLink += title + "</span></a>";
+    			titleLink = titleLink.replaceAll("&", "&amp;");
+    			outputString = outputString.substring(0, m2.start(0)) + titleLink + outputString.substring(m2.end(), outputString.length());
+				m2 = p2.matcher(outputString);
+			}
+    	}
+    	
+    	//When viewing the string, replace the markup title links with real links    [[page title]]
+		if (binderId != null && (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FILE))) {
 			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 	    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	    	Matcher m3 = p3.matcher(outputString);
@@ -446,20 +492,26 @@ public class WebHelper {
 	    		String normalizedTitle = getNormalizedTitle(title);
 	    		if (!normalizedTitle.equals("")) {
 	    			//Build the url to that entry
-	    			Map params = new HashMap();
-	    			params.put(WebKeys.URL_BINDER_ID, binderId.toString());
-	    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
-	    			String webUrl = getPortletUrl(req, res, action, true, params);
-	    			String titleLink = "<a href=\"" + webUrl + "\" ";
-	    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
-	    			titleLink += "<span class=\"ss_title_link\">";
-	    			titleLink += title + "</span></a>";
+	    			String titleLink = "";
+	    			if (type.equals(WebKeys.MARKUP_VIEW)) {
+		    			Map params = new HashMap();
+		    			params.put(WebKeys.URL_BINDER_ID, binderId.toString());
+		    			params.put(WebKeys.URL_NORMALIZED_TITLE, normalizedTitle);
+		    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
+		    			titleLink = "<a href=\"" + webUrl + "\" ";
+		    			titleLink += "onClick=\"if (self.ss_openTitleUrl) return self.ss_openTitleUrl(this);\">";
+		    			titleLink += "<span class=\"ss_title_link\">";
+		    			titleLink += title + "</span></a>";
+	    			} else {
+		    			titleLink = "{{titleUrl: " + WebKeys.URL_BINDER_ID + "=" + binderId.toString();
+		    			titleLink += " " + WebKeys.URL_NORMALIZED_TITLE + "=" + normalizedTitle;
+		    			titleLink += " text=" + title + "}}";
+	    			}
 	    			outputString = outputString.substring(0, m3.start(0)) + titleLink + outputString.substring(m3.end(), outputString.length());
 	    			m3 = p3.matcher(outputString);
 	    		}
 			}
 		}
-    	
      	return outputString;
 	}
 	
@@ -480,11 +532,13 @@ public class WebHelper {
 	}
 	
 	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
+			HttpServletRequest httpReq, HttpServletResponse httpRes,
 			String action, boolean actionUrl, Map params) {
-		return getPortletUrl(req, res, action, actionUrl, params, false, "ss_forum");
+		return getPortletUrl(req, res, httpReq, httpRes, action, actionUrl, params, false, "ss_forum");
 	}
-	public static String getPortletUrl(RenderRequest req, RenderResponse res, String action, 
-			boolean actionUrl, Map params, boolean forceAdapter, String portletName) {
+	public static String getPortletUrl(RenderRequest req, RenderResponse res, 
+			HttpServletRequest httpReq, HttpServletResponse httpRes,
+			String action, boolean actionUrl, Map params, boolean forceAdapter, String portletName) {
 		if (forceAdapter) {
 			if (!Validator.isNull(action)) {
 				params.put("action", new String[] {action});
@@ -497,7 +551,21 @@ public class WebHelper {
 				adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
 			}
 			return adapterUrl.toString();
-		
+			
+		} else if (req == null || res == null) {
+			//This call must have come from a servlet (e.g., rss)
+			//  Build a permalink url
+			if (!Validator.isNull(action)) {
+				params.put("action", new String[] {action});
+			}
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(httpReq, portletName, actionUrl);
+			Iterator it = params.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry me = (Map.Entry) it.next();
+				adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+			}
+			return adapterUrl.toString();
+
 		} else {
 			PortletURL portletURL = null;
 			if (actionUrl) {
