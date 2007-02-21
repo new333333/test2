@@ -55,7 +55,7 @@
 	<img id="clipboardIcon_${prefix}" src="<html:imagesPath/>icons/liveclipboard-icon-16x16.jpg" onmouseover="displayClipboardMenu_${prefix}();" />
 	<div id="clipboardMenu_${prefix}" class="clipboardIconMenuPane" style="visibility: hidden; display: none; position: absolute;">
 		<ul id="clipboardUsersListUL_${prefix}" class="ss_finestprint">
-			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" <c:if test="${clipboardUsersCount > 0}">onclick="loadClipboardUsers_${prefix}(clickAllClipboardUsers_${prefix});"</c:if>><c:if test="${clipboardUsersCount > 0}">Add all (<strong>${clipboardUsersCount}</strong>)</c:if><c:if test="${clipboardUsersCount == 0}">There are no users on clipboard</c:if></li>
+			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" <c:if test="${clipboardUsersCount > 0}">onclick="loadClipboardUsers_${prefix}(clickAllClipboardUsers_${prefix});"</c:if>><c:if test="${clipboardUsersCount > 0}"><ssf:nlt tag="clipboard.addAll"/> (<strong>${clipboardUsersCount}</strong>)</c:if><c:if test="${clipboardUsersCount == 0}"><ssf:nlt tag="clipboard.noUsres"/></c:if></li>
 			<c:if test="${clipboardUsersCount > 0}">
 				<li class="getAllUsers" id="clipboardUsersList_${prefix}" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; loadClipboardUsers_${prefix}();" onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';"><img border="0" src="<html:imagesPath/>pics/sym_s_collapse.gif" /></li>
 			</c:if>
