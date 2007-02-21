@@ -901,6 +901,7 @@ public class ListFolderController extends  SAbstractController {
 		Toolbar entryToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
+		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
 		//	The "Add" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
@@ -911,11 +912,11 @@ public class ListFolderController extends  SAbstractController {
 				entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"));
 				qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));
-				String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+				//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
 				//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
@@ -935,29 +936,35 @@ public class ListFolderController extends  SAbstractController {
 		//The "Administration" menu
 		qualifiers = new HashMap();
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageFolderMenu");
-		folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
+		folderToolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
 		if (getFolderModule().testAccess(folder, "addFolder")) {
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
-			folderToolbar.addToolbarMenuItem("2_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		}
 		
-		//Access control
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		//Move binder
+		if (getBinderModule().testAccess(folder, "moveBinder")) {
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.move_folder"), url);
+		}
+
 		//Configuration
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
-		//Definition builder - forms
+		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		
+		//Definition builder - forms (turned off until local definitions supported)
+		/*
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
@@ -971,6 +978,7 @@ public class ListFolderController extends  SAbstractController {
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
+		*/
 		
 		//Delete binder
 		if (getBinderModule().testAccess(folder, "deleteBinder")) {
@@ -981,7 +989,7 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
 		}
 
 		//Modify binder
@@ -991,26 +999,54 @@ public class ListFolderController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_folder"), url);		
 		}
 		
-		//Move binder
-		if (getBinderModule().testAccess(folder, "moveBinder")) {
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.move_folder"), url);
-		}
-
 		//set email
 		try {
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
 		} catch (AccessControlException ac) {};
+		
+		//The "Subsrciptions" menu
+		qualifiers = new HashMap();
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
+		folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
+		
+		if (folder.isTop()) {
+			Subscription sub = getBinderModule().getSubscription(folder.getId());
+			qualifiers = new HashMap();
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
+			adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
+			if (sub == null) {
+				folderToolbar.addToolbarMenuItem("3_administration", "", 
+						NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+			} else {
+				folderToolbar.addToolbarMenuItem("3_administration", "", 
+						NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
+			}
+
+			//RSS link 
+			qualifiers = new HashMap();
+			folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), 
+					UrlUtil.getFeedURL(request, forumId), qualifiers);
+		}
+		
+		//Access control
+		qualifiers = new HashMap();
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
+		url = response.createRenderURL();
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+		folderToolbar.addToolbarMenu("4_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+
 		
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
@@ -1125,25 +1161,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		//The "Footer" menu
-		if (folder.isTop()) {
-			//RSS link 
-			footerToolbar.addToolbarMenu("RSS", NLT.get("toolbar.menu.rss"), UrlUtil.getFeedURL(request, forumId));
-			Subscription sub = getBinderModule().getSubscription(folder.getId());
-			qualifiers = new HashMap();
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
-			adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
-			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
-			if (sub == null) {
-				footerToolbar.addToolbarMenu("subscribeToFolder", NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
-			} else {
-				footerToolbar.addToolbarMenu("subscriptionToFolder", NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
-			}
-
-		}
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
@@ -1152,14 +1170,15 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
 				adapterUrl.toString(), qualifiers);
 		
+		
+		//email
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		footerToolbar.addToolbarMenuItem("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
-		
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);

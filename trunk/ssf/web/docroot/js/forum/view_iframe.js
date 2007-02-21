@@ -42,6 +42,7 @@ function ss_showForumEntryInIframe(url) {
     return false;
 }
 
+var ss_scrollHeightFudge = 40;
 function ss_positionEntryDiv() {
 	//ss_debug("ss_positionEntryDiv: "+ss_entryWindowLeft)
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
@@ -90,7 +91,7 @@ function ss_positionEntryDiv() {
     //Allow the entry section to grow to as large as needed to show the entry
 	if (window.ss_showentryframe && window.ss_showentryframe.document && 
 			window.ss_showentryframe.document.body) {
-	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight)
+	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
 	    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
 	    if (entryHeight > ss_entryHeightHighWaterMark) {
 		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.

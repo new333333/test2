@@ -113,6 +113,9 @@ public class BinderHelper {
 			}
 			while (parentBinder != null) {
 				Document tree = null;
+				if (!bs.getBinderModule().testAccess(parentBinder.getId(), 
+						WorkAreaOperation.READ_ENTRIES.toString()))
+					break;
 				if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
 					tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper),0);
