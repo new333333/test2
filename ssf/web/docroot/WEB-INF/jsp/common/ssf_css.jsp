@@ -2861,5 +2861,34 @@ div.ss_buddiesListFooter {
 	text-align: right;
 }
 
+div.clipboardIcon, div.teamIcon {
+	display: inline;
+}
+
+div.clipboardIcon img, div.teamIcon img {
+	border: 0;
+	margin-left: 5px;
+}
+
+div.clipboardIconMenuPane ul, div.teamIconMenuPane ul {
+	margin: 0;
+	padding: 0;
+	list-style-type: none;
+	border: 1px solid #333;
+	background-color: ${ss_style_background_color};
+}
+
+div.clipboardIconMenuPane ul li.pasteAllUsers, div.teamIconMenuPane ul li.pasteAllUsers {
+	border-bottom: 1px solid #333;
+	padding: 1px;
+	text-align: center;
+}
+
+div.clipboardIconMenuPane ul li.getAllUsers, div.teamIconMenuPane ul li.getAllUsers {
+	text-align: center;
+	line-height: 8px;
+}
+
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

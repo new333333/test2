@@ -29,7 +29,6 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -60,22 +59,6 @@ public class SendEntryMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-			// TODO: refactor clipboard
-//			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
-			if (formData.containsKey(WebKeys.URL_TEAM_MEMBERS)) {
-				try {
-					List team = getBinderModule().getTeamMembers(folderId);
-					for (int i=0; i<team.size();++i) {
-						memberIds.add(((Principal)team.get(i)).getId());
-					}					
-				} catch (AccessControlException ax) {
-					//don't use teamMembership if not a member
-				}
-			} else if (formData.containsKey(WebKeys.URL_TEAM_MEMBER_IDS)) {
-				if (getBinderModule().testAccessGetTeamMembers(folderId)) {
-					memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_TEAM_MEMBER_IDS)));
-				}
-			}
 			
 			
 			List entries = null;
@@ -125,11 +108,6 @@ public class SendEntryMailController extends SAbstractController {
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.BINDER, folder);
-		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(folderId));
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
 		model.put(WebKeys.CONFIG_JSP_STYLE, "mail");
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
@@ -148,14 +126,6 @@ public class SendEntryMailController extends SAbstractController {
 			}
 		}
 		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
-
-		// Get the clipboard users
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-		Collection principals = getProfileModule().getUsersFromPrincipals(
-				clipboardUsers);
-		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));

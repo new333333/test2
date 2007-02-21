@@ -1,73 +1,99 @@
-<% //Business mini card view %>
-<%@ page import="java.lang.reflect.Method" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String binderId = (String) request.getAttribute("binderId");
+	String clickRoutine = (String) request.getAttribute("clickRoutine");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
-<c:set var="prefix" value="${form_name_all_team_members}_${form_name_team_member_ids}_${iCount}" />
+<c:set var="binderId" value="<%= binderId %>"/>
+<c:set var="clickRoutine" value="<%= clickRoutine %>"/>
+<c:set var="prefix" value="${iCount}" />
 
 <script type="text/javascript">
-
-	function selectUnselectTeamMembers${prefix}() {
-		var checkboxObj = $("${prefix}_${form_name_all_team_members}");
-		var checked = checkboxObj && checkboxObj.checked;
-		var teamMemberCheckboxes = document.getElementsByName("${form_name_team_member_ids}");
-		for (var i = 0; i < teamMemberCheckboxes.length; i++) {
-			teamMemberCheckboxes[i].checked = checked;
-		}
-	}
 	
-	function adjustTeamMembersCheck${prefix}() {
-		var checkboxObj = $("${prefix}_${form_name_all_team_members}");
-		var teamMemberCheckboxes = document.getElementsByName("${form_name_team_member_ids}");
-		for (var i = 0; i < teamMemberCheckboxes.length; i++) {
-			if (!teamMemberCheckboxes[i].checked)
-				checkboxObj.checked = false;
-		}
-	}	
+	var teamMembersCountLoaded_${prefix} = false;
+	var teamMembersLoaded_${prefix} = false;
 	
-	var areTeamMembersLoaded${prefix} = false;
-	var areTeamMembersShown${prefix} = false;	
-		
-	function toggleTeamMembersList${prefix} (divId) {
-		ss_toggleDivWipe(divId);
-
-		if (areTeamMembersShown${prefix}) {
-			areTeamMembersShown${prefix} = false;
-			ss_replaceImage('loadTeamMembersIcon${prefix}', '<html:imagesPath />pics/sym_s_collapse.gif');
-		} else {
-			areTeamMembersShown${prefix} = true;
-			ss_replaceImage('loadTeamMembersIcon${prefix}', '<html:imagesPath />pics/sym_s_expand.gif');		
-		}
-			
-		if (areTeamMembersLoaded${prefix})
+	function displayTeamMembersMenu_${prefix}() {
+		if (teamMembersCountLoaded_${prefix}) {
+			displayTeamMembersMenu_postRequest_${prefix}();
 			return;
-			
-		toggleAjaxLoadingIndicator("ajaxLoadingPane${prefix}");
-		areTeamMembersLoaded${prefix} = true;
-						 
-		var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members" /><ssf:param name="binderId" value="${ssBinder.id}" /></ssf:url>";
-		url += "&ss_divId=" + divId;
-		url += "&formElementName=${form_name_team_member_ids}";
-		url += "&prefix=${prefix}";
+		}		
+		var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members_count" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>";
+		url += "&ss_divId=teamMembersAmount_${prefix}";
 		
-		var ajaxRequest = new ss_AjaxRequest(url);
-		ajaxRequest.setPostRequest(selectUnselectTeamMembers${prefix});		
+		var ajaxRequest = new ss_AjaxRequest(url);	
+		ajaxRequest.setPostRequest(displayTeamMembersMenu_postRequest_${prefix});
 		ajaxRequest.setUseGET();
 		ajaxRequest.sendRequest();
 	}
 	
+	function displayTeamMembersMenu_postRequest_${prefix}() {
+		var divObj = $("teamMenu_${prefix}");
+		ss_moveDivToBody("teamMenu_${prefix}");
+		ss_setObjectTop(divObj, parseInt(ss_getDivTop("teamIcon_${prefix}")) + + ss_getDivWidth("teamIcon_${prefix}"))
+		ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("teamIcon_${prefix}")))
+		ss_showDivActivate("teamMenu_${prefix}");	
+		
+		if (teamMembersLoaded_${prefix} || teamMembersCountLoaded_${prefix}) 
+			return;
+		
+		var ulObj = $("teamMembersListUL_${prefix}");
+		if (ulObj) {
+			var getAllLIObj = document.createElement("li");
+			getAllLIObj.setAttribute("class", "getAllUsers");
+			getAllLIObj.setAttribute("id", "teamMembersList_${prefix}");
+			getAllLIObj.setAttribute("onmouseover", "this.style.backgroundColor='#333'; this.style.color='#FFF'; loadTeamMembers_${prefix}();");
+			getAllLIObj.setAttribute("onmouseout", "this.style.backgroundColor='#FFF'; this.style.color='#333';");
+			
+			var getAllIMGObj = document.createElement("img");
+			getAllIMGObj.setAttribute("class", "getAllUsers");
+			getAllIMGObj.setAttribute("border", "0");
+			getAllIMGObj.setAttribute("src", "<html:imagesPath/>pics/sym_s_collapse.gif");
+
+			getAllLIObj.appendChild(getAllIMGObj);
+			ulObj.appendChild(getAllLIObj);
+		}
+	}
+	
+	function addAllUsersFromTeam_${prefix}() {
+		var ulObj = $('teamMembersListUL_${prefix}');
+		var lisObj = ulObj.getElementsByTagName("li");
+		for (var i = 0; i < lisObj.length; i++) {
+			if (lisObj[i].getElementsByTagName("a") && 
+				lisObj[i].getElementsByTagName("a").length > 0 &&
+				lisObj[i].getElementsByTagName("a").item(0).onclick) {
+				lisObj[i].getElementsByTagName("a").item(0).onclick();
+			}
+		}
+	}
+	
+    function loadTeamMembers_${prefix}(afterPostRoutine) {
+    	if (teamMembersLoaded_${prefix}) {
+    		if (afterPostRoutine)
+    			afterPostRoutine();
+			return;
+		}
+		teamMembersLoaded_${prefix} = true;
+		var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_team_members" /><ssf:param name="binderId" value="${binderId}" /></ssf:url>";
+		url += "&ss_divId=teamMembersList_${prefix}";
+		url += "&clickRoutine=${clickRoutine}";
+		
+		var ajaxRequest = new ss_AjaxRequest(url);	
+		if (afterPostRoutine)
+			ajaxRequest.setPostRequest(afterPostRoutine);
+		ajaxRequest.setUseGET();
+		ajaxRequest.sendRequest();
+    }	
+	
 </script>
 
-<c:choose>
-	<c:when test="${no_team_members}">
-		<a onclick="toggleTeamMembersList${prefix}('teamMembersListDiv${prefix}'); return false;" href="javascript: ;"><img id="loadTeamMembersIcon${prefix}" name="loadTeamMembersIcon${prefix}" border="0" name="" src="/ssf/images/pics/sym_s_expand.gif"/></a>
-		<input type="checkbox" class="ss_style" name="${form_name_all_team_members}" id="${prefix}_${form_name_all_team_members}" value="true"  onChange="selectUnselectTeamMembers${prefix}(); ">&nbsp;<span class="ss_labelRight"><ssf:nlt tag="teamMembers.form.label"/></span>
-		<div id="teamMembersListDiv${prefix}" style=""><div id="ajaxLoadingPane${prefix}"></div></div>
-	</c:when>
-	<c:otherwise>
-		<span class="ss_light"><ssf:nlt tag="teamMembers.noMembers"/></span>
-	</c:otherwise>
-</c:choose>
+<div class="teamIcon">
+	<img id="teamIcon_${prefix}" src="<html:imagesPath/>icons/group.gif" onmouseover="displayTeamMembersMenu_${prefix}();" />
+	<div id="teamMenu_${prefix}" class="teamIconMenuPane" style="visibility: hidden; display: none; position: absolute;">
+		<ul id="teamMembersListUL_${prefix}" class="ss_finestprint">
+			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" onclick="loadTeamMembers_${prefix}(addAllUsersFromTeam_${prefix});">Add all (<strong id="teamMembersAmount_${prefix}">${teamMembersCount}</strong>)</li>	
+		</ul>
+	</div>	
+</div>
 

@@ -248,6 +248,8 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
+	public static final String OPERATION_GET_TEAM_MEMBERS_COUNT = "get_team_members_count";
+	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -297,6 +299,7 @@ public class WebKeys {
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
 	public static final String CLIPBOARD="ssClipboard";
 	public static final String CLIPBOARD_PRINCIPALS="ssClipboardPrincipals";
+	public static final String CLIPBOARD_PRINCIPALS_COUNT="ssClipboardPrincipalsCount";
 	public static final String COMMUNITY_TAGS="ssCommunityTags";
 	public static final String CONDITION_ENTRY_DEF_ID="conditionDefinitionId";
 	public static final String CONDITION_ELEMENT_NAME="conditionElementName";

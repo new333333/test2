@@ -271,6 +271,10 @@ public class AjaxController  extends SAbstractController {
 			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS_COUNT)) {
+			return ajaxGetTeamMembersCount(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_CLIPBOARD_USERS)) {
+			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
 		}
@@ -332,7 +336,7 @@ public class AjaxController  extends SAbstractController {
 		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
 		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
 				entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
-			if (!entryId.equals("") && operation2.equals("delete")) {
+		if (!entryId.equals("") && operation2.equals("delete")) {
 				getBinderModule().deleteTag(binderId, tagToDelete);
 			} else if (!entryId.equals("") && operation2.equals("add")) {
 				if (!communityTag.equals("")) getBinderModule().setTag(binderId, communityTag, true);
@@ -340,12 +344,12 @@ public class AjaxController  extends SAbstractController {
 			}
 		} else {
 			if (!entryId.equals("") && operation2.equals("delete")) {
-				getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
-			} else if (!entryId.equals("") && operation2.equals("add")) {
-				if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
-				if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
-			}
+			getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
+		} else if (!entryId.equals("") && operation2.equals("add")) {
+			if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
+			if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
 		}
+	}
 	}
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
@@ -558,8 +562,8 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
 			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
 		} else {
-			model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
-			model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
+		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
 		}
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
@@ -1498,23 +1502,6 @@ public class AjaxController  extends SAbstractController {
 		Binder binder = null;
 		if (binderId != null) {
 			binder = getBinderModule().getBinder(binderId);
-						
-			Boolean teamMembers = PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_TEAM_MEMBERS);
-			List teamMembersIds = PortletRequestUtils.getLongListParameters(request, WebKeys.URL_TEAM_MEMBER_IDS);
-
-			if (teamMembers != null && teamMembers) {
-				try {
-					memberIds.addAll(getBinderModule().getTeamUserMembersIds(binderId));
-				} catch (AccessControlException ax) {
-					//don't use teamMembership if not a member
-				}
-			} else if (!teamMembersIds.isEmpty()) {
-				if (getBinderModule().testAccessGetTeamMembers(binderId)) {
-					// don't use teamMembership if not a member
-					memberIds.addAll(teamMembersIds);
-				}
-			}
-			
 		}
 		Entry entry = null;
 		if (Validator.isNotNull(entryId)) {
@@ -1536,17 +1523,29 @@ public class AjaxController  extends SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
-		String divId = PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID);
-		model.put(WebKeys.DIV_ID, divId);
+		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
+		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
 		
 		model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamUserMembers(binderId));
-		model.put("formElementName", PortletRequestUtils.getStringParameter(request, "formElementName"));
-		model.put("prefix", PortletRequestUtils.getStringParameter(request, "prefix"));
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/team_members", model);
 	}
-
+	
+	private ModelAndView ajaxGetTeamMembersCount(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		
+		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
+		
+		model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamUserMembersIds(binderId).size());
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/team_members_count", model);
+	}	
+	
 	private ModelAndView ajaxGetBinderOwner(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1564,6 +1563,22 @@ public class AjaxController  extends SAbstractController {
 			
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_binder_owner", model);
+	}
+	
+	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
+		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
+		
+		Clipboard clipboard = new Clipboard(request);
+		Map clipboardMap = clipboard.getClipboard();
+		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
+		model.put(WebKeys.CLIPBOARD_PRINCIPALS , getProfileModule().getUsersFromPrincipals(
+				clipboardUsers));
+		
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/clipboard_users", model);
 	}
 
 }

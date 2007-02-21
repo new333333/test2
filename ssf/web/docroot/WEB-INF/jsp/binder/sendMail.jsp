@@ -70,21 +70,6 @@ self.window.resizeTo(width, height);
  <input class="ss_style" type="checkbox" name="self" id="self" >&nbsp;<span class="ss_labelRight">
   <label for="self">${ssUser.title} (${ssUser.emailAddress})</label></span>
  </td></tr>
- <c:if test="${!empty ssClipboard.ss_muster_users}">
- <tr><td>
- <br/>
-<br/>
-</td></tr>
- </c:if>
-</table>
-
-<table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="95%" style="margin: 15px 0 5px 0;">
-<tr>
-<td valign="top">
- 	<ssf:teamMembers noTeamMembers="${ssTeamMembership}" formNameAllTeamMembers="teamMembers" 
-		formNameTeamMemberIds="team_member_ids" />
-</td>
-</tr>
 </table>
 
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3" width="95%">
@@ -92,7 +77,8 @@ self.window.resizeTo(width, height);
 <td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 <td valign="top">
   <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" clipboardUserList="${ssClipboardPrincipals}"/>
+    type="user" userList="${ssUsers}" showClipboard="true"
+    showTeamMembers="true" binderId="${ssBinder.id}"/>
 </td>
 </tr>
 <tr>

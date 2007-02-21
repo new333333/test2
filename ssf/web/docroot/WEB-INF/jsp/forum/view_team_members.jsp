@@ -75,7 +75,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 						<c:if test="${ssTeamMembersCount > 0}">					
 							<c:forEach var="member" items="${ssTeamMembers}">
 								<tr>
-									<td class="selectable"><input type="checkbox" name="team_member_ids" value="${member.id}" onchange="adjustSynchronizedCheckbox('team_member_all_ids', 'team_member_ids');"/></td>
+									<td class="selectable"><input type="checkbox" name="team_member_ids" value="${member.id}" /></td>
 									<td class="picture">
 										<div class="ss_thumbnail_small_buddies_list"><div>
 										  <c:set var="selections" value="${member.customAttributes['picture'].value}" />
@@ -113,7 +113,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 					
 						<c:if test="${ssTeamMembersCount > 0}">	
 							<tr class="options">
-								<td class="ss_light ss_fineprint selectall"><input type="checkbox" id="team_member_all_ids" onchange="selectUnselectSynchronizedCheckboxes('team_member_all_ids', 'team_member_ids');" /><br/><label for="team_member_all_ids"><ssf:nlt tag="button.selectAll"/></label></td>
+								<td class="ss_light ss_fineprint selectall"><input type="checkbox" id="team_member_all_ids" /><br/><label for="team_member_all_ids"><ssf:nlt tag="button.selectAll"/></label></td>
 								<td colspan="5"></td>
 							</tr>
 						</c:if>
@@ -131,6 +131,10 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 		</div>
 	</div>
 	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+
+	<script type="text/javascript">
+		ss_synchronizeCheckboxes("team_member_all_ids", "team_member_ids");
+	</script>
 
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />

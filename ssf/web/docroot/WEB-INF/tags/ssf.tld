@@ -69,6 +69,22 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>
+	
+	<tag>
+		<name>clipboard</name>
+		<tag-class>com.sitescape.team.taglib.ClipboardTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>type</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>clickRoutine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>	
 
 	<tag>
 		<name>dashboard</name>
@@ -307,11 +323,17 @@
 			<type>java.util.Set</type>
 		</attribute>	
 		<attribute>
-			<name>clipboardUserList</name>
+			<name>showClipboard</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.util.Set</type>
-		</attribute>			
+			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>showTeamMembers</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
 		<attribute>
 			<name>clickRoutine</name>
 			<required>false</required>
@@ -782,34 +804,23 @@
 			<type>com.sitescape.team.domain.Binder</type>
 		</attribute>		
 	</tag>	
-
+	
 	<tag>
 		<name>teamMembers</name>
 		<tag-class>com.sitescape.team.taglib.TeamMembers</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
-			<name>noTeamMembers</name>
+			<name>binderId</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>				
-		<attribute>
-			<name>formNameAllTeamMembers</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>formNameTeamMemberIds</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>
-		<attribute>
-			<name>label</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
-	</tag>
-	
+		<attribute>
+			<name>clickRoutine</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>			
+	</tag>	
+
 	<tag>
 		<name>timepicker</name>
 		<tag-class>com.sitescape.team.taglib.Timepicker</tag-class>

@@ -60,27 +60,16 @@ public class MeetingController  extends SAbstractController {
 		Long entryId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_ENTRY_ID);
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
- 
-		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(binderId));
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
-		Binder binder = getBinderModule().getBinder(binderId);
+
+
+		Binder binder = getBinderModule().getBinder(binderId);		
 		model.put(WebKeys.BINDER, binder);
+		
 		
 		if (entryId != null) {
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
 		}
-
-		// Get the clipboard users
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-		Collection principals = getProfileModule().getUsersFromPrincipals(
-				clipboardUsers);
-		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 		
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
 		
