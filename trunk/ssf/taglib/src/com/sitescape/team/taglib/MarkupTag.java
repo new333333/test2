@@ -35,6 +35,8 @@ public class MarkupTag extends BodyTagSupport {
 	private String _bodyContent;
 	private DefinableEntity entity = null;
 	private String type = WebKeys.MARKUP_VIEW;
+	private String binderId = "";
+	private String entryId = "";
     
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -56,9 +58,16 @@ public class MarkupTag extends BodyTagSupport {
 			
 			// Transform the body
 			String translatedString = _bodyContent;
+			
 			//Transform the markup 
-			translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
-					httpReq, httpRes, entity, _bodyContent, type);
+			if (binderId.equals("")) {
+				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
+						httpReq, httpRes, entity, _bodyContent, type);
+			} else {
+				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
+						httpReq, httpRes, entity, _bodyContent, type, 
+						Long.valueOf(binderId), Long.valueOf(entryId));
+			}
 			pageContext.getOut().print(translatedString);
 
 			return EVAL_PAGE;
@@ -69,6 +78,8 @@ public class MarkupTag extends BodyTagSupport {
 		finally {
 			this.type = WebKeys.MARKUP_VIEW;
 			this.entity = null;
+			this.binderId = "";
+			this.entryId = "";
 		}
 	}
 
@@ -78,6 +89,14 @@ public class MarkupTag extends BodyTagSupport {
 
 	public void setEntity(DefinableEntity entity) {
 	    this.entity = entity;
+	}
+
+	public void setBinderId(String binderId) {
+	    this.binderId = binderId;
+	}
+
+	public void setEntryId(String entryId) {
+	    this.entryId = entryId;
 	}
 
 }

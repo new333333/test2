@@ -8,6 +8,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.document.DateTools;
@@ -19,6 +24,7 @@ import org.dom4j.Node;
 
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -29,6 +35,8 @@ import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.XmlFileUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 public class RssGenerator extends CommonDependencyInjection {
@@ -182,7 +190,7 @@ public class RssGenerator extends CommonDependencyInjection {
 		writeRssFile(entry.getParentBinder(), doc);
 	}
 
-	public String filterRss(Binder binder, User user) {
+	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder, User user) {
 		// See if the feed already exists
 		boolean access = false;
 		String rssFileName = getRssFileName(binder);
@@ -226,7 +234,10 @@ public class RssGenerator extends CommonDependencyInjection {
 		}
 
 		// return the doc
-		return doc.asXML();
+		String results = doc.asXML();
+		results = WebHelper.markupStringReplacement(null, null, 
+				request, response, null, results, WebKeys.MARKUP_VIEW);
+		return results;
 	}
 
     public Document parseFile(String rssFileName) {
@@ -248,6 +259,8 @@ public class RssGenerator extends CommonDependencyInjection {
     	entryElement.addElement("link")
     		.addText(WebUrlUtil.getEntryViewURL((FolderEntry)entry));//ROY
     	String description = entry.getDescription() == null ? "" : entry.getDescription().getText();
+    	description = WebHelper.markupStringReplacement(null, null, 
+				null, null, entry, description, WebKeys.MARKUP_FILE);
     	Date eDate = entry.getModification().getDate();
     	
     	entryElement.addElement("description")

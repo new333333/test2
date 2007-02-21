@@ -28,7 +28,7 @@ public class ListController extends SAbstractController {
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		//use writer to enfoce character set
-		response.getWriter().write(getRssGenerator().filterRss(binder,user));
+		response.getWriter().write(getRssGenerator().filterRss(request, response, binder,user));
 		response.flushBuffer();
 		return null;
 	}

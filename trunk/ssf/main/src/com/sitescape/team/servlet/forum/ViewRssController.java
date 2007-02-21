@@ -66,7 +66,7 @@ public class ViewRssController extends SAbstractController {
 		}
 		
 
-		//response.getWriter(getRssGenerator().filterRss(binder,user));
+		//response.getWriter(getRssGenerator().filterRss(request, response, binder,user));
 			
 		/*response.setContentType(mimeTypes.getContentType(shortFileName));*/
 		response.resetBuffer();
@@ -74,7 +74,7 @@ public class ViewRssController extends SAbstractController {
 		response.setHeader("Pragma", "no-cache");
 		
 		OutputStream out = response.getOutputStream();
-		byte[] buffer = getRssGenerator().filterRss(binder,user).getBytes();
+		byte[] buffer = getRssGenerator().filterRss(request, response, binder,user).getBytes();
 		out.write(buffer, 0, buffer.length);
 
 		out.flush();
