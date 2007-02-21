@@ -198,9 +198,9 @@ public class EntityIndexUtils {
     			for (Iterator iter=workflowStates.iterator(); iter.hasNext();) {
     				WorkflowState ws = (WorkflowState)iter.next();
     				Field workflowStateField = new Field(WORKFLOW_STATE_FIELD, 
-   						ws.getState(), Field.Store.NO, Field.Index.UN_TOKENIZED);
+   						ws.getState(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     				Field workflowStateCaptionField = new Field(WORKFLOW_STATE_CAPTION_FIELD, 
-   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()), Field.Store.NO, Field.Index.UN_TOKENIZED);
+   						WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()), Field.Store.YES, Field.Index.UN_TOKENIZED);
     				//Index the workflow state
     				doc.add(workflowStateField);
     				doc.add(workflowStateCaptionField);
