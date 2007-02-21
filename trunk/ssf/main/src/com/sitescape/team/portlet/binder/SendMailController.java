@@ -1,9 +1,7 @@
 package com.sitescape.team.portlet.binder;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,17 +13,13 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.domain.User;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
@@ -54,24 +48,6 @@ public class SendMailController extends SAbstractController {
 			if (self) memberIds.add(RequestContextHolder.getRequestContext().getUserId());
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-			// TODO: refactor clipboard
-//			if (formData.containsKey("clipboardUsers")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("clipboardUsers")));
-						
-			if (formData.containsKey(WebKeys.URL_TEAM_MEMBERS)) {
-				try {
-					List team = getBinderModule().getTeamMembers(binderId);
-					for (int i=0; i<team.size();++i) {
-						memberIds.add(((Principal)team.get(i)).getId());
-					}					
-				} catch (AccessControlException ax) {
-					//don't use teamMembership if not a member
-				}
-			} else if (formData.containsKey(WebKeys.URL_TEAM_MEMBER_IDS)) {
-				if (getBinderModule().testAccessGetTeamMembers(binderId)) {
-					memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues(WebKeys.URL_TEAM_MEMBER_IDS)));
-				}
-			}
-			
 			
 			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML), null);
 			int i = 0;
@@ -105,21 +81,8 @@ public class SendMailController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 		}
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().hasTeamUserMembers(binderId));
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
-		
-		// Get the clipboard users
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-		Collection principals = getProfileModule().getUsersFromPrincipals(
-				clipboardUsers);
-		model.put(WebKeys.CLIPBOARD_PRINCIPALS, principals);
 		
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));

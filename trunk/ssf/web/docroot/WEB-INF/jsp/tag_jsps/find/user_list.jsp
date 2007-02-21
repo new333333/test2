@@ -5,18 +5,32 @@
 <%
 	Set userList = (Set) request.getAttribute("user_list");
 	String userGroupType = (String) request.getAttribute("list_type");
+	String binderId = (String) request.getAttribute("binderId");
 	String userListFormName = (String) request.getAttribute("form_name");
 	String userListElementName = (String) request.getAttribute("form_element");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	Boolean showClipboard = (Boolean) request.getAttribute("show_clipboard");
+	Boolean showTeamMembers = (Boolean) request.getAttribute("show_team_members");
+	String addUserToListRoutine = (String) request.getAttribute("addUserToListRoutine");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
 <c:set var="userList" value="<%= userList %>"/>
+<c:set var="showClipboard" value="<%= showClipboard %>"/>
+<c:set var="showTeamMembers" value="<%= showTeamMembers %>"/>
+<c:set var="addUserToListRoutine" value="<%= addUserToListRoutine %>"/>
+<c:set var="binderId" value="<%= binderId %>"/>
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 
 <script type="text/javascript">
 
+function afterAddUser${prefix}(obj) {
+	dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
+}
+
 //Routine called when item is selected
 function ss_userListSelectItem${prefix}(id, obj) {
+	if (ss_userListSelectItemAlreadyAdded${prefix}(id))
+		return;
 	var spanObj = obj.getElementsByTagName("span").item(0);
 	var ulObj = document.getElementById('added_${prefix}');
 	var newLiObj = document.createElement("li");
@@ -32,6 +46,44 @@ function ss_userListSelectItem${prefix}(id, obj) {
 	newAnchorObj.appendChild(newImgObj);
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
+	afterAddUser${prefix}(newLiObj);	
+}
+
+//Routine called when item is selected, it takes as parameters user id and user name
+function ${addUserToListRoutine}(userId, userName) {
+	if (ss_userListSelectItemAlreadyAdded${prefix}(userId))
+		return;
+	var ulObj = document.getElementById('added_${prefix}');
+	var newLiObj = document.createElement("li");
+	newLiObj.setAttribute("id", userId);
+	var newSpanObj = document.createElement("span");
+	newSpanObj.setAttribute("style", "white-space:nowrap;");
+	newSpanObj.appendChild(document.createTextNode(userName));
+	newLiObj.appendChild(newSpanObj);
+	var newAnchorObj = document.createElement("a");
+	newAnchorObj.setAttribute("href", "javascript: ;");
+	newAnchorObj.setAttribute("onClick", "ss_userListRemove${prefix}(this);");
+	var newImgObj = document.createElement("img");
+	newImgObj.setAttribute("src", "<html:imagesPath/>pics/sym_s_delete.gif");
+	newImgObj.setAttribute("border", "0");
+	newImgObj.style.paddingLeft = "10px";
+	newAnchorObj.appendChild(newImgObj);
+	newLiObj.appendChild(newAnchorObj);
+	ulObj.appendChild(newLiObj);
+	afterAddUser${prefix}(newLiObj);	
+}
+
+// Check if user allready added to list, if yes highlight it
+function ss_userListSelectItemAlreadyAdded${prefix}(id) {
+	var ulObj = document.getElementById('added_${prefix}');
+	var lisObj = ulObj.childNodes;
+	for (var i = 0; i < lisObj.length; i++) {
+		if (lisObj[i].id == id) {
+			afterAddUser${prefix}(lisObj[i]);
+			return true;
+		}
+	}
+	return false;
 }
 
 //Routine to remove a user
@@ -61,23 +113,32 @@ function ss_userListRemove${prefix}(obj) {
 
 </td>
 <td valign="top">
-<div>
+<div style="float: left;">
   <div style="border:solid black 1px;">
     <ul id="added_${prefix}" class="ss_userlist">
       <c:forEach var="item" items="${userList}">
         <li id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
           <a href="javascript: ;" 
-            onClick="ss_userListRemove${prefix}(this);return false;"><img border="0" 
+            onClick="ss_userListRemove${prefix}(this);return false;"><img border="0" style="padding-left: 10px;" 
             src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
         </li>
       </c:forEach>
-    </ul>
-  </div>
+    </ul>    
+  </div>  
 </div>
+
+<c:if test="${showClipboard}">
+	<ssf:clipboard type="user" clickRoutine="${addUserToListRoutine}"/>
+</c:if>
+
+<c:if test="${showTeamMembers}">
+	<ssf:teamMembers clickRoutine="${addUserToListRoutine}" binderId="${binderId}"/>
+</c:if>
+
 </td>
 </tr>
 </table>
-<input type="hidden" name="<%= userListElementName %>"/>
+<input type="hidden" name="<%= userListElementName %>"/>		
 
 <script type="text/javascript">
 function ss_saveUserListData_${prefix}() {
@@ -94,4 +155,5 @@ function ss_saveUserListData_${prefix}() {
 }
 
 ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_${prefix});
+
 </script>

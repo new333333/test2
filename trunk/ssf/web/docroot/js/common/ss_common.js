@@ -3061,8 +3061,15 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         }
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgvcard'+ssNamespace+'"></td>';
-        m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';
+        m += '<td><a class="ss_graymenu" href="' + vcard + '">'+ss_ostatus_outlook+'</a></td></tr>';	
     }
+
+	if (userId != '') {
+        m += '<tr>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgclipboard'+ssNamespace+'"></td>';
+        m += '<td><form id="addToClipboard' + screenName + '" name="addToClipboard' + screenName + '"><input type="hidden" name="muster_class" value="ss_muster_users"><input type="hidden" name="muster_ids" value="' + userId + '"></form><a class="ss_graymenu" href="javascript: ;" onclick="ss_muster.addToClipboard(\'addToClipboard' + screenName + '\');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
+	}	
+	
     m += '</table>'
 
     m += '</div>'
@@ -3101,6 +3108,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     if (self.document.images["ppgsched"+ssNamespace]) {
         self.document.images["ppgsched"+ssNamespace].src = ss_presencePopupGraphics["sched"].src;
     }
+    if (self.document.images["ppgclipboard"+ssNamespace]) {
+        self.document.images["ppgclipboard"+ssNamespace].src = ss_presencePopupGraphics["clipboard"].src;
+    }	
     if (divId == '') {
 	    // move the div up if it scrolls off the bottom
 	    var mousePosX = parseInt(ss_getClickPositionX());
@@ -3521,7 +3531,7 @@ var ss_muster = {
 		addBtnObj.setAttribute("type", "submit");
 		addBtnObj.setAttribute("name", "add");
 		addBtnObj.setAttribute("value", ss_addToClipboardText);
-		addBtnObj.setAttribute("onClick", "ss_muster.addToClipboard(this);return false;");
+		addBtnObj.setAttribute("onClick", "ss_muster.addToClipboard('ss_muster_form');return false;");
 		addBtnObj.style.marginRight = "15px"
 		var clearBtnObj = document.createElement("input");
 		clearBtnObj.setAttribute("type", "submit");
@@ -3549,12 +3559,12 @@ var ss_muster = {
 		ss_showPopupDivCentered('ss_muster_div');
 	},
 	
-	addToClipboard : function(obj) {
+	addToClipboard : function(formName) {
 		ss_setupStatusMessageDiv()
 		var url = ss_musterUrl;
 		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.addFormElements("ss_muster_form");
+		ajaxRequest.addFormElements(formName);
 		//ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setPostRequest(ss_muster.postAddToClipboard);
 		ajaxRequest.setUsePOST();
@@ -3627,7 +3637,7 @@ function ss_startMeeting(url, formId) {
 }
 
 /*
-	Show/Hide ajax loading animated icon. Icon displays in given HTML-Element as child.
+	Show/Hide ajax loading animated icon. The icon displays/disappears in given HTML-Element as child.
 */
 function toggleAjaxLoadingIndicator(objId) {
 	var imgObj = document.createElement("img");
@@ -3656,29 +3666,53 @@ function $(id) {
 	return document.getElementById(id);
 }
 
-/*
-  Those two methods synchronize checkbox "select all" with a group of checkboxes with the same name.
-  Method 'selectUnselectSynchronizedCheckboxes' schould be defined "onChange" event of  "select all"-checkbox.
-  Method 'adjustSynchronizedCheckbox' schould be defined "onChange" event of named checkboxes.
- */
-function selectUnselectSynchronizedCheckboxes(checkboxId, checkboxesName) {
-	var checkboxObj = $(checkboxId);
-	var checked = checkboxObj && checkboxObj.checked;
-	var checkboxes = document.getElementsByName(checkboxesName);
-	for (var i = 0; i < checkboxes.length; i++) {
-		checkboxes[i].checked = checked;
-	}
-}
 
-/* Look at "selectUnselectSynchronizedCheckboxes" method for description. */
-function adjustSynchronizedCheckbox(checkboxId, checkboxesName) {
-	var checkboxObj = $(checkboxId);
-	var checkboxes = document.getElementsByName(checkboxesName);
-	for (var i = 0; i < checkboxes.length; i++) {
-		if (!checkboxes[i].checked) {
-			checkboxObj.checked = false;
-			return;
+/*
+ 	Summary:
+ 	
+ 	Use this routine to create 'select all' checkbox.
+ 	
+ 	Description:
+ 	
+ 	Routine synchronize checbox 'selectAllCheckboxId' with group of checkboxes with name 'checkboxesName'. If checkbox 'selectAllCheckboxId' is
+ 	checked/unchecked then all 'checkboxesName' checkboxes are checked/unchecked too.
+ 	
+ 	Example:
+ 	 
+ 	 	HTML:
+ 	 		<input type="checkbox" name="team_member_ids" value="998" /> Joe Bloggs
+ 	 		<input type="checkbox" name="team_member_ids" value="999" /> Bob Dao
+ 	 		
+ 	 		<input type="checkbox" id="team_member_all_ids" /> Select all 
+ 	 		
+ 	 	JavaScript:
+ 			ss_synchronizeCheckboxes("team_member_all_ids", "team_member_ids");
+  
+ */
+function ss_synchronizeCheckboxes(selectAllCheckboxId, checkboxesName) {
+
+    var selectAllCheckboxObj = $(selectAllCheckboxId);
+
+    var synchronizedCheckboxesObjs = document.getElementsByName(checkboxesName);
+
+	if (selectAllCheckboxObj) {
+		selectAllCheckboxObj.onchange = function() {
+			var checked = selectAllCheckboxObj && selectAllCheckboxObj.checked;
+			for (var i = 0; i < synchronizedCheckboxesObjs.length; i++) {
+				synchronizedCheckboxesObjs[i].checked = checked;
+			}
 		}
 	}
-	checkboxObj.checked = true;
+	
+	for (var i = 0; i < synchronizedCheckboxesObjs.length; i++) {
+		synchronizedCheckboxesObjs[i].onchange = function () {
+			for (var i = 0; i < synchronizedCheckboxesObjs.length; i++) {
+				if (!synchronizedCheckboxesObjs[i].checked) {
+					selectAllCheckboxObj.checked = false;
+					return;
+				}
+			}
+			selectAllCheckboxObj.checked = true;
+		}	
+	}
 }

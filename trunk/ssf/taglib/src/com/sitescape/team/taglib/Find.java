@@ -20,8 +20,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  *
  */
 public class Find extends TagSupport {
-    private Set userList;
-    private Set clipboardUserList;
+    private Set userList;    
     private String formName = "";
     private String formElement;
     private String width = "30";
@@ -31,6 +30,8 @@ public class Find extends TagSupport {
     private String clickRoutine = "";
     private String binderId = "";
     private Boolean searchSubFolders;
+    private Boolean showClipboard;
+    private Boolean showTeamMembers;
     private Integer instanceCount = 0;
     
 	public int doStartTag() throws JspException {
@@ -38,13 +39,13 @@ public class Find extends TagSupport {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
-			if (this.userList == null) this.userList = new HashSet();
-			if (this.clipboardUserList == null) this.clipboardUserList = new HashSet();
-			this.userList.addAll(this.clipboardUserList);
+			if (this.userList == null) this.userList = new HashSet();			
 			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
+			if (this.showClipboard == null) this.showClipboard = false;
+			if (this.showTeamMembers == null) this.showTeamMembers = false;
 			this.instanceCount++;
 			
 			//Output the start of the area
@@ -75,7 +76,7 @@ public class Find extends TagSupport {
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq);
-			req.setAttribute("user_list", this.userList);
+			req.setAttribute("user_list", this.userList);			
 			req.setAttribute("form_name", this.formName);
 			req.setAttribute("form_element", this.formElement);
 			req.setAttribute("element_width", this.width);
@@ -86,6 +87,12 @@ public class Find extends TagSupport {
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
 			req.setAttribute("binderId", this.binderId);
+			req.setAttribute("show_clipboard", this.showClipboard);
+			req.setAttribute("show_team_members", this.showTeamMembers);
+			
+			// in use only on search users and groups
+			req.setAttribute("addUserToListRoutine", "ss_addUserToUserList_"+ this.formName + "_" + this.formElement + "_" + this.instanceCount);
+			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());
@@ -98,13 +105,14 @@ public class Find extends TagSupport {
 		finally {
 			this.formName = "";
 			this.userList = null;
-			this.clipboardUserList = null;
+			this.showClipboard = false;
 			this.singleItem = false;
 			this.width = "30";
 			this.clickRoutine = "";
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
+			this.showTeamMembers = false;
 		}
 	}
 
@@ -152,10 +160,12 @@ public class Find extends TagSupport {
 	    this.searchSubFolders = searchSubFolders;
 	}
 
-	public void setClipboardUserList(Set clipboardUserList) {
-		this.clipboardUserList = clipboardUserList;
+	public void setShowClipboard(Boolean showClipboard) {
+		this.showClipboard = showClipboard;
+	}
+
+	public void setShowTeamMembers(Boolean showTeamMembers) {
+		this.showTeamMembers = showTeamMembers;
 	}
 
 }
-
-

@@ -26,7 +26,7 @@ public class Clipboard {
 		PortletSession ps = WebHelper.getRequiredPortletSession(request);
 		clipboard = (Map) ps.getAttribute(WebKeys.CLIPBOARD, PortletSession.APPLICATION_SCOPE);
 		if (clipboard == null) {
-			clipboard = new HashMap();
+			clipboard = new HashMap(3);
 			clipboard.put(BINDERS, new HashSet());
 			clipboard.put(ENTRIES, new HashSet());
 			clipboard.put(USERS, new HashSet());
