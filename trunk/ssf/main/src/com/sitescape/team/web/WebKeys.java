@@ -535,6 +535,8 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_GROUP="group";
     public static final String USER_SEARCH_USER_GROUP_TYPE_USER="user";
     public static final String USER_SEARCH_USER_GROUP_TYPE_TAGS="tags";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS="personalTags";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS="communityTags";
     public static final String USER_SEARCH_USER_GROUP_TYPE_ENTRIES="entries";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";

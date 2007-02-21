@@ -4,6 +4,7 @@
 <taconite-root xml:space="preserve">
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
+
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
 	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
@@ -15,11 +16,23 @@
           <tr>
           <td colspan="2">
 	      <ul>
+	      	
 		    <c:forEach var="tag" items="${ss_tags}">
 		      <c:set var="count" value="${count + 1}"/>
+
+		      	<c:set var="onClickVal" value="ss_findTagSelectItem('${ss_namespace}',this.parentNode);" />
+		      	<c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
+		      		<c:set var="onClickVal" value="putValueInto('ss_findTags_searchText_${ss_namespace}', '${tag.ssTag}');" />
+		      	</c:if>
+		      
 		      <li id="<c:out value="ss_findTag_id_${tag.ssTag}"/>"><a 
-		          href="#" onClick="ss_findTagSelectItem${ss_namespace}(this.parentNode);" 
-		          ><span style="white-space:nowrap;"><c:out value="${tag.ssTag}"/></span></a></li>
+		          href="#" onClick="
+		          <c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
+		      		putValueInto('ss_findTags_searchText_${ss_namespace}', '${tag.ssTag}');
+		      	  </c:if>
+  		          <c:if test="${ss_userGroupType != 'personalTags' && ss_userGroupType != 'communityTags' }">
+  		          	ss_findTagSelectItem('${ss_namespace}', null,this.parentNode);
+  		          </c:if>"><span style="white-space:nowrap;"><c:out value="${tag.ssTag}"/></span></a></li>
 		    </c:forEach>
 	      </ul>
 	      </td>
@@ -28,19 +41,19 @@
 	      <tr>
 	      <td width="150" nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${ss_pageNumber > 0}">
-              <a href="#" onClick="ss_findTagPrevPage${ss_namespace}();return false;"
+              <a href="#" onClick="ss_findTagPrevPage('${ss_namespace}');return false;"
               ><ssf:nlt tag="general.Previous"/>...</a>
             </c:if>
             </td>
            <td nowrap="nowrap" style="white-space:nowrap;">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="#" onClick="ss_findTagNextPage${ss_namespace}();return false;"
+              <a href="#" onClick="ss_findTagNextPage('${ss_namespace}');return false;"
               ><ssf:nlt tag="general.Next"/>...</a>
             </c:if>
            </td>
            </tr>
 	       <tr><td width="150" align="center">
-             <a href="#" onClick="ss_findTagClose${ss_namespace}();return false;"
+             <a href="#" onClick="ss_findTagClose('${ss_namespace}');return false;"
              ><ssf:nlt tag="button.close"/></a>
 	       </td><td></td>
 	       </tr>
@@ -56,7 +69,7 @@
 		    </td></tr>
 	        <tr><td align="center">
               <br/>
-              <a href="#" onClick="ss_findTagClose${ss_namespace}();return false;"
+              <a href="#" onClick="ss_findTagClose('${ss_namespace}');return false;"
               ><ssf:nlt tag="button.close"/></a>
 	        </td>
 	        </tr>

@@ -54,7 +54,7 @@ public class Find extends TagSupport {
 			if (singleItem) {
 				if (type.equals("places")) {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_place.jsp";
-				} else if (type.equals("tags")) {
+				} else if (type.equals("tags") || type.equals("personalTags") || type.equals("communityTags")) {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_tag.jsp";
 				} else if (type.equals("entries")) {
 					jsp = "/WEB-INF/jsp/tag_jsps/find/single_entry.jsp";
@@ -100,6 +100,8 @@ public class Find extends TagSupport {
 			return EVAL_PAGE;
 		}
 	    catch(Exception e) {
+			// TODO: temporary, remove later
+	    	// System.out.println("EXCEPTION:"+e);
 	        throw new JspException(e);
 	    }
 		finally {
