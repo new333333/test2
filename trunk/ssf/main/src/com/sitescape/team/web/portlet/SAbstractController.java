@@ -144,6 +144,14 @@ implements AllBusinessServicesInjected {
 	public DashboardModule getDashboardModule() {
 		return dashboardModule;
 	}
+	
+	public ICBroker getIcBroker() {
+		return icBroker;
+	}
+
+	public void setIcBroker(ICBroker icBroker) {
+		this.icBroker = icBroker;
+	}
 
 	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)
 	throws Exception {
@@ -174,11 +182,4 @@ implements AllBusinessServicesInjected {
 	    throw new PortletException("This controller does not handle action requests");
 	}
 
-	public ICBroker getIcBroker() {
-		return icBroker;
-	}
-
-	public void setIcBroker(ICBroker icBroker) {
-		this.icBroker = icBroker;
-	}
 }
