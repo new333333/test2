@@ -784,7 +784,7 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
 			view = "forum/find_entries_search";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
 			
 			String wordRoot = searchText;
 			int i = wordRoot.indexOf("*");
@@ -818,6 +818,8 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put(WebKeys.DIV_ID, listDivId);
 		model.put(WebKeys.NAMESPACE, namespace);
+		
+		
 		response.setContentType("text/xml");
 		return new ModelAndView(view, model);
 	}

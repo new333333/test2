@@ -3716,3 +3716,230 @@ function ss_synchronizeCheckboxes(selectAllCheckboxId, checkboxesName) {
 		}	
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// AJAX STUFF FOR FIND TAG
+function declareVariables () {
+	ss_findTag_searchText = new Array();
+	ss_findTag_pageNumber = new Array();
+	ss_findTagDivTopOffset = new Array();
+	ss_findTagSearchInProgress = new Array();
+	ss_findTagSearchWaiting = new Array();
+	ss_findTagSearchStartMs = new Array();
+	ss_findTagSearchLastText = new Array();
+	ss_findTagSearchLastTextObjId = new Array();
+	ss_findTagSearchLastElement = new Array();
+	ss_findTagSearchLastfindTagType = new Array();
+	ss_findTagClickRoutine = new Array();
+}
+
+function confVariableForPrefix(prefix, clickRoutine) {
+	if (typeof ss_findTag_searchText == 'undefined') {
+		declareVariables();
+	}
+	ss_findTag_searchText[prefix] = "";
+	ss_findTag_pageNumber[prefix] = 0;
+	ss_findTagDivTopOffset[prefix] = 2;
+	ss_findTagSearchInProgress[prefix] = 0;
+	ss_findTagSearchWaiting[prefix] = 0;
+	ss_findTagSearchStartMs[prefix] = 0;
+	ss_findTagSearchLastText[prefix] = "";
+	ss_findTagSearchLastTextObjId[prefix] = "";
+	ss_findTagSearchLastElement[prefix] = "";
+	ss_findTagSearchLastfindTagType[prefix] = "";
+	ss_findTagClickRoutine[prefix] = clickRoutine;
+}
+
+function ss_findTagSearch(prefix, textObjId, elementName, findTagType, leaveResultsVisible, url) {
+	var textObj = document.getElementById(textObjId);
+	var text = textObj.value;
+	if (text == '' || text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
+	ss_setupStatusMessageDiv();
+	//ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
+	//Are we already doing a search?
+	if (ss_findTagSearchInProgress[prefix] == 1) {
+		//Yes, hold this request until the current one finishes
+		ss_findTagSearchLastText[prefix] = text;
+		ss_findTagSearchLastTextObjId[prefix] = textObjId;
+		ss_findTagSearchLastElement[prefix] = elementName;
+		ss_findTagSearchLastfindTagType[prefix] = findTagType;
+		ss_findTagSearchWaiting[prefix] = 1;
+		var d = new Date();
+		var curr_msec = d.getTime();
+		if (ss_findTagSearchStartMs[prefix] == 0 || curr_msec < parseInt(ss_findTagSearchStartMs[prefix] + 1000)) {
+			ss_debug('  hold search request...')
+			if (ss_findTagSearchStartMs[prefix] == 0) ss_findTagSearchStartMs[prefix] = curr_msec;
+			return;
+		}
+		//The user waited for over a second, let this request go through
+		ss_findTagSearchStartMs[prefix] = 0;
+		ss_debug('   Stopped waiting');
+	}
+	ss_findTagSearchInProgress[prefix] = 1;
+	ss_findTagSearchWaiting[prefix] = 0;
+	ss_findTagSearchLastTextObjId[prefix] = textObjId;
+	ss_findTagSearchLastElement[prefix] = elementName;
+	ss_findTagSearchLastText[prefix] = text;
+	ss_findTagSearchLastfindTagType[prefix] = findTagType;
+ 	//Save the text in case the user changes the search type
+ 	ss_findTag_searchText[prefix] = text;
+ 	
+ 	//See if the user ended the string with a CR. If so, then try to launch.
+ 	var newText = "";
+ 	var crFound = 0;
+ 	for (var i = 0; i < text.length; i++) {
+ 		if (text.charCodeAt(i) == 10 || text.charCodeAt(i) == 13) {
+ 			crFound = 1;
+ 			break;
+ 		} else {
+ 			newText += text.charAt(i);
+ 		}
+ 	}
+ 	if (crFound == 1) {
+ 		textObj.value = newText;
+ 		text = textObj.value;
+		var ulObj = document.getElementById('available_'+prefix);
+		var liObjs = ulObj.getElementsByTagName('li');
+		if (liObjs.length == 1) {
+			ss_findTagSelectItem(prefix, leaveResultsVisible, liObjs[0]);
+			return;
+		}
+ 	}
+ 	//Fade the previous selections
+ 	var savedColor = "#000000";
+ 	var divObj = document.getElementById('available_'+prefix);
+ 	if (divObj != null && divObj.style && divObj.style.color) {
+ 		savedColor = divObj.style.color;
+ 	}
+ 	if (divObj != null) divObj.style.color = "#cccccc";
+
+ 	ss_debug("//"+text+"//")
+ 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	var searchText = text;
+	if (searchText.length > 0 && searchText.charAt(searchText.length-1) != " ") {
+		if (searchText.lastIndexOf("*") < parseInt(searchText.length - 1)) searchText += "*";
+	}
+	ajaxRequest.addKeyValue("searchText", searchText);
+	ajaxRequest.addKeyValue("maxEntries", "10");
+	ajaxRequest.addKeyValue("pageNumber", ss_findTag_pageNumber[prefix]);
+	ajaxRequest.addKeyValue("findType", findTagType);
+	ajaxRequest.addKeyValue("listDivId", "available_"+prefix);
+	ajaxRequest.addKeyValue("namespace", prefix);
+	//ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setPreRequest(ss_preFindTagRequest);
+	// TODO implement add param ajaxRequest.setPostRequestParam like ajaxRequest.setPostRequest  
+	ajaxRequest.setPostRequest(ss_postFindTagRequest);
+	ajaxRequest.setData("prefix", prefix);
+	ajaxRequest.setData("leaveResultsVisible", leaveResultsVisible);
+	ajaxRequest.setData("url", url);
+	ajaxRequest.setData("elementName", elementName);
+	ajaxRequest.setData("savedColor", savedColor);
+	ajaxRequest.setData("crFound", crFound);
+	ajaxRequest.setUseGET();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postFindTagRequest(obj) {
+	prefix = obj.getData("prefix");
+	leaveResultsVisible = obj.getData("leaveResultsVisible");
+	url = obj.getData("url");
+	ss_debug('ss_postFindTagRequest'+prefix);
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+	ss_findTagSearchInProgress[obj.getData("prefix")] = 0;
+
+	ss_showFindTagSelections(prefix);
+	
+ 	//Show this at full brightness
+	var divObj = document.getElementById('ss_findTagNavBarDiv_'+prefix);
+ 	divObj = document.getElementById('available_'+prefix);
+ 	if (divObj != null) divObj.style.color = obj.getData('savedColor');
+	
+	//See if there is another search request to be done
+	if (ss_findTagSearchWaiting[prefix] == 1) {
+		setTimeout('ss_findTagSearch('+prefix+', '+ ss_findTagSearchLastTextObjId[prefix]+', '+ ss_findTagSearchLastElement[prefix]+', '+ ss_findTagSearchLastfindTagType[prefix]+','+leaveResultsVisible+', '+url+');', 100);
+	}
+
+	//See if the user typed a return. If so, see if there is a unique value to go to
+	if (obj.getData('crFound') == 1) {
+		var ulObj = document.getElementById('available_'+prefix);
+		var liObjs = ulObj.getElementsByTagName('li');
+		if (liObjs.length == 1) {
+			setTimeout("ss_findTagSelectItem0("+prefix+", "+leaveResultsVisible+");", 100);
+			return;
+		}
+	}
+}
+function ss_showFindTagSelections (prefix) {
+	var divObj = document.getElementById('ss_findTagNavBarDiv_'+prefix);
+	ss_moveDivToBody('ss_findTagNavBarDiv_'+prefix);
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_findTag_searchText_bottom_"+prefix) + ss_findTagDivTopOffset[prefix]));
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_findTag_searchText_bottom_"+prefix)));
+	ss_showDivActivate('ss_findTagNavBarDiv_'+prefix);
+}
+function ss_findTagSelectItem0 (prefix, leaveResultsVisible) {
+	var ulObj = document.getElementById('available_'+prefix);
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 1) {
+		ss_findTagSelectItem (prefix, leaveResultsVisible, liObjs[0]);
+	}
+}
+//Routine called when item is clicked
+function ss_findTagSelectItem (prefix,leaveResultsVisible, obj) {
+//alert("in ss_findTagSelectItem, obj: "+obj);
+	if (!obj || !obj.id ||obj.id == undefined) return false;
+	var id = ss_replaceSubStr(obj.id, 'ss_findTag_id_', "");
+	// alert('ss_findTagClickRoutine[prefix]'+ss_findTagClickRoutine[prefix]+" \n tagSearchResultUrl: "+tagSearchResultUrl);
+	if (ss_findTagClickRoutine[prefix] != "") {
+		eval(ss_findTagClickRoutine[prefix] + "('"+id+"');");
+		if (leaveResultsVisible) {
+		  setTimeout("ss_showFindTagSelections(prefix);", 200)
+		}
+	} else {
+		var url = ss_replaceSubStrAll(tagSearchResultUrl, 'ss_tagPlaceHolder', id);
+		self.location.href = url;
+	}
+}
+
+function ss_saveFindTagData(prefix,leaveResultsVisible) {
+	ss_debug('ss_saveFindTagData')
+	var ulObj = document.getElementById('available_'+prefix);
+	var liObjs = ulObj.getElementsByTagName('li');
+	if (liObjs.length == 1) {
+		ss_findTagSelectItem(prefix, leaveResultsVisible, liObjs[0]);
+	}
+	return false;
+}
+
+function ss_findTagNextPage(prefix, leaveResultsVisible, url) {
+	ss_findTag_pageNumber[prefix]++;
+	ss_findTagSearch(prefix, ss_findTagSearchLastTextObjId[prefix], ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix], leaveResultsVisible, url);
+}
+
+function ss_findTagPrevPage(prefix, leaveResultsVisible, url) {
+	ss_findTag_pageNumber[prefix]--;
+	if (ss_findTag_pageNumber[prefix] < 0) ss_findTag_pageNumber[prefix] = 0;
+	ss_findTagSearch(prefix, ss_findTagSearchLastTextObjId[prefix], ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix], leaveResultsVisible, url);
+}
+
+function ss_findTagClose(prefix) {
+	document.getElementById('ss_findTag_searchText_'+prefix).focus();
+}
+
+
+
+

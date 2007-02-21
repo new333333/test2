@@ -47,11 +47,31 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     	</ssf:url>"
     url += "&operation=" + op;
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
+
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+
+	if (op2 == 'tags') { 
+		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
+		ss_fetch_url(url, showTagComponents, termNumber);
+//		alert("after fetch_url");
+	} else {
+//		ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	}
+}
+function showTagComponents(response, ind) {
+//	alert("obj:"+document.getElementById(id));
+//	alert("response: "+response);
+	
+	document.getElementById("entryList"+ind).innerHTML = response;
+	document.getElementById("entryList"+ind).style.disply="block";
+	document.getElementById("entryList"+ind).style.visibility="visible";
+	document.getElementById("elementList"+ind).innerHTML="";
+	document.getElementById("elementList"+ind).style.visibility="hidden";
+	document.getElementById("valueList"+ind).innerHTML="";
+	document.getElementById("valueList"+ind).style.visibility="hidden";
 }
 
 var ss_filterTermNumber = 0;
@@ -142,6 +162,20 @@ function t_searchForm_wsTree_showId(forum, obj) {
 	return false
 }
 
+
+function putValueInto(inputId, value) {
+	document.getElementById(inputId).value = value;
+}
+
+tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="search"/>
+			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
+			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
+			<portlet:param name="searchTags" value="searchTagsOr"/>
+			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
+			<portlet:param name="newTab" value="1"/>
+			</portlet:actionURL>";
+declareVariables();
 </script>
 <!-- p> TAG SSF:TREE START</p -->
 <ssf:tree 
@@ -153,6 +187,7 @@ function t_searchForm_wsTree_showId(forum, obj) {
   initOnly="true" />
 
 <!-- p>AFTER TAG SSF TREE</p -->
+
 
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="searchForm.terms"/></legend>
@@ -188,9 +223,6 @@ function t_searchForm_wsTree_showId(forum, obj) {
 
 	      <li><a href="#" onClick="ss_getFilterTypeSelection(this, 'tags');return false;">
 	          <ssf:nlt tag="filter.tags"/>
-	         
-	          <!-- ssf:find formName="_ss_workspacetree_WAR_ssf_INSTANCE_UIT9_form1" 
-    			  formElement="searchPersonalTags" type="tags" width="70px" singleItem="true"/ -->
 	      </a></li>
 
 	    </div>
