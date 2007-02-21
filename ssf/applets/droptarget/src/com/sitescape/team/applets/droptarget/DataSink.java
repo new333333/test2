@@ -125,10 +125,8 @@ private static ArrayList xferFileListNames;
 	    // Check for types of data that we support
 	    
 	    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-	      System.out.println("Hemanth: DataFlavor.javaFileListFlavor supported...........");
 	      files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
 	    } else if (t.isDataFlavorSupported(copiedFilesListFlavor)) {
-        	System.out.println("Hemanth: copiedFilesListFlavor supported...........");
 	    	InputStream ips = (InputStream)t.getTransferData(copiedFilesListFlavor);
 	    	ByteArrayOutputStream ops = new ByteArrayOutputStream();
             
@@ -162,7 +160,7 @@ private static ArrayList xferFileListNames;
               xferFileList.add(f);
               xferFileListNames.add(strFileName);
             }
-          }
+        }
           //e.dropComplete(true);
           Iterator fileIter = xferFileList.iterator();
           if (xferFileList.size() > 0) {
@@ -175,7 +173,6 @@ private static ArrayList xferFileListNames;
           }
     }
     catch(Exception ex) {
-    	System.out.println("Hemanth addFilesToList: Error: " + ex);
     	ex.printStackTrace();
     }
   }
@@ -292,7 +289,6 @@ private static ArrayList xferFileListNames;
           }
     }
     catch(Exception ex) {
-    	System.out.println("Hemanth drop: Error: " + ex);
     	ex.printStackTrace();
     	e.dropComplete(false);
     }

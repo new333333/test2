@@ -1,5 +1,13 @@
 <% //File entry title view %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "nonie";
+if (isIECheck) strBrowserType = "ie";
+%>
+
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
@@ -25,7 +33,7 @@
     <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
 </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>
 
-<ssf:ifSupportsEditInPlace relativeFilePath="${fileHandle.fileItem.name}">
+<ssf:ifSupportsEditInPlace relativeFilePath="${fileHandle.fileItem.name}" browserType="<%=strBrowserType%>">
 <a style="text-decoration: none;"
 	href="<ssf:ssfsInternalTitleFileUrl 
 		binder="${ssDefinitionEntry.parentBinder}"

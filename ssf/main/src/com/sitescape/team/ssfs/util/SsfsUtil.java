@@ -9,7 +9,8 @@ import com.sitescape.team.web.util.WebUrlUtil;
 
 public class SsfsUtil {
 
-	private static String[] editInPlaceFileExtensions;
+	private static String[] editInPlaceFileExtensionsIE;
+	private static String[] editInPlaceFileExtensionsNonIE;
 	
 	public static String getEntryUrl(Binder binder, 
 			DefinableEntity entity, String strRepositoryName) {
@@ -76,7 +77,7 @@ public class SsfsUtil {
 		append("/");	
 	}
 	
-	public static boolean supportsEditInPlace(String relativeFilePath) {
+	public static boolean supportsEditInPlace(String relativeFilePath, String browserType) { 
 		String extension = null;
 		int index = relativeFilePath.lastIndexOf(".");
 		if(index < 0)
@@ -84,12 +85,30 @@ public class SsfsUtil {
 		else
 			extension = relativeFilePath.substring(index).toLowerCase();
 		
-		if(editInPlaceFileExtensions == null) {
-			String[] s = SPropsUtil.getStringArray("edit.in.place.file.extensions", ",");
-			for(int i = 0; i < s.length; i++) {
-				s[i] = s[i].toLowerCase();
-			}		
-			editInPlaceFileExtensions = s;
+		String [] editInPlaceFileExtensions;
+		String strEditType = "";
+		
+		if (browserType != null && browserType.equalsIgnoreCase("ie")) {
+			if (editInPlaceFileExtensionsIE == null) {
+				strEditType = SPropsUtil.getString("edit.in.place.for.ie", "");
+				String[] s = SPropsUtil.getStringArray("edit.in.place.file." + strEditType + ".extensions", ",");
+				for(int i = 0; i < s.length; i++) {
+					s[i] = s[i].toLowerCase();
+				}		
+				editInPlaceFileExtensionsIE = s;
+			}
+			editInPlaceFileExtensions = editInPlaceFileExtensionsIE;
+		} else {
+			if (editInPlaceFileExtensionsNonIE == null) {
+				strEditType = SPropsUtil.getString("edit.in.place.for.nonie", "");
+
+				String[] s = SPropsUtil.getStringArray("edit.in.place.file." + strEditType + ".extensions", ",");
+				for(int i = 0; i < s.length; i++) {
+					s[i] = s[i].toLowerCase();
+				}		
+				editInPlaceFileExtensionsNonIE = s;
+			}
+			editInPlaceFileExtensions = editInPlaceFileExtensionsNonIE;
 		}
 		
 		for(int i = 0; i < editInPlaceFileExtensions.length; i++) {
