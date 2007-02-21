@@ -2,6 +2,8 @@
 <div id="${ss_viewEntryAttachmentDivId}">
 	<%
 	boolean isIECheck = BrowserSniffer.is_ie(request);
+	String strBrowserType = "nonie";
+	if (isIECheck) strBrowserType = "ie";
 	%>
 	<table width="100%" border="0">
 	<tbody>
@@ -29,7 +31,7 @@
 				
 					<c:if test="${ssConfigJspStyle != 'mail'}">
 						<c:if test="${ssEntryAttachmentAllowEdit == 'true'}">
-							<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
+							<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 								<% if (isIECheck) { %>
 									<c:choose>
 									<c:when test="${ssEntryAttachmentEditTypeForIE == 'applet'}">

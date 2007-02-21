@@ -24,3 +24,6 @@
 <c:if test="${ss_folderViewStyle == 'guestbook'}">
 <jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />
 </c:if>
+<c:if test="${ss_folderViewStyle == 'search'}">
+<jsp:include page="/WEB-INF/jsp/definition_elements/guestbook/guestbook.jsp" />
+</c:if>

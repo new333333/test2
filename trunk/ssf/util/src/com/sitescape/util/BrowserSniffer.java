@@ -253,8 +253,6 @@ public class BrowserSniffer {
 		}
 
 		agent = agent.toLowerCase();
-		
-		System.out.println("Hemanth: Agent: "+agent);
 
 		if ((agent.indexOf("windows") != -1)) return "windows";
 		else if ((agent.indexOf("linux") != -1)) return "linux";

@@ -1,4 +1,10 @@
 <% //File view %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "nonie";
+if (isIECheck) strBrowserType = "ie";
+%>
 
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 <div class="ss_entryContent">
@@ -16,7 +22,7 @@
     </ssf:url>"><c:out value="${selection.fileItem.name}"/>
 </a>
 <c:if test="${ssConfigJspStyle != 'mail'}">
-<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}">
+<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 <a 
 	href="<ssf:ssfsInternalFileUrl 
 		binder="${ssDefinitionEntry.parentBinder}"
