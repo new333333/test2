@@ -55,23 +55,24 @@ function <portlet:namespace/>_getUnseenCounts() {
 <table width="100%">
 <tr>
 <td align="left">
+<c:if test="${!empty ssFolderList}">
   <a class="ss_linkButton ss_smallprint" 
     href="javascript: ;" onClick="<portlet:namespace/>_getUnseenCounts();return false;"
     ><ssf:nlt tag="portlet.showUnread"/></a>
+</c:if>
 </td>
 <td align="right">
   <a class="ss_linkButton ss_smallprint" 
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
-    ><ssf:nlt tag="portlet.setPreferences"/></a>
+    ><ssf:nlt tag="portlet.configure"/></a>
 </td>
 </tr>
 </table>
 
 <c:if test="${empty ssFolderList}">
-  <ssf:nlt tag="portlet.noPreferences" 
-   text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
+  <ssf:nlt tag="portlet.notConfigured"/>
 </c:if>
  
 <c:if test="${!empty ssFolderList}">

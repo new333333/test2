@@ -19,8 +19,12 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
- <ssf:nlt tag="portlet.noPreferences" text="The portlet preferences are not set.  Choose the edit button to configure the portlet."/>
+<div align="right">
   <a class="ss_linkButton ss_smallprint" 
 		    href="<portlet:renderURL 
 		      portletMode="edit" 
-		      windowState="maximized" />"><ssf:nlt tag="portlet.setPreferences"/></a>
+		      windowState="maximized" />"><ssf:nlt tag="portlet.configure"/></a>
+</div>
+<div>
+ <ssf:nlt tag="portlet.notConfigured"/>
+</div>
