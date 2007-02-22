@@ -438,6 +438,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			filePath = FilePathUtil.getFilePath(binder, entry, HTML_SUBDIR, fa.getId() + File.separator + fa.getFileItem().getName());
 			filePath = filePath.substring(0, filePath.lastIndexOf('.')) + HTML_FILE_SUFFIX;
 			htmlFile = cacheFileStore.getFile(filePath);
+			
 			if (htmlFile != null
 			&& htmlFile.exists()
 			&& htmlFile.lastModified() >= fa.getModification().getDate().getTime())
@@ -687,7 +688,13 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			if(!parentDir.exists())
 				parentDir.mkdirs();
 			
-			if (htmlfile.lastModified() < fa.getModification().getDate().getTime())
+			// Verify the HTML file exists in cache or not
+			outFile = htmlfile.getAbsolutePath();
+			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
+			File oFile = new File(outFile);
+			
+			if (!oFile.exists()
+			|| htmlfile.lastModified() < fa.getModification().getDate().getTime())
 			{
 				try
 				{
@@ -708,8 +715,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 						fos.close();
 				}
 				
-				outFile = htmlfile.getAbsolutePath();
-				outFile = outFile.substring(0, outFile.lastIndexOf('.')) + HTML_FILE_SUFFIX;			
 				generateAndStoreHtmlFile(url, binder.getId(), entry.getId(), fa.getId(), originalFile.getAbsolutePath(), outFile);
 			}
 		}
