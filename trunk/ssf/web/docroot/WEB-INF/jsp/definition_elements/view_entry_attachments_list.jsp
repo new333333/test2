@@ -85,17 +85,18 @@
 				     value="${selection.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="short" /></td>
 				<td class="ss_compact20" width="5%"><span class="ss_smallprint">(${selection.fileItem.lengthKB}KB)</span></td>
-				<td class="ss_compact20" width="65%"><span class="ss_smallprint">
-					<a target="_blank" style="text-decoration: none;" href="<ssf:url 
-					    webPath="viewFile"
-					    folderId="${ssDefinitionEntry.parentBinder.id}"
-					    entryId="${ssDefinitionEntry.id}" >
-					    <ssf:param name="fileId" value="${selection.id}"/>
-					    <ssf:param name="viewType" value="html"/>
-					    </ssf:url>" >[<ssf:nlt tag="entry.HTML" />]</a>
-					</span>
-				</td>
-				
+				<ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
+					<td class="ss_compact20" width="65%"><span class="ss_smallprint">
+						<a target="_blank" style="text-decoration: none;" href="<ssf:url 
+						    webPath="viewFile"
+						    folderId="${ssDefinitionEntry.parentBinder.id}"
+					   	 	entryId="${ssDefinitionEntry.id}" >
+					    	<ssf:param name="fileId" value="${selection.id}"/>
+					    	<ssf:param name="viewType" value="html"/>
+					    	</ssf:url>" >[<ssf:nlt tag="entry.HTML" />]</a>
+						</span>
+					</td>
+				</ssf:ifSupportsViewAsHtml>
 			</tr>
 		</tbody>
 		</table>
