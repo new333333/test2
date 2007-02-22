@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.Collection;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -31,6 +32,7 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryMap;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.UserPerFolderPK;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -555,6 +557,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * 
      */
     public void moveEntries(final Folder folder, final List ids) {
+    	if (ids.isEmpty()) return;
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
@@ -593,6 +596,31 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	   			.setParameterList("pList", ids)
       	   				.executeUpdate();
 	       	   		return null;
+	    	   		}
+	    	   	}
+	    	 );    	
+   	
+    }
+    //load public and private tags for a list of folder entries
+    //order by id and name
+    public List loadEntryTags(final EntityIdentifier ownerIdentifier, final Collection ids) {
+    	if (ids.isEmpty()) return new ArrayList();
+	   	return (List)getHibernateTemplate().execute(
+		     	new HibernateCallback() {
+		       		public Object doInHibernate(Session session) throws HibernateException {
+	                 	return session.createCriteria(Tag.class)
+       					.add(Expression.eq("entityIdentifier.type", EntityIdentifier.EntityType.folderEntry.getValue()))
+                 		.add(Expression.in("entityIdentifier.entityId", ids))
+                        .add(Expression.disjunction()
+              					.add(Expression.eq("public",true))
+              					.add(Expression.conjunction()
+              							.add(Expression.eq("ownerIdentifier.entityId", ownerIdentifier.getEntityId()))
+              							.add(Expression.eq("ownerIdentifier.type", ownerIdentifier.getEntityType().getValue()))
+              					)
+              			)
+              			.addOrder(Order.asc("entityIdentifier.entityId"))
+                 		.addOrder(Order.asc("name"))
+	                 	.list();
 	    	   		}
 	    	   	}
 	    	 );    	

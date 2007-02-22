@@ -23,10 +23,6 @@
 	}
 %>
 
-<div class="ss_folder">
-
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
 
 <% // Then include the navigation widgets for this view %>
 <div style="margin:0px;">

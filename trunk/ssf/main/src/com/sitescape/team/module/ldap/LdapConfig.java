@@ -13,7 +13,6 @@ import com.sitescape.util.GetterUtil;
  */
 public class LdapConfig extends ScheduleInfo {
 
-//	public static final String SESSION_REGISTER_USERS = "ldap.session.register";
 //	public static final String SESSION_SYNC = "ldap.session.sync";
 	public static final String SCHEDULE = "ldap.schedule";
 	public static final String QUARTZ_SCHEDULE = "ldap.quartz.schedule";
@@ -86,12 +85,6 @@ public class LdapConfig extends ScheduleInfo {
 	public void setScheduleEnabled(boolean scheduleEnabled) {
 		details.put(ENABLE_SCHEDULE, Boolean.toString(scheduleEnabled));
 	}
-//	public boolean isSessionRegister() {
-//		return GetterUtil.get((String)details.get(SESSION_REGISTER_USERS), false);
-//	}
-//	public void setSessionRegister(boolean autoLogin) {
-//		details.put(SESSION_REGISTER_USERS, Boolean.toString(autoLogin));
-//	}
 //	public boolean isSessionSync() {
 //		return GetterUtil.get((String)details.get(SESSION_SYNC), false);
 //	}

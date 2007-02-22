@@ -54,6 +54,8 @@ public interface ObjectKeys {
     public static final String BINDER="binder";
     public static final String SEARCH_ENTRIES="search_entries";
     public static final String FULL_ENTRIES="database_entries";
+    public static final String COMMUNITY_ENTRIES_TAGS="community_entries_tags";
+    public static final String PERSONAL_ENTRIES_TAGS="personal_entries_tags";
     public static final String FOLDER_ENTRY_ANCESTORS="folderEntryAncestors";
     public static final String FOLDER_ENTRY_DESCENDANTS="folderEntryDescendants";
     public static final String FOLDER_ENTRY="folderEntry";

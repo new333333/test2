@@ -3,8 +3,6 @@ package com.sitescape.team.portlet.forum;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -13,8 +11,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -31,7 +29,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
@@ -49,14 +46,12 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.rss.util.UrlUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DateHelper;
@@ -66,6 +61,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -243,7 +239,8 @@ public class ListFolderController extends  SAbstractController {
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(BinderHelper.getViewListingJsp(this));
-		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
+		}
+		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
 				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -259,6 +256,7 @@ public class ListFolderController extends  SAbstractController {
 		Binder binder = getBinderModule().getBinder(binderId);
 		Map<String,Object> model = new HashMap<String,Object>();
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
@@ -268,36 +266,6 @@ public class ListFolderController extends  SAbstractController {
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
 		model.put(WebKeys.ENTRY_ID_TO_BE_SHOWN, entryIdToBeShown);
 
-		//Set up the tabs
-		Tabs tabs = new Tabs(request);
-		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
-		
-		//What do the newTab values mean?
-		//newTab == 1 means if the Tab already exists use it, if not create another one
-		//newTab == 2 means create a new Tab always
-		if (newTab.equals("1")) {
-			boolean blnClearTab = true;
-			tabs.setCurrentTab(tabs.findTab(binder, blnClearTab));
-		} else if (newTab.equals("2")) {
-			tabs.setCurrentTab(tabs.addTab(binder));
-		} else if (tabId != null) {
-			//Do not set the page number to zero
-			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
-		} else {
-			//Don't overwrite a search tab
-			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-				boolean blnClearTab = true;
-				tabs.setCurrentTab(tabs.findTab(binder, blnClearTab));
-				
-			} else {
-				boolean blnClearTab = true;
-				Map options = new HashMap();
-				tabs.setCurrentTab(tabs.findTab(binder, options, blnClearTab, tabs.getCurrentTab()));
-			}
-		}
-		model.put(WebKeys.TABS, tabs.getTabs());
-		
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
 		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -310,25 +278,105 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		model.put(WebKeys.SEEN_MAP, getProfileModule().getUserSeenMap(user.getId()));
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
+		//See if the user has selected a specific view to use
+		DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+
+		Tabs tabs = initTabs(request, binder);
+		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
+		model.put(WebKeys.TABS, tabs.getTabs());		
 
 		Map options = new HashMap();		
 		
 		//Determine the Search Filter
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;
-		if (searchFilterName != null && !searchFilterName.equals("")) {
+		if (Validator.isNotNull(searchFilterName)) {
 			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
 			searchFilter = (Document)searchFilters.get(searchFilterName);
 		}
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		
-		//See if the user has selected a specific view to use
-		String userDefaultDef = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-		DefinitionHelper.getDefinitions(binder, model, userDefaultDef);
+		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
+		if (!searchTitle.equals("")) {
+			options.put(ObjectKeys.SEARCH_TITLE, searchTitle);
+		}
+		//determine page starts/ counts
+		initPageCounts(request, userProperties, tabOptions, options);
 
-		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
+		String viewType = "";
+		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (configElement != null) {
+			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
+		}
+
+		//Checking the Sort Order that has been set. If not using the Default Sort Order
+		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
+
+		setupUrlCalendar(request, tabOptions, options, model);
+		setupUrlTags(request, tabOptions, options, model);
+
+		String view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
 		
+		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
+		model.put(WebKeys.URL_TAB_ID, currentTabId);
+		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
+
+		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
+		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
+
+		if (configElement == null) 	return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+		try {
+			//won't work on adapter
+			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
+		} catch (UnsupportedOperationException us) {}
+		
+		return new ModelAndView(view, model);
+	}
+	protected void initSortOrder(RenderRequest request, UserProperties userFolderProperties, Map tabOptions, Map options, String viewType) {
+		//Start - Determine the Sort Order
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//This is a blog view, set the default sort order
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+
+		} else {
+
+			//First Check the Tab Object, see if it has the Sort Order Information
+			//	If it is not there, Check the User Folder Properties for the Sort Order Information
+			//Get Sort Informtion from Tab Level
+			String searchSortBy  = (String) tabOptions.get(Tabs.SORTBY);
+			String searchSortDescend  = (String) tabOptions.get(Tabs.SORTDESCEND);
+			//Trying to get Sort Information from the User Folder Properties, since Sort information is not available at Tab Level 
+			if (Validator.isNull(searchSortBy)) {
+				searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
+				searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
+			}
+			//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
+			//If not, go with the Default Sort Properties 
+			if (Validator.isNotNull(searchSortBy)) {
+				options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
+				if (("true").equalsIgnoreCase(searchSortDescend)) {
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+				} else {
+					options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+				}
+			}
+			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
+				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
+		}
+
+		//Saving the Sort Option in the Tab
+		tabOptions.put(Tabs.SORTBY, (String) options.get(ObjectKeys.SEARCH_SORT_BY));
+		tabOptions.put(Tabs.SORTDESCEND, options.get(ObjectKeys.SEARCH_SORT_DESCEND).toString());
+		//End - Determine the Sort Order
+		
+	}
+	protected void initPageCounts(RenderRequest request, Map userProperties, Map tabOptions, Map options) {
 		//Determine the Records Per Page
 		//Getting the entries per page from the user properties
 		//String entriesPerPage = (String) userFolderProperties.getProperty(ObjectKeys.PAGE_ENTRIES_PER_PAGE);
@@ -341,21 +389,22 @@ public class ListFolderController extends  SAbstractController {
 		//If the entries per page is not present in the user properties, then it means the
 		//number of records per page is obtained from the ssf properties file, so we do not have 
 		//to worry about checking the old and new number or records per page.
-		if (entriesPerPage == null || "".equals(entriesPerPage)) {
+		if (Validator.isNull(entriesPerPage)) {
 			//This means that the tab does not have the information about the number of records to display in a page
 			//So we need to add this information into the tab
 			if (recordsInPage == null) {
-				String searchMaxHits = SPropsUtil.getString("folder.records.listed");
-				options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(searchMaxHits));
-				tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(searchMaxHits));
+				Integer searchMaxHits = Integer.valueOf(SPropsUtil.getString("folder.records.listed"));
+				options.put(ObjectKeys.SEARCH_MAX_HITS, searchMaxHits);
+				tabOptions.put(Tabs.RECORDS_IN_PAGE, searchMaxHits);
 			} else {
 				options.put(ObjectKeys.SEARCH_MAX_HITS, recordsInPage);
 			}
 		} else {
-			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(entriesPerPage));
-			tabOptions.put(Tabs.RECORDS_IN_PAGE, new Integer(entriesPerPage));
+			Integer perPage = Integer.valueOf(entriesPerPage);
+			options.put(ObjectKeys.SEARCH_MAX_HITS, perPage);
+			tabOptions.put(Tabs.RECORDS_IN_PAGE, perPage);
 			if (recordsInPage != null) {
-				int intEntriesPerPage = (new Integer(entriesPerPage)).intValue();
+				int intEntriesPerPage = perPage.intValue();
 				int intEntriesPerPageInTab = recordsInPage.intValue();
 				
 				if (intEntriesPerPage != intEntriesPerPageInTab) {
@@ -364,7 +413,7 @@ public class ListFolderController extends  SAbstractController {
 						int intPageRecordIndex = pageRecordIndex.intValue();
 						int intNewPageNumber = (intPageRecordIndex + 1)/(intEntriesPerPage);
 						int intNewPageStartIndex = (intNewPageNumber) * intEntriesPerPage;
-						tabOptions.put(Tabs.PAGE, new Integer(intNewPageStartIndex));
+						tabOptions.put(Tabs.PAGE, Integer.valueOf(intNewPageStartIndex));
 					}
 				}
 			} else {
@@ -374,59 +423,41 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Determine the Folder Start Index
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
-		if (tabPageNumber == null) tabPageNumber = new Integer(0);
+		if (tabPageNumber == null) tabPageNumber = Integer.valueOf(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		
-		//Start - Determine the Sort Order
-		//First Check the Tab Object, see if it has the Sort Order Information
-		//If it is not there, Check the User Folder Properties for the Sort Order Information
-		//Get Sort Informtion from Tab Level
-		String searchSortBy  = (String) tabOptions.get(Tabs.SORTBY);
-		String searchSortDescend  = (String) tabOptions.get(Tabs.SORTDESCEND);
-		//Trying to get Sort Information from the User Folder Properties, since Sort information is not available at Tab Level 
-		if (searchSortBy == null || searchSortBy.equals("")) {
-			searchSortBy = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_BY);
-			searchSortDescend = (String) userFolderProperties.getProperty(ObjectKeys.SEARCH_SORT_DESCEND);
-		}
-		//Setting the Sort properties if it is available in the Tab or User Folder Properties Level. 
-		//If not, go with the Default Sort Properties 
-		if (searchSortBy != null && !searchSortBy.equals("")) {
-			options.put(ObjectKeys.SEARCH_SORT_BY, searchSortBy);
-			if (("true").equalsIgnoreCase(searchSortDescend)) {
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-			} else {
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
-			}
-		}
-		//Checking the Sort Order that has been set. If not using the Default Sort Order
-		String viewType = "";
-		Element elementView = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (elementView != null) {
-			Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-			if (viewElement != null)
-				viewType = viewElement.attributeValue("value", "");
-		}
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//This is a blog view, set the default sort order
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
-			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-
+		
+	}
+	protected Tabs initTabs(RenderRequest request, Binder binder) throws Exception {
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		
+		//What do the newTab values mean?
+		//newTab == 1 means if the Tab already exists use it, if not create another one
+		//newTab == 2 means create a new Tab always
+		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.findTab(binder, true));
+		} else if (newTab.equals("2")) {
+			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (tabId != null) {
+			//Do not set the page number to zero
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {
-			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
-				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
-				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-		}
-
-		//Saving the Sort Option in the Tab
-		tabOptions.put(Tabs.SORTBY, (String) options.get(ObjectKeys.SEARCH_SORT_BY));
-		tabOptions.put(Tabs.SORTDESCEND, ((Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND)).toString());
-		//End - Determine the Sort Order
-
+			//Don't overwrite a search tab
+			if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+				tabs.setCurrentTab(tabs.findTab(binder, true));				
+			} else {
+				tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
+			}
+		}	
+		return tabs;
+	}
+	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
 		//See if the url contains an ending date
 		Calendar cal = Calendar.getInstance();
-		cal.setTimeZone(user.getTimeZone());
+		cal.setTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
 		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
 		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
 		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
@@ -484,6 +515,8 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 		
+	}
+	protected void setupUrlTags(RenderRequest request, Map tabOptions, Map options, Map model) {
 		//See if the url has tags 
 		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
 		if (!cTag.equals("")) {
@@ -519,36 +552,7 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 
-		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
-		if (!searchTitle.equals("")) {
-			options.put(ObjectKeys.SEARCH_TITLE, searchTitle);
-		}
-
-		String view;
-		view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
-		
-		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
-		model.put(WebKeys.URL_TAB_ID, currentTabId);
-		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
-		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
-
-		model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
-		model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
-
-		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
-		if ((obj == null) || (obj.equals(""))) 
-			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		obj = model.get(WebKeys.CONFIG_DEFINITION);
-		if ((obj == null) || (obj.equals(""))) 
-			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-		try {
-			//won't work on adapter
-			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
-		} catch (UnsupportedOperationException us) {}
-		
-		return new ModelAndView(view, model);
 	}
-
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -571,7 +575,7 @@ public class ListFolderController extends  SAbstractController {
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
 			folderEntries = getFolderModule().getEntries(folderId, options);
-			if (viewType.equals("wiki")) {
+			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
 				buildWikiBeans(response, folder, options, model, folderEntries);
@@ -579,15 +583,13 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
-		if (sortBy == null) sortBy = "";
 		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
-		if (sortDescend == null) sortDescend = new Boolean(true);
 		
 		model.put(WebKeys.FOLDER_SORT_BY, sortBy);		
 		model.put(WebKeys.FOLDER_SORT_DESCEND, sortDescend.toString());
 		
 		int totalRecordsFound = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+//		int totalRecordsReturned = (Integer) folderEntries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		//Start Point of the Record
 		int searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
 		int searchPageIncrement = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
@@ -614,29 +616,17 @@ public class ListFolderController extends  SAbstractController {
 		
 		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
 		
-		//Build the beans depending on the operation being done
-		model.put(WebKeys.FOLDER, folder);
-		Folder topFolder = folder.getTopFolder();
-		if (topFolder == null) {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(folderId, new WsDomTreeBuilder(null, false, this)));
-		} else {
-			model.put(WebKeys.FOLDER_DOM_TREE, getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this)));			
-		}
 		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-		User user = RequestContextHolder.getRequestContext().getUser();
-		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 				
 		//See if this folder is to be viewed as a calendar
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			//This is a calendar view, so get the event beans
 			getEvents(folder, entries, model, req, response);
-		}
-		//See if this folder is to be viewed as a blog
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, so get the extra blog beans
-			getBlogEntries(folder, (List)folderEntries.get(ObjectKeys.FULL_ENTRIES), model, req, response);
+			getBlogEntries(folder, folderEntries, model, req, response);
 		}
 		
 		//Build the navigation beans
@@ -649,11 +639,9 @@ public class ListFolderController extends  SAbstractController {
 			RenderResponse response, Binder folder, Map<String,Object>model) throws PortletRequestBindingException {
 
 		String viewType = "";
-		Element elementView = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (elementView != null) {
-			Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-			if (viewElement != null)
-				viewType = viewElement.attributeValue("value", "");
+		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (configElement != null) {
+			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
 		}
 		//	The "Display styles" menu
 		Toolbar entryToolbar = new Toolbar();
@@ -671,34 +659,24 @@ public class ListFolderController extends  SAbstractController {
 			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
 		}
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
-
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//Get the WebDAV URLs
-			model.put(WebKeys.FOLDER_ENTRIES_WEBDAVURLS, new HashMap());
-			
-			//Get the list of all entries to build the archive list
-//			buildBlogBeans(response, folder, options, model, folderEntries);
-		} else {
-			if (viewType.equals("wiki")) {
-				//Get the list of all entries to build the archive list
-//				buildBlogBeans(response, folder, options, model, folderEntries);
-				model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, "");
-			}
-		}
 		List entries = new ArrayList();
 		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		//dummy seen map
 		model.put(WebKeys.SEEN_MAP, new SeenMap(Long.valueOf(-1)));
-				
-		//See if this folder is to be viewed as a calendar
-		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//Get the WebDAV URLs
+			model.put(WebKeys.BLOG_ENTRIES, new TreeMap());
+			model.put(WebKeys.FOLDER_ENTRIES_WEBDAVURLS, new HashMap());
+			
+			//Get the list of all entries to build the archive list
+//			buildBlogBeans(response, folder, options, model, folderEntries);
+		} else if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+			//Get the list of all entries to build the archive list
+			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
+		} else 	if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			//This is a calendar view, so get the event beans
 			getEvents(folder, entries, model, req, response);
-		}
-		//See if this folder is to be viewed as a blog
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//This is a blog view, so get the extra blog beans
-			model.put(WebKeys.BLOG_ENTRIES, new TreeMap());
 		}
 		
 	}
@@ -724,7 +702,7 @@ public class ListFolderController extends  SAbstractController {
 			searchFilter = DocumentHelper.createDocument();
     		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
         	rootElement.addElement(FilterHelper.FilterTerms);
-    		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
+    		rootElement.addElement(FilterHelper.FilterTerms);
 		}
 		Map options2 = new HashMap();
 		options2.put(ObjectKeys.SEARCH_MAX_HITS, 
@@ -821,8 +799,8 @@ public class ListFolderController extends  SAbstractController {
 	}
 
 	//Routine to build the beans for the blog archives list
-	public void buildWikiBeans(RenderResponse response, Folder folder, Map options, Map model, Map folderEntries) {
-		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
+	public void buildWikiBeans(RenderResponse response, Binder binder, Map options, Map model, Map folderEntries) {
+		model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, binder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 	}
 	
 	//This method returns a HashMap with Keys referring to the Previous Page Keys,
@@ -1583,9 +1561,12 @@ public class ListFolderController extends  SAbstractController {
 		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
-	protected void getBlogEntries(Folder folder, List entrylist, Map model, RenderRequest request, RenderResponse response) {
+	protected void getBlogEntries(Folder folder, Map folderEntries,  Map model, RenderRequest request, RenderResponse response) {
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
+		List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
+		Map publicTags = (Map)folderEntries.get(ObjectKeys.COMMUNITY_ENTRIES_TAGS);
+		Map privateTags = (Map)folderEntries.get(ObjectKeys.PERSONAL_ENTRIES_TAGS);
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
 			FolderEntry entry  = (FolderEntry) entryIterator.next();
@@ -1598,11 +1579,11 @@ public class ListFolderController extends  SAbstractController {
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
 			Definition def = (Definition)entryMap.get(WebKeys.ENTRY_DEFINITION);
-			Document defDoc = def.getDefinition();
-			List replyStyles = defDoc.getRootElement().selectNodes("properties/property[@name='replyStyle']");
-			if (!replyStyles.isEmpty()) {
-				if (getFolderModule().testAccess(entry, "addReply")) {
-					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+			if (getFolderModule().testAccess(entry, "addReply")) {
+				Document defDoc = def.getDefinition();
+				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
+				if (!replyStyles.isEmpty()) {
+					String replyStyleId = (String)replyStyles.get(0);
 					if (!replyStyleId.equals("")) {
 						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
@@ -1616,8 +1597,8 @@ public class ListFolderController extends  SAbstractController {
 				}
 			}
 
-			entryMap.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folder.getId(), entry.getId()));
-			entryMap.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folder.getId(), entry.getId()));
+			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
+			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
 		}
 	}
 	

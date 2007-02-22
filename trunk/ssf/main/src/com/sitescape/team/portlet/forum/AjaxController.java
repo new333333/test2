@@ -3,7 +3,6 @@ package com.sitescape.team.portlet.forum;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,14 +27,13 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -43,8 +41,6 @@ import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.WorkArea;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -323,34 +319,35 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxModifyTags(ActionRequest request, ActionResponse response) throws Exception {
 		//Add or delete tags
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		String entityType = "";
-		if (binderId != null && entryId.equals(binderId.toString())) {
+		EntityType entityType = null;
+		if (entryId.equals(binderId.toString())) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			entityType = binder.getEntityIdentifier().getEntityType().name();
+			entityType = binder.getEntityIdentifier().getEntityType();
 		}
 		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
 		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
 		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
-		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
-				entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
-		if (!entryId.equals("") && operation2.equals("delete")) {
+		if (EntityIdentifier.EntityType.folder.equals(entityType) || 
+				EntityIdentifier.EntityType.workspace.equals(entityType)) {
+			if (operation2.equals("delete")) {
 				getBinderModule().deleteTag(binderId, tagToDelete);
-			} else if (!entryId.equals("") && operation2.equals("add")) {
+			} else if (operation2.equals("add")) {
 				if (!communityTag.equals("")) getBinderModule().setTag(binderId, communityTag, true);
 				if (!personalTag.equals("")) getBinderModule().setTag(binderId, personalTag, false);
 			}
-		} else {
-			if (!entryId.equals("") && operation2.equals("delete")) {
-			getFolderModule().setTagDelete(binderId, Long.valueOf(entryId), tagToDelete);
-		} else if (!entryId.equals("") && operation2.equals("add")) {
-			if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
-			if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
+		} else if (Validator.isNotNull(entryId)){
+			if (operation2.equals("delete")) {
+				getFolderModule().deleteTag(binderId, Long.valueOf(entryId), tagToDelete);
+			} else if (operation2.equals("add")) {
+				if (!communityTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), communityTag, true);
+				if (!personalTag.equals("")) getFolderModule().setTag(binderId, Long.valueOf(entryId), personalTag, false);
+			}
 		}
 	}
-	}
+	
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
 		//Save the order of the favorites list
@@ -548,22 +545,17 @@ public class AjaxController  extends SAbstractController {
 	
 		Map model = new HashMap();
 		
-		String entityType = "";
-		if (binderId != null && entryId.toString().equals(binderId.toString())) {
+		EntityType entityType = null;
+		if (binderId != null && binderId.equals(entryId)) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			entityType = binder.getEntityIdentifier().getEntityType().name();
+			entityType = binder.getEntityIdentifier().getEntityType();
 		}
-		String operation2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
-		String communityTag = PortletRequestUtils.getStringParameter(request, "communityTag", "");
-		String personalTag = PortletRequestUtils.getStringParameter(request, "personalTag", "");
-		String tagToDelete = PortletRequestUtils.getStringParameter(request, "tagToDelete", "");
-		if (entityType.equals(EntityIdentifier.EntityType.folder.name()) || 
-				entityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+		if (entityType.equals(EntityType.folder) || entityType.equals(EntityType.workspace)) {
 			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
 			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
 		} else {
-		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
-		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
+			model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(binderId, entryId));
+			model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(binderId, entryId));
 		}
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.TAG_DIV_NUMBER, tagDivNumber);
@@ -818,8 +810,6 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		model.put(WebKeys.DIV_ID, listDivId);
 		model.put(WebKeys.NAMESPACE, namespace);
-		
-		
 		response.setContentType("text/xml");
 		return new ModelAndView(view, model);
 	}

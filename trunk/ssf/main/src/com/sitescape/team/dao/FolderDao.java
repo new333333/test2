@@ -1,4 +1,5 @@
 package com.sitescape.team.dao;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -8,6 +9,7 @@ import org.springframework.dao.DataAccessException;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryMap;
@@ -62,5 +64,6 @@ public interface FolderDao {
     public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);
     public void moveEntries(Folder folder, List ids);
-    	 
+    public List loadEntryTags(EntityIdentifier ownerIdentifier, Collection ids);
+
 }

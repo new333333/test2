@@ -989,7 +989,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (emailSet.isEmpty()) {
 			//no-one to send tos
 			errors.add(0, NLT.get("errorcode.noRecipients", errorParams));
-			result.put(ObjectKeys.SENDMAIL_STATUS, Boolean.FALSE);
+			result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_FAILED);
 			return result;			
 		}
     	Map message = new HashMap();

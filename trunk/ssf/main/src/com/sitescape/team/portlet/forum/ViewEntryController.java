@@ -20,8 +20,6 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.NotSupportedException;
-import com.sitescape.team.NoObjectByTheNameException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -36,7 +34,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -120,6 +117,8 @@ public class ViewEntryController extends  SAbstractController {
 		Map model = new HashMap();
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 
 		boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
 		String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
@@ -135,89 +134,73 @@ public class ViewEntryController extends  SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			model = new HashMap();
+			model.clear();
 			model.put("ssReloadUrl", reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
+		} 
+		FolderEntry fe;
+		if (Validator.isNull(entryId)) {
+			entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+			model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
+			Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
+			if (entries.size() == 1) {
+				FolderEntry entry = (FolderEntry)entries.iterator().next();
+				entryId = entry.getId().toString();
+				fe = getShowEntry(entryId, formData, request, response, folderId, model);
+			} else if (entries.size() == 0) {
+				//There are no entries by this title
+				Folder folder = getFolderModule().getFolder(folderId);
+				buildNoEntryBeans(request, response, folder, entryId, model);
+				return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
+			} else {
+				//There are multiple matches
+				model.put(WebKeys.FOLDER_ENTRIES, entries);
+				return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
+			}
 		} else {
-			if (Validator.isNull(entryId)) {
-				entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-				model.put(WebKeys.ENTRY_TITLE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_PAGE_TITLE, ""));
-				Set entries = getFolderModule().getFolderEntryByNormalizedTitle(folderId, entryId);
-				if (entries.size() == 1) {
-					FolderEntry entry = (FolderEntry)entries.iterator().next();
-					entryId = entry.getId().toString();
-					getShowEntry(entryId, formData, request, response, folderId, model);
-				} else if (entries.size() == 0) {
-					//There are no entries by this title
-					Folder folder = getFolderModule().getFolder(folderId);
-					buildNoEntryBeans(request, response, folder, entryId, model);
-					return new ModelAndView(WebKeys.VIEW_NO_TITLE_ENTRY, model);
-				} else {
-					//There are multiple matches
-					model.put(WebKeys.FOLDER_ENTRIES, entries);
-					return new ModelAndView(WebKeys.VIEW_MULTIPLE_TITLE_ENTRIES, model);
-				}
-			} else {
-				getShowEntry(entryId, formData, request, response, folderId, model);
-			}
-			FolderEntry fe = (FolderEntry)model.get(WebKeys.ENTRY);
-			
-			//Set up the tabs
-			Tabs tabs = new Tabs(request);
-			Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-			String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
-			if (newTab.equals("1")) {
-				tabs.setCurrentTab(tabs.findTab(fe));
-			} else if (newTab.equals("2")) {
-				tabs.setCurrentTab(tabs.addTab(fe));
-			} else if (tabId != null) {
-				tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
-			} else {
-				//Change the tab only if not using the adaptor url
-				if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-					// Indicates that the request is being served by the adapter framework.
-					//Don't overwrite a search tab
-					if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
-						tabs.setCurrentTab(tabs.findTab(fe));
-					} else {
-						tabs.setCurrentTab(tabs.setTab(fe));
-					}
-				}
-			}
-			model.put(WebKeys.TABS, tabs.getTabs());
-
-			//Build the navigation beans
-			BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
-			
-			//only want to update visits when first enter.  Don't want cancels on modifies
-			//to increment count
-			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
-				getFolderModule().setUserVisit(fe);
-			}
-			Object obj = model.get(WebKeys.CONFIG_ELEMENT);
-			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
-			obj = model.get(WebKeys.CONFIG_DEFINITION);
-			if ((obj == null) || (obj.equals(""))) 
-				return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+			fe = getShowEntry(entryId, formData, request, response, folderId, model);
 		}
+		buildEntryToolbar(request, response, model, fe, userProperties);
+
+		//Set up the tabs
+		Tabs tabs = new Tabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
+		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		if (newTab.equals("1")) {
+			tabs.setCurrentTab(tabs.findTab(fe));
+		} else if (newTab.equals("2")) {
+			tabs.setCurrentTab(tabs.addTab(fe));
+		} else if (tabId != null) {
+			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
+		} else {
+			//Change the tab only if not using the adaptor url
+			if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
+				// Indicates that the request is being served by the adapter framework.
+				//Don't overwrite a search tab
+				if (tabs.getTabType(tabs.getCurrentTab()).equals(Tabs.QUERY)) {
+					tabs.setCurrentTab(tabs.findTab(fe));
+				} else {
+					tabs.setCurrentTab(tabs.setTab(fe));
+				}
+			}
+		}
+		model.put(WebKeys.TABS, tabs.getTabs());
+
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, fe.getParentBinder(), model);
+			
+		//only want to update visits when first enter.  Don't want cancels on modifies
+		//to increment count
+		if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
+			getFolderModule().setUserVisit(fe);
+		}
+
 		return new ModelAndView(viewPath, model);
 	} 
 
-	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, Map model, 
-			String folderId, String entryId) {
-		Element entryViewElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		Document entryView = entryViewElement.getDocument();
-		Definition def = (Definition)model.get(WebKeys.ENTRY_DEFINITION);
-		String entryDefId="";
-		if (def != null)
-			entryDefId= def.getId().toString();
-	    //Build the toolbar array
-		Toolbar toolbar = new Toolbar();
-	    //The "Reply" menu
-		List replyStyles = entryView.getRootElement().selectNodes("properties/property[@name='replyStyle']");
+	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, Map model, FolderEntry entry, Map userProperties) {
+
 		PortletURL url;
-		FolderEntry entry = (FolderEntry)model.get(WebKeys.ENTRY);
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 
@@ -245,18 +228,26 @@ public class ViewEntryController extends  SAbstractController {
 				isLockedByAndLoginUserSame = true;
 			}
 		}
-		
-		if (!replyStyles.isEmpty()) {
-			if (getFolderModule().testAccess(entry, "addReply")) {
+		Definition def = entry.getEntryDef(); //cannot be null here
+	    //The "Reply" menu
+		//strings for urls
+		String entryDefId=def.getId().toString();
+		String entryId = entry.getId().toString();
+		String folderId = entry.getParentFolder().getId().toString();
+	    //Build the toolbar array
+		Toolbar toolbar = new Toolbar();
+		if (getFolderModule().testAccess(entry, "addReply")) {
+			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+			if (!replyStyles.isEmpty()) {
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu
-					String replyStyleId = ((Element)replyStyles.get(0)).attributeValue("value", "");
+					String replyStyleId = (String)replyStyles.get(0);
 					
 					if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ){
 						toolbar.addToolbarMenu("1_reply", NLT.get("toolbar.reply"), nullPortletUrl, disabledQual);
 					}
 					else {
-						if (!replyStyleId.equals("")) {
+						if (Validator.isNotNull(replyStyleId)) {
 							AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 							adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_REPLY);
 							adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -278,7 +269,7 @@ public class ViewEntryController extends  SAbstractController {
 						Map qualifiers = new HashMap();
 						qualifiers.put("popup", new Boolean(true));
 						for (int i = 0; i < replyStyles.size(); i++) {
-							String replyStyleId = ((Element)replyStyles.get(i)).attributeValue("value", "");
+							String replyStyleId = (String)replyStyles.get(i);
 							try {
 								Definition replyDef = getDefinitionModule().getDefinition(replyStyleId);
 								AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -381,23 +372,26 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
 			}
 		}
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		Binder binder = entry.getParentBinder();
 		//Check the access rights of the user
 		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
-			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = binder.getDefaultViewDef();
-			if (displayDefId != null && !displayDefId.equals("")) {
-				displayDef = DefinitionHelper.getDefinition(displayDefId);
+			String displayDefId = (String) userProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			Definition displayDef = null;
+			if (!Validator.isNull(displayDefId)) {
+				try {
+					displayDef = getDefinitionModule().getDefinition(displayDefId);
+				} catch (Exception ex) {
+					
+				}
 			}
+			if (displayDef == null) displayDef = binder.getDefaultViewDef();
 			Document defDoc = displayDef.getDefinition();
 			String viewType = "";
 			if (defDoc != null) {
 				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView']");
 				if (elementView != null) {
-					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
-					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+					viewType = DefinitionUtils.getPropertyValue(elementView, "type");
 				}
 			}
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
@@ -471,20 +465,18 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ADD_ENTRY_TITLE,  entryTitle);
 		if (getFolderModule().testAccess(folder, "addEntry")) {				
 			if (!defaultEntryDefinitions.isEmpty()) {
-				if (getFolderModule().testAccess(folder, "addEntry")) {				
-					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-						Definition def = (Definition) defaultEntryDefinitions.get(i);
-						AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-						urls.put(def.getId(), adapterUrl.toString());
-						titles.put(NLT.getDef(def.getTitle()), def.getId());
-						if (i == 0) {
-							adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-							adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-							model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-						}
+				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+					Definition def = (Definition) defaultEntryDefinitions.get(i);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+					urls.put(def.getId(), adapterUrl.toString());
+					titles.put(NLT.getDef(def.getTitle()), def.getId());
+					if (i == 0) {
+						adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+						adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+						model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 					}
 				}
 			}
@@ -508,20 +500,16 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	}
 	
-	protected void getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
+	protected FolderEntry getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
 			Long folderId, Map model)  {
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
-		if (!entryId.equals("")) {
-			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
-			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-			folder = entry.getParentFolder();
-			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
-			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-		} else {
-			folder = getFolderModule().getFolder(folderId);
-		}
+		folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
+		entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+		folder = entry.getParentFolder();
+		model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
+		model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
 		
@@ -536,24 +524,17 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, folder);
-		model.put(WebKeys.BINDER, (Binder) folder);
+		model.put(WebKeys.BINDER, folder);
 		model.put(WebKeys.BINDER_WEBDAV_URL, strEntryURL);
 		//model.put(WebKeys.BINDER_WEBDAV_URL, strWebDavURL);
+		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(entry));
+		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(entry));
+		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));
 		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-		model.put(WebKeys.COMMUNITY_TAGS, getFolderModule().getCommunityTags(folderId,Long.valueOf(entryId)));
-		model.put(WebKeys.PERSONAL_TAGS, getFolderModule().getPersonalTags(folderId,Long.valueOf(entryId)));
-		model.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(folderId,Long.valueOf(entryId)));
-		if (entry == null) {
-			DefinitionHelper.getDefinition(null, model, "//item[@name='entryView']");
-			return;
-		}
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		}
-		if (!entryId.equals("")) {
-			buildEntryToolbar(req, response, model, folderId.toString(), entryId);
-		}
+
 		//only start transaction if necessary
 		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
 		if (replies != null)  {
@@ -579,13 +560,12 @@ public class ViewEntryController extends  SAbstractController {
 				WorkflowState ws = (WorkflowState)iter.next();
 				//store the UI caption for each state
 				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
-				try {
-					//See if user can transition out of this state
-					getFolderModule().checkTransitionOutStateAllowed(reply, ws.getTokenId());
+//				See if user can transition out of this state
+				if (getFolderModule().testTransitionOutStateAllowed(reply, ws.getTokenId())) {
 					//get all manual transitions
 					Map trans = getFolderModule().getManualTransitions(reply, ws.getTokenId());
 					transitionMap.put(ws.getTokenId(), trans);
-				} catch (AccessControlException ac) {}
+				} 
 					
 				Map qMap = getFolderModule().getWorkflowQuestions(reply, ws.getTokenId());
 				questionsMap.put(ws.getTokenId(), qMap);
@@ -595,7 +575,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.WORKFLOW_QUESTIONS, questionsMap);
 		model.put(WebKeys.WORKFLOW_TRANSITIONS, transitionMap);
 		
-		return;
+		return entry;
 	}
 	
 	

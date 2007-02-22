@@ -63,11 +63,6 @@ public class EntityResolver implements org.xml.sax.EntityResolver {
 		new KeyValuePair(
 			"-//BEA Systems, Inc.//DTD WebLogic 7.0.0 EJB//EN",
 			"weblogic-ejb-jar.dtd"
-		),
-		
-		new KeyValuePair(
-		    "-//SiteScape//DTD Object Index Mapping 1.0.0//EN",
-			"object-index-mapping_1_0_0.dtd"
 		)
 	};
 

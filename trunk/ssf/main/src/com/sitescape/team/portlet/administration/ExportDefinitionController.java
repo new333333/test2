@@ -35,8 +35,8 @@ public class ExportDefinitionController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();
 			//Get the forums to be indexed
-			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + RequestContextHolder.getRequestContext().getZoneName() +
-				File.separator + "definitions";
+			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "definitions" +
+				File.separator + RequestContextHolder.getRequestContext().getZoneName();
 			FileHelper.mkdirsIfNecessary(dirPath);
 			Iterator itFormData = formData.entrySet().iterator();
 			while (itFormData.hasNext()) {

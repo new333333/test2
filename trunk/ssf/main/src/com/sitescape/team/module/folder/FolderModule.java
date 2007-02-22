@@ -28,12 +28,7 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
  */
 public interface FolderModule {
 
-    public Folder getFolder(Long folderId);
-	public Collection getFolders(List folderIds);
-    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
-
-   /**
+	   /**
      * Create an entry object from the input data and add it to the specified
      * folder.  
      * 
@@ -48,6 +43,63 @@ public interface FolderModule {
     		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
+
+    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems) throws AccessControlException, WriteFilesException;
+    public void addSubscription(Long folderId, Long entryId, int style); 
+
+    public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+    public void deleteSubscription(Long folderId, Long entryId);
+    public void deleteTag(Long binderId, Long entryId, String tagId);
+    
+    public List getCommunityTags(Long binderId, Long entryId);
+	public List getCommunityTags(FolderEntry entry);
+	  /**
+     * Return Dom tree of folders starting at the topFolder of the specified folder
+     * @param folderId
+     * @return
+     */
+	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
+	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
+	public Map getEntries(Long folderId) throws AccessControlException;
+	public Map getEntries(Long folderId, Map options) throws AccessControlException;
+    public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+    public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
+    public Folder getFolder(Long folderId);
+	public Collection getFolders(List folderIds);
+    /**
+     * Returns a list of ids of all folders that the user has read access to. 
+     * 
+     * @return
+     */
+    public List<String> getFolderIds(Integer type);
+    public Set getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
+	public Map getFullEntries(Long folderId) throws AccessControlException;
+	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;
+	   /**
+     * Finds library folder entry by the file name. If no matching entry is 
+     * found it returns <code>null</code>. If matching entry is found but the
+     * user has no access to it, it throws <code>AccessControlException</code>.
+     *  
+     * @param libraryFolder
+     * @param fileName
+     * @return
+     * @throws AccessControlException
+     */
+    public FolderEntry getLibraryFolderEntryByFileName(Folder libraryFolder, String fileName)
+    	throws AccessControlException;
+    
+    
+	public Map getManualTransitions(FolderEntry entry, Long stateId);
+	public List getPersonalTags(Long binderId, Long entryId);
+	public List getPersonalTags(FolderEntry entry);    
+    public Set<Folder> getSubfolders(Folder folder);
+    public Set<String> getSubfoldersTitles(Folder folder);
+	public Subscription getSubscription(FolderEntry entry); 
+ 	  
+	public Map getUnseenCounts(List folderIds);
+	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
+
     /**
      * 
      * @param folderId
@@ -68,48 +120,9 @@ public interface FolderModule {
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
-	public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) throws AccessControlException;
-	public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) throws AccessControlException;
-	public Map getManualTransitions(FolderEntry entry, Long stateId);
-	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
-    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData);
-    
-   /**
-     * Return Dom tree of folders starting at the topFolder of the specified folder
-     * @param folderId
-     * @return
-     */
-    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
-    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
- 	public Map getEntries(Long folderId) throws AccessControlException;
-	public Map getEntries(Long folderId, Map options) throws AccessControlException;
-	public Map getFullEntries(Long folderId) throws AccessControlException;
-	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;
-    public Map getUnseenCounts(List folderIds);
-    public List getCommunityTags(Long binderId, Long entryId);
-    public List getPersonalTags(Long binderId, Long entryId);
-    public void setUserRating(Long folderId, Long entryId, long value);
-	public void setUserRating(Long folderId, long value);
-	public void setUserVisit(FolderEntry entry);
-    public void setTag(Long binderId, Long entryId, String tag, boolean community);
-    public void setTagDelete(Long binderId, Long entryId, String tagId);
-    
-    public void addSubscription(Long folderId, Long entryId, int style); 
-    public void deleteSubscription(Long folderId, Long entryId);
-    public Subscription getSubscription(Long folderId, Long entryId); 
-        	  
-    public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
-    public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
-    public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+
     public void moveEntry(Long folderId, Long entryId, Long destinationId);
-    
-    /**
-     * Returns a list of ids of all folders that the user has read access to. 
-     * 
-     * @return
-     */
-    public List<String> getFolderIds(Integer type);
-    
+
     /**
      * Reserve the entry.
      * 
@@ -123,6 +136,19 @@ public interface FolderModule {
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
     
+    
+	public void setTag(Long binderId, Long entryId, String tag, boolean community);
+    public void setUserRating(Long folderId, Long entryId, long value);
+	public void setUserRating(Long folderId, long value);
+	public void setUserVisit(FolderEntry entry);
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData);
+    
+    public boolean testAccess(Folder folder, String operation);
+    public boolean testAccess(FolderEntry entry, String operation);
+    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId);
+	public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState);
+   
+    
     /**
      * Cancel reservation on the entry.
      * 
@@ -134,26 +160,5 @@ public interface FolderModule {
     public void unreserveEntry(Long folderId, Long entryId)
 		throws AccessControlException, ReservedByAnotherUserException;
     
-    /**
-     * Finds library folder entry by the file name. If no matching entry is 
-     * found it returns <code>null</code>. If matching entry is found but the
-     * user has no access to it, it throws <code>AccessControlException</code>.
-     *  
-     * @param libraryFolder
-     * @param fileName
-     * @return
-     * @throws AccessControlException
-     */
-    public FolderEntry getLibraryFolderEntryByFileName(Folder libraryFolder, String fileName)
-    	throws AccessControlException;
-    
-    public Set getFolderEntryByNormalizedTitle(Long folderId, String title) 
-    	throws AccessControlException;
-    
-    public Set<String> getSubfoldersTitles(Folder folder);
-    
-    public Set<Folder> getSubfolders(Folder folder);
-    public boolean testAccess(Folder folder, String operation);
-    public boolean testAccess(FolderEntry entry, String operation);
 
 }

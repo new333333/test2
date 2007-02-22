@@ -28,7 +28,13 @@ import com.sitescape.util.Validator;
 public class ViewController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-//		getAdminModule().setZone();
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		//force reload so we can setup js correctly
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			prefs.store();
+		}
 		response.setRenderParameters(request.getParameterMap());
 	}
 
@@ -38,14 +44,14 @@ public class ViewController extends  SAbstractController {
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
 			
 			PortletURL url;
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			prefs.store();
+			return new ModelAndView("administration/view", model);
+
 		}
 		
 		PortletURL url;
@@ -152,16 +158,17 @@ public class ViewController extends  SAbstractController {
 		element.addAttribute("url", url.toString());
 		
 		//Ldap configuration
-		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-		element.addAttribute("title", NLT.get("administration.configure_ldap"));
-		element.addAttribute("image", "bullet");
-		element.addAttribute("id", String.valueOf(nextId++));
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE);
-		url.setWindowState(WindowState.MAXIMIZED);
-		url.setPortletMode(PortletMode.VIEW);
-		element.addAttribute("url", url.toString());
-
+		if (getLdapModule().getLdapConfig() != null) {
+			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.configure_ldap"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_LDAP_CONFIGURE);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+		}
 		//Roles configuration
 		element = rootElement.addElement("child");
 		element.addAttribute("title", NLT.get("administration.configure_roles"));
@@ -228,6 +235,7 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
+		//Definition export
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.export.definitions"));
 		element.addAttribute("image", "bullet");
@@ -237,7 +245,8 @@ public class ViewController extends  SAbstractController {
 		url.setWindowState(WindowState.MAXIMIZED);
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
-
+		
+		//templates
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.configure_configurations"));
 		element.addAttribute("image", "bullet");
@@ -248,6 +257,7 @@ public class ViewController extends  SAbstractController {
 		url.setPortletMode(PortletMode.VIEW);
 		element.addAttribute("url", url.toString());
 
+		//TODO:temporary for debug
 		element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 		element.addAttribute("title", NLT.get("administration.view_change_log"));
 		element.addAttribute("image", "bullet");
