@@ -764,7 +764,6 @@ table.ss_blog_title table {
 
 div.ss_blog_title  {
   background-color:${ss_style_header_bar_background};
-  height: 21px;
   overflow: hidden;
   border-top: 2px solid ${ss_style_header_bar_background};
   border-bottom: 2px solid ${ss_style_header_bar_background};
