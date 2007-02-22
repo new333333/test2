@@ -25,8 +25,6 @@
 
      <div class="ss_blog_sidebar_container">
 	  <div class="ss_blog_sidebar">
-		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="blog.calendar"/></div>
-		<br>
 		<div class="ss_blog_sidebar_hole">
 		<div id="ss_blog_sidebar_date_popup"></div>
  		 <form name="ss_blog_sidebar_date_form" style="display:inline;">

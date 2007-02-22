@@ -96,8 +96,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 					<div style="position:relative; top:2; margin:2px; padding:2px; border-top:solid #666666 1px; border-bottom:solid #666666 1px;  border-right:solid #666666 1px;  border-left:solid #666666 1px;">
 						<span class="ss_light ss_fineprint">
 			
-						<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar_submenu" menuImage="pics/menudown.gif">
-							<ul class="ss_actions_bar_submenu" style="width:250px;">
+						<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar2 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+							<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 							<li>
 								<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '5');return false;">
 									<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
@@ -240,16 +240,16 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
   border-left:solid #666666 1px;">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar">
+<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
 
-<ssf:toolbar style="ss_actions_bar" item="true">
+<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
 <c:set var="ss_history_bar_table_class" value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
 </ssf:toolbar>
 
 <% // Entry toolbar %>
 <c:if test="${!empty ssEntryToolbar}">
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar" item="true" />
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
 
 </ssf:toolbar>
