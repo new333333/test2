@@ -16,7 +16,7 @@
 <%
 	}
 %>
-<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar" />
+<ssf:toolbar toolbar="${ssFolderEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" />
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <td valign="top"><%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %></td>

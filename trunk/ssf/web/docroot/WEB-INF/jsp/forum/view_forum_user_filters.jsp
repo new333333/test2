@@ -16,7 +16,7 @@
 %>
 <table cellspacing="0" cellpadding="0" class="ss_actions_bar_background">
 <tr>
-<td valign="top"><span class="ss_bold"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</span></td>
+<td valign="top"><ssf:nlt tag="filter.filter" text="Filter"/>:&nbsp;</td>
 <td valign="top"><form class="ss_compact ss_actions_bar_background" 
     name="ss_filterSelect" style="display:inline;"
 	action="<portlet:actionURL windowState="maximized">
@@ -28,7 +28,7 @@
   titleId="ss_filterTitle" 
   titleClass="ss_compact"
   menuClass="ss_actions_bar_submenu">
-<ul class="ss_actions_bar_submenu" style="width:250px;">
+<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 <li><a href="javascript: ;" 
   onClick="ss_changeUserFilter(this, '<c:out value=""/>');return false;"
 >--<ssf:nlt tag="none" text="none"/>--</a></li>

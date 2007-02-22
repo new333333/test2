@@ -17,7 +17,7 @@
 
 <% // Toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar" />
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />
 </c:if>
 
 <% // List of users %>

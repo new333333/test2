@@ -185,11 +185,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 
 <div class="ss_tab_canvas">
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-<div class="ss_decor-round-corners-top1"><div><div></div></div></div>
-	<div class="ss_decor-border3">
-		<div class="ss_decor-border4">
-			<div class="ss_rounden-content">
-			    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+   <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 
 </ssf:ifnotadapter>
 
@@ -200,11 +196,9 @@ if (self.parent && self.parent.ss_highlightLineById) {
   entry="${ssEntry}" />
 
 <ssf:ifnotadapter>
-			    </div>
-			</div>
-		</div>
 	</div>
-	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+</div>
+
 </ssf:ifnotadapter>
 
 <div align="left" name="ss_subscription_entry" id="ss_subscription_entry" 

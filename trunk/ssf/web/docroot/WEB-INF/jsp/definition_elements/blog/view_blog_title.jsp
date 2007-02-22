@@ -68,7 +68,7 @@
 ><div class="ss_iconed_label ss_subscribe"><ssf:nlt tag="entry.subscribe"/></div></a>
 </div>
 </div>
-<div>
+<div style="padding-left: 6px">
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view.jsp" %>
 </div>
 </c:if>

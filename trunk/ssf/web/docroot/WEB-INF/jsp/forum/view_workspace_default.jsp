@@ -22,7 +22,7 @@
 
 <% // Toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar" />
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
 </c:if>
 
 <% // Show the workspace default parts %>
