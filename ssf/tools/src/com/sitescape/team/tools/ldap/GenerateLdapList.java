@@ -91,11 +91,9 @@ public class GenerateLdapList {
             LdapContext ctx = getContext(cfgRoot);
            	Document profileDoc = DocumentHelper.createDocument();
         	Element profileRoot = profileDoc.addElement("profiles");
-        	Element userRoot = profileRoot.addElement("users");
-            doUsers(ctx, cfgRoot, userRoot);
+            doUsers(ctx, cfgRoot, profileRoot);
             if (doGroups) {
-            	Element groupRoot = profileRoot.addElement("groups");
-            	doGroups(ctx, cfgRoot, groupRoot);
+            	doGroups(ctx, cfgRoot, profileRoot);
             }
             xOut.write(profileDoc);
     		xOut.flush();

@@ -474,17 +474,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public List getCommunityTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, "getCommunityTags");
-		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadCommunityTagsByEntity(binder.getEntityIdentifier());
+		List<Tag> tags = getCoreDao().loadCommunityTagsByEntity(binder.getEntityIdentifier());
 		return TagUtil.uniqueTags(tags);		
 	}
 	
 	public List getPersonalTags(Long binderId) {
 		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "getPersonalTags");
-		List tags = new ArrayList<Tag>();
+		checkAccess(binder, "getPersonalTags");		
 		User user = RequestContextHolder.getRequestContext().getUser();
-		tags = getCoreDao().loadPersonalEntityTags(binder.getEntityIdentifier(),user.getEntityIdentifier());
+		List<Tag> tags = getCoreDao().loadPersonalEntityTags(binder.getEntityIdentifier(),user.getEntityIdentifier());
 		return TagUtil.uniqueTags(tags);		
 	}
 	
@@ -981,13 +979,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	ObjectBuilder.updateObject(current, updates);
     	if (principals == null) return;
   		//	Pre-load for performance
-    	List notifyUsers = new ArrayList();
-    	getProfileDao().loadPrincipals(principals, binder.getZoneId());
-   		for (Iterator iter=principals.iterator(); iter.hasNext();) {
-   			//	make sure user exists and is in this zone
-   			Principal p = getProfileDao().loadPrincipal((Long)iter.next(),binder.getZoneId());
-   			notifyUsers.add(p);   			
-   		}
+    	List notifyUsers = getProfileDao().loadPrincipals(principals, binder.getZoneId());
    		current.setDistribution(notifyUsers);
     }
     

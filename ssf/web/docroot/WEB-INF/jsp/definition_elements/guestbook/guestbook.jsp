@@ -5,10 +5,6 @@
 
 <script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
 
-<div class="folder">
-<% // First include the folder tree %>
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_list_folders.jsp" %>
-</div>
 <br>
 <div style="margin:0px;">
 

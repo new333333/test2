@@ -128,6 +128,32 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	    }
 
 	}
+    public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+		try {
+			checkTransitionOutStateAllowed(entry, stateId);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+    }
+    protected void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws.getState());   		
+    }
+	
+    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+		try {
+			checkTransitionInStateAllowed(entry, stateId, toState);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+   }
+    protected void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
+		WorkflowState ws = entry.getWorkflowState(stateId);
+		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
+    }
+	
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -290,16 +316,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         processor.modifyWorkflowState(folder, entry, stateId, toState);
         if (!stamp.equals(entry.getWorkflowChange().getDate())) scheduleSubscription(folder, entry, stamp);
     }
-
-    public void checkTransitionOutStateAllowed(FolderEntry entry, Long stateId) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		AccessUtils.checkTransitionOut(entry.getParentBinder(), entry, ws.getDefinition(), ws.getState());   		
-    }
-	
-    public void checkTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState) {
-		WorkflowState ws = entry.getWorkflowState(stateId);
-		AccessUtils.checkTransitionIn(entry.getParentBinder(), entry, ws.getDefinition(), toState);   		
-    }
 	public Map getManualTransitions(FolderEntry entry, Long stateId) {
 		WorkflowState ws = entry.getWorkflowState(stateId);
 		Map result = WorkflowUtils.getManualTransitions(ws.getDefinition(), ws.getState());
@@ -402,7 +418,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         		childEntries.remove(i);
         	}
         }
-        List entries = getCoreDao().loadObjects(ids, FolderEntry.class, null);
+        List preLoads = new ArrayList();
+        preLoads.add("attachments");
+        List entries = getCoreDao().loadObjects(ids, FolderEntry.class, null, preLoads);
         //return them in the same order
         List fullEntries = new ArrayList(entries.size());
         for (int i=0; i<childEntries.size(); ++i) {
@@ -420,6 +438,36 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         	
         result.put(ObjectKeys.FULL_ENTRIES, fullEntries);
+        //bulk load tags
+        List<Tag> tags = getFolderDao().loadEntryTags(RequestContextHolder.getRequestContext().getUser().getEntityIdentifier(), ids);
+        Map publicTags = new HashMap();
+        Map privateTags = new HashMap();
+        for (Tag t: tags) {
+        	Long id = t.getEntityIdentifier().getEntityId();
+        	List p;
+        	if (t.isPublic()) {
+        		p = (List)publicTags.get(id);
+        		if (p == null) {
+        			p = new ArrayList();
+        			publicTags.put(id, p);
+        		}
+        	} else {
+           		p = (List)privateTags.get(id);
+        		if (p == null) {
+        			p = new ArrayList();
+        			privateTags.put(id, p);
+        		}
+        	}
+        	//tags are returned in name order, remove duplicates
+        	if (p.size() != 0) {
+        		Tag exist = (Tag)p.get(p.size()-1);
+        		if (!exist.getName().equals(t.getName())) p.add(t);
+        	} else p.add(t);       		
+        	        	
+        }
+        
+        result.put(ObjectKeys.COMMUNITY_ENTRIES_TAGS, publicTags);
+        result.put(ObjectKeys.PERSONAL_ENTRIES_TAGS, privateTags);
         return result;
     }
 
@@ -557,9 +605,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 		} else 	s.setStyle(style);
   	
     }
-    public Subscription getSubscription(Long folderId, Long entryId) {
-    	//getEntry check read access
-		FolderEntry entry = getEntry(folderId, entryId);
+    public Subscription getSubscription(FolderEntry entry) {
+    	//have entry so assume read access
 		User user = RequestContextHolder.getRequestContext().getUser();
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
@@ -574,18 +621,28 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public List getCommunityTags(Long binderId, Long entryId) {
 		//getEntry does read check
     	FolderEntry entry = getEntry(binderId, entryId);
-		List tags = new ArrayList<Tag>();
-		tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
+    	return getCommunityTags(entry);
 	}
+    //If entry already loaded, save time since getEntry bypasses the cache
+	//assume can already read entry
+   public List getCommunityTags(FolderEntry entry) {
+		List<Tag> tags = getCoreDao().loadCommunityTagsByEntity(entry.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
+    	
+    }
 	public List getPersonalTags(Long binderId, Long entryId) {
 		//getEntry does read check
 		FolderEntry entry = getEntry(binderId, entryId);
-		List tags = new ArrayList<Tag>();
-		User user = RequestContextHolder.getRequestContext().getUser();
-		tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
-		return TagUtil.uniqueTags(tags);		
+		return getPersonalTags(entry);
 	}
+
+	//If entry already loaded, save time since getEntry bypasses the cache
+	//assume can already read entry
+    public List getPersonalTags(FolderEntry entry) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		List<Tag> tags = getCoreDao().loadPersonalEntityTags(entry.getEntityIdentifier(),user.getEntityIdentifier());
+		return TagUtil.uniqueTags(tags);		
+    }
 	public void modifyTag(Long binderId, Long entryId, String tagId, String newtag) {
 		FolderEntry entry = getEntry(binderId, entryId);
 	   	Tag tag = coreDao.loadTagById(tagId);
@@ -624,7 +681,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
-	public void setTagDelete(Long binderId, Long entryId, String tagId) {
+	public void deleteTag(Long binderId, Long entryId, String tagId) {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
 	   	User user = RequestContextHolder.getRequestContext().getUser();
    		Tag tag = null;

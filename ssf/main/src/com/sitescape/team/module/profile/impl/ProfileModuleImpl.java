@@ -75,17 +75,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
 	}
-
-    protected TransactionTemplate getTransactionTemplate() {
-		return transactionTemplate;
-	}
-    /**
-     * Setup by spring
-     * @param transactionTemplate
-     */
-    public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
-		this.transactionTemplate = transactionTemplate;
-	}
     
     protected AdminModule adminModule;
     protected AdminModule getAdminModule() {
@@ -316,54 +305,55 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        checkAccess(binder, "addEntries");
        //process the document
        Element root = doc.getRootElement();
-       List defList = root.selectNodes("/profiles/users");
-       //users are grouped by defintion
+       List defList = root.selectNodes("/profiles/user");
+       Map userLists = new HashMap();
+	   Definition defaultUserDef = binder.getDefaultEntryDef();		
+	   if (defaultUserDef == null) {
+		   User temp = new User();
+		   getDefinitionModule().setDefaultEntryDefinition(temp);
+		   defaultUserDef = temp.getEntryDef();
+	   }
+	   List defaultUserList = new ArrayList();
+	   userLists.put(defaultUserDef, defaultUserList);
+       //group users by defintion
        for (int i=0; i<defList.size(); ++i) {
     	   //get default definition to use
-    	   Element userG = (Element)defList.get(i);
-    	   String defId = userG.attributeValue("definition");
+    	   Element user = (Element)defList.get(i);
+    	   String defId = user.attributeValue("entryDef");
     	   Definition userDef=null;
     	   if (!Validator.isNull(defId)) {
     		   try {
     			   userDef = getDefinitionModule().getDefinition(defId);
     		   } catch (NoDefinitionByTheIdException nd) {};
     		   
-    	   } 
-    	   if (userDef == null) userDef = binder.getDefaultEntryDef();		
-    	   if (userDef == null) {
-    		   User temp = new User();
-    		   getDefinitionModule().setDefaultEntryDefinition(temp);
-    		   userDef = temp.getEntryDef();
     	   }
-    	   //add users in groups of 100
-    	   List<Element> userList = userG.selectNodes("./user");
-    	   addEntries(userList, User.class, binder, userDef);
+    	   if (userDef == null) defaultUserList.add(user);
+    	   else {
+    		   //see if it exists
+    		   List userL = (List)userLists.get(userDef);
+    		   if (userL == null) {
+    			   userL = new ArrayList();
+    			   userLists.put(userDef, userL);
+    		   }
+    		   userL.add(user);
+    	   }
+       }
+   	   //add users in groups of 100
+       for (Iterator iter=userLists.entrySet().iterator(); iter.hasNext();) {
+    	   Map.Entry me = (Map.Entry)iter.next();
+    	   List users = (List)me.getValue();
+    	   Definition userDef = (Definition)me.getKey();
+    	   List<User> addedUsers = addEntries(users, User.class, binder, userDef);  
+    	   for (int j=0; j<addedUsers.size(); ++j) {
+    		   addUserWorkspace(addedUsers.get(j));
+    	   }   	   
+    	}
+       defList = root.selectNodes("/profiles/group");
    	   
-    	}
-       defList = root.selectNodes("/profiles/groups");
-       List allGroups = new ArrayList();
-       //users are grouped by definition
-       for (int i=0; i<defList.size(); ++i) {
-    	   //get default definition to use
-    	   Element groupG = (Element)defList.get(i);
-    	   String defId = groupG.attributeValue("definition");
-    	   Definition groupDef=null;
-    	   if (!Validator.isNull(defId)) {
-    		   try {
-    			   groupDef = getDefinitionModule().getDefinition(defId);
-    		   } catch (NoDefinitionByTheIdException nd) {};
-    		   
-    	   } 
-    	   if (groupDef == null) {
-    		   Group temp = new Group();
-    		   getDefinitionModule().setDefaultEntryDefinition(temp);
-    		   groupDef = temp.getEntryDef();
-    	   }
-    	   //add users in groups of 100
-    	   List<Element> groupList = groupG.selectNodes("./group");
-    	   allGroups.addAll(addEntries(groupList, Group.class, binder, groupDef));
-    	   
-    	}
+	   Group temp = new Group();
+	   getDefinitionModule().setDefaultEntryDefinition(temp);
+	   Definition defaultGroupDef = temp.getEntryDef();
+   	   addEntries(defList, Group.class, binder, defaultGroupDef);  	   
     }
     private List addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
        ProfileCoreProcessor processor=loadProcessor(binder);

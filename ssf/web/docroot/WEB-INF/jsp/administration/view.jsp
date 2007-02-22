@@ -16,8 +16,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${empty ss_portletInitialization}">
-<%@ page import="org.dom4j.Document" %>
-
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
   <div class="ss_portlet_style ss_portlet">
 	<table border="0" width="100%">

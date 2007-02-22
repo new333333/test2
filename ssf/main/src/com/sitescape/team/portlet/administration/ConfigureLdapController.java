@@ -23,30 +23,32 @@ public class ConfigureLdapController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("okBtn")) {
 			LdapConfig config = getLdapModule().getLdapConfig();
-			config.setSchedule(ScheduleHelper.getSchedule(request));
-			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
-			config.setUserDisable(PortletRequestUtils.getBooleanParameter(request, "userDisable", false));
-			config.setGroupDisable(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false));
-			config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
-			config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
-			config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
-			config.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", false));
-			config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
-			config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
-			config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
-			config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredential", ""));
-			config.setUserIdMapping(PortletRequestUtils.getStringParameter(request, "userIdMapping", ""));
-			String[] mappings = StringUtil.split(PortletRequestUtils.getStringParameter(request, "userMappings", ""), "\n");
-			Map maps = new HashMap();
-			for (int i=0; i<mappings.length; ++i) {
-				String m = mappings[i];
-				if (Validator.isNull(m)) continue;
-				String[] vals = StringUtil.split(m, "=");
-				if (vals.length != 2) continue;
-				maps.put(vals[1].trim(), vals[0].trim());
+			if (config != null) {
+				config.setSchedule(ScheduleHelper.getSchedule(request));
+				config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
+				config.setUserDisable(PortletRequestUtils.getBooleanParameter(request, "userDisable", false));
+				config.setGroupDisable(PortletRequestUtils.getBooleanParameter(request, "groupDisable", false));
+				config.setUserRegister(PortletRequestUtils.getBooleanParameter(request, "userRegister", false));
+				config.setGroupRegister(PortletRequestUtils.getBooleanParameter(request, "groupRegister", false));
+				config.setUserSync(PortletRequestUtils.getBooleanParameter(request, "userSync", false));
+				config.setGroupSync(PortletRequestUtils.getBooleanParameter(request, "groupSync", false));
+				config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
+				config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
+				config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
+				config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredential", ""));
+				config.setUserIdMapping(PortletRequestUtils.getStringParameter(request, "userIdMapping", ""));
+				String[] mappings = StringUtil.split(PortletRequestUtils.getStringParameter(request, "userMappings", ""), "\n");
+				Map maps = new HashMap();
+				for (int i=0; i<mappings.length; ++i) {
+					String m = mappings[i];
+					if (Validator.isNull(m)) continue;
+					String[] vals = StringUtil.split(m, "=");
+					if (vals.length != 2) continue;
+					maps.put(vals[1].trim(), vals[0].trim());
+				}
+				config.setUserMappings(maps);
+				getLdapModule().setLdapConfig(config);
 			}
-			config.setUserMappings(maps);
-			getLdapModule().setLdapConfig(config);
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			response.setRenderParameter("redirect", "true");
@@ -62,8 +64,7 @@ public class ConfigureLdapController extends  SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 
-		LdapConfig config = getLdapModule().getLdapConfig();
-		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, WebKeys.LDAP_CONFIG, config);
+		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_LDAP, WebKeys.LDAP_CONFIG, getLdapModule().getLdapConfig());
 		
 	}
 }
