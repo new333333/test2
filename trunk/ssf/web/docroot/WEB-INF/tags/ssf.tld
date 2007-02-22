@@ -420,6 +420,24 @@
 	</tag>
 	
 	<tag>
+		<name>ifSupportsViewAsHtml</name>
+		<tag-class>com.sitescape.team.taglib.IfSupportsViewAsHtmlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>relativeFilePath</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+		<attribute>
+			<name>browserType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.String</type>
+		</attribute>		
+	</tag>
+	
+	<tag>
 		<name>markup</name>
 		<tag-class>com.sitescape.team.taglib.MarkupTag</tag-class>
 		<body-content>JSP</body-content>
