@@ -119,6 +119,28 @@ public class SsfsUtil {
 		return false;
 	}
 	
+	public static boolean supportsViewAsHtml(String relativeFilePath, String browserType) { 
+		String extension = null;
+		
+		int index = relativeFilePath.lastIndexOf(".");
+		if(index < 0)
+			return false; // No extension. can not support edit-in-place
+		else
+			extension = relativeFilePath.substring(index).toLowerCase();
+		
+		String[] s = SPropsUtil.getStringArray("view.as.html.file.stellent.extensions", ",");
+		for(int i = 0; i < s.length; i++)
+			s[i] = s[i].toLowerCase();
+
+		for(int i = 0; i < s.length; i++)
+		{
+			if(extension.endsWith(s[i]))
+				return true;
+		}
+		
+		return false;
+	}
+	
 	public static String openInEditor(String relativeFilePath, String operatingSystem) {
 		if (operatingSystem == null || operatingSystem.equals("")) return "";
 		String extension = null;
