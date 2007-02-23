@@ -687,8 +687,7 @@ public class BinderHelper {
 		//Build list of allowed roles
 		for (int i=0; i<functions.size(); ++i) {
 			Function f = (Function)functions.get(i);
-			if (AccessUtils.checkIfAllOperationsAllowed(f, (WorkArea) binder)) 
-				allowedFunctions.put(f.getId(), f);
+			allowedFunctions.put(f.getId(), f);
 		}
 		
 		model.put(WebKeys.BINDER, binder);
