@@ -2063,6 +2063,7 @@ div.ss_actions_bar_submenu {
 ul.ss_actions_bar_submenu.ss_actions_bar1 {
 	background-color: #BFCA8A;
 	background-image: none;
+	opacity: 0.93;
 }
 
 ul.ss_actions_bar_submenu.ss_actions_bar2 {
