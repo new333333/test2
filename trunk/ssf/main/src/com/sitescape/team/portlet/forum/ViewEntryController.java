@@ -394,7 +394,7 @@ public class ViewEntryController extends  SAbstractController {
 					viewType = DefinitionUtils.getPropertyValue(elementView, "type");
 				}
 			}
-			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+			if (viewType != null && viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				Map qualifiers = new HashMap();
 				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
 				url = response.createActionURL();

@@ -309,6 +309,11 @@ public class ListFolderController extends  SAbstractController {
 		if (configElement != null) {
 			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
 		}
+		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//In Blog style we only want to show this entry
+			if (!entryIdToBeShown.equals("")) options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
+		}
+
 
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
 		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
