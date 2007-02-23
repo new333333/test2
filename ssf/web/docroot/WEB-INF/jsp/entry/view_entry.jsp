@@ -2,7 +2,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <ssf:ifadapter>
-<body>
+<body class="ss_style_body">
 </ssf:ifadapter>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>

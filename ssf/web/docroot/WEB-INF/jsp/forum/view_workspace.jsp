@@ -3,7 +3,7 @@
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <ssf:ifadapter>
-<body>
+<body class="ss_style_body">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">
