@@ -466,6 +466,7 @@ div.ss_replies div.ss_entryDescription {
 .ss_entryTitle {
   font-weight: bold;
   font-size: ${ss_style_font_largerprint};
+  font-family: Arial, Helvetica, sans-serif;
   margin-bottom: 4px;
   margin-top: 4px;
   }
@@ -786,6 +787,12 @@ div.ss_clear_float {
   background-color:${ss_blog_summary_title_background_color};
 }
 
+span.ss_blog_summary_title_text {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+}
+
 table.ss_blog_title table {
   background-color:${ss_style_header_bar_background};
 }
@@ -834,6 +841,8 @@ div.ss_header_bar_title_text {
 }
 
 span.ss_header_bar_title_text {
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
 	color: ${ss_style_header_bar_title_color};
 	font-size: 15px;
 	margin-left: 5px;
@@ -1641,15 +1650,15 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border2.gif) repeat-x bottom;
 }
 .ss_decor-round-corners-bottom3 div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner3.gif) no-repeat left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner3.jpg) no-repeat left;
 }
 .ss_decor-round-corners-bottom3 div div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner4.gif) no-repeat right;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner4.jpg) no-repeat right;
 	height:7px;
 	font-size:1px;
 }
 .ss_decor-border7 {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border3.gif) repeat-y left;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border3.jpg) repeat-y left;
 }
 .ss_decor-border8 {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/border4.gif) repeat-y right;
@@ -1905,9 +1914,10 @@ a.ss_breadcrumb {
 
 /* titlebar */
 .ss_title_bar {
-	background: ${ss_dashcomp_header_bar_background};
+	background-image: url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/background_dc_bar.jpg);
+	background-repeat: repeat-x;
 	color: ${ss_dashcomp_header_bar_title_color};
-	height:21px;
+	height:16px;
 	margin:0px;
 	padding-bottom: 3px;
 }
@@ -1932,7 +1942,7 @@ a.ss_breadcrumb {
 .ss_title_bar strong {
 	position:relative;
 	padding-left:15px;
-	top:7px;
+	top:1px;
 	margin:0px;
 	padding:0px;
 }
@@ -1940,7 +1950,7 @@ a.ss_breadcrumb {
 .ss_title_bar_icons {
 	float:right;
 	margin:0px;
-	padding:6px 0px 3px 10px;
+	padding:2px 0px 2px 10px;
 	cursor:auto;
 }
 .ss_title_bar_icons li {
