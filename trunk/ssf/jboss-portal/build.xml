@@ -75,6 +75,8 @@
 	<target name="deploy-jboss-jboss-tomcat" depends="clean, init-jboss-portal, clean-app-server">	
 		<unwar src="${project.dir}/war/ssf.war" dest="${app.server.ssf.dir}" />
 		
+		<antcall target="deploy-jboss-portal-specific-ssf-artifacts"/>
+
 		<antcall target="deploy-additional-components" />
 		
 		<copy todir="${app.server.dir}" overwrite="true">
@@ -101,4 +103,13 @@
 		</delete>		
 	</target>		
 
+	<target name="deploy-jboss-portal-specific-ssf-artifacts">
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/jboss-portal.web.xml"
+			tofile="${app.server.ssf.dir}/WEB-INF/web.xml"/>
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/jboss-portal.jboss-web.xml"
+			tofile="${app.server.ssf.dir}/WEB-INF/jboss-web.xml"/>
+	</target>
+	
 </project>

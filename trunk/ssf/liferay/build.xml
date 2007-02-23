@@ -112,8 +112,13 @@
 	</target>-->
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
-		<copy file="${project.dir}/war/ssf.war" todir="temp" />		
-		
+		<unwar src="${project.dir}/war/ssf.war" dest="temp" />
+		<antcall target="copy-liferay-specific-ssf-artifacts"/>
+		<mkdir dir="temp2" />
+		<war basedir="temp"
+			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"/>
+
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
 			classpathref="deploy.liferay.classpath"
@@ -122,7 +127,7 @@
 
 				<!-- Required Arguments -->
 
-				<jvmarg value="-Ddeployer.base.dir=temp/" />
+				<jvmarg value="-Ddeployer.base.dir=temp2/" />
 				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
 				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
 				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
@@ -140,17 +145,23 @@
 				<arg value="${deploy.liferay.bridges.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
-		
+				
 		<delete dir="temp" />
+		<delete dir="temp2" />
 
 		<antcall target="deploy-additional-components" />
 		
 		<delete file="${app.server.ssf.dir}/WEB-INF/lib/xercesImpl.jar" />
 	</target>
 		
-	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">	
-		<copy file="${project.dir}/war/ssf.war" todir="temp" />		
-		
+	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">		
+		<unwar src="${project.dir}/war/ssf.war" dest="temp" />
+		<antcall target="copy-liferay-specific-ssf-artifacts"/>
+		<mkdir dir="temp2" />
+		<war basedir="temp"
+			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"/>
+
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
 			classpathref="deploy.liferay.classpath"
@@ -159,7 +170,7 @@
 
 				<!-- Required Arguments -->
 
-				<jvmarg value="-Ddeployer.base.dir=temp/" />
+				<jvmarg value="-Ddeployer.base.dir=temp2/" />
 				<jvmarg value="-Ddeployer.dest.dir=${app.server.deploy.dir}" />
 				<jvmarg value="-Ddeployer.app.server.type=${app.server.type}" />
 				<jvmarg value="-Ddeployer.portlet.taglib.dtd=${deploy.liferay.portlet.tld}" />
@@ -176,8 +187,9 @@
 				<arg value="${deploy.liferay.bridges.jar}" />
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
-		
+
 		<delete dir="temp" />
+		<delete dir="temp2" />
 		
 		<antcall target="deploy-additional-components" />
 		
@@ -214,5 +226,14 @@
 		
 		<copy file="resources/${liferay.version.jboss.tomcat}/Language-ext.properties" todir="${app.server.deploy.dir}/liferay-portal.ear/ext-ejb.jar/content" />
 	</target>		
+	
+	<target name="copy-liferay-specific-ssf-artifacts">
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/liferay-portal.web.xml"
+			tofile="temp/WEB-INF/web.xml"/>
+		<copy overwrite="true" 
+			file="${project.dir}/web/docroot/WEB-INF/liferay-portal.jboss-web.xml"
+			tofile="temp/WEB-INF/jboss-web.xml"/>
+	</target>
 	
 </project>
