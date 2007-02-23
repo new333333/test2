@@ -50,7 +50,25 @@ function ss_loadTargetUrl() {
 	if (ss_targetUrlLoadCount > ss_screens_to_login_screen) {
 		ss_showHideObj('iframe_window', 'hidden', 'block');
 	}
-	if (ss_targetUrlLoadCount > ss_screens_to_login_screen + ss_screens_after_login_screen_to_logged_in) {
+
+ 	//Check to see if the user is logged in yet
+	ss_setupStatusMessageDiv()
+ 	var url = "<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="__ajax_request" 
+    	actionUrl="false" >
+		<ssf:param name="operation" value="check_if_logged_in" />
+    	</ssf:url>"
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setPostRequest(ss_postCheckIfLoggedIn);
+	ajaxRequest.setUseGET();
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postCheckIfLoggedIn(obj) {
+	if (self.document.getElementById("ss_status_message").innerHTML == "ok") {
+		//The user is logged in.
 		self.location.reload(true);
 	}
 }
