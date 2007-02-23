@@ -15,9 +15,11 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchFilter;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
@@ -111,15 +113,25 @@ public class FilterHelper {
    	
    	//Routine to parse the results of submitting the filter builder form
    	static public Document getSearchFilter (PortletRequest request) throws Exception {
-		Document searchFilter = DocumentHelper.createDocument();
-		Element sfRoot = searchFilter.addElement(FilterRootName);
-		Map formData = request.getParameterMap();
+		
+   		SearchFilter sf = new SearchFilter();
+   		
+//		TODO remove after refactoring			
+// 		Document searchFilter = DocumentHelper.createDocument();
+//		Element sfRoot = searchFilter.addElement(FilterRootName);
+// end remove
+   		
+   		Map formData = request.getParameterMap();
 
 		String filterName = PortletRequestUtils.getStringParameter(request, FilterNameField, "");
-		Element filterNameEle = sfRoot.addElement(FilterName);
-		filterNameEle.setText(filterName);
+
+		sf.addFilterName(filterName);
+//		TODO remove after refactoring			
+//		Element filterNameEle = sfRoot.addElement(FilterName);
+//		filterNameEle.setText(filterName);
 		
-		Element filterTerms = sfRoot.addElement(FilterTerms);
+//		Element filterTerms = sfRoot.addElement(FilterTerms);
+// end remove
 		
 		//Get the terms out of the formData
 		Integer maxTermNumber = new Integer(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.FILTER_ENTRY_FILTER_TERM_NUMBER_MAX));
@@ -144,9 +156,12 @@ public class FilterHelper {
 					//Get the search text
 					String searchText = PortletRequestUtils.getStringParameter(request, FilterElementValueField + String.valueOf(i), "");
 					if (!searchText.equals("")) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, filterType);
-						filterTerm.addText(searchText);
+						sf.addTextFilter(searchText);
+//						TODO remove after refactoring			
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, filterType);
+//						filterTerm.addText(searchText);
+// end remove			
 					}
 				} else if (filterType.equals(FilterTypeEntry)) {
 					//Get the entry definition, element and value
@@ -164,33 +179,40 @@ public class FilterHelper {
 							value = new String[] {"false"};
 						}
 					}
-					if (!defId.equals("") && name.equals("_all_entries")) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, filterType);
-						filterTerm.addAttribute(FilterEntryDefId, defId);
-					} else if (!defId.equals("") && !name.equals("") && value.length > 0) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, filterType);
-						//If not selecting a "common" element, store the definition id, too
-						if (!defId.equals("_common")) filterTerm.addAttribute(FilterEntryDefId, defId);
-						filterTerm.addAttribute(FilterElementName, name);
-						for (int j = 0; j < value.length; j++) {
-							Element newTerm = filterTerm.addElement(FilterElementValue);
-							newTerm.setText(value[j]);
-						}
-					}
+					
+					sf.addEntryTypeFilter(defId, name, value);
+//					TODO remove after refactoring					
+//					if (!defId.equals("") && name.equals("_all_entries")) {
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, filterType);
+//						filterTerm.addAttribute(FilterEntryDefId, defId);
+//					} else if (!defId.equals("") && !name.equals("") && value.length > 0) {
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, filterType);
+//						//If not selecting a "common" element, store the definition id, too
+//						if (!defId.equals("_common")) filterTerm.addAttribute(FilterEntryDefId, defId);
+//						filterTerm.addAttribute(FilterElementName, name);
+//						for (int j = 0; j < value.length; j++) {
+//							Element newTerm = filterTerm.addElement(FilterElementValue);
+//							newTerm.setText(value[j]);
+//						}
+//					}
+// end remove					
 				} else if (filterType.equals(FilterTypeWorkflow)) {
 					//Get the workflow definition and state
 					String defId = PortletRequestUtils.getStringParameter(request, FilterWorkflowDefIdField + String.valueOf(i), "");
 					String[] states = (String[])formData.get(FilterWorkflowStateNameField + String.valueOf(i));
 					if (!defId.equals("") && states != null && states.length > 0) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, filterType);
-						filterTerm.addAttribute(FilterWorkflowDefId, defId);
-						for (int i2 = 0; i2 < states.length; i2++) {
-							Element newTerm = filterTerm.addElement(FilterWorkflowStateName);
-							newTerm.setText(states[i2]);
-						}
+						sf.addWorkflowFilter(defId, states);
+//						TODO remove after refactoring			
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, filterType);
+//						filterTerm.addAttribute(FilterWorkflowDefId, defId);
+//						for (int i2 = 0; i2 < states.length; i2++) {
+//							Element newTerm = filterTerm.addElement(FilterWorkflowStateName);
+//							newTerm.setText(states[i2]);
+//						}
+// end remove						
 					}
 				} else if (filterType.equals(FilterTypeFolders)) {
 					//Get the list of folders
@@ -203,39 +225,38 @@ public class FilterHelper {
 						}
 					}
 					for (Object id : folderIds) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, filterType);
-						filterTerm.addAttribute(FilterFolderId, (String)id);
+						sf.addFolderTerm((String) id);
+//						TODO remove after refactoring			
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, filterType);
+//						filterTerm.addAttribute(FilterFolderId, (String)id);
+// end remove						
 					}
 				} else if (filterType.equals(FilterTypeTags)) {
 					// TODO: temporary, remove later
 					// System.out.println("FILTER TYPE TAG! ");
 					String searchTags = PortletRequestUtils.getStringParameter(request, FilterCommunityTagsField + String.valueOf(i), "");
+					// addFilterTermElement(filterTerms, FilterTypeCommunityTagSearch, searchTags);
 					if (!searchTags.equals("")) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, FilterTypeCommunityTagSearch);
-						filterTerm.addText(searchTags);
-						// TODO: temporary, remove later
-						// System.out.println("FILTER TERM"+filterTerm.asXML());
+						sf.addTagsFilter(FilterTypeCommunityTagSearch, searchTags);
+//						TODO remove after refactoring			
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, FilterTypeCommunityTagSearch);
+//						filterTerm.addText(searchTags);
+// end remove						
 					}
 					
 					String searchPersonalTags = PortletRequestUtils.getStringParameter(request, FilterPersonalTagsField + String.valueOf(i), "");
+					// addFilterTermElement(filterTerms, FilterTypePersonalTagSearch, searchPersonalTags);
 					if (!searchPersonalTags.equals("")) {
-						Element filterTerm = filterTerms.addElement(FilterTerm);
-						filterTerm.addAttribute(FilterType, FilterTypePersonalTagSearch);
-						filterTerm.addText(searchPersonalTags);
-						// TODO: temporary, remove later
-						// System.out.println("FILTER TERM"+filterTerm.asXML());
+						sf.addTagsFilter(FilterTypePersonalTagSearch, searchPersonalTags);
+//						TODO remove after refactoring			
+//						Element filterTerm = filterTerms.addElement(FilterTerm);
+//						filterTerm.addAttribute(FilterType, FilterTypePersonalTagSearch);
+//						filterTerm.addText(searchPersonalTags);
+// end remove			
+						
 					}
-					
-					
-					
-					
-					// createAndSearchQuery(request, searchFilter);
-					
-					
-					
-
 					
 				}
 			}
@@ -244,7 +265,10 @@ public class FilterHelper {
 		// TODO: temporary, remove later
 		// System.out.println("AFTER ADD TAGS: "+searchFilter.asXML());
 		//searchFilter.asXML();
-		return searchFilter;
+		
+		//return searchFilter;
+		// end remove
+		return sf.getFilter();
 	}
    	
    	static public Map buildFilterFormMap(Document searchFilter, Map commonElements) {
@@ -629,5 +653,78 @@ public class FilterHelper {
 		return filterName.getText();
 	}
 
+	static public void createTagsFilterTerms(Element sfRoot, Element filterTerms, String searchText) {
+		//Add the title term
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
+		
+		filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTerm.setText(searchText.trim());
+		
+		//Add terms to search folders and workspaces
+		filterTerms = addAttributeFilterElement(sfRoot, FilterTerms, FilterAnd, "true");
+		filterTerm = addAttributeFilterElement(filterTerms, FilterTerm, FilterType, FilterTypeEntityTypes);
+		addTextFilterElement(filterTerm, FilterEntityType, EntityIdentifier.EntityType.folder.name());
+		addTextFilterElement(filterTerm, FilterEntityType, EntityIdentifier.EntityType.workspace.name());
+		
+	}
+
+	static public Element createFilterTerms(Element rootElement, String filterType, String searchText) {
+		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
+		// Add the title term
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, filterType);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
+		
+		filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, filterType);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTermValueEle.setText(searchText.trim());
+		return filterTerms;
+		
+	}
+
+	static public void createPlacesFilterTerms (Element root, String searchText) {
+		Element filterTerms = createFilterTerms(root, FilterTypeElement, searchText);
+		
+//		Add terms to search folders and workspaces
+		filterTerms = root.addElement(FilterHelper.FilterTerms);
+		filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
+		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
+		Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
+		filterTerm2.setText(EntityIdentifier.EntityType.folder.name());
+		filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
+		filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
+	}
 	
+	
+	static public void addFilterTermElement(Element filterTerms, String attributeType, String attributeValue) {
+		if (!attributeValue.equals("")) {
+			Element filterTerm = filterTerms.addElement(FilterTerm);
+			filterTerm.addAttribute(FilterType, attributeType);
+			filterTerm.addText(attributeValue);
+			// TODO: temporary, remove later
+			System.out.println("FILTER TERM"+filterTerm.asXML());
+		}
+	}
+	
+	static public void addTextFilterElement(Element parentElement, String filterType, String filterValue) {
+		Element filterElement = parentElement.addElement(filterType);
+		filterElement.setText(filterValue);
+	}
+	static public Element addAttributeFilterElement(Element parentElement, String type, String attribute, String value) {
+		Element filterElement = parentElement.addElement(type);
+		filterElement.addAttribute(attribute, value);
+		return filterElement;
+	}
 }
