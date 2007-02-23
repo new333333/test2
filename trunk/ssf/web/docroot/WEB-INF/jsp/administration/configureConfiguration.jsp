@@ -150,7 +150,7 @@ function ss_confirmDeleteConfig() {
 <% // Folder toolbar %>
 <c:if test="${!empty ssForumToolbar}">
 <div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar"/>
+<ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar2 ss_actions_bar"/>
 </div>
 </c:if>
 

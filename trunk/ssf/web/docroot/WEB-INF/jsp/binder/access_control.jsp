@@ -389,8 +389,8 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 </div>
 
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
-	<div id="ss_addRolesMenu<portlet:namespace/>" class="ss_actions_bar_submenu" >
-		<ul class="ss_actions_bar_submenu" style="width:250px;">
+	<div id="ss_addRolesMenu<portlet:namespace/>" class="ss_actions_bar2 ss_actions_bar_submenu" >
+		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
 	    <c:forEach var="function" items="${ssFunctionMap}">
 	      <c:set var="includeRole" value="1"/>
