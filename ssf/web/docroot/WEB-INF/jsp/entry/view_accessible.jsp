@@ -22,16 +22,12 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 
 <div class="ss_tab_canvas">
 <!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-<div class="ss_decor-round-corners-top1"><div><div></div></div></div>
-	<div class="ss_decor-border3">
-		<div class="ss_decor-border4">
-			<div class="ss_rounden-content">
-			  <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+  <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 
 <% // Folder toolbar %>
 <c:if test="${!empty ssFolderToolbar}">
 <div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar"/>
+<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
 </div>
 </c:if>
 
@@ -60,11 +56,8 @@ function ss_showForumEntryInIframe(url) {
 }
 </script>
 
-			  </div>
-			</div>
-		</div>
 	</div>
-	<div class="ss_decor-round-corners-bottom1"><div><div></div></div></div>
+</div>
 
 <% // Footer toolbar %>
 <jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
