@@ -3606,9 +3606,16 @@ var ss_muster = {
 /*
 	Starts a Zon meeting. The meeting id is taken from value of "meetingToken"-HTML element.
 */
-function ss_launchMeeting() {
-	if ($("meetingToken"))
-		ss_launchMeetingWithId($("meetingToken").value);
+function ss_launchMeeting(ajaxRequest) {
+	if ($("meetingToken")) {
+		if ($("meetingToken").value != "") {
+			ss_launchMeetingWithId($("meetingToken").value);
+			toggleAjaxLoadingIndicator(ajaxRequest.getData("ajaxLoadingIndicatorPane"));			
+		} else {
+			toggleAjaxLoadingIndicator(ajaxRequest.getData("ajaxLoadingIndicatorPane"));
+			alert(ss_not_logged_in);
+		}
+	}
 	return false;
 }
 
@@ -3622,14 +3629,22 @@ function ss_launchMeetingWithId(id) {
 
 /*
 	Creates a new Zon meeting and launch it now.
+	
+	ajaxLoadingIndicatorPane: add loading indicator as child of this HTML element (if exists)
 */
-function ss_startMeeting(url, formId) {
+function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
+	if (typeof ajaxLoadingIndicatorPane == "string")
+		ajaxLoadingIndicatorPane = $(ajaxLoadingIndicatorPane);
+	
+	toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane, true);
+	
 	if (formId && formId != "")
 		ss_onSubmit($(formId));
 	var ajaxRequest = new ss_AjaxRequest(url);
 	if (formId && formId != "")
 		ajaxRequest.addFormElements(formId);
 	ajaxRequest.setPostRequest(ss_launchMeeting);
+	ajaxRequest.setData("ajaxLoadingIndicatorPane", ajaxLoadingIndicatorPane);
 	ajaxRequest.setUseGET();	
 	if (formId && formId != "")
 		ajaxRequest.setUsePOST();
@@ -3638,14 +3653,22 @@ function ss_startMeeting(url, formId) {
 
 /*
 	Show/Hide ajax loading animated icon. The icon displays/disappears in given HTML-Element as child.
+	
+	objId: HTML element id OR HTML element
+	append: 
+		true - append loading indicator as child to objId
+		false - replace objId content with loading indicator
 */
-function toggleAjaxLoadingIndicator(objId, append) {
+function toggleAjaxLoadingIndicator(obj, append) {
+	var divObj = obj;
+	if (typeof obj == "string")
+		divObj = $(obj);
+	if (!divObj) return;
+			
 	var imgObj = document.createElement("img");
 	imgObj.setAttribute("src", "/ssf/images/pics/ajax-loader.gif");
 	imgObj.setAttribute("border", "0");
-
-	var divObj = $(objId);
-	if (!divObj) return;
+	imgObj.setAttribute("style" , "vertical-align: middle; ");
 
 	var wasAjaxLoaderThere = false;
 	for (var i = divObj.childNodes.length; i > 0; --i) {

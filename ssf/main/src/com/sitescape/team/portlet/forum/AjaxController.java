@@ -2,6 +2,7 @@ package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -167,7 +168,12 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/ajax_return", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 				return new ModelAndView("binder/access_control_table", model);
-			} 
+			} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
+				return new ModelAndView("forum/meeting_return", model);	
+			} else if (op.equals(WebKeys.OPERATION_SCHEDULE_MEETING)) {
+				return new ModelAndView("forum/meeting_return", model);	
+			}
+
 			return new ModelAndView("forum/ajax_return", model);
 		}
 		
@@ -296,6 +302,32 @@ public class AjaxController  extends SAbstractController {
 		   		getProfileModule().setUserProperty(null, binderId, WebKeys.FOLDER_COLUMN_POSITIONS, columnPositions);
 		   	}
 		}
+	}
+	
+	private void ajaxStartMeeting(ActionRequest request, ActionResponse response, int[] meetingType) throws Exception {
+		Map model = new HashMap();
+		
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		
+		Set<Long> memberIds = new HashSet();
+		memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request
+				.getParameterValues("users")));
+				
+		Binder binder = null;
+		if (binderId != null) {
+			binder = getBinderModule().getBinder(binderId);
+		}
+		Entry entry = null;
+		if (Validator.isNotNull(entryId)) {
+			entry = getFolderModule().getEntry(binderId, Long.valueOf(entryId));
+		}
+		
+		String meetingToken = getIcBroker().addMeeting(memberIds,
+				binder, entry, "", -1, "", meetingType);
+
+		model.put(WebKeys.MEETING_TOKEN, meetingToken);
+			
 	}
 	
 	private void ajaxAddFavoriteBinder(ActionRequest request, ActionResponse response) throws Exception {
@@ -1581,7 +1613,11 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
 		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
 		
-		model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamUserMembers(binderId));
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamUserMembers(binderId));
+		} else {
+			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
+		}
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/team_members", model);
@@ -1595,7 +1631,11 @@ public class AjaxController  extends SAbstractController {
 		
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
 		
-		model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamUserMembersIds(binderId).size());
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamUserMembersIds(binderId).size());
+		} else {
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, 0);
+		}
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/team_members_count", model);
@@ -1626,11 +1666,15 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
 		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
 		
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-		model.put(WebKeys.CLIPBOARD_PRINCIPALS , getProfileModule().getUsersFromPrincipals(
-				clipboardUsers));
+		if (WebHelper.isUserLoggedIn(request)) {
+			Clipboard clipboard = new Clipboard(request);
+			Map clipboardMap = clipboard.getClipboard();
+			Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
+			model.put(WebKeys.CLIPBOARD_PRINCIPALS , getProfileModule().getUsersFromPrincipals(
+					clipboardUsers));
+		} else {
+			model.put(WebKeys.CLIPBOARD_PRINCIPALS , 0);			
+		}
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/clipboard_users", model);
