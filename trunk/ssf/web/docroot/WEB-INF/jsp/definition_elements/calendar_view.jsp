@@ -25,11 +25,6 @@
 
 
 <% // Then include the navigation widgets for this view %>
-<div style="margin:0px;">
-<div class="ss_folder_border" style="position:relative; top:2px; margin:2px; 
-  border-top:solid #666666 1px; 
-  border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
@@ -50,24 +45,6 @@
 
 </ssf:toolbar>
 
-</div>
-</div>
-
-<%
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-<div id="ss_folder_table" 
-  style="position:relative; overflow:scroll; height:<%= ssFolderTableHeight %>px;
-  margin:2px; border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
-<%
-	} else {
-%>
-<div id="ss_folder_table" style="margin:2px; border-left:solid #666666 1px; border-right:solid #666666 1px;">
-<%
-	}
-%>
 
 <c:choose>
 <c:when test="${ssCalendarViewMode == 'day'}">
@@ -86,5 +63,3 @@
 Unknown view mode: ${ssCalendarViewMode}
 </c:otherwise>
 </c:choose>
-</div>
-</div>

@@ -4,7 +4,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <ssf:ifadapter>
-<body>
+<body class="ss_style_body">
 </ssf:ifadapter>
 
 <c:if test="${!empty ssReloadUrl}">

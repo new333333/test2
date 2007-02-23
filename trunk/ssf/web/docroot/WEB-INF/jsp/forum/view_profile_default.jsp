@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <ssf:ifadapter>
-<body>
+<body class="ss_style_body">
 </ssf:ifadapter>
 
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />

@@ -302,6 +302,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 html { filter: expression(document.execCommand("BackgroundImageCache", false, true)); } 
 </c:if>
 
+body.ss_style_body {
+	margin: 0px 1px;
+}
+
 .ss_style, .ss_style table {
   font-family: ${ss_style_font_family};
   font-weight: inherit;

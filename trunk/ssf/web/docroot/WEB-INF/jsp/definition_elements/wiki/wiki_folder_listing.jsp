@@ -8,9 +8,42 @@
 	}
 %>
 
-  <table class="ss_blog" width="100%">
-    <tr>
-	  <td class="ss_blog_sidebar" width="20%" valign="top">
+
+<div class="ss_blog">
+
+  <div class="ss_blog_content_container1">
+    <div class="ss_blog_content_container2">
+	  <div class="ss_blog_content">
+
+        <div id="ss_wikiEntryDiv<portlet:namespace/>">
+          <iframe id="ss_wikiIframe<portlet:namespace/>" name="ss_wikiIframe<portlet:namespace/>" style="width:100%; 
+    		display:block; position:relative;"
+    		<c:if test="${empty ss_wikiHomepageEntryId}">
+    		  src="<html:rootPath/>js/forum/null.html" 
+    		</c:if>
+    		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">
+    		  <c:set var="entryId" value="${ss_wikiHomepageEntryId}"/>
+    		  <c:if test="${!empty ssEntryIdToBeShown}">
+    		    <c:set var="entryId" value="${ssEntryIdToBeShown}"/>
+    		  </c:if>
+    		  src="<ssf:url     
+		    		adapter="<%= useAdaptor %>" 
+		    		portletName="ss_forum" 
+		    		folderId="${ssFolder.id}" 
+		    		action="view_folder_entry" 
+		    		entryId="${entryId}" 
+		    		actionUrl="true" />" 
+    		</c:if>
+    		height="95%" width="100%" 
+    		onLoad="ss_setWikiIframeSize<portlet:namespace/>();" frameBorder="0" >xxx</iframe>
+        </div>
+        
+     </div>
+  </div>
+</div>
+<div class="ss_blog_sidebar_container">
+	  <div class="ss_blog_sidebar">
+
 	    <c:if test="${!empty ss_wikiHomepageEntryId}">
 	    <span class="ss_bold">
 	    <a href="<ssf:url     
@@ -114,61 +147,40 @@
 		  </c:forEach>
 		</table>
       </ssf:expandableArea>
-	  <br/>
+
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
 		
-	  <ssf:expandableArea title="<%= NLT.get("tags.community") %>" action="wipe" initOpen="true">
 		   <c:if test="${!empty ssFolderEntryCommunityTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 					name="action" value="view_folder_listing"/><portlet:param 
 					name="binderId" value="${ssBinder.id}"/><portlet:param 
 					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-					class="${tag.searchResultsRatingCSS} 
+					class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
 					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
 		   </c:if>
-      </ssf:expandableArea>
 		
-      <br/>
-	  <ssf:expandableArea title="<%= NLT.get("tags.personal") %>" action="wipe" initOpen="true">
+	<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
 		   <c:if test="${!empty ssFolderEntryPersonalTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				name="action" value="view_folder_listing"/><portlet:param 
 				name="binderId" value="${ssBinder.id}"/><portlet:param 
 				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
-				class="${tag.searchResultsRatingCSS} 
+				class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 				<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>
 				<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 						
 		   </c:forEach>
 		   </c:if>
-      </ssf:expandableArea>
-	  </td>
-      <td class="ss_wiki_content" width="80%" valign="top">
-        <div id="ss_wikiEntryDiv<portlet:namespace/>">
-          <iframe id="ss_wikiIframe<portlet:namespace/>" name="ss_wikiIframe<portlet:namespace/>" style="width:100%; 
-    		display:block; position:relative; left:5px;"
-    		<c:if test="${empty ss_wikiHomepageEntryId}">
-    		  src="<html:rootPath/>js/forum/null.html" 
-    		</c:if>
-    		<c:if test="${!empty ss_wikiHomepageEntryId || !empty ssEntryIdToBeShown}">
-    		  <c:set var="entryId" value="${ss_wikiHomepageEntryId}"/>
-    		  <c:if test="${!empty ssEntryIdToBeShown}">
-    		    <c:set var="entryId" value="${ssEntryIdToBeShown}"/>
-    		  </c:if>
-    		  src="<ssf:url     
-		    		adapter="<%= useAdaptor %>" 
-		    		portletName="ss_forum" 
-		    		folderId="${ssFolder.id}" 
-		    		action="view_folder_entry" 
-		    		entryId="${entryId}" 
-		    		actionUrl="true" />" 
-    		</c:if>
-    		height="95%" width="100%" 
-    		onLoad="ss_setWikiIframeSize<portlet:namespace/>();" frameBorder="0" >xxx</iframe>
-        </div>
-	  </td>
-    </tr>
-  </table>
+
+
+	  </div>
+     </div>
+
+
+	  <div class="ss_clear_float"></div>
+   </div>
+   

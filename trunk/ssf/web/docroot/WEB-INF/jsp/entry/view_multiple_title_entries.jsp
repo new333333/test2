@@ -3,7 +3,7 @@
 <%@ page contentType="text/html; charset=UTF-8" %>
 
 <ssf:ifadapter>
-<body>
+<body class="ss_style_body">
 </ssf:ifadapter>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 
