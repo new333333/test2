@@ -172,6 +172,7 @@ public class ViewFileController extends SAbstractController {
 					}
 					catch(Exception e1) {}
 					if (scaledFileExists) {
+						response.setContentType("image/jpeg");
 						getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
 					} else {
 						try {
@@ -183,6 +184,7 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else if (viewType.equals("thumbnail")) {
 					try {
+						response.setContentType("image/jpeg");
 						getFileModule().readThumbnailFile(parent, entity, fa, response.getOutputStream());
 					}
 					catch(Exception e) {
