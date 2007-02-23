@@ -7,22 +7,9 @@
 <table>
 	<tr>
 		<td style="padding: 10px 0 10px 0;"> 
-		  <div class="ss_thumbnail_gallery ss_thumbnail_small_no_text"><div>
-			  <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
-			  <c:set var="pictureCount" value="0"/>
-			  <c:forEach var="selection" items="${selections}">
-			  	<c:if test="${pictureCount == 0}">
-					<img border="0" src="<ssf:url 
-					    webPath="viewFile"
-					    folderId="${ssDefinitionEntry.parentBinder.id}"
-					    entryId="${ssDefinitionEntry.id}" >
-					    <ssf:param name="fileId" value="${selection.id}"/>
-					    <ssf:param name="viewType" value="scaled"/>
-					    </ssf:url>" />
-				</c:if>
-				<c:set var="pictureCount" value="${pictureCount + 1}"/>
-			  </c:forEach>
-		  </div></div>
+			<ssf:buddyPhoto style="ss_thumbnail_gallery ss_thumbnail_small_no_text" 
+				photos="${ssDefinitionEntry.customAttributes['picture'].value}" 
+				folderId="${ssDefinitionEntry.parentBinder.id}" entryId="${ssDefinitionEntry.id}" />
 		</td>
 
 		<c:if test="${!empty propertyValues__elements}">

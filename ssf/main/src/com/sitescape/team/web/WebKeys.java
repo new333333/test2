@@ -158,6 +158,11 @@ public class WebKeys {
 	public static final String ACTION_START_MEETING="start_meeting";
 	public static final String ACTION_SCHEDULE_MEETING="schedule_meeting";
 	public static final String ACTION_VIEW_TEAM_MEMBERS = "view_team_members";
+	public static final String ACTION_EDIT_TEAM_MEMBERS = "edit_team_members";
+	public static final String ACTION_TEAM_SENDMAIL = "team_sendmail";
+	public static final String ACTION_TEAM_MEETING = "team_meeting";
+	
+	
 	
 	//operations
  	public static final String OPERATION_ADD_FAVORITE_BINDER = "add_favorite_binder";
@@ -250,6 +255,8 @@ public class WebKeys {
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_TEAM_MEMBERS_COUNT = "get_team_members_count";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
+	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
+	public static final String OPERATION_EDIT_TEAM_MEMBERS = "edit_team_members";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -258,6 +265,8 @@ public class WebKeys {
 	public static final String OPERATION_VIEW_ENTRY = "view_entry";
 	public static final String OPERATION_VIEW_FILE = "view_file";
 	public static final String OPERATION_VIEW_UPLOAD_FILE = "view_upload_file";
+	
+	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
@@ -515,6 +524,8 @@ public class WebKeys {
     public static final String TAGS="ss_tags";
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
+    public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
+    public static final String EDIT_TEAM_MEMBERS="ss_editTeamMembers";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
@@ -522,6 +533,7 @@ public class WebKeys {
     public static final String USERS="ssUsers";
     public static final String USER_IDS_TO_ADD="ssUsersIdsToAdd";
     public static final String USER_IDS_TO_SKIP="ssUserIdsToSkip";
+    public static final String USER_IDS_TO_REMOVE="ssUserIdsToRemove";
 	public static final String USER_NAME = "com.sitescape.username";
 	public static final String USER_PRINCIPAL = "ssUser";
 	public static final String TAG_NAME = "ssTag";

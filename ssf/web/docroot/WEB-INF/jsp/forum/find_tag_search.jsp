@@ -22,16 +22,16 @@
 
 		      	<c:set var="onClickVal" value="ss_findTagSelectItem('${ss_namespace}',this.parentNode);" />
 		      	<c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
-		      		<c:set var="onClickVal" value="putValueInto('ss_findTags_searchText_${ss_namespace}', '${tag.ssTag}');" />
+		      		<c:set var="onClickVal" value="putValueInto('ss_findTag_searchText_${ss_namespace}', '${tag.ssTag}');" />
 		      	</c:if>
 		      
 		      <li id="<c:out value="ss_findTag_id_${tag.ssTag}"/>"><a 
 		          href="#" onClick="
 		          <c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
-		      		putValueInto('ss_findTags_searchText_${ss_namespace}', '${tag.ssTag}');
+		      		putValueInto('ss_findTag_searchText_${ss_namespace}', '${tag.ssTag}');
 		      	  </c:if>
   		          <c:if test="${ss_userGroupType != 'personalTags' && ss_userGroupType != 'communityTags' }">
-  		          	ss_findTagSelectItem('${ss_namespace}', null,this.parentNode);
+  		          	ss_findTagSelectItem('${ss_namespace}', this.parentNode);
   		          </c:if>"><span style="white-space:nowrap;"><c:out value="${tag.ssTag}"/></span></a></li>
 		    </c:forEach>
 	      </ul>

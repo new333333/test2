@@ -1039,9 +1039,6 @@ table.ss_mouseOverInfo {
   color:#999999; 
 }
 
-
-
-
 .ss_entry_toolbar {
   display:inline;
   background-color: ${ss_toolbar_background_color};
@@ -2043,8 +2040,6 @@ ul.ss_actions_bar2 {
 .ss_actions_bar.ss_actions_bar_lower {
 	margin:0px 3px;
 }
-
-
 div.ss_actions_bar_submenu {
 	background-color: inherit;
 	margin:0px;
@@ -2374,12 +2369,21 @@ div.ss_thumbnail_small img {
 }
 div.ss_thumbnail_small_no_text img {
     width: 50px;
-    height: 50px;
+    height: 50px;    
 }
-div.ss_thumbnail_small_buddies_list img {
+
+div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
     width: 35px;
     height: 35px;
+    background-color: ${ss_gallery_background_color};
+    color: #666666;    
+    vertical-align: middle;
+	text-align:center;
+	font-weight:bold;
+	font-size:${ss_style_font_fineprint};
 }
+
+
 div.ss_thumbnail_big div {
     width: 152px;
     height: 180px;
@@ -2400,6 +2404,13 @@ div.ss_thumbnail_gallery div {
     overflow: hidden;
     background-color: ${ss_gallery_background_color};
 }
+    
+.noImg {
+	color: #666666;   
+    vertical-align: middle;
+	font-weight: bold;
+}
+	
 div.ss_thumbnail_gallery img {
     border-width: 1px;
     border-style: solid;
@@ -2916,6 +2927,7 @@ div.ss_buddiesListHeader img {
 
 table.ss_buddiesList {
 	width: 100%; 
+	empty-cells: show;
 	padding: 0px; 
 	border-top: 1px solid #333333;
 }
@@ -2923,6 +2935,7 @@ table.ss_buddiesList {
 table.ss_buddiesList td {
 	border-bottom: 1px solid #333;
 	padding: 6px 0 7px 0px;
+	height: 50px;
 }
 
 table.ss_buddiesList td.selectable {
