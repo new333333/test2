@@ -67,7 +67,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	decorateBox = true;
 }
 %>
-<c:set var="colWidth" value="98"/>
+<c:set var="colWidth" value="99"/>
 <c:if test="<%= showMoveIcon %>">
     <c:set var="colWidth" value="${colWidth - 35}"/>
 </c:if>
@@ -104,7 +104,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	  <col width="8"/>
 	  <tr>
 	  <td><img border="0"
-	    src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"></td>
+	    src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.jpg"></td>
 	  <c:if test="<%= showResizeIcon %>">
 		<td class="ss_title_bar" align="left"><div style="display:inline; width:20px; 
 		    background-position:center left;
@@ -121,7 +121,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 	    src="<html:imagesPath/>pics/1pix.gif"/></div></td>
 	  </c:if>
 
-	  <td align="center"><div class="ss_title_bar" align="center"
+	  <td class="ss_title_bar" align="center"><div class="ss_title_bar" align="center"
 	    style="margin:0px; padding:0px;"><%= title %></div></td>
 	
 	  <c:if test="<%= showMoveIcon %>">
@@ -139,7 +139,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 			 title="<ssf:nlt tag="icon.close" text="Close" />" 
 			 vspace="0" width="14" ></a></span></td>
 	  </c:if>
-	  <td><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></td>
+	  <td><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.jpg"></td>
 	  </tr>
 	  
 	  <tr>

@@ -191,7 +191,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 
 <div class="ss_entryContent">
 
-<table width="100%" border="0" valign="top" cellpadding="0" cellspacing="0">
+<table width="100%" border="0" valign="top" cellpadding="1" cellspacing="0">
 <tr>
 	<td width="40%" valign="top">
 		<span id="ss_browse_div_position${ssDefinitionEntry.id}<portlet:namespace/>" 

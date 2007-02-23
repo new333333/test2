@@ -83,10 +83,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </table>
 
 </div>
-<div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;
-  border-top:solid #666666 1px; 
-  border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
+<div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
