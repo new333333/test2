@@ -379,7 +379,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out) {
-		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, fa.getFileItem().getName());
+		
+		String relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
+		
+		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
 		if(cacheFileStore.fileExists(filePath)) {
 			try {
 				cacheFileStore.readFile(filePath, out);
@@ -399,7 +402,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
 			OutputStream out) {
 
-		String relativeFilePath = fa.getFileItem().getName();
+		String relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
 		
 		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath)) {			
