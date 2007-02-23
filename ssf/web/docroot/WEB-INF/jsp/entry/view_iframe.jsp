@@ -96,7 +96,7 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
     <ssf:param name="box_title" useBody="true">
-      <div style="position:relative; top:5px;">
+      <div style="position:relative;">
       <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
       <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
       </div>

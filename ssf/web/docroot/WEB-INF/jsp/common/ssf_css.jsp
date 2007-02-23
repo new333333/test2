@@ -581,6 +581,7 @@ div.ss_iconed_label {
   background-position: left center;
   padding-left: 16px;
   padding-right: 16px;
+  margin-left: 2px;
   font-size: 11px;
   line-height: 20px;
   color: ${ss_style_muted_label_color};
@@ -1925,9 +1926,8 @@ a.ss_breadcrumb {
 	background:transparent;
 }
 .ss_title_bar_history_bar {
-	padding-top:2px;
 	background:inherit;
-	color:#FFF;
+	color:#333333;
 }
 .ss_title_bar_inner1 {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif) no-repeat left;
@@ -2007,8 +2007,8 @@ ul.ss_actions_bar2 {
 	padding:0px;
 }
 .ss_actions_bar_history_bar {
-	height:23px;
-	line-height:23px;
+	font-size: 11px;
+	font-family: Arial;
 }
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
