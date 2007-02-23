@@ -13,8 +13,6 @@
 
 <c:forEach var="reply" items="${ssFolderEntryDescendants}">
   <jsp:useBean id="reply" type="com.sitescape.team.domain.Entry" />
-  <ssf:box style="rounded">
-  <ssf:param name="backgroundClass" value="ss_replies_background"/>
   <div class="ss_replies">
 
   <c:if test="${!empty reply.entryDef}">
@@ -33,7 +31,6 @@
   </c:if>
  
   </div>
-  </ssf:box>
 
 </c:forEach>
 

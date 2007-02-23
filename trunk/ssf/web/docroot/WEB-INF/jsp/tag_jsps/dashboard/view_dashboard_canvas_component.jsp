@@ -33,7 +33,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif"></div></td>
+><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.jpg"></div></td>
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_title_bar"
   <c:if test="${hideDashboardControls}">
@@ -94,7 +94,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}'); return false;"
-				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif" 
+				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete-component.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			</ul>
 	</form>
@@ -108,7 +108,7 @@ if (displayStyle == null || displayStyle.equals("")) {
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
   </c:if>
-><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.gif"></div></td>
+><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner2.jpg"></div></td>
 </tr>
 <tr>
 <c:if test="${hideDashboardControls}">

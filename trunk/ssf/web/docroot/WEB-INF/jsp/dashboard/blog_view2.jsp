@@ -31,7 +31,7 @@
 <div class="ss_blog_summary_title">
   <table cellspacing="0" cellpadding="0" width="100%">
   <tr>
-  <td valign="top"><span class="ss_bold ss_largerprint">
+  <td valign="top"><span class="ss_blog_summary_title_text">
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
 		    binderId="${fileEntry._binderId}"

@@ -31,7 +31,6 @@
 		</ssf:url>"
  ><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
 </div>
-<div class="ss_header_bar_burst"><img src="<html:imagesPath/>icons/new_burst.gif"></div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
 		ssSeenMap.setSeen(title_entry);
