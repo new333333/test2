@@ -24,6 +24,10 @@
 <script type="text/javascript" src="<html:rootPath/>js/common/PopupWindow.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript" src="<html:rootPath/>js/tree/tree_widget.js"></script>
+
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_tag.js"></script>
+
+
 <script type="text/javascript">
 
 function ss_getFilterTypeSelection(obj, op2) {
@@ -175,7 +179,7 @@ tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="vi
 			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>";
-declareVariables();
+// declareFindTagSearchVariables();
 </script>
 <!-- p> TAG SSF:TREE START</p -->
 <ssf:tree 
