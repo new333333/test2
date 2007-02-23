@@ -58,9 +58,11 @@
 				</table>
 			</form>
 		
-			<a class="ss_linkButton ss_bold ss_smallprint" href="#"
-			  onClick="ss_startMeeting(<c:if test="${action == 'start_meeting'}">ss_ostatus_start_meeting_url</c:if><c:if test="${action == 'schedule_meeting'}">ss_ostatus_schedule_meeting_url</c:if>, 'startMeetingForm');"
-			><c:if test="${action == 'start_meeting'}"><ssf:nlt tag="meeting.start"/></c:if><c:if test="${action == 'schedule_meeting'}"><ssf:nlt tag="meeting.schedule"/></c:if></a>
+			<div>
+				<a class="ss_linkButton ss_bold ss_smallprint" href="#"
+				  onClick="ss_startMeeting(<c:if test="${action == 'start_meeting'}">ss_ostatus_start_meeting_url</c:if><c:if test="${action == 'schedule_meeting'}">ss_ostatus_schedule_meeting_url</c:if>, 'startMeetingForm', this.parentNode);"
+				><c:if test="${action == 'start_meeting'}"><ssf:nlt tag="meeting.start"/></c:if><c:if test="${action == 'schedule_meeting'}"><ssf:nlt tag="meeting.schedule"/></c:if></a>
+			</div>
 		
 			<br/><br/>
 		
