@@ -1134,6 +1134,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	}
        	}
+       	if (options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
+           	//Forget all of the above and just get the desired entry
+       		queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, null);
+       		Element rootElement = queryTree.getRootElement();
+       		if (rootElement != null) {
+        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (boolElement != null) {
+        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
+	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    	    	child.setText((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
+        		}
+        	}
+       	}
        	//queryTree.asXML();
        	
        	//Create the Lucene query

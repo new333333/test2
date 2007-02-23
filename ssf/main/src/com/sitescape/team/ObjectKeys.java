@@ -97,6 +97,8 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_WIKI_SUMMARY = "wiki";    
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
     
+    public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
+    
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
     public static final int SEARCH_MAX_HITS_DEFAULT = 10;
