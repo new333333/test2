@@ -29,8 +29,8 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 	  <table cellspacing="0" cellpadding="0" style="background:transparent;">
 	  <tbody>
 	  <tr>
-	  <td valign="middle" class="ss_tabs_td_left${active}"><img border="0" width="15"
-	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
+	  <td valign="middle" class="ss_tabs_td_left${active}"><img border="0"
+	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner_l"/></td>
 	  <td valign="middle" class="ss_tabs_td${active}" nowrap="true">
 		<a id="ss_tabbar_td${tab.tabId}" style="position:relative; left:-0px;" 
 		  <c:if test="${tab.type == 'binder'}">
@@ -96,8 +96,8 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		</a>
 	</c:if>
 	  </td>
-	  <td valign="middle" class="ss_tabs_td_right${active}"><img border="0" width="15"
-	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner"/></td>
+	  <td valign="middle" class="ss_tabs_td_right${active}"><img border="0"
+	    src="<html:imagesPath/>pics/1pix.gif" class="ss_tabs_corner_r"/></td>
 	  </tr>
 	  </tbody>
 	  </table>

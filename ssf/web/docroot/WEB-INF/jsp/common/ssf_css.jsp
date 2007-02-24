@@ -1855,43 +1855,48 @@ div.ss_tabs {
 .ss_tabs_td {
 	font-size:${ss_style_font_largeprint};
 	color:#5A3C68;
-	height:36px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.gif) repeat-x top;
+	height:28px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.jpg) repeat-x top;
 	white-space: nowrap;
 	margin:0px;
-	padding:8px 0px 0px 0px;
+	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_active {
 	font-size:${ss_style_font_largeprint};
 	font-weight:bold;
 	color:#5A3C68;
-	height:36px;
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.gif) repeat-x top;
+	height:28px;
+	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.jpg) repeat-x top;
 	margin:0px;
-	padding:8px 0px 0px 0px;
+	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_left_active {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.gif) no-repeat left;
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.jpg) no-repeat left;
     width:15px;
     min-width:15px;
 }
 .ss_tabs_td_right_active {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.gif) no-repeat right;
-    width:15px;
-    min-width:15px;
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.jpg) no-repeat right;
+    width:12px;
+    min-width:12px;
 }
 .ss_tabs_td_left {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.gif) no-repeat left;
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.jpg) no-repeat left;
     width:15px;
     min-width:15px;
 }
 .ss_tabs_td_right {
-    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.gif) no-repeat right;
-    width:15px;
-    min-width:15px;
+    background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.jpg) no-repeat right;
+    width:12px;
+    min-width:12px;
 }
-.ss_tabs_corner {
-    min-width:15px;
+.ss_tabs_corner_l {
+  min-width:15px;
+  width:15px;
+}
+.ss_tabs_corner_r {
+  width:12px;
+  min-width:12px;
 }
 
 .ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
@@ -1968,7 +1973,7 @@ a.ss_breadcrumb {
 /* actions: */
 
 .ss_actions_bar1 {
-	background-color: #BFCA8A;
+	background-color: #DCE2BE;
 	font-weight: normal;
 	font-size: 11px;
 	font-family: Arial;
@@ -1993,7 +1998,12 @@ ul.ss_actions_bar2 {
 
 .ss_actions_bar {
 	list-style-type:none;
+<c:if test="<%= isIE %>">
+	width: 100%;
+</c:if>
+<c:if test="<%= !isIE %>">
 	width: 99.3%;
+</c:if>
 	margin:0px;
 	padding-left:6px;
 	padding-right:0px;
