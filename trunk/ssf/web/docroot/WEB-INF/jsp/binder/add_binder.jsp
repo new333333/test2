@@ -23,6 +23,18 @@
 <form class="ss_style ss_form" 
   id="<portlet:namespace/>fm" 
   method="post">
+<span class="ss_bold">
+  <c:if test="${ssOperation == 'add_workspace'}">
+<ssf:nlt tag="binder.add.workspace.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+</ssf:nlt>
+</c:if>
+<c:if test="${ssOperation != 'add_workspace'}">
+<ssf:nlt tag="binder.add.folder.title"><ssf:param name="value" value="${ssBinder.pathName}"/>
+</ssf:nlt>
+</c:if>
+
+</span></br></br>
+  
 	<span class="ss_labelLeft"><ssf:nlt tag="folder.label.title" text="Title"/></span>
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
   <span class="ss_bold"><ssf:nlt tag="binder.add.binder.select.config"/></span>

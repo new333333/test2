@@ -28,7 +28,6 @@
 <c:if test="${empty ssReloadUrl}">
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
-<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
 <script type="text/javascript">
 var ss_reloadUrl = "${ss_reloadUrl}";
