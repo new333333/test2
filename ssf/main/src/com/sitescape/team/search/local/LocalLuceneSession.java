@@ -314,12 +314,15 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			});
 
-			String[] fields = new String[2];
-			if (type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
+			String[] fields = null;
+			if (type != null && type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
+				fields = new String[1];
 				fields[0] = BasicIndexUtils.ACL_TAG_FIELD;
-			} else if (type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+			} else if ( type != null && type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+				fields = new String[1];
 				fields[0] = BasicIndexUtils.TAG_FIELD;
 			} else {
+				fields = new String[2];
 				fields[0] = BasicIndexUtils.TAG_FIELD;
 				fields[1] = BasicIndexUtils.ACL_TAG_FIELD;
 			}
