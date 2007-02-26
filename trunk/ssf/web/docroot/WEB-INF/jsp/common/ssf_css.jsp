@@ -2078,15 +2078,21 @@ div.ss_actions_bar_submenu {
 }
 
 ul.ss_actions_bar_submenu.ss_actions_bar1 {
-	background-color: #BFCA8A;
-	background-image: none;
-	opacity: 0.93;
+  background-color: #BFCA8A;
+  background-image: none;
+  opacity: 0.95;
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=95);
+ </c:if>
 }
 
 ul.ss_actions_bar_submenu.ss_actions_bar2 {
-	background-color: #CECECE;
-	background-image: none;
-	opacity: 0.93;
+  background-color: #CECECE;
+  background-image: none;
+  opacity: 0.95;
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=95);
+ </c:if>
 }
 
 
