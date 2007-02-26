@@ -1,5 +1,6 @@
 package com.sitescape.team.search;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.web.util.FilterHelper;
@@ -153,13 +155,61 @@ public class SearchFilter {
 		}
 	}
 	
+	public void addCommunityTagField (String tag) {
+		currentFilterTerms = sfRoot.addElement(QueryBuilder.FIELD_ELEMENT);
+		currentFilterTerms.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
+		Element child = currentFilterTerms.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(tag);
+	}
+	
+	public void addPersonalTagField (String tags) {
+		Element fieldTag = sfRoot.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
+	    String [] strTagArray = tags.split("\\s");
+	    for (int k = 0; k < strTagArray.length; k++) {
+	    	String strTag = strTagArray[k];
+	    	if (strTag.equals("")) continue;
+    		Element childTag = fieldTag.addElement(QueryBuilder.TAG_ELEMENT);
+    		childTag.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
+	    }
+	}
+	
+	public void addPlacesFilter(String searchText) {
+		if (currentFilterTerms == null) {
+			newCurrent();
+		}
+	
+		// this is not the same as in addFilter! 
+		// the setText method is called on filterTerm and not on filterTermValueElem
+		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
+		
+		filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+		filterTerm.setText(searchText.trim());
+	
+		List searchTerms = new ArrayList(2);
+		searchTerms.add(EntityIdentifier.EntityType.folder.name());
+		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
+		addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);		
+	}
+	
+	
 	private void newCurrent() {
 		currentFilterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
 	}
 	public SearchFilter() {
+		this(FilterHelper.FilterRootName);
+	}
+
+	public SearchFilter(String rootElement) {
 		super();
 		filter = DocumentHelper.createDocument();
-		sfRoot = filter.addElement(FilterHelper.FilterRootName);
+		sfRoot = filter.addElement(rootElement);
 	}
 
 	// TODO remove after test

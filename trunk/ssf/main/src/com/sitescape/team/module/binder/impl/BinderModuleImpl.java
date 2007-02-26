@@ -595,7 +595,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Map executeSearchQuery(Document searchQuery, Map options) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
-        
+       
         if (searchQuery != null) {
         	Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchQuery, options);
         	Element rootElement = qTree.getRootElement();
@@ -619,8 +619,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
 		    	
 		    	if(logger.isInfoEnabled()) {
-		    		logger.info("Query is: " + searchQuery.asXML());
-		    		logger.info("Query is: " + soQuery.toString());
+		    		logger.info("Query is in executeSearchQuery: " + searchQuery.asXML());
+		    		logger.info("Query is in executeSearchQuery: " + soQuery.toString());
 		    	}
 		    	
 		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
@@ -638,6 +638,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		            luceneSession.close();
 		        }
         	}
+        } else {
+			// TODO: temporary, remove later
+        	// System.out.println("SEARCHQUERY IS NULL");
         }
 		EntryProcessor processor = 
 			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.team.domain.Folder", 
@@ -733,7 +736,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         return retMap;
 	}
 
-	public ArrayList getSearchTags(String wordroot) {
+	public ArrayList getSearchTags(String wordroot, String type) {
 		ArrayList tags = new ArrayList();
 		Element qTreeElement = null;
 		
@@ -749,7 +752,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
         try {
-	        tags = luceneSession.getTags(so.getQuery(), wordroot);
+	        tags = luceneSession.getTags(so.getQuery(), wordroot, type);
         }
         finally {
             luceneSession.close();

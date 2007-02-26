@@ -153,10 +153,11 @@ public interface LuceneSession {
 	 * 
 	 * @param query
 	 * @param wordroot
+	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(Query query, String tag)
+	public ArrayList getTags(Query query, String tag, String type)
 			throws LuceneException;
 
 	/**

@@ -89,7 +89,7 @@ public interface BinderModule {
     public Map executeSearchQuery(Document searchQuery, Map options);
     public Map executePeopleSearchQuery(Document searchQuery);
     public Map executePeopleSearchQuery(Binder binder, Document searchQuery);
-    public ArrayList getSearchTags(String wordroot); 
+    public ArrayList getSearchTags(String wordroot, String type); 
     /**
      * Index a binder and its child binders.  Include entries
      * @param binderId

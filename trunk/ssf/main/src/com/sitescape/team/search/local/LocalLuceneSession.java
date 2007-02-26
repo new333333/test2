@@ -35,6 +35,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.util.LuceneUtil;
+import com.sitescape.team.web.WebKeys;
 
 /**
  * This implementation provides access to local Lucene index.
@@ -288,10 +289,11 @@ public class LocalLuceneSession implements LuceneSession {
 	 * 
 	 * @param query
 	 * @param tag
+	 * @param type 
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(Query query, String tag) throws LuceneException {
+	public ArrayList getTags(Query query, String tag, String type) throws LuceneException {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
 		TreeSet results = new TreeSet();
@@ -312,8 +314,15 @@ public class LocalLuceneSession implements LuceneSession {
 				}
 			});
 
-			String[] fields = { BasicIndexUtils.TAG_FIELD,
-					BasicIndexUtils.ACL_TAG_FIELD };
+			String[] fields = new String[2];
+			if (type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
+				fields[0] = BasicIndexUtils.ACL_TAG_FIELD;
+			} else if (type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+				fields[0] = BasicIndexUtils.TAG_FIELD;
+			} else {
+				fields[0] = BasicIndexUtils.TAG_FIELD;
+				fields[1] = BasicIndexUtils.ACL_TAG_FIELD;
+			}
 			int preTagLength = 0;
 			for (int i = 0; i < fields.length; i++) {
 				if (fields[i].equalsIgnoreCase("_aclTagField")) {

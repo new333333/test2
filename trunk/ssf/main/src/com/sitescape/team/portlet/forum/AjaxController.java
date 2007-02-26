@@ -684,105 +684,26 @@ public class AjaxController  extends SAbstractController {
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 
 		//Build the search query
-//		TODO remove after refactoring
-//		Document searchFilter = DocumentHelper.createDocument();
-//		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
-//		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-//		 end remove		
-
-//TODO remove after refactoring
-//		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-// end remove		
 		SearchFilter searchTermFilter = new SearchFilter();
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeElement, searchText);
-//TODO remove after refactoring		
-//			//Add the title term
-//			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
-//			
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.trim());
-//			
-//			 end remove		
 
-			List searchTerms = new ArrayList(2);
-			searchTerms.add(EntityIdentifier.EntityType.folder.name());
-			searchTerms.add(EntityIdentifier.EntityType.workspace.name());
-			searchTermFilter.addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);
+			searchTermFilter.addPlacesFilter(searchText);
 
-//			TODO remove after refactoring			
-//			//Add terms to search folders and workspaces
-//			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-//			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
-//			Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
-//			filterTerm2.setText(EntityIdentifier.EntityType.folder.name());
-//			filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
-//			filterTerm2.setText(EntityIdentifier.EntityType.workspace.name());
-//			 end remove		
-
-			
-			
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
-			
-//			TODO remove after refactoring			
-//			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
-//			
-//			//Add a term to search the title field
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.trim());
-//			 end remove		
 
 			List searchTerms = new ArrayList();
 			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
 			searchTermFilter.addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);
-//			TODO remove after refactoring			
-//			//Add terms to search entries only
-//			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-//			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntityTypes);
-//			Element filterTerm2 = filterTerm.addElement(FilterHelper.FilterEntityType);
-//			filterTerm2.setText(EntityIdentifier.EntityType.folderEntry.name());
-//			 end remove		
 			
 			searchTermFilter.addAndFilter(FilterHelper.FilterTypeTopEntry);
-//			TODO remove after refactoring			
-//			filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-//			filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeTopEntry);
-//			 end remove		
 			
 			//Add terms to search this folder
 			if (!binderId.equals("")) {
 				
 				searchTermFilter.addAndFolderTerm(binderId);
-//				TODO remove after refactoring			
-//				filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
-//				filterTerms.addAttribute(FilterHelper.FilterAnd, "true");
-//				filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//				filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeFolders);
-//				filterTerm.addAttribute(FilterHelper.FilterFolderId, binderId);
-//				 end remove		
 				
 				//TODO Need to implement "searchSubFolders"
 			}
@@ -790,59 +711,18 @@ public class AjaxController  extends SAbstractController {
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
 			// this has been replaced by a getTags method in the search engine.
 			// searchTermFilter.addTagsFilter(FilterHelper.FilterTypeTags, searchText);
-		
-			
 		} else {
 			//Add the login name term
 			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
 			searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, searchText);
 			
-//			TODO remove after refactoring			
-//			Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
-//			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
-		
-//			//Add a term to search the title field
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
-		
-			//Add the login name term
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, ProfileIndexUtils.LOGINNAME_FIELD);
-//			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.trim());
-		
-//			//Add a term to search the title field
-//			filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
-//			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
-//			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
-//			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-//			filterTermValueEle.setText(searchText.trim());
-//			 end remove		
-			
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
 			if (!getProfileModule().checkUserSeeAll()) {
-//				TODO remove after refactoring			
-//				Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
-//				 end remove		
 				if (getProfileModule().checkUserSeeCommunity())	{
 		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-//					TODO remove after refactoring			
-					// Add the group visibility element to the filter terms document
-//					field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-//		    		 end remove		
 		    	} else {
 		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-//					TODO remove after refactoring			
-//		    		 field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-//		    		 end remove		
 		    	}
 			}
 		}
@@ -850,18 +730,12 @@ public class AjaxController  extends SAbstractController {
 		//Do a search to find the first few items that match the search text
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-//			TODO remove after refactoring			
-//			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
-//			 end remove		
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
 			view = "forum/find_places_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
-//			TODO remove after refactoring			
-//			Map retMap = getBinderModule().executeSearchQuery( searchFilter, options);
-//			 end remove		
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
@@ -873,9 +747,8 @@ public class AjaxController  extends SAbstractController {
 			int i = wordRoot.indexOf("*");
 			if (i > 0) wordRoot = wordRoot.substring(0, i);
 			
-			//
-			List tags = getBinderModule().getSearchTags(wordRoot);
-
+			List tags = getBinderModule().getSearchTags(wordRoot, findType);
+			
 			List tagsPage = new ArrayList();
 			
 			// Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
