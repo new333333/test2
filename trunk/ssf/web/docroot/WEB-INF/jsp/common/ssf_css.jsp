@@ -692,6 +692,13 @@ div.ss_send_friend {
   list-style-type: square;
 }
 
+.ss_inlineHelp {
+  visibility:hidden; 
+  display:none; 
+  border:1px solid black; 
+  background:#ffffff;
+}
+
 .ss_lightBox {
   position:absolute;
   background-color:${ss_lightBox_background_color};
