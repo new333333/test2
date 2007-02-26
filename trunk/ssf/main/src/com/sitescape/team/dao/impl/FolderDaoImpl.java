@@ -355,15 +355,14 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	 );    	
     	
     }
-    public void deleteEntries(final FolderEntry entry, final List entries) {
+    public void deleteEntries(final Folder folder, final List entries) {
+    	if (entries.isEmpty()) return;
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
                	   	   	Set ids = new HashSet();
                			StringBuffer inList = new StringBuffer();
                			FolderEntry p;
-               			ids.add(entry.getId());
-        	    		inList.append(entry.getId().toString() + ",");
             			for (int i=0; i<entries.size(); ++i) {
             				p = (FolderEntry)entries.get(i); 
             	    		ids.add(p.getId());
@@ -395,7 +394,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     		   			//delete any reserved names
      		   			session.createQuery("Delete com.sitescape.team.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
     		   				.setParameterList("pList", ids)
-    		   				.setLong("binderId", entry.getParentFolder().getId())
+    		   				.setLong("binderId", folder.getId())
     		   				.executeUpdate();
      		   			//remove foreign key or mysql complains
     		   			session.createQuery("Update com.sitescape.team.domain.FolderEntry set parentEntry = null, topEntry=null where id in (:pList)")

@@ -48,6 +48,18 @@ public interface FolderModule {
        		Map fileItems) throws AccessControlException, WriteFilesException;
     public void addSubscription(Long folderId, Long entryId, int style); 
 
+    /**
+     * Complete deletion of folders previously marked for delete
+     * Used by a scheduled job to finish the delete in the background
+     *
+     */
+    public void cleanupFolders();
+    /**
+     * Delete a FolderEntry and all of its replies
+     * @param parentFolderId
+     * @param entryId
+     * @throws AccessControlException
+     */
     public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
     public void deleteSubscription(Long folderId, Long entryId);
     public void deleteTag(Long binderId, Long entryId, String tagId);

@@ -1,6 +1,5 @@
 package com.sitescape.team.domain;
 
-import java.util.HashMap;
 
 /**
  * This object represents a dashboard configured for a user. We want it treated different
@@ -18,8 +17,14 @@ public class UserDashboard extends Dashboard {
 		super();
 	}
 	public UserDashboard(EntityIdentifier ownerId, Long binderId) {
+		super();
 		this.ownerId = ownerId;
 		this.binderId = binderId;
+	}
+	public UserDashboard(UserDashboard dashboard) {
+		super(dashboard);
+		setBinderId(dashboard.getBinderId());
+		setOwnerIdentifier(dashboard.getOwnerIdentifier());
 	}
 	   /**
      * The Entity that owns the tag
@@ -43,15 +48,5 @@ public class UserDashboard extends Dashboard {
     }
     public void setBinderId(Long binderId) {
     	this.binderId = binderId;
-    }
-    public UserDashboard clone() {
-    	try {
-    		UserDashboard other = (UserDashboard)super.clone();
-    		other.setProperties(new HashMap(getProperties()));
- 		   	return other;
- 	   	}  catch (CloneNotSupportedException e) {
- 	        // 	This shouldn't happen, since we are Cloneable
- 	   		throw new InternalError("Clone error: " + e.getMessage());
- 	   	}    	
     }
 }

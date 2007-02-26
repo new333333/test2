@@ -47,7 +47,7 @@ public interface AdminModule {
 	public TemplateBinder getTemplate(Long id); 
 	public List getTemplates();
 	public List getTemplates(int type);
-    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title) throws AccessControlException, WriteFilesException;
+    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
 
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships);
     public void deleteWorkAreaFunctionMembership(WorkArea workArea, Long functionId); 

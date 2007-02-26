@@ -26,7 +26,7 @@
 		<!-- Set the following two properties to false when running under production since it affect performance -->
 		<property name="show_sql">true</property>
 		<property name="hibernate.generate_statistics">true</property>
-	
+		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- Sitescape Mappings -->
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>

@@ -15,7 +15,9 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -77,7 +79,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		this.definitionModule = definitionModule;
 	}
 	private Workspace loadWorkspace(Long workspaceId)  {
-        return  (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());
+        Workspace workspace = (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());
+        if (workspace.isDeleted()) throw new NoBinderByTheIdException(workspace.getId());
+        return workspace;
 		
 	}
 	private BinderProcessor loadProcessor(Workspace workspace) {
@@ -101,6 +105,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         } else {
         	workspace = (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());  
         }
+        if (workspace.isDeleted()) throw new NoBinderByTheIdException(workspace.getId());
 		// Check if the user has "read" access to the workspace.
         checkAccess(workspace, "getWorkspace");
  
@@ -111,11 +116,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		return top;
     }
    	public Collection getWorkspaceTree(Long id) throws AccessControlException {
-    	Workspace top;
-        if (id == null) top =  getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
-        else top = (Workspace)getCoreDao().loadBinder(id, RequestContextHolder.getRequestContext().getZoneId());
-		// Check if the user has "read" access to the workspace
-        checkAccess(top, "getWorkspace");
+    	Workspace top = getWorkspace(id);
         return getWorkspaceTree(top);
     }
    	
@@ -126,43 +127,32 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        	TreeSet<Binder> tree = new TreeSet<Binder>(c);
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
+    		if (b.isDeleted()) continue;
     		// To make this method consistent with the Dom construction counterpart
     		// (ie, getDomWorkspaceTree), the following additional check is necessary 
     		// before testing its access control.
-    		if(b instanceof Folder) {
-    			if(((Folder) b).getTopFolder() != null)
-    				continue;
+    		if ((b instanceof Folder) || (b instanceof Workspace)) {
+    			// Check if the user has "read" access to the binder.
+    			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
+    				tree.add(b);
     		}
-    		else if(!(b instanceof Workspace)) {
-    			// If neither folder nor workspace, discard it.
-    			continue;
-    		}
-        	// Check if the user has "read" access to the binder.
-            if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
-                tree.add(b);
         }
      	return tree;
    	}
     	 
    	public Set<String> getChildrenTitles(Workspace top) {
-        User user = RequestContextHolder.getRequestContext().getUser();
        	TreeSet<String> titles = new TreeSet<String>();
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
-    		// To make this method consistent with the Dom construction counterpart
+       		if (b.isDeleted()) continue;
+       	 	// To make this method consistent with the Dom construction counterpart
     		// (ie, getDomWorkspaceTree), the following additional check is necessary 
     		// before testing its access control.
-    		if(b instanceof Folder) {
-    			if(((Folder) b).getTopFolder() != null)
-    				continue;
-    		}
-    		else if(!(b instanceof Workspace)) {
-    			// If neither folder nor workspace, discard it.
-    			continue;
-    		}
-        	// Check if the user has "read" access to the binder.
-            if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
-            	titles.add(b.getTitle());
+       		if ((b instanceof Folder) || (b instanceof Workspace)) {
+       		     	// Check if the user has "read" access to the binder.
+       			if(getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES))
+       				titles.add(b.getTitle());
+       		}
         }
      	return titles;
    		
@@ -172,14 +162,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
        	return getDomWorkspaceTree(null, domTreeHelper, -1);
     }
     public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException {
-    	Workspace top;
+    	//getWorkspace does access check
+    	Workspace top = getWorkspace(id);
+ 
         User user = RequestContextHolder.getRequestContext().getUser();
-        if (id == null) top =  getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
-        else top = (Workspace)getCoreDao().loadBinder(id, user.getZoneId());
-		
-		// Check if the user has "read" access to the top folder.
-        checkAccess(top, "getWorkspace");
-
         Comparator c = new BinderComparator(user.getLocale());
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
@@ -189,10 +175,9 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     
     public org.dom4j.Document getDomWorkspaceTree(Long topId, Long bottomId, DomTreeBuilder domTreeHelper) throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
-        Workspace top = (Workspace)getCoreDao().loadBinder(topId, user.getZoneId());
-		Workspace bottom = (Workspace)getCoreDao().loadBinder(bottomId, user.getZoneId());
-		// Check if the user has "read" access to the top folder.
-        checkAccess(top, "getWorkspace");
+       	//getWorkspace does access check
+    	Workspace top = getWorkspace(topId);
+ 		Workspace bottom = (Workspace)getCoreDao().loadBinder(bottomId, user.getZoneId());
         
         List<Workspace> ancestors = new ArrayList<Workspace>();
         Workspace parent = bottom;
@@ -231,7 +216,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  			ws.addAll(top.getFolders());
  			for (Iterator iter=ws.iterator(); iter.hasNext();) {
  				f = (Folder)iter.next();
- 				if (f.getTopFolder() != null) continue;
+ 	      		if (f.isDeleted()) continue;
  				// 	Check if the user has "read" access to the folder.
  				if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
  					continue;
@@ -244,7 +229,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	ws.addAll(top.getWorkspaces());
      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
      		w = (Workspace)iter.next();
-        	// Check if the user has "read" access to the folder.
+      		if (w.isDeleted()) continue;
+      		// Check if the user has "read" access to the folder.
             if(!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES))
             	continue;
      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
@@ -273,7 +259,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         if (!Validator.isNull(definitionId)) { 
         	def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         }
-        //allow users workspace to be created for all users
+        //allow users workspaces to be created for all users
     	if (parentWorkspace.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentWorkspace.getInternalId())) { 
     		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
         		checkAccess(parentWorkspace, "addWorkspace");

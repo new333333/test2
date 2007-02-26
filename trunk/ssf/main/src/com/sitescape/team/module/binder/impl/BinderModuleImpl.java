@@ -47,9 +47,11 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.exception.UncheckedCodedContainerException;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
+import com.sitescape.team.jobs.WorkflowTimeout;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
@@ -69,6 +71,8 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
@@ -100,7 +104,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
-
+		
 	}
  
    protected DefinitionModule getDefinitionModule() {
@@ -128,7 +132,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
-	 * This should not be called inside a transaction because it results in a rollback.
+	 * 
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Binder binder, String operation)  {
@@ -140,25 +144,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	}
 	
-	public boolean testAccess(Binder binder, WorkAreaOperation operation)  {
-		try {
-			checkAccess(binder, operation);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-	}
 	
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
-	 * This should not be called inside a transaction because it results in a rollback.
+	 * 
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Long binderId, String operation)  {
-		return testAccess(loadBinder(binderId), operation);
-	}
-	
-	public boolean testAccess(Long binderId, WorkAreaOperation operation)  {
 		return testAccess(loadBinder(binderId), operation);
 	}
 	
@@ -174,12 +166,18 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public boolean testAccessGetTeamMembers(Long binderId)  {
 		return testAccessGetTeamMembers(loadBinder(binderId));
 	}
-		
+	/**
+	 * Use method names instead of WorkAreaOperation so application doesn't have the required knowledge.  
+	 * This also makes it easier to change what operations and allow multiple operations need to execute a method.
+	 * @param binder
+	 * @param operation
+	 * @throws AccessControlException
+	 */	
 	protected void checkAccess(Binder binder, String operation) throws AccessControlException {
 		if (binder instanceof TemplateBinder) {
-  			//gues anyone can read a template
+  			//guess anyone can read a template
   			if ("getBinder".equals(operation)) return;
-			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+  			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
   		} else {
   			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
   			if (wfo == null) {
@@ -208,7 +206,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
 	private Binder loadBinder(Long binderId) {
-		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		if (binder.isDeleted()) throw new NoBinderByTheIdException(binderId);
+		return binder;
 	}
 	private EntryProcessor loadEntryProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -239,6 +239,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	List binders = binder.getBinders();
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
+    		if (b.isDeleted()) continue;
             if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
     	}
     	return false;
@@ -247,6 +248,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	List binders = binder.getBinders();
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
+    		if (b.isDeleted()) continue;
     		//only check for specific types
     		if (b.getEntityType().equals(binderType)) 
     			if (getAccessControlManager().testOperation(b, WorkAreaOperation.READ_ENTRIES)) return true;    	       		
@@ -386,11 +388,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    }    
     public void deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
-    	//if can delete this binder, can delete everything under it??
 		checkAccess(binder, "deleteBinder");
 		if (binder.isReserved()) throw new NotSupportedException(
 				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
-
+		
    		List errors = deleteChildBinders(binder);
    		if (errors.isEmpty()) loadBinderProcessor(binder).deleteBinder(binder);
    		else {
@@ -404,6 +405,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	List errors = new ArrayList();
     	for (int i=0; i<binders.size(); ++i) {
     		Binder b = (Binder)binders.get(i);
+    		//see if already taken care of
+    		if (b.isDeleted()) continue;
         	try {
         		checkAccess(b, "deleteBinder");
        			List e = deleteChildBinders(b);
@@ -451,13 +454,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
 		Binder binder = setDefinitions(binderId, definitionIds);
-		checkAccess(binder, "setDefinitions"); 
+//checked already		checkAccess(binder, "setDefinitions"); 
 		Map wf = new HashMap();
 		Definition def;
 		if (workflowAssociations != null) {
 			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
 				Map.Entry me = (Map.Entry)iter.next();
-				//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
+				//	TODO:(not implemented yet) getAccessControlManager().checkAcl(def, AccessType.READ);
 				try {
 					def = getCoreDao().loadDefinition((String)me.getValue(), 
 							RequestContextHolder.getRequestContext().getZoneId());
@@ -471,16 +474,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	public Binder setDefinitions(Long binderId, List definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "setDefinitions"); 
 		List definitions = new ArrayList(); 
 		Definition def;
-		checkAccess(binder, "setDefinitions"); 
 		//	Build up new set - domain object will handle associations
 		if (definitionIds != null) {
 			for (int i=0; i<definitionIds.size(); ++i) {
 				try {
 					def = getCoreDao().loadDefinition((String)definitionIds.get(i), 
 							RequestContextHolder.getRequestContext().getZoneId());
-					//	TODO:	getAccessControlManager().checkAcl(def, AccessType.READ);
+					//	TODO:	(not implemented yet) getAccessControlManager().checkAcl(def, AccessType.READ);
 					definitions.add(def);
 				} catch (NoDefinitionByTheIdException nd) {}
 			}
@@ -525,13 +528,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * Add a new tag, owned by this binder
 	 */
 	public void setTag(Long binderId, String newTag, boolean community) {
-		if ("".equals(newTag)) return;
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, "setTag"); 
+		if (Validator.isNull(newTag)) return;
 		newTag = newTag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
 		String[] newTags = newTag.split(" ");
 		if (newTags.length == 0) return;
 		List tags = new ArrayList();
-		Binder binder = loadBinder(binderId);
-		checkAccess(binder, "setTag"); 
 		User user = RequestContextHolder.getRequestContext().getUser();
 	   	EntityIdentifier uei = user.getEntityIdentifier();
 	   	EntityIdentifier bei = binder.getEntityIdentifier();
@@ -764,8 +767,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    	public Binder getBinderByPathName(String pathName) throws AccessControlException {
 	   	List binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
 	    	
-	   	if(binders.size() > 0) {
+	   	if (binders.size() > 0) {
 	   		Binder binder = (Binder) binders.get(0); // only one matching binder
+			if (binder.isDeleted()) return null;
 			checkAccess(binder, "getBinder"); 
 	
 	   		return binder;
@@ -921,7 +925,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	setPosting(binderId, updates);
     }
     public void setPosting(Long binderId, Map updates) {
-        Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
+        Binder binder = loadBinder(binderId); 
         checkAccess(binder, "setPosting");
         PostingDef post = binder.getPosting();
         String email = (String)updates.get("emailAddress");
@@ -970,16 +974,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      * @param id
      * @param value
      */
-	public ScheduleInfo getNotificationConfig(Long id) {
-       Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+	public ScheduleInfo getNotificationConfig(Long binderId) {
+        Binder binder = loadBinder(binderId); 
         checkAccess(binder, "getNotificationConfig"); 
         //data is stored with job
 		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
   		return process.getScheduleInfo(binder);
 	}
 	    
-    public void setNotificationConfig(Long id, ScheduleInfo config) {
-        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+    public void setNotificationConfig(Long binderId, ScheduleInfo config) {
+        Binder binder = loadBinder(binderId); 
         checkAccess(binder, "setNotificationConfig"); 
         //data is stored with job
         EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
@@ -991,9 +995,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      * @param updates
      * @param principals - if null, don't change list.
      */
-    public void modifyNotification(Long id, Map updates, Collection principals) 
-    {
-        Binder binder = coreDao.loadBinder(id, RequestContextHolder.getRequestContext().getZoneId()); 
+    public void modifyNotification(Long binderId, Map updates, Collection principals) {
+        Binder binder = loadBinder(binderId); 
         checkAccess(binder, "modifyNotification"); 
     	NotificationDef current = binder.getNotificationDef();
     	if (current == null) {

@@ -25,6 +25,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
+import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
@@ -33,12 +34,9 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoBinderByTheNameException;
-import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
@@ -75,7 +73,6 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -155,7 +152,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    			return false;
    		}
    	}
-    	protected void checkAccess(String operation) {
+    protected void checkAccess(String operation) {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
  
         if ("modifyPosting".equals(operation)) {
@@ -384,8 +381,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (destination.getId() == null) getCoreDao().save(destination);
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
-			EntityDashboard myDashboard = dashboard.clone();
-			myDashboard.setId(null);
+			EntityDashboard myDashboard = new EntityDashboard(dashboard);
 			myDashboard.setOwnerIdentifier(destination.getEntityIdentifier());
 			getCoreDao().save(myDashboard);
 		  }
@@ -576,7 +572,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return getCoreDao().loadConfigurations( RequestContextHolder.getRequestContext().getZoneId(), type);
 	}
 
-    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title) throws AccessControlException, WriteFilesException {
+    public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException {
     	//modules do the access checking
 	   Long zoneId =  RequestContextHolder.getRequestContext().getZoneId();
 	   TemplateBinder cfg = (TemplateBinder)getCoreDao().loadBinder(configId, zoneId);
@@ -591,7 +587,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		InputDataAccessor inputData = new MapInputData(entryData);
 		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
 		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
-			
 		entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		String description = NLT.getDef(cfg.getDescription().getText());
 		if (Validator.isNull(description)) description = NLT.getDef(cfg.getTemplateDescription().getText());
@@ -599,7 +594,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
 		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
 		entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
-	   //get binder created
+		if (Validator.isNull(name)) name = cfg.getName();	
+		entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
+		//get binder created
 	   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
    			binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinderId, def.getId(), inputData, fileItems), zoneId);
 	   } else if (cfg.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
@@ -642,7 +639,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    }
 	    List<TemplateBinder> children = cfg.getBinders();    
 	    for (TemplateBinder child: children) {
-	    	addBinderFromTemplate(child.getId(), binder.getId(), NLT.getDef(child.getTitle()));	    	
+	    	addBinderFromTemplate(child.getId(), binder.getId(), NLT.getDef(child.getTitle()), null);	    	
 	    }
 	    return binder.getId();
 	}
@@ -826,8 +823,15 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     }
     public void setWorkAreaOwner(WorkArea workArea, Long userId) {
     	checkAccess(workArea, "setWorkAreaOwner");
-    	User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
-   		workArea.setOwner(user);
+    	if (!workArea.getOwnerId().equals(userId)) {
+    		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
+    		workArea.setOwner(user);
+    		List ids = new ArrayList();
+    		ids.add(workArea.getWorkAreaId());
+    		//need to update access, since owner has changed
+    		indexMembership(ids, getAccessControlManager().getWorkAreaAccessControl(workArea, WorkAreaOperation.READ_ENTRIES));
+    	}
+   		
     }
     public WorkAreaFunctionMembership getWorkAreaFunctionMembership(WorkArea workArea, Long functionId) {
 		// open to anyone - only way to get parentMemberships
@@ -1228,51 +1232,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void setZone1(String zoneName) {		
 	}
 	public void setZone2(String zoneName) {
-		com.sitescape.team.module.binder.BinderModule binderModule = (com.sitescape.team.module.binder.BinderModule)SpringContextUtil.getBean("binderModule");
-		
-		Workspace top = getCoreDao().findTopWorkspace(zoneName);
-		try {
-			getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
-		} catch (NoUserByTheNameException nu) {
-			User superU = getProfileDao().findUserByName(SZoneConfig.getString(zoneName, "property[@name='adminUser']", "admin"), zoneName);
-			superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-		}
-		ProfileBinder profiles = (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, top.getId());
-		String title = NLT.get("administration.initial.profile.title", "Personal");
-		if (!profiles.getTitle().equals(title)) {
-			Map updates = new HashMap();
-			updates.put("title", title);
-			try {
-				binderModule.modifyBinder(profiles.getId(), new com.sitescape.team.module.shared.MapInputData(updates));
-			} catch (WriteFilesException wf) {}
-		}
-		Workspace global=null;
-		Workspace team=null;
-		try {
-			global = (Workspace)getCoreDao().loadReservedBinder(ObjectKeys.GLOBAL_ROOT_INTERNALID, top.getId()); 
-		} catch (NoBinderByTheNameException nb) {
-			
-			global = addGlobalRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
-			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(global, true);
-			IndexSynchronizationManager.applyChanges();
-		}
-		try {
-			team = (Workspace)getCoreDao().loadReservedBinder(ObjectKeys.TEAM_ROOT_INTERNALID, top.getId()); 
-		} catch (NoBinderByTheNameException nb) {
-			team = addTeamRoot(top, new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));		
-			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(team, true);
-			IndexSynchronizationManager.applyChanges();
-		}
-		List binders = top.getBinders();
-		for (int i=0; i<binders.size(); ++i) {
-			Binder b = (Binder)binders.get(i);
-			if (!b.isReserved()) {
-				binderModule.moveBinder(b.getId(), global.getId());
-			}
-			
-		}
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);

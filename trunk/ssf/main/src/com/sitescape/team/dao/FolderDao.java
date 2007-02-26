@@ -59,7 +59,7 @@ public interface FolderDao {
     public HistoryMap loadHistoryMap(Long userId, Long folderId);
     public void delete(Folder folder);
     public void deleteEntries(Folder folder);
-    public void deleteEntries(FolderEntry entry, List entries);
+    public void deleteEntries(Folder folder, List entries);
     public void deleteEntryWorkflows(Folder folder);
     public void deleteEntryWorkflows(Folder folder, List ids);
     public void moveEntries(Folder folder);

@@ -23,7 +23,6 @@ import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *
- * @author Jong Kim
  */
 public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTimeout {
 	 

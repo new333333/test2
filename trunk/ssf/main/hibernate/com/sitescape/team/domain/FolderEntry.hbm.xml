@@ -86,6 +86,6 @@
       <property name="average" column="rating_average"/>
       <property name="count" column="rating_count"/>
     </component>
-    <property name="popularity"/>
+    <property name="popularity" optimistic-lock="false"/>
   </class>
 </hibernate-mapping>

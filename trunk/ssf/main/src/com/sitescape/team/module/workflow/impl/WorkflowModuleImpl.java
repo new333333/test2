@@ -69,34 +69,38 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 	   List companies = getCoreDao().findCompanies();
 	   for (int i=0; i<companies.size(); ++i) {
 		   Workspace zone = (Workspace)companies.get(i);
-		   String jobClass = SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
-		   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultWorkflowTimeout";
-		   try {
-			   Class processorClass = ReflectHelper.classForName(jobClass);
-			   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
-			   //make sure a timeout job is scheduled for the zone
-			   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
-			   int seconds = 300;
-			   try {
-				   seconds = Integer.parseInt(secsString);
-			   } catch (Exception ex) {};
-			   	job.schedule(zone.getId(), seconds);
-    	
-		   } catch (ClassNotFoundException e) {
-			   throw new ConfigurationException(
-    				"Invalid WorkflowTimeout class name '" + jobClass + "'",
-    				e);
-		   } catch (InstantiationException e) {
-			   throw new ConfigurationException(
-    				"Cannot instantiate WorkflowTimeout of type '"
-                        	+ jobClass + "'");
-		   } catch (IllegalAccessException e) {
-			   throw new ConfigurationException(
-    				"Cannot instantiate WorkflowTimeout of type '"
-    				+ jobClass + "'");
-		   }
+		   startScheduledJobs(zone);
 	   }
    }
+   public void startScheduledJobs(Workspace zone) {
+	   String jobClass = SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_JOB + "']");
+	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultWorkflowTimeout";
+	   try {
+		   Class processorClass = ReflectHelper.classForName(jobClass);
+		   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
+		   //make sure a timeout job is scheduled for the zone
+		   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
+		   int seconds = 300;
+		   try {
+			   seconds = Integer.parseInt(secsString);
+		   } catch (Exception ex) {};
+		   	job.schedule(zone.getId(), seconds);
+	
+	   } catch (ClassNotFoundException e) {
+		   throw new ConfigurationException(
+				"Invalid WorkflowTimeout class name '" + jobClass + "'",
+				e);
+	   } catch (InstantiationException e) {
+		   throw new ConfigurationException(
+				"Cannot instantiate WorkflowTimeout of type '"
+                    	+ jobClass + "'");
+	   } catch (IllegalAccessException e) {
+		   throw new ConfigurationException(
+				"Cannot instantiate WorkflowTimeout of type '"
+				+ jobClass + "'");
+	   } 
+	   
+    }
 	public List getAllDefinitions() {
 		JbpmContext context = WorkflowFactory.getContext();
 	    try {

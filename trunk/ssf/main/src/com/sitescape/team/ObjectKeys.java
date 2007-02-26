@@ -160,6 +160,7 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_ICONNAME="iconName";
     
     public static final String FIELD_BINDER_LIBRARY="library";
+    public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
 
     public static final String FIELD_USER_FIRSTNAME="firstName";

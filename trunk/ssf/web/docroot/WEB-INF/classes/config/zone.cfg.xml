@@ -7,7 +7,7 @@
 	<mailConfiguration>	
 		<notify session="java:comp/env/mail/SiteScape"/>
 		<posting session="java:comp/env/mail/SiteScapePosting"/>
-		<property name="notify.templateCacheDisabled">true</property>
+		<property name="notify.templateCacheDisabled">false</property>
 	</mailConfiguration>	
 	<ldapConfiguration>	
 		<property name="java.naming.security.principal"/>

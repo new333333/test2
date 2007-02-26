@@ -32,7 +32,7 @@ public class AddFolderController extends SAbstractController {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
 			Long newId = getAdminModule().addBinderFromTemplate(cfgType, binderId, 
-						PortletRequestUtils.getStringParameter(request, "title", ""));
+						PortletRequestUtils.getStringParameter(request, "title", ""), null);
 			
 			setupViewBinder(response, newId);
 			

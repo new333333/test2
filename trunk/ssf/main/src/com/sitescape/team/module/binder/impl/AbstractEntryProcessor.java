@@ -655,7 +655,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.end().print();
         
         sp.reset("deleteEntry_indexDel").begin();
-        ctx = deleteEntry_indexDel(entry, ctx);
+        ctx = deleteEntry_indexDel(parentBinder, entry, ctx);
         sp.end().print();
     }
      protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
@@ -663,10 +663,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         entry.incrLogVersion();
-    	ChangeLog changes = new ChangeLog(entry, ChangeLog.DELETEENTRY);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
-       	return null;
+        processChangeLog(entry, ChangeLog.DELETEENTRY);
+        return null;
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
@@ -676,6 +674,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
+    	//attachment meta-data not deleted.  Done in optimized delete entry
     	getFileModule().deleteFiles(parentBinder, entry, null);
       	return ctx;
     }
@@ -690,7 +689,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       	return ctx;
    }
 
-    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
+    protected Object deleteEntry_indexDel(Binder parentBinder, Entry entry, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
@@ -706,10 +705,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
-    	indexEntries_deleteEntries(binder);
-		// Since all matches will be deleted, this will also delete the attachments 
-		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-		IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
+    	indexDeleteEntries(binder);
+    	super.deleteBinder_indexDel(binder, ctx);
+       	return ctx;
+    }
+    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
+    	//when deleteing a binder, all files and entries are deleted by a background job
+    	//this is so we can log all deletes and archive files
+    	return ctx;
+    }
+    
+    protected Object deleteBinder_delete(Binder binder, Object ctx) {
+    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    			RequestContextHolder.getRequestContext().getZoneId(), binder);
+    	
+    	binder.setDeleted(true);
+    	
        	return ctx;
     }
 	    
@@ -718,6 +729,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (includeEntries == true) indexEntries(binder);
     	else  indexBinder(binder, null, null, false);
 
+    }
+    protected void indexDeleteEntries(Binder binder) {
+		// Since all matches will be deleted, this will also delete the attachments 
+		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
+   	
     }
     //***********************************************************************************************************
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
@@ -825,7 +841,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      	// this is just here until we get our indexes in sync with
     	// the db.  (Early in development, they're not...
    		//iterate through results
-    	indexEntries_deleteEntries(binder);
     	indexEntries_preIndex(binder);
    		//flush any changes so any exiting changes don't get lost on the evict
    		getCoreDao().flush();
@@ -898,18 +913,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
     }
     protected void indexEntries_preIndex(Binder binder) {
-    	
-    }
-    protected void indexEntries_deleteEntries(Binder binder) {
-        //need to use session directly, cause index_entries does.
+         //need to use session directly, cause index_entries does.
     	//make sure this gets out first
        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         try {	            
 	        logger.info("Indexing (" + binder.getId().toString() + ") ");
 	        
 	        // Delete the document that's currently in the index.
-	        Term delTerm = indexEntries_getDeleteEntriesTerm(binder);
-	        luceneSession.deleteDocuments(delTerm);
+	        luceneSession.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
+
 	            
         } finally {
 	        luceneSession.close();
@@ -917,9 +929,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
  
     }
     
-    protected Term indexEntries_getDeleteEntriesTerm(Binder binder) {
-        return new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString());
-    }
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
