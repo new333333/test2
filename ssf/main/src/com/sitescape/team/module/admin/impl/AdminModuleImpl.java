@@ -120,6 +120,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    	protected FolderModule getFolderModule() {
 		return folderModule;
 	}
+
+   	/**
+   	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
+	 */
    	public boolean testAccess(WorkArea workArea, String operation) {
    		try {
    			checkAccess(workArea, operation);
@@ -144,6 +149,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 		
 	}
+   	/**
+	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
+   	 * 
+   	 */
   	public boolean testAccess(String operation) {
    		try {
    			checkAccess(operation);

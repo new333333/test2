@@ -1487,7 +1487,7 @@ public class AjaxController  extends SAbstractController {
 		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
 		
 		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamUserMembers(binderId));
+			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 		}
@@ -1505,7 +1505,7 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
 		
 		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamUserMembersIds(binderId).size());
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamMemberIds(binderId, true).size());
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, 0);
 		}

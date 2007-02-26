@@ -35,7 +35,6 @@ public class SendMailController extends SAbstractController {
 		
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			String subject = PortletRequestUtils.getStringParameter(request, "subject", "");	
 			String[] to = StringUtil.split(PortletRequestUtils.getStringParameter(request, "addresses", ""));
 			Set emailAddress = new HashSet();

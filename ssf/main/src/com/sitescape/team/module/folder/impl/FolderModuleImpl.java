@@ -124,7 +124,9 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
  	   
      }
 	/*
+	 *  (non-Javadoc)
 	 * Check access to folder.  If operation not listed, assume read_entries needed
+	 * Use method names as operation so we can keep the logic out of application
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Folder folder, String operation) {
@@ -146,6 +148,12 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	    	getAccessControlManager().checkOperation(folder, WorkAreaOperation.READ_ENTRIES);
 		}
 	}
+	/*
+	 *  (non-Javadoc)
+	 * Check access to folder.  If operation not listed, assume read_entries needed
+	 * Use method names as operation so we can keep the logic out of application
+	 * @see com.sitescape.team.module.folder.FolderModule#testAccess(com.sitescape.team.domain.FolderEntry, java.lang.String)
+	 */
 	public boolean testAccess(FolderEntry entry, String operation) {
 		try {
 			checkAccess(entry, operation);

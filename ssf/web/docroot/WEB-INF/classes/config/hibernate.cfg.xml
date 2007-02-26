@@ -69,9 +69,11 @@
     <!-- comment out the following 3 lines if you don't-->
     <!-- want to use the default jBPM identity mgmgt   -->
     <!-- component                                     -->
+<!--
     <mapping resource="org/jbpm/identity/User.hbm.xml"/>
     <mapping resource="org/jbpm/identity/Group.hbm.xml"/>
-    <mapping resource="org/jbpm/identity/Membership.hbm.xml"/>
+    <mapping resource="org/jbpm/identity/Membership.hbm.xml"/>  
+-->
 
     <!-- ###################### -->
     <!-- # jbpm mapping files # -->

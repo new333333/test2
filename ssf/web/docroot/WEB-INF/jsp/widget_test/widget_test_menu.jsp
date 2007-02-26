@@ -34,12 +34,6 @@
 				<a href="<portlet:actionURL windowState="maximized"><portlet:param 
 					name="action" value="event" /></portlet:actionURL>">Event tester</a>
 				<br>
-				<br><span><b>JBPM workflow tests</b></span>
-				<br>
-				<a href="<portlet:actionURL windowState="maximized"><portlet:param 
-					name="action" value="workflow" /><portlet:param 
-					name="operation" value="null" /></portlet:actionURL>">Workflow tester</a>
-				<br>
 				<br><span><b>Servlet tests</b></span>
 				<br>
 				<a href="<portlet:renderURL windowState="maximized"><portlet:param 

@@ -653,7 +653,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
         	beans.put(id, idData);
     	}
 
-		List users = getBinderModule().getTeamUserMembers(binder);
+		List users = getBinderModule().getTeamMembers(binder.getId(), true);
 		idData.put(WebKeys.TEAM_MEMBERS, users);
 		idData.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
 	}
