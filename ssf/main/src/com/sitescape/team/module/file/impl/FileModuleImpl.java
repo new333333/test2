@@ -380,7 +380,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	public void readScaledFile(Binder binder, DefinableEntity entry, 
 			FileAttachment fa, OutputStream out) {
 		
-		//String relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
 		String relativeFilePath = fa.getFileItem().getName();
 		
 		String filePath = FilePathUtil.getFilePath(binder, entry, SCALED_SUBDIR, relativeFilePath);
@@ -407,7 +406,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath)) {			
-				generateThumbnailFile(binder, entry, fa, 150, 0);
+				generateThumbnailFile(binder, entry, fa, 200, 0);
+				generateScaledFile(binder, entry, fa, 200, 200);
 		}
 
 		try {
@@ -2019,7 +2019,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			
 			try
 			{
-				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), originalFile.getAbsolutePath() + com.sitescape.team.docconverter.IImageConverterManager.IMG_EXTENSION, 900, 900);
+				generateAndStoreThumbnailFile(binder.getId(), entry.getId(), originalFile.getAbsolutePath(), originalFile.getAbsolutePath() + com.sitescape.team.docconverter.IImageConverterManager.IMG_EXTENSION, 200, 200);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
