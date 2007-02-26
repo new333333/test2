@@ -158,6 +158,8 @@ public class ViewFileController extends SAbstractController {
 				
 				if (viewType.equals(WebKeys.FILE_VIEW_TYPE_SCALED)) {
 					boolean scaledFileExists = false;
+					response.setContentType("image/jpeg");
+					
 					try {
 						// (rsordillo) different file types are possible need to convert extension to 'JPG' to ensure image
 						if (!(fa.getFileItem().getName().toLowerCase().endsWith(".gif")
@@ -172,7 +174,6 @@ public class ViewFileController extends SAbstractController {
 					}
 					catch(Exception e1) {}
 					if (scaledFileExists) {
-						response.setContentType("image/jpeg");
 						getFileModule().readScaledFile(parent, entity, fa, response.getOutputStream());
 					} else {
 						try {
