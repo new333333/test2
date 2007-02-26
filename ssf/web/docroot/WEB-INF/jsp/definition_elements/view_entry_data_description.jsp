@@ -1,10 +1,10 @@
 <% //Description view %>
 <c:if test="${!empty ssDefinitionEntry.description}">
 <c:if test="${empty ss_element_display_style}">
-<div class="ss_entryContent ss_entryDescription">
+<ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
  <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
    value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
-</div>
+</ssf:editable>
 </c:if>
 
 <c:if test="${!empty ss_element_display_style && 
@@ -14,12 +14,11 @@
     <c:out value="${property_caption}" />
   </td>
   <td valign="top">
-    <div class="ss_entryContent ss_entryDescription">
+    <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">
     <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
       value="${ssDefinitionEntry.description.text}" 
       escapeXml="false"/></ssf:markup></span>
-      <div style="float: right; margin-left: 5px;">[EDIT]</div>
-    </div>
+    </ssf:editable>
   </td>
 </tr>
 </c:if>
