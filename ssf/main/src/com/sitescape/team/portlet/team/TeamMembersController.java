@@ -51,25 +51,9 @@ public class TeamMembersController extends SAbstractController  {
 			RenderResponse response) throws Exception {
 		
  		Map<String,Object> model = new HashMap<String,Object>();
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
-		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
-			//Signal that this is the initialization step
-			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
-			
-			PortletURL url;
-			url = response.createRenderURL();
-			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			prefs.store();
-		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.setBinderPermaLink(this, request, response);
-		try {
-			//won't work on adapter
-			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
-		} catch (UnsupportedOperationException us) {}
 
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -84,30 +68,9 @@ public class TeamMembersController extends SAbstractController  {
 			request.setAttribute("ssReloadUrl", reloadUrl.toString());
 			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 		}
-		Binder binder=null;
-		//see if it is a user workspace - can also get directly to user ws by a binderId
-		//so don't assume anything here.  This just allows us to handle users without a workspace.
-		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
-			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-			if (entryId != null) {
-				User entry = (User)getProfileModule().getEntry(binderId, entryId);
-				if (entry.getWorkspaceId() == null) {
-					binder = getProfileModule().addUserWorkspace(entry);
-				} else {
-					try {
-						binder = getBinderModule().getBinder(entry.getWorkspaceId());
-					} catch (NoBinderByTheIdException nb) {
-						binder = getProfileModule().addUserWorkspace(entry);
-						
-					}
-				}
-			}
-		}
-
 		
 		Map formData = request.getParameterMap();
-		if (binder == null) binder = getBinderModule().getBinder(binderId);
+		Binder binder = getBinderModule().getBinder(binderId);
 
  
  		//Check special options in the URL
@@ -174,7 +137,6 @@ public class TeamMembersController extends SAbstractController  {
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
-		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
 		try {
 			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binder.getId()));
 		} catch (AccessControlException ax) {
