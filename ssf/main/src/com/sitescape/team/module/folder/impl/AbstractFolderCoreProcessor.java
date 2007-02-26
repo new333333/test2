@@ -245,7 +245,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
-       	List replies = (List)ctx;
+    	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
+    	List replies = (List)ctx;
     	List ids = new ArrayList();
       	for (int i=0; i<replies.size(); ++i) {
     		ids.add(((FolderEntry)replies.get(i)).getId());
@@ -266,17 +267,20 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
- 
-    	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-    	getFolderDao().deleteEntries((FolderEntry)entry, (List)ctx);   
-      	return ctx;
+       	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
+        //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
+       	List entries = new ArrayList((List)ctx);
+       	entries.add(entry);
+       	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
+       	return ctx;
     }
-    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
-    	List replies = (List)ctx;
+    protected Object deleteEntry_indexDel(Binder parentBinder, Entry entry, Object ctx) {
+       	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
+        List replies = (List)ctx;
       	for (int i=0; i<replies.size(); ++i) {
-    		super.deleteEntry_indexDel((FolderEntry)replies.get(i), null);
+    		super.deleteEntry_indexDel(parentBinder, (FolderEntry)replies.get(i), null);
     	}
-		super.deleteEntry_indexDel(entry, null);
+		super.deleteEntry_indexDel(parentBinder, entry, null);
 		return ctx;
    }
     
@@ -399,20 +403,80 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
          
     //***********************************************************************************************************
-   
-    protected Object deleteBinder_delete(Binder binder, Object ctx) {
-    	//remove folder contents
-    	getFolderDao().deleteEntryWorkflows((Folder)binder);
-		getFolderDao().deleteEntries((Folder)binder);
-		//finally delete the binder and its associations
-		return super.deleteBinder_delete(binder, ctx);
+    public void deleteBinder(Binder binder) {
+    	if (!binder.isDeleted()) super.deleteBinder(binder);
+    	else {
+    		final Folder folder = (Folder)binder;
+    		final FilterControls fc = new FilterControls(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
+    		
+    		//loop through all entries and record delete
+			Boolean done=Boolean.FALSE;
+			while (!done) {
+				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						List entries = new ArrayList();
+						SFQuery query = (SFQuery)getFolderDao().queryEntries(fc); 
+						try {
+							int count = 0;
+							while (query.hasNext()) {
+			      				Object obj = query.next();
+			       				if (obj instanceof Object[])
+			       					obj = ((Object [])obj)[0];
+			 					FolderEntry entry = (FolderEntry)obj;
+					    		//create history - using timestamp and version from folder delete
+								entry.setModification(folder.getModification());
+								entry.incrLogVersion();
+								processChangeLog(entry, ChangeLog.DELETEENTRY);
+								try {
+									getFileModule().deleteFiles(folder, entry, null);
+								} catch (Exception ex) {
+									logger.error("Error delete files: " + ex.getMessage());
+								}
+								entries.add(entry);
+								//after 100 entries - commit transaction
+								++count;
+								if (count == 100) {
+									//remove folder contents in bulk
+									getFolderDao().deleteEntryWorkflows(folder, entries);
+									getFolderDao().deleteEntries(folder, entries);
+									return Boolean.FALSE;
+								}
+							}
+							//	finally delete the binder and its associations
+							try {
+								getFileModule().deleteFiles(folder, folder, null);
+							} catch (Exception ex) {
+								logger.error("Error delete files: " + ex.getMessage());
+							}
+							//remove anything that is left
+							getFolderDao().deleteEntries(folder);
+							//finally remove folder
+							getFolderDao().delete(folder);
+							//delete binder
+							return Boolean.TRUE;
+						} finally {
+							query.close();
+						}
+					}
+	        	});
+			}
+
+     	};
+    }
+    
+    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
+    	//save for background
+    	return ctx;
+    }
+    public Object deleteBinder_delete(Binder binder, Object ctx) {
+    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    			RequestContextHolder.getRequestContext().getZoneId(), binder);
+    	//mark for delete now and continue in the background
+    	binder.setDeleted(true);
+    	return ctx;
     }
 
-    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
-    	indexEntries_deleteEntries(binder);
-    	return super.deleteBinder_indexDel(binder, ctx);
-    }
-
+ 
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
     	if (destination instanceof Folder) 

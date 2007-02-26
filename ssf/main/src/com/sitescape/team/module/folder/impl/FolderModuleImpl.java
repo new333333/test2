@@ -18,7 +18,9 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -33,6 +35,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
@@ -42,7 +45,9 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FillEmailSubscription;
+import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderComparator;
@@ -63,6 +68,8 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
@@ -70,13 +77,52 @@ import com.sitescape.util.Validator;
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule { 
+public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule, InitializingBean {
    	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
 
-
+    /**
+     * Called after bean is initialized.  
+     */
+ 	public void afterPropertiesSet() {
+ 		//make sure job to delete and log folders is running
+ 		List companies = getCoreDao().findCompanies();
+ 		for (int i=0; i<companies.size(); ++i) {
+ 			Workspace zone = (Workspace)companies.get(i);
+ 			startScheduledJobs(zone);
+	   }
+ 	}
+    public void startScheduledJobs(Workspace zone) {
+ 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
+ 	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFolderDelete";
+ 	   try {
+ 		   Class processorClass = ReflectHelper.classForName(jobClass);
+ 		  FolderDelete job = (FolderDelete)processorClass.newInstance();
+ 		   //make sure a delete job is scheduled for the zone
+ 		   String hrsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
+ 		   int hours = 24;
+ 		   try {
+ 			  hours = Integer.parseInt(hrsString);
+ 		   } catch (Exception ex) {};
+ 		   	job.schedule(zone.getId(), hours);
+ 	
+ 	   } catch (ClassNotFoundException e) {
+ 		   throw new ConfigurationException(
+ 				"Invalid WorkflowTimeout class name '" + jobClass + "'",
+ 				e);
+ 	   } catch (InstantiationException e) {
+ 		   throw new ConfigurationException(
+ 				"Cannot instantiate WorkflowTimeout of type '"
+                     	+ jobClass + "'");
+ 	   } catch (IllegalAccessException e) {
+ 		   throw new ConfigurationException(
+ 				"Cannot instantiate WorkflowTimeout of type '"
+ 				+ jobClass + "'");
+ 	   } 
+ 	   
+     }
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
@@ -174,8 +220,10 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	
 	private Folder loadFolder(Long folderId)  {
-        return  getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
-		
+        Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
+		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
+		return folder;
+
 	}
 	private FolderEntry loadEntry(Long folderId, Long entryId) {
         Folder folder = loadFolder(folderId);
@@ -206,6 +254,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (int i=0; i<folderIds.size(); ++i) {
 			try {//access check done by getFolder
+				//assume most folders are cached
 				result.add(getFolder((Long)folderIds.get(i)));
 			} catch (NoFolderByTheIdException ex) {
 			} catch (AccessControlException ax) {
@@ -379,6 +428,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	folders.addAll(top.getFolders());
        	for (Iterator iter=folders.iterator(); iter.hasNext();) {
        		f = (Folder)iter.next();
+    		if (f.isDeleted()) continue;
       	    // Check if the user has the privilege to view the folder 
        		if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
        			continue;
@@ -658,7 +708,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	}
 	
 	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
-		if ("".equals(newtag)) return;
+		if (Validator.isNull(newtag)) return;
 		newtag = newtag.replaceAll("\\W", " ").trim().replaceAll("\\s+"," ");
 		String[] newTags = newtag.split(" ");
 		if (newTags.length == 0) return;
@@ -785,6 +835,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	List<String> result = new ArrayList<String>(folders.size());
     	for(int i = 0; i < folders.size(); i++) {
     		Folder folder = (Folder) folders.get(i);
+	    	if (folder.isDeleted()) continue;
     		// Check if the user has "read" access to the folder.
     		if(getAccessControlManager().testOperation(folder, WorkAreaOperation.READ_ENTRIES))
     			result.add(folder.getId().toString());
@@ -938,6 +989,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
+    		if (f.isDeleted()) continue;
     		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
     			titles.add(f.getTitle());
     	}
@@ -951,6 +1003,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
+    		if (f.isDeleted()) continue;
     		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
     			subFolders.add(f);
     	}
@@ -958,27 +1011,6 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	return subFolders;    	
     }
     
-    /*
-    public Collection getFolderTree(Long folderId) throws AccessControlException {
-   		Folder top = loadFolder(folderId);
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
-        return getFolderTree(top);
-   	}
-   	
-   	public Collection getFolderTree(Folder folder) {        
-        User user = RequestContextHolder.getRequestContext().getUser();
-    	Comparator c = new BinderComparator(user.getLocale());
-
-    	TreeSet<Folder> folders = new TreeSet<Folder>(c);
-   		
-    	for(Object o : folder.getFolders()) {
-    		Folder f = (Folder) o;
-    		if(getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
-    			folders.add(f);
-    	}
-    	
-    	return folders;
-   	}*/
     private void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
   		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder, FillEmailSubscription.PROCESSOR_KEY);
   		//if anyone subscribed to the topLevel entry, notify them of a change
@@ -987,6 +1019,23 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
   		if (!getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier()).isEmpty())
   			process.schedule(folder.getId(), entry.getId(), when);
     	
+    }
+    
+    //called by scheduler to complete folder deletions
+    public void cleanupFolders() {
+   		FilterControls fc = new FilterControls();
+   		fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+   		fc.add("deleted", Boolean.TRUE);
+   	    List<Folder> folders = getCoreDao().loadObjects(Folder.class, fc);
+   		logger.debug("checking for deleted folders");
+   		for (Folder f: folders) {
+   			FolderCoreProcessor processor = loadProcessor(f);
+   			try {
+  				processor.deleteBinder(f);
+   			} catch (Exception ex) {
+   				logger.error(ex);
+   			}
+   		}
     }
     /**
      * Helper classs to return folder unseen counts as an objects

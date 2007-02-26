@@ -11,6 +11,10 @@ public class DashboardPortlet extends Dashboard {
 	public DashboardPortlet() {
 		super();
 	}
+	public DashboardPortlet(DashboardPortlet dashboard) {
+		super(dashboard);
+		setPortletName(dashboard.getPortletName());
+	}
 	public DashboardPortlet(String portletName) {
 		super();
 		this.portletName = portletName;		

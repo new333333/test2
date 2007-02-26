@@ -250,6 +250,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setCreation(new HistoryStamp(user));
         binder.setModification(binder.getCreation());
         binder.setLogVersion(Long.valueOf(1));
+        binder.setOwner(user);
     	//Since parent collection is a list we can add the binder without an id
     	getCoreDao().refresh(parent);
       	parent.addBinder(binder);
@@ -263,12 +264,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         		getCoreDao().save(obj);
         }
         doBinderFillin(binder, inputData, entryData);
-        //can add these fields, by on modify ensure they are safe
+        //can add these fields on creation, but cannot use modifyBinder to change them
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_LIBRARY)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY)));
    		}
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_UNIQUETITLES) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_UNIQUETITLES)) {
    			entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_UNIQUETITLES)));
+   		}
+   		if (inputData.exists(ObjectKeys.FIELD_BINDER_NAME) && !entryData.containsKey(ObjectKeys.FIELD_BINDER_NAME)) {
+   			entryData.put(ObjectKeys.FIELD_BINDER_NAME, Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_NAME)));
    		}
  		EntryBuilder.buildEntry(binder, entryData);
     }
@@ -476,8 +480,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //***********************************************************************************************************
     /**
-     * The default behavior is to delete the binder and all its entries
-     * There shouldn't be any sub-folders
+     * The default behavior is to mark the binder for delete at a later time
+     * This allows us to log each deleted entry and file without tying up the current transaction
+     * Expected that sub-folders are handled separetly
      */
     public void deleteBinder(Binder binder) {
     	if (binder.isReserved()) 
@@ -510,6 +515,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.reset("deleteBinder_indexDel").begin();
         deleteBinder_indexDel(binder, ctx);
         sp.end().print();
+        
     }
     
     protected Object deleteBinder_preDelete(Binder binder) { 
@@ -517,10 +523,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         User user = RequestContextHolder.getRequestContext().getUser();
         binder.setModification(new HistoryStamp(user));
         binder.incrLogVersion();
-    	ChangeLog changes = new ChangeLog(binder, ChangeLog.DELETEBINDER);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
-    	if ((binder.getDefinitionType() != null) &&
+    	processChangeLog(binder, ChangeLog.DELETEBINDER);
+     	if ((binder.getDefinitionType() != null) &&
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
     		if (binder.getOwner() != null) {
@@ -529,36 +533,46 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				owner.setWorkspaceId(null);
     		}
     	}
+     	//remove postings to this binder
+     	if (binder.getPosting() != null) {
+     		getCoreDao().delete(binder.getPosting());
+     	}
+     	
+       	if (!binder.isRoot()) {
+    		binder.getParentBinder().removeBinder(binder);
+    	}
     	return null;
     }
   
-    //TODO: delete all files under binder
+    
     protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-    	//getFileModule().deleteFiles(binder, null);
+    	getFileModule().deleteFiles(binder, binder, null);
     	return ctx;
     }
     
     protected Object deleteBinder_delete(Binder binder, Object ctx) {
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
+    	
     	getCoreDao().delete(binder);
+    	
        	return ctx;
     }
     protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
-    	if (!binder.isRoot()) {
-    		binder.getParentBinder().removeBinder(binder);
-    	}
-    	//core will delete all LibraryEntries
-       	return ctx;
+    	return ctx;
     }
 
     protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
         // Delete the document that's currently in the index.
-    	// Since all matches will be deleted, this will also delete the attachments
-        IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+    	indexDeleteBinder(binder);
        	return ctx;
     }
     
+    //***********************************************************************************************************
+    public void finalBinderDelete(Binder binder) {
+    	if (!binder.isDeleted()) return; 
+
+    }
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
     	if (source.isReserved() || source.isZone()) 
@@ -605,6 +619,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	List binders = binder.getBinders();
    		for (int i=0; i<binders.size(); ++i) {
    	    	Binder b = (Binder)binders.get(i);
+   	    	if (b.isDeleted()) continue;
    	    	//index children
    	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
    	    	indexedIds.addAll(processor.indexTree(b, exclusions));
@@ -650,7 +665,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     	indexBinderWithAttachments(binder, binder.getFileAttachments(), fileUploadItems, newEntry);
     }
-    
+    protected void indexDeleteBinder(Binder binder) {
+		// Since all matches will be deleted, this will also delete the attachments 
+		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
+	//TODO: what is this?
+		IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
+   	
+    }
     /**
      * Index binder along with its file attachments. Doesn't index the binder entries.
      * 
@@ -667,11 +688,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			List fileAttachments, List fileUploadItems, boolean newEntry) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
-			
-			// Since all matches will be deleted, this will also delete the attachments 
-			IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-			IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
-	        
+			indexDeleteBinder(binder);	        
 		}
 		
         // Create an index document from the entry object.
@@ -961,7 +978,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			//must be top
 			binder.setPathName("/" + binder.getTitle());
 		}
-			List children = new ArrayList(binder.getBinders());
+		List children = new ArrayList(binder.getBinders());
 		//if we index the path, need to reindex all these folders
 		while (!children.isEmpty()) {
 			Binder child = (Binder)children.get(0);

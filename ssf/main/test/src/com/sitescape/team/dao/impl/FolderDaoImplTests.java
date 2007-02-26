@@ -236,7 +236,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		
 		//have to clear session cause we are bypassing hibernate cascade.
 		cdi.clear();
-		fdi.deleteEntries((FolderEntry)entries.get(0), entries);
+		fdi.deleteEntries(folder, entries);
 		for (int i=0; i<entries.size(); ++i) {
 			checkDeleted((FolderEntry)entries.get(i));
 		}

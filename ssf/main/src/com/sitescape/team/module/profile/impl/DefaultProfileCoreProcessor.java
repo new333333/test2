@@ -246,16 +246,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	if (entry instanceof User) return ctx;
       	return super.deleteEntry_postDelete(parentBinder, entry, ctx);
    }
-
-    protected Object deleteEntry_indexDel(Entry entry, Object ctx) {
-        // Delete the document that's currently in the index.
-    	// Since all matches will be deleted, this will also delete the attachments
-      	if (entry instanceof User) {
-      		IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-      		return ctx;
-      	} 
-      	return super.deleteEntry_indexDel(entry, ctx);
-   }
     //***********************************************************************************************************    
  
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {

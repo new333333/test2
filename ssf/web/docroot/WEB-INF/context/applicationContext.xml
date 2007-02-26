@@ -472,7 +472,7 @@
 	</bean>
 
 
-	<bean id="folderModule" parent="baseTransactionProxy">
+	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
 		<property name="target">
 			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
 				<property name="definitionModule"><ref local="definitionModule"/></property>

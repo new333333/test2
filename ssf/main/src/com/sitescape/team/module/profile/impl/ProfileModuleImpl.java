@@ -17,6 +17,7 @@ import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
@@ -34,6 +35,7 @@ import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheIdException;
+import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -55,10 +57,11 @@ import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 
-public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
+public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule, InitializingBean {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
@@ -84,6 +87,33 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	this.adminModule = adminModule;
     }
     
+	/**
+	 * Called after bean is initialized.  Use this to make sure
+	 * scheduler has workflowtimeout job active
+	 *
+	 */
+	public void afterPropertiesSet() {
+		//make sure super user is set correctly
+		//there should not be any session opened, so auto-commit should be in effect
+		List companies = getCoreDao().findCompanies();
+		for (int i=0; i<companies.size(); ++i) {
+		   Workspace zone = (Workspace)companies.get(i);
+		   String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+		   //get super user from config file
+		   try {
+			   User superU = getProfileDao().findUserByName(superName, zone.getName());
+			   if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
+					superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
+					//force update
+					getCoreDao().merge(superU);				   
+			   }
+			   //make sure only one
+			   getCoreDao().executeUpdate(
+					   "update com.sitescape.team.domain.User set internalId=null where " +
+					   "internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
+		   } catch (NoUserByTheNameException nu) {} 
+		}
+	}
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
@@ -401,12 +431,20 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
    		try {
    			if (!templates.isEmpty()) {
+   				//pick the first
    				TemplateBinder template = (TemplateBinder)templates.get(0);
-   				Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getName());
-   				Binder ws = getCoreDao().loadBinder(wsId, entry.getZoneId());
-   				entry.setWorkspaceId(wsId);
-   				ws.setOwner(entry);
-   				return (Workspace)ws;
+   				RequestContext oldCtx = RequestContextHolder.getRequestContext();
+   				//want the user to be the creator
+   				RequestContextUtil.setThreadContext(entry);
+  				try {
+   					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getTitle(), entry.getName());
+   					Binder ws = getCoreDao().loadBinder(wsId, entry.getZoneId());
+   					entry.setWorkspaceId(wsId);
+   					return (Workspace)ws;
+  				} finally {
+  					//leave new context for indexing
+  					RequestContextHolder.setRequestContext(oldCtx);				
+  				}
    			}
    		} catch (WriteFilesException wf) {
    			logger.error("Cannot create user workspace: ", wf);

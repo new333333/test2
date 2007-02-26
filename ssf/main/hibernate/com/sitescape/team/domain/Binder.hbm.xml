@@ -11,6 +11,7 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" not-null="true"/>
 	<property name="library"/>
+	<property name="deleted"/>
 	<property name="uniqueTitles"/>
 	<property name="logVersion"/>
     <many-to-one name="parentBinder"/>
@@ -90,7 +91,7 @@
       <property name="average" column="rating_average" />
       <property name="count" column="rating_count"/>
     </component>
-    <property name="popularity"/>
+    <property name="popularity" optimistic-lock="false"/>
     <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>

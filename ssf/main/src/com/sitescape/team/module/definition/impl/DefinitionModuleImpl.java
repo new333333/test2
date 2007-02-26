@@ -89,8 +89,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    	}
    	protected void checkAccess(String operation) throws AccessControlException {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
-        getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);        		
-
+ 
         if ("addDefinition".equals(operation)) {
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else if (operation.startsWith("modifyDefinitionName")) {
@@ -113,7 +112,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else {
 	        //getDefinitions
-			accessControlManager.checkOperation(top, WorkAreaOperation.READ_ENTRIES);
+			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		}
    	}
     public String addDefinition(Document doc) {

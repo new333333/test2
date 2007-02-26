@@ -134,11 +134,7 @@ public interface BinderModule {
 	public boolean testAccess(Binder binder, String operation);
 
 	public boolean testAccess(Long binderId, String operation);
-	
-	public boolean testAccess(Binder binder, WorkAreaOperation operation);
-
-	public boolean testAccess(Long binderId, WorkAreaOperation operation);
-	
+		
 	public boolean testAccessGetTeamMembers(Long binderId);
 	
 	public boolean testAccessGetTeamMembers(Binder binder);

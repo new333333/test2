@@ -12,7 +12,6 @@ import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.util.SpringContextUtil;
 /**
  *
- * @author Jong Kim
  */
 public class DefaultEmailNotification extends SSStatefulJob implements EmailNotification {
 	 

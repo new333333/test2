@@ -14,7 +14,7 @@ import java.util.Map;
  * @author Jong Kim
  *
  */
-public abstract class Dashboard extends PersistentTimestampObject implements Cloneable {
+public abstract class Dashboard extends PersistentTimestampObject {
 	public final static String Components = "components";
 
 	//Component list map keys (Components)
@@ -28,6 +28,12 @@ public abstract class Dashboard extends PersistentTimestampObject implements Clo
 	protected boolean showComponents=true;
 
 	public Dashboard() {
+	}
+	public Dashboard(Dashboard dashboard) {
+		super();
+		setNextComponentId(dashboard.getNextComponentId());
+		setShowComponents(dashboard.isShowComponents());
+		setProperties(new HashMap(dashboard.getProperties()));
 	}
 
     /**

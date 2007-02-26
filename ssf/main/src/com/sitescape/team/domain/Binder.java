@@ -24,6 +24,7 @@ import com.sitescape.util.Validator;
  *
  */
 public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
+	protected boolean deleted=false;
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
     protected Map properties;
@@ -88,6 +89,16 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public boolean isRoot() {
     	return getParentBinder() == null;
     }
+    /**
+     * @hibernate.property
+     */
+    public boolean isDeleted() {
+    	return deleted;
+    }
+    public void setDeleted(boolean deleted) {
+    	this.deleted = deleted;
+    }
+ 
     /**
      * @hibernate.property
      */
