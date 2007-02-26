@@ -17,6 +17,7 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.WorkAreaOperation;
 
 /**
  * @author Janet McCann
@@ -133,6 +134,10 @@ public interface BinderModule {
 	public boolean testAccess(Binder binder, String operation);
 
 	public boolean testAccess(Long binderId, String operation);
+	
+	public boolean testAccess(Binder binder, WorkAreaOperation operation);
+
+	public boolean testAccess(Long binderId, WorkAreaOperation operation);
 	
 	public boolean testAccessGetTeamMembers(Long binderId);
 	

@@ -140,12 +140,25 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	}
 	
+	public boolean testAccess(Binder binder, WorkAreaOperation operation)  {
+		try {
+			checkAccess(binder, operation);
+			return true;
+		} catch (AccessControlException ac) {
+			return false;
+		}
+	}
+	
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
 	 * This should not be called inside a transaction because it results in a rollback.
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Long binderId, String operation)  {
+		return testAccess(loadBinder(binderId), operation);
+	}
+	
+	public boolean testAccess(Long binderId, WorkAreaOperation operation)  {
 		return testAccess(loadBinder(binderId), operation);
 	}
 	
@@ -169,8 +182,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
   		} else {
   			WorkAreaOperation[] wfo = (WorkAreaOperation[])operations.get(operation);
-  			if (wfo == null) getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
-  			else {
+  			if (wfo == null) {
+  				getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
+  			} else {
   				for (int i=0; i<wfo.length-1; ++i) {
 				//	only need to have 1
   					if (getAccessControlManager().testOperation(binder, wfo[i])) return;
@@ -179,10 +193,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   				getAccessControlManager().checkOperation(binder, wfo[wfo.length-1]);
   			}
 		}
-  		
-// fall under read_entries: getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
-//addSubscription,modifySubscription,deleteSubscription (personal)
+		// fall under read_entries: getBinder,getCommunityTags,getPersonalTags,getNotificationConfig
+		//addSubscription,modifySubscription,deleteSubscription (personal)
 	}
+  		
+	protected void checkAccess(Binder binder, WorkAreaOperation operation) throws AccessControlException {
+		if (binder instanceof TemplateBinder) {
+			//Only allow template access checks if site-admin
+			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
+  		} else {
+			//	will throw exception on failure
+			getAccessControlManager().checkOperation(binder, operation);
+		}
+	}
+	
 	private Binder loadBinder(Long binderId) {
 		return getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 	}
