@@ -15,6 +15,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
@@ -24,3 +27,7 @@
   processThisItem="true" />
 </td></tr></table>
 
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

@@ -15,8 +15,11 @@ import java.util.Set;
 import java.util.HashSet;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.web.WebKeys;
@@ -60,6 +63,7 @@ public class AccessControlController extends AbstractBinderController {
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
+        User user = RequestContextHolder.getRequestContext().getUser();
 		
 		Map model = new HashMap();
 		setupAccess(this, request, response, binder, model);
@@ -72,7 +76,9 @@ public class AccessControlController extends AbstractBinderController {
 			User owner = (User) getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), ownerId);
 			model.put(WebKeys.BINDER_OWNER, owner);
 		}
-		
+		User superUser = AccessUtils.getZoneSuperUser();
+		model.put(WebKeys.ACCESS_SUPER_USER, superUser);
+
 		return new ModelAndView(WebKeys.VIEW_ACCESS_CONTROL, model);
 	}
 	//shared with binderconfig 
@@ -142,6 +148,8 @@ public class AccessControlController extends AbstractBinderController {
 			}
 		}
 		
+		//Set up the role beans
+		BinderHelper.buildAccessControlRoleBeans(bs, model);
 	}
 
 }

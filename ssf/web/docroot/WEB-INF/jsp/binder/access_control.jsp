@@ -428,7 +428,12 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 
 </form>
 </c:if>
-
+<br/>
+<br/>
+<span class="ss_italic ss_small">[<ssf:nlt tag="access.superUser">
+  <ssf:param name="value" value="${ss_superUser.title}"/>
+  <ssf:param name="value" value="${ss_superUser.name}"/>
+  </ssf:nlt>]</span><br/>
 </div>
 </ssf:box>
 
@@ -446,4 +451,30 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 </form>
 </div>
 </div>
+
+<c:forEach var="function" items="${ssFunctions}">
+<jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
+<div id="<portlet:namespace/>ss_operations${function.id}"
+  style="position:absolute; display:none; width:300px; border:1px solid #000000; 
+  margin-bottom:10px; padding:4px; background-color:#ffffff;">
+  <div align="right">
+    <a href="#" onClick="ss_hideDiv('<portlet:namespace/>ss_operations${function.id}');return false;">
+      <img border="0" src="<html:imagesPath/>box/close_off.gif"/>
+    </a>
+  </div>
+  <div>
+	<span class="ss_bold">${function.name}</span><br/>
+	<c:forEach var="operation" items="${ssWorkAreaOperations}">
+		<c:set var="checked" value=""/>
+		<c:forEach var="roleOperation" items="${function.operations}">
+			<c:if test="${roleOperation.name == operation.key}">
+				<c:out value="${operation.value}"/><br>
+			</c:if>
+		</c:forEach>
+	</c:forEach>	
+  </div>	
 </div>
+</c:forEach>
+
+</div>
+

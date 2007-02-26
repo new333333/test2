@@ -11,6 +11,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.FolderEntry;
@@ -36,16 +37,16 @@ public class ModifyEntryController extends SAbstractController {
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
 			getFolderModule().deleteEntry(folderId, entryId);
 			setupViewFolder(response, folderId);		
-		} 
-		else if (op.equals(WebKeys.OPERATION_LOCK)) {
+		
+		} else if (op.equals(WebKeys.OPERATION_LOCK)) {
 			getFolderModule().reserveEntry(folderId, entryId);
 			setupViewEntry(response, folderId, entryId);
-		}
-		else if (op.equals(WebKeys.OPERATION_UNLOCK)) {
+		
+		}else if (op.equals(WebKeys.OPERATION_UNLOCK)) {
 			getFolderModule().unreserveEntry(folderId, entryId);
 			setupViewEntry(response, folderId, entryId);
-		}
-		else if (formData.containsKey("okBtn")) {
+			
+		} else if (formData.containsKey("okBtn")) {
 			if (op.equals("")) {
 
 				//See if the add entry form was submitted
@@ -65,7 +66,8 @@ public class ModifyEntryController extends SAbstractController {
 					}
 				}
 			
-				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
+				getFolderModule().modifyEntry(folderId, entryId, 
+						new MapInputData(formData), fileMap, deleteAtts, null);
 				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
 				//response.setRenderParameter("ssReloadUrl", "");
@@ -75,9 +77,16 @@ public class ModifyEntryController extends SAbstractController {
 				getFolderModule().moveEntry(folderId, entryId, destinationId);
 				setupViewFolder(response, folderId);		
 			}
+			
+		} else if (formData.containsKey("editElementBtn")) {
+			getFolderModule().modifyEntry(folderId, entryId, 
+					new MapInputData(formData), new HashMap(), null, null);
+			setupReloadOpener(response, folderId, entryId);
+
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupCloseWindow(response);
+		
 		} else {
 			response.setRenderParameters(formData);		
 		}
@@ -114,8 +123,9 @@ public class ModifyEntryController extends SAbstractController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		String elementToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT_TO_EDIT, "");
 		String path;
-		FolderEntry entry=null;
+		FolderEntry entry = null;
 		if (op.equals(WebKeys.OPERATION_MOVE)) {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
@@ -130,7 +140,12 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
 			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
-			path = WebKeys.VIEW_MODIFY_ENTRY;
+			if (elementToEdit.equals("")) {
+				path = WebKeys.VIEW_MODIFY_ENTRY;
+			} else {
+				DefinitionHelper.getDefinitionElement(entry.getEntryDef(), model, elementToEdit);
+				path = WebKeys.VIEW_MODIFY_ENTRY_ELEMENT;
+			}
 		} 
 			
 		return new ModelAndView(path, model);

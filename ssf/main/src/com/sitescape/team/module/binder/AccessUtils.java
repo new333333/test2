@@ -264,4 +264,9 @@ public class AccessUtils  {
 		return true;
 	}
     	    
+    public static User getZoneSuperUser() {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		User superUser = getInstance().getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, user.getZoneId());
+		return superUser;
+    }
 }

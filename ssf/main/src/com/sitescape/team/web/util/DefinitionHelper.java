@@ -85,7 +85,7 @@ public class DefinitionHelper {
 	 * @param node
 	 * @return
 	 */
-	public static  boolean getDefinition(Definition currentDef, Map model, String node) {
+	public static boolean getDefinition(Definition currentDef, Map model, String node) {
 		model.put(WebKeys.ENTRY_DEFINITION, currentDef);
 		model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 		if (currentDef == null) {
@@ -108,7 +108,33 @@ public class DefinitionHelper {
 			}
 		}
 		return true;
-		
+	}
+
+	public static boolean getDefinitionElement(Definition currentDef, Map model, String elementName) {
+		if (currentDef == null) {
+			model.put(WebKeys.CONFIG_ELEMENT, null);
+			return false;
+		}
+		Document configDoc = currentDef.getDefinition();
+		if (configDoc == null) { 
+			model.put(WebKeys.CONFIG_ELEMENT, null);
+			return false;
+		} else {
+			Element configRoot = configDoc.getRootElement();
+			if (configRoot == null) {
+				model.put(WebKeys.CONFIG_ELEMENT, null);
+				return false;
+			} else {
+				//Get the form in which this element lives
+				Element formEle = (Element) configRoot.selectSingleNode("//item[@type='form']");
+				//Find the item that has the desired name
+				Element configEle = (Element) formEle.selectSingleNode(
+						"//item/properties/property[@name='name' and @value='"+elementName+"']");
+				model.put(WebKeys.CONFIG_ELEMENT, configEle.getParent().getParent());
+				if (configEle == null) return false;
+			}
+		}
+		return true;
 	}
 
 	public static void getDefinitions(Binder binder, Map model) {
