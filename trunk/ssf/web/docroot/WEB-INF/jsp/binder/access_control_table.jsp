@@ -56,7 +56,7 @@
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <input type="hidden" name="roleIds" value="${function.id}"/>
 <TH class="ss_table_smheaders"><a href="#" 
-  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext">${function.name}
 <c:if test="${empty ssFunctionsAllowed[function.id]}">
 *
@@ -130,7 +130,7 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
   <TH class="ss_table_smheaders"><a href="#" 
-  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext">${function.name}
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *
@@ -207,7 +207,7 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
   <TH class="ss_table_smheaders"><a href="#" 
-  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
   ><span class="ss_table_smalltext">${function.name}
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *

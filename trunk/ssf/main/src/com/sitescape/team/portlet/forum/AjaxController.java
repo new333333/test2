@@ -584,7 +584,7 @@ public class AjaxController  extends SAbstractController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			entityType = binder.getEntityIdentifier().getEntityType();
 		}
-		if (entityType.equals(EntityType.folder) || entityType.equals(EntityType.workspace)) {
+		if (entityType != null && (entityType.equals(EntityType.folder) || entityType.equals(EntityType.workspace))) {
 			model.put(WebKeys.COMMUNITY_TAGS, getBinderModule().getCommunityTags(binderId));
 			model.put(WebKeys.PERSONAL_TAGS, getBinderModule().getPersonalTags(binderId));
 		} else {
