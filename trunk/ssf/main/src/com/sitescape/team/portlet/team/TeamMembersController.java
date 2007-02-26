@@ -137,11 +137,6 @@ public class TeamMembersController extends SAbstractController  {
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
-		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binder.getId()));
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;
 		if (searchFilterName != null && !searchFilterName.equals("")) {
@@ -166,7 +161,7 @@ public class TeamMembersController extends SAbstractController  {
 		return new ModelAndView(WebKeys.VIEW_TEAM_MEMBERS, model);
 	}
 	protected void getTeamMembers(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) throws PortletRequestBindingException {
-		List users = getBinderModule().getTeamUserMembers(ws);
+		List users = getBinderModule().getTeamMembers(ws.getId(), true);
 		model.put(WebKeys.TEAM_MEMBERS, users);
 		model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());

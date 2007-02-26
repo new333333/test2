@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
-import org.apache.lucene.document.Field;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
@@ -42,16 +40,13 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.exception.UncheckedCodedContainerException;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.jobs.WorkflowTimeout;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
@@ -60,7 +55,6 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.search.LuceneSession;
@@ -71,8 +65,6 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
@@ -132,6 +124,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
+	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
 	 * 
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
@@ -147,25 +141,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	
 	/*
 	 * Check access to binder.  If operation not listed, assume read_entries needed
-	 * 
+	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Long binderId, String operation)  {
 		return testAccess(loadBinder(binderId), operation);
 	}
 	
-	public boolean testAccessGetTeamMembers(Binder binder)  {
-		try {
-			checkAccess(binder, "getTeamMembers");
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-	}
-
-	public boolean testAccessGetTeamMembers(Long binderId)  {
-		return testAccessGetTeamMembers(loadBinder(binderId));
-	}
 	/**
 	 * Use method names instead of WorkAreaOperation so application doesn't have the required knowledge.  
 	 * This also makes it easier to change what operations and allow multiple operations need to execute a method.
@@ -209,14 +192,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
 		if (binder.isDeleted()) throw new NoBinderByTheIdException(binderId);
 		return binder;
-	}
-	private EntryProcessor loadEntryProcessor(Binder binder) {
-        // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.team.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-
-		return (EntryProcessor)getProcessorManager().getProcessor(binder, binder.getProcessorKey(EntryProcessor.PROCESSOR_KEY));			
 	}
 	private BinderProcessor loadBinderProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
@@ -453,8 +428,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
     public Binder setDefinitions(Long binderId, List definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
-		Binder binder = setDefinitions(binderId, definitionIds);
-//checked already		checkAccess(binder, "setDefinitions"); 
+    	//access checked in setDefinitions
+    	Binder binder = setDefinitions(binderId, definitionIds);
 		Map wf = new HashMap();
 		Definition def;
 		if (workflowAssociations != null) {
@@ -654,96 +629,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return retMap; 
 	}	
 	
-	public Map executePeopleSearchQuery(Document searchQuery) {
-		Binder binder = null;
-		return executePeopleSearchQuery(binder, searchQuery);
-	}
-	public Map executePeopleSearchQuery(Binder binder, Document searchQuery) {
-        List entries = new ArrayList();
-        Hits hits = new Hits(0);
-        
-        if (searchQuery != null) {
-        	Document qTree = FilterHelper.convertSearchFilterToPeopleSearchBoolean(searchQuery);
-        	Element rootElement = qTree.getRootElement();
-        	if (rootElement != null) {
-	        	//Find the first "and" element and add to it
-	        	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
-	        	if (boolElement == null) {
-	        		//If there isn't one, then create one.
-	        		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-	        	}
-	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-	        	
-	        	if (!getProfileModule().checkUserSeeAll()) {
-	    			Element field = boolElement.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
-	    			if (getProfileModule().checkUserSeeCommunity())
-	    	    	{
-	    	    		// Add the group visibility element to the filter terms document
-	    				field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
-	    	    	} else {
-	    	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
-	    	    	}
-	        	}
-	        	
-	        	//Create the Lucene query
-		    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
-		    	SearchObject so = qb.buildQuery(qTree);
-		    	
-		    	//Set the sort order
-		    	//SortField[] fields = getBinderEntries_getSortFields(binder); 
-		    	//so.setSortBy(fields);
-		    	
-		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
-		    	
-		    	if(logger.isInfoEnabled()) {
-		    		logger.info("Query is: " + searchQuery.asXML());
-		    		logger.info("Query is: " + soQuery.toString());
-		    	}
-		    	
-		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-		        
-		        int maxResults = 10;
-		        try {
-			        hits = luceneSession.search(soQuery,so.getSortBy(),0,maxResults);
-		        }
-		        finally {
-		            luceneSession.close();
-		        }
-        	}
-        }
-		        
-        Set ids = new HashSet();
-        org.apache.lucene.document.Document doc;
-        Field field;
-        for (int i = 0; i < hits.length(); i++) {
-            doc = hits.doc(i);
-            field = doc.getField(EntityIndexUtils.ENTRY_TYPE_FIELD);
-            if (field.stringValue().equalsIgnoreCase(EntityIndexUtils.ENTRY_TYPE_USER)) {
-            	field = doc.getField(EntityIndexUtils.DOCID_FIELD);
-            	try {ids.add(new Long(field.stringValue()));
-        	    } catch (Exception ex) {}
-            }
-            if (field.stringValue().equalsIgnoreCase(EntityIndexUtils.ENTRY_TYPE_GROUP)) {
-            	field = doc.getField(EntityIndexUtils.DOCID_FIELD);
-            	try {ids.add(new Long(field.stringValue()));
-        	    } catch (Exception ex) {}
-            }
-        }
-        entries =  getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
-        Map retMap = new HashMap();
-        retMap.put(WebKeys.PEOPLE_RESULTS, entries);
-        retMap.put(WebKeys.PEOPLE_RESULTCOUNT, new Integer(hits.getTotalHits()));
-        return retMap;
-	}
 
 	public ArrayList getSearchTags(String wordroot, String type) {
 		ArrayList tags = new ArrayList();
-		Element qTreeElement = null;
 		
 		// Top of query doc 
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeAclElement = qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
+		qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
 			
     	//Create the query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
@@ -782,21 +675,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	}
 	 }
 
-	public boolean hasTeamMembers(Long binderId) {
+	public boolean hasTeamMembers(Long binderId, boolean explodeGroups) {
 		Binder binder = loadBinder(binderId);
 		//give access to team members OR binder Admins.
 		checkAccess(binder, "getTeamMembers");
-		return hasTeamMembers(binder);
-	}
-
-	public boolean hasTeamUserMembers(Long binderId) {
-		Binder binder = loadBinder(binderId);
-		//give access to team members OR binder Admins.
-		checkAccess(binder, "getTeamMembers");
-		return hasTeamUserMembers(binder);
-	}
-
-	public boolean hasTeamMembers(Binder binder) {
 		List <WorkAreaFunctionMembership> wfms=null;
 		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
 	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
@@ -808,6 +690,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		    }
 	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
 	    }
+		if (explodeGroups) {
+			Set ids = new HashSet();
+			for (WorkAreaFunctionMembership fm: wfms) {
+				ids.addAll(fm.getMemberIds());
+			}
+		
+			// explode groups
+			return getProfileDao().explodeGroups(ids, binder.getZoneId()).size() > 0;
+		}
 		for (WorkAreaFunctionMembership fm: wfms) {
 			// don't explode groups
 			if (fm.getMemberIds() != null && fm.getMemberIds().size() > 0) {
@@ -816,71 +707,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 	    return false;
 	}
-	
-	public boolean hasTeamUserMembers(Binder binder) {
-		List <WorkAreaFunctionMembership> wfms=null;
-		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
-		} else {
-	    	WorkArea source = binder.getParentWorkArea();
-	    	
-	    	while (source.isFunctionMembershipInherited()) {
-		    	source = source.getParentWorkArea();
-		    }
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
-	    }
-		Set ids = new HashSet();
-		for (WorkAreaFunctionMembership fm: wfms) {
-			ids.addAll(fm.getMemberIds());
-		}
 		
-	    // explode groups
-		return getProfileDao().explodeGroups(ids, binder.getZoneId()).size() > 0;	
-	}
-	
 
-	public List getTeamMembers(Long binderId) {
+	public List getTeamMembers(Long binderId, boolean explodeGroups) {
+		//give access to team members  or binder Admins.
+		Set ids = getTeamMemberIds(binderId, explodeGroups);
+		//turn ids into real Principals
+ 	    return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
+	
+	public Set getTeamMemberIds(Long binderId, boolean explodeGroups) {
 		Binder binder = loadBinder(binderId);
 		//give access to team members  or binder Admins.
 		checkAccess(binder, "getTeamMembers");
-		return getTeamMembers(binder);
+		return getTeamMemberIds(binder, explodeGroups);
 	}
-	
-	public List getTeamUserMembers(Long binderId) {
-		Binder binder = loadBinder(binderId);
-		//give access to team members  or binder Admins.
-		checkAccess(binder, "getTeamMembers");
-		return getTeamUserMembers(binder);
-	}
-	
-	public Set getTeamUserMembersIds(Long binderId) {
-		Binder binder = loadBinder(binderId);
-		//give access to team members  or binder Admins.
-		checkAccess(binder, "getTeamMembers");
-		return getTeamUserMembersIds(binder);
-	}
-	
-	public List getTeamMembers(Binder binder) {
-		List <WorkAreaFunctionMembership> wfms=null;
-		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
-		} else {
-	    	WorkArea source = binder.getParentWorkArea();
-	    	
-	    	while (source.isFunctionMembershipInherited()) {
-		    	source = source.getParentWorkArea();
-		    }
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
-	    }
-		Set ids = new HashSet();
-		for (WorkAreaFunctionMembership fm: wfms) {
-			ids.addAll(fm.getMemberIds());
-		}
-	    //don't explode groups
-	    return getProfileDao().loadPrincipals(ids, binder.getZoneId());
-	}
-	
-	public List getTeamUserMembers(Binder binder) {
+	/*
+	 *  (non-Javadoc)
+	 *  No access check - used internally to send notifications
+	 * @see com.sitescape.team.module.binder.BinderModule#getTeamMemberIds(com.sitescape.team.domain.Binder, boolean)
+	 */
+	public Set getTeamMemberIds(Binder binder, boolean explodeGroups) {
 		List <WorkAreaFunctionMembership> wfms=null;
 		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
 	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
@@ -898,28 +746,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		}
 		
 	    // explode groups
-		return getProfileDao().loadPrincipals(getProfileDao().explodeGroups(ids, binder.getZoneId()), binder.getZoneId());		
-	}
-	
-	public Set getTeamUserMembersIds(Binder binder) {
-		List <WorkAreaFunctionMembership> wfms=null;
-		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
-		} else {
-	    	WorkArea source = binder.getParentWorkArea();
-	    	
-	    	while (source.isFunctionMembershipInherited()) {
-		    	source = source.getParentWorkArea();
-		    }
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
-	    }
-		Set ids = new HashSet();
-		for (WorkAreaFunctionMembership fm: wfms) {
-			ids.addAll(fm.getMemberIds());
-		}
-		
-	    // explode groups
-		return getProfileDao().explodeGroups(ids, binder.getZoneId());
+		if (explodeGroups) return getProfileDao().explodeGroups(ids, binder.getZoneId());
+		return ids;
 	}
 
     public void setPosting(Long binderId, String emailAddress) {

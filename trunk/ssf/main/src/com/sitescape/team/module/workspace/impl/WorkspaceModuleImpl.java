@@ -46,6 +46,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     protected DefinitionModule definitionModule;
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
+   	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
 	public boolean testAccess(Workspace workspace, String operation) {

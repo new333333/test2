@@ -78,6 +78,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 
     }
+    /*
+     *  (non-Javadoc)
+ 	 * Use method names as operation so we can keep the logic out of application
+     * @see com.sitescape.team.module.definition.DefinitionModule#testAccess(java.lang.String)
+     */
    	public boolean testAccess(String operation) {
    		try {
    			checkAccess(operation);

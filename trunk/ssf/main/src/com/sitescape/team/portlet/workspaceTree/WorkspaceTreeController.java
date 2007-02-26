@@ -54,19 +54,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
  		Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		BinderHelper.setBinderPermaLink(this, request, response);
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
-		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
-			//Signal that this is the initialization step
-			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
-			
-			PortletURL url;
-			url = response.createRenderURL();
-			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			prefs.store();
-		}
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.setBinderPermaLink(this, request, response);
@@ -116,7 +103,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		Map formData = request.getParameterMap();
 		if (binder == null) binder = getBinderModule().getBinder(binderId);
-
  
  		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
@@ -185,11 +171,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		try {
-			model.put(WebKeys.TEAM_MEMBERSHIP, getBinderModule().getTeamMembers(binder.getId()));
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;
 		if (searchFilterName != null && !searchFilterName.equals("")) {
@@ -246,7 +227,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 	}
 	
 	protected void getTeamMembers(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) throws PortletRequestBindingException {
-		List users = getBinderModule().getTeamUserMembers(ws);
+		List users = getBinderModule().getTeamMembers(ws.getId(), true);
 		model.put(WebKeys.TEAM_MEMBERS, users);
 		model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
@@ -400,7 +381,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		
 		// list team members
-		if (getBinderModule().testAccessGetTeamMembers(workspace.getId())) {
+		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
 			Map qualifiers = new HashMap();
 //			url = response.createActionURL();
 //			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_TEAM_MEMBERS);

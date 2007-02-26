@@ -139,6 +139,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 		}
 	}
+	/*
+ 	 * Check access to folder.  If operation not listed, assume read_entries needed
+  	 * Use method names as operation so we can keep the logic out of application
+	 * and easisly change the required rights
+	 * @see com.sitescape.team.module.profile.ProfileModule#testAccess(com.sitescape.team.domain.Principal, java.lang.String)
+	 */
 	public boolean testAccess(Principal entry, String operation) {
 		try {
 			checkAccess(entry, operation);

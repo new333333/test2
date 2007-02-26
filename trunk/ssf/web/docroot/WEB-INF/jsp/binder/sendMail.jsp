@@ -111,6 +111,16 @@ self.window.resizeTo(width, height);
 	    processThisItem="true" 
 	    entry="${ssEntry}" />
 </c:if>
+<c:if test="${empty ssEntry}">
+  <a href="<ssf:url 
+  		adapter="true" 
+    	portletName="ss_forum" 
+   		action="view_permalink"
+		binderId="${ssBinder.id}">
+		<ssf:param name="entityType" value="${ssBinder.entityType}" />
+    	<ssf:param name="newTab" value="1"/>
+ 	  	</ssf:url>">${ssBinder.title}</a><br/>
+</c:if>
   </ssf:htmleditor>
   </div>
 </td></tr>

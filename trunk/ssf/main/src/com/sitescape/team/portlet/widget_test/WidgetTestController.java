@@ -21,6 +21,12 @@ public class WidgetTestController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response)
 	throws Exception {
 		//There is no action. Just go to the render phase
+ 		PortletPreferences prefs = request.getPreferences();
+		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		if (Validator.isNull(ss_initialized)) {
+			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+			prefs.store();
+		}
 		response.setRenderParameters(request.getParameterMap());
 	}
 	
@@ -30,14 +36,12 @@ public class WidgetTestController extends SAbstractController {
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
 			
 			PortletURL url;
 			url = response.createRenderURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			prefs.store();
 		}
 		//Dispatch the the desired jsp
 		String action = request.getParameter("action");
