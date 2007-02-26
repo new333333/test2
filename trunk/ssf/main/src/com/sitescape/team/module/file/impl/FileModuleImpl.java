@@ -400,9 +400,17 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	
 	public void readThumbnailFile(
 			Binder binder, DefinableEntity entry, FileAttachment fa, 
-			OutputStream out) {
-
-		String relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
+			OutputStream out)
+	{
+		String relativeFilePath = "";
+		
+		if (!(fa.getFileItem().getName().toLowerCase().endsWith(".gif")
+		|| fa.getFileItem().getName().toLowerCase().endsWith(".jpg")
+		|| fa.getFileItem().getName().toLowerCase().endsWith(".jpeg")
+		|| fa.getFileItem().getName().toLowerCase().endsWith(".png")))
+			relativeFilePath = fa.getFileItem().getName() + IImageConverterManager.IMG_EXTENSION;
+		else
+			relativeFilePath = fa.getFileItem().getName();
 		
 		String filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
 		if(!cacheFileStore.fileExists(filePath)) {			
