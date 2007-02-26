@@ -18,6 +18,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
@@ -74,17 +75,9 @@ public class ConfigureRolesController extends  SAbstractController {
 		}
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
-		//Add the list of existing functions for this zone
-		model.put(WebKeys.FUNCTIONS, getAdminModule().getFunctions());
 		
-		//Add the list of workAreaOperations that can be added to each function
-		Map operations = new HashMap();
-		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
-		while (itWorkAreaOperations.hasNext()) {
-			String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
-			operations.put(operationName, NLT.get("workarea_operation." + operationName));
-		}
-		model.put("ssWorkAreaOperations", operations);
+		//Set up the role beans
+		BinderHelper.buildAccessControlRoleBeans(this, model);
 		
 		return new ModelAndView("administration/configureRoles", model);
 		

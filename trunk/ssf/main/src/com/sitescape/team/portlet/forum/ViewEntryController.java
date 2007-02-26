@@ -198,11 +198,15 @@ public class ViewEntryController extends  SAbstractController {
 		return new ModelAndView(viewPath, model);
 	} 
 
-	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, Map model, FolderEntry entry, Map userProperties) {
+	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, 
+			Map model, FolderEntry entry, Map userProperties) {
 
 		PortletURL url;
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		//Initialize the acl bean
+		Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
 
 		Map disabledQual = new HashMap();
 		disabledQual.put("disabled", new Boolean(true));
@@ -237,6 +241,7 @@ public class ViewEntryController extends  SAbstractController {
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		if (getFolderModule().testAccess(entry, "addReply")) {
+			accessControlEntryMap.put("addReply", new Boolean(true));
 			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
 			if (!replyStyles.isEmpty()) {
 				if (replyStyles.size() == 1) {
@@ -294,6 +299,7 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
 			}
 			else {
+				accessControlEntryMap.put("modifyEntry", new Boolean(true));
 				//The "Modify" menu
 				Map qualifiers = new HashMap();
 				qualifiers.put("popup", new Boolean(true));
@@ -361,6 +367,7 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), nullPortletUrl, disabledQual);
 			}
 			else {
+				accessControlEntryMap.put("deleteEntry", new Boolean(true));
 				Map qualifiers = new HashMap();
 				qualifiers.put("onClick", "return ss_confirmDeleteEntry();");
 				url = response.createActionURL();
@@ -455,6 +462,9 @@ public class ViewEntryController extends  SAbstractController {
 	
 	protected void buildNoEntryBeans(RenderRequest request, 
 			RenderResponse response, Folder folder, String entryTitle, Map model) {
+		//Initialize the acl bean
+		Map accessControlFolderMap = BinderHelper.getAccessControlEntityMapBean(model, folder);
+
 		//Build the "add entry" beans
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		Map urls = new HashMap();
@@ -464,6 +474,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ADD_ENTRY_TITLES,  titles);
 		model.put(WebKeys.ADD_ENTRY_TITLE,  entryTitle);
 		if (getFolderModule().testAccess(folder, "addEntry")) {				
+			accessControlFolderMap.put("addEntry", new Boolean(true));
 			if (!defaultEntryDefinitions.isEmpty()) {
 				for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
 					Definition def = (Definition) defaultEntryDefinitions.get(i);

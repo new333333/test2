@@ -106,6 +106,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  
        return workspace;
     }
+    public Workspace getTopWorkspace() {
+		Workspace top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+		return top;
+    }
    	public Collection getWorkspaceTree(Long id) throws AccessControlException {
     	Workspace top;
         if (id == null) top =  getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());

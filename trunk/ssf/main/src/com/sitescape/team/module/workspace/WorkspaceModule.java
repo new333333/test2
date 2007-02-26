@@ -27,6 +27,7 @@ public interface WorkspaceModule {
      */
     public Workspace getWorkspace() throws NoWorkspaceByTheIdException, AccessControlException;
 	public Workspace getWorkspace(Long workspaceId)	throws NoWorkspaceByTheIdException, AccessControlException;
+	public Workspace getTopWorkspace();
   	/**
   	 * Return list of child binders, that have been verified for read access
   	 * and sorted by title

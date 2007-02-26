@@ -55,11 +55,13 @@
 <TR>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
 <input type="hidden" name="roleIds" value="${function.id}"/>
-<TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+<TH class="ss_table_smheaders"><a href="#" 
+  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  ><span class="ss_table_smalltext">${function.name}
 <c:if test="${empty ssFunctionsAllowed[function.id]}">
 *
 </c:if>
-</span></TH>
+</span></a></TH>
 </c:forEach>
 </TR>
 </THEAD>
@@ -127,11 +129,13 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.groupName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+  <TH class="ss_table_smheaders"><a href="#" 
+  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  ><span class="ss_table_smalltext">${function.name}
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *
   </c:if>
-  </span></TH>
+  </span></a></TH>
 </c:forEach>
 </TR>
 </THEAD>
@@ -202,11 +206,13 @@
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userTitle"/></TH>
   <TH class="ss_table_smheaders"><ssf:nlt tag="access.userName"/></TH>
 <c:forEach var="function" items="${ss_accessSortedFunctions}">
-  <TH class="ss_table_smheaders"><span class="ss_table_smalltext">${function.name}
+  <TH class="ss_table_smheaders"><a href="#" 
+  onClick="ss_showDivAtXY('<portlet:namespace/>ss_operations${function.id}');return false;"
+  ><span class="ss_table_smalltext">${function.name}
   <c:if test="${empty ssFunctionsAllowed[function.id]}">
   *
   </c:if>
-  </span></TH>
+  </span></a></TH>
 </c:forEach>
 </TR>
 </THEAD>

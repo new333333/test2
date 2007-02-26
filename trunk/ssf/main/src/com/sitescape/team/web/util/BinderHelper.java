@@ -24,6 +24,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
@@ -93,6 +94,15 @@ public class BinderHelper {
 		return url;
 	}
 
+	static public Map getAccessControlEntityMapBean(Map model, DefinableEntity entity) {
+		//Initialize the acl bean
+		if (!model.containsKey(WebKeys.ACCESS_CONTROL_MAP)) 
+			model.put(WebKeys.ACCESS_CONTROL_MAP, new HashMap());
+		Map accessControlMap = (Map)model.get(WebKeys.ACCESS_CONTROL_MAP);
+		if (!accessControlMap.containsKey(entity.getId())) 
+			accessControlMap.put(entity.getId(), new HashMap());
+		return (Map)accessControlMap.get(entity.getId());
+	}
 	static public void buildNavigationLinkBeans(AllBusinessServicesInjected bs, Binder binder, Map model) {
 		if (binder instanceof TemplateBinder)
 			buildNavigationLinkBeans(bs, (TemplateBinder)binder, model, new ConfigHelper(""));
@@ -776,5 +786,17 @@ public class BinderHelper {
 		public String getTreeNameKey() {return null;}
 		
 	}
-	
+	public static void buildAccessControlRoleBeans(AllBusinessServicesInjected bs, Map model) {
+		//Add the list of existing functions for this zone
+		model.put(WebKeys.FUNCTIONS, bs.getAdminModule().getFunctions());
+		
+		//Add the list of workAreaOperations that can be added to each function
+		Map operations = new HashMap();
+		Iterator itWorkAreaOperations = WorkAreaOperation.getWorkAreaOperations();
+		while (itWorkAreaOperations.hasNext()) {
+			String operationName = (String) ((WorkAreaOperation) itWorkAreaOperations.next()).toString();
+			operations.put(operationName, NLT.get("workarea_operation." + operationName));
+		}
+		model.put(WebKeys.WORKAREA_OPERATIONS, operations);
+	}
 }

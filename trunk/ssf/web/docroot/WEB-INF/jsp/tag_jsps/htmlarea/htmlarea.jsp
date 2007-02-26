@@ -29,13 +29,10 @@ var ss_imageUploadUrl = "<ssf:url
     </ssf:url>";
 </script>
 <div align="left" style="<c:if test="${!empty element_color}">background-color:${element_color};
-</c:if><c:if test="${!empty element_height}">
-height:${element_height}px;
 </c:if>">
 <textarea class="ss_style mceEditable"
-  <c:if test="${!empty element_color}">
-    style="background-color:${element_color};"
-  </c:if>
+  style="<c:if test="${!empty element_height}">height:${element_height}px;</c:if> <c:if 
+  test="${!empty element_color}">background-color:${element_color}; </c:if>"
   <c:if test="${!empty element_id}">
     id="${element_id}" 
   </c:if>

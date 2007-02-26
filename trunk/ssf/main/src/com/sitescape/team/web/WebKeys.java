@@ -59,6 +59,7 @@ public class WebKeys {
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
+	public static final String URL_ELEMENT_TO_EDIT = "element";
 	public static final String URL_ENTITY_ID = "entityId";
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
@@ -129,6 +130,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURE_DEFINITIONS = "configure_definitions";
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
+	public static final String ACTION_EDIT_ELEMENT = "edit_element";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -269,6 +271,7 @@ public class WebKeys {
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
 	
 	// MODEL TAGS & Attributes
+	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
@@ -279,6 +282,7 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_GROUPS_MAP = "ss_accessSortedGroupsMap";
 	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
+	public static final String ACCESS_SUPER_USER = "ss_superUser";
 	public static final String ACTION = "action";
 	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
@@ -553,6 +557,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
+    public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";
     public static final String WORKFLOW_CAPTIONS="ssWorkflowCaptions";
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINTION_MAP="ssWorkflowDefinitionMap";
@@ -624,6 +629,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
+    public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
     public static final String VIEW_MOVE_ENTRY="entry/move_entry";
     public static final String VIEW_MODIFY_BINDER="binder/modify_binder";
