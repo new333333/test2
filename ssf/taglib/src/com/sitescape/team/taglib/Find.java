@@ -90,9 +90,6 @@ public class Find extends TagSupport {
 			req.setAttribute("show_clipboard", this.showClipboard);
 			req.setAttribute("show_team_members", this.showTeamMembers);
 			
-			// in use only on search users and groups
-			req.setAttribute("addUserToListRoutine", "ss_addUserToUserList_"+ this.formName + "_" + this.formElement + "_" + this.instanceCount);
-			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
 			pageContext.getOut().print(res.getString());

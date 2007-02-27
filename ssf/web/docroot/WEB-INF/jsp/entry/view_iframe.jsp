@@ -2,88 +2,89 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
-String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
+	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 
-//Get the folder type of this definition (folder, file, or event)
-String folderViewStyle = "folder";
-Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
-if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+	//Get the folder type of this definition (folder, file, or event)
+	String folderViewStyle = "folder";
+	Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
+	if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
-<script type="text/javascript">
-//Define the variables needed by the javascript routines
-var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+	<script type="text/javascript">
+		//Define the variables needed by the javascript routines
+		var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+		
+		<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+			var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
+			var ss_entryWindowTop = ${ss_entryWindowTop};
+			var ss_entryWindowLeft = ${ss_entryWindowLeft};
+		</c:if>
+		<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+			var ss_entryWindowTopOriginal = -1;
+			var ss_entryWindowTop = -1;
+			var ss_entryWindowLeft = -1;
+		</c:if>
+		
+		var ss_saveEntryWidthUrl = "<ssf:url 
+			adapter="true" 
+			portletName="ss_forum" 
+			action="__ajax_request" 
+			actionUrl="true" >
+			<ssf:param name="operation" value="save_entry_width" />
+			</ssf:url>"
+		
+		var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
+		var ss_entryWindowWidth = ${ss_entryWindowWidth};
+		var ss_entryBackgroundColor = "${ss_style_background_color}";
+	</script>
+	<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
-<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
-var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
-var ss_entryWindowTop = ${ss_entryWindowTop};
-var ss_entryWindowLeft = ${ss_entryWindowLeft};
-</c:if>
-<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
-var ss_entryWindowTopOriginal = -1;
-var ss_entryWindowTop = -1;
-var ss_entryWindowLeft = -1;
-</c:if>
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-var ss_saveEntryWidthUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_entry_width" />
-	</ssf:url>"
+	<% // Tabs %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<div class="ss_clear"></div>
 
-var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
-var ss_entryWindowWidth = ${ss_entryWindowWidth};
-var ss_entryBackgroundColor = "${ss_style_background_color}";
-</script>
-<script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
+	<div class="ss_tab_canvas">
+		<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
+	    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
+					
+			<% // Folder toolbar %>
+			<c:if test="${!empty ssFolderToolbar}">
+				<div class="ss_content_inner">
+					<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
+				</div>
+			</c:if>
+	
+			<div class="ss_content_inner">
+				<c:if test="${!ss_showSearchResults}">
+					<% // Navigation links %>
+					<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+					<div align="right" width="100%">
+						<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+					</div>
+		
+					<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+					  configElement="${ssConfigElement}" 
+					  configJspStyle="${ssConfigJspStyle}" />
+				</c:if>
+				<c:if test="${ss_showSearchResults}">
+					<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
+				</c:if>
+			</div>
+		</div>
+	</div>
 
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-<% // Tabs %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-<div class="ss_clear"></div>
+	<% // Footer toolbar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
 
-<div class="ss_tab_canvas">
-<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
-				
-<% // Folder toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
-<div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-</div>
-</c:if>
-
-<div class="ss_content_inner">
-<c:if test="${!ss_showSearchResults}">
-<% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-<div align="right" width="100%">
-<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
-</div>
-
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${ssConfigElement}" 
-  configJspStyle="${ssConfigJspStyle}" />
-</c:if>
-<c:if test="${ss_showSearchResults}">
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
-</c:if>
-   </div>
-  </div>
-</div>
-
-<% // Footer toolbar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-
-</div>
+	</div>
 </div>
 
 <c:if test="${ss_folderViewStyle != 'blog'}">
@@ -118,24 +119,24 @@ var ss_entryBackgroundColor = "${ss_style_background_color}";
 </c:if>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
-<input type="hidden" name="entry_width">
-<input type="hidden" name="entry_top">
-<input type="hidden" name="entry_left">
+	<input type="hidden" name="entry_width">
+	<input type="hidden" name="entry_top">
+	<input type="hidden" name="entry_left">
 </form>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
-<script type="text/javascript">
-function ss_showEntryToBeShown<portlet:namespace/>() {
-    var url = "<ssf:url     
-		adapter="true" 
-		portletName="ss_forum" 
-		folderId="${ssBinder.id}" 
-		action="view_folder_entry" 
-		entryId="${ssEntryIdToBeShown}" 
-		actionUrl="true" />" 
-	ss_showForumEntryInIframe(url);
-}
-ss_createOnLoadObj('ss_showEntryToBeShown<portlet:namespace/>', ss_showEntryToBeShown<portlet:namespace/>);
-</script>
+	<script type="text/javascript">
+		function ss_showEntryToBeShown<portlet:namespace/>() {
+		    var url = "<ssf:url     
+				adapter="true" 
+				portletName="ss_forum" 
+				folderId="${ssBinder.id}" 
+				action="view_folder_entry" 
+				entryId="${ssEntryIdToBeShown}" 
+				actionUrl="true" />" 
+			ss_showForumEntryInIframe(url);
+		}
+		ss_createOnLoadObj('ss_showEntryToBeShown<portlet:namespace/>', ss_showEntryToBeShown<portlet:namespace/>);
+	</script>
 </c:if>
 

@@ -18,33 +18,28 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div style="margin:6px; width:100%;">
-<h3><ssf:nlt tag="presence.configure" text="Configure buddy list"/></h3>
-<fieldset class="ss_fieldset">
-  <legend class="ss_legend"><ssf:nlt tag="presence.configure.buddies" 
-    text="Buddies"/></legend>
+	<h3><ssf:nlt tag="presence.configure" text="Configure buddy list"/></h3>
+	<fieldset class="ss_fieldset">
+		<legend class="ss_legend"><ssf:nlt tag="presence.configure.buddies" text="Buddies"/></legend>
 
-<table cellspacing="10px" cellpadding="10px" width="100%">
+		<table cellspacing="10px" cellpadding="10px" width="100%">
+			<tr>
+				<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+				<td valign="top">
+					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_users" 
+    					type="user" userList="${ssDashboard.beans[ssComponentId].ssUsers}" 
+    					showClipboard="true" showTeamMembers="true" binderId="${ssBinder.id}"/>
+				</td>
+			</tr>
+			<tr>
+				<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+				<td valign="top">
+					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
+						type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}"/>
+				</td>
+			</tr>
+		</table>
 
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" 
- text="Users"/></td>
-<td valign="top">
-  <ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_users" 
-    type="user" userList="${ssDashboard.beans[ssComponentId].ssUsers}"/>
-</td>
-</tr>
-<tr>
-<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" 
- text="Groups"/></td>
-<td valign="top">
-  <ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
-    type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}"/>
-</td>
-</tr>
-
-</table>
-
-</fieldset>
-
-
+	</fieldset>
+	
 </div>

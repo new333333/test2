@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +31,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
@@ -757,8 +759,52 @@ public class SearchController extends AbstractBinderController {
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 
+		
+		//The "Footer" menu
+		
+		String[] peopleIds = getPeopleIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE));
+		
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
+		Map qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
+
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
+		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
+		qualifiers = new HashMap();
+		qualifiers.put("popup", Boolean.TRUE);
+		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
+
+
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
+	}
+	
+	private String[] getPeopleIds(List people) {
+		Set principals = new HashSet();
+		
+		if (people != null) {
+			Iterator it = people.iterator();
+			while (it.hasNext()) {
+				Map user = (Map)it.next();
+				Principal principal = (Principal)user.get(WebKeys.USER_PRINCIPAL);
+				principals.add(principal.getId().toString());
+			}
+		}
+		
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
 	}
 }

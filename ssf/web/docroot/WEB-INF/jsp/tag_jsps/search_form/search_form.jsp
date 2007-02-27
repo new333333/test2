@@ -179,7 +179,7 @@ tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="vi
 			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>";
-// declareFindTagSearchVariables();
+// ss_declareFindTagSearchVariables();
 </script>
 <!-- p> TAG SSF:TREE START</p -->
 <ssf:tree 

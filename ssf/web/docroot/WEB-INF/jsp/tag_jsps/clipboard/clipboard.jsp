@@ -11,13 +11,13 @@
 
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/clipboard/clipboard.js"></script>
 
-<div class="clipboardIcon">
-	<img id="clipboardIcon_${prefix}" src="<html:imagesPath/>icons/liveclipboard-icon-16x16.jpg" onmouseover="displayClipboardMenu('${prefix}');" />
-	<div id="clipboardMenu_${prefix}" class="clipboardIconMenuPane" style="visibility: hidden; display: none; position: absolute;">
-		<ul id="clipboardUsersListUL_${prefix}" class="ss_finestprint">
-			<li class="pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; " onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';" <c:if test="${clipboardUsersCount > 0}">onclick="loadClipboardUsers('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>', '${prefix}', '${clickRoutine}', clickAllClipboardUsers);"</c:if>><c:if test="${clipboardUsersCount > 0}"><ssf:nlt tag="clipboard.addAll"/> (<strong>${clipboardUsersCount}</strong>)</c:if><c:if test="${clipboardUsersCount == 0}"><ssf:nlt tag="clipboard.noUsres"/></c:if></li>
+<div class="ss_clipboardMenu">
+	<img id="ss_clipboardIcon_${prefix}" src="<html:imagesPath/>icons/liveclipboard-icon-16x16.jpg" onmouseover="if (window.ss_displayClipboardMenu) ss_displayClipboardMenu('${prefix}');" />
+	<div id="ss_clipboardOptions_${prefix}" class="ss_clipboardOptionsPane ss_style" style="visibility: hidden; display: none; position: absolute;">
+		<ul id="ss_clipboardOptionsListUL_${prefix}">
+			<li class="ss_pasteAllUsers" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; this.style.cursor='pointer';" onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333'; this.style.cursor='default';" <c:if test="${clipboardUsersCount > 0}">onclick="ss_loadClipboardUsers('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>', '${prefix}', '${clickRoutine}', ss_clickAllClipboardUsers);"</c:if>><c:if test="${clipboardUsersCount > 0}"><ssf:nlt tag="clipboard.addAll"/> (<strong>${clipboardUsersCount}</strong>)</c:if><c:if test="${clipboardUsersCount == 0}"><ssf:nlt tag="clipboard.noUsres"/></c:if></li>
 			<c:if test="${clipboardUsersCount > 0}">
-				<li class="getAllUsers" id="clipboardUsersList_${prefix}" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; loadClipboardUsers('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>', '${prefix}', '${clickRoutine}');" onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';"><img border="0" src="<html:imagesPath/>pics/sym_s_collapse.gif" /></li>
+				<li class="ss_getAllUsers" id="ss_clipboardUsersList_${prefix}" onmouseover="this.style.backgroundColor='#333'; this.style.color='#FFF'; ss_loadClipboardUsers('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>', '${prefix}', '${clickRoutine}');" onmouseout="this.style.backgroundColor='#FFF'; this.style.color='#333';"><img border="0" src="<html:imagesPath/>pics/sym_s_collapse.gif" /></li>
 			</c:if>
 		</ul>
 	</div>

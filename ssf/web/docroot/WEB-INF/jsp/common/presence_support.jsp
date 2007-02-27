@@ -49,4 +49,4 @@ var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard" text="Add to 
 
 
 </script>
-<form><input type="hidden" id="meetingToken" value="" /></form>
+

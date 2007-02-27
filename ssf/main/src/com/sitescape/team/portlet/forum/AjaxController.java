@@ -1473,7 +1473,7 @@ public class AjaxController  extends SAbstractController {
 
 		model.put(WebKeys.MEETING_TOKEN, meetingToken);
 		
-		response.setContentType("text/xml");
+		response.setContentType("text/json");
 		return new ModelAndView("forum/meeting_return", model);		
 	}	
 	

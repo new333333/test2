@@ -97,7 +97,6 @@ public class WebKeys {
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
 	public static final String URL_TEAM_MEMBERS="teamMembers";
-	public static final String URL_TEAM_MEMBER_IDS="team_member_ids";
 	public static final String URL_OS_INFO="ssOSInfo";
 
 	//Portlet Preferences
@@ -258,7 +257,6 @@ public class WebKeys {
 	public static final String OPERATION_GET_TEAM_MEMBERS_COUNT = "get_team_members_count";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
-	public static final String OPERATION_EDIT_TEAM_MEMBERS = "edit_team_members";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
@@ -529,7 +527,6 @@ public class WebKeys {
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
-    public static final String EDIT_TEAM_MEMBERS="ss_editTeamMembers";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
