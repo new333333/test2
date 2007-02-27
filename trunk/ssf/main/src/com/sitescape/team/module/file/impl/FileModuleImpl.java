@@ -627,10 +627,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			
 			try
 			{
-				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, relativeFilePath);
+				is = RepositoryUtil.read(fa.getRepositoryName(), binder, entry, fa.getFileItem().getName());
 				byte[] bbuf = new byte[is.available()];
 				is.read(bbuf);
-				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, relativeFilePath);
+				filePath = FilePathUtil.getFilePath(binder, entry, THUMB_SUBDIR, fa.getFileItem().getName());
 				originalFile = cacheFileStore.getFile(filePath);
 				fos = new FileOutputStream(originalFile);
 				fos.write(bbuf);
