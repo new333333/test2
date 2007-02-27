@@ -15,6 +15,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:out value="${releaseInfo}"/>
 <c:if test="${empty ss_portletInitialization}">
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
   <div class="ss_portlet_style ss_portlet">
