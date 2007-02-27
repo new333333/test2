@@ -472,6 +472,7 @@ public class LocalLuceneSession implements LuceneSession {
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
 				updater.close();
+				updater = null;
 			} catch (IOException ioe) {
 				throw new LuceneException(
 						"Could not update fields on the index ["
@@ -479,7 +480,8 @@ public class LocalLuceneSession implements LuceneSession {
 								+ q.toString() + " field: " + fieldname);
 			} finally {
 				try {
-					updater.close();
+					if (updater != null)
+						updater.close();
 				} catch (Exception e) {}
 				try {
 					indexWriter = LuceneUtil.getWriter(indexPath);
