@@ -16,7 +16,7 @@ if (!window.ss_findUserLeaveResultsVisible) window.ss_findUserLeaveResultsVisibl
 if (!window.ss_findUserSearchUrl) window.ss_findUserSearchUrl = new Array();
 
 
-function findUserConfVariableForPrefix(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
+function ss_findUserConfVariableForPrefix(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
 	ss_findUser_searchText[prefix] = "";
 	ss_findUser_pageNumber[prefix] = 0;
 	ss_findUserDivTopOffset[prefix] = 2;

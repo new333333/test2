@@ -31,7 +31,7 @@
       </ul>
     </div>
 </div>
-<img src="<html:imagesPath/>pics/1pix.gif" onload="findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 
 		value="ss_entryIdPlaceholder"/><ssf:param name="newTab" value="1"/></ssf:url>', ${leaveResultsVisible}, '<ssf:url 
     	adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >

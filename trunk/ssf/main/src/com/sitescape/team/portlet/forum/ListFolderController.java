@@ -34,10 +34,12 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -288,7 +290,14 @@ public class ListFolderController extends  SAbstractController {
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		//See if the user has selected a specific view to use
 		DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-
+		try {
+			List users = getBinderModule().getTeamMembers(binder.getId(), true);
+			model.put(WebKeys.TEAM_MEMBERS, users);
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
+		
 		Tabs tabs = initTabs(request, binder);
 		Map tabOptions = tabs.getTab(tabs.getCurrentTab());
 		model.put(WebKeys.TABS, tabs.getTabs());		
@@ -327,7 +336,15 @@ public class ListFolderController extends  SAbstractController {
 		setupUrlCalendar(request, tabOptions, options, model);
 		setupUrlTags(request, tabOptions, options, model);
 
-		String view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
+		String view = null;
+		if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+			model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
+			view = getTeamMembers(formData, request, response, (Folder)binder, options, model, viewType);
+		} else {
+			view = getShowFolder(formData, request, response, (Folder)binder, options, model, viewType);
+		}
+		
+		
 		
 		Integer currentTabId  = (Integer) tabOptions.get(Tabs.TAB_ID);
 		model.put(WebKeys.URL_TAB_ID, currentTabId);
@@ -646,6 +663,17 @@ public class ListFolderController extends  SAbstractController {
 		buildFolderToolbars(req, response, folder, forumId, model);
 		return BinderHelper.getViewListingJsp(this);
 	}
+	
+	protected String getTeamMembers(Map formData, RenderRequest req, 
+			RenderResponse response, Folder folder, Map options, 
+			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, folder, model);
+		
+		buildFolderToolbars(req, response, folder, folder.getId().toString(), model);
+		return "entry/view_listing_team_members";
+	}
+	
 	public static void getShowTemplate(RenderRequest req, 
 			RenderResponse response, Binder folder, Map<String,Object>model) throws PortletRequestBindingException {
 
@@ -1037,6 +1065,39 @@ public class ListFolderController extends  SAbstractController {
 		folderToolbar.addToolbarMenu("4_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
 
 		
+		String[] teamMembersIds = getTeamMemberIds((List)model.get(WebKeys.TEAM_MEMBERS));
+		// list team members
+		if (getBinderModule().testAccess(folder.getId(), "getTeamMembers")) {
+			qualifiers = new HashMap();			
+			
+			//The "Teams" menu
+			folderToolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
+			
+			//View
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
+			//Sendmail
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+			//Meet
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
+		}
+		
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
 		//Get the definitions available for use in this folder
@@ -1159,7 +1220,6 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
 				adapterUrl.toString(), qualifiers);
 		
-		
 		//email
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
@@ -1168,10 +1228,18 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenuItem("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
+
+		String[] creatorsAndMoficatsIds = collectCreatorsAndMoficatsIds((List)model.get(WebKeys.FOLDER_ENTRIES));
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorsAndMoficatsIds((List)model.get(WebKeys.FOLDER_ENTRIES)));
+		if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);	
+		} else {
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, creatorsAndMoficatsIds);	
+		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
@@ -1179,7 +1247,11 @@ public class ListFolderController extends  SAbstractController {
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, collectCreatorsAndMoficatsIds((List)model.get(WebKeys.FOLDER_ENTRIES)));
+		if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);	
+		} else {
+			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, creatorsAndMoficatsIds);	
+		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
@@ -1206,14 +1278,17 @@ public class ListFolderController extends  SAbstractController {
 
 	private String[] collectCreatorsAndMoficatsIds(List entries) {
 		Set principals = new HashSet();
-		Iterator entriesIt = entries.iterator();
-		while (entriesIt.hasNext()) {
-			Map entry = (Map)entriesIt.next();
-			String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
-			String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
-			principals.add(creatorId);
-			principals.add(modificationId);
-		}	
+		
+		if (entries != null) {
+			Iterator entriesIt = entries.iterator();
+			while (entriesIt.hasNext()) {
+				Map entry = (Map)entriesIt.next();
+				String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
+				String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
+				principals.add(creatorId);
+				principals.add(modificationId);
+			}	
+		}
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
 		return as;
@@ -1615,7 +1690,20 @@ public class ListFolderController extends  SAbstractController {
 		}
 	}
 	
-
+	private String[] getTeamMemberIds(List teamMembers) {
+		Set principals = new HashSet();
+		
+		if (teamMembers != null) {		
+			Iterator it = teamMembers.iterator();
+			while (it.hasNext()) {
+				principals.add(((Principal)it.next()).getId().toString());
+			}
+		}
+		
+		String[] as = new String[principals.size()];
+		principals.toArray(as);
+		return as;
+	}
 
 }
 

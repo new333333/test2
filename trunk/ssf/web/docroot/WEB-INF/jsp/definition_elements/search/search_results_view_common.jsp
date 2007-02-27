@@ -52,19 +52,19 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 <div class="ss_folder" id="ss_folder_table_parent">
 
 <div id="ss_search_results_things_div" style="display:block;">  
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_things.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_things.jsp" %>
 </div>
 
 <div id="ss_search_results_people_div" style="display:none;">  
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_people.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_people.jsp" %>
 </div>
 
 <div id="ss_search_results_places_div" style="display:none;">  
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_places.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_places.jsp" %>
 </div>
 
 <div id="ss_search_results_tags_div" style="display:none;">  
-<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_tags.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_tags.jsp" %>
 </div>
 
 <script type="text/javascript">

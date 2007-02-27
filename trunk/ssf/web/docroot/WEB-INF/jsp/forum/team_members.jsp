@@ -5,7 +5,7 @@
 	<taconite-replace contextNodeID="${ss_divId}" parseInBrowser="true">
 		<c:forEach var="user" items="${ssTeamMembers}">		
 			<li id="ss_findUser_id_<c:out value="${user.id}"/>" >
-			<a onClick="${clickRoutine}(${user.id}, '${user.title}');" 
+			<a onClick="${clickRoutine}(<c:out value="${user.id}"/>, '<ssf:escapeJavaScript value="${user.title}"/>');" 
 			    href="#"><span style="white-space: nowrap;"><c:out value="${user.title}"/></span></a>
 	        </li>
 		</c:forEach>

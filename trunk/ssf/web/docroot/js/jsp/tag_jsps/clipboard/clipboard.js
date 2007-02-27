@@ -1,18 +1,18 @@
 
-if (!window.clipboardUsersLoaded)
-	clipboardUsersLoaded = new Array();
+if (!window.ss_clipboardUsersLoaded)
+	ss_clipboardUsersLoaded = new Array();
 
-function displayClipboardMenu(prefix) {
-	var divObj = $("clipboardMenu_" + prefix);
-	ss_moveDivToBody("clipboardMenu_" + prefix);
-	ss_setObjectTop(divObj, parseInt(ss_getDivTop("clipboardIcon_" + prefix)) + + ss_getDivWidth("clipboardIcon_" + prefix))
-	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("clipboardIcon_" + prefix)))
-	ss_showDivActivate("clipboardMenu_" + prefix);
+function ss_displayClipboardMenu(prefix) {
+	var divObj = $("ss_clipboardOptions_" + prefix);
+	ss_moveDivToBody("ss_clipboardOptions_" + prefix);
+	ss_setObjectTop(divObj, parseInt(ss_getDivTop("ss_clipboardIcon_" + prefix)) + + ss_getDivWidth("ss_clipboardIcon_" + prefix))
+	ss_setObjectLeft(divObj, parseInt(ss_getDivLeft("ss_clipboardIcon_" + prefix)))
+	ss_showDivActivate("ss_clipboardOptions_" + prefix);
 }
 	
-function clickAllClipboardUsers(ajaxRequest) { 
+function ss_clickAllClipboardUsers(ajaxRequest) { 
 	var prefix = ajaxRequest.getData("prefix");
-	var ulObj = $("clipboardUsersListUL_" + prefix);
+	var ulObj = $("ss_clipboardOptionsListUL_" + prefix);
 	var lisObj = ulObj.getElementsByTagName("li");
 	for (var i = 0; i < lisObj.length; i++) {
 		if (lisObj[i].getElementsByTagName("a") && 
@@ -23,8 +23,8 @@ function clickAllClipboardUsers(ajaxRequest) {
 	}
 }
 
-function loadClipboardUsers(url, prefix, clickRoutine, afterPostRoutine) {
-	if (clipboardUsersLoaded[prefix]) {
+function ss_loadClipboardUsers(url, prefix, clickRoutine, afterPostRoutine) {
+	if (ss_clipboardUsersLoaded[prefix]) {
 		if (afterPostRoutine) {
 			var aR = new ss_AjaxRequest("");
 			aR.setData("prefix", prefix);	
@@ -32,10 +32,10 @@ function loadClipboardUsers(url, prefix, clickRoutine, afterPostRoutine) {
 		}
 		return;
 	}
-	toggleAjaxLoadingIndicator("clipboardUsersList_" + prefix, false);
-	clipboardUsersLoaded[prefix] = true;
+	ss_toggleAjaxLoadingIndicator("ss_clipboardUsersList_" + prefix, false);
+	ss_clipboardUsersLoaded[prefix] = true;
 
-	url += "&ss_divId=clipboardUsersList_" + prefix;
+	url += "&ss_divId=ss_clipboardUsersList_" + prefix;
 	url += "&clickRoutine=" + clickRoutine;
 	
 	var ajaxRequest = new ss_AjaxRequest(url);	

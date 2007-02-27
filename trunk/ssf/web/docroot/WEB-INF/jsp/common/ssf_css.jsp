@@ -2952,6 +2952,10 @@ span.ss_cal_eventTime {
   padding-right: 3px;
 }
 
+div.ss_buddies {
+	padding-bottom: 35px; 
+}
+
 div.ss_buddiesListHeader {
 	padding: 5px;
 }
@@ -2999,30 +3003,35 @@ div.ss_buddiesListFooter {
 	text-align: right;
 }
 
-div.clipboardIcon, div.teamIcon {
+div.ss_clipboardMenu, div.ss_teamMenu {
 	display: inline;
 }
 
-div.clipboardIcon img, div.teamIcon img {
+div.ss_clipboardMenu img, div.ss_teamMenu img {
 	border: 0;
 	margin-left: 5px;
 }
 
-div.clipboardIconMenuPane ul, div.teamIconMenuPane ul {
+div.ss_clipboardOptionsPane ul, div.ss_teamOptionsPane ul {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
 	border: 1px solid #333;
 	background-color: ${ss_style_background_color};
+	font-size: ${ss_style_font_fineprint} !important; 
 }
 
-div.clipboardIconMenuPane ul li.pasteAllUsers, div.teamIconMenuPane ul li.pasteAllUsers {
+div.ss_clipboardOptionsPane ul li, div.ss_teamOptionsPane ul li {
+	text-align: left;
+	padding: 3px;
+}
+
+div.ss_clipboardOptionsPane ul li.ss_pasteAllUsers, div.ss_teamOptionsPane ul li.ss_pasteAllUsers {
 	border-bottom: 1px solid #333;
-	padding: 1px;
 	text-align: center;
 }
 
-div.clipboardIconMenuPane ul li.getAllUsers, div.teamIconMenuPane ul li.getAllUsers {
+div.ss_clipboardOptionsPane ul li.ss_getAllUsers, div.ss_teamOptionsPane ul li.ss_getAllUsers {
 	text-align: center;
 	line-height: 8px;
 }

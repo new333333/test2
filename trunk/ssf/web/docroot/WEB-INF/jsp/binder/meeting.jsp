@@ -17,6 +17,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
+
+
 <ssf:ifadapter>
 	<body>
 </ssf:ifadapter>

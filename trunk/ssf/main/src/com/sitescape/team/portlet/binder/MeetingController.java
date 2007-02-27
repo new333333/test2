@@ -55,18 +55,18 @@ public class MeetingController  extends SAbstractController {
 			model.put(WebKeys.ERROR_LIST, errors);
 			return new ModelAndView(WebKeys.VIEW_BINDER_MEETING, model);
 		}
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request,
+		Long binderId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_ENTRY_ID);
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
 
-
-		Binder binder = getBinderModule().getBinder(binderId);		
-		model.put(WebKeys.BINDER, binder);
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);		
+			model.put(WebKeys.BINDER, binder);
+		}
 		
-		
-		if (entryId != null) {
+		if (binderId != null && entryId != null) {
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
 		}

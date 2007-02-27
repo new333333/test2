@@ -1,5 +1,5 @@
 
-function declareFindTagSearchVariables () {
+function ss_declareFindTagSearchVariables () {
 	window.ss_findTag_searchText = new Array();
 	window.ss_findTag_pageNumber = new Array();
 	window.ss_findTagDivTopOffset = new Array();
@@ -17,9 +17,9 @@ function declareFindTagSearchVariables () {
 	window.ss_findTagSearchUrl = new Array();
 }
 
-function confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
+function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
 	if (!window.ss_findTag_searchText) {
-		declareFindTagSearchVariables();
+		ss_declareFindTagSearchVariables();
 	}
 	ss_findTag_searchText[prefix] = "";
 	ss_findTag_pageNumber[prefix] = 0;

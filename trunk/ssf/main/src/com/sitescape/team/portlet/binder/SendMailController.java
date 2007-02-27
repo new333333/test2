@@ -79,9 +79,12 @@ public class SendMailController extends SAbstractController {
 			model.put(WebKeys.EMAIL_ADDRESSES, request.getParameterValues(WebKeys.EMAIL_ADDRESSES));
 			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 		}
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = getBinderModule().getBinder(binderId);
-		model.put(WebKeys.BINDER, binder);
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+		}
 		
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));

@@ -56,18 +56,22 @@
 								<% // Workspace toolbar %>
 								<c:if test="${!empty ssFolderToolbar}">
 									<div class="ss_content_inner">
-<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
+										<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
 									</div>
 								</c:if>
 	
 								<div class="ss_content_inner">
 								  	<c:choose>
-								  		<c:when test="${ss_showTeamMembers || ss_editTeamMembers}">
+								  		<c:when test="${ss_showTeamMembers}">
 											<% // Navigation links %>
 											<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 											<br/>
 											
 											<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
+											
+											<c:if test="${!empty ss_reloadUrl}">
+												<div style="text-align: right; "><a href="<c:out value="${ss_reloadUrl}" />"><ssf:nlt tag="__return_to" /> <ssf:nlt tag="__workspace_view" /></a></div>
+											</c:if>
 											
 										</c:when>
 										<c:when test="${ss_showSearchResults}">
