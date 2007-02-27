@@ -87,35 +87,35 @@
 	</div>
 </div>
 
-<c:if test="${ss_folderViewStyle != 'blog'}">
-<div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; visibility:hidden;
-  width:600px; height:80%; display:none;">
-  <ssf:box>
-    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
-    <ssf:param name="box_width" value="400" />
-    <ssf:param name="box_color" value="${ss_entry_border_color}" />
-    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
-    <ssf:param name="box_title" useBody="true">
-      <div style="position:relative;">
-      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-      </div>
-    </ssf:param>
-    <ssf:param name="box_show_resize_icon" value="true" />
-    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
-    <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
-    <ssf:param name="box_show_move_icon" value="true" />
-    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
-    <ssf:param name="box_show_close_icon" value="true" />
-    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
-    display:block; position:relative; left:5px;"
-    src="<html:rootPath/>js/forum/null.html" 
-    height="95%" width="100%" 
-    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
-  </ssf:box>
-</div>
+<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook'}">
+	<div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
+	  style="position:absolute; visibility:hidden;
+	  width:600px; height:80%; display:none;">
+	  <ssf:box>
+	    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+	    <ssf:param name="box_width" value="400" />
+	    <ssf:param name="box_color" value="${ss_entry_border_color}" />
+	    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+	    <ssf:param name="box_title" useBody="true">
+	      <div style="position:relative;">
+	      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
+	      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+	      </div>
+	    </ssf:param>
+	    <ssf:param name="box_show_resize_icon" value="true" />
+	    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
+	    <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
+	    <ssf:param name="box_show_move_icon" value="true" />
+	    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
+	    <ssf:param name="box_show_close_icon" value="true" />
+	    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
+	  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
+	    display:block; position:relative; left:5px;"
+	    src="<html:rootPath/>js/forum/null.html" 
+	    height="95%" width="100%" 
+	    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+	  </ssf:box>
+	</div>
 </c:if>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
