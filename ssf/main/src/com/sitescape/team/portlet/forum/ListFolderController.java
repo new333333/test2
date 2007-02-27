@@ -144,9 +144,15 @@ public class ListFolderController extends  SAbstractController {
 			}
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
+			String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (style != null) {
-				if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
-				else getBinderModule().addSubscription(binderId, style.intValue());
+				if (entryId.equals("")) {
+					if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
+					else getBinderModule().addSubscription(binderId, style.intValue());
+				} else {
+					if (style.intValue() == -1) getFolderModule().deleteSubscription(binderId, Long.valueOf(entryId));
+					else getFolderModule().addSubscription(binderId, Long.valueOf(entryId), style.intValue());
+				}
 			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {
 			//Saves the folder sort information
@@ -760,7 +766,7 @@ public class ListFolderController extends  SAbstractController {
 				monthHits.put(yearMonth, new Integer(++hitCount));
 			}
 			if (entry.containsKey(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD)) {
-				
+				//TODO - ???
 			}
 		}
 		List entryCommunityTags = new ArrayList();
@@ -1604,6 +1610,8 @@ public class ListFolderController extends  SAbstractController {
 
 			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
 			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
+			
+			entryMap.put(WebKeys.SUBSCRIPTION, getFolderModule().getSubscription(entry));
 		}
 	}
 	
