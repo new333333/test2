@@ -12,7 +12,7 @@ public class ReleaseInfo {
 	
 	static {
 		if(SPropsUtil.getString("release.type").equals("plus"))
-			title += " Enterprise/Premium";
+			title += " Plus"; // Enterprise/Premium
 		else
 			title += " Core"; // Open Source version
 			
