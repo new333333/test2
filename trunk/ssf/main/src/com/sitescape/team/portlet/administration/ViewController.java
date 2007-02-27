@@ -24,6 +24,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -46,6 +47,7 @@ public class ViewController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
+		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
  		PortletPreferences prefs = request.getPreferences();
 		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
