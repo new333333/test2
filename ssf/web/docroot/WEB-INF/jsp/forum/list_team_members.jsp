@@ -6,8 +6,8 @@
 
 <div class="ss_buddies">
 
-	<div class="ss_buddiesListHeader">
-		<img border="0" src="<html:imagesPath/>icons/group.gif"/> <span class="ss_largerprint ss_bold"><ssf:nlt tag="teamMembersList.title"/></span> <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>
+	<div class="ss_buddiesListHeader">		
+		<img border="0" src="<html:imagesPath/>icons/group.gif"/> <span class="ss_largerprint ss_bold"><ssf:nlt tag="teamMembersList.title"><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt></span> <span class="ss_fineprint ss_light"><ssf:nlt tag="teamMembersList.count"/></span> <span class="ss_fineprint ss_bold">${ssTeamMembersCount}</span>		
 	</div>
 	
 	<table class="ss_buddiesList" cellpadding="0" cellspacing="0">
