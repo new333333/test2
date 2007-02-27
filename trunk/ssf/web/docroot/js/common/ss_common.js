@@ -2482,7 +2482,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr) {
 			//Signal that the layout changed 
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
-	} else if (imgObj.src.match(/delete.gif/)) {
+	} else if (imgObj.src.match(/delete-component.gif/)) {
 		url += "\&operation=delete_component";
 	    callbackRoutine = ss_hideComponentCallback;
 		var targetDiv = document.getElementById(divId);
