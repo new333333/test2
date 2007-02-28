@@ -245,8 +245,8 @@ public class ListFolderController extends  SAbstractController {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			request.setAttribute("ssReloadUrl", reloadUrl.toString());			
-			return new ModelAndView(BinderHelper.getViewListingJsp(this));
+			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())));
 		}
 		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
@@ -582,6 +582,35 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 	}
+	public String getViewType(String folderId) {
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		
+		String viewType = "";
+		
+		//Check the access rights of the user
+		if (getBinderModule().testAccess(binder, "setProperty")) {
+			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
+			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			Definition displayDef = binder.getDefaultViewDef();
+			if (displayDefId != null && !displayDefId.equals("")) {
+				displayDef = DefinitionHelper.getDefinition(displayDefId);
+			}
+			Document defDoc = displayDef.getDefinition();
+			
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+				}
+			}
+		}
+		return viewType;
+	}
+	
 	protected void setupViewBinder(ActionResponse response, Long binderId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -662,7 +691,7 @@ public class ListFolderController extends  SAbstractController {
 		BinderHelper.buildNavigationLinkBeans(this, folder, model);
 		
 		buildFolderToolbars(req, response, folder, forumId, model);
-		return BinderHelper.getViewListingJsp(this);
+		return BinderHelper.getViewListingJsp(this, getViewType(forumId));
 	}
 	
 	protected String getTeamMembers(Map formData, RenderRequest req, 

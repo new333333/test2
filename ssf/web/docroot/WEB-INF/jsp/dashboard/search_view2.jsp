@@ -21,116 +21,125 @@
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
-<c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
-  <c:set var="hitCount" value="${hitCount + 1}"/>
-<div class="ss_blog_summary_title">
-  <table cellspacing="0" cellpadding="0" width="100%">
-  <tr>
-  <td valign="top"><span class="ss_blog_summary_title_text">
-  	<c:choose>
-  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>"
-		onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 
-    </c:when>
-    <c:when test="${fileEntry._entityType == 'user'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="view_permalink"
-			binderId="${fileEntry._principal.workspaceId}">
-			<ssf:param name="entityType" value="workspace" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-		onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+<c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}">
+<c:set var="hitCount" value="${hitCount + 1}"/>
+	<div class="ss_blog_summary_title">
+		<table cellspacing="0" cellpadding="0" width="98%" border="0">
+	  	<tr>
+			<td valign="top" class="ss_searchviewDashboardContainer">
+			  	<c:choose>
+				  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
+					    <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+								name="action" value="view_folder_entry"/><portlet:param 
+								name="binderId" value="${fileEntry._binderId}"/><portlet:param 
+								name="entryId" value="${fileEntry._docId}"/><portlet:param 
+								name="newTab" value="1"/></portlet:renderURL>">
+				  	
+					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							    action="view_permalink"
+							    binderId="${fileEntry._binderId}"
+							    entryId="${fileEntry._docId}">
+							    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+					    	    <ssf:param name="newTab" value="1"/>
+								</ssf:url>"
+							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+				    </c:when>
+				    <c:when test="${fileEntry._entityType == 'user'}">
+					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+								action="view_permalink"
+								binderId="${fileEntry._principal.workspaceId}">
+								<ssf:param name="entityType" value="workspace" />
+					    	    <ssf:param name="newTab" value="1"/>
+								</ssf:url>" 
+							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+				    </c:when>
+				    <c:when test="${fileEntry._entityType == 'group'}">
+					    <a target="_blank" href="<ssf:url action="view_profile_entry" 
+					    		folderId="${fileEntry._binderId}"
+					    		entryId="${fileEntry._docId}" />">
+				    </c:when>
+				    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
+							    action="view_permalink"
+							    binderId="${fileEntry._docId}">
+							    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+					    	    <ssf:param name="newTab" value="1"/>
+								</ssf:url>" 
+							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
+				    </c:when>
+			 	</c:choose>
+		 	
+			    <c:if test="${empty fileEntry.title}">
+			    	<span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle"/>)</i></span>
+			    </c:if>
+		    
+		    	<span class="ss_entryTitle ss_underline"><c:out value="${fileEntry.title}"/></span></a>
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="ss_searchviewDashboardContainer">
+				<span class="ss_smallprint">
+					<ssf:markup type="view">
+						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="30" />
+					</ssf:markup>
+				</span>	
+			</td>
+		</tr>
+		
+		<tr>
+			<td class="ss_smallprint">
+				<table width="100%">
+				<tr>
+					<td width="50%" class="ss_smallprint">
+						<c:if test="${fileEntry._entityType == 'folderEntry' || fileEntry._entityType == 'reply'}">
+							<ssf:nlt tag="entry.Folder" />: 
+							<a href="<ssf:url adapter="true" portletName="ss_forum" 
+						    	action="view_permalink"
+						    	binderId="${fileEntry._binderId}">
+						    	<ssf:param name="entityType" value="folder" />
+				    	    	<ssf:param name="newTab" value="1"/>
+								</ssf:url>" 
+								onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','', 'folder'); return false;">
+								<span class="ss_underline">${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</span>
+								</a>
+						</c:if>
+					</td>
+					<td width="50%" class="ss_smallprint">
+						<c:if test="${!empty fileEntry._workflowStateCaption}">
+							<ssf:nlt tag="entry.workflowState" />: <c:out value="${fileEntry._workflowStateCaption}" />
+						</c:if>
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<table width="100%">
+				<tr>
+					<td width="50%" class="ss_smallprint">
+						<ssf:nlt tag="entry.createdBy" />: <ssf:showUser user="${fileEntry._principal}" />
+					</td>
+					<td width="50%" class="ss_smallprint">
+						<ssf:nlt tag="entry.modifiedDate" />: <fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+					 		value="${fileEntry._modificationDate}" type="both" 
+					 		timeStyle="long" dateStyle="long" />
+					</td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+		
+		<tr>
+			<td><div class="ss_line"></div></td>
+		</tr>
+		
+	  </table>
+	</div>
 
-    </c:when>
-    <c:when test="${fileEntry._entityType == 'group'}">
-    <a target="_blank" href="<ssf:url action="view_profile_entry" 
-    		folderId="${fileEntry._binderId}"
-    		entryId="${fileEntry._docId}" />" >
-    </c:when>
-    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-		onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
-
-    </c:when>
- 	</c:choose>
-    <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle"/>)</i></span>
-    </c:if>
-    <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
-	</td>
-	
-	<td align="right" nowrap valign="top"><span class="ss_italic ss_smallprint">
-    <c:if test="${fileEntry._entityType == 'folderEntry' || 
-      		fileEntry._entityType == 'reply'}">
-		<ssf:menu titleId="ss_folderName_${hitCount}_${componentId}_<portlet:namespace/>" 
-		    menuClass="ss_actions_bar2 ss_actions_bar_submenu">
-		  <ssf:param name="title" useBody="true">
-		      <c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img border="0" src="<html:imagesPath/>icons/folder.gif"/>
-		      </c:if>
-		      <c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}">
-		        <img border="0" 
-		          src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].iconName}" />
-		      </c:if>
-		  </ssf:param>
-		  <ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
-		  <li><a href="<ssf:url adapter="true" portletName="ss_forum" 
-				    action="view_permalink"
-				    binderId="${fileEntry._binderId}">
-				    <ssf:param name="entityType" value="folder" />
-		    	    <ssf:param name="newTab" value="1"/>
-					</ssf:url>" 
-				onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','', 'folder'); return false;">
-					
-		  >${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</a></li>
-		  </ul>
-		</ssf:menu>
-     </c:if>
-    &nbsp;&nbsp;
-    <c:out value="${fileEntry._principal.title}"/>,&nbsp;&nbsp;
-	<fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
-      value="${fileEntry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="short" /></span>&nbsp;&nbsp;
-	</td>
-	</tr>
-	</table>
-  </div>
-  
-  <div style="padding-bottom:10px;">
-<jsp:useBean id="fileEntry" type="java.util.Map" />
-<%
-	if (fileEntry.containsKey("_desc")) {
-		String[] words = ((String)fileEntry.get("_desc")).split(" ");
-		String summary = "";
-		for (int i = 0; i < words.length; i++) {
-			summary = summary + " " + words[i];
-			//Limit the summary to 30 words
-			if (i >= 30) {
-				if (i < words.length - 1) summary = summary + "...";
-				break;
-			}
-		}
-%>
-    <div class="ss_smallprint ss_indent_medium">  
-      <ssf:markup type="view" binderId="${fileEntry._binderId}" 
-        entryId="${fileEntry._docId}"><c:out value="<%= summary %>" escapeXml="false"/></ssf:markup>
-    </div>
-<%
-	}
-%>  
-  </div>
 </c:forEach>
 
 <div>

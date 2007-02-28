@@ -28,6 +28,7 @@
 <% // Show the folder default parts %>
 
 <% // Folder listing %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_list.jsp" %>
 
 </div>

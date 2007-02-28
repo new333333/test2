@@ -1037,6 +1037,7 @@
 				<option name="photo" caption="__folder_photo" />
 				<option name="file" caption="__folder_file" />
 				<option name="guestbook" caption="__folder_guestbook" />
+				<option name="search" caption="__folder_search" />
 				<help>__help_folder_view_type</help>
 			</property>
 		</properties>
