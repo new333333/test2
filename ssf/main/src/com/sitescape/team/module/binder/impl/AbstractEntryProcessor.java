@@ -71,6 +71,7 @@ import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
 /**
  *
@@ -270,12 +271,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	//handle basic fields only without definition
         	Map entryDataAll = new HashMap();
 	        Map entryData = new HashMap();
-	        entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
-	        entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, new ArrayList());
+			List fileData = new ArrayList();
+			entryDataAll.put(ObjectKeys.DEFINITION_ENTRY_DATA, entryData);
+			entryDataAll.put(ObjectKeys.DEFINITION_FILE_DATA, fileData);
  			if (inputData.exists(ObjectKeys.FIELD_ENTITY_TITLE)) entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, inputData.getSingleValue("title"));
 			if (inputData.exists(ObjectKeys.FIELD_ENTITY_DESCRIPTION)) {
 				Description description = new Description();
 				description.setText(inputData.getSingleValue(ObjectKeys.FIELD_ENTITY_DESCRIPTION));
+				WebHelper.scanDescriptionForUploadFiles(description, fileData);
+				WebHelper.scanDescriptionForAttachmentFileUrls(description);
 				description.setFormat(Description.FORMAT_HTML);
 				entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			}

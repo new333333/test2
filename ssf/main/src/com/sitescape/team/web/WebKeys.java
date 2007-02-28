@@ -70,6 +70,7 @@ public class WebKeys {
     public static final String URL_ENTRY_TYPE="entryType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
+	public static final String URL_FILE_TITLE = "fileTitle";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";

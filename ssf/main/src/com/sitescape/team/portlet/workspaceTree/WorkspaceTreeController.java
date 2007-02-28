@@ -342,20 +342,18 @@ public class WorkspaceTreeController extends SAbstractController  {
 				if (!owner.getId().equals(user.getId())) showDeleteProfileMenu = true;
 			}
 			
-			if (showDeleteProfileMenu) {
+			if (showDeleteProfileMenu && showModifyProfileMenu) {
 				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.manageThisProfile"));
-				if (showModifyProfileMenu) {
-					//	The "Modify" menu item
-					Map qualifiers = new HashMap();
-					qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
-					toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-				}
-				//	The "Delete" menu item
+				//	The "Modify" menu item
 				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_openUrlInWindow(this, '_blank');return false;");
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenuItem("4_manageProfile", "", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
+				//	The "Delete" menu item
+				qualifiers = new HashMap();
 				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
@@ -373,6 +371,17 @@ public class WorkspaceTreeController extends SAbstractController  {
 				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
 				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.menu.modify_profile"), adapterUrl.toString(), qualifiers);
+			}
+			if (!showModifyProfileMenu && showDeleteProfileMenu) {
+				//	The "delete" menu item
+				Map qualifiers = new HashMap();
+				qualifiers.put("onClick", "return ss_confirmDeleteProfile();");
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_PROFILE_ENTRY);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
+				url.setParameter(WebKeys.URL_BINDER_ID, owner.getParentBinder().getId().toString());
+				url.setParameter(WebKeys.URL_ENTRY_ID, owner.getId().toString());
+				toolbar.addToolbarMenu("4_manageProfile", NLT.get("toolbar.delete"), url, qualifiers);
 			}
 		}
 		

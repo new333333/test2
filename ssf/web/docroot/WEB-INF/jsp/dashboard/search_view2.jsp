@@ -124,7 +124,8 @@
 		}
 %>
     <div class="ss_smallprint ss_indent_medium">  
-      <ssf:markup type="view"><c:out value="<%= summary %>" escapeXml="false"/></ssf:markup>
+      <ssf:markup type="view" binderId="${fileEntry._binderId}" 
+        entryId="${fileEntry._docId}"><c:out value="<%= summary %>" escapeXml="false"/></ssf:markup>
     </div>
 <%
 	}

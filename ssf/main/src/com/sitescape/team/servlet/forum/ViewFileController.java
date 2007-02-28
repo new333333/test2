@@ -36,6 +36,7 @@ public class ViewFileController extends SAbstractController {
 
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
+		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE)) {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
@@ -79,10 +80,15 @@ public class ViewFileController extends SAbstractController {
 			FileAttachment fa = null;
 			FileAttachment topAtt = null;
 			if (fileId.equals("")) {
-				//This must be a request for the title file; go set that up.
-				CustomAttribute ca = entity.getCustomAttribute("_fileEntryTitle");
-				if (ca == null) ca = entity.getCustomAttribute("title");
-				if (ca != null && ca.getValue() instanceof FileAttachment) fileId = ((FileAttachment)ca.getValue()).getId();
+				if (!fileTitle.equals("")) {
+					fa = entity.getFileAttachment(fileTitle);
+					if (fa != null) fileId = fa.getId();
+				} else {
+					//This must be a request for the title file; go set that up.
+					CustomAttribute ca = entity.getCustomAttribute("_fileEntryTitle");
+					if (ca == null) ca = entity.getCustomAttribute("title");
+					if (ca != null && ca.getValue() instanceof FileAttachment) fileId = ((FileAttachment)ca.getValue()).getId();
+				}
 			}
 			if (!fileId.equals("")) topAtt = (FileAttachment)entity.getAttachment(fileId);
 			if (topAtt != null) {

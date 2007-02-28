@@ -323,6 +323,7 @@ public class ListFolderController extends  SAbstractController {
 		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
 		if (configElement != null) {
 			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
+			if (viewType == null) viewType = "";
 		}
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
