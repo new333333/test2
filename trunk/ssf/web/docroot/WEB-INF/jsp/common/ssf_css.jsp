@@ -2160,6 +2160,12 @@ div.ss_utils_bar {
 	background:transparent none repeat scroll 0%;
 	font-size:${ss_style_font_size};
 }
+div.ss_line {
+	border-bottom: 1px solid #999999;
+	width: 100%;
+	margin: 0px;
+	padding: 0px 0px 0px 0px;
+}
 ul.ss_utils_bar {
 	list-style-type:none;
 	margin:0px;
@@ -2636,6 +2642,23 @@ td.ss_guestbookContainer {
 	padding: 10px;
 }
 
+table.ss_searchviewContainer {
+	border-spacing: 1px;
+	vertical-align: top;	
+}
+td.ss_searchviewContainer {
+	vertical-align: top;
+	padding: 4px;
+}
+
+table.ss_searchviewDashboardContainer {
+	border-spacing: 1px;
+	vertical-align: top;	
+}
+td.ss_searchviewDashboardContainer {
+	vertical-align: top;
+	padding: 2px;
+}
 
 /*
  ************************************************************************

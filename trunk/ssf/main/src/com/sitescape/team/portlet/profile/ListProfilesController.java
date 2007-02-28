@@ -7,6 +7,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.Map;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
@@ -62,7 +64,7 @@ public class ListProfilesController extends   SAbstractController {
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model.put("ssReloadUrl", reloadUrl.toString());
-			return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
+			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 			if (!entryId.equals("")) {
@@ -141,7 +143,7 @@ public class ListProfilesController extends   SAbstractController {
 		//Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 		
-		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
 	}
 
 	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
@@ -241,4 +243,33 @@ public class ListProfilesController extends   SAbstractController {
 		
 	}
 
+	public String getViewType(String folderId) {
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		
+		String viewType = "";
+		
+		//Check the access rights of the user
+		if (getBinderModule().testAccess(binder, "setProperty")) {
+			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
+			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			Definition displayDef = binder.getDefaultViewDef();
+			if (displayDefId != null && !displayDefId.equals("")) {
+				displayDef = DefinitionHelper.getDefinition(displayDefId);
+			}
+			Document defDoc = displayDef.getDefinition();
+			
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+				}
+			}
+		}
+		return viewType;
+	}	
+	
 }

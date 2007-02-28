@@ -1,4 +1,5 @@
 <% //view a folder forum with the entry at the bottom in an iframe %>
+
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
 	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
@@ -58,6 +59,7 @@
 					<%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 				</div>
 
+
 				<div id="ss_folder">
 					<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					    configElement="${ssConfigElement}" 
@@ -68,7 +70,7 @@
 				<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
 			</c:if>
 			
-			<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook'}">
+			<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook' && ss_folderViewStyle != 'search'}">
 				<div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
 				  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
 				  style="position:relative; margin:0px 2px 0px 2px; padding:0px; 

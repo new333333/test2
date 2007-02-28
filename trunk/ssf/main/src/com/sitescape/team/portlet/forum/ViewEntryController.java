@@ -113,7 +113,13 @@ public class ViewEntryController extends  SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map formData = request.getParameterMap();
-		String viewPath = BinderHelper.getViewListingJsp(this);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		
+		String viewType = getViewType(folderId.toString());
+		
+		String viewPath = BinderHelper.getViewListingJsp(this, viewType);
 		Map model = new HashMap();
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
@@ -239,6 +245,10 @@ public class ViewEntryController extends  SAbstractController {
 		String entryDefId=def.getId().toString();
 		String entryId = entry.getId().toString();
 		String folderId = entry.getParentFolder().getId().toString();
+		
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		String viewType = getViewType(folderId);
+		
 	    //Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		if (getFolderModule().testAccess(entry, "addReply")) {
@@ -380,42 +390,19 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenu("5_delete", NLT.get("toolbar.delete"), url, qualifiers);
 			}
 		}
-		Binder binder = entry.getParentBinder();
-		//Check the access rights of the user
-		if (getBinderModule().testAccess(binder, "setProperty")) {
-			UserProperties userBinderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
-			String displayDefId = (String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
-			Definition displayDef = null;
-			if (!Validator.isNull(displayDefId)) {
-				try {
-					displayDef = getDefinitionModule().getDefinition(displayDefId);
-				} catch (Exception ex) {
-					
-				}
-			}
-			if (displayDef == null) displayDef = binder.getDefaultViewDef();
-			Document defDoc = displayDef.getDefinition();
-			String viewType = "";
-			if (defDoc != null) {
-				Element rootElement = defDoc.getRootElement();
-				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView']");
-				if (elementView != null) {
-					viewType = DefinitionUtils.getPropertyValue(elementView, "type");
-				}
-			}
-			if (viewType != null && viewType.equals(Definition.VIEW_STYLE_WIKI)) {
-				Map qualifiers = new HashMap();
-				qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
-				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
-				toolbar.addToolbarMenu("6_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
-			}
-		}
-	    
+		
+		if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "if (parent.ss_confirmSetWikiHomepage) {return parent.ss_confirmSetWikiHomepage()} else {return false}");
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_WIKI_HOMEPAGE);
+			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			url.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
+			url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+			toolbar.addToolbarMenu("6_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
+		}		
+		
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
 		Map qualifiers = new HashMap();
@@ -461,7 +448,36 @@ public class ViewEntryController extends  SAbstractController {
 
 		return toolbar;
 	}
-	
+
+	public String getViewType(String folderId) {
+
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
+		
+		String viewType = "";
+		
+		//Check the access rights of the user
+		if (getBinderModule().testAccess(binder, "setProperty")) {
+			UserProperties userProperties = getProfileModule().getUserProperties(user.getId(), Long.valueOf(folderId)); 
+			String displayDefId = (String) userProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			Definition displayDef = binder.getDefaultViewDef();
+			if (displayDefId != null && !displayDefId.equals("")) {
+				displayDef = DefinitionHelper.getDefinition(displayDefId);
+			}
+			Document defDoc = displayDef.getDefinition();
+			
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) viewType = viewElement.attributeValue("value", "");
+				}
+			}
+		}
+		return viewType;
+	}
+
 	protected void buildNoEntryBeans(RenderRequest request, 
 			RenderResponse response, Folder folder, String entryTitle, Map model) {
 		//Initialize the acl bean
@@ -590,6 +606,4 @@ public class ViewEntryController extends  SAbstractController {
 		
 		return entry;
 	}
-	
-	
 }

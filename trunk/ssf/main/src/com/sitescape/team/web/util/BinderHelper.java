@@ -45,6 +45,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.team.domain.Definition;
 
 public class BinderHelper {
 
@@ -67,6 +68,34 @@ public class BinderHelper {
 		return viewListingJspName;
 	}
 
+	//The getViewListingJSP function has been overloaded, to check if the displayDefinition is of type
+	//search. For the 'search' display defintion, we should not have the display at bottom (vertical)
+	//option. So when a user chooses display at bottom option, we will be showing the user a overlay display
+	static public String getViewListingJsp(AllBusinessServicesInjected bs, String displayDefinition) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle == null || displayStyle.equals("")) {
+			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+		}
+		String viewListingJspName;
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
+			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
+			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+			if (displayDefinition != null && displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_SEARCH)) {
+				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
+			} else {
+				viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;
+			}
+		} else {
+			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
+		}
+		return viewListingJspName;
+	}
+	
 	//Routine to save a generic portal url used to build a url to a binder or entry 
 	//  This routine is callable only from a portlet controller
 	static public void setBinderPermaLink(AllBusinessServicesInjected bs, 
