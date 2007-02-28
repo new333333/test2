@@ -1104,6 +1104,37 @@ table.ss_mouseOverInfo {
 }
 
 
+table.ss_attachments_list {
+	margin-left: 30px;
+	width: 98%;
+	empty-cells: show;
+}
+
+table.ss_attachments_list td.ss_att_title {
+	font-size: 10px;
+	font-weight: bold;
+}
+
+table.ss_attachments_list hr.ss_att_divider {
+	border-top: 1px solid #CCCCCC;
+	border-bottom: none;
+	height: 0px;
+}
+
+table.ss_attachments_list td.ss_att_meta {
+	font-size: 10px;
+	white-space: nowrap;
+	padding-left: 5px;
+	color: #666666;
+}
+table.ss_attachments_list td.ss_att_space {
+    padding-left: 10px;
+}
+
+.ss_subhead2 {
+	color: #333333;
+}
+
 .ss_footer_toolbar {
   width: 100%; 
   background-color: ${ss_style_background_color};
