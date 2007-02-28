@@ -167,7 +167,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				PortletURL reloadUrl = response.createRenderURL();
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-				request.setAttribute("ssReloadUrl", reloadUrl.toString());			
+				request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 				return new ModelAndView("administration/reload_opener");
 			} else if (Validator.isNull(operation)) {
 				model.put(WebKeys.DEFINITION_ENTRY, config);

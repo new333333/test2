@@ -45,14 +45,14 @@ public class ViewEntryController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		Map formData = request.getParameterMap();
 		String viewPath = BinderHelper.getViewListingJsp(this, getViewType(binderId.toString()));
-		if (formData.containsKey("ssReloadUrl")) {
+		if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			model = new HashMap();
-			model.put("ssReloadUrl", reloadUrl.toString());			
+			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
 		}
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_ENTRY);

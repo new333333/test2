@@ -63,7 +63,7 @@ public class ListProfilesController extends   SAbstractController {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-			model.put("ssReloadUrl", reloadUrl.toString());
+			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
 			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())), model);
 		} else if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");

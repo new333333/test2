@@ -62,7 +62,7 @@ public class AddAttachmentController extends SAbstractController {
 				setupCloseDiv(response, folderId, closeDivFunctionName);
 			}
 			//flag reload of folder listing
-			//response.setRenderParameter("ssReloadUrl", "");
+			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else {
 			response.setRenderParameters(formData);		
 		}

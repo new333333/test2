@@ -172,6 +172,8 @@ var ss_saveViewEntryWidthUrl = "<ssf:url
 if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 }
+//Define the url of this page in case the entry needs to reload this page
+var ss_reloadUrl = "${ss_reloadUrl}";
 </script>
 
 <ssf:ifnotadapter>
