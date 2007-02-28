@@ -198,7 +198,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 		class="ss_labelLeft"><c:out value="${property_caption}"/>&nbsp;&nbsp;</span>
 	</td>
 
-	<td width="10%" valign="top">
+	<td valign="top">
 		<c:if test="${ssIsAppletSupported == 'true'}">
 			<a class="ss_linkButton" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 				<ssf:nlt tag="entry.AttachFilesByApplet"/>
@@ -207,7 +207,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	</td>
 
 	<% if (isIE) { %>
-	<td width="10%" valign="top">
+	<td valign="top">
 		<c:if test="${ss_folderViewStyle == 'blog'}">
 			<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
 			<a class="ss_linkButton" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
@@ -222,7 +222,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	</td>
 	<% } %>
 	
-	<td width="10%" valign="top">
+	<td valign="top">
 		<a class="ss_linkButton" href="javascript: ;" onClick="ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 			<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
 		</a>
