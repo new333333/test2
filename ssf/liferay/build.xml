@@ -12,6 +12,7 @@
 
 	<target name="clean">
 		<delete dir="temp" />
+		<delete dir="temp2" />
 	</target>
 	
 	<!-- Incremental deploy for ssf-liferay.jar -->
@@ -112,12 +113,13 @@
 	</target>-->
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
-		<unwar src="${project.dir}/war/ssf.war" dest="temp" />
+		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
+
 		<antcall target="copy-liferay-specific-ssf-artifacts"/>
-		<mkdir dir="temp2" />
+
 		<war basedir="temp"
 			destfile="temp2/ssf.war"
-			webxml="temp/WEB-INF/web.xml"/>
+			update="true" />				
 
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
@@ -155,12 +157,13 @@
 	</target>
 		
 	<target name="deploy-liferay-jboss-tomcat" depends="clean, init-liferay, clean-app-server">		
-		<unwar src="${project.dir}/war/ssf.war" dest="temp" />
+		<copy file="${project.dir}/war/ssf.war" todir="temp2"/>
+	
 		<antcall target="copy-liferay-specific-ssf-artifacts"/>
-		<mkdir dir="temp2" />
+	
 		<war basedir="temp"
 			destfile="temp2/ssf.war"
-			webxml="temp/WEB-INF/web.xml"/>
+			update="true" />				
 
 		<java
 			classname="com.liferay.portal.tools.PortletDeployer"
