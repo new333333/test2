@@ -29,7 +29,7 @@
 			value="${ssDefinitionEntry.creation.principal.id}"/>
 	    <ssf:param name="newTab" value="1" />
 		</ssf:url>"
- ><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
+ ><ssf:showUser user="${ssDefinitionEntry.creation.principal}"/></a>
 </div>
 <%
 	if (!ssSeenMap.checkIfSeen(title_entry)) {
