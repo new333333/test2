@@ -116,7 +116,7 @@ public class AjaxController  extends SAbstractController {
 			//  The code on the calling page will output the proper translated message.
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
-			
+
 			//Check for calls from "ss_fetch_url" (which don't output in xml format)
 			if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT) || 
 					op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT) ||
@@ -1314,6 +1314,7 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		AccessControlController.setupAccess(this, request, response, binder, model);
 		
+		// User context
 		User user = RequestContextHolder.getRequestContext().getUser();
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
@@ -1368,6 +1369,11 @@ public class AjaxController  extends SAbstractController {
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
+
+		// User context
+		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+
 
 		if (!entryId.equals("")) {
 			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
