@@ -158,9 +158,7 @@ public class WebKeys {
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
-	public static final String ACTION_START_MEETING="start_meeting";
-	public static final String ACTION_SCHEDULE_MEETING="schedule_meeting";
-	
+	public static final String ACTION_ADD_MEETING="add_meeting";
 	
 	
 	//operations

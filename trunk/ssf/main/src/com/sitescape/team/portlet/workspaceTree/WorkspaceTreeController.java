@@ -413,7 +413,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			
 			// Meet
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
@@ -511,7 +511,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 
 		// start meeting
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
@@ -522,22 +522,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 			qualifiers.put("post", Boolean.TRUE);
 			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
 		}
-		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
+		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
-		// schedule meeting
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
-			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-		}
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
-			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
-		}
-		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());

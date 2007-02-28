@@ -3105,15 +3105,5 @@ form.inline {
 	margin: 0;	
 }
 
-form.inline input {
-	border: 0;
-	padding: 0;
-	margin: 0;
-	background-color: transparent; 
-	color: #8E8FA7 !important;
-	font-size: 0.9em;
-	font-family: Lucida Sans Unicode,Arial,sans-serif;
-}
-
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

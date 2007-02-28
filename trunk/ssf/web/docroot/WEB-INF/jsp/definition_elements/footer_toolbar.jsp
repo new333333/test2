@@ -18,7 +18,7 @@
 	      
 			  	<% // qualifier 'post' allows to open new page with post method - it sends a form with parameter given as qualifiers.postParams %>
 			    <c:if test="${!empty toolbarMenu.value.qualifiers.post}">
-				 	<form class="inline" action="${toolbarMenu.value.url}" method="post" <c:if test="${!empty toolbarMenu.value.qualifiers.popup}"> target="footerToolbarOptionWnd" onsubmit="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd')" </c:if>>
+				 	<form class="inline" action="${toolbarMenu.value.url}" method="post" <c:if test="${!empty toolbarMenu.value.qualifiers.popup}"> target="footerToolbarOptionWnd"</c:if>>
 				 		<c:forEach var="p2" items="${toolbarMenu.value.qualifiers.postParams}">
 						  <c:set var="key2" value="${p2.key}"/>
 						  
@@ -28,8 +28,7 @@
 					      
 				        </c:forEach>
 				        
-				        <% // style it to regular link %>
-				 		<input type="submit" value="${toolbarMenu.value.title}" onmouseover="this.style.cursor='pointer'; this.style.textDecoration='underline';" onmouseout="this.style.cursor='default'; this.style.textDecoration='none';" />
+				        <a href="javascript: //" onclick="<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">ss_toolbarPopupUrl('', 'footerToolbarOptionWnd')</c:if>; ss_submitParentForm(this); ">${toolbarMenu.value.title}</a>
 				 	</form>
 			    </c:if>
 			    
