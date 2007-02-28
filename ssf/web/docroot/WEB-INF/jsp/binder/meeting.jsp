@@ -40,7 +40,7 @@
 					<input type="hidden" name="entryId" value="${ssEntry.id}" />	
 				</c:if>
 		
-				<span class="ss_bold"><c:if test="${action == 'start_meeting'}"><ssf:nlt tag="meeting.start.title"/></c:if><c:if test="${action == 'schedule_meeting'}"><ssf:nlt tag="meeting.schedule.title"/></c:if></span>
+				<span class="ss_bold"><ssf:nlt tag="meeting.add.title"/></span>
 				<table class="ss_style"  border="0" cellspacing="0" cellpadding="0" width="95%">
 					<tr><td>
 						<fieldset class="ss_fieldset">
@@ -61,9 +61,15 @@
 			</form>
 		
 			<div>
+				<span>
 				<a class="ss_linkButton ss_bold ss_smallprint" href="#"
-				  onClick="ss_startMeeting(<c:if test="${action == 'start_meeting'}">ss_ostatus_start_meeting_url</c:if><c:if test="${action == 'schedule_meeting'}">ss_ostatus_schedule_meeting_url</c:if>, 'startMeetingForm', this.parentNode);"
-				><c:if test="${action == 'start_meeting'}"><ssf:nlt tag="meeting.start"/></c:if><c:if test="${action == 'schedule_meeting'}"><ssf:nlt tag="meeting.schedule"/></c:if></a>
+				  onClick="ss_startMeeting(ss_ostatus_start_meeting_url, 'startMeetingForm', this.parentNode);"
+				><ssf:nlt tag="meeting.start"/></a></span>
+
+				<span>
+				<a class="ss_linkButton ss_bold ss_smallprint" href="#"
+				  onClick="ss_startMeeting(ss_ostatus_schedule_meeting_url, 'startMeetingForm', this.parentNode);"
+				><ssf:nlt tag="meeting.schedule"/></a></span>				
 			</div>
 		
 			<br/><br/>

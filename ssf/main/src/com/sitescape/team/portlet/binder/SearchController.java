@@ -774,21 +774,12 @@ public class SearchController extends AbstractBinderController {
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("post", Boolean.TRUE);
 		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));		
-		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
-
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));		
-		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
-
+		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
