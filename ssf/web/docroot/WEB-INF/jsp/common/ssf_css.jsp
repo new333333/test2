@@ -183,6 +183,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
 	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
     <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
+    <c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/>
 	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
@@ -1139,8 +1140,7 @@ table.ss_attachments_list td.ss_att_space {
   width: 100%; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_footer_text_color};
-  font-size:${ss_style_font_fineprint};
-  font-weight:normal;
+  font: ${ss_style_footer_font};
   text-align:center;
   margin-top: 0px;
   margin-bottom: 8px;
@@ -1171,9 +1171,11 @@ table.ss_attachments_list td.ss_att_space {
   }
 .ss_footer_toolbar a, .ss_toolbar a:visited {
   color: ${ss_style_footer_text_color};
+  text-decoration: none;
 }
 .ss_footer_toolbar a:hover {
   color: ${ss_style_link_hover_color};
+  text-decoration: underline;
 }
 
 .ss_tags {
