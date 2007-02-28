@@ -70,7 +70,7 @@ public class ModifyEntryController extends SAbstractController {
 						new MapInputData(formData), fileMap, deleteAtts, null);
 				setupReloadOpener(response, folderId, entryId);
 				//flag reload of folder listing
-				//response.setRenderParameter("ssReloadUrl", "");
+				//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
 				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));

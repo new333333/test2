@@ -134,14 +134,18 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
 		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
 		
-		if (formData.containsKey("ssReloadUrl")) {
-			PortletURL reloadUrl = response.createRenderURL();
-			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		//Build a reload url
+		PortletURL reloadUrl = response.createRenderURL();
+		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+		reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+	
+		if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
 			model.clear();
-			model.put("ssReloadUrl", reloadUrl.toString());			
+			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 			return new ModelAndView(viewPath, model);
 		} 
 		FolderEntry fe;

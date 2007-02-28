@@ -42,7 +42,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			//get view data, before binder is deleted
 			setupViewOnDelete(response, binder, binderType);	
 			getBinderModule().deleteBinder(binderId);
-			response.setRenderParameter("ssReloadUrl", "");
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			
 		} else if (formData.containsKey("okBtn")) {
 			if (op.equals("") || op.equals(WebKeys.OPERATION_MODIFY)) { 			

@@ -246,7 +246,7 @@ public class ListFolderController extends  SAbstractController {
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 			return new ModelAndView(BinderHelper.getViewListingJsp(this, getViewType(binderId.toString())));
 		}
 		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {

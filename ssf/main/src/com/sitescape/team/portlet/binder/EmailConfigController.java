@@ -38,7 +38,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 			if (folderId != null) {
 				Binder binder = getBinderModule().getBinder(folderId);
 				setupViewBinder(response, binder);
-				response.setRenderParameter("ssReloadUrl", "");
+				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			} else {
 				response.setRenderParameter("redirect", "true");
 			}

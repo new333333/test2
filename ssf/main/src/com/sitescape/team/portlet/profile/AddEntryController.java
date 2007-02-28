@@ -48,7 +48,7 @@ public class AddEntryController extends SAbstractController {
 			entryId= getProfileModule().addUser(binderId, entryType, inputData, fileMap);
 			setupViewEntry(response, binderId, entryId);
 			//flag reload of folder listing
-			response.setRenderParameter("ssReloadUrl", "");
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());				
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);

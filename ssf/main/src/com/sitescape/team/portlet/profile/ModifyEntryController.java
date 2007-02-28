@@ -42,7 +42,7 @@ public class ModifyEntryController extends SAbstractController {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-			response.setRenderParameter("ssReloadUrl", "");
+			response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("okBtn") && op.equals("")) {
 			//The modify form was submitted. Go process it
 			Map fileMap=null;
@@ -63,7 +63,7 @@ public class ModifyEntryController extends SAbstractController {
 			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
 			setupReloadOpener(response, binderId, entryId);
 			//flag reload of folder listing
-			//response.setRenderParameter("ssReloadUrl", "");
+			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
 			setupCloseWindow(response);

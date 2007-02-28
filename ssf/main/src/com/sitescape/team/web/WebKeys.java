@@ -487,6 +487,7 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RELOAD_URL="ss_reloadUrl";
+    public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";

@@ -83,7 +83,7 @@ public class AddEntryController extends SAbstractController {
 				}
 			}
 			//flag reload of folder listing
-			//response.setRenderParameter("ssReloadUrl", "");
+			//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 		} else if (formData.containsKey("cancelBtn")) {
 			if (!blogReply.equals("")) {
 				setupReloadOpener(response, folderId, entryId);

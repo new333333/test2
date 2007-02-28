@@ -128,6 +128,9 @@ var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
 var ss_highlightedLine = null;
 var ss_savedHighlightedLineBgColor = null;
 
+//Define the url of this page in case the entry needs to reload this page
+var ss_reloadUrl = "${ss_reloadUrl}";
+
 
 </script>
 </c:if>

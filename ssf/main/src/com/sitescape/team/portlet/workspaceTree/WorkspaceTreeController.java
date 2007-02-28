@@ -74,7 +74,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			String random = String.valueOf(new Random().nextInt(999999));
 			reloadUrl.setParameter(WebKeys.URL_RANDOM, random);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, "noop");
-			request.setAttribute("ssReloadUrl", reloadUrl.toString());
+			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
 			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
 		}
 
