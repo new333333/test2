@@ -1,5 +1,6 @@
 package com.sitescape.team.portlet.workspaceTree;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -173,13 +174,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 		DashboardHelper.getDashboardMap(binder, userProperties, model);
 		model.put(WebKeys.SEEN_MAP,getProfileModule().getUserSeenMap(user.getId()));
-		try {
-			List users = getBinderModule().getTeamMembers(binder.getId(), true);
-			model.put(WebKeys.TEAM_MEMBERS, users);
-			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-		} catch (AccessControlException ax) {
-			//don't display membership
-		}
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		Document searchFilter = null;
 		if (searchFilterName != null && !searchFilterName.equals("")) {
@@ -227,6 +221,14 @@ public class WorkspaceTreeController extends SAbstractController  {
 	}
 	
 	protected void getTeamMembers(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) throws PortletRequestBindingException {
+		try {
+			List users = getBinderModule().getTeamMembers(ws.getId(), true);
+			model.put(WebKeys.TEAM_MEMBERS, users);
+			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
+		} catch (AccessControlException ax) {
+			//don't display membership
+		}
+		
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
 	}
 	
@@ -385,35 +387,35 @@ public class WorkspaceTreeController extends SAbstractController  {
 			}
 		}
 		
-		String[] teamMembersIds = getTeamMemberIds((List)model.get(WebKeys.TEAM_MEMBERS));
-		
 		// list team members
 		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
 			Map qualifiers = new HashMap();
 					
-			//The "Teams" menu
+			// The "Teams" menu
 			toolbar.addToolbarMenu("5_team", NLT.get("toolbar.teams"));
 			
-			//View
+			// View
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHOW_TEAM_MEMBERS);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
-			//Sendmail
+			
+			// Sendmail
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
 			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
-			//Meet
+			
+			// Meet
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
 			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
@@ -482,7 +484,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Toolbar footerToolbar = new Toolbar();
 		String[] creatorAndMoficationIds = collectCreatorAndMoficationIds(workspace);
 		
-		
+		// permalink
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -492,40 +494,49 @@ public class WorkspaceTreeController extends SAbstractController  {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 
 				adapterUrl.toString(), qualifiers);
 
+		// send mail
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
-		} else {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
+		}
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
+		// start meeting
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
-		} else {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
+		}
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
 
+		// schedule meeting
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		if (getBinderModule().testAccess(workspace, "getTeamMembers")) {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, teamMembersIds);
-		} else {
-			adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
 		}
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
+		}
 		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
@@ -536,21 +547,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		Set principals = new HashSet();
 		principals.add(workspace.getCreation().getPrincipal().getId().toString());
 		principals.add(workspace.getModification().getPrincipal().getId().toString());
-		String[] as = new String[principals.size()];
-		principals.toArray(as);
-		return as;
-	}
-	
-	private String[] getTeamMemberIds(List teamMembers) {
-		Set principals = new HashSet();
-		
-		if (teamMembers != null) {		
-			Iterator it = teamMembers.iterator();
-			while (it.hasNext()) {
-				principals.add(((Principal)it.next()).getId().toString());
-			}
-		}
-		
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
 		return as;

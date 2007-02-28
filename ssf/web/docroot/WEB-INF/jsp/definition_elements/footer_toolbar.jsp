@@ -14,28 +14,56 @@
       </c:if>
 	  <c:choose>
 	    <c:when test="${!empty toolbarMenu.value.url}">
-	      <div class="ss_bottomlinks"><a href="${toolbarMenu.value.url}"
-    	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
-    	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
-    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
-    	    	</c:if>
-    	    </c:if>
-    	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
-    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
-    	    </c:if>
-    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
-<%
-		if (BrowserSniffer.is_ie(request)) {
-%>
-    	      	style="behavior: url(#default#AnchorClick);"
-<%
-		}
-%>
-    	      	folder="${toolbarMenu.value.qualifiers.folder}"
-    	      	target="_blank"
-    	    </c:if>
-	      ><c:out 
-	        value="${toolbarMenu.value.title}" /></a></div>
+	      <div class="ss_bottomlinks">
+	      
+			  	<% // qualifier 'post' allows to open new page with post method - it sends a form with parameter given as qualifiers.postParams %>
+			    <c:if test="${!empty toolbarMenu.value.qualifiers.post}">
+				 	<form class="inline" action="${toolbarMenu.value.url}" method="post" <c:if test="${!empty toolbarMenu.value.qualifiers.popup}"> target="footerToolbarOptionWnd" onsubmit="ss_toolbarPopupUrl('', 'footerToolbarOptionWnd')" </c:if>>
+				 		<c:forEach var="p2" items="${toolbarMenu.value.qualifiers.postParams}">
+						  <c:set var="key2" value="${p2.key}"/>
+						  
+						  <c:forEach var="value2" items="${p2.value}">
+					      	<input type="hidden" name="${key2}" value="${value2}"/>
+					      </c:forEach>
+					      
+				        </c:forEach>
+				        
+				        <% // style it to regular link %>
+				 		<input type="submit" value="${toolbarMenu.value.title}" onmouseover="this.style.cursor='pointer'; this.style.textDecoration='underline';" onmouseout="this.style.cursor='default'; this.style.textDecoration='none';" />
+				 	</form>
+			    </c:if>
+			    
+				<c:if test="${empty toolbarMenu.value.qualifiers.post}">
+				 
+	      
+				      <a href="${toolbarMenu.value.url}"
+			    	    <c:if test="${empty toolbarMenu.value.qualifiers.onClick}">
+			    	    	<c:if test="${!empty toolbarMenu.value.qualifiers.popup}">
+			    	      		onClick="ss_toolbarPopupUrl(this.href);return false;"
+			    	    	</c:if>
+			    	    </c:if>
+			    	    <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
+			    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+			    	    </c:if>
+			    	    <c:if test="${!empty toolbarMenu.value.qualifiers.folder}">
+			<%
+					if (BrowserSniffer.is_ie(request)) {
+			%>
+			    	      	style="behavior: url(#default#AnchorClick);"
+			<%
+					}
+			%>
+			    	      	folder="${toolbarMenu.value.qualifiers.folder}"
+			    	      	target="_blank"
+			    	    </c:if>
+				      ><c:out 
+				        value="${toolbarMenu.value.title}" /></a>
+
+
+				</c:if>
+       
+	        
+	        </div>
 	    </c:when>
 	    <c:when test="${!empty toolbarMenu.value.urlParams}">
 	      <div class="ss_bottomlinks"><a href="<ssf:url>
