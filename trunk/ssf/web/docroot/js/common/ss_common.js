@@ -228,14 +228,30 @@ function ss_openTitleUrl(obj) {
 function ss_showPermalink(obj) {
 	//See if the div exists already
 	var divObj = document.getElementById('ss_permalink_display_div');
+	var divObj3 = document.getElementById('ss_permalink_display_div3');
 	if (divObj == null) {
 		//Create the div
 	    divObj = document.createElement("div");
 	    divObj.setAttribute("id", "ss_permalink_display_div");
-	    divObj.className = "ss_popupMenu";
+	    divObj.className = "ss_style ss_popupMenu";
+	    divObj2 = document.createElement("div");
+	    divObj3 = document.createElement("div");
+	    divObj3.setAttribute("id", "ss_permalink_display_div3");
+	    divObj2.setAttribute("align", "right");
+	    divObj2.className = "ss_popupMenuClose";
+	    aObj = document.createElement("a");
+	    aObj.setAttribute("href", "#");
+	    aObj.setAttribute("onClick", "ss_hideDiv('ss_permalink_display_div');return false;");
+	    imgObj = document.createElement("img");
+	    imgObj.setAttribute("border", "0");
+	    imgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
+	    aObj.appendChild(imgObj);
+	    divObj2.appendChild(aObj);
+	    divObj.appendChild(divObj2)
+	    divObj.appendChild(divObj3)
 		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
 	}
-	divObj.innerHTML = obj.href;
+	divObj3.innerHTML = obj.href;
 	ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
 	divObj.style.top = parseInt(ss_getClickPositionY() + 10) + "px";
 	var x = parseInt(ss_getClickPositionX());

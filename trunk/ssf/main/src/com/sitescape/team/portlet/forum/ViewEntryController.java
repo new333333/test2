@@ -383,7 +383,8 @@ public class ViewEntryController extends  SAbstractController {
 		Binder binder = entry.getParentBinder();
 		//Check the access rights of the user
 		if (getBinderModule().testAccess(binder, "setProperty")) {
-			String displayDefId = (String) userProperties.get(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
+			UserProperties userBinderProperties = getProfileModule().getUserProperties(user.getId(), binder.getId());
+			String displayDefId = (String) userBinderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION);
 			Definition displayDef = null;
 			if (!Validator.isNull(displayDefId)) {
 				try {

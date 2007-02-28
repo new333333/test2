@@ -638,6 +638,11 @@ div.ss_send_friend {
   padding:2px;
   background-color:${ss_style_background_color};
   }
+.ss_popupMenuClose {
+  width:100%;
+  padding:0px 8px 0px 0px;
+  text-align:right;
+}
 
 .ss_popupTitleOptions {
   position:absolute;
