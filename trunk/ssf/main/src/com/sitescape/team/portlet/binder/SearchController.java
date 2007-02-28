@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -766,23 +767,26 @@ public class SearchController extends AbstractBinderController {
 		
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
 		Map qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("post", Boolean.TRUE);
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_START_MEETING);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("post", Boolean.TRUE);
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));		
 		footerToolbar.addToolbarMenu("startMeeting", NLT.get("toolbar.menu.startMeeting"), adapterUrl.toString(), qualifiers);
 
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_MEETING);
-		adapterUrl.setParameter(WebKeys.USER_IDS_TO_ADD, peopleIds);
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
+		qualifiers.put("post", Boolean.TRUE);
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));		
 		footerToolbar.addToolbarMenu("scheduleMeeting", NLT.get("toolbar.menu.scheduleMeeting"), adapterUrl.toString(), qualifiers);
 
 

@@ -40,7 +40,7 @@ import com.sitescape.util.StringUtil;
  * @author Janet McCann
  * 
  */
-public class MeetingController  extends SAbstractController {
+public class MeetingController extends SAbstractController {
 
 	public void handleActionRequestAfterValidation(ActionRequest request,
 			ActionResponse response) throws Exception {
@@ -59,23 +59,32 @@ public class MeetingController  extends SAbstractController {
 				WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request,
 				WebKeys.URL_ENTRY_ID);
-		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
+		List userIds = PortletRequestUtils.getLongListParameters(request,
+				WebKeys.USER_IDS_TO_ADD);
+		Boolean appendTeamMembers = PortletRequestUtils.getBooleanParameter(
+				request, WebKeys.URL_APPEND_TEAM_MEMBERS, false);
 
 		if (binderId != null) {
-			Binder binder = getBinderModule().getBinder(binderId);		
+			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 		}
-		
+
 		if (binderId != null && entryId != null) {
 			Entry entry = getFolderModule().getEntry(binderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
 		}
+
 		
-		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
-		
-		model.put(WebKeys.ACTION, PortletRequestUtils.getStringParameter(request,
-				WebKeys.ACTION));
-		
+		Set users = new HashSet();
+		users.addAll(getProfileModule().getUsers(new HashSet(userIds)));
+		if (appendTeamMembers) {
+			users.addAll(getBinderModule().getTeamMembers(binderId, true));
+		}
+		model.put(WebKeys.USERS, users);
+
+		model.put(WebKeys.ACTION, PortletRequestUtils.getStringParameter(
+				request, WebKeys.ACTION));
+
 		return new ModelAndView(WebKeys.VIEW_BINDER_MEETING, model);
 	}
 

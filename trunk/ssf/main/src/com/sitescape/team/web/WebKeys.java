@@ -39,6 +39,7 @@ public class WebKeys {
     
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
+    public static final String URL_APPEND_TEAM_MEMBERS = "appendTeamMembers";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
     public static final String URL_ADD_DEFAULT_ENTRY = "addDefaultEntryURL";
@@ -159,10 +160,6 @@ public class WebKeys {
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";
 	public static final String ACTION_START_MEETING="start_meeting";
 	public static final String ACTION_SCHEDULE_MEETING="schedule_meeting";
-	public static final String ACTION_VIEW_TEAM_MEMBERS = "view_team_members";
-	public static final String ACTION_EDIT_TEAM_MEMBERS = "edit_team_members";
-	public static final String ACTION_TEAM_SENDMAIL = "team_sendmail";
-	public static final String ACTION_TEAM_MEETING = "team_meeting";
 	
 	
 	

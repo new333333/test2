@@ -1,5 +1,6 @@
 package com.sitescape.team.portlet.binder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -80,6 +81,8 @@ public class SendMailController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 		}
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Boolean appendTeamMembers = PortletRequestUtils.getBooleanParameter(
+				request, WebKeys.URL_APPEND_TEAM_MEMBERS, false);
 		
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
@@ -87,7 +90,14 @@ public class SendMailController extends SAbstractController {
 		}
 		
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
-		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));
+
+		Set users = new HashSet();
+		users.addAll(getProfileModule().getUsers(new HashSet(userIds)));
+		if (appendTeamMembers) {
+			users.addAll(getBinderModule().getTeamMembers(binderId, true));
+		}
+		model.put(WebKeys.USERS, users);
+	
 		
 		return new ModelAndView(WebKeys.VIEW_BINDER_SENDMAIL, model);
 	}
