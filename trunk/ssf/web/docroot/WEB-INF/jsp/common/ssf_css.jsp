@@ -1106,7 +1106,7 @@ table.ss_mouseOverInfo {
 
 
 table.ss_attachments_list {
-	margin-left: 30px;
+	padding-left: 30px;
 	width: 98%;
 	empty-cells: show;
 }
