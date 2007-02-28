@@ -1,13 +1,5 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div class="ss_muted_tag_cloud">
-<c:forEach var="ptag" items="${ssPersonalTags}">
- <span class="ss_muted_cloud_tag"><c:out value="${ptag.name}"/></span>
-</c:forEach>
-<c:forEach var="tag" items="${ssCommunityTags}">
- <span class="ss_muted_cloud_tag"><c:out value="${tag.name}"/></span>
-</c:forEach>
-</div>
-<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}" class="ss_tag_pane">
+<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane">
 <div align="right">
 <a onClick="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"><img 
   border="0" src="<html:imagesPath/>box/close_off.gif"/></a>

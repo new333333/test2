@@ -279,7 +279,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_gallery_anchor_color" value="black" scope="request"/>
 	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
 
-	<c:set var="ss_tag_color" value="blue" scope="request"/>
+	<c:set var="ss_tag_color" value="#999966" scope="request"/>
 	<c:set var="ss_tag_pane_background_color" value="#cecece" scope="request"/>
 </c:if>
 
@@ -1201,9 +1201,12 @@ table.ss_attachments_list td.ss_att_space {
 }
 .ss_tag_pane_ok_cover {
   position:relative; 
-  top:-14px; 
+  top:-14px;
+<c:if test="<%= !isIE %>">
+  left: 35%; 
+</c:if>
   height:20px; 
-  width:20px; 
+  width:50px; 
   background-color:${ss_tag_pane_background_color};
 }
 
