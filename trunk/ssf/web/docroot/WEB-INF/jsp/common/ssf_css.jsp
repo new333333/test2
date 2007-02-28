@@ -351,6 +351,10 @@ body.ss_style_body {
 .ss_finestprint {
   font-size: ${ss_style_font_finestprint} !important; 
 }
+
+.ss_nowrap {
+  white-space: nowrap;
+}
 .ss_brightest {
  opacity: ${ss_style_brightest};
  <c:if test="<%= isIE %>">

@@ -35,7 +35,7 @@
 	}
 %>
 <c:if test="${!empty ssDefinitionEntry.averageRating}">
-<td>
+<td class="ss_nowrap">
 <c:if test="${ssDefinitionEntry.averageRating.count == 1}">
   <span class="ss_muted_label_small"> (<ssf:nlt tag="popularity.rating.average">
     <ssf:param name="value" value="${ssDefinitionEntry.averageRating.average}"/>
