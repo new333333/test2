@@ -1114,6 +1114,7 @@ table.ss_attachments_list {
 table.ss_attachments_list td.ss_att_title {
 	font-size: 10px;
 	font-weight: bold;
+	padding-left: 0px;
 }
 
 table.ss_attachments_list hr.ss_att_divider {

@@ -111,7 +111,7 @@
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
-        <tr><td colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+        <tr><td class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8"><ssf:nlt tag="entry.PreviousVersions"/></td>
 		</tr>	
