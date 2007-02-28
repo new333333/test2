@@ -5,7 +5,7 @@
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 <script type="text/javascript">
 function ss_showTags<portlet:namespace/>(divNumber, entryId) {
-	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber);
+	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
 	ss_moveDivToBody(divId);
 	var divObj = document.getElementById(divId);
 	divObj.style.display = "block";
@@ -21,7 +21,7 @@ function ss_showTags<portlet:namespace/>(divNumber, entryId) {
 	ss_showDiv(divId);
 }
 function ss_hideTags<portlet:namespace/>(divNumber, entryId) {
-	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber);
+	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
 	ss_hideDiv(divId);
 }
 function ss_addTag<portlet:namespace/>(divNumber, entryId) {
@@ -83,4 +83,5 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntryId" value="${ssDefinitionEntry.id}" scope="request"/>
+<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
