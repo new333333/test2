@@ -759,7 +759,7 @@ public class ListFolderController extends  SAbstractController {
 		for (Iterator iter= folderList.iterator(); iter.hasNext();) {
 			Object itrObj = iter.next();
 			FolderEntry folderEntry = (FolderEntry) itrObj;
-			String strWebDAVURL = DefinitionUtils.getWebDAVURL(folder, folderEntry);
+			String strWebDAVURL = DefinitionHelper.getWebDAVURL(folder, folderEntry);
 			Long lngFolderEntry = folderEntry.getId();
 			hmWebDAVURLs.put(lngFolderEntry, strWebDAVURL);
 		}

@@ -10,6 +10,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import org.dom4j.Document;
 
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
@@ -27,7 +28,7 @@ public class ShowUser extends BodyTagSupport {
 
 	private Principal user = null;
 	private String titleStyle = "";
-    private Boolean showPresence = true;
+    private Boolean showPresence = Boolean.TRUE;
 
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -43,18 +44,24 @@ public class ShowUser extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
 			// Get a user object from the principal
-			User user1 = null;
-			if (user != null) {
+			if ((user != null) && !(user instanceof User) && !(user instanceof Group)) {
 				ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 				try {
-					user1 = profileDao.loadUser(user.getId(), user.getZoneId());
+					//this will remove the proxy and return a real user or group
+					//currently looks like this code is expecting a User
+					//get user even if deleted.
+					user = profileDao.loadPrincipal(user.getId(), user.getZoneId(), false);
 				} catch (Exception e) {
 				}
 			}
 
 			httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
-			httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);		
-			httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);		
+			httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);	
+			if (user.isActive())
+				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
+			else
+				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
+				
 			
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/show_user/show_user.jsp";

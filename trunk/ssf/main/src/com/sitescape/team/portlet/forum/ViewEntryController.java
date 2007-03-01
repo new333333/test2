@@ -540,7 +540,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
 		
-		String strEntryURL = DefinitionUtils.getWebDAVURL(folder, entry);
+		String strEntryURL = DefinitionHelper.getWebDAVURL(folder, entry);
 		//String strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
 		//String strWebDavURL = SsfsUtil.getLibraryBinderUrl(folder);
 		

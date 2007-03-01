@@ -38,6 +38,7 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.CollectionUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -256,7 +257,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		//mark deleted, cause their ids are used all over
        		//profileDao will delete all associations and groups
        		p.setDeleted(true);
-       		p.setTitle("(Deleted)" + p.getTitle());
+       		p.setTitle(NLT.get("profile.deleted.label") + " " + p.getTitle());
        	}
     	getProfileDao().delete((Principal)entry);   
        	return ctx;
