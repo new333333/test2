@@ -813,6 +813,8 @@
 	    </property>
 	</bean>
 
+	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
+	     property must be set to true in the Hibernate configuration file. -->
 	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
 		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
