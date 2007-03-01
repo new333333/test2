@@ -126,7 +126,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         	if (inputData.exists(ObjectKeys.FIELD_GROUP_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
     			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, inputData.getSingleValue(ObjectKeys.FIELD_GROUP_MEMBERS));
         	}
-        	//hack to get member names from input and convert to set - Mostly for ldap
+        	//hack to get member names from input and convert to set - Mostly for user/group load
         	if (inputData.exists(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
         		String[] sNames = inputData.getValues(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME);
         		
@@ -142,7 +142,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         		Set members = new HashSet();
         		for (int x=0;x<exists.size(); ++x) {
 				   Principal p = (Principal)exists.get(x);
-				   members.add(p);
+				   if (p.isActive()) members.add(p);
         		}
 	   			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, members);
         	}
