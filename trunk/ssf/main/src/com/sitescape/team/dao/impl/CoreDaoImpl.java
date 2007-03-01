@@ -50,8 +50,8 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
-import com.sitescape.team.domain.NoConfigurationByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -190,9 +190,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
 
-		   			//free alias for someone else
+		   			//delete alias
+	    			//scheduled items should delete themselves as they come due
 	    			PostingDef def = binder.getPosting();
-	    			if (def != null) def.setBinder(null);
+	    			if (def != null) session.delete(def);
 	    			session.flush();
 	    			Connection connect = session.connection();
 		   			try {
@@ -203,6 +204,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
 		   			}
+	     	   		//delete user dashboards on this binder
+	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where binderId=:binderId")
+		   				.setLong("binderId", binder.getId())
+	     	   			.executeUpdate();
 		   			session.createQuery("DELETE com.sitescape.team.domain.UserProperties where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 		   				.executeUpdate();
@@ -248,23 +253,23 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
      	   			.setLong("entityId", entity.getId())
      	   			.setParameter("entityType", entity.getEntityType().getValue())
      	   			.executeUpdate();
-	   			//delete ratings/visits for these entries
+	   			//delete ratings/visits for this entry
 	   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
-	   			//delete subscriptions to these entries
+	   			//delete subscriptions to this entry
 	   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId=:entityId and entityType=:entityType")
 	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
-		   		//delete tags for these entries
+		   		//delete tags on this entry
 		   		session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id=:entityId and entity_type=:entityType")
  	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityType().getValue())
 	   				.executeUpdate();
 
-	   			//delete tags owned by these entries
+	   			//delete tags owned by this entry
 		   		session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id=:entityId and owner_type=:entityType")
  	   				.setLong("entityId", entity.getId())
 	   			  	.setParameter("entityType", entity.getEntityType().getValue())
@@ -641,7 +646,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
-                            throw new NoBinderByTheNameException(ObjectKeys.TOP_WORKSPACE_INTERNALID); 
+                            throw new NoWorkspaceByTheNameException(ObjectKeys.TOP_WORKSPACE_INTERNALID); 
                         }
                         return (Workspace)results.get(0);
                     }

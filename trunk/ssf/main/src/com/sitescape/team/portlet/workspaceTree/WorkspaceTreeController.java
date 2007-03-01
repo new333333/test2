@@ -157,15 +157,19 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//See if this is a user workspace
 		if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				binder.getOwner() != null) {
-			Document profileDef = user.getEntryDef().getDefinition();
-			model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
-			model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
-					profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
-			model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
 			Principal owner = binder.getOwner();
-			//turn owner into real object = not hibernate proxy
-			model.put(WebKeys.PROFILE_CONFIG_ENTRY, 
-					getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId()));
+			if (owner != null) {
+				//	turn owner into real object = not hibernate proxy
+				try {
+					User u = (User)getProfileModule().getEntry(owner.getParentBinder().getId(), owner.getId());
+					model.put(WebKeys.PROFILE_CONFIG_ENTRY, u);							
+					Document profileDef = u.getEntryDef().getDefinition();
+					model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
+					model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
+							profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
+					model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+				} catch (Exception ex) {} //user may have been deleted, but ws left around
+			}
 		}
 	
 		Map userProperties = getProfileModule().getUserProperties(user.getId()).getProperties();

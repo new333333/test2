@@ -1,8 +1,8 @@
 
 package com.sitescape.team.jobs;
 
-import java.util.Iterator;
 import java.util.Date;
+import java.util.Iterator;
 
 import org.jbpm.JbpmContext;
 import org.jbpm.db.SchedulerSession;
@@ -38,7 +38,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     		SchedulerSession schedulerSession = jContext.getSchedulerSession();
     	      
     		logger.debug("checking for timers");
-    		Iterator iter = schedulerSession.findTimersByDueDate();
+    		Iterator iter = schedulerSession.findTimersByDueDate(100);
     		boolean isDueDateInPast=true; 
     		while( (iter.hasNext()) && (isDueDateInPast)) {
     			Timer timer = (Timer) iter.next();
@@ -58,6 +58,7 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     	}
     }
 
+	
     public void schedule(Long zoneId, int seconds) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {

@@ -6,7 +6,7 @@ public class LibraryEntry implements Serializable {
 	private final static long serialVersionUID=1;
 	protected Long binderId;
 	protected String name=""; //set by hibernate access=Field
-	protected Long entityId;
+	protected Long entityId; //must be folderEntryId
 	protected Long type=FILE;
 	public static Long FILE=Long.valueOf(1);
 	public static Long TITLE=Long.valueOf(2);

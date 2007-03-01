@@ -26,8 +26,7 @@ Jaxen 1.1-beta-7
 JAXRPC 1.1
 JBoss App Server 4.0.4.GA jbosssx.jar
 JBoss Portal 2.6 DR1 portal-identity-lib.jar
-JBPM 3.1.2
-JBPM-Identity 3.1.2
+JBPM 3.1.4 (not using/shipping jbpm-identity)
 JCR 1.0
 JDOM 1.0
 JSon-lib 1.0b2 for jdk15

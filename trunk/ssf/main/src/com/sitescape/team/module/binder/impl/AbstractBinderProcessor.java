@@ -427,9 +427,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
     	//create history - using timestamp and version from fillIn
-    	ChangeLog changes = new ChangeLog(binder, ChangeLog.MODIFYBINDER);
     	processChangeLog(binder, ChangeLog.MODIFYBINDER);
-    	getCoreDao().save(changes);
     }
     
     protected void modifyBinder_indexAdd(Binder binder, 
@@ -533,14 +531,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				owner.setWorkspaceId(null);
     		}
     	}
-     	//remove postings to this binder
-     	if (binder.getPosting() != null) {
-     		getCoreDao().delete(binder.getPosting());
-     	}
-     	
-       	if (!binder.isRoot()) {
-    		binder.getParentBinder().removeBinder(binder);
-    	}
+     	//remove postings to this binder handled in coreDao
+    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
+    			RequestContextHolder.getRequestContext().getZoneId(), binder);
+    	
     	return null;
     }
   
@@ -551,10 +545,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     
     protected Object deleteBinder_delete(Binder binder, Object ctx) {
-    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
-    			RequestContextHolder.getRequestContext().getZoneId(), binder);
     	
-    	getCoreDao().delete(binder);
+       	if (!binder.isRoot()) {
+    		binder.getParentBinder().removeBinder(binder);
+    	}
+       	getCoreDao().delete(binder);
     	
        	return ctx;
     }
@@ -568,11 +563,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	return ctx;
     }
     
-    //***********************************************************************************************************
-    public void finalBinderDelete(Binder binder) {
-    	if (!binder.isDeleted()) return; 
-
-    }
     //***********************************************************************************************************
     public void moveBinder(Binder source, Binder destination) {
     	if (source.isReserved() || source.isZone()) 

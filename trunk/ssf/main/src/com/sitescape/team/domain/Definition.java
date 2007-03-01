@@ -48,6 +48,8 @@ public class Definition extends PersistentTimestampObject implements AclControll
 	public static final String VIEW_STYLE_CALENDAR="event"; 
 	public static final String VIEW_STYLE_BLOG="blog";
 	public static final String VIEW_STYLE_SEARCH="search";
+	public static final String VIEW_STYLE_GUESTBOOK="guestbook"; 
+	public static final String VIEW_STYLE_PHOTO_ALBUM="photo"; 
 	
 	//visibility values
 	public static final int PUBLIC=1;

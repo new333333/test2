@@ -202,10 +202,9 @@ public class ViewEntryController extends  SAbstractController {
 			
 		//only want to update visits when first enter.  Don't want cancels on modifies
 		//to increment count
-		//Not used, don't set
-//		if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
-//			getFolderModule().setUserVisit(fe);
-//		}
+		if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
+			getFolderModule().setUserVisit(fe);
+		}
 
 		return new ModelAndView(viewPath, model);
 	} 

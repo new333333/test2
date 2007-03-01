@@ -71,7 +71,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            	//Validate user and zone are compatible
            	if (jobDataMap.containsKey(USERID)) {
            		Long id = new Long(jobDataMap.getLong(USERID));
-           		user = profileDao.loadUserOnlyIfEnabled(id, zoneId);
+           		user = profileDao.loadUser(id, zoneId);
            	} else {
            		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zoneId);
            	}

@@ -194,9 +194,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		return def;
 	}
 	public Definition getDefinition(String id) {
-		String companyId = RequestContextHolder.getRequestContext().getZoneName();
-		Workspace workspace = getCoreDao().findTopWorkspace(companyId);
-        accessControlManager.checkOperation(workspace, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);        
+		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
@@ -453,6 +451,22 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					definitionTitle = "__definition_default_folder_calendar";
 					definitionName="Calendar folder";
 					internalId = ObjectKeys.DEFAULT_FOLDER_CALENDAR_DEF;
+					break;
+				} else if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_PHOTO_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder_photo";
+					definitionName="Photo album folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_PHOTO_DEF;
+					break;
+				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
+					List result = getCoreDao().loadObjects(Definition.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_DEF, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (Definition)result.get(0);
+					definitionTitle = "__definition_default_folder_guestbook";
+					definitionName="Guestbook folder";
+					internalId = ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_DEF;
 					break;
 				} else {
 					List result = getCoreDao().loadObjects(Definition.class, 

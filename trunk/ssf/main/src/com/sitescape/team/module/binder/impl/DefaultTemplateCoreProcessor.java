@@ -30,28 +30,19 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException("Add not supported on TemplateBinder");
 
 	}
-     protected Object deleteBinder_preDelete(Binder binder) { 
-    	// changes are logged
-    	return null;
-    }
-    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
-    	// not indexed, nothing to do
-    	return ctx;
-    }
-    protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData) {
-     }
     
-    protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex) {
-    	//not indexed
-    }
-    protected void modifyBinder_removeAttachments(Binder binder, Collection deleteAttachments,
-    		List<FileAttachment> filesToDeindex, List<FileAttachment> filesToReindex) {
-    }
     protected void modifyBinder_indexAdd(Binder binder, 
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex) {
     }
- 	//not supported
+    public void deleteBinder(Binder binder) {
+    	//Delete the template.  The interalId isn't meant
+    	// to force the template allways exist
+    	binder.setInternalId(null); 
+    	super.deleteBinder(binder);
+    		
+    }
+  	//not supported
 	public void moveBinder(Binder source, Binder destination) {
 		throw new NotSupportedException("Move not supported on TemplateBinder");
 	

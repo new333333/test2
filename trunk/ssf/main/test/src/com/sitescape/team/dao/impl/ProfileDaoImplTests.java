@@ -193,7 +193,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 			cdi.evict(g);
 		}
 		
-		List prins = pdi.loadPrincipals(ids, top.getZoneId());
+		List prins = pdi.loadPrincipals(ids, top.getZoneId(), true);
 		if (prins.size() != (users.size() + groups.size())) {
 			fail("Principals don't add up " + prins.size());
 		}
@@ -217,7 +217,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		cdi.flush();
 		cdi.clear();
 		try {
-			pdi.loadUserOnlyIfEnabled(user1.getId(), top.getZoneId());
+			pdi.loadUser(user1.getId(), top.getZoneId());
 			fail("Disabled user loaded with loadUserOnlyIfEnabled");
 		} catch (NoUserByTheIdException nu) {}
 		//load all users
@@ -228,7 +228,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 			ids.add(u.getId());
 			cdi.evict(u);
 		}
-		users = pdi.loadEnabledUsers(ids, top.getZoneId());
+		users = pdi.loadUsers(ids, top.getZoneId());
 		if (users.contains(user1))
 			fail("Disabled user loaded with loadEnabledUsers");
 

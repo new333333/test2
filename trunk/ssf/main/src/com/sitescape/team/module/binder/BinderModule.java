@@ -30,11 +30,14 @@ public interface BinderModule {
 	 */
 	public void addSubscription(Long binderId, int style);
 	/**
-	 * Delete a binder include any sub-binders and entries
+	 * Delete a binder including any sub-binders and entries
+	 * Any errors deleting child-binders will be returned, but
+	 * will continue deleting as much as possible
 	 * @param binderId
+	 * @return List of errors when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public void deleteBinder(Long binderId) throws AccessControlException;
+	public List deleteBinder(Long binderId) throws AccessControlException;
 	/**
 	 * Stop receiveing notifications that you have explicity requested.
 	 * @param binderId

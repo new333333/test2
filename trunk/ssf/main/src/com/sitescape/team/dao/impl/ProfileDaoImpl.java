@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +14,7 @@ import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -49,8 +49,11 @@ import com.sitescape.team.domain.UserEntityPK;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Visits;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.LongIdComparator;
+import com.sitescape.team.util.SZoneConfig;
 /**
  * @author Jong Kim
  *
@@ -66,6 +69,58 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	private CoreDao getCoreDao() {
 	    return coreDao;
 	}
+	//called from super-class afterPropertiesSet
+	protected void initDao() throws Exception {
+		//make sure super user is set correctly
+		//there should not be any session opened, so auto-commit should be in effect
+		List companies = getCoreDao().findCompanies();
+		for (int i=0; i<companies.size(); ++i) {
+		   Workspace zone = (Workspace)companies.get(i);
+		   String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+		   //get super user from config file
+		   try {
+			   User superU = findUserByName(superName, zone.getName());
+			   if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
+					superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
+					//force update
+					getCoreDao().merge(superU);				   
+			   }
+			   //make sure only one
+			   getCoreDao().executeUpdate(
+					   "update com.sitescape.team.domain.User set internalId=null where " +
+					   "internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
+		   } catch (NoUserByTheNameException nu) {} 
+		}
+	    List<Principal> profiles = (List)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                   	Query query = session.createQuery("from com.sitescape.team.domain.Principal p where not p.internalId is null");
+	                    return query.list();
+	                 }
+	            }
+	        );
+	    //keep cache of reserved ids=>database id
+	    //since the all_users group Id is requested frequently, use our own cache,
+	    //skipping hibernates object cache
+		for (Principal p:profiles) {
+			String key = p.getInternalId() + "-" + p.getZoneId();
+			reservedIds.put(key, p.getId());
+		}
+	 
+	}
+	
+	/*
+	 * In most cases this will be initialized at startup and won't change,
+	 * but adding a zone or changing the ids could do it.
+	 */
+	protected synchronized Long getReservedId(String internalId, Long zoneId) {
+		String key = internalId + "-" + zoneId;
+   		return (Long)reservedIds.get(key);	
+	}
+	protected synchronized void setReservedId(String internalId, Long zoneId, Long id) {
+		String key = internalId + "-" + zoneId;
+   		reservedIds.put(key, id);	
+	}
 	
 	/**
 	 * Delete the binder object and its assocations.
@@ -80,9 +135,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 * Don't delete the folder
 	 */
     public void deleteEntries(final ProfileBinder profiles) {
-    	//TODO: because groups own the membership association, this will require
-    	//all groups to be flushed from the session. Since we are disabling users, won't worry about it
-    	//for now
 	    getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
@@ -150,6 +202,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			   			.setEntity("profile", profiles)
 	   			  		.setParameterList("tList", types)
 	   			  		.executeUpdate();
+	     	   		//delete dashboards owned
+	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id in +" +
+			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
+	   			  			" p.parentBinder=:profile) and owner_type in (:tList)")
+ 			   			.setEntity("profile", profiles)
+	   					.setParameterList("tList", types)
+	     	   			.executeUpdate();
 		   			//delete tags owned by these users
  		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id in " + 
  			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
@@ -165,13 +224,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  	.setEntity("profile", profiles)
 		   			  	.setParameterList("tList", types)
 		   				.executeUpdate();
- 		   			//delete any reserved names for entries
- 		   			session.createQuery("Delete com.sitescape.team.domain.LibraryTag where binderId=:binderId and not entityId is null")
-		   				.setLong("binderId", profiles.getId())
-		   				.executeUpdate();
-		   			session.createQuery("Delete com.sitescape.team.domain.Principal where parentBinder=" + profiles.getId())
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where parentBinder=" + profiles.getId())
 	       				.executeUpdate();
-	       			session.getSessionFactory().evict(Principal.class);		
 	       	   		return null;
 	       		}
 	       	}
@@ -188,14 +242,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	deleteEntries(entries);
              	
      } 
-    /**
+    /*
      * Delete a list of entries
+     * We only actually delete groups.  Users are left forever, but
+     * there associations are deleted
      */
     public void deleteEntries(final List entries) {
-    	//TODO: because groups own the membership association, this will require
-    	//all groups to be flushed from the session or the memberhips to be fixed up
-    	//prior to this call.  Since we are disabling users, won't worry about it
-    	//for now
     	if (entries == null || entries.size() == 0) return;
       	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
@@ -209,6 +261,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         	    		inList.append(p.getId().toString() + ",");
         	    	}
         			inList.deleteCharAt(inList.length()-1);
+        			//these associations are link tables, no class exists to access them
     	   			Connection connect = session.connection();
        	   			try {
        	   				Statement s = connect.createStatement();
@@ -244,38 +297,41 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
-	       			//delete subscriptions to these principals
+	       			//delete subscriptions to these principals - not likely to exist
  		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where entityId in (:pList) and entityType in (:tList)")
  	   					.setParameterList("pList", ids)
 	   					.setParameterList("tList", types)
 		   				.executeUpdate();
  	       			
-		   			//delete ratings/visits for by these principals
+		   			//delete ratings/visits at these principals - not likely to exist
  		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in (:pList) and entityType in (:tList)")
  	   					.setParameterList("pList", ids)
 	   					.setParameterList("tList", types)
 		   				.executeUpdate();
+	     	   		//delete dashboards owned
+	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id in (:pList) and owner_type in (:tList)")
+ 	   					.setParameterList("pList", ids)
+	   					.setParameterList("tList", types)
+	     	   			.executeUpdate();
 
  		   			//delete tags owned by this entity
  		   			session.createQuery("Delete com.sitescape.team.domain.Tag where owner_id in (:pList) and owner_type in (:tList)")
 	   					.setParameterList("pList", ids)
 	   					.setParameterList("tList", types)
 	   					.executeUpdate();
-
+ 		   			//delete tags on this entity
 		   			session.createQuery("Delete com.sitescape.team.domain.Tag where entity_id in (:pList) and entity_type in (:tList)")
    						.setParameterList("pList", ids)
    						.setParameterList("tList", types)
    						.executeUpdate();
-   		   			//delete any reserved names
- 		   			session.createQuery("Delete com.sitescape.team.domain.LibraryEntry where binderId=:binderId and entityId in (:pList)")
-		   				.setParameterList("pList", ids)
-		   				.setLong("binderId", ((Principal)entries.get(0)).getParentBinder().getId())
-		   				.executeUpdate();
- 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList)")
+ 		   			//only delete groups; leave users around
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='G'")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
-	       			session.getSessionFactory().evict(Principal.class);		
-       	   				
+		   			//this flushes secondary cache
+		   			session.getSessionFactory().evict(Principal.class);			   			
+		   			session.getSessionFactory().evictCollection("com.sitescape.team.domain.Principal.memberOf");
+      	   				
            	   		return null;
         	   		}
         	   	}
@@ -283,72 +339,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	
     }
         
-    public ProfileBinder getProfileBinder(Long zoneId) {
-    	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
-    }
-
-    /*
-     *  (non-Javadoc)
-     * @see com.sitescape.team.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
-     */
-    public Principal loadPrincipal(final Long prinId, Long zoneId) {
-        Principal principal = (Principal)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	//hoping for cache hit
-                    	Principal principal = (Principal)session.get(Principal.class, prinId);
-                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
-                        //Get the real object, not a proxy to abstract class
-                        principal = (Principal)session.get(User.class, prinId);
-                        if (principal==null) 
-                            principal = (Principal)session.get(Group.class, prinId);
-                        return principal;
-                    }
-                }
-        );
-        //make sure from correct zone
-        if (!principal.getZoneId().equals(zoneId)) {throw new NoPrincipalByTheIdException(prinId);}
-       
-        return principal;
-              
-    }
-   /* 
-     * Optimization to load principals in bulk
-     */
-    public List loadPrincipals(final Collection ids, final Long zoneId) {
-        if ((ids == null) || ids.isEmpty()) return new ArrayList();
-        List result = (List)getHibernateTemplate().execute(
-           	new HibernateCallback() {
-            		public Object doInHibernate(Session session) throws HibernateException {
-            			List result = session.createQuery("from com.sitescape.team.domain.Principal p where p.zoneId = :zoneId and p.id in (:pList)")
-            			.setLong("zoneId", zoneId)
-            			.setParameterList("pList", ids)
-            			// Unlike some other query caches used for reference type objects,
-            			// this cache is not very useful in the sense that the result of
-            			// this query is very unlikely to be shared across users.
-            			// However, some WebDAV usage patterns make it useful because it
-            			// can repeatedly asks for the same set of information (for a 
-            			// request from the same user). We can use this as a short-lived
-            			// temporary cache. 
-            			.setCacheable(true)
-            			.list();
-            			//remove proxies
-            			for (int i=0; i<result.size(); ++i) {
-            				Principal p = (Principal)result.get(i);
-            				if (!(p instanceof User) && !(p instanceof Group)) {
-            					Principal principal = (Principal)session.get(User.class, p.getId());
-            					if (principal==null) 
-            						principal = (Principal)session.get(Group.class, p.getId());
-            					result.set(i, principal);
-            				}
-            			}
-            			return result;
-            		}
-           	}
-        );
-        return result;
-     }
-  
     public void disablePrincipals(final Collection ids, final Long zoneId) {
     	getHibernateTemplate().execute(
         	new HibernateCallback() {
@@ -364,62 +354,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         );
 
     }
-    /*
-     *  (non-Javadoc)
-     * @see com.sitescape.team.dao.CoreDao#loadUser(java.lang.Long, java.lang.Long)
-     */
-    public User loadUser(Long userId, Long zoneId) {
-    	try {
-    		User user = (User)getHibernateTemplate().get(User.class, userId);
-    		if (user == null) {throw new NoUserByTheIdException(userId);}
-    		//	make sure from correct zone
-    		if (!user.getZoneId().equals(zoneId)) {
-    			throw new NoUserByTheIdException(userId);
-    		}
-    		return user;
-    	} catch (ClassCastException ce) {
-   			throw new NoUserByTheIdException(userId);   		
-    	}
-    }
-	public User loadUserOnlyIfEnabled(Long userId, Long zoneId) {
-        User user = loadUser(userId, zoneId);
-                      		
-        if (user.isDisabled()) {
-            throw new NoUserByTheIdException(userId);               
-        }        
-        return user;
-    }
-	
-	public User loadUserOnlyIfEnabled(Long userId, String zoneName) {
-		Binder top = getCoreDao().findTopWorkspace(zoneName);
-		return loadUserOnlyIfEnabled(userId, top.getZoneId());
-    }
-	public List loadUsers(Collection ids, Long zoneId) {
-		return getCoreDao().loadObjects(ids, User.class, zoneId);
-	}
-	public List loadEnabledUsers(Collection ids, Long zoneId) {
-		List users = loadUsers(ids, zoneId);
-		List result = new ArrayList();
-		for (Iterator iter=users.iterator();iter.hasNext();) {
-			User u = (User)iter.next();
-			if (!u.isDisabled()) {
-				result.add(u);
-			}
-		}
-        return result;        
-    }
-
     public User findUserByName(final String userName, String zoneName) {
     	final Binder top = getCoreDao().findTopWorkspace(zoneName);
         return (User)getHibernateTemplate().execute(
            new HibernateCallback() {
                public Object doInHibernate(Session session) throws HibernateException {
-                   User user = (User)session.getNamedQuery("find-User-Company")
+            	   //only returns active users
+            	   User user = (User)session.getNamedQuery("find-User-Company")
                         		.setString(ParameterNames.USER_NAME, userName)
                         		.setLong(ParameterNames.ZONE_ID, top.getId())
                         		.setCacheable(true)
                         		.uniqueResult();
-                   if (user == null) {
+                   if ((user == null) || !user.isActive()) {
                        throw new NoUserByTheNameException(userName); 
                    }
                    return user;
@@ -428,36 +374,161 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         );
     }
     
-    public User findUserByNameOnlyIfEnabled(final String userName, final String zoneName) {
-        User user = findUserByName(userName, zoneName);
-        
-        if (user.isDisabled()) {
-            throw new NoUserByTheNameException(userName);               
-        }  
-        
-        return user;
+    public ProfileBinder getProfileBinder(Long zoneId) {
+    	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
+    }
+
+    /*
+     *  (non-Javadoc)
+     * @see com.sitescape.team.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
+     */
+    public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+        Principal principal = (Principal)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	//hoping for cache hit
+                    	Principal principal = (Principal)session.get(Principal.class, prinId);
+                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
+                        //Get the real object, not a proxy to abstract class
+                        principal = (Principal)session.get(User.class, prinId);
+                        if (principal==null) 
+                            principal = (Principal)session.get(Group.class, prinId);
+                        //make sure from correct zone
+                        if (!principal.getZoneId().equals(zoneId) ||
+                        		(checkActive && !principal.isActive())) {throw new NoPrincipalByTheIdException(prinId);}
+                        return principal;
+                    }
+                }
+        );
+       
+        return principal;
+              
+    }
+    public List loadPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
+    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
+		//remove proxies
+		for (int i=0; i<result.size(); ++i) {
+			Principal p = result.get(i);
+			if (!(p instanceof User) && !(p instanceof Group)) {
+				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+   				result.set(i, principal);
+            }
+        }
+		return result;
+    }
+    private List loadPrincipals(final Collection ids, final Long zoneId, final Class clazz, final boolean cacheable, final boolean checkActive) {
+        if ((ids == null) || ids.isEmpty()) return new ArrayList();
+        List result = (List)getHibernateTemplate().execute(
+           	new HibernateCallback() {
+            		public Object doInHibernate(Session session) throws HibernateException {
+            			Criteria crit = session.createCriteria(clazz)
+                        	.add(Expression.in(Constants.ID, ids))
+                        	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                        	// Unlike some other query caches used for reference type objects,
+                        	// this cache is not very useful in the sense that the result of
+                        	// this query is very unlikely to be shared across users.
+                        	// However, some WebDAV usage patterns make it useful because it
+                        	// can repeatedly asks for the same set of information (for a 
+                        	// request from the same user). We can use this as a short-lived
+                        	// temporary cache. 
+                        	.setCacheable(cacheable);
+            			if (checkActive) {
+                        	crit.add(Expression.eq("deleted", Boolean.FALSE));
+                        	crit.add(Expression.eq("disabled", Boolean.FALSE));
+            			}
+                        return crit.list();
+
+            		}
+           	}
+        );
+        return result;
+    	
+    }
+    private List loadPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
+       	filter.add(ObjectKeys.FIELD_ZONE, zoneId);
+    	filter.add("deleted", Boolean.FALSE);
+    	filter.add("disabled", Boolean.FALSE);
+        return (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        //sqlqueries, filters and criteria don't help with frontbase problem
+                        //
+                        Query query = session.createQuery("from " + clazz.getName() + " u " + filter.getFilterString("u"));
+                		List filterValues = filter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+                			query.setParameter(i, filterValues.get(i));
+                		}
+                       return query.list();
+                    }
+                }
+            );  
     }    
+  
+	public Group loadGroup(final Long groupId, Long zoneId)  {
+		try {
+			Group group = (Group)getHibernateTemplate().get(Group.class, groupId);
+			if (group == null) {throw new NoGroupByTheIdException(groupId);}
+			//make sure from correct zone
+			if (!group.getZoneId().equals(zoneId) || !group.isActive()) {throw new NoGroupByTheIdException(groupId);}
+			return group;
+		} catch (ClassCastException ce) {
+			throw new NoGroupByTheIdException(groupId);
+		}
+	}
+	public List loadGroups(Collection ids, Long zoneId) {
+		return loadPrincipals(ids, zoneId, Group.class, false, true);
+	}
+
+    public List loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
+    	return loadPrincipals(filter, zoneId, Group.class);
+    }  
+	public User loadUser(Long userId, String zoneName) {
+		Binder top = getCoreDao().findTopWorkspace(zoneName);
+		return loadUser(userId, top.getZoneId());
+    }
+    public User loadUser(Long userId, Long zoneId) {
+    	try {
+    		User user = (User)getHibernateTemplate().get(User.class, userId);
+    		if (user == null) {throw new NoUserByTheIdException(userId);}
+    		//	make sure from correct zone
+    		if (!user.getZoneId().equals(zoneId) || !user.isActive()) {
+    			throw new NoUserByTheIdException(userId);
+    		}
+    		return user;
+    	} catch (ClassCastException ce) {
+   			throw new NoUserByTheIdException(userId);   		
+    	}
+    }
+	
+	public List loadUsers(Collection ids, Long zoneId) {
+		return loadPrincipals(ids, zoneId, User.class, false, true);
+    }
+    public List loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
+     	return loadPrincipals(filter, zoneId, User.class);
+    }
+
      
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-       	return queryPrincipals(filter, User.class.getName());
+       	return queryPrincipals(filter, zoneId, User.class);
     }
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-    	return queryPrincipals(filter, Group.class.getName());
+    	return queryPrincipals(filter, zoneId, Group.class);
     }  
     public SFQuery queryAllPrincipals(FilterControls filter, Long zoneId) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-       	return queryPrincipals(filter, Principal.class.getName());
+       	return queryPrincipals(filter, zoneId, Principal.class);
     }
     
-    private SFQuery queryPrincipals(final FilterControls filter, final String clazz) throws DataAccessException { 
+    private SFQuery queryPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
+    	filter.add("zoneId", zoneId);
+    	filter.add("deleted", Boolean.FALSE);
+    	filter.add("disabled", Boolean.FALSE);
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
-                        Query query = session.createQuery("from " + clazz + " u " + filter.getFilterString("u"));
+                        Query query = session.createQuery("from " + clazz.getName() + " u " + filter.getFilterString("u"));
                 		List filterValues = filter.getFilterValues();
                			for (int i=0; i<filterValues.size(); ++i) {
                 			query.setParameter(i, filterValues.get(i));
@@ -468,31 +539,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             );  
        return new SFQuery(query);
     }    
-    public List loadUsers(FilterControls filter, Long zoneId) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-    	return loadPrincipals(filter, User.class.getName());
-    }
-    public List loadGroups(FilterControls filter, Long zoneId) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-    	return loadPrincipals(filter, Group.class.getName());
-    }  
-    private List loadPrincipals(final FilterControls filter, final String clazz) throws DataAccessException { 
-        return (List)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        //sqlqueries, filters and criteria don't help with frontbase problem
-                        //
-                        Query query = session.createQuery("from " + clazz + " u " + filter.getFilterString("u"));
-                		List filterValues = filter.getFilterValues();
-               			for (int i=0; i<filterValues.size(); ++i) {
-                			query.setParameter(i, filterValues.get(i));
-                		}
-                       return query.list();
-                    }
-                }
-            );  
-    }    
-	public void bulkLoadCollections(final Collection<Principal> entries) {
+ 	public void bulkLoadCollections(final Collection<Principal> entries) {
 		//try loading the isMemberOf collection - we will get the Membership and assume the groups are in the secondary cache.
 	    getHibernateTemplate().execute(
             new HibernateCallback() {
@@ -566,54 +613,34 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         return uProps;
     }
  
-	public Group loadGroup(final Long groupId, Long zoneId)  {
-		try {
-			Group group = (Group)getHibernateTemplate().get(Group.class, groupId);
-			if (group == null) {throw new NoGroupByTheIdException(groupId);}
-			//make sure from correct zone
-			if (!group.getZoneId().equals(zoneId)) {throw new NoGroupByTheIdException(groupId);}
-			return group;
-		} catch (ClassCastException ce) {
-			throw new NoGroupByTheIdException(groupId);
-		}
-	}
-	public List loadGroups(Collection ids, Long zoneId) {
-		return getCoreDao().loadObjects(ids, Group.class, zoneId);
-	}
-   private Long getReservedGroupId(String internalId, Long zoneId) {
-    	String key = internalId + "-" + zoneId;
-    	Long id=null;
-    	synchronized (reservedIds) {
-    		id = (Long)reservedIds.get(key);
-    	}
-    	if (id == null) {
-    		try {
-    			Group g = getReservedGroup(internalId, zoneId);
-    			id = g.getId();
-    		} catch (NoGroupByTheNameException ng) {}
-    		
-        	synchronized (reservedIds) {
-        		reservedIds.put(key, id);
-        	}
-     	}
-   		return id;    	
-    }
     public Group getReservedGroup(String internalId, Long zoneId) {
-   		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(
-    					new String[]{"internalId", "zoneId"},
-    					new Object[]{internalId, zoneId}));
-    	if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
-    	return (Group)objs.get(0);
+    	Long id = getReservedId(internalId, zoneId);
+    	if (id == null) {
+    		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(
+    				new String[]{"internalId", "zoneId"},
+    				new Object[]{internalId, zoneId}));
+    		if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
+    		Group g = objs.get(0);
+    		setReservedId(internalId, zoneId, g.getId());
+    		return g;
+    	}
+    	return loadGroup(id, zoneId);
     }
     public User getReservedUser(String internalId, Long zoneId) {
-   		List<User>objs = getCoreDao().loadObjectsCacheable(User.class, new FilterControls(
+    	Long id = getReservedId(internalId, zoneId);
+    	if (id == null) {
+    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(
     					new String[]{"internalId", "zoneId"},
     					new Object[]{internalId, zoneId}));
-    	if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
-    	return (User)objs.get(0);
-    }
+    		if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
+    		User u = objs.get(0);
+    		setReservedId(internalId, zoneId, u.getId());
+    		return u;
+    	}
+    	return loadUser(id, zoneId);
+   }
     public Set getPrincipalIds(User user) {
-    	return new HashSet(user.computePrincipalIds(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+    	return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
@@ -626,14 +653,13 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	public Set explodeGroups(final Set ids, Long zoneId) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
 		Set users;
-		if (ids.contains(getReservedGroupId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
+		if (ids.contains(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
 			List<Object[]> result = getCoreDao().loadObjects(new ObjectControls(User.class, 
 					new String[]{"id"}), 
 					new FilterControls(new String[]{"zoneId"}, new Object[]{zoneId}));
 			users = new HashSet(result);
 			//remove postingAgent
-			User u = getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId);
-			users.remove(u.getId());
+			users.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
 		} else {
 			users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {

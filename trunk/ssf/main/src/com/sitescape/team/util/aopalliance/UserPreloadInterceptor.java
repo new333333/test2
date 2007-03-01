@@ -22,7 +22,7 @@ public class UserPreloadInterceptor implements MethodInterceptor {
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
-		User user = getProfileDao().findUserByNameOnlyIfEnabled
+		User user = getProfileDao().findUserByName
 			(requestContext.getUserName(), requestContext.getZoneName());
 		requestContext.setUser(user);
 		

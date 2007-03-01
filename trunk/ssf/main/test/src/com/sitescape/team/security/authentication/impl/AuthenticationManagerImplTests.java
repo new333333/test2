@@ -42,7 +42,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 	public void testAuthenticateOk() {
 		// Define expected behavior of the mock object.
 		profileDaoControl.reset();
-		profileDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
+		profileDao.findUserByName("testUser", "testZone");
 		profileDaoControl.setReturnValue(user);
 		profileDaoControl.replay();
 		
@@ -59,7 +59,7 @@ public class AuthenticationManagerImplTests extends TestCase {
 	public void testAuthenticateUserDoesNotExistException() {
 		// Define expected behavior of the mock object. 
 		profileDaoControl.reset();
-		profileDao.findUserByNameOnlyIfEnabled("testUser", "testZone");
+		profileDao.findUserByName("testUser", "testZone");
 		profileDaoControl.setThrowable(new NoUserByTheNameException(""));
 		profileDaoControl.replay();
 		

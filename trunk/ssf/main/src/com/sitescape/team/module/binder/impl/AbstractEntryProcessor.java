@@ -647,9 +647,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.reset("deleteEntry_processFiles").begin();
         ctx = deleteEntry_processFiles(parentBinder, entry, ctx);
         sp.end().print();
-   		if (entry.isTop() && parentBinder.isUniqueTitles()) 
-   			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
-        
+         
         sp.reset("deleteEntry_delete").begin();
         ctx = deleteEntry_delete(parentBinder, entry, ctx);
         sp.end().print();
@@ -663,12 +661,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         sp.end().print();
     }
      protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
-     	//create history - using timestamp and version from fillIn
+   		if (entry.isTop() && parentBinder.isUniqueTitles()) 
+   			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
+    	//create history - using timestamp and version from fillIn
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         entry.incrLogVersion();
         processChangeLog(entry, ChangeLog.DELETEENTRY);
-        return null;
+        return ctx;
     }
         
     protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
@@ -685,7 +685,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-
     	getCoreDao().delete(entry);   
       	return ctx;
     }
@@ -706,25 +705,19 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     //***********************************************************************************************************
+    /*
+     * classes must provide code to delete files belonging to entries
+     */
+    protected abstract Object deleteBinder_processFiles(Binder binder, Object ctx);
+    /*
+     * classes must provide code to delete entries in the binder
+     */   
+    protected abstract Object deleteBinder_delete(Binder binder, Object ctx);
     protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
     	indexDeleteEntries(binder);
     	super.deleteBinder_indexDel(binder, ctx);
-       	return ctx;
-    }
-    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
-    	//when deleteing a binder, all files and entries are deleted by a background job
-    	//this is so we can log all deletes and archive files
-    	return ctx;
-    }
-    
-    protected Object deleteBinder_delete(Binder binder, Object ctx) {
-    	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
-    			RequestContextHolder.getRequestContext().getZoneId(), binder);
-    	
-    	binder.setDeleted(true);
-    	
        	return ctx;
     }
 	    
@@ -1241,7 +1234,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             ids.add(entry.getCreation().getPrincipal().getId());
         if (entry.getModification() != null)
             ids.add(entry.getModification().getPrincipal().getId());
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
      } 
 
     protected List loadEntryHistoryLuc(List pList) {
@@ -1257,7 +1250,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
         		} catch (Exception ex) {}
         }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
      }   
 
     protected void loadEntryHistory(List pList) {
@@ -1271,7 +1264,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             if (entry.getModification() != null)
                 ids.add(entry.getModification().getPrincipal().getId());
         }
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(),false);
      }     
     
 

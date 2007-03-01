@@ -9,11 +9,10 @@ import java.util.Set;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 
 public class ResolveIds {
-	public static Collection getPrincipals(CustomAttribute attribute) {
+	public static List getPrincipals(CustomAttribute attribute) {
 		if ((attribute != null) && (attribute.getValueType() == CustomAttribute.COMMASEPARATEDSTRING)) {
 			Set<String> strIds = attribute.getValueSet();
 			Set ids = new HashSet();
@@ -24,14 +23,14 @@ public class ResolveIds {
 			}
 			
 			ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-			return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
 
 		}
 		return null;
 	}
-	public static Collection getPrincipals(Collection ids) {
+	public static List getPrincipals(Collection ids) {
 		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
 	}
 	//This is used after a search to map the binder id to a title
 	public static Map getBinderTitlesAndIcons(Collection ids) {

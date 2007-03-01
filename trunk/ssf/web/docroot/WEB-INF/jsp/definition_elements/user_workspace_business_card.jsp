@@ -6,13 +6,13 @@
 <div class="ss_decor-border5">
   <div class="ss_decor-border6">
     <div class="ss_content_window">
-
+<c:if test="${!empty ssProfileConfigDefinition}">
 <ssf:displayConfiguration configDefinition="${ssProfileConfigDefinition}" 
   configElement="${ssProfileConfigElement}" 
   configJspStyle="${ssProfileConfigJspStyle}"
   processThisItem="true" 
   entry="${ssProfileConfigEntry}" />
-
+</c:if>
     </div>
   </div>
 </div>

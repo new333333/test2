@@ -80,7 +80,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 		   WorkflowTimeout job = (WorkflowTimeout)processorClass.newInstance();
 		   //make sure a timeout job is scheduled for the zone
 		   String secsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + WorkflowTimeout.TIMEOUT_SECONDS + "']");
-		   int seconds = 300;
+		   int seconds = 5*60;
 		   try {
 			   seconds = Integer.parseInt(secsString);
 		   } catch (Exception ex) {};
