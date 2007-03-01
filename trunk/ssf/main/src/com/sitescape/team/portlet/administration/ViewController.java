@@ -83,9 +83,9 @@ public class ViewController extends  SAbstractController {
 		designerElement.addAttribute("image", "bullet");
 		designerElement.addAttribute("displayOnly", "true");
 		designerElement.addAttribute("id", String.valueOf(nextId++));
-		
+		boolean hasDefAccess=false;
 		//Definition builder - Entry form designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addEntryDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 			element.addAttribute("image", "bullet");
@@ -96,10 +96,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 				
 		//Definition builder - Folder view designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 			element.addAttribute("image", "bullet");
@@ -110,10 +111,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 				
 		//Definition builder - Workflow designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addWorkflowDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 			element.addAttribute("image", "bullet");
@@ -124,10 +126,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 		
 		//Definition builder - Profile listing designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 			element.addAttribute("image", "bullet");
@@ -138,10 +141,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 		
 		//Definition builder - Profile designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 			element.addAttribute("image", "bullet");
@@ -152,10 +156,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 		
 		//Definition builder - Workspace designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -166,10 +171,11 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
 		
 		//Definition builder - User workspace designer
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_user_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -180,8 +186,10 @@ public class ViewController extends  SAbstractController {
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
+			hasDefAccess=true;
 		}
-		
+		if (!hasDefAccess) rootElement.remove(designerElement);
+
 		//Ldap configuration
 		if (getLdapModule().testAccess("getLdapConfig")) {
 			if (getLdapModule().getLdapConfig() != null) {
