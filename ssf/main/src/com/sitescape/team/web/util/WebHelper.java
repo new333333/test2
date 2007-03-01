@@ -408,7 +408,7 @@ public class WebHelper {
 		outputString = outputString.replaceAll("%7D", "}");
 
     	//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
-    	if (httpReq != null) {
+    	if (httpReq != null && binderId != null) {
     		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	    	Matcher m1 = p1.matcher(outputString);
 	    	while (m1.find()) {
