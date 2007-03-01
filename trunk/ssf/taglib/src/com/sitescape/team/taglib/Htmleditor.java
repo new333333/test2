@@ -82,7 +82,7 @@ public class Htmleditor extends BodyTagSupport {
 			pageContext.getOut().print(res.getString());
 
 			// Body
-			pageContext.getOut().print(_bodyContent);
+			if (this._bodyContent != null) pageContext.getOut().print(_bodyContent);
 
 			// Bottom
 			rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/htmlarea/htmlarea_bottom.jsp");

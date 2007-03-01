@@ -454,7 +454,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
-<div id="<portlet:namespace/>ss_operations${function.id}"
+<div id="<portlet:namespace/>ss_operations${function.id}" class="ss_style ss_portlet"
   style="position:absolute; display:none; width:300px; border:1px solid #000000; 
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">

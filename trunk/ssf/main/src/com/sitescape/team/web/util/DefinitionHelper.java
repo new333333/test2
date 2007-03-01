@@ -235,7 +235,8 @@ public class DefinitionHelper {
 	public static boolean checkIfBinderShowingDashboard(Binder binder) {
 		Definition def = binder.getEntryDef();
 		if (def == null) getInstance().getDefinitionModule().setDefaultBinderDefinition(binder);
-		Document defDoc = def.getDefinition();
+		Document defDoc = null;
+		if (def != null) defDoc = def.getDefinition();
 		if (defDoc != null) {
 			if (defDoc.getRootElement().selectSingleNode("//item[@name='dashboardCanvas']") != null) {
 				return true;
