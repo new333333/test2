@@ -63,15 +63,18 @@ public class Tabs {
    	public final static String QUERY = "query";
 	
 	public Tabs(PortletRequest request) {
-		PortletSession ps = WebHelper.getRequiredPortletSession(request);
-		tabs = (Map) ps.getAttribute(WebKeys.TABS, PortletSession.APPLICATION_SCOPE);
+		PortletSession ps = null;
+		if (request != null) {
+			ps = WebHelper.getRequiredPortletSession(request);
+			tabs = (Map) ps.getAttribute(WebKeys.TABS, PortletSession.APPLICATION_SCOPE);
+		} 
 		if (tabs == null) {
 			tabs = new HashMap();
 			tabs.put(TABLIST, new ArrayList());
 			tabs.put(CURRENT_TAB, new Integer(0));
 			tabs.put(NEXT_TAB_ID, new Integer(0));
 			tabs.put(NEXT_REF, new Integer(0));
-			ps.setAttribute(WebKeys.TABS, tabs, PortletSession.APPLICATION_SCOPE);
+			if (ps != null) ps.setAttribute(WebKeys.TABS, tabs, PortletSession.APPLICATION_SCOPE);
 		}
 	}
 	

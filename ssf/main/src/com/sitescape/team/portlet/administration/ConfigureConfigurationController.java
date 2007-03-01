@@ -199,9 +199,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					model.put(WebKeys.CONFIG_JSP_STYLE, "template");
 					ListFolderController.getShowTemplate(request, response, config, model);
 				}
-				Map options = new HashMap();
-				Tabs tabs = new Tabs(request);
-				tabs.setCurrentTab(tabs.findTab(config, options, true, tabs.getCurrentTab()));
+				Tabs tabs = new Tabs(null);
+				tabs.addTab(config);
 				model.put(WebKeys.TABS, tabs.getTabs());
 					
 			} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {

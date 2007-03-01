@@ -97,6 +97,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  
         if ("addDefinition".equals(operation)) {
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+        } else if ("addEntryDefinition".equals(operation)) {
+        	//special name to handle right on entry definitions
+			if (getAccessControlManager().testOperation(top, WorkAreaOperation.SITE_ADMINISTRATION)) return;
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);			
+        } else if ("addWorkflowDefinition".equals(operation)) {
+        	//special name to handle right on workflow definitions
+			if (getAccessControlManager().testOperation(top, WorkAreaOperation.SITE_ADMINISTRATION)) return;
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);			
 		} else if (operation.startsWith("modifyDefinitionName")) {
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else if (operation.startsWith("modifyDefinitionAttribute")) {
