@@ -82,7 +82,6 @@ import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.Thumbnail;
 import com.sitescape.team.util.ThumbnailException;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.KeyValuePair;
@@ -1552,7 +1551,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		// the file, the files are treated identical globally within a single
 		// Entry instance as long as their file names are identical. 
 		// flatten repository namespace to reduce confusion
-//    	FileAttachment fAtt = entry.getFileAttachment(repositoryName, relativeFilePath);
 		FileAttachment fAtt = entry.getFileAttachment(relativeFilePath);
     	if ((fAtt != null) && !repositoryName.equals(fAtt.getRepositoryName())) {
 			errors.addProblem(new FilesErrors.Problem
@@ -1567,117 +1565,81 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
     	try {
 	    	// Determine if we need to generate secondary files from the primary file.
-	    	if((fui.getMaxHeight() > 0 && fui.getMaxWidth() > 0) || (fui.getGenerateThumbnail())) {
-	    		// Unfortunately the scaling function we use expects byte array 
-	    		// not input stream as input. In this case we read the file content
-	    		// into a byte array once and reuse it for all repository operations
-	    		// to avoid having to incur file I/O multiple times. 
-	    		byte[] primaryContent = null;
+    		// Unfortunately the scaling function we use expects byte array 
+    		// not input stream as input. In this case we read the file content
+    		// into a byte array once and reuse it for all repository operations
+    		// to avoid having to incur file I/O multiple times. 
+    		byte[] primaryContent = null;
+    		
+    		try {
+	    		primaryContent = fui.getBytes();
 	    		
-	    		try {
-		    		primaryContent = fui.getBytes();
-		    		
-		    		// Store primary file first, since we do not want to generate secondary
-		    		// files unless we could successfully store the primary file first. 
-		    		
-		    		if(fAtt == null) { // New file for the entry
-		    			isNew = true;
-		    			fAtt = createFile(session, binder, entry, fui, primaryContent);
-		    		}
-		    		else { // Existing file for the entry
-		    			writeExistingFile(session, binder, entry, fui, primaryContent);
-		    		}
+	    		// Store primary file first, since we do not want to generate secondary
+	    		// files unless we could successfully store the primary file first. 
+	    		
+	    		if(fAtt == null) { // New file for the entry
+	    			isNew = true;
+	    			fAtt = createFile(session, binder, entry, fui, primaryContent);
 	    		}
-	    		catch(Exception e) {
-	    			logger.error("Error storing primary file " + relativeFilePath, e);
-	    			// We failed to write the primary file. In this case, we 
-	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryName, relativeFilePath, 
-	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
-	    			return false;
-	    		}		
+	    		else { // Existing file for the entry
+	    			writeExistingFile(session, binder, entry, fui, primaryContent);
+	    		}
+    		}
+    		catch(Exception e) {
+    			logger.error("Error storing primary file " + relativeFilePath, e);
+    			// We failed to write the primary file. In this case, we 
+    			// discard the rest of the operation (i.e., step2 thru 4).
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
+    			return false;
+    		}		
 
-	    		// Scaled file
-	        	if(fui.getMaxWidth() > 0 && fui.getMaxHeight() > 0) {
-	            	// Generate scaled file which goes into the same repository as
-	        		// the primary file except that the generated file is not versioned.
-	        		try {
-	        			generateScaledFile(binder, entry, fAtt, fui.getMaxWidth(),fui.getMaxWidth());
-	        		}
-	        		catch(ThumbnailException e) {
-	        			// Scaling operation can fail for a variety of reasons, primarily
-	        			// when the file format is not supported. Do not cause this to
-	        			// fail the entire operation. Simply log it and proceed.  
-	        			logger.warn("Error generating scaled copy of " + relativeFilePath, e);
-		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryName, relativeFilePath, 
-		    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
-	        		}
-	        		catch(Exception e) {
-		    			// Failed to store scaled file. Record the problem and proceed.
-	        			logger.warn("Error storing scaled copy of " + relativeFilePath, e);
-		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryName, relativeFilePath, 
-		    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
-	        		}
-	        	}    
+    		// Scaled file
+        	// Generate scaled file which goes into the same repository as
+    		// the primary file except that the generated file is not versioned.
+    		try {
+    			// NOTE: cannot use fui.getMaxWidth(), fui.getMaxHeight() they may be 0
+    			generateScaledFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, IImageConverterManager.IMAGEHEIGHT);
+    		}
+    		catch(ThumbnailException e) {
+    			// Scaling operation can fail for a variety of reasons, primarily
+    			// when the file format is not supported. Do not cause this to
+    			// fail the entire operation. Simply log it and proceed.  
+    			logger.warn("Error generating scaled copy of " + relativeFilePath, e);
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_GENERATING_SCALED_FILE, e));
+    		}
+    		catch(Exception e) {
+    			// Failed to store scaled file. Record the problem and proceed.
+    			logger.warn("Error storing scaled copy of " + relativeFilePath, e);
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_STORING_SCALED_FILE, e));	        			
+    		}
 
-	        	// Thumbnail file
-	        	if(fui.getGenerateThumbnail()) {
-	        		try {
-	        			/**
-	        			 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
-	        			 * 		Stellent does not deal with Stream data
-	        			 */
-	        			generateThumbnailFile(binder, entry, fAtt, fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight());
-	        		}
-	        		catch(ThumbnailException e) {
-	        			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
-		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryName, relativeFilePath, 
-		    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
-	        		}
-	        		catch(Exception e) {
-	        			logger.warn("Error storing thumbnail copy of " + relativeFilePath, e);
-		    			errors.addProblem(new FilesErrors.Problem
-		    					(repositoryName, relativeFilePath, 
-		    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
-	        		}
-	        	}
-	    	}
-	    	else { // We do not need to generate secondary files. 	  
-	    		try {
-		    		InputStream is = fui.getInputStream();
-		    		
-		    		try {
-			    		if(fAtt == null) { // New file for the entry
-			    			isNew = true;
-			    			fAtt = createFile(session, binder, entry, fui, is);
-			    		}
-			    		else { // Existing file for the entry
-			    			writeExistingFile(session, binder, entry, fui, is);
-			    		}	 
-		    		}
-		    		finally {
-		    			try {
-		    				is.close();
-		    			}
-		    			catch(IOException e) {
-		    				logger.error(e.getMessage(), e);
-		    			}
-		    		}
-	    		}
-	    		catch(Exception e) {
-	    			// We failed to write the primary file. In this case, we 
-	    			// discard the rest of the operation (i.e., step2 thru 4).
-	    			logger.error("Error storing primary file " + relativeFilePath, e);
-	    			errors.addProblem(new FilesErrors.Problem
-	    					(repositoryName, relativeFilePath, 
-	    							FilesErrors.Problem.PROBLEM_STORING_PRIMARY_FILE, e));
-	    			return false;
-	    		}
-	    	}
+    		// Thumbnail file
+    		try {
+    			/**
+    			 * (rsordillo) To use Stellent to convert documents into thumbnails we need to deal with files since
+    			 * 		Stellent does not deal with Stream data
+    			 * 	NOTE: cannot use fui.getThumbnailMaxWidth(), fui.getThumbnailMaxHeight() they may be 0
+    			 */
+    			generateThumbnailFile(binder, entry, fAtt, IImageConverterManager.IMAGEWIDTH, 0);
+    		}
+    		catch(ThumbnailException e) {
+    			logger.warn("Error generating thumbnail copy of " + relativeFilePath, e);
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_GENERATING_THUMBNAIL_FILE, e));
+    		}
+    		catch(Exception e) {
+    			logger.warn("Error storing thumbnail copy of " + relativeFilePath, e);
+    			errors.addProblem(new FilesErrors.Problem
+    					(repositoryName, relativeFilePath, 
+    							FilesErrors.Problem.PROBLEM_STORING_THUMBNAIL_FILE, e));	        			
+    		}
     	}
     	finally {
     		session.close();
