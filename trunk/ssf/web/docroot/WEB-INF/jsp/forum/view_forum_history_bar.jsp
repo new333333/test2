@@ -122,7 +122,6 @@ if (false) {
 <%
 }
 %>
-      <td>&nbsp;</td>
   </tr>
 </table>
 

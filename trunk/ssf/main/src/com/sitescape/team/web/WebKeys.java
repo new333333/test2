@@ -525,6 +525,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String TOOLBAR="ss_toolbar";
+    public static final String TOOLBAR_MENU_SELECTED="selected"; 
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
     public static final String TOOLBAR_ITEM="ss_toolbar_item";
     public static final String UNAUTHENTICATED_REQUEST = "com.sitescape.unauthenticated.request";

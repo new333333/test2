@@ -113,6 +113,9 @@ var ss_userSkin = "${ss_user_skin}";
 	          <c:if test="${!empty toolbarMenuCategoryItem.value.qualifiers.textId}">
 	            id="${toolbarMenuCategoryItem.value.qualifiers.textId}"
 	          </c:if>
+	      	  <c:if test="${toolbarMenuCategoryItem.value.qualifiers.selected}">
+	            class="ss_bold"
+	          </c:if>
 	          ><c:out value="${toolbarMenuCategoryItem.key}" /></span></a>
 	        </li>
 	      </c:forEach>
@@ -172,6 +175,9 @@ var ss_userSkin = "${ss_user_skin}";
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
 	        id="${toolbarMenu.value.qualifiers.textId}"
 	      </c:if>
+	      <c:if test="${toolbarMenu.value.qualifiers.selected}">
+	        class="ss_bold"
+	      </c:if>
 	      >
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.icon}">
 	      	<img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/<c:out value="${toolbarMenu.value.qualifiers.icon}" />" alt="<c:out value="${toolbarMenu.value.title}" />" >
@@ -212,6 +218,9 @@ var ss_userSkin = "${ss_user_skin}";
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
 	        id="${toolbarMenu.value.qualifiers.textId}"
 	      </c:if>
+	      <c:if test="${toolbarMenu.value.qualifiers.selected}">
+	        class="ss_bold"
+	      </c:if>
 	 	  ><c:out 
 	 	    value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:when>
@@ -219,6 +228,9 @@ var ss_userSkin = "${ss_user_skin}";
 	      <li><a href=""><span
 	      <c:if test="${!empty toolbarMenu.value.qualifiers.textId}">
 	        id="${toolbarMenu.value.qualifiers.textId}"
+	      </c:if>
+	      <c:if test="${toolbarMenu.value.qualifiers.selected}">
+	        class="ss_bold"
 	      </c:if>
 	      ><c:out value="${toolbarMenu.value.title}" /></span></a></li>
 	    </c:otherwise>

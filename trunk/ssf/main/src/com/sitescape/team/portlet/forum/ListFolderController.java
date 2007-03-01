@@ -945,6 +945,7 @@ public class ListFolderController extends  SAbstractController {
 	
 	protected void buildFolderToolbars(RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model) {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
@@ -1130,19 +1131,43 @@ public class ListFolderController extends  SAbstractController {
 			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.meet"), adapterUrl.toString(), qualifiers);
 		}
 		
+		//Get the view type that the user is using
+		String viewType = "";
+		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+		if (configElement != null) {
+			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
+			if (viewType == null) viewType = "";
+		}
+		
 		//	The "Display styles" menu
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
 		//Get the definitions available for use in this folder
 		List folderViewDefs = folder.getViewDefinitions();
 		for (int i = 0; i < folderViewDefs.size(); i++) {
+			String defViewType = "";
 			Definition def = (Definition)folderViewDefs.get(i);
+			Document defDoc = null;
+			if (def != null) defDoc = def.getDefinition();
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) {
+						defViewType = viewElement.attributeValue("value", "");
+						if (defViewType.equals("")) defViewType = viewElement.attributeValue("default", "");
+					}
+				}
+			}
 			//Build a url to switch to this view
+			qualifiers = new HashMap();
+			if (viewType.equals(defViewType)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
+			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		//WebDav folder view
 		String webdavUrl = SsfsUtil.getLibraryBinderUrl(folder);
@@ -1151,33 +1176,49 @@ public class ListFolderController extends  SAbstractController {
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
 		//vertical
+		qualifiers = new HashMap();
+		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_vertical"), url);
+		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
+				NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 		//accessible
+		qualifiers = new HashMap();
+		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_accessible"), url);
+		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
+				NLT.get("toolbar.menu.display_style_accessible"), url, qualifiers);
 		//iframe
+		qualifiers = new HashMap();
+		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_iframe"), url);
+		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
+				NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
 		//popup
+		qualifiers = new HashMap();
+		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
+		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
+				NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
