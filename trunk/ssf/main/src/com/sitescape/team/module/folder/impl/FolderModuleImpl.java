@@ -605,7 +605,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
     	SearchObject so = qb.buildQuery(qTree);
     	
-    	System.out.println("Query is: " + so.getQueryString());
+    	logger.info("Query is: " + so.getQueryString());
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
     	//RemoteInStreamSession instreamSession = getInstreamSessionFactory().openSession();
