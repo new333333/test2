@@ -32,6 +32,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.util.Validator;
@@ -55,7 +56,7 @@ public class ViewController  extends SAbstractController {
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			prefs.store();
@@ -67,7 +68,7 @@ public class ViewController  extends SAbstractController {
  		Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
@@ -77,8 +78,8 @@ public class ViewController  extends SAbstractController {
 			url = response.createActionURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
 		}
-
-		String displayType = (String)prefs.getValue(WebKeys.PORTLET_PREF_TYPE, null);
+		
+		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			displayType = getDisplayType(request);
 		}
@@ -88,7 +89,7 @@ public class ViewController  extends SAbstractController {
 		if (FORUM_PORTLET.equals(displayType)) {
 		
 			//This is the portlet view; get the configured list of folders to show
-			String[] preferredBinderIds = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+			String[] preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 
 			//Build the jsp bean (sorted by folder title)
 			List<Long> binderIds = new ArrayList<Long>();
@@ -99,7 +100,7 @@ public class ViewController  extends SAbstractController {
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
-			String id = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
+			String id = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
 			Workspace binder;
 			try {
 				binder = getWorkspaceModule().getWorkspace(Long.valueOf(id));
@@ -120,8 +121,8 @@ public class ViewController  extends SAbstractController {
 		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
- 			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_USER_LIST, "")));
- 			ids.addAll(FindIdsHelper.getIdsAsLongSet(prefs.getValue(WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			ids.addAll(FindIdsHelper.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 			ids.addAll(FindIdsHelper.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
  			//This is the portlet view; get the configured list of principals to show
  			model.put(WebKeys.USERS, getProfileModule().getUsersFromPrincipals(ids));
  			//if we list groups, then we have issues when a user appears in multiple groups??
@@ -153,7 +154,7 @@ public class ViewController  extends SAbstractController {
 		return null;
 	}
 	protected ModelAndView setupSummaryPortlets(RenderRequest request, PortletPreferences prefs, Map model, String view) {
-		String gId = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+		String gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (gId != null) {
 			try {
 				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(gId);

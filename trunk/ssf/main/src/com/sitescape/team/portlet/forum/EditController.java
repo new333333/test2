@@ -30,6 +30,7 @@ import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
+import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
@@ -44,14 +45,14 @@ public class EditController extends SAbstractController {
         //Make the prefs available to the jsp
 		Map formData = request.getParameterMap();
 		PortletPreferences prefs= request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 		}
 		//see if type is being set
 		if (formData.containsKey("applyBtn") || 
 				formData.containsKey("okBtn")) {
-			String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
+			String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
 			if (Validator.isNull(displayType)) { 
 				displayType = ViewController.getDisplayType(request);
@@ -77,7 +78,7 @@ public class EditController extends SAbstractController {
 					ViewController.WIKI_PORTLET.equals(displayType) ||
 					ViewController.SEARCH_PORTLET.equals(displayType) ||
 					ViewController.GALLERY_PORTLET.equals(displayType)) {
-				String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+				String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 				DashboardPortlet d=null;
 				if (id != null) {
 					try {
@@ -112,7 +113,7 @@ public class EditController extends SAbstractController {
         //Make the prefs available to the jsp
 		PortletPreferences prefs= request.getPreferences();
         Map model = new HashMap();
-		String displayType = prefs.getValue(WebKeys.PORTLET_PREF_TYPE, "");
+		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 		if (Validator.isNull(displayType)) {
 			displayType = ViewController.getDisplayType(request);
 			
@@ -123,7 +124,7 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
 		
-			String[] forumPrefIdList = prefs.getValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+			String[] forumPrefIdList = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 		
 			//	Build the jsp bean (sorted by folder title)
 			List folderIds = new ArrayList();
@@ -162,7 +163,7 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
 			
-			String wsId = prefs.getValue(WebKeys.WORKSPACE_PREF_ID, null);
+			String wsId = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
 			try {
 				Workspace ws;
 				if (Validator.isNull(wsId)) ws = getWorkspaceModule().getWorkspace();	
@@ -176,7 +177,7 @@ public class EditController extends SAbstractController {
 	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view, String componentName) {
 		Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		String id = prefs.getValue(WebKeys.PORTLET_PREF_DASHBOARD, null);
+		String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (id != null) {
 			try {
 				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
