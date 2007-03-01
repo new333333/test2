@@ -3,6 +3,7 @@ package com.sitescape.team.jobs;
 
 import java.util.Date;
 import java.util.Iterator;
+import java.util.HashSet;
 
 import org.jbpm.JbpmContext;
 import org.jbpm.db.SchedulerSession;
@@ -34,10 +35,13 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 	public void doExecute(JobExecutionContext context) throws JobExecutionException {	
 		WorkflowModule work = (WorkflowModule)SpringContextUtil.getBean("workflowModule");
     	JbpmContext jContext = WorkflowFactory.getContext();
-    	try {
+   		HashSet<Long>timers = new HashSet();
+   	   	try {
     		SchedulerSession schedulerSession = jContext.getSchedulerSession();
     	      
     		logger.debug("checking for timers");
+    		//collect timer info and close context,
+    		//otherwise something messes up with closing the iterator.
     		Iterator iter = schedulerSession.findTimersByDueDate(100);
     		boolean isDueDateInPast=true; 
     		while( (iter.hasNext()) && (isDueDateInPast)) {
@@ -47,8 +51,8 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     			// if this timer is due
     			if (timer.isDue()) {
     				logger.debug("executing timer '"+timer+"'");
-    				work.modifyWorkflowStateOnTimeout(new Long(timer.getId()));  
-
+    				timers.add(new Long(timer.getId()));
+ 
     			} else { // this is the first timer that is not yet due
     				isDueDateInPast = false;
     			}
@@ -56,7 +60,10 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     	} finally {
     		jContext.close();
     	}
-    }
+		for (Long id:timers) {
+			work.modifyWorkflowStateOnTimeout(id);
+		}
+	}
 
 	
     public void schedule(Long zoneId, int seconds) {
