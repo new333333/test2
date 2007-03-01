@@ -75,6 +75,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         doProfileEntryFillin(entry, inputData, entryData);
         super.addEntry_fillIn(binder, entry, inputData, entryData);
      }
+    //inside write transaction
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    	//make user the owner so create_modify access works
+    	if (entry instanceof User) {
+    		entry.getCreation().setPrincipal((User)entry);
+    		entry.getModification().setPrincipal((User)entry);
+    	}
+    	super.addEntry_postSave(binder, entry, inputData, entryData);
+    }
        
     //***********************************************************************************************************	
    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
