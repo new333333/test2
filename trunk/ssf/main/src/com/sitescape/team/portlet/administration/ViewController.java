@@ -285,7 +285,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Definition export
-		if (getDefinitionModule().testAccess("getDefinitions")) {
+		if (getDefinitionModule().testAccess("addDefinition")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.export.definitions"));
 			element.addAttribute("image", "bullet");
