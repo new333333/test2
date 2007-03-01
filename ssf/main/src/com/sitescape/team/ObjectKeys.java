@@ -24,16 +24,19 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_BLOG_DEF="402883b90cc53079010cc539bf26000a";
 	public static final String DEFAULT_FOLDER_CALENDAR_DEF="402883b90cc53079010cc539bf26000c";
 	public static final String DEFAULT_FOLDER_WIKI_DEF="402883b90cc53079010cc539bf26000d";
+	public static final String DEFAULT_FOLDER_GUESTBOOK_DEF="402883b90cc53079010cc539bf26000e";
+	public static final String DEFAULT_FOLDER_PHOTO_DEF="402883b90cc53079010cc539bf26000f";
 
 	
-	
 	public static final String ADMINISTRATOR_ROLE_ID="402883b90cc53079010cc539bf260009";
+	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
-	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_FOLDER_BLOG_CONFIG="402883b90d0de1f3010d0df5582b000c";
 	public static final String DEFAULT_FOLDER_WIKI_CONFIG="402883b90d0de1f3010d0df5582b000d";
 	public static final String DEFAULT_FOLDER_CALENDAR_CONFIG="402883b90d0de1f3010d0df5582b000e";
+	public static final String DEFAULT_FOLDER_GUESTBOOK_CONFIG="402883b90d0de1f3010d0df5582b000f";
+	public static final String DEFAULT_FOLDER_PHOTO_CONFIG="402883b90d0de1f3010d0df5582b0010";
 
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
 	public static final String ALL_USERS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0006";
@@ -173,6 +176,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
+    public static final String FIELD_PRINCIPAL_DELETED="disabled";
     public static final String FIELD_GROUP_MEMBERS="members";
  
     

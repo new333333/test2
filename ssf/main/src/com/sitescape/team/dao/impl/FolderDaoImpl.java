@@ -90,7 +90,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.
      */
-    public Iterator queryEntries(final FilterControls filter) throws DataAccessException { 
+    public SFQuery queryEntries(final FilterControls filter) throws DataAccessException { 
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -110,7 +110,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
     /**
      * Load level 1 FolderEntries for 1 folder.  Replies are not loaded
      */
-    public Iterator queryChildEntries(Folder parentFolder) throws DataAccessException {
+    public SFQuery queryChildEntries(Folder parentFolder) throws DataAccessException {
     	Object[] cfValues = new Object[]{parentFolder, new Integer(1)};
     	// use default query
      	return queryEntries(new FilterControls(cfAttrs, cfValues, cfOrder));

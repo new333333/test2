@@ -36,7 +36,6 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.web.util.FilterHelper;
@@ -48,7 +47,28 @@ import com.sitescape.util.Validator;
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
     
-    //***********************************************************************************************************	
+	//cannot be deleted
+    protected Object deleteBinder_preDelete(Binder binder) {     	
+    	return null;
+    }
+  
+    
+    protected Object deleteBinder_processFiles(Binder binder, Object ctx) {
+    	return ctx;
+    }
+    
+    protected Object deleteBinder_delete(Binder binder, Object ctx) {
+    	return ctx;
+    }
+    protected Object deleteBinder_postDelete(Binder binder, Object ctx) {
+    	return ctx;
+    }
+
+    protected Object deleteBinder_indexDel(Binder binder, Object ctx) {
+      	return ctx;
+    }
+    
+    //***********************************************************************************************************
             
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
         ((Principal)entry).setZoneId(binder.getZoneId());
@@ -56,7 +76,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         super.addEntry_fillIn(binder, entry, inputData, entryData);
      }
        
-    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    //***********************************************************************************************************	
+   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
     	//see if we have updates to fields not covered by definition build
     	doProfileEntryFillin(entry, inputData, entryData);
     	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
@@ -211,41 +232,27 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
            
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId());        
+        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), true);        
     }
           
     //***********************************************************************************************************
-    //Overload entire delete entry.  Only want to disable users
     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
-    	return super.deleteEntry_preDelete(parentBinder, entry, ctx);
+    	super.deleteEntry_preDelete(parentBinder, entry, ctx);
+    	
+    	return ctx;
     }
-        
-    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
-       	if (entry instanceof User) return ctx;
-       	return super.deleteEntry_workflow(parentBinder, entry, ctx);
-    }
-    
     protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
        	if (entry instanceof User) {
        		User p = (User)entry;
-       		//we just disable principals, cause their ids are used all over
-       		p.setDisabled(true);
-       		return ctx;
+       		//mark deleted, cause their ids are used all over
+       		//profileDao will delete all associations and groups
+       		p.setDeleted(true);
+       		p.setTitle("(Deleted)" + p.getTitle());
        	}
-       	return super.deleteEntry_delete(parentBinder, entry, ctx);
+    	getProfileDao().delete((Principal)entry);   
+       	return ctx;
     }
 
-   protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
-     	if (entry instanceof User) return ctx;
-     	return super.deleteEntry_processFiles(parentBinder, entry, ctx);
-    }
-    
-
-    protected Object deleteEntry_postDelete(Binder parentBinder, Entry entry, Object ctx) {
-      	//TODO: what about disabled users??
-    	if (entry instanceof User) return ctx;
-      	return super.deleteEntry_postDelete(parentBinder, entry, ctx);
-   }
     //***********************************************************************************************************    
  
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {

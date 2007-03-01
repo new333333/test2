@@ -77,7 +77,10 @@ public class User extends Principal {
     	return getName();		
 	}
 	public void setTitle(String title) {
-		throw new NotSupportedException(NLT.get("errorcode.notsupported.setTitle"));
+		if (!isDeleted())
+			throw new NotSupportedException(NLT.get("errorcode.notsupported.setTitle"));
+		//allow title to be changed when a user is deleted.
+		super.setTitle(title);
 	}
     private String setupTitle() {
     	String val;
@@ -292,7 +295,9 @@ public class User extends Principal {
     public Set computePrincipalIds(Long reservedGroupId) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
-    	if(principalIds == null) {
+        if (!isActive()) return new HashSet();
+        
+        if(principalIds == null) {
     		Set ids = new HashSet();
     		ids.add(reservedGroupId);
     		addPrincipalIds(this, ids);
@@ -305,7 +310,7 @@ public class User extends Principal {
         // To prevent infinite loop resulting from possible cycle among
         // group membership, proceed only if the principal hasn't already
         // been processed. 
-        
+        if (!principal.isActive()) return;
         if(ids.add(principal.getId())) {
             List memberOf = principal.getMemberOf();
             for(Iterator i = memberOf.iterator(); i.hasNext();) {
@@ -321,7 +326,8 @@ public class User extends Principal {
      * @return
      */
     public SortedSet computeGroupNames() {
-    	if(groupNames == null) {
+        if (!isActive()) return new TreeSet();
+        if(groupNames == null) {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
     		names.add("allUsers");
@@ -331,9 +337,10 @@ public class User extends Principal {
     }
     
     private void addGroupNames(Principal principal, SortedSet names) {
-    	List memberOf = principal.getMemberOf();
+        List memberOf = principal.getMemberOf();
     	for(Iterator i = memberOf.iterator(); i.hasNext();) {
     		Group group = (Group) i.next();
+            if (!group.isActive()) continue;
     		if(names.add(group.getName())) {
     			addGroupNames(group, names);
     		}

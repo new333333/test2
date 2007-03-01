@@ -57,7 +57,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 			String zoneName = reqCxt.getZoneName();
 			String userName = reqCxt.getUserName();
 			try {
-				user = getProfileDao().findUserByNameOnlyIfEnabled(
+				user = getProfileDao().findUserByName(
 					userName, zoneName);
 			}
 			catch(NoUserByTheNameException e) {
@@ -89,7 +89,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 			}
 			ses.setAttribute(WebKeys.USER_ID, user.getId());
 		} else {
-			user = getProfileDao().loadUserOnlyIfEnabled(userId, reqCxt.getZoneName());
+			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
 		}
 
 		reqCxt.setUser(user);

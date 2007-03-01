@@ -44,17 +44,14 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.exception.UncheckedCodedContainerException;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.binder.EntryProcessor;
-import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.search.LuceneSession;
@@ -75,8 +72,6 @@ import com.sitescape.util.Validator;
  *
  */
 public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule, InitializingBean {
-    protected DefinitionModule definitionModule;
-    protected ProfileModule profileModule;
 	protected Map operations = new HashMap();
 
    /**
@@ -99,22 +94,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 	}
  
-   protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-   }
-	/**
-	 * Setup by spring
-	 * @param definitionModule
-	 */
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	public ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -327,7 +306,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        			//add entry titles
   		        			if (binder instanceof Folder) {
   		        				Folder parentFolder = (Folder)binder;
-  		        				SFQuery query = (SFQuery)getFolderDao().queryChildEntries(parentFolder); 
+  		        				SFQuery query = getFolderDao().queryChildEntries(parentFolder); 
   		        				try {
   		        					while (query.hasNext()) {
   	  		        					Object obj = query.next();
@@ -361,19 +340,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		checkAccess(binder, "setProperty");
 		binder.setProperty(property, value);	
    }    
-    public void deleteBinder(Long binderId) {
+    public List deleteBinder(Long binderId) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, "deleteBinder");
-		if (binder.isReserved()) throw new NotSupportedException(
-				NLT.get("errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()}));
 		
    		List errors = deleteChildBinders(binder);
-   		if (errors.isEmpty()) loadBinderProcessor(binder).deleteBinder(binder);
-   		else {
-   			UncheckedCodedContainerException ue = new UncheckedCodedContainerException("errorcode.delete.binder");
-   			ue.addExceptions(errors);
-   		}
-     }
+   		if (!errors.isEmpty()) return errors;
+   		loadBinderProcessor(binder).deleteBinder(binder);
+   		return null;
+    }
     protected List deleteChildBinders(Binder binder) {
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
@@ -713,7 +688,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		//give access to team members  or binder Admins.
 		Set ids = getTeamMemberIds(binderId, explodeGroups);
 		//turn ids into real Principals
- 	    return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+ 	    return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
 	}
 	
 	
@@ -837,7 +812,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	ObjectBuilder.updateObject(current, updates);
     	if (principals == null) return;
   		//	Pre-load for performance
-    	List notifyUsers = getProfileDao().loadPrincipals(principals, binder.getZoneId());
+    	List notifyUsers = getProfileDao().loadPrincipals(principals, binder.getZoneId(), true);
    		current.setDistribution(notifyUsers);
     }
     

@@ -22,7 +22,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoFolderByTheIdException;
-import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
@@ -266,7 +266,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		Workspace top;
 		try { 
 			top = cdi.findTopWorkspace(name);
-		} catch (NoWorkspaceByTheNameException nw) {
+		} catch (NoBinderByTheNameException nw) {
 			top = new Workspace();
 			top.setName(name);
 			top.setZoneId(new Long(-1));

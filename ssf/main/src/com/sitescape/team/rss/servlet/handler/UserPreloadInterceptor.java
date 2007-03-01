@@ -36,7 +36,7 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 		if(rc.getUserId() == null)
 			throw new InternalException("User ID must be present in request context");
 		//if userId is there so is zoneId
-		User user = getProfileDao().loadUserOnlyIfEnabled(rc.getUserId(), rc.getZoneId());
+		User user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneId());
 		rc.setUser(user);
 	}
 

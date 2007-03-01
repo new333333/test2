@@ -84,7 +84,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			String zoneName = reqCxt.getZoneName();
 			String userName = reqCxt.getUserName();
 			try {
-				user = getProfileDao().findUserByNameOnlyIfEnabled(userName, zoneName);
+				user = getProfileDao().findUserByName(userName, zoneName);
 			}
 			catch(NoUserByTheNameException e) {
 				// The user doesn't exist in the Aspen user database. Since this
@@ -137,7 +137,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor {
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} 
 		else {
-			user = getProfileDao().loadUserOnlyIfEnabled(userId, reqCxt.getZoneName());
+			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
 		}
 		
 		boolean userModify = 

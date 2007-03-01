@@ -64,7 +64,7 @@ public class UserReloadInterceptor implements MethodInterceptor {
 		String zoneName = requestContext.getZoneName();
 		
 		try {
-			User user = getProfileDao().findUserByNameOnlyIfEnabled
+			User user = getProfileDao().findUserByName
 			(userName, zoneName);
 			
 			requestContext.setUser(user);

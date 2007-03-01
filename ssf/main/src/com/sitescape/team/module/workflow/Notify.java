@@ -68,7 +68,7 @@ public class Notify extends AbstractActionHandler {
 				}
 				
 			}
-			List<User> users = getProfileDao().loadEnabledUsers(notify.getPrincipalIds(), entry.getParentBinder().getZoneId());
+			List<User> users = getProfileDao().loadUsers(notify.getPrincipalIds(), entry.getParentBinder().getZoneId());
 			for (User u: users)  {
 				String email = u.getEmailAddress();
 				try	{

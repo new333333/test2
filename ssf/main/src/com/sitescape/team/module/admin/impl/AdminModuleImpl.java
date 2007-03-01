@@ -295,6 +295,30 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					defs.add(entryDef);
 					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
+				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
+					List result = getCoreDao().loadObjects(TemplateBinder.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
+					config.setTemplateTitle("__configuration_default_folder_guestbook");
+					config.setTemplateDescription("__configuration_default_folder_guestbook_description");
+					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG);
+					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_GUESTBOOK);
+					config.setEntryDef(entryDef);
+					defs.add(entryDef);
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					break;
+				} else if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) {
+					List result = getCoreDao().loadObjects(TemplateBinder.class, 
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG, zoneId, Integer.valueOf(type)}));
+					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
+					config.setTemplateTitle("__configuration_default_folder_photo");
+					config.setTemplateDescription("__configuration_default_folder_photo_description");
+					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG);
+					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_PHOTO_ALBUM);
+					config.setEntryDef(entryDef);
+					defs.add(entryDef);
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					break;
 				} else {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
 							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, zoneId, Integer.valueOf(type)}));
@@ -376,6 +400,24 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			config.addBinder(newDef);
 			
 			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
+			newDef = new TemplateBinder(def);
+			copyBinderAttributes(def, newDef);
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
+			newDef.setFunctionMembershipInherited(true);
+			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
+			config.addBinder(newDef);
+
+			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
+			newDef = new TemplateBinder(def);
+			copyBinderAttributes(def, newDef);
+			newDef.setCreation(stamp);
+			newDef.setModification(stamp);
+			newDef.setFunctionMembershipInherited(true);
+			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
+			config.addBinder(newDef);
+			
+			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -599,8 +641,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
 		entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 		String description = NLT.getDef(cfg.getDescription().getText());
-		if (Validator.isNull(description)) description = NLT.getDef(cfg.getTemplateDescription().getText());
-		entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
+		if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 		entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
 		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
 		entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
@@ -1108,6 +1149,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			processor.indexBinder(team, true);
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
+			//this will force the Ids to be cached
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
+			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
+			getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
 		} finally  {
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);
@@ -1246,6 +1291,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
 		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);		
+		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
+		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);		
 		createDefaultTemplate(Definition.WORKSPACE_VIEW);
 		createDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
 		

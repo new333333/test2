@@ -26,13 +26,14 @@ import com.sitescape.team.NotSupportedException;
 *
 */
 public abstract class Principal extends Entry  {
+	protected boolean deleted=false;
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
     protected List memberOf;//initialized by hiberate access=field
     protected String signature="";    
     protected Long zoneId;
-    protected Long workspaceId, calendarId;
+    protected Long workspaceId;
     protected List iMemberOf;
     protected String internalId;
     protected String type;
@@ -67,6 +68,28 @@ public abstract class Principal extends Entry  {
     }
     /**
      * @hibernate.property
+     */
+    public boolean isDeleted() {
+    	return deleted;
+    }
+    public void setDeleted(boolean deleted) {
+    	this.deleted = deleted;
+    }
+	/**
+     * @hibernate.property 
+     * @return Return disabled
+     */
+    public boolean isDisabled() {
+        return this.disabled;
+    }
+    public void setDisabled(boolean disabled) {
+       this.disabled = disabled;
+    }
+    public boolean isActive() {
+    	return !(disabled || deleted);
+    }
+    /**
+     * @hibernate.property
      * Load ourselves - cause not always needed and don't want to proxy
      * @return
      */
@@ -76,19 +99,7 @@ public abstract class Principal extends Entry  {
     public void setWorkspaceId(Long workspaceId) {
        	this.workspaceId = workspaceId;         	
     }
- 
-    /**
-     * @hibernate.property
-     * Load ourselves - cause not always needed and don't want to proxy
-     * @return
-     */
-    public Long getCalendarId() {
-      	return calendarId;
-    }
-    public void setCalendarId(Long calendarId) {
-       	this.calendarId = calendarId;         	
-    }
-    
+     
     /**
      * @hibernate.property not-null="true"
      */
@@ -110,16 +121,6 @@ public abstract class Principal extends Entry  {
 	    this.signature = signature;
 	} 
  
-     /**
-     * @hibernate.property 
-     * @return Return disabled
-     */
-    public boolean isDisabled() {
-        return this.disabled;
-    }
-    public void setDisabled(boolean disabled) {
-       this.disabled = disabled;
-    }
     /**
      * @hibernate.property length="82"
      * @return Returns the loginName.

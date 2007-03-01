@@ -202,7 +202,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				userIds.remove(notify.getId().getPrincipalId());
 			}
 		}
-		List<User> users = getProfileDao().loadEnabledUsers(userIds, folder.getZoneId());
+		List<User> users = getProfileDao().loadUsers(userIds, folder.getZoneId());
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
 		for (User u: users) {
@@ -359,7 +359,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			} 
 		}
 		
- 		return getProfileDao().loadEnabledUsers(userIds,  RequestContextHolder.getRequestContext().getZoneId());
+ 		return getProfileDao().loadUsers(userIds,  RequestContextHolder.getRequestContext().getZoneId());
 
 		
 	}

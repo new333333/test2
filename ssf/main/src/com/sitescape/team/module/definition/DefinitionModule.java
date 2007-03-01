@@ -20,30 +20,8 @@ import com.sitescape.team.module.shared.InputDataAccessor;
  *
  */
 public interface DefinitionModule {
-  	public boolean testAccess(String operation);
-
-	public Definition getDefinition(String id);
-	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
-	public String addDefinition(Document doc);
-	public void deleteDefinition(String id);
-	public Definition createDefaultDefinition(int type);
-	public Definition createDefaultDefinition(int type, String viewType);
-	public Definition setDefaultBinderDefinition(Binder binder);
-	public Definition setDefaultEntryDefinition(Entry entry);
-	/**
-	 * Get 
-	 * @param name
-	 * @param title
-	 * @param type
-	 * @param inputData
-	 * @return
-	 */
-	public Document getDefinitionConfig();
-	public void modifyDefinitionName(String id, String name, String caption);
-	public void modifyDefinitionAttribute(String id, String key, String value);
-	public void modifyDefinitionProperties(String id, InputDataAccessor inputData);
-	public void setDefinitionLayout(String id, InputDataAccessor inputData);
-
+	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
+	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -59,10 +37,17 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
-	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
+	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
+	public String addDefinition(Document doc);
+	public Definition createDefaultDefinition(int type);
+	public Definition createDefaultDefinition(int type, String viewType);
+	public void deleteDefinition(String id);
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
-	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
-	
+
+	public Definition getDefinition(String id);
+	public List getDefinitions();
+	public List getDefinitions(int type);
+	public Document getDefinitionConfig();
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 
@@ -71,12 +56,20 @@ public interface DefinitionModule {
 	 * @return
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
-	public List getDefinitions();
-	public List getDefinitions(int type);
-	
-	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
-	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getEntryDefinitionElements(String id);
 	public Map getWorkflowDefinitionStates(String id);
+
+	public void modifyDefinitionName(String id, String name, String caption);
+	public void modifyDefinitionAttribute(String id, String key, String value);
+	public void modifyDefinitionProperties(String id, InputDataAccessor inputData);
+	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException;
+	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException;
+	public Definition setDefaultBinderDefinition(Binder binder);
+	public Definition setDefaultEntryDefinition(Entry entry);
+	public void setDefinitionLayout(String id, InputDataAccessor inputData);
+
+  	public boolean testAccess(String operation);
+	
+	
 
 }

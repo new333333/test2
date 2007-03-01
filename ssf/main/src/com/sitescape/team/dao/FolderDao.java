@@ -1,20 +1,18 @@
 package com.sitescape.team.dao;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryMap;
 import com.sitescape.team.domain.NoFolderByTheIdException;
-import com.sitescape.team.domain.TitleException;
 
 /**
  * @author Jong Kim
@@ -25,11 +23,11 @@ public interface FolderDao {
    /**
      * Return iterator of child entries
      * @param filter
-     * @return Iterator
+     * @return SFQuery
      * @throws DataAccessException
      */
-    public Iterator queryEntries(FilterControls filter) throws DataAccessException; 
-	public Iterator queryChildEntries(Folder folder) throws DataAccessException;    
+    public SFQuery queryEntries(FilterControls filter) throws DataAccessException; 
+	public SFQuery queryChildEntries(Folder folder) throws DataAccessException;    
     /**
      * 
      * @param parentFolder

@@ -17,15 +17,14 @@ import java.util.TreeSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -33,9 +32,9 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheIdException;
-import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -43,8 +42,9 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.admin.AdminModule;
+import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -57,11 +57,10 @@ import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 
-public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule, InitializingBean {
+public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
@@ -87,38 +86,19 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	this.adminModule = adminModule;
     }
     
-	/**
-	 * Called after bean is initialized.  Use this to make sure
-	 * scheduler has workflowtimeout job active
-	 *
-	 */
-	public void afterPropertiesSet() {
-		//make sure super user is set correctly
-		//there should not be any session opened, so auto-commit should be in effect
-		List companies = getCoreDao().findCompanies();
-		for (int i=0; i<companies.size(); ++i) {
-		   Workspace zone = (Workspace)companies.get(i);
-		   String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
-		   //get super user from config file
-		   try {
-			   User superU = getProfileDao().findUserByName(superName, zone.getName());
-			   if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
-					superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-					//force update
-					getCoreDao().merge(superU);				   
-			   }
-			   //make sure only one
-			   getCoreDao().executeUpdate(
-					   "update com.sitescape.team.domain.User set internalId=null where " +
-					   "internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
-		   } catch (NoUserByTheNameException nu) {} 
-		}
-	}
+    protected BinderModule binderModule;
+    protected BinderModule getBinderModule() {
+    	return binderModule;
+    }
+    public void setBinderModule(BinderModule binderModule) {
+    	this.binderModule = binderModule;
+    }
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
 	 * @see com.sitescape.team.module.binder.BinderModule#checkAccess(com.sitescape.team.domain.Binder, java.lang.String)
 	 */
-	public boolean testAccess(ProfileBinder binder, String operation) {
+    //NO transaction
+    public boolean testAccess(ProfileBinder binder, String operation) {
 		try {
 			checkAccess(binder, operation);
 			return true;
@@ -145,6 +125,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	 * and easisly change the required rights
 	 * @see com.sitescape.team.module.profile.ProfileModule#testAccess(com.sitescape.team.domain.Principal, java.lang.String)
 	 */
+    //NO transaction
 	public boolean testAccess(Principal entry, String operation) {
 		try {
 			checkAccess(entry, operation);
@@ -179,6 +160,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneId());
 	}
 
+	//RO transaction
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadBinder();
 		// Check if the user has "read" access to the folder.
@@ -186,64 +168,67 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	   return binder;
     }
 
+	//RO transaction
 	public Principal getEntry(Long binderId, Long principaId) {
         ProfileBinder binder = loadBinder(binderId);
-        Principal p = getProfileDao().loadPrincipal(principaId, binder.getZoneId());        
+        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principaId);        
         checkAccess(p, "getEntry");
         return p;
     }
-   public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
+    //RW transaction
+  public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
   		if (userId == null) userId = user.getId();
-   		//TODO: probably need access checks, but how?
   		if (user.getId().equals(userId)) {
     		uProps = getProfileDao().loadUserProperties(userId, binderId);
 			uProps.setProperty(property, value); 	
-  		}
+  		} else throw new NotSupportedException();
   		return uProps;
    }
+	//RO transaction
    public UserProperties getUserProperties(Long userId, Long binderId) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
   		if (userId == null) userId = user.getId();
-		//TODO: probably need access checks, but how?
-  		if (user.getId().equals(userId)) {
+ 		if (user.getId().equals(userId)) {
 			uProps = getProfileDao().loadUserProperties(userId, binderId);
-		}
+  		} else throw new NotSupportedException();
 		return uProps;
 }
 
+   //RW transaction
    public UserProperties setUserProperty(Long userId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
- 		//TODO: probably need access checks, but how?
   		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
  			uProps = getProfileDao().loadUserProperties(user.getId());
 			uProps.setProperty(property, value);			
-  		}
+  		} else throw new NotSupportedException();
 		return uProps;
     }
+	//RO transaction
    public UserProperties getUserProperties(Long userId) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
  		if (userId == null) userId = user.getId();
- 		  		//TODO: probably need access checks, but how?
   		if (user.getId().equals(userId)) {
     		uProps = getProfileDao().loadUserProperties(userId);
-  		}
+  		} else throw new NotSupportedException();
   		return uProps;
    }
+	//RO transaction
    public SeenMap getUserSeenMap(Long userId) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		SeenMap seen = null;
 		if (userId == null) userId = user.getId();
   		if (user.getId().equals(userId)) {
  			 seen = getProfileDao().loadSeenMap(user.getId());
- 		}
+  		} else throw new NotSupportedException();
    		return seen;
    }
+   //RW transaction
    public void setSeen(Long userId, Entry entry) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
@@ -251,8 +236,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   		if (user.getId().equals(userId)) {
 			 seen = getProfileDao().loadSeenMap(user.getId());
 			 seen.setSeen(entry);
-		}
-   }
+  		} else throw new NotSupportedException();
+  }
+   //RW transaction
    public void setSeen(Long userId, List entries) {
    		User user = RequestContextHolder.getRequestContext().getUser();
    		SeenMap seen;
@@ -263,20 +249,23 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    				Entry reply = (Entry)entries.get(i);
    				seen.setSeen(reply);
    			}
-   		}
+  		} else throw new NotSupportedException();
    }  	
   
+	//RO transaction
    public Map getGroups(Long binderId) {
 	   Map options = new HashMap();
 	   options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
 	   return getGroups(binderId, options);
    }
  
-    public Map getGroups(Long binderId, Map options) {
+	//RO transaction
+   public Map getGroups(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
 		checkAccess(binder, "getEntries");
         return loadProcessor(binder).getBinderEntries(binder, groupDocType, options);        
     }
+	//RO transaction
 	public Collection getGroups(Set entryIds) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
@@ -289,7 +278,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				// assuming users are cached
 				result.add(getProfileDao().loadGroup((Long)iter.next(), binder.getZoneId()));
 			} catch (NoGroupByTheIdException ex) {
-			} catch (AccessControlException ax) {
 			}
 			
 		}
@@ -297,6 +285,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
     
     //***********************************************************************************************************	
+    //NO transaction
     public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
@@ -314,10 +303,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
     }
 
+    //NO transaction
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {
     	modifyEntry(binderId, id, inputData, new HashMap(), null, null);
     }
+    //NO transaction
    public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, 
 		   Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
    		throws AccessControlException, WriteFilesException {
@@ -336,7 +327,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
          processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
      }
 
-     public void addEntries(Long binderId, Document doc) {
+   //NO transaction
+    public void addEntries(Long binderId, Document doc) {
        ProfileBinder binder = loadBinder(binderId);
        checkAccess(binder, "addEntries");
        //process the document
@@ -427,7 +419,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    	   return allEntries;
   
     }
-
+    //RW transaction
     public Workspace addUserWorkspace(User entry) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
         	try {
@@ -464,6 +456,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return null;
    }
 
+    //NO transaction
     public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
@@ -472,29 +465,40 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
     }
 
-
+    //RW transaction
     public void deleteEntry(Long binderId, Long principalId) {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, principalId);
         checkAccess(entry, "deleteEntry");
        	if (entry.isReserved()) 
-    		throw new NotSupportedException(NLT.get("errorcode.group.reserved", new Object[]{entry.getName()}));
-        processor.deleteEntry(binder, entry);    	
-    }
+    		throw new NotSupportedException(NLT.get("errorcode.group.reserved", new Object[]{entry.getName()}));       	
+        if (entry instanceof User) {
+        	//delete workspace
+        	User u = (User)entry;
+        	Long wsId = u.getWorkspaceId();
+        	try {
+        		getBinderModule().deleteBinder(wsId);
+           		u.setWorkspaceId(null);       		
+        	} catch (Exception ue) {}       	
+        }
+        processor.deleteEntry(binder, entry); 
+     }
     
-    public Map getUsers(Long binderId) {
+    //RO transaction
+   public Map getUsers(Long binderId) {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(DEFAULT_MAX_ENTRIES));
     	return getUsers(binderId, options);
     }
+	//RO transaction
     public Map getUsers(Long binderId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
 		checkAccess(binder, "getEntries");
         return loadProcessor(binder).getBinderEntries(binder, userDocType, options);
         
    }
- 
+	//RO transaction 
 	public Collection getUsers(Set entryIds) {
 		checkAccess(getProfileBinder(), "getEntries");
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -504,6 +508,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		return result;
 	}
    
+	//RO transaction
 	public Collection getUsersFromPrincipals(Set principalIds) {
 		ProfileBinder profile = getProfileBinder();
 		checkAccess(profile, "getEntries");
@@ -561,6 +566,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}		
 	}
 	
+    //RW transaction
 	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
 		if(updates == null)
 			updates = new HashMap();
@@ -611,6 +617,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 	}
 
+    //RW transaction
 	public void modifyUserFromPortal(User user, Map updates) {
 		if (updates == null)
 			return; // nothing to update with
