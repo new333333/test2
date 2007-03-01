@@ -2694,7 +2694,9 @@ td.ss_searchviewContainer {
 
 table.ss_searchviewDashboardContainer {
 	border-spacing: 1px;
-	vertical-align: top;	
+	vertical-align: top;
+	margin-left: 2px;
+	margin-right: 2px;
 }
 td.ss_searchviewDashboardContainer {
 	vertical-align: top;

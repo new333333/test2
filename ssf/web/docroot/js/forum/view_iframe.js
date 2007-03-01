@@ -96,6 +96,7 @@ function ss_positionEntryDiv() {
 	    if (entryHeight > ss_entryHeightHighWaterMark) {
 		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
 		    ss_entryHeightHighWaterMark = entryHeight;
+		    
 			ss_setObjectHeight(wObj1, entryHeight);
 			ss_setObjectHeight(wObj3, entryHeight);
 		}

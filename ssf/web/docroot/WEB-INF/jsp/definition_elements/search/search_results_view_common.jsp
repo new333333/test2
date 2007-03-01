@@ -32,6 +32,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 
 <% // People, places, things selection bar %>
 
+
+
 <div>
   <ul class="ss_search_results_selection">
     <li class="ss_search_results_selection_inactive" id="ss_search_results_people_tab"><a href="#" 
@@ -52,7 +54,10 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 <div class="ss_folder" id="ss_folder_table_parent">
 
 <div id="ss_search_results_things_div" style="display:block;">  
-	<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_things.jsp" %>
+	<c:set var="ss_search_results_display_format" value="nontable"/>
+	<c:if test="${ss_search_results_display_format == 'nontable'}">
+		<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_things_non_table.jsp" %>
+	</c:if>
 </div>
 
 <div id="ss_search_results_people_div" style="display:none;">  

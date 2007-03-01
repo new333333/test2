@@ -136,6 +136,7 @@ return
     ss_setObjectLeft(wObj1, left);
     ss_setObjectWidth(wObj1, width);
     //ss_setObjectHeight(wObj1, height);
+    
     ss_setObjectHeight(wObj1, "");
     wObj1.style.background = "#ffffff"
 }

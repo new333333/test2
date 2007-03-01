@@ -1,5 +1,6 @@
 <% // Common folder page number navigation %>
 <c:if test="${ssConfigJspStyle != 'template'}">
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript">
 //Check the Page Number Before Submission
 function ss_goToPage_<portlet:namespace/>(formObj) {
