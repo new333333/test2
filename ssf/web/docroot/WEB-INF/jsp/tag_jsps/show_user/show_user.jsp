@@ -10,6 +10,7 @@
   <ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" titleStyle="${ss_showUserTitleStyle}" /> 
 </c:if>
 <c:if test="${!ss_showUserShowPresence}">
+<c:if test="${ss_showUserUser.active}">
 	<ssf:ifadapter>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
@@ -31,6 +32,9 @@
 	  ><span id="${ss_showUserUser.id}"  
 	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
 	</ssf:ifnotadapter>
+</c:if>
+<c:if test="${!ss_showUserUser.active}">
   <span id="${ss_showUserUser.id}" 
     class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+</c:if>
 </c:if>

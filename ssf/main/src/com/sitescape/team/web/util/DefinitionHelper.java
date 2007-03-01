@@ -12,9 +12,14 @@ import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
@@ -244,4 +249,32 @@ public class DefinitionHelper {
 		}
 		return false;
 	}
+    public static String getWebDAVURL(Folder folder, FolderEntry entry) {
+    	String strEntryURL = "";
+		Definition entryDef = entry.getEntryDef();
+		if (entryDef == null) getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
+		Document entryDefDocTree = entryDef.getDefinition();
+		String strRepositoryName = "";
+		if (entryDefDocTree != null) {
+			//root is the root of the entry's definition
+			Element root = entryDefDocTree.getRootElement();
+			Element entryFormItem = (Element)root.selectSingleNode("item[@name='entryForm']");			
+			
+			//if root is not null
+			if (entryFormItem != null) {
+				//get the attachFiles
+				Element entryAttachFileItem = (Element)entryFormItem.selectSingleNode(".//item[@name='attachFiles']");
+				//if there is a attachFiles item entry
+				if (entryAttachFileItem != null) {
+					strRepositoryName = DefinitionUtils.getPropertyValue(entryAttachFileItem, "storage");
+					if (Validator.isNull(strRepositoryName)) strRepositoryName = RepositoryUtil.getDefaultRepositoryName();
+				}
+				
+			}
+		}
+		strEntryURL = SsfsUtil.getEntryUrl(folder, entry, strRepositoryName);
+		
+		return strEntryURL;
+    }
+	
 }
