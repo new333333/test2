@@ -19,7 +19,7 @@ public interface MailManager {
 	public static final String NOTIFY_FROM="notify.from";
 	public static final String NOTIFY_SUBJECT="notify.subject";
     public static final String REPLY_SUBJECT="RE: DocId:";
-
+    public static final String DEFAULT_TIMEZONE="notify.timezone";
 	public Date sendNotifications(Long folderId, Date start);
 	public void fillSubscription(Long folderId, Long entryId, Date stamp);
 	public void receivePostings();

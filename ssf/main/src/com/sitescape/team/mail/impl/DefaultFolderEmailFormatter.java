@@ -423,8 +423,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		element.addAttribute("title", entry.getTitle());			    
 		element.addAttribute("docNumber", entry.getDocNumber());			    
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
-		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
-		element.addAttribute("href", entryUrl);
+		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+		element.addAttribute("href", adapterUrl.toString());
 		definitionModule.addNotifyElementForEntity(element, notifyDef, entry);	
 	}
 	// get cached template.  If not cached yet,load it
