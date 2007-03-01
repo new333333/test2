@@ -41,6 +41,7 @@ public class DefinitionUtils {
 		return results;   	
     }
     public static boolean isSourceItem(Document definitionTree, String itemSource, String itemTarget) {
+    	if (definitionTree == null) return false;
 		Element root = definitionTree.getRootElement();
 		
 		//Get a list of all of the form items in the definition (i.e., from the "form" section of the definition)
@@ -48,6 +49,7 @@ public class DefinitionUtils {
 		if (entryFormItem == null) return false;
 		//see if item is generated and save source
 		Element itemEle = (Element)entryFormItem.selectSingleNode(".//item[@name='" + itemTarget + "']");
+		if (itemEle == null) return false;
 		boolean generated = GetterUtil.get(DefinitionUtils.getPropertyValue(itemEle, "generated"), false);
 		if (generated) {
 			String source = getPropertyValue(itemEle, "itemSource");
