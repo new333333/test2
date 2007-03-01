@@ -8,6 +8,7 @@
 		<notify session="java:comp/env/mail/SiteScape"/>
 		<posting session="java:comp/env/mail/SiteScapePosting"/>
 		<property name="notify.templateCacheDisabled">false</property>
+		<property name="notify.timezone">EST</property>
 	</mailConfiguration>	
 	<ldapConfiguration>	
 		<property name="java.naming.security.principal"/>

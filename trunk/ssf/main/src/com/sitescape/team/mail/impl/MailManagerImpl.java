@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.activation.DataSource;
 import javax.mail.Message;
@@ -291,7 +292,8 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setEntry(entry);
-
+		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.DEFAULT_TIMEZONE));
+		
 		mHelper.setType(Notify.FULL);
 		mHelper.setSendAttachments(false);
 		doSubscription (folder, mailSender, mHelper, messageNoAttsResults);
@@ -345,6 +347,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailManager.DEFAULT_TIMEZONE));
 
 		for (int i=0; i<digestResults.size(); ++i) {
 			Object row[] = (Object [])digestResults.get(i);
@@ -419,6 +422,7 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		Date startDate;
 		String defaultFrom;
 		Locale locale;
+		TimeZone timezone;
 		boolean sendAttachments=false;
 		
 		private MimeHelper(FolderEmailFormatter processor, Folder folder, Date startDate) {
@@ -442,6 +446,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 		protected void setLocale(Locale locale) {
 			this.locale = locale;
 		}
+		protected void setTimeZone(String timezone) {			
+			this.timezone = TimeZone.getTimeZone(timezone);
+		}
 		protected void setType(String type) {
 			messageType = type;
 		}
@@ -458,7 +465,10 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 			notify.setAttachmentsIncluded(sendAttachments);
 			notify.setStartDate(startDate);
 			notify.setLocale(locale);
-			notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale);
+			if (timezone == null) timezone = TimeZone.getDefault();
+			df.setTimeZone(timezone);
+			notify.setDateFormat(df);
 			message = null;
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 			helper.setSubject(processor.getSubject(folder, notify));
