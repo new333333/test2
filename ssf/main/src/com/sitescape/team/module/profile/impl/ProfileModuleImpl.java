@@ -387,6 +387,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        ProfileCoreProcessor processor=loadProcessor(binder);
        List allEntries = new ArrayList();
    	   Map newEntries = new HashMap();
+   	   Map oldEntries = new HashMap();
    	   for (int j=0; j<elements.size();) {
    		   newEntries.clear();
    		   for (int k=j; k < elements.size() && k-j<100; ++k) {
@@ -404,15 +405,22 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			params.put("plist", newEntries.keySet());
 			params.put("zoneId", binder.getZoneId());
 			List<Principal> exists = getCoreDao().loadObjects("from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:plist)", params);
+			
 			for (int x=0;x<exists.size(); ++x) {
 				Principal p = (Principal)exists.get(x);
-				newEntries.remove(p.getName());
-				logger.error("Principal exists: " + p.getName());
+				ElementInputData data = (ElementInputData)newEntries.get(p.getName());
+				if (data != null && !p.isDeleted()) {
+					newEntries.remove(p.getName());
+					oldEntries.put(p,data);
+				}
+				logger.debug("Principal exists: " + p.getName());
 			}
-			if (!newEntries.isEmpty()) {
+			if (!newEntries.isEmpty() || !oldEntries.isEmpty()) {
 				IndexSynchronizationManager.begin();
 				//returns list of user objects
 				allEntries.addAll(processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values())));
+				processor.syncEntries(oldEntries);
+				
 				IndexSynchronizationManager.applyChanges();
 			}
   	   }
