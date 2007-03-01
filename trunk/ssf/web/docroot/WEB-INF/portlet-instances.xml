@@ -49,4 +49,16 @@
          <portlet-ref>ss_gallery</portlet-ref>
       </instance>
    </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_presence-instance</instance-id>
+         <portlet-ref>ss_presence</portlet-ref>
+      </instance>
+   </deployment>
+   <deployment>
+      <instance>
+         <instance-id>ss_toolbar-instance</instance-id>
+         <portlet-ref>ss_toolbar</portlet-ref>
+      </instance>
+   </deployment>
 </deployments>
