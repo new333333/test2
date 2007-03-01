@@ -946,6 +946,9 @@ public class ListFolderController extends  SAbstractController {
 	protected void buildFolderToolbars(RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model) {
         User user = RequestContextHolder.getRequestContext().getUser();
+        String userDisplayStyle = user.getDisplayStyle();
+        if (userDisplayStyle == null) userDisplayStyle = "";
+        
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
@@ -1177,7 +1180,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		//vertical
 		qualifiers = new HashMap();
-		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
 			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -1188,7 +1191,7 @@ public class ListFolderController extends  SAbstractController {
 				NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 		//accessible
 		qualifiers = new HashMap();
-		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
 			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -1199,7 +1202,7 @@ public class ListFolderController extends  SAbstractController {
 				NLT.get("toolbar.menu.display_style_accessible"), url, qualifiers);
 		//iframe
 		qualifiers = new HashMap();
-		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
 			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -1210,7 +1213,7 @@ public class ListFolderController extends  SAbstractController {
 				NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
 		//popup
 		qualifiers = new HashMap();
-		if (user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
 			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
