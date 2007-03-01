@@ -590,7 +590,8 @@ public class ListFolderController extends  SAbstractController {
 			if (displayDefId != null && !displayDefId.equals("")) {
 				displayDef = DefinitionHelper.getDefinition(displayDefId);
 			}
-			Document defDoc = displayDef.getDefinition();
+			Document defDoc = null;
+			if (displayDef != null) defDoc = displayDef.getDefinition();
 			
 			if (defDoc != null) {
 				Element rootElement = defDoc.getRootElement();
