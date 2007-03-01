@@ -74,17 +74,17 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void addDocument(Document doc) {
+		IndexWriter indexWriter;
 		if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
 			throw new LuceneException(
 					"Document must contain a UID with field name "
 							+ BasicIndexUtils.UID_FIELD);
-
-		IndexWriter indexWriter = null;
-
+		//block until updateDocs is completed
+		synchronized (LocalLuceneSession.class) {
+			indexWriter = null;
+		}
 		try {
-			synchronized (SyncObj) {
-				indexWriter = LuceneUtil.getWriter(indexPath);
-			}
+			indexWriter = LuceneUtil.getWriter(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -105,12 +105,15 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public void addDocuments(Collection docs) {
 
-		IndexWriter indexWriter = null;
-
+		IndexWriter indexWriter;
+		
+		//block until updateDocs is completed
+		synchronized (LocalLuceneSession.class) {
+			indexWriter = null;
+		}
+		
 		try {
-			synchronized (SyncObj) {
-				indexWriter = LuceneUtil.getWriter(indexPath);
-			}
+			indexWriter = LuceneUtil.getWriter(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -141,7 +144,12 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void deleteDocuments(Term term) {
-		IndexReader indexReader = null;
+		IndexReader indexReader;
+		
+		//block until updateDocs is completed
+		synchronized (LocalLuceneSession.class) {
+			indexReader = null;
+		}
 
 		try {
 			indexReader = LuceneUtil.getReader(indexPath);
@@ -165,7 +173,12 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void deleteDocuments(Query query) {
-		IndexSearcher indexSearcher = null;
+		IndexSearcher indexSearcher;
+		
+		//block until updateDocs is completed
+		synchronized (LocalLuceneSession.class) {
+			indexSearcher = null;
+		}
 
 		try {
 			indexSearcher = LuceneUtil.getSearcher(indexPath);
@@ -295,9 +308,14 @@ public class LocalLuceneSession implements LuceneSession {
 	 */
 	public ArrayList getTags(Query query, String tag, String type) throws LuceneException {
 		IndexReader indexReader = null;
-		IndexSearcher indexSearcher = null;
+		IndexSearcher indexSearcher;
 		TreeSet results = new TreeSet();
 		ArrayList resultTags = new ArrayList();
+		
+		//block until updateDocs is completed
+		synchronized (LocalLuceneSession.class) {
+			indexSearcher = null;
+		}
 
 		try {
 			indexReader = LuceneUtil.getReader(indexPath);
@@ -384,28 +402,25 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public void optimize() {
 		IndexWriter indexWriter = null;
-		synchronized (SyncObj) {
-			try {
-				indexWriter = LuceneUtil.getWriter(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
+		try {
+			indexWriter = LuceneUtil.getWriter(indexPath);
+		} catch (IOException e) {
+			throw new LuceneException("Could not open writer on the index ["
+					+ this.indexPath + "]", e);
+		}
 
+		try {
+			indexWriter.optimize();
+		} catch (IOException e) {
+			throw new LuceneException("Could not add document to the index ["
+					+ indexPath + "]", e);
+		} finally {
 			try {
-				indexWriter.optimize();
+				indexWriter.close();
 			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not add document to the index [" + indexPath
-								+ "]", e);
-			} finally {
-				try {
-					indexWriter.close();
-				} catch (IOException e) {
-				}
 			}
 		}
+
 	}
 
 	public void close() {
@@ -446,15 +461,15 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
+		
+		//block every read/write while updateDocs is in progress
 		synchronized (LocalLuceneSession.class) {
 			IndexUpdater updater = null;
 			// first Optimize the index.
 			IndexWriter indexWriter = null;
 
 			try {
-				synchronized (SyncObj) {
-					indexWriter = LuceneUtil.getWriter(indexPath);
-				}
+				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
 				throw new LuceneException(
 						"Could not open writer on the index [" + this.indexPath
