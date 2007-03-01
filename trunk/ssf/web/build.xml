@@ -132,7 +132,7 @@
 		<war
 			basedir="${web.dir}"
 			destfile="${war.file}"
-			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/classes/config/ssf.properties.save"
+			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<!-- No longer necessary
@@ -171,9 +171,9 @@
 	
 	<target name="deploy">
 		<copy todir="${app.server.ssf.dir}">
-			<fileset dir="${web.dir}">
-				<exclude name="WEB-INF/*.tmpl" />
-			</fileset>
+			<fileset dir="${web.dir}"
+				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml"
+			/>
 		</copy>
 	</target>
 	
