@@ -252,7 +252,10 @@ public class DefinitionHelper {
     public static String getWebDAVURL(Folder folder, FolderEntry entry) {
     	String strEntryURL = "";
 		Definition entryDef = entry.getEntryDef();
-		if (entryDef == null) getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
+		if (entryDef == null) {
+			getInstance().getDefinitionModule().setDefaultEntryDefinition(entry);
+			entryDef = entry.getEntryDef();
+		}
 		Document entryDefDocTree = entryDef.getDefinition();
 		String strRepositoryName = "";
 		if (entryDefDocTree != null) {
