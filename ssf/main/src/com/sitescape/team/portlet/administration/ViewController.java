@@ -28,6 +28,7 @@ import com.sitescape.team.util.ReleaseInfo;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.util.Validator;
 
 
@@ -35,7 +36,7 @@ public class ViewController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		//force reload so we can setup js correctly
 		if (Validator.isNull(ss_initialized)) {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
@@ -49,7 +50,7 @@ public class ViewController extends  SAbstractController {
  		Map<String,Object> model = new HashMap<String,Object>();
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");

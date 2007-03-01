@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.util.Validator;
 
 public class WidgetTestController extends SAbstractController {
@@ -22,7 +23,7 @@ public class WidgetTestController extends SAbstractController {
 	throws Exception {
 		//There is no action. Just go to the render phase
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 			prefs.store();
@@ -34,7 +35,7 @@ public class WidgetTestController extends SAbstractController {
 			RenderResponse response) throws Exception {
  		Map<String,Object> model = new HashMap<String,Object>();
  		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = (String)prefs.getValue(WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
 		if (Validator.isNull(ss_initialized)) {
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
