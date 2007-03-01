@@ -39,4 +39,4 @@ var ss_imageUploadUrl = "<ssf:url
   <c:if test="${!empty element_name}">
     name="${element_name}" 
   </c:if>
->
+><c:out value="${init_text}"/>
