@@ -53,7 +53,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 		return profileDao;
 	}
     public Set getWorkAreaAccessControl(WorkArea workArea, WorkAreaOperation workAreaOperation) {
-    	//need to use this work areas owner, event if inheriting
+    	//need to use this work areas owner, even if inheriting
     	return getWorkAreaAccessControl(workArea, workArea.getOwnerId(), workAreaOperation);
     }
 
@@ -67,25 +67,14 @@ public class AccessControlManagerImpl implements AccessControlManager {
         }
         else {
 	        Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	        //Get list of functions that allow the operation
-	        List functions = getFunctionManager().findFunctions(zoneId, workAreaOperation);
-	        //get all function memberships for this workarea
-	        List memberships = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMemberships(zoneId, workArea);
-	        //build list of users by merging  
-	        Set result = new HashSet();
-	        for (int i=0; i<memberships.size(); ++i) {
-	        	WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)memberships.get(i);
-	        	for (int j=0; j<functions.size(); ++j) {
-	        		Function f = (Function)functions.get(j);
-	        		if (f.getId().equals(m.getFunctionId())) {
-	        			result.addAll(m.getMemberIds());
-	        			break;
-	        		}
-	        	}
-	        }
+        	List<WorkAreaFunctionMembership>wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(zoneId, workArea, workAreaOperation);
 	        //replaces reserved ownerId with workArea owner
-	        if (result.remove(ObjectKeys.OWNER_USER_ID)) result.add(ownerId);
-	        return result;
+           	Set ids = new HashSet();
+            for (WorkAreaFunctionMembership wfm:wfms) {
+            	ids.addAll(wfm.getMemberIds());
+        	}
+        	if (ids.remove(ObjectKeys.OWNER_USER_ID)) ids.add(ownerId);
+	        return ids;
 	        
         }    	
     }

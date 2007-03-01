@@ -46,11 +46,12 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
 				jobDetail.addJobListener(getDefaultCleanupListener());
 				scheduler.addJob(jobDetail, true);
 			}
+			int milliSeconds = hours*60*60*1000;
 			SimpleTrigger trigger = (SimpleTrigger)scheduler.getTrigger(zoneId.toString(), FOLDER_DELETE_GROUP);
 			//	see if job exists
 			if (trigger == null) {
 				trigger = new SimpleTrigger(zoneId.toString(), FOLDER_DELETE_GROUP, zoneId.toString(), FOLDER_DELETE_GROUP, new Date(), null, 
-						SimpleTrigger.REPEAT_INDEFINITELY, hours*1000);
+						SimpleTrigger.REPEAT_INDEFINITELY, milliSeconds);
 				trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
 				trigger.setDescription(FOLDER_DELETE_DESCRIPTION);
 				trigger.setVolatility(false);
@@ -61,8 +62,8 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
 				if ((state == Trigger.STATE_PAUSED) || (state == Trigger.STATE_NONE)) {
 					scheduler.resumeJob(zoneId.toString(), FOLDER_DELETE_GROUP);
 				}
-				if (trigger.getRepeatInterval() != hours*1000) {
-					trigger.setRepeatInterval(hours*1000);
+				if (trigger.getRepeatInterval() != milliSeconds) {
+					trigger.setRepeatInterval(milliSeconds);
 					scheduler.rescheduleJob(zoneId.toString(), FOLDER_DELETE_GROUP, trigger);
 				}
 			} 
