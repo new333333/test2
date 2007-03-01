@@ -36,6 +36,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -486,7 +487,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//The "Footer" menu
 		//RSS link 
 		Toolbar footerToolbar = new Toolbar();
-		String[] creatorAndMoficationIds = collectCreatorAndMoficationIds(workspace);
+		String[] contributorIds = collectContributorIds(workspace);
 		
 		// permalink
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -497,6 +498,18 @@ public class WorkspaceTreeController extends SAbstractController  {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 
 				adapterUrl.toString(), qualifiers);
+
+		// clipboard
+		qualifiers = new HashMap();
+		String contributorIdsAsJSString = "";
+		for (int i = 0; i < contributorIds.length; i++) {
+			contributorIdsAsJSString += contributorIds[i];
+			if (i < (contributorIds.length -1)) {
+				contributorIdsAsJSString += ", ";	
+			}
+		}
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (getBinderModule().testAccess(workspace, "getTeamMembers") ? ", '" + forumId + "'" : "" ) + ");return false;");
+		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
 
 		// send mail
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -509,7 +522,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		qualifiers.put("popup", Boolean.TRUE);
 		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
 			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
@@ -524,7 +537,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		qualifiers.put("popup", Boolean.TRUE);
 		if (!getBinderModule().testAccess(workspace, "getTeamMembers")) {
 			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorAndMoficationIds));
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
@@ -533,7 +546,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.FOLDER_TOOLBAR, toolbar.getToolbar());
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 	}
-	private String[] collectCreatorAndMoficationIds(Workspace workspace) {
+	
+	private String[] collectContributorIds(Workspace workspace) {
 		Set principals = new HashSet();
 		principals.add(workspace.getCreation().getPrincipal().getId().toString());
 		principals.add(workspace.getModification().getPrincipal().getId().toString());

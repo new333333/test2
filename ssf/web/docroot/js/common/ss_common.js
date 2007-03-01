@@ -3106,7 +3106,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	if (userId != '') {
         m += '<tr>';
         m += '<td class="ss_bglightgray"><img border="0" alt="" src="" id="ppgclipboard'+ssNamespace+'"></td>';
-        m += '<td id="addToClipboardTD' + screenName + '"><form id="addToClipboard' + screenName + '" name="addToClipboard' + screenName + '"><input type="hidden" name="muster_class" value="ss_muster_users"><input type="hidden" name="muster_ids" value="' + userId + '"></form><a class="ss_graymenu" href="javascript: ;" onclick="ss_muster.addToClipboard(\'addToClipboard' + screenName + '\'' + (divId != ''?', function () {$(\'addToClipboardTD'+screenName+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
+        m += '<td id="addToClipboardTD' + screenName + '"><a class="ss_graymenu" href="javascript: // ;" onclick="ss_muster.addUsersToClipboard([' + userId + ']' + (divId != ''?', function () {$(\'addToClipboardTD'+screenName+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
 	}	
 	
     m += '</table>'
@@ -3500,28 +3500,29 @@ function ss_showThisImage(obj) {
 	}
 }
 
-//Mustering routines
-var ss_muster = {
 
-	showForm : function(musterClass) {
-		this.buildDiv(musterClass);
-		this.showDiv()
-	},
+//Mustering routines
+function ss_Clipboard () {
+
+	var usersCheckboxes = new Array();
+
+	var contributorsIds = new Array();
+
+	var sBinderId;
 	
-	buildDiv : function(musterClass) {
-		var items = new Array();
-		var itemIds = new Array();
-		var itemTitles = new Array();
-		var itemSpans = ss_getElementsByClass(musterClass, null, 'span')
-		for (var i = 0; i < itemSpans.length; i++) {
-			var id = itemSpans[i].id;
-			if (typeof itemIds['id'+id] == "undefined") {
-				items[items.length] = id;
-				itemIds['id'+id] = id;
-				itemTitles['id'+id] = itemSpans[i].innerHTML;
-			}
-		}
+	this.showForm = function (musterClass, userIds, binderId) {
+		contributorsIds = userIds;
+		sBinderId = binderId;
+		buildDiv(musterClass, userIds);
+		showDiv();
+	}
+
+	this.cancel = function () {
+		ss_cancelPopupDiv('ss_muster_div');
+		return false;
+	}
 		
+	function buildDiv (musterClass) {
 		//Build the muster form
 		var musterDiv = document.getElementById('ss_muster_div');
 		if (musterDiv != null) musterDiv.parentNode.removeChild(musterDiv);
@@ -3533,6 +3534,17 @@ var ss_muster = {
 	    musterDiv.style.visibility = "hidden";
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
+	
+		var formTitle = document.createElement("div");
+		formTitle.style.padding="3px"; 
+		formTitle.style.marginTop="0"; 
+		formTitle.style.marginBottom="7px";  
+		formTitle.style.borderBottom="1px solid black"; 
+		formTitle.style.fontWeight="bold";
+		formTitle.appendChild(document.createTextNode("Clipboard"));
+		musterDiv.appendChild(formTitle);
+		
+		
 	    var formObj = document.createElement("form");
 	    formObj.setAttribute("id", "ss_muster_form");
 	    formObj.setAttribute("name", "ss_muster_form");
@@ -3542,111 +3554,250 @@ var ss_muster = {
 	    hiddenObj.setAttribute("name", "muster_class");
 	    hiddenObj.setAttribute("value", musterClass);
 	    formObj.appendChild(hiddenObj);
+
 		
-		//Add the items to be mustered
-		for (var i = 0; i < items.length; i++) {
-			ss_debug('Muster item '+items[i]+': '+itemTitles['id'+items[i]])
-			var inputObj = document.createElement("input");
-			inputObj.setAttribute("type", "checkbox");
-			inputObj.setAttribute("name", "muster_ids");
-			inputObj.setAttribute("value", items[i]);
-			inputObj.setAttribute("id", "muster_ids_" + i);
-						
-			var labelObj = document.createElement("label");
-			labelObj.setAttribute("for", "muster_ids_" + i);
-			labelObj.appendChild(document.createTextNode(itemTitles['id'+items[i]]));
-			
-			var spanObj = document.createElement("span");
-			spanObj.appendChild(labelObj);
-						
-			var brObj = document.createElement("br");
-			formObj.appendChild(inputObj);
-			formObj.appendChild(spanObj);
-			formObj.appendChild(brObj);
-		}
-		//Add the buttons 
 		var brObj = document.createElement("br");
-		var addBtnObj = document.createElement("input");
-		addBtnObj.setAttribute("type", "submit");
-		addBtnObj.setAttribute("name", "add");
-		addBtnObj.setAttribute("value", ss_addToClipboardText);
-		addBtnObj.setAttribute("onClick", "ss_muster.addToClipboard('ss_muster_form');return false;");
-		addBtnObj.style.marginRight = "15px"
-		var clearBtnObj = document.createElement("input");
-		clearBtnObj.setAttribute("type", "submit");
-		clearBtnObj.setAttribute("name", "clear");
-		clearBtnObj.setAttribute("value", ss_clearClipboardText);
-		clearBtnObj.setAttribute("onClick", "ss_muster.clearClipboard(this);return false;");
-		clearBtnObj.style.marginRight = "15px"
+
+		var addBtnDivObj = document.createElement("div");
+		addBtnDivObj.style.textAlign = "right";
+		addBtnDivObj.style.width = "100%";
+
+		var addContrBtnObj = document.createElement("input");
+		addContrBtnObj.setAttribute("type", "button");
+		addContrBtnObj.setAttribute("name", "add");
+		addContrBtnObj.setAttribute("value", ss_addContributesToClipboardText);
+		addContrBtnObj.setAttribute("onClick", "ss_muster.addContributesToClipboard();return false;");
+
+		var addTeamMembersBtnObj = document.createElement("input");
+		addTeamMembersBtnObj.setAttribute("type", "button");
+		addTeamMembersBtnObj.setAttribute("name", "add");
+		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
+		addTeamMembersBtnObj.setAttribute("onClick", "ss_muster.addTeamMembersToClipboard();return false;");
+
+
+		addBtnDivObj.appendChild(addContrBtnObj);
+		addBtnDivObj.appendChild(brObj.cloneNode(false));
+		if (sBinderId)
+			addBtnDivObj.appendChild(addTeamMembersBtnObj);
+		
+		formObj.appendChild(addBtnDivObj);
+		formObj.appendChild(brObj);
+		
+		// Add list container
+		var divObj = document.createElement("div");
+		divObj.id = "ss_muster_list_container";
+		formObj.appendChild(divObj);
+		
+		//Add the buttons 		
+		var deleteBtnObj = document.createElement("input");
+		deleteBtnObj.setAttribute("type", "submit");
+		deleteBtnObj.setAttribute("name", "clear");
+		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
+		deleteBtnObj.setAttribute("onClick", "ss_muster.removeFromClipboard('ss_muster_form');return false;");
+		deleteBtnObj.style.marginRight = "15px"
 		var cancelBtnObj = document.createElement("input");
-		cancelBtnObj.setAttribute("type", "submit");
+		cancelBtnObj.setAttribute("type", "button");
 		cancelBtnObj.setAttribute("name", "cancel");
-		cancelBtnObj.setAttribute("value", ss_cancelButtonText);
-		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel(this);return false;");
+		cancelBtnObj.setAttribute("value", ss_closeButtonText);
+		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel();");
 		cancelBtnObj.style.marginRight = "15px"
 
-		formObj.appendChild(brObj);
-		formObj.appendChild(addBtnObj);
-		formObj.appendChild(clearBtnObj);
+		formObj.appendChild(brObj.cloneNode(false));
+		formObj.appendChild(deleteBtnObj);
 		formObj.appendChild(cancelBtnObj);
 		
 		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
-	},
+
+		loadUsers(divObj);
+	}
 	
-	showDiv : function() {
+	
+	function loadUsers (divObj) {
+		if (!divObj)
+			return;
+		ss_toggleAjaxLoadingIndicator(divObj, true);
+		var url = ss_musterUrl;
+		var url = ss_replaceSubStr(url, "ss_operation_place_holder",  "get_clipboard_users");
+		
+		var bindArgs = {
+	    	url: url,
+			error: function(type, data, evt) {
+				ss_toggleAjaxLoadingIndicator(divObj);
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+				ss_toggleAjaxLoadingIndicator(divObj);
+				displayUsers(data, divObj);			
+			},
+			mimetype: "text/json",
+			method: "get"
+		};
+	   
+		dojo.io.bind(bindArgs);
+	}
+	
+	function displayUsers(data, containerObj) {
+		if (data.length > 0) {
+			usersCheckboxes = new Array();
+
+			var ulObj = document.createElement("ul");
+			ulObj.style.marginLeft = "0";
+			ulObj.style.marginTop = "5px";
+			ulObj.style.marginBottom = "15px";
+			ulObj.style.marginRight = "0";
+			ulObj.style.padding = "0";
+
+			var lastIndex = 0;
+			for (var i = 0; i < data.length; i++) {
+				ulObj.appendChild(createUserLI(i, data[i][0], data[i][1]));
+				lastIndex = i;
+			}
+			
+			var hrefSelectAllObj = document.createElement("a");
+			hrefSelectAllObj.href = "javascript: //";
+			hrefSelectAllObj.setAttribute("onClick", "ss_muster.selectAll()");
+			hrefSelectAllObj.className = "ss_linkButton";
+			hrefSelectAllObj.style.marginRight = "5px";
+			hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
+
+			var hrefDeselectAllObj = document.createElement("a");
+			hrefDeselectAllObj.href = "javascript: //";
+			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.deselectAll()");
+			hrefDeselectAllObj.className = "ss_linkButton";
+			hrefDeselectAllObj.style.marginRight = "5px";
+			hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
+
+			containerObj.innerHTML = "";
+			containerObj.appendChild(ulObj);
+			containerObj.appendChild(hrefSelectAllObj);
+			containerObj.appendChild(hrefDeselectAllObj);
+		}
+	}
+	
+	this.selectAll = function () {
+		for (var i = 0; i < usersCheckboxes.length; i++) {
+			usersCheckboxes[i].checked = true;
+		}
+	}
+	
+	this.deselectAll = function () {
+		for (var i = 0; i < usersCheckboxes.length; i++) {
+			usersCheckboxes[i].checked = false;
+		}
+	}
+
+	function createUserLI (index, userId, userTitle) {
+		var liObj = document.createElement("li");
+	
+		var inputObj = document.createElement("input");
+		inputObj.setAttribute("type", "checkbox");
+		inputObj.setAttribute("name", "muster_ids");
+		inputObj.setAttribute("value", userId);
+		inputObj.setAttribute("id", "muster_ids_" + index);
+		
+		usersCheckboxes.push(inputObj);
+		
+		var labelObj = document.createElement("label");
+		labelObj.setAttribute("for", "muster_ids_" + index);
+		labelObj.appendChild(document.createTextNode(userTitle));
+					
+		liObj.appendChild(inputObj);
+		liObj.appendChild(labelObj);
+		
+		return liObj;
+	}
+	
+	function showDiv () {
 		//Show the muster form
 		ss_showPopupDivCentered('ss_muster_div');
-	},
+	}
 	
 	/*
 	 * afterPostRoutine - optional
 	 */
-	addToClipboard : function(formName, afterPostRoutine) {
+	this.addContributesToClipboard = function (afterPostRoutine) {
+		this.addUsersToClipboard(contributorsIds, afterPostRoutine);
+	}
+
+	/*
+	 * afterPostRoutine - optional
+	 */	
+	this.addTeamMembersToClipboard = function (afterPostRoutine) {
 		ss_setupStatusMessageDiv()
 		var url = ss_musterUrl;
 		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.addFormElements(formName);
+		url += "&add_team_members=true";
+		url += "&binderId=" + sBinderId;
+	
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object		
 		//ajaxRequest.setEchoDebugInfo();
 		if (afterPostRoutine)
 			ajaxRequest.setPostRequest(afterPostRoutine);
 		else
-			ajaxRequest.setPostRequest(ss_muster.postAddToClipboard);			
+			ajaxRequest.setPostRequest(postAddToClipboard);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
-	},
+	}
 	
-	postAddToClipboard : function(obj) {
-		//See if there was an error
-		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-			alert(ss_not_logged_in);
-		}
-		ss_cancelPopupDiv('ss_muster_div');
-	},
-	
-	clearClipboard : function(obj) {
+	/*
+	 * afterPostRoutine - optional
+	 */
+	this.addUsersToClipboard = function (userIds, afterPostRoutine) {
 		ss_setupStatusMessageDiv()
 		var url = ss_musterUrl;
-		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "clear_clipboard");
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "add_to_clipboard");
+		
+		
+		url += "&muster_class=ss_muster_users";
+		for (var i = 0; i < userIds.length; i++) {
+			url += "&muster_ids=" + userIds[i];
+		}
+
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object		
 		//ajaxRequest.setEchoDebugInfo();
-		ajaxRequest.setPostRequest(ss_muster.postClearClipboard);
+		if (afterPostRoutine)
+			ajaxRequest.setPostRequest(afterPostRoutine);
+		else
+			ajaxRequest.setPostRequest(postAddToClipboard);			
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
-	},
+	}
 	
-	postClearClipboard : function(obj) {
+	
+	function postAddToClipboard (obj) {
+		//See if there was an error
+		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+			alert(ss_not_logged_in);
+		} else {
+			loadUsers ($("ss_muster_list_container"));
+		}
+	}
+	
+	this.removeFromClipboard = function (formName) {
+		ss_setupStatusMessageDiv()
+		var url = ss_musterUrl;
+		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "remove_from_clipboard");
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.addFormElements(formName);
+		ajaxRequest.setPostRequest(postRemoveFromClipboard);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+
+	}
+	
+	function postRemoveFromClipboard (obj) {
 		//See if there was an error
 		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 			alert(ss_not_logged_in);
 		}
 		ss_cancelPopupDiv('ss_muster_div');
-	},
-	
-	cancel : function(obj) {
-		ss_cancelPopupDiv('ss_muster_div');
 	}
+
+
 }
+
+var ss_muster = new ss_Clipboard();
 
 /*
 	Starts a Zon meeting with given id;
@@ -3668,7 +3819,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
     	url: url,
 		error: function(type, data, evt) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-			alert("An error occurred.");
+			alert(ss_not_logged_in);
 		},
 		load: function(type, data, evt) {
 			ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
@@ -3678,6 +3829,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 				ss_launchMeeting(data.meetingToken);
 			}
 		},
+		formNode: $(formId),
 		mimetype: "text/json",
 		method: "post"
 	};
@@ -3753,10 +3905,13 @@ function $(id) {
   
  */
 function ss_synchronizeCheckboxes(selectAllCheckboxId, checkboxesName) {
-
     var selectAllCheckboxObj = $(selectAllCheckboxId);
-
     var synchronizedCheckboxesObjs = document.getElementsByName(checkboxesName);
+	
+	ss_synchronizeCheckboxes(selectAllCheckboxObj, synchronizedCheckboxesObjs);
+}
+
+function ss_synchronizeCheckboxes(selectAllCheckboxObj, synchronizedCheckboxesObjs) {
 
 	if (selectAllCheckboxObj) {
 		selectAllCheckboxObj.onchange = function() {

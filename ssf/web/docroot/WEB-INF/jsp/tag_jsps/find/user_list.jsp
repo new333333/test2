@@ -9,13 +9,9 @@
 	String userListFormName = (String) request.getAttribute("form_name");
 	String userListElementName = (String) request.getAttribute("form_element");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
-	Boolean showClipboard = (Boolean) request.getAttribute("show_clipboard");
-	Boolean showTeamMembers = (Boolean) request.getAttribute("show_team_members");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
 <c:set var="userList" value="<%= userList %>"/>
-<c:set var="showClipboard" value="<%= showClipboard %>"/>
-<c:set var="showTeamMembers" value="<%= showTeamMembers %>"/>
 <c:set var="binderId" value="<%= binderId %>"/>
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 <c:set var="addUserToListRoutine" value="ss_addUserToUserList_${prefix}"/>
@@ -125,14 +121,6 @@ function ss_userListRemove${prefix}(obj) {
     </ul>    
   </div>  
 </div>
-
-<c:if test="${showClipboard}">
-	<ssf:clipboard type="user" clickRoutine="${addUserToListRoutine}"/>
-</c:if>
-
-<c:if test="${showTeamMembers && binderId != ''}">
-	<ssf:teamMembers clickRoutine="${addUserToListRoutine}" binderId="${binderId}"/>
-</c:if>
 
 </td>
 </tr>

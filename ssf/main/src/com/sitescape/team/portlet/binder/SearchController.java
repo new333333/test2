@@ -40,6 +40,7 @@ import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -761,16 +762,27 @@ public class SearchController extends AbstractBinderController {
 		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", NLT.get("toolbar.menu.display_style_popup"), url);
 
 		
-		//The "Footer" menu
+		//The "Footer" menu		
+		String[] contributorIds = getContributorIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE));
 		
-		String[] peopleIds = getPeopleIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE));
+		// clipboard
+		Map qualifiers = new HashMap();
+		String contributorIdsAsJSString = "";
+		for (int i = 0; i < contributorIds.length; i++) {
+			contributorIdsAsJSString += contributorIds[i];
+			if (i < (contributorIds.length -1)) {
+				contributorIdsAsJSString += ", ";	
+			}
+		}
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]);return false;");
+		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
 		
 		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		Map qualifiers = new HashMap();
+		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
@@ -778,7 +790,7 @@ public class SearchController extends AbstractBinderController {
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, peopleIds));		
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));		
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
@@ -786,7 +798,7 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 	}
 	
-	private String[] getPeopleIds(List people) {
+	private String[] getContributorIds(List people) {
 		Set principals = new HashSet();
 		
 		if (people != null) {

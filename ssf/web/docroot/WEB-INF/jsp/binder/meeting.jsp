@@ -50,10 +50,17 @@
 									<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 									<td valign="top">
 									  <ssf:find formName="startMeetingForm" formElement="users" 
-									    type="user" userList="${ssUsers}" showClipboard="true"
-									    showTeamMembers="true" binderId="${ssBinder.id}" />
+									    type="user" userList="${ssUsers}" />
 									</td>
 								</tr>
+								<tr>
+									<td colspan="2">
+										<ssf:clipboard type="user" formElement="users" />
+										<c:if test="${!empty ssBinder}">
+											<ssf:teamMembers binderId="${ssBinder.id}" formElement="users" appendAll="${appendTeamMembers}"/>
+										</c:if>										
+									</td>
+								</tr>								
 							</table>
 						</fieldset>
 					</td></tr>

@@ -45,6 +45,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
@@ -421,6 +422,9 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPopupDivCentered('ss_subscription_entry'); return false;");
 		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), "#", qualifiers);
 
+		
+		String[] contributorIds = collectContributorIds(entry);
+		
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -436,7 +440,7 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers = new HashMap();
 		qualifiers.put("popup", Boolean.TRUE);
 		qualifiers.put("post", Boolean.TRUE);
-		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, collectCreatorAndMoficationIds(entry)));
+		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
 		
@@ -510,7 +514,7 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	}
 
-	private String[] collectCreatorAndMoficationIds(FolderEntry entry) {		
+	private String[] collectContributorIds(FolderEntry entry) {		
 		Set principals = new HashSet();
 		collectCreatorAndMoficationIdsRecursive(entry, principals);
 		String[] as = new String[principals.size()];

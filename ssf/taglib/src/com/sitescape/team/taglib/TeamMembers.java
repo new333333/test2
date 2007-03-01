@@ -18,11 +18,13 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class TeamMembers extends BodyTagSupport {
 	
-	private String clickRoutine = "";
+	private String formElement = "";
 
 	private Integer instanceCount = 0;
 	
 	private String binderId = "";
+	
+	private Boolean appendAll= false;
 	
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
@@ -42,8 +44,9 @@ public class TeamMembers extends BodyTagSupport {
 			this.instanceCount++;
 
 			httpReq.setAttribute("binderId", this.binderId);
-			httpReq.setAttribute("clickRoutine", this.clickRoutine);
+			httpReq.setAttribute("formElement", this.formElement);
 			httpReq.setAttribute("instanceCount", this.instanceCount);
+			httpReq.setAttribute("appendAll", this.appendAll);
 			
 			// Output the presence info
 			String jsp = "/WEB-INF/jsp/tag_jsps/team/team_members.jsp";
@@ -56,8 +59,9 @@ public class TeamMembers extends BodyTagSupport {
 		} catch (Exception e) {
 			throw new JspTagException(e.getMessage());
 		} finally {
-			clickRoutine = "";
+			formElement = "";
 			binderId = "";			
+			appendAll = false;
 		}
 
 		return EVAL_PAGE;
@@ -67,8 +71,12 @@ public class TeamMembers extends BodyTagSupport {
 		this.binderId = binderId;
 	}
 
-	public void setClickRoutine(String clickRoutine) {
-		this.clickRoutine = clickRoutine;
+	public void setFormElement(String formElement) {
+		this.formElement = formElement;
+	}
+
+	public void setAppendAll(Boolean appendAll) {
+		this.appendAll = appendAll;
 	}
 
 }

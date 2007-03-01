@@ -119,9 +119,10 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
 	
 	//Clipboard text
-	ss_addToClipboardText = "<ssf:nlt tag="button.add_to_clipboard"/>";
+	ss_addContributesToClipboardText = "<ssf:nlt tag="button.add_contributes_to_clipboard"/>";
+	ss_addTeamMembersToClipboardText = "<ssf:nlt tag="button.sdd_team_members_to_clipboard"/>";
 	ss_clearClipboardText = "<ssf:nlt tag="button.clear_clipboard"/>";
-	ss_cancelButtonText = "<ssf:nlt tag="button.cancel"/>";
+	ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
 }
 
 function ss_loadDojoFiles() {

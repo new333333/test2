@@ -6,7 +6,7 @@
 <div align="center" class="ss_footer_toolbar">
 <c:set var="delimiter" value=""/>
 <c:forEach var="toolbarMenu" items="${ssFooterToolbar}">
-    <c:if test="${!empty toolbarMenu.value.url || !empty toolbarMenu.value.urlParams}">
+    
       <c:out value="${delimiter}" escapeXml="false"/>
       <c:set var="popup" value="false"/>
       <c:if test="${toolbarMenu.value.qualifiers.popup}">
@@ -95,11 +95,16 @@
 	 	    value="${toolbarMenu.value.title}" /></a></div>
 	    </c:when>
 	    <c:otherwise>
-	      <div class="ss_bottomlinks"><a href=""><c:out value="${toolbarMenu.value.title}" /></a></div>
+	      <div class="ss_bottomlinks">
+	      	<a href="javascript: //"
+		        <c:if test="${!empty toolbarMenu.value.qualifiers.onClick}">
+	    	      	onClick="${toolbarMenu.value.qualifiers.onClick}"
+	    	    </c:if>
+	    	    ><c:out value="${toolbarMenu.value.title}" /></a></div>
 	    </c:otherwise>
 	  </c:choose>
 	  <c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
-    </c:if>
+    
 </c:forEach>
 </div>
 

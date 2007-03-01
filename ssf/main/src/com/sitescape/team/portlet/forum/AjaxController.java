@@ -99,6 +99,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxAddToClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_CLEAR_CLIPBOARD)) {
 				ajaxClearClipboard(request, response);
+			} else if (op.equals(WebKeys.OPERATION_REMOVE_FROM_CLIPBOARD)) {
+				ajaxRemoveFromClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 				ajaxSetBinderOwnerId(request, response);
 			}
@@ -275,8 +277,6 @@ public class AjaxController  extends SAbstractController {
 			return ajaxStartMeeting(request, response, ICBroker.SCHEDULED_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS_COUNT)) {
-			return ajaxGetTeamMembersCount(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_CLIPBOARD_USERS)) {
 			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
@@ -1078,6 +1078,22 @@ public class AjaxController  extends SAbstractController {
 	private void ajaxAddToClipboard(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
+		List musterIds = PortletRequestUtils.getLongListParameters(request, WebKeys.URL_MUSTER_IDS);
+		
+		Clipboard clipboard = new Clipboard(request);
+		clipboard.add(musterClass, musterIds);
+		
+		Boolean addTeamMembers = PortletRequestUtils.getBooleanParameter(request, "add_team_members", false);
+		if (addTeamMembers) {
+			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			Set teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
+			clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));
+		}
+	}
+
+	private void ajaxRemoveFromClipboard(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
 		String[] musterIds = new String[0];
 		if (PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS) != null) {
 			musterIds = PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS);
@@ -1088,7 +1104,7 @@ public class AjaxController  extends SAbstractController {
 			Set idList = (Set) clipboardMap.get(musterClass);
 			for (int i = 0; i < musterIds.length; i++) {
 				Long id = Long.valueOf(musterIds[i]);
-				if (!idList.contains(id)) idList.add(id);
+				if (idList.contains(id)) idList.remove(id);
 			}
 		}
 	}
@@ -1489,36 +1505,15 @@ public class AjaxController  extends SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
-		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
-		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
-		
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 		}
 		
-		response.setContentType("text/xml");
+		response.setContentType("text/json");
 		return new ModelAndView("forum/team_members", model);
 	}
-	
-	private ModelAndView ajaxGetTeamMembersCount(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		
-		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
-		
-		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.TEAM_MEMBERS_COUNT, getBinderModule().getTeamMemberIds(binderId, true).size());
-		} else {
-			model.put(WebKeys.TEAM_MEMBERS_COUNT, 0);
-		}
-		
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/team_members_count", model);
-	}	
 	
 	private ModelAndView ajaxGetBinderOwner(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -1542,8 +1537,6 @@ public class AjaxController  extends SAbstractController {
 	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		model.put(WebKeys.DIV_ID, PortletRequestUtils.getStringParameter(request, WebKeys.DIV_ID));
-		model.put("clickRoutine", PortletRequestUtils.getStringParameter(request, "clickRoutine"));
 		
 		if (WebHelper.isUserLoggedIn(request)) {
 			Clipboard clipboard = new Clipboard(request);
@@ -1555,7 +1548,7 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.CLIPBOARD_PRINCIPALS , 0);			
 		}
 		
-		response.setContentType("text/xml");
+		response.setContentType("text/json");
 		return new ModelAndView("forum/clipboard_users", model);
 	}
 
