@@ -654,33 +654,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = loadBinder(binderId);
 		//give access to team members OR binder Admins.
 		checkAccess(binder, "getTeamMembers");
-		List <WorkAreaFunctionMembership> wfms=null;
-		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
-		} else {
-	    	WorkArea source = binder.getParentWorkArea();
-	    	
-	    	while (source.isFunctionMembershipInherited()) {
-		    	source = source.getParentWorkArea();
-		    }
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
-	    }
+		Set ids = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.TEAM_MEMBER);		
 		if (explodeGroups) {
-			Set ids = new HashSet();
-			for (WorkAreaFunctionMembership fm: wfms) {
-				ids.addAll(fm.getMemberIds());
-			}
-		
 			// explode groups
 			return getProfileDao().explodeGroups(ids, binder.getZoneId()).size() > 0;
 		}
-		for (WorkAreaFunctionMembership fm: wfms) {
-			// don't explode groups
-			if (fm.getMemberIds() != null && fm.getMemberIds().size() > 0) {
-				return true;
-			}
-		}
-	    return false;
+		if (ids.isEmpty()) return false;
+		return true;
 	}
 		
 
@@ -704,22 +684,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 * @see com.sitescape.team.module.binder.BinderModule#getTeamMemberIds(com.sitescape.team.domain.Binder, boolean)
 	 */
 	public Set getTeamMemberIds(Binder binder, boolean explodeGroups) {
-		List <WorkAreaFunctionMembership> wfms=null;
-		if (!binder.isFunctionMembershipInherited() || (binder.getParentWorkArea() == null)) {
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), binder, WorkAreaOperation.TEAM_MEMBER);
-		} else {
-	    	WorkArea source = binder.getParentWorkArea();
-	    	
-	    	while (source.isFunctionMembershipInherited()) {
-		    	source = source.getParentWorkArea();
-		    }
-	    	wfms = getWorkAreaFunctionMembershipManager().findWorkAreaFunctionMembershipsByOperation(RequestContextHolder.getRequestContext().getZoneId(), source, WorkAreaOperation.TEAM_MEMBER);
-	    }
-		Set ids = new HashSet();
-		for (WorkAreaFunctionMembership fm: wfms) {
-			ids.addAll(fm.getMemberIds());
-		}
-		
+		Set ids = getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.TEAM_MEMBER);		
 	    // explode groups
 		if (explodeGroups) return getProfileDao().explodeGroups(ids, binder.getZoneId());
 		return ids;
