@@ -28,7 +28,7 @@
 				<td valign="top">
 					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_users" 
     					type="user" userList="${ssDashboard.beans[ssComponentId].ssUsers}" 
-    					showClipboard="true" showTeamMembers="true" binderId="${ssBinder.id}"/>
+    					binderId="${ssBinder.id}"/>
 				</td>
 			</tr>
 			<tr>
@@ -36,6 +36,14 @@
 				<td valign="top">
 					<ssf:find formName="${ss_dashboard_config_form_name}" formElement="data_groups" 
 						type="group" userList="${ssDashboard.beans[ssComponentId].ssGroups}"/>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<ssf:clipboard type="user" formElement="data_users" />
+					<c:if test="${!empty ssBinder}">
+						<ssf:teamMembers binderId="${ssBinder.id}" formElement="data_users"/>
+					</c:if>						
 				</td>
 			</tr>
 		</table>

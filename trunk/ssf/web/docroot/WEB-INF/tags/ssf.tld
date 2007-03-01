@@ -107,8 +107,8 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>clickRoutine</name>
-			<required>false</required>
+			<name>formElement</name>
+			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 	</tag>	
@@ -383,18 +383,6 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.util.Set</type>
 		</attribute>	
-		<attribute>
-			<name>showClipboard</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>
-		<attribute>
-			<name>showTeamMembers</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Boolean</type>
-		</attribute>
 		<attribute>
 			<name>clickRoutine</name>
 			<required>false</required>
@@ -906,10 +894,15 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
-			<name>clickRoutine</name>
+			<name>formElement</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>appendAll</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>			
+		</attribute>
 	</tag>	
 
 	<tag>

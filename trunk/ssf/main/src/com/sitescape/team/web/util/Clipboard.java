@@ -1,8 +1,11 @@
 package com.sitescape.team.web.util;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
@@ -31,6 +34,17 @@ public class Clipboard {
 			clipboard.put(ENTRIES, new HashSet());
 			clipboard.put(USERS, new HashSet());
 			ps.setAttribute(WebKeys.CLIPBOARD, clipboard, PortletSession.APPLICATION_SCOPE);
+		}
+	}
+	
+	public void add(String musterClass, List ids) {
+		if (clipboard.containsKey(musterClass)) {
+			Set idList = (Set) clipboard.get(musterClass);
+			Iterator it = ids.iterator();
+			while (it.hasNext()) {
+				Long id = (Long)it.next();
+				if (!idList.contains(id)) idList.add(id);
+			}
 		}
 	}
 	

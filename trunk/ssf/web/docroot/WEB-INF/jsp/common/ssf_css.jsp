@@ -3072,44 +3072,15 @@ div.ss_buddiesListFooter {
 	text-align: right;
 }
 
-div.ss_clipboardMenu, div.ss_teamMenu {
-	display: inline;
-}
-
-div.ss_clipboardMenu img, div.ss_teamMenu img {
-	border: 0;
-	margin-left: 5px;
-}
-
-div.ss_clipboardOptionsPane ul, div.ss_teamOptionsPane ul {
-	margin: 0;
-	padding: 0;
-	list-style-type: none;
-	border: 1px solid #333;
-	background-color: ${ss_style_background_color};
-	font-size: ${ss_style_font_fineprint} !important; 
-}
-
-div.ss_clipboardOptionsPane ul li, div.ss_teamOptionsPane ul li {
-	text-align: left;
-	padding: 3px;
-}
-
-div.ss_clipboardOptionsPane ul li.ss_pasteAllUsers, div.ss_teamOptionsPane ul li.ss_pasteAllUsers {
-	border-bottom: 1px solid #333;
-	text-align: center;
-}
-
-div.ss_clipboardOptionsPane ul li.ss_getAllUsers, div.ss_teamOptionsPane ul li.ss_getAllUsers {
-	text-align: center;
-	line-height: 8px;
-}
-
 form.inline {
 	display: inline;
 	border: 0;
 	padding: 0;
 	margin: 0;	
+}
+
+div.ss_teamMembersList, div.ss_clipboardUsersList {
+	padding-left: 20px; 
 }
 
 <% // Place all CSS code above this line %>

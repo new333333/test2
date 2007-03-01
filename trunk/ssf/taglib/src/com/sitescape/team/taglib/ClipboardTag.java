@@ -29,7 +29,7 @@ public class ClipboardTag extends BodyTagSupport {
 
 	private String type;
 	
-	private String clickRoutine = "";
+	private String formElement = "";
 	
 	private Integer instanceCount = 0;
 	
@@ -57,7 +57,7 @@ public class ClipboardTag extends BodyTagSupport {
 			httpReq.setAttribute("type", this.type);			
 			httpReq.setAttribute("clipboard_user_count", ((Set) clipboardMap.get(Clipboard.USERS)).size());
 			httpReq.setAttribute("instanceCount", this.instanceCount);
-			httpReq.setAttribute("clickRoutine", this.clickRoutine);
+			httpReq.setAttribute("formElement", this.formElement);
 			
 			String jsp = "/WEB-INF/jsp/tag_jsps/clipboard/clipboard.jsp";
 			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
@@ -69,8 +69,8 @@ public class ClipboardTag extends BodyTagSupport {
 		} catch (Exception e) {
 			throw new JspTagException(e.getMessage());
 		} finally {
-			type = null;
-			this.clickRoutine = "";
+			this.type = null;
+			this.formElement = "";
 		}
 
 		return EVAL_PAGE;
@@ -80,8 +80,8 @@ public class ClipboardTag extends BodyTagSupport {
 		this.type = type;
 	}
 
-	public void setClickRoutine(String clickRoutine) {
-		this.clickRoutine = clickRoutine;
+	public void setFormElement(String formElement) {
+		this.formElement = formElement;
 	}
 
 }

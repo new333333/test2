@@ -77,10 +77,10 @@ public class MeetingController extends SAbstractController {
 		
 		Set users = new HashSet();
 		users.addAll(getProfileModule().getUsers(new HashSet(userIds)));
-		if (appendTeamMembers) {
-			users.addAll(getBinderModule().getTeamMembers(binderId, true));
-		}
+		
+		
 		model.put(WebKeys.USERS, users);
+		model.put(WebKeys.URL_APPEND_TEAM_MEMBERS, appendTeamMembers);
 
 		return new ModelAndView(WebKeys.VIEW_BINDER_MEETING, model);
 	}

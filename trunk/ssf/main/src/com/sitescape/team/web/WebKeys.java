@@ -172,7 +172,8 @@ public class WebKeys {
     public static final String OPERATION_ADD_WORKSPACE = "add_workspace";
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
- 	public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
+    public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
+ 	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
     public static final String OPERATION_MOVE="move";
@@ -250,7 +251,6 @@ public class WebKeys {
 	public static final String OPERATION_CHANGE_ENTRIES_ON_PAGE="change_entries_on_page";
 	public static final String OPERATION_CHANGE_WIKI_HOMEPAGE="change_wiki_homepage";
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
-	public static final String OPERATION_GET_TEAM_MEMBERS_COUNT = "get_team_members_count";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	

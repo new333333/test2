@@ -56,6 +56,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -1296,9 +1297,21 @@ public class ListFolderController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
 				adapterUrl.toString(), qualifiers);
 
-		String[] creatorsAndMoficatsIds = collectCreatorsAndMoficatsIds((List)model.get(WebKeys.FOLDER_ENTRIES));
+		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
+		// clipboard
+		qualifiers = new HashMap();
+		String contributorIdsAsJSString = "";
+		for (int i = 0; i < contributorIds.length; i++) {
+			contributorIdsAsJSString += contributorIds[i];
+			if (i < (contributorIds.length -1)) {
+				contributorIdsAsJSString += ", ";	
+			}
+		}
+		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + (getBinderModule().testAccess(folder.getId(), "getTeamMembers") ? ", '" + forumId + "'" : "" ) + ");return false;");
+		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
+		
 		// email
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
@@ -1310,7 +1323,7 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);
 		if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorsAndMoficatsIds));
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
@@ -1325,7 +1338,7 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("popup", Boolean.TRUE);		
 		if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
 			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, creatorsAndMoficatsIds));
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		}
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		
@@ -1348,7 +1361,7 @@ public class ListFolderController extends  SAbstractController {
 	}
 	
 
-	private String[] collectCreatorsAndMoficatsIds(List entries) {
+	private String[] collectContributorIds(List entries) {
 		Set principals = new HashSet();
 		
 		if (entries != null) {
