@@ -28,16 +28,7 @@
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
 	//Build a url to go to
-	var entryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	var folderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type);
+	ss_dashboardPorletUrlSupport(binderId, entryId, type);
 	return false;
 }
 </script>

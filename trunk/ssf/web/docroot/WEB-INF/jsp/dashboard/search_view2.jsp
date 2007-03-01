@@ -25,27 +25,21 @@
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}">
 <c:set var="hitCount" value="${hitCount + 1}"/>
 	<div class="ss_blog_summary_title">
-		<table cellspacing="0" cellpadding="0" width="98%" border="0">
+		<table class="ss_searchviewDashboardContainer" cellspacing="0" cellpadding="0" width="100%" border="0" align="center">
 	  	<tr>
 			<td valign="top" class="ss_searchviewDashboardContainer">
 			  	<c:choose>
 				  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-					    <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-								name="action" value="view_folder_entry"/><portlet:param 
-								name="binderId" value="${fileEntry._binderId}"/><portlet:param 
-								name="entryId" value="${fileEntry._docId}"/><portlet:param 
-								name="newTab" value="1"/></portlet:renderURL>">
-				  	
-					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-							    action="view_permalink"
-							    binderId="${fileEntry._binderId}"
-							    entryId="${fileEntry._docId}">
-							    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+					    <a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"
+								binderId="${fileEntry._binderId}"
+								entryId="${fileEntry._docId}">
+								<ssf:param name="entityType" value="folderEntry" />
 					    	    <ssf:param name="newTab" value="1"/>
-								</ssf:url>"
+								</ssf:url>" 
 							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'user'}">
+				    	<img border="0" src="<html:imagesPath/>pics/sym_s_white_dude.gif" alt="<ssf:nlt tag="general.users" />" />
 					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 								action="view_permalink"
 								binderId="${fileEntry._principal.workspaceId}">
@@ -55,11 +49,40 @@
 							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'group'}">
+				    	<img border="0" src="<html:imagesPath/>icons/group.gif" alt="<ssf:nlt tag="general.groups" />"/>
 					    <a target="_blank" href="<ssf:url action="view_profile_entry" 
 					    		folderId="${fileEntry._binderId}"
 					    		entryId="${fileEntry._docId}" />">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+					    
+					    <c:if test="${fileEntry._entityType == 'folder'}">
+					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.folder" />"/>
+					    	</c:if>
+					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>icons/folder.gif" alt="<ssf:nlt tag="general.type.folder" />"/>
+					    	</c:if>
+					    </c:if>
+					    
+					    <c:if test="${fileEntry._entityType == 'workspace'}">
+					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
+					    	</c:if>
+					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
+					    	</c:if>
+					    </c:if>
+
+					    <c:if test="${fileEntry._entityType == 'profiles'}">
+					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.profiles" />"/>
+					    	</c:if>
+					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+					    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" alt="<ssf:nlt tag="general.profiles" />"/>
+					    	</c:if>
+					    </c:if>
+					    
 					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 							    action="view_permalink"
 							    binderId="${fileEntry._docId}">
@@ -83,6 +106,9 @@
 				<span class="ss_smallprint">
 					<ssf:markup type="view">
 						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="30" />
+						<c:if test="${fileEntry._entityType == 'user'}">
+							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="30" />
+						</c:if>
 					</ssf:markup>
 				</span>	
 			</td>
@@ -143,44 +169,45 @@
 </c:forEach>
 
 <div>
-  <table width="100%">
-   <tr>
-    <td>
-<c:if test="${hitCount > 0}">
-      <span class="ss_light ss_fineprint">
-	    [<ssf:nlt tag="search.results">
-	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
-	    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
-	    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
-	    </ssf:nlt>]
-	  </span>
-</c:if>
-<c:if test="${hitCount == 0}">
-    <span class="ss_light ss_fineprint">
-	  [<ssf:nlt tag="search.noneFound"/>]
-	</span>
-</c:if>
-	</td>
-	<td align="right">
-	<c:if test="${ssDashboard.scope != 'portlet'}">
-		<c:set var="binderId" value="${ssBinder.id}"/>
-	</c:if>
-	<c:if test="${ssDashboard.scope == 'portlet'}">
-		<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
-	</c:if>
-	  <c:if test="${ss_pageNumber > 0}">
-	    <span>
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;"
-	        href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
-	    </span>
-	  </c:if>
-	  <c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
-	    <span>&nbsp;&nbsp;
-	      <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;"
-	        href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
-	    </span>
-	  </c:if>
-    </td>
-   </tr>
-  </table>
+	<table width="98%">
+	<tr>
+		<td>
+			<c:if test="${hitCount > 0}">
+				<span class="ss_light ss_fineprint">
+					[<ssf:nlt tag="search.results">
+				    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + 1}"/>
+				    <ssf:param name="value" value="${ss_pageNumber * ss_pageSize + hitCount}"/>
+				    <ssf:param name="value" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}"/>
+				    </ssf:nlt>]
+				</span>
+			</c:if>
+			<c:if test="${hitCount == 0}">
+				<span class="ss_light ss_fineprint">
+				  [<ssf:nlt tag="search.noneFound"/>]
+				</span>
+			</c:if>
+		</td>
+
+		<td align="right">
+			<c:if test="${ssDashboard.scope != 'portlet'}">
+				<c:set var="binderId" value="${ssBinder.id}"/>
+			</c:if>
+			<c:if test="${ssDashboard.scope == 'portlet'}">
+				<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
+			</c:if>
+			<c:if test="${ss_pageNumber > 0}">
+				<span class="ss_light ss_fineprint">
+				  <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;"
+				    href="#" >&lt;&lt;&lt;&nbsp;<ssf:nlt tag="general.previousPage"/></a>&nbsp;&nbsp;&nbsp;
+				</span>
+			</c:if>
+			<c:if test="${(ss_pageNumber * ss_pageSize + hitCount) < ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+				<span class="ss_light ss_fineprint">&nbsp;&nbsp;
+				  <a onClick="ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}', '${ss_divId}', '${componentId}', 'search'); return false;"
+				    href="#" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
+				</span>
+			</c:if>
+		</td>
+	</tr>
+	</table>
 </div>

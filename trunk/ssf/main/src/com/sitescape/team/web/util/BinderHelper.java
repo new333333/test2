@@ -83,7 +83,7 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-			if (displayDefinition != null && displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_SEARCH)) {
+			if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_SEARCH) || displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY))) {
 				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;

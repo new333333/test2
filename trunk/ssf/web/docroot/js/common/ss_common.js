@@ -985,6 +985,8 @@ function ss_setObjectWidth(obj, width) {
 }
 
 function ss_setObjectHeight(obj, height) {
+	if (obj == null) return;
+
     if (obj && parseInt(height) > 0) obj.style.height = parseInt(height) + 'px';
     
     //Call the routines that want to be called on layout changes

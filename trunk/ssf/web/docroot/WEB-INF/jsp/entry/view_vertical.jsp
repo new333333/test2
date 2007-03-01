@@ -12,6 +12,7 @@
 	Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
 	if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
+
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
@@ -69,47 +70,50 @@
 			<c:if test="${ss_showSearchResults}">
 				<%@ include file="/WEB-INF/jsp/definition_elements/search/search_results_view.jsp" %>
 			</c:if>
-			
-			<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook' && ss_folderViewStyle != 'search'}">
-				<div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
-				  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
-				  style="position:relative; margin:0px 2px 0px 2px; padding:0px; 
-				    border-top:1px solid #666666; 
-				    background-color:${ss_style_background_color};
-				    cursor:n-resize; top:<%= sliderDivOffset %>px;"
-				><table cellspacing="0" cellpadding="0" style="width:95%">
-				<tr>
-				<td style="background:url(<html:imagesPath/>skins/${ss_user_skin}/uparrows.gif) center no-repeat;"><img 
-				  border="0" style="height:<%= String.valueOf(sliderDivHeight) %>px;" 
-				  src="<html:imagesPath/>pics/1pix.gif"></td>
-				</tr></table></div>
-
-				<div id="ss_showentrydiv" class="ss_style ss_portlet" 
-				  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-				  style="position:relative; padding:0px 0px 20px 2px; width: 99.5%;
-				    top:<%= sliderDivOffset %>px;">
-				  <ssf:box>
-				    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
-				    <ssf:param name="box_class" value="ss_style" />
-				    <ssf:param name="box_style" value="margin:0px;" />
-				    <ssf:param name="box_color" value="${ss_folder_border_color}" />
-				    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
-				    <ssf:param name="box_title" useBody="true">
-				    <!-- Set width to 0 to indicate "100%" -->
-				    <ssf:param name="box_width" value="0" />
-				      <div style="position:relative;">
-				      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-				      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-				      </div>
-				    </ssf:param>
-				  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
-				    display:block; position:relative; left:5px;"
-				    src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
-				    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
-				  </ssf:box>
-				</div>
-
-			</c:if>
+				
+			<c:if test="${!ss_showSearchResults}">	
+				<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook' && ss_folderViewStyle != 'search'}">
+					<div id="ss_showfolder_slider" align="center" onMousedown="ss_startDragDiv();"
+					  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}" 
+					  style="position:relative; margin:0px 2px 0px 2px; padding:0px; 
+					    border-top:1px solid #666666; 
+					    background-color:${ss_style_background_color};
+					    cursor:n-resize; top:<%= sliderDivOffset %>px;"
+					><table cellspacing="0" cellpadding="0" style="width:95%">
+					<tr>
+					<td style="background:url(<html:imagesPath/>skins/${ss_user_skin}/uparrows.gif) center no-repeat;"><img 
+					  border="0" style="height:<%= String.valueOf(sliderDivHeight) %>px;" 
+					  src="<html:imagesPath/>pics/1pix.gif"></td>
+					</tr></table></div>
+	
+					<div id="ss_showentrydiv" class="ss_style ss_portlet" 
+					  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
+					  style="position:relative; padding:0px 0px 20px 2px; width: 99.5%;
+					    top:<%= sliderDivOffset %>px;">
+					  <ssf:box>
+					    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+					    <ssf:param name="box_class" value="ss_style" />
+					    <ssf:param name="box_style" value="margin:0px;" />
+					    <ssf:param name="box_color" value="${ss_folder_border_color}" />
+					    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+					    <ssf:param name="box_title" useBody="true">
+					    <!-- Set width to 0 to indicate "100%" -->
+					    <ssf:param name="box_width" value="0" />
+					      <div style="position:relative;">
+					      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
+					      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+					      </div>
+					    </ssf:param>
+					  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
+					    display:block; position:relative; left:5px;"
+					    src="<html:rootPath/>js/forum/null.html" height="100" width="100%" 
+					    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+					  </ssf:box>
+					</div>
+					
+				</c:if>
+			</c:if>	
+				
 		</div>
 
 		<form class="ss_style ss_form" name="ss_saveEntryHeightForm" id="ss_saveEntryHeightForm" >

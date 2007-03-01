@@ -439,7 +439,7 @@ public class SearchController extends AbstractBinderController {
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
 		model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
 		buildSearchResultsToolbars(request, response, model);
-		return new ModelAndView(BinderHelper.getViewListingJsp(this), model);
+		return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
 	}
 
 	//Method to generate the "and portion" of the Search Filter
