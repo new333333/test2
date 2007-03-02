@@ -550,6 +550,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 	private String[] collectContributorIds(Workspace workspace) {
 		Set principals = new HashSet();
 		principals.add(workspace.getCreation().getPrincipal().getId().toString());
+		principals.add(workspace.getOwner().getId().toString());
 		principals.add(workspace.getModification().getPrincipal().getId().toString());
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
