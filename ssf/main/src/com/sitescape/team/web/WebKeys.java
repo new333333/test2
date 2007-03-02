@@ -336,6 +336,8 @@ public class WebKeys {
     public static final String DASHBOARD_NARROW_FIXED_WIDTH="narrowFixedWidth";
     public static final String DASHBOARD_NARROW_FIXED_WIDTH2="narrowFixedWidth2";
     public static final String DASHBOARD_PORTLET="ssDashboardPortlet";
+    public static final String DASHBOARD_SEARCH_RESULTS_COUNT="resultsCount";
+    public static final String DASHBOARD_SEARCH_SUMMARY_WORD_COUNT="summaryWordCount";
     public static final String DASHBOARD_SCOPE="scope";
     public static final String DASHBOARD_SHARED_MODIFICATION_ALLOWED="sharedModificationAllowed";
     public static final String DASHBOARD_SHOW_ALL="ss_show_all_dashboard_components";

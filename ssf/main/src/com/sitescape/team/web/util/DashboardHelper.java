@@ -731,6 +731,13 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxHitsStr[0]));
 		}
 		int pageSize = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		if (data.containsKey(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT)) {
+			try {
+				String[] resultsCount = (String[])data.get(WebKeys.DASHBOARD_SEARCH_RESULTS_COUNT);
+				pageSize = Integer.valueOf(resultsCount[0]);
+				model.put(WebKeys.PAGE_SIZE, Integer.valueOf(pageSize).toString());
+			} catch (Exception e) {}
+		}
 		int pageNumber = 0;
 		if (model.containsKey(WebKeys.PAGE_SIZE)) {
 			pageSize = Integer.valueOf((String)model.get(WebKeys.PAGE_SIZE));
