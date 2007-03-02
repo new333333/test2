@@ -5,12 +5,16 @@ function ss_showSignGuestbookIframe(namespace, obj) {
 	var targetDiv = document.getElementById(namespace + '_add_entry_from_iframe');
 	var iframeDiv = document.getElementById(namespace + '_new_guestbook_entry_iframe');
 	if (window.frames[namespace + '_new_guestbook_entry_iframe'] != null) {
-		eval("var iframeHeight = parseInt(window." + namespace + "_new_guestbook_entry_iframe.document.body.scrollHeight);");
+		// avoids error on dashboard in firefox 
+		var iframeDoc = window.frames[namespace + '_new_guestbook_entry_iframe'].document ? window.frames[namespace + '_new_guestbook_entry_iframe'].document : obj.contentDocument;
+
+		var iframeHeight = parseInt(iframeDoc.body.scrollHeight);
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_signGuestbookIframeOffset + "px"
 		}
 	}
 }
+
 function ss_signGuestbook(namespace, obj) {
 	var targetDiv = document.getElementById(namespace + '_add_entry_from_iframe');
 	if (targetDiv != null) {
