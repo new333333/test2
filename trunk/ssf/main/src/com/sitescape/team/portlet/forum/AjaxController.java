@@ -1087,11 +1087,9 @@ public class AjaxController  extends SAbstractController {
 		Boolean addTeamMembers = PortletRequestUtils.getBooleanParameter(request, "add_team_members", false);
 		if (addTeamMembers) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			try { 
+			if (getBinderModule().testAccess(binderId, "getTeamMembers")) {
 				Set teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
 				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));
-			} catch (AccessControlException e) {
-				// not allowed to do it
 			}
 		}
 	}
@@ -1510,12 +1508,8 @@ public class AjaxController  extends SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
-		if (WebHelper.isUserLoggedIn(request)) {
-			try {
-				model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
-			} catch (AccessControlException e) {
-				model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
-			}
+		if (WebHelper.isUserLoggedIn(request) && getBinderModule().testAccess(binderId, "getTeamMembers")) {
+			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 		}

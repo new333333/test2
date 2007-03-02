@@ -692,12 +692,11 @@ public class ListFolderController extends  SAbstractController {
 	protected String getTeamMembers(Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
-		try {
+		
+		if (getBinderModule().testAccess(folder, "getTeamMembers")) {
 			List users = getBinderModule().getTeamMembers(folder.getId(), true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-		} catch (AccessControlException ax) {
-			//don't display membership
 		}
 		
 		//Build the navigation beans

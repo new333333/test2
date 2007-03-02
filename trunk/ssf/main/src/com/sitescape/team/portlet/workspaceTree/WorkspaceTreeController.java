@@ -226,12 +226,10 @@ public class WorkspaceTreeController extends SAbstractController  {
 	}
 	
 	protected void getTeamMembers(Map formData, RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) throws PortletRequestBindingException {
-		try {
+		if (getBinderModule().testAccess(ws, "getTeamMembers")) {
 			List users = getBinderModule().getTeamMembers(ws.getId(), true);
 			model.put(WebKeys.TEAM_MEMBERS, users);
 			model.put(WebKeys.TEAM_MEMBERS_COUNT, users.size());
-		} catch (AccessControlException ax) {
-			//don't display membership
 		}
 		
 		buildWorkspaceToolbar(req, response, model, ws, ws.getId().toString());
