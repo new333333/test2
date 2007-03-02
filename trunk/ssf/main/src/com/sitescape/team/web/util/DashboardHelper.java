@@ -13,6 +13,7 @@ import javax.portlet.ActionRequest;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.SingletonViolationException;
@@ -42,6 +43,8 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.rss.RssGenerator;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ResolveIds;
@@ -754,6 +757,23 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			searchSearchFormData.put(WebKeys.BINDER_ID_LIST, new ArrayList());
 		else
 			searchSearchFormData.put(WebKeys.BINDER_ID_LIST, savedFolderIds);
+		
+		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) || 
+				component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY) ||
+			component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+			//Limit the search to entries only
+			Document searchFilter2 = DocumentHelper.createDocument();
+    		Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
+        	Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+           	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+           	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+           	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+           	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+        	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
+		}		
 		if (!isConfig) {
 			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
