@@ -1083,11 +1083,16 @@ public class AjaxController  extends SAbstractController {
 		Clipboard clipboard = new Clipboard(request);
 		clipboard.add(musterClass, musterIds);
 		
+		
 		Boolean addTeamMembers = PortletRequestUtils.getBooleanParameter(request, "add_team_members", false);
 		if (addTeamMembers) {
 			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			Set teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
-			clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));
+			try { 
+				Set teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
+				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));
+			} catch (AccessControlException e) {
+				// not allowed to do it
+			}
 		}
 	}
 
@@ -1506,7 +1511,11 @@ public class AjaxController  extends SAbstractController {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
 		if (WebHelper.isUserLoggedIn(request)) {
-			model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
+			try {
+				model.put(WebKeys.TEAM_MEMBERS, getBinderModule().getTeamMembers(binderId, true));
+			} catch (AccessControlException e) {
+				model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
+			}
 		} else {
 			model.put(WebKeys.TEAM_MEMBERS, Collections.emptyList());
 		}
