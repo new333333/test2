@@ -85,7 +85,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		  </c:if>
 		>
 	<c:if test="${!empty tab.icon}">
-		   <img border="0" style="position:relative; left:-6px;" 
+		   <img border="0" style="position:relative; left: 0px;" 
 		     src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 		   <span>${tab.title}</span></a>

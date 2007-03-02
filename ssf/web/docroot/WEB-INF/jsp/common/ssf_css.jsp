@@ -145,7 +145,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 <c:if test="${ss_color_theme == 'blackandwhite'}">
 	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
-	<c:set var="ss_style_folder_view_font_family" value="Tahoma, Arial, sans-serif" scope="request"/>
+	<c:set var="ss_style_folder_view_font_family" value="Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
 	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -1601,6 +1601,7 @@ div.ss_inactiveTab, div.ss_disabledTab {
   padding-bottom: 3px;
   }
 
+
 div.ss_activeTab {
   padding-left: 7px;
   padding-right: 7px;
@@ -1818,7 +1819,7 @@ div.ss_global_toolbar_hide_portal {
     height: 20px;
     width: 20px;
     margin-right: 3px;
-	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_hide_portal.gif) no-repeat top;
 }
 div.ss_global_toolbar_help {
     float: right;
@@ -1906,50 +1907,53 @@ div.ss_tabs {
     margin-right:40px;
 }
 .ss_tabs_td {
-	font-size:${ss_style_font_largeprint};
+	font-family: Arial, helvetica;
+	font-weight: bold;
+	font-size: 11px;
 	color:#5A3C68;
-	height:28px;
+	height:24px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1.jpg) repeat-x top;
 	white-space: nowrap;
 	margin:0px;
 	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_active {
-	font-size:${ss_style_font_largeprint};
-	font-weight:bold;
+	font-family: Arial, helvetica;
+	font-weight: bold;
+	font-size:11px;
 	color:#5A3C68;
-	height:28px;
+	height:24px;
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back1_active.jpg) repeat-x top;
 	margin:0px;
 	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_left_active {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2_active.jpg) no-repeat left;
-    width:15px;
-    min-width:15px;
+    width:6px;
+    min-width:6px;
 }
 .ss_tabs_td_right_active {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3_active.jpg) no-repeat right;
-    width:12px;
-    min-width:12px;
+    width:4px;
+    min-width:4px;
 }
 .ss_tabs_td_left {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back2.jpg) no-repeat left;
-    width:15px;
-    min-width:15px;
+    width:6px;
+    min-width:6px;
 }
 .ss_tabs_td_right {
     background:url(<html:imagesPath/>skins/${ss_user_skin}/tabs/back3.jpg) no-repeat right;
-    width:12px;
-    min-width:12px;
+    width:4px;
+    min-width:4px;
 }
 .ss_tabs_corner_l {
-  min-width:15px;
-  width:15px;
+  min-width:6px;
+  width:6px;
 }
 .ss_tabs_corner_r {
-  width:12px;
-  min-width:12px;
+  width:4px;
+  min-width:4px;
 }
 
 .ss_tabs_td_active a:hover, .ss_tabs_td a:hover {
