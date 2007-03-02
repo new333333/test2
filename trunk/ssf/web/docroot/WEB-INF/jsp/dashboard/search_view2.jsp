@@ -21,6 +21,11 @@
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
+<c:set var="ss_pageSize" value="${ssDashboard.beans[componentId].ssSearchFormData.ss_pageSize}" />
+<c:set var="summaryWordCount" value="30"/>
+<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}">
+  <c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
+</c:if>
 
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}">
 <c:set var="hitCount" value="${hitCount + 1}"/>
@@ -105,9 +110,9 @@
 			<td class="ss_searchviewDashboardContainer">
 				<span class="ss_smallprint">
 					<ssf:markup type="view">
-						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="30" />
+						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
 						<c:if test="${fileEntry._entityType == 'user'}">
-							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="30" />
+							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
 						</c:if>
 					</ssf:markup>
 				</span>	
