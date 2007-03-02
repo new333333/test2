@@ -119,6 +119,7 @@
 
 		<war basedir="temp"
 			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"
 			update="true" />				
 
 		<java
@@ -148,8 +149,8 @@
 				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 				
-		<delete dir="temp" />
-		<delete dir="temp2" />
+		<!--<delete dir="temp" />
+		<delete dir="temp2" />-->
 
 		<antcall target="deploy-additional-components" />
 		
@@ -163,6 +164,7 @@
 	
 		<war basedir="temp"
 			destfile="temp2/ssf.war"
+			webxml="temp/WEB-INF/web.xml"
 			update="true" />				
 
 		<java
