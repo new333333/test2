@@ -15,7 +15,7 @@ public class IfSupportsEditInPlaceTag extends TagSupport {
 		if(relativeFilePath == null)
 			throw new JspException("File path must be specified");
 		
-		if(SsfsUtil.supportsEditInPlace(relativeFilePath, browserType))
+		if(SsfsUtil.supportAttachmentEdit() && SsfsUtil.supportsEditInPlace(relativeFilePath, browserType))
 			return EVAL_BODY_INCLUDE;
 		else
 			return SKIP_BODY;

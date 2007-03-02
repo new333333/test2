@@ -127,14 +127,6 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
-
-		boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
-		String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
-		String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
-
-		model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
-		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
-		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
 		
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
