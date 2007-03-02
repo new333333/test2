@@ -1,10 +1,13 @@
 <% // View entry attachments %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 String operatingSystem = BrowserSniffer.getOSInfo(request);
+boolean isAppletSupported = SsfsUtil.supportApplets();
 %>
 
 <script language="JavaScript">
@@ -199,11 +202,11 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 	</td>
 
 	<td valign="top">
-		<c:if test="${ssIsAppletSupported == 'true'}">
+		<% if (isAppletSupported) { %>
 			<a class="ss_linkButton" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 				<ssf:nlt tag="entry.AttachFilesByApplet"/>
 			</a>
-		</c:if>
+		<% } %>
 	</td>
 
 	<% if (isIE) { %>
@@ -248,7 +251,7 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 				<td width="60%">
 					<div id="ss_div_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" class="ss_border_light" style="visibility:hidden;display:none;">
 						<div align="right">
-						<a  onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;"><img 
+						<a onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;"><img 
 						  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
 						</div>	
 						<iframe frameborder="0" scrolling="no" id="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_dropbox${ssDefinitionEntry.id}<portlet:namespace/>" height="70%" width="100%" onClick="ss_hideAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace />(); return false;">xxx</iframe>

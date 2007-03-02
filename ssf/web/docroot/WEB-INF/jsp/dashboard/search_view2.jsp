@@ -44,7 +44,7 @@
 							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'user'}">
-				    	<img border="0" src="<html:imagesPath/>pics/sym_s_white_dude.gif" alt="<ssf:nlt tag="general.users" />" />
+				    	<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />" />
 					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
 								action="view_permalink"
 								binderId="${fileEntry._principal.workspaceId}">

@@ -262,7 +262,6 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 
-
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
@@ -274,24 +273,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	}
 %>
 
-
-
-
-
-
-
-
-
-
 <div class="ss_blog_summary_title">
 	<table class="ss_searchviewDashboardContainer" cellspacing="0" cellpadding="0" width="100%" border="0" align="center">
-	
-	
-
-	
-	
-	
-	
   	<tr>
 		<td valign="top" class="ss_searchviewDashboardContainer">
 			
@@ -308,7 +291,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		  </c:if>
 		  
 		  <c:if test="${entry1._entityType == 'user'}">
-		  	<img border="0" src="<html:imagesPath/>pics/sym_s_white_dude.gif" alt="<ssf:nlt tag="general.users" />" />
+		  	<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />" />
 		    <a href="<ssf:url     
 		      adapter="<%= useAdaptor2 %>" 
 		      portletName="ss_forum" 

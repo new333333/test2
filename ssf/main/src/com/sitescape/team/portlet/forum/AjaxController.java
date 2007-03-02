@@ -1401,14 +1401,6 @@ public class AjaxController  extends SAbstractController {
 		} else {
 			folder = getFolderModule().getFolder(folderId);
 		}
-
-		boolean blnEditAttachment = SsfsUtil.supportAttachmentEdit();
-		String strEditTypeForIE = SsfsUtil.attachmentEditTypeForIE();
-		String strEditTypeForNonIE = SsfsUtil.attachmentEditTypeForNonIE();
-
-		model.put(WebKeys.ENTRY_ATTACHMENT_ALLOW_EDIT, ""+blnEditAttachment);
-		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE, strEditTypeForIE);
-		model.put(WebKeys.ENTRY_ATTACHMENT_EDIT_TYPE_FOR_NON_IE, strEditTypeForNonIE);
 		
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.ENTRY, entry);
