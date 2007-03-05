@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<span class="ss_bold">The Aspen Administration Portlet</span>
+<span class="ss_bold">The ICEcorps Administration Portlet</span>
 <br/>
 Select the help you want to see...
 <br/>
