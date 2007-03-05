@@ -2091,10 +2091,9 @@ ul.ss_actions_bar2 {
 	border-right:  1px solid #666666;
 	margin-right: 3px;
 	background-color: inherit;
+	height: 100%;
 }
-.ss_actions_bar li * {
-	background:inherit;
-}
+
 .ss_actions_bar li.ss_actions_bar_last-child {
 	border-right:none;
 }
@@ -2102,7 +2101,6 @@ ul.ss_actions_bar2 {
 	color:#333333 !important;
 	display:block;
 	padding:0px 15px;
-	background:inherit;
 }
 
 .ss_actions_bar1 li a:hover {
@@ -2148,7 +2146,12 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 
 .ss_actions_bar_submenu {
 	position:absolute;
-	top:-10px;
+ <c:if test="<%= isIE %>">
+	top:-14px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+	top:-12px;
+ </c:if>
 	left:-20px;
 	border:1px solid #907FA3;
 	border-top:none;
