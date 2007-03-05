@@ -279,6 +279,7 @@ public class TreeTag extends TagSupport {
 	
 			//Text
 			String s_text = Html.formatTo(e.attributeValue("title"));
+			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
 			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
@@ -673,6 +674,7 @@ public class TreeTag extends TagSupport {
 	
 			//Text
 			String s_text = Html.formatTo(e.attributeValue("title"));
+			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
 			if (this.nowrap) s_text = "<nobr>" + s_text + "</nobr>";
 	
 			//id
