@@ -248,10 +248,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         }
     }
  
-	public TemplateBinder createDefaultTemplate(int type) {
-		return createDefaultTemplate(type, null);
+	public TemplateBinder addDefaultTemplate(int type) {
+		//noaccess check - should exist
+		return addDefaultTemplate(type, null);
 	}
-	public TemplateBinder createDefaultTemplate(int type, String viewType) {
+	private TemplateBinder addDefaultTemplate(int type, String viewType) {
        	//This is called as a side effect to bootstrap
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		List defs = new ArrayList();
@@ -269,6 +270,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
 					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_WIKI.equals(viewType)) {
@@ -293,6 +296,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
 					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
@@ -329,6 +334,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
+					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
 					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				}
@@ -372,7 +379,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (type == Definition.USER_WORKSPACE_VIEW) {
 			//get default folder definition
 			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
-			TemplateBinder def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
+			TemplateBinder def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
 			TemplateBinder newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -381,7 +388,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 			
-			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
+			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -390,7 +397,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 			
-			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);
+			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -399,7 +406,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 			
-			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
+			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -408,7 +415,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 
-			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
+			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -417,7 +424,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 			
-			def = createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);
+			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);
 			newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -1132,9 +1139,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			addAdminRole(top, top, user);
 			//all users are visitors
 			addVisitorsRole(top, top, group);
-			createDefaultTemplate(Definition.FOLDER_VIEW);
-			createDefaultTemplate(Definition.WORKSPACE_VIEW);
-			createDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
+			addDefaultTemplate(Definition.FOLDER_VIEW);
+			addDefaultTemplate(Definition.WORKSPACE_VIEW);
+			addDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
 			
 			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 			processor.indexBinder(top, true);
@@ -1287,14 +1294,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	public void setZone1(String zoneName) {		
 	}
 	public void setZone2(String zoneName) {
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);		
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
-		createDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);		
-		createDefaultTemplate(Definition.WORKSPACE_VIEW);
-		createDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);		
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
+		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);		
+		addDefaultTemplate(Definition.WORKSPACE_VIEW);
+		addDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
 		
 	}
    public List getChanges(Long binderId, String operation) {

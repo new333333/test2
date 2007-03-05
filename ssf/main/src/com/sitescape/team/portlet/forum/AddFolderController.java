@@ -56,19 +56,19 @@ public class AddFolderController extends SAbstractController {
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
 			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().createDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
 			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().createDefaultTemplate(Definition.WORKSPACE_VIEW));	
+				result.add(getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		}

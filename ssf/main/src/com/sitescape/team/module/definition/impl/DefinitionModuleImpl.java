@@ -83,53 +83,31 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 * Use method names as operation so we can keep the logic out of application
      * @see com.sitescape.team.module.definition.DefinitionModule#testAccess(java.lang.String)
      */
-   	public boolean testAccess(String operation) {
+   	public boolean testAccess(int type, String operation) {
    		try {
-   			checkAccess(operation);
+   			checkAccess(type, operation);
    			return true;
    		} catch (AccessControlException ac) {
    			return false;
    		}
    		
    	}
-   	protected void checkAccess(String operation) throws AccessControlException {
+   	protected void checkAccess(int type, String operation) throws AccessControlException {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
- 
-        if ("addDefinition".equals(operation)) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-        } else if ("addEntryDefinition".equals(operation)) {
-        	//special name to handle right on entry definitions
-			if (getAccessControlManager().testOperation(top, WorkAreaOperation.SITE_ADMINISTRATION)) return;
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS);			
-        } else if ("addWorkflowDefinition".equals(operation)) {
-        	//special name to handle right on workflow definitions
-			if (getAccessControlManager().testOperation(top, WorkAreaOperation.SITE_ADMINISTRATION)) return;
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS);			
-		} else if (operation.startsWith("modifyDefinitionName")) {
+   		if (type == Definition.FOLDER_ENTRY) {
+   			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
 	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("modifyDefinitionAttribute")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
- 		} else if (operation.startsWith("modifyDefinitionProperties")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("setDefinitionLayout")) {
-	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("deleteDefinition")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("addItem")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("modifyItem")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("deleteItem")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else if (operation.startsWith("modifyItemLocation")) {
-			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-		} else {
-	        //
+   		} else if (type == Definition.WORKFLOW) {
+   			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
+	    	getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);  			
+   		} else {
 			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		}
    	}
     public String addDefinition(Document doc) {
-    	checkAccess("addDefinition");
+    	Element root = doc.getRootElement();
+		String type = root.attributeValue("type");
+    	checkAccess(Integer.valueOf(type), "addDefinition");
     	return doAddDefinition(doc, null).getId();
     }
     protected Definition doAddDefinition(Document doc, String internalId) {
@@ -214,7 +192,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) {
-    	checkAccess("addDefinition");
+    	checkAccess(type, "addDefinition");
 
 		Definition newDefinition = new Definition();
 		newDefinition.setName(name);
@@ -230,8 +208,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyDefinitionName(String id, String name, String title) {
-    	checkAccess("modifyDefinitionName");
 		Definition def = getDefinition(id);
+    	checkAccess(def.getType(), "modifyDefinitionName");
 		if (def != null) {
 			
 			//Store the name and title (If they are not blank) in the definition object and in the definition document
@@ -265,8 +243,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyDefinitionAttribute(String id, String key, String value) {
-	   	checkAccess("modifyDefinitionAttribute");
 		Definition def = getDefinition(id);
+	   	checkAccess(def.getType(), "modifyDefinitionAttribute");
 		//Store this attribute in the definition document (but only if it is different)
 		Document defDoc = def.getDefinition();
 		Element docRoot = defDoc.getRootElement();
@@ -292,8 +270,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 	
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {
-	   	checkAccess("modifyDefinitionProperties");
 		Definition def = getDefinition(id);
+	   	checkAccess(def.getType(), "modifyDefinitionProperties");
 		if (def != null) {			
 			String definitionName = "";
 			if (inputData.exists("propertyId_name")) {
@@ -370,8 +348,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) {
-		checkAccess("setDefinitionLayout");
 		Definition def = getDefinition(id);
+		checkAccess(def.getType(), "setDefinitionLayout");
 		Document defDoc = def.getDefinition();
 		
 		if (inputData.exists("xmlData") && def != null) {
@@ -411,8 +389,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void deleteDefinition(String id) {
-		checkAccess("deleteDefinition");
 		Definition def = getDefinition(id);
+		checkAccess(def.getType(), "deleteDefinition");
 		getCoreDao().delete(def);
 		if (def.getType() == Definition.WORKFLOW) {
 			//jbpm defs are named with the string id of the ss definitions
@@ -646,8 +624,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemNameToAdd, InputDataAccessor inputData) throws DefinitionInvalidException {
-		checkAccess("addItem");
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
+		Definition def = getDefinition(defId);
+		checkAccess(def.getType(), "addItem");
 		
 		Document definitionTree = def.getDefinition();
 		/**
@@ -900,8 +878,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
-		checkAccess("modifyItem");
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
+		Definition def = getDefinition(defId);
+		checkAccess(def.getType(), "modifyItem");
 		Document definitionTree = def.getDefinition();
 		
 		if (definitionTree != null) {
@@ -984,8 +962,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 	}
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException {
-		checkAccess("deleteItem");
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
+		Definition def = getDefinition(defId);
+		checkAccess(def.getType(), "deleteItem");
 
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {
@@ -1033,8 +1011,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
 	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
-		checkAccess("modifyItemLocation");
-		Definition def = getCoreDao().loadDefinition(defId, RequestContextHolder.getRequestContext().getZoneId());
+		Definition def = getDefinition(defId);
+		checkAccess(def.getType(), "modifyItemLocation");
 		if (!sourceItemId.equals(targetItemId.toString())) {
 			Document definitionTree = def.getDefinition();
 			if (definitionTree != null) {

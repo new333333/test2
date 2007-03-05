@@ -22,6 +22,9 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 public interface DefinitionModule {
 	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
 	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
+
+	public String addDefinition(Document doc);
+	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -37,8 +40,6 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
-	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
-	public String addDefinition(Document doc);
 	public Definition createDefaultDefinition(int type);
 	public Definition createDefaultDefinition(int type, String viewType);
 	public void deleteDefinition(String id);
@@ -68,7 +69,7 @@ public interface DefinitionModule {
 	public Definition setDefaultEntryDefinition(Entry entry);
 	public void setDefinitionLayout(String id, InputDataAccessor inputData);
 
-  	public boolean testAccess(String operation);
+  	public boolean testAccess(int type, String operation);
 	
 	
 
