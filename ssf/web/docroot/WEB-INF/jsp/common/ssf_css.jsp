@@ -1785,25 +1785,27 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 .ss_global_toolbar_links li {
 	float:left;
-	margin-left:5px;
-	background:inherit !important;
+	padding-left:5px;
 }
 .ss_global_toolbar_links li:hover div:hover {
 	cursor:pointer !important;
 }
 .ss_global_toolbar_links li div {
 	display:block;
-	padding-top:25px;
 	color:#666666;
 	text-align:center;
 }
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.png) no-repeat top;
+	padding-top: 25px;
 	margin-left: 10px;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
+	padding-top: 25px;
 }
+
+
 .ss_global_toolbar_clipboard div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
 }
@@ -1832,7 +1834,6 @@ div.ss_global_toolbar_help {
     width: 16px;
 }
 .ss_global_toolbar_findUser {
-	background:inherit !important;
 	margin-top: 3px;
 }
 .ss_global_toolbar_findUser form {
@@ -1842,21 +1843,15 @@ div.ss_global_toolbar_help {
 	width:40px;
 }
 div.ss_global_toolbar_findUser_text {
-    width:70px;
 	color:#484848;
+    width:70px;
 	text-align:center;
-	padding:0px !important;
-	margin:0px !important;
-	background:inherit !important;
 }
 div.ss_global_toolbar_findUser_text span {
-	background:inherit !important;
 }
 .ss_global_toolbar_findUser a {
-	background:inherit !important;
 }
 .ss_global_toolbar_search {
-	background:inherit !important;
 	margin-top: 3px;
 }
 .ss_global_toolbar_search form {
@@ -1871,13 +1866,6 @@ div.ss_global_toolbar_search_text {
 	color:#484848;
 	text-align:center;
 	padding:0px !important;
-<c:if test="<%= isIE %>">
-	margin:0px 0px 0px 0px !important;
-</c:if>
-<c:if test="<%= !isIE %>">
-	margin:-2px 0px 0px 0px !important;
-</c:if>
-	background:inherit !important;
 }
 div.ss_global_toolbar_search_text span {
 	background:inherit !important;
