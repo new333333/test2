@@ -26,6 +26,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/tree/tree_widget.js"></script>
 
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_tag.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
 
 
 <script type="text/javascript">
@@ -59,6 +60,10 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
 		ss_fetch_url(url, showTagComponents, termNumber);
 //		alert("after fetch_url");
+	} else if (op2 == 'entry') {
+//		alert(obj.id + ' entry'); 
+		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
+		ss_fetch_url(url, showEntryComponents, [termNumber, nameRoot]);
 	} else {
 //		ajaxRequest.setEchoDebugInfo();
 		ajaxRequest.setUsePOST();
@@ -66,8 +71,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 	}
 }
 function showTagComponents(response, ind) {
-//	alert("obj:"+document.getElementById(id));
-//	alert("response: "+response);
+// 	alert("response: "+response);
 	
 	document.getElementById("entryList"+ind).innerHTML = response;
 	document.getElementById("entryList"+ind).style.disply="block";
@@ -76,6 +80,36 @@ function showTagComponents(response, ind) {
 	document.getElementById("elementList"+ind).style.visibility="hidden";
 	document.getElementById("valueList"+ind).innerHTML="";
 	document.getElementById("valueList"+ind).style.visibility="hidden";
+}
+function showEntryComponents (response, params) {
+//	alert("response: "+response);
+	var ind = params[0];
+	var objId = params[1];
+// 	alert("Ind: "+ind+" objId: "+objId);
+	if (objId == "typeList") {
+		// alert("level1");
+		document.getElementById("entryList"+ind).innerHTML = response;
+		document.getElementById("entryList"+ind).style.disply="block";
+		document.getElementById("entryList"+ind).style.visibility="visible";
+		document.getElementById("elementList"+ind).innerHTML="";
+		document.getElementById("elementList"+ind).style.visibility="hidden";
+		document.getElementById("valueList"+ind).innerHTML="";
+		document.getElementById("valueList"+ind).style.visibility="hidden";
+		
+	} else if (objId == "ss_entry_def_id") {
+		// alert("level2");
+		document.getElementById("elementList"+ind).innerHTML=response;
+		document.getElementById("elementList"+ind).style.disply="block";
+		document.getElementById("elementList"+ind).style.visibility="visible";
+		document.getElementById("valueList"+ind).innerHTML="";
+		document.getElementById("valueList"+ind).style.visibility="hidden";		
+	} else {
+		// alert("level3");
+		document.getElementById("valueList"+ind).innerHTML=response;
+		document.getElementById("valueList"+ind).style.disply="block";
+		document.getElementById("valueList"+ind).style.visibility="visible";	
+	}
+	
 }
 
 var ss_filterTermNumber = 0;
@@ -169,6 +203,25 @@ function t_searchForm_wsTree_showId(forum, obj) {
 
 function putValueInto(inputId, value) {
 	document.getElementById(inputId).value = value;
+}
+var currentEntryCreatorIndex = 1;
+
+function saveCurrentEntryClick(ind) {
+	currentEntryCreatorIndex = ind;
+}
+
+function rewriteValueIntoFormElement(id, obj) {
+//	alert("ID: "+id);
+//	alert("Obj: "+obj+" \n"+obj.innerHTML);
+	var spanObj = obj.getElementsByTagName("span").item(0);
+//	alert("User: "+spanObj.innerHTML);
+//	alert(document.getElementById("elementValue"+currentEntryCreatorIndex));
+//	alert("currentEntryCreatorIndex: "+currentEntryCreatorIndex);
+//	alert(document.getElementsByName("elementValue"+currentEntryCreatorIndex).length);
+	document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value = spanObj.innerHTML;
+	document.getElementById("elementValue"+currentEntryCreatorIndex).value=id;
+//	alert(document.getElementById("elementValue"+currentEntryCreatorIndex).value);
+//	alert(document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value);
 }
 
 tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">

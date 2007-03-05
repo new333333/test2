@@ -52,9 +52,46 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+
+	if (op2 == 'entry') {
+//		alert(obj.id + ' entry'); 
+		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
+		ss_fetch_url(url, showEntryComponents, [termNumber, nameRoot]);
+	} else {
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+	}
+}
+
+function showEntryComponents (response, params) {
+//	alert("response: "+response);
+	var ind = params[0];
+	var objId = params[1];
+// 	alert("Ind: "+ind+" objId: "+objId);
+	if (objId == "typeList") {
+		// alert("level1");
+		document.getElementById("entryList"+ind).innerHTML = response;
+		document.getElementById("entryList"+ind).style.disply="block";
+		document.getElementById("entryList"+ind).style.visibility="visible";
+		document.getElementById("elementList"+ind).innerHTML="";
+		document.getElementById("elementList"+ind).style.visibility="hidden";
+		document.getElementById("valueList"+ind).innerHTML="";
+		document.getElementById("valueList"+ind).style.visibility="hidden";
+		
+	} else if (objId == "ss_entry_def_id") {
+		// alert("level2");
+		document.getElementById("elementList"+ind).innerHTML=response;
+		document.getElementById("elementList"+ind).style.disply="block";
+		document.getElementById("elementList"+ind).style.visibility="visible";
+		document.getElementById("valueList"+ind).innerHTML="";
+		document.getElementById("valueList"+ind).style.visibility="hidden";		
+	} else {
+		// alert("level3");
+		document.getElementById("valueList"+ind).innerHTML=response;
+		document.getElementById("valueList"+ind).style.disply="block";
+		document.getElementById("valueList"+ind).style.visibility="visible";	
+	}	
 }
 
 var ss_filterTermNumber = 0;

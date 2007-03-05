@@ -1,14 +1,6 @@
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
-<%@ page contentType="text/xml; charset=UTF-8" %>
-<taconite-root xml:space="preserve">
-<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-	<taconite-replace contextNodeID="valueList<c:out value="${ss_filterTermNumber}"/>" 
-	parseInBrowser="true"><div 
-	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
-	style="visibility:visible; display:inline;">
 	  <c:forEach var="element" items="${ssEntryDefinitionElementData}">
 		<c:if test="${element.key == ss_filter_entry_element_name}">
 	       
@@ -67,17 +59,21 @@
 	       </c:if>
 	       
 	       <c:if test="${element.value.type == 'user_list'}">
-	         <ssf:nlt tag="searchForm.users" text="Users"/>: ...
+	         <ssf:nlt tag="searchForm.users" text="Users"/>: 
+	         
+	          <ssf:find formName="" 
+    formElement="elementValue${ss_filterTermNumber}" 
+    type="user"
+    width="170px" 
+    clickRoutine="saveCurrentEntryClick(${ss_filterTermNumber});rewriteValueIntoFormElement"
+    leaveResultsVisible="false"
+    singleItem="true"/> 
+	         
+	         <input type="hidden" name="_elementValue<c:out value="${ss_filterTermNumber}"/>" id="elementValue<c:out value="${ss_filterTermNumber}"/>" />
+	         <input type="hidden" name="elementValueType<c:out value="${ss_filterTermNumber}"/>" 
+	         value="${element.value.type}"/>
 	       </c:if>
 		</c:if>
 	  </c:forEach>
-	 </div></taconite-replace>
-       
-	<taconite-replace contextNodeID="valueData<c:out value="${ss_filterTermNumber}"/>" 
-	parseInBrowser="true"><div 
-	  id="valueData<c:out value="${ss_filterTermNumber}"/>" 
-	  style="visibility:visible; display:inline;">
-	</div></taconite-replace>
-
 </c:if>
-</taconite-root>
+
