@@ -72,16 +72,17 @@ try {
 
 			if (members[(j * rows) + i]) {
 				var checkbox = document.createElement("input");
+				var checkboxId = "teamMemberEl_" + window.ss_teamMembersFormElement[prefix] + "_" + prefix + "_" + (i * rows) + j;
 				checkbox.setAttribute("type", "checkbox");
 				checkbox.setAttribute("name", window.ss_teamMembersFormElement[prefix]);
-				checkbox.setAttribute("id", window.ss_teamMembersFormElement[prefix] + "_" + prefix + "_" + (i * rows) + j);
+				checkbox.setAttribute("id", checkboxId);
 				checkbox.setAttribute("value", members[(j * rows) + i][0]);
 				if (checkAll) checkbox.setAttribute("checked", "checked");
 				
 				cell.appendChild(checkbox);
 				
 				var label = document.createElement("label");
-				label.setAttribute("for", window.ss_teamMembersFormElement[prefix] + "_" + prefix + "_" + (i * rows) + j);
+				label.setAttribute("for", checkboxId);
 	
 				var txtNode = document.createTextNode(members[(j * rows) + i][1]);
 				label.appendChild(txtNode);
