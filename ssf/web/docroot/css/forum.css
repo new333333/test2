@@ -42,6 +42,11 @@
   margin:0px;
   padding:0px;
   }
+  
+.ss_nowrap {
+  white-space: nowrap;
+  }
+  
 table.ss_compact20 {
   margin:0px;
   padding:0px;

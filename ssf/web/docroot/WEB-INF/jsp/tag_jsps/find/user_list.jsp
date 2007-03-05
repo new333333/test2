@@ -30,6 +30,7 @@ function ss_userListSelectItem${prefix}(id, obj) {
 	var ulObj = document.getElementById('added_${prefix}');
 	var newLiObj = document.createElement("li");
 	newLiObj.setAttribute("id", id);
+	newLiObj.className = "ss_nowrap";
 	newLiObj.innerHTML = spanObj.innerHTML;
 	var newAnchorObj = document.createElement("a");
 	newAnchorObj.setAttribute("href", "javascript: ;");
@@ -52,7 +53,7 @@ function ${addUserToListRoutine}(userId, userName) {
 	var newLiObj = document.createElement("li");
 	newLiObj.setAttribute("id", userId);
 	var newSpanObj = document.createElement("span");
-	newSpanObj.setAttribute("style", "white-space:nowrap;");
+	newSpanObj.className = "ss_nowrap";
 	newSpanObj.appendChild(document.createTextNode(userName));
 	newLiObj.appendChild(newSpanObj);
 	var newAnchorObj = document.createElement("a");
@@ -61,7 +62,7 @@ function ${addUserToListRoutine}(userId, userName) {
 	var newImgObj = document.createElement("img");
 	newImgObj.setAttribute("src", "<html:imagesPath/>pics/sym_s_delete.gif");
 	newImgObj.setAttribute("border", "0");
-	newImgObj.style.paddingLeft = "10px";
+	newImgObj.style.paddingLeft = "5px";
 	newAnchorObj.appendChild(newImgObj);
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
@@ -112,7 +113,7 @@ function ss_userListRemove${prefix}(obj) {
   <div style="border:solid black 1px;">
     <ul id="added_${prefix}" class="ss_userlist">
       <c:forEach var="item" items="${userList}">
-        <li id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
+        <li class="ss_nowrap" id="<c:out value="${item.id}"/>" ><c:out value="${item.title}"/>
           <a href="javascript: ;" 
             onClick="ss_userListRemove${prefix}(this);return false;"><img border="0" style="padding-left: 10px;" 
             src="<html:imagesPath/>pics/sym_s_delete.gif"/></a>
