@@ -207,7 +207,7 @@
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="entryIcon" />
-			<option name="attachFiles" default="true" />
+			<option name="attachFiles" default="true" initial="true"/>
 			<option name="entryFormButtons" initial="true" />
 			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
 			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
@@ -681,6 +681,7 @@
 				-->   
 				<help>__help_storage_media</help>
 			</property>
+			<property name="hide" caption="__hideFormElement" type="boolean" default="false"/>
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />

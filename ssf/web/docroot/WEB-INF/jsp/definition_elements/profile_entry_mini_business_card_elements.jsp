@@ -6,7 +6,7 @@
 
 <table>
 	<tr>
-		<td style="padding: 10px 0 10px 0;"> 
+		<td style="padding: 10px 0 10px 0;" valign="top"> 
 			<ssf:buddyPhoto style="ss_thumbnail_gallery ss_thumbnail_small_no_text" 
 				photos="${ssDefinitionEntry.customAttributes['picture'].value}" 
 				folderId="${ssDefinitionEntry.parentBinder.id}" entryId="${ssDefinitionEntry.id}" />
@@ -22,7 +22,7 @@
 				
 					<c:if test="${!empty ssDefinitionEntry[element]}">
 						<tr>
-							<td nowrap="nowrap">
+							<td nowrap="nowrap" valign="top">
 								<c:if test="${element == 'name'}">
 									  <div id="ss_presenceOptions_${renderResponse.namespace}"></div>
 										  <ssf:presenceInfo user="${ssDefinitionEntry}" 
@@ -37,7 +37,7 @@
 					
 					<c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
 						<tr>
-							<td>
+							<td valign="top">
 							    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
 							</td>
 						</tr>

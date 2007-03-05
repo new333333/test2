@@ -716,18 +716,35 @@ public class ListFolderController extends  SAbstractController {
 		}
 		//	The "Display styles" menu
 		Toolbar entryToolbar = new Toolbar();
-		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
+		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
 		List folderViewDefs = folder.getViewDefinitions();
 		for (int i = 0; i < folderViewDefs.size(); i++) {
+			String defViewType = "";
 			Definition def = (Definition)folderViewDefs.get(i);
+			Document defDoc = null;
+			if (def != null) defDoc = def.getDefinition();
+			if (defDoc != null) {
+				Element rootElement = defDoc.getRootElement();
+				Element elementView = (Element) rootElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
+				if (elementView != null) {
+					Element viewElement = (Element)elementView.selectSingleNode("./properties/property[@name='type']");
+					if (viewElement != null) {
+						defViewType = viewElement.attributeValue("value", "");
+						if (defViewType.equals("")) defViewType = viewElement.attributeValue("default", "");
+					}
+				}
+			}
+			//Build a url to switch to this view
+			Map qualifiers = new HashMap();
+			if (viewType.equals(defViewType)) qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			//Build a url to switch to this view
 			PortletURL url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url);
+			entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
 		List entries = new ArrayList();
@@ -956,7 +973,7 @@ public class ListFolderController extends  SAbstractController {
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
-		//	The "Add" menu
+		//	The "Add entry" menu
 		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
 		if (!defaultEntryDefinitions.isEmpty()) {
@@ -989,9 +1006,11 @@ public class ListFolderController extends  SAbstractController {
 		//The "Administration" menu
 		qualifiers = new HashMap();
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageFolderMenu");
+		boolean adminMenuCreated=false;
 		folderToolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
 		if (getFolderModule().testAccess(folder, "addFolder")) {
+			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1001,6 +1020,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		//Move binder
 		if (getBinderModule().testAccess(folder, "moveBinder")) {
+			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1010,31 +1030,37 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		//Configuration
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		if (getBinderModule().testAccess(folder, "modifyBinder")) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		}
 		
 		//Definition builder - forms (turned off until local definitions supported)
 		/*
+		adminMenuCreated=true;
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.folderEntry"), url);
+		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.folderEntry"), url);
 		//Definition builder - workflows
+		adminMenuCreated=true;
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
 		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
 		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
+		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
 		*/
 		
 		//Delete binder
 		if (getBinderModule().testAccess(folder, "deleteBinder")) {
+			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "return ss_confirmDeleteFolder();");
 			url = response.createActionURL();
@@ -1047,6 +1073,7 @@ public class ListFolderController extends  SAbstractController {
 
 		//Modify binder
 		if (getBinderModule().testAccess(folder, "modifyBinder")) {
+			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
@@ -1056,13 +1083,30 @@ public class ListFolderController extends  SAbstractController {
 		}
 		
 		//set email
-		try {
+		if (getBinderModule().testAccess(folder, "setNotificationConfig")) {
+			try {
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
+				adminMenuCreated=true;
+			} catch (AccessControlException ac) {};
+		}
+
+		//if no menu items were added, remove the empty menu
+		if (!adminMenuCreated) folderToolbar.deleteToolbarMenu("1_administration");
+
+		//Access control
+		if (getBinderModule().testAccess(folder, "accessControl")) {
+			qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
-		} catch (AccessControlException ac) {};
-		
+			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
+			folderToolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+		}
+
 		//The "Subsrciptions" menu
 		qualifiers = new HashMap();
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
@@ -1091,15 +1135,6 @@ public class ListFolderController extends  SAbstractController {
 					UrlUtil.getFeedURL(request, forumId), qualifiers);
 		}
 		
-		//Access control
-		qualifiers = new HashMap();
-		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenu("4_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
-
 		// list team members
 		if (getBinderModule().testAccess(folder.getId(), "getTeamMembers")) {
 			qualifiers = new HashMap();			
@@ -1143,7 +1178,7 @@ public class ListFolderController extends  SAbstractController {
 		}
 		
 		//	The "Display styles" menu
-		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.display_styles"));
+		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
 		List folderViewDefs = folder.getViewDefinitions();
 		for (int i = 0; i < folderViewDefs.size(); i++) {
@@ -1178,50 +1213,56 @@ public class ListFolderController extends  SAbstractController {
 		qualifiers.put("folder", webdavUrl);
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
-		//vertical
-		qualifiers = new HashMap();
-		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
-				NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
-		//accessible
-		qualifiers = new HashMap();
-		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
-			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
-				NLT.get("toolbar.menu.display_style_accessible"), url, qualifiers);
-		//iframe
-		qualifiers = new HashMap();
-		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
-			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
-				NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
-		//popup
-		qualifiers = new HashMap();
-		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
-			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-		entryToolbar.addToolbarMenuItem("2_display_styles", "styles", 
-				NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
+		//Folder action menu
+		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals("")) {
+			//Only show these options if in the folder table style
+			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
+
+			//vertical
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			//accessible
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_accessible"), url, qualifiers);
+			//iframe
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
+			//popup
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
+		}
 
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition

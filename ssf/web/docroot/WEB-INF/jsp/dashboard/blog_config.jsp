@@ -41,6 +41,21 @@ function ${treeName}_showId(forum, obj) {
 </table>
 </c:if>
 <br/>
+<br/>
+<table>
+<tr>
+<td><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></td>
+<td style="padding-left:10px;"><input type="text" name="data_resultsCount" size="5"
+  value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/></td>
+</tr>
+<tr>
+<td><span><ssf:nlt tag="dashboard.search.summardWordCount"/></span></td>
+<td style="padding-left:10px;"><input type="text" name="data_summaryWordCount" size="5" 
+  value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/></td>
+</tr>
+</table>
+<br/>
+<br/>
 
 <span class="ss_bold">
   <ssf:nlt tag="dashboard.blog.selectBlogFolder"/>

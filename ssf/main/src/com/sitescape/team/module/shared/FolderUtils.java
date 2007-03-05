@@ -1,8 +1,10 @@
 package com.sitescape.team.module.shared;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ import com.sitescape.team.util.DatedMultipartFile;
 
 public class FolderUtils {
 
-	private static final String ITEM_NAME = "attachFiles";
+	private static final String[] ITEM_NAMES = {"attachFiles", "graphic", "file", "profileEntryPicture"};
 	
 	/**
 	 * Creates a new folder entry with an attachment file.
@@ -152,23 +154,35 @@ public class FolderUtils {
 					new MapInputData(data), new HashMap());
 	}
 
+	//Routine to get the name of the element that will store the uploaded file
+	//  This routine searches the definition looking for the first file element
 	private static String getDefaultElementName(Definition definition) {
 		Document defDoc = definition.getDefinition();
 		Element root = defDoc.getRootElement();
-		Element item = (Element) root.selectSingleNode("//item[@name='" + ITEM_NAME
-				+ "' and @type='data']");
+		Element formItem = (Element) root.selectSingleNode("//item[@type='form']");
+		Element item = null;
+		List fileItems = new ArrayList();
+		for (int i = 0; i < ITEM_NAMES.length; i++) fileItems.add(ITEM_NAMES[i]);
+		Iterator itItems = formItem.selectNodes("//item").iterator();
+		while (itItems.hasNext()) {
+			//Look for the first file element
+			Element itemEle = (Element) itItems.next();
+			if (fileItems.contains(itemEle.attributeValue("name"))) {
+				item = itemEle;
+				break;
+			}
+		}
 		Element nameProperty = (Element) item.selectSingleNode("./properties/property[@name='name']");
 		String elementName = nameProperty.attributeValue("value");
 		
-		if(ITEM_NAME.equals("attachFiles")) {
+		if (item.attributeValue("name").equals("attachFiles")) {
 			// Since attachment element allows uploading multiple files at the
 			// same (when done through Aspen UI), each file is identified 
 			// uniquely by appending numeric number (1-based) to the element
 			// name. When uploaded through WebDAV, there is always exactly one
 			// file involed. So we use "1".
 			return elementName + "1";
-		}
-		else {		
+		} else {		
 			return elementName;
 		}
 	}

@@ -84,6 +84,8 @@ public class TreeTag extends TagSupport {
 
 			User user = RequestContextHolder.getRequestContext().getUser();
 			this.userDisplayStyle = user.getDisplayStyle();
+	        if (this.userDisplayStyle == null) this.userDisplayStyle = "";
+
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/images");

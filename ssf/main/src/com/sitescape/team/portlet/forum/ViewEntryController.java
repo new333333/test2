@@ -128,20 +128,34 @@ public class ViewEntryController extends  SAbstractController {
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		
-		//Build a reload url
-		PortletURL reloadUrl = response.createRenderURL();
-		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
-		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+		//Build the reload url
+		if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			adapterUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+			model.put(WebKeys.RELOAD_URL, adapterUrl.toString());
+			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
+				model.clear();
+				model.put(WebKeys.RELOAD_URL_FORCED, adapterUrl.toString());			
+				return new ModelAndView(viewPath, model);
+			} 
+		} else {
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
+			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+			model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+			if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
+				model.clear();
+				model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
+				return new ModelAndView(viewPath, model);
+			} 
+		}
 	
-		if (formData.containsKey(WebKeys.RELOAD_URL_FORCED)) {
-			model.clear();
-			model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-			return new ModelAndView(viewPath, model);
-		} 
 		FolderEntry fe;
 		if (Validator.isNull(entryId)) {
 			entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");

@@ -109,7 +109,25 @@
 		<tr>
 			<td class="ss_searchviewDashboardContainer">
 				<span class="ss_smallprint">
-					<ssf:markup type="view">
+				  	<c:set var="binderId" value=""/>
+				  	<c:set var="entryId" value=""/>
+				  	<c:choose>
+					  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
+				  			<c:set var="binderId" value="${fileEntry._binderId}"/>
+				  			<c:set var="entryId" value="${fileEntry._docId}"/>
+					    </c:when>
+					    <c:when test="${fileEntry._entityType == 'user'}">
+				  			<c:set var="binderId" value="${fileEntry._principal.workspaceId}"/>
+					    </c:when>
+					    <c:when test="${fileEntry._entityType == 'group'}">
+				  			<c:set var="binderId" value="${fileEntry._binderId}"/>
+				  			<c:set var="entryId" value="${fileEntry._docId}"/>
+					    </c:when>
+					    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+				  			<c:set var="binderId" value="${fileEntry._docId}"/>
+					    </c:when>
+				 	</c:choose>
+					<ssf:markup type="view" binderId="${binderId}" entryId="${entryId}">
 						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
 						<c:if test="${fileEntry._entityType == 'user'}">
 							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />

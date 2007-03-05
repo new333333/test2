@@ -196,7 +196,11 @@ public class SearchFilter {
 		searchTerms.add(EntityIdentifier.EntityType.folder.name());
 		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
 		addAndFilter(FilterHelper.FilterTypeEntityTypes,FilterHelper.FilterEntityType, searchTerms);		
-	}
+
+		searchTerms = new ArrayList(1);
+		searchTerms.add(BasicIndexUtils.DOC_TYPE_BINDER);
+		addAndFilter(FilterHelper.FilterTypeDocTypes,FilterHelper.FilterDocType, searchTerms);		
+}
 	
 	
 	private void newCurrent() {

@@ -34,10 +34,10 @@
 
   <table cellspacing="0" cellpadding="0" width="100%">
 	  <tr> 	
-			<td class="ss_miniBusinessCard">
+			<td class="ss_miniBusinessCard" valign="top">
 				<ssf:miniBusinessCard user="${fileEntry._principal}"/> 
 			</td>		 	
-			<td class="ss_guestbookContainer">
+			<td class="ss_guestbookContainer" valign="top">
 			
     <a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="view_permalink"
@@ -60,7 +60,8 @@
 				
 				<c:if test="${!empty fileEntry._desc}">
 				<div class="ss_entryContent ss_entryDescription">
-					<span><ssf:markup type="view"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
+					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" 
+					  entryId="${fileEntry._docId}"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
 				</div>
 				</c:if>
 			</td>					 	
@@ -73,7 +74,7 @@
 <div>
   <table width="100%">
    <tr>
-    <td>
+    <td valign="top">
 <c:if test="${hitCount > 0}">
       <span class="ss_light ss_fineprint">
 	    [<ssf:nlt tag="search.results">

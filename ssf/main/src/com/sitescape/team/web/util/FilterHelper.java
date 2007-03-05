@@ -48,6 +48,7 @@ public class FilterHelper {
    	public final static String FilterElementName = "filterElementName";
    	public final static String FilterElementValue = "filterElementValue";
    	public final static String FilterEntityType = "filterEntityType";
+   	public final static String FilterDocType = "filterDocType";
    	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
@@ -57,6 +58,7 @@ public class FilterHelper {
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
    	public final static String FilterTypeTags = "tags";
+   	public final static String FilterTypeDocTypes = "docTypes";
    	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterTypeElement = "element";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
@@ -477,6 +479,21 @@ public class FilterHelper {
 	    				if (!entityTypeName.equals("")) {
 	    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
 	    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTITY_FIELD);
+	    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+	    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    					child2.setText(entityTypeName);
+	    				}
+	    			}
+	    		} else if (filterType.equals(FilterTypeDocTypes)) {
+	    	    	//Add an OR field with all of the desired docId types
+	    			Element andField = orField;
+	    			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+	    			Iterator itTermTypes = filterTerm.selectNodes(FilterDocType).iterator();
+	    			while (itTermTypes.hasNext()) {
+	    				String entityTypeName = ((Element) itTermTypes.next()).getText();
+	    				if (!entityTypeName.equals("")) {
+	    					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+	    					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.DOC_TYPE_FIELD);
 	    					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
 	    					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 	    					child2.setText(entityTypeName);

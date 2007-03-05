@@ -70,6 +70,9 @@ public class Toolbar {
 		toolbarData.put("url", url);
 		toolbarData.put("qualifiers", qualifiers);
 	}
+	public void deleteToolbarMenu(String name) {
+		toolbar.remove(name);
+	}
 	private Map getCategory(String name, String category) {
 		if (this.toolbar.containsKey(name)) {
 			Map toolbarData = (Map) this.toolbar.get(name);

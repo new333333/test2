@@ -48,10 +48,14 @@ public class MarkupTag extends BodyTagSupport {
 			if (binderId.equals("")) {
 				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
 						httpReq, httpRes, entity, _bodyContent, type);
-			} else {
+			} else if (!binderId.equals("") && !entryId.equals("")) {
 				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
 						httpReq, httpRes, entity, _bodyContent, type, 
 						Long.valueOf(binderId), Long.valueOf(entryId));
+			} else {
+				translatedString = WebHelper.markupStringReplacement(renderRequest, renderResponse, 
+						httpReq, httpRes, entity, _bodyContent, type, 
+						Long.valueOf(binderId), null);
 			}
 			pageContext.getOut().print(translatedString);
 
