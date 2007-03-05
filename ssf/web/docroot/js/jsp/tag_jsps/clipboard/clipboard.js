@@ -71,7 +71,7 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 
 			if (members[(j * rows) + i]) {
 				var checkbox = document.createElement("input");
-				var checkboxId = "clipbardEl_" + window.ss_clipboardUsersFormElement[prefix] + "_" + prefix + "_" + (i * rows) + j;
+				var checkboxId = "clipboardEl_" + window.ss_clipboardUsersFormElement[prefix] + "_" + prefix + "_" + (i * rows) + j;
 				
 				
 				checkbox.setAttribute("type", "checkbox");
