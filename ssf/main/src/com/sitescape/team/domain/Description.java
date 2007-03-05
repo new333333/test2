@@ -17,12 +17,11 @@ public class Description {
     public static final int FORMAT_AUTOMATIC = 3;
 
     private SSClobString description;
-    private Integer format;
+    private Integer format=FORMAT_HTML;
     public Description() {
     }
     public Description(String text) {
         setText(text);
-        setFormat(FORMAT_HTML);
     }
     public Description(String text, int format) {
         setText(text);
