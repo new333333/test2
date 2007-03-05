@@ -23,13 +23,4 @@
 <br/>
 <br/>
 
-<div>
-<a class="ss_linkButton ss_smallprint" 
-  href="javascript: ;" 
-  onClick="ss_muster.showForm('ss_muster_users'); return false;"><ssf:nlt tag="button.muster"/></a>
-</div>
-
-<div id="ss_musterUsersDiv" style="position:absolute;">
-</div>
-
 </div>

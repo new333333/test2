@@ -304,7 +304,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 </c:if>
 
 body.ss_style_body {
-	margin: 0px 1px;
+	margin: 0px 3px 0px 1px;
 }
 
 .ss_style, .ss_style table {

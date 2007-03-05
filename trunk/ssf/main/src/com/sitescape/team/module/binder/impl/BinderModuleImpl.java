@@ -91,7 +91,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		operations.put("modifyNotification", new WorkAreaOperation[]{WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("getTeamMembers", new WorkAreaOperation[] {WorkAreaOperation.TEAM_MEMBER,WorkAreaOperation.BINDER_ADMINISTRATION});
 		operations.put("setPosting", new WorkAreaOperation[] {WorkAreaOperation.MANAGE_BINDER_INCOMING, WorkAreaOperation.SITE_ADMINISTRATION});
-		
+		operations.put("accessControl", new WorkAreaOperation[]{WorkAreaOperation.CHANGE_ACCESS_CONTROL});
 	}
  
 	private TransactionTemplate transactionTemplate;

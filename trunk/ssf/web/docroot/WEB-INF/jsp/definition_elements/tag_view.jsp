@@ -19,6 +19,9 @@ function ss_showTags<portlet:namespace/>(divNumber, entryId) {
 	self.parent.ss_debug("top = "+ss_getDivTop('ss_tags_anchor<portlet:namespace/>_'+parseInt(divNumber)) + ", left = " +leftEdge)
 	ss_setObjectLeft(divObj, leftEdge + "px")
 	ss_showDiv(divId);
+	
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 function ss_hideTags<portlet:namespace/>(divNumber, entryId) {
 	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';

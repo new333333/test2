@@ -1,9 +1,9 @@
 //Routines that support the iframe folder style
 
-var ss_minEntryWindowWidth = 200;
-var ss_minEntryWindowHeight = 200;
+var ss_minEntryWindowWidth = 300;
+var ss_minEntryWindowHeight = 300;
 var ss_entryWindowHeight = ss_minEntryWindowHeight;
-var ss_scrollbarWidth = 25;
+var ss_scrollbarWidth = 30;
 var ss_entryDivTopDelta = 25;
 var ss_entryDivBottomDelta = 50;
 var ss_scrollTopOffset = 4;

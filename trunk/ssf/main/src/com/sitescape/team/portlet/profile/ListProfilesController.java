@@ -147,6 +147,9 @@ public class ListProfilesController extends   SAbstractController {
 	}
 
 	protected Toolbar buildViewToolbar(RenderRequest request, RenderResponse response, ProfileBinder binder) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        String userDisplayStyle = user.getDisplayStyle();
+        if (userDisplayStyle == null) userDisplayStyle = "";
 		PortletURL url;
 		String binderId = binder.getId().toString();
 		//Build the toolbar array
@@ -210,35 +213,51 @@ public class ListProfilesController extends   SAbstractController {
 			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
 		}
 		//	The "Display styles" menu
-		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.display_styles"));
+		toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//vertical
+		Map qualifiers = new HashMap();
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), 
+				url, qualifiers);
 		//accessible
+		qualifiers = new HashMap();
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), 
+				url, qualifiers);
 		//iframe
+		qualifiers = new HashMap();
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_iframe"), 
+				url, qualifiers);
 		//popup
+		qualifiers = new HashMap();
+		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) 
+			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
 		url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), url);
+		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_popup"), 
+				url, qualifiers);
 		return toolbar;
 		
 	}

@@ -241,7 +241,7 @@ function ss_showPermalink(obj) {
 	    divObj2.className = "ss_popupMenuClose";
 	    aObj = document.createElement("a");
 	    aObj.setAttribute("href", "#");
-	    aObj.setAttribute("onClick", "ss_hideDiv('ss_permalink_display_div');return false;");
+	    aObj.setAttribute("onClick", "ss_hideDivNone('ss_permalink_display_div');return false;");
 	    imgObj = document.createElement("img");
 	    imgObj.setAttribute("border", "0");
 	    imgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
@@ -252,16 +252,18 @@ function ss_showPermalink(obj) {
 		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
 	}
 	divObj3.innerHTML = obj.href;
-	ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
-	divObj.style.top = parseInt(ss_getClickPositionY() + 10) + "px";
-	var x = parseInt(ss_getClickPositionX());
-	x = x - parseInt(ss_getObjectWidth(divObj) / 2);
-	if (x < 0) x = 0;
-	divObj.style.left = x + "px";
+	//ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
 	if (divObj.style && divObj.style.visibility && divObj.style.visibility == 'visible') {
+		divObj.style.display = 'none';
 		divObj.style.visibility = 'hidden';
 	} else {
+		divObj.style.display = 'block';
 		divObj.style.visibility = 'visible';
+		divObj.style.top = parseInt(ss_getClickPositionY() + 10) + "px";
+		var x = parseInt(ss_getClickPositionX());
+		x = x - parseInt((ss_getObjectWidth(divObj) / 3) * 2);
+		if (x < 0) x = 0;
+		divObj.style.left = x + "px";
 	}
 }
 
@@ -1286,8 +1288,10 @@ function ss_hideDiv(divName) {
 }
 
 function ss_hideDivNone(divName) {
-	if (document.getElementById(divName))
-			document.getElementById(divName).style.display = "none";
+	if (document.getElementById(divName)) {
+		document.getElementById(divName).style.display = "none";
+		document.getElementById(divName).style.visibility = "hidden";
+	}
     divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
     

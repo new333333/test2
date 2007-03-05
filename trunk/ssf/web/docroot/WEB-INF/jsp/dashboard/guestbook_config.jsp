@@ -31,9 +31,26 @@ function ${treeName}_showId(forum, obj) {
 </script>
 
 <br/>
+<br/>
+<table>
+<tr>
+<td><span><ssf:nlt tag="dashboard.search.resultsCount"/></span></td>
+<td style="padding-left:10px;"><input type="text" name="data_resultsCount" size="5"
+  value="${ssDashboard.dashboard.components[ssComponentId].data.resultsCount[0]}"/></td>
+</tr>
+<tr>
+<td><span><ssf:nlt tag="dashboard.search.summardWordCount"/></span></td>
+<td style="padding-left:10px;"><input type="text" name="data_summaryWordCount" size="5" 
+  value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/></td>
+</tr>
+</table>
+
+<br/>
+<br/>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
+${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}
 </c:if>
 <br/><br/>
 

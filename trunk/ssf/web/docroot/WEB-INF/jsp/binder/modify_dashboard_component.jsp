@@ -88,11 +88,11 @@
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-	<input type="submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>" />
+	<input type="submit" class="ss_submit" name="_saveConfigData" value="<ssf:nlt tag="button.ok"/>" />
 	&nbsp;&nbsp;
 	<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel" text="Cancel"/>"/>
 	&nbsp;&nbsp;
-	<input type="submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
+	<input type="submit" class="ss_submit" name="_deleteComponent" value="<ssf:nlt tag="button.delete"/>"/>
 </form>
 </div>
 
