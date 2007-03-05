@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <div id="ss_tags_table" style="position:relative; 
- height:400px; overflow:scroll; 
+ height:400px; overflow:visible; 
  margin:2px; border: #666666 1px solid;">
 <table cellspacing="0" cellpadding="0" width="95%" align="center">
  
