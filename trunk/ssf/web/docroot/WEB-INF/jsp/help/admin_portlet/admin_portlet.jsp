@@ -1,8 +1,8 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div class="ss_style" align="left">
-<span class="ss_bold">The ICEcorps Administration Portlet</span>
+<span class="ss_bold"><ssf:nlt tag="administration.portlet"/></span>
 <br/>
-Select the help you want to see...
+<ssf:nlt tag="administration.selectHelp"/>
 <br/>
 <br/>
 <ul style="list-style-type: square;">
