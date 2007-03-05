@@ -1755,9 +1755,10 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 .ss_global_toolbar {
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
-	padding-top:4px;
+	padding-top:6px;
+	
 <c:if test="<%= isIE %>">
-	margin-bottom:6px;
+	margin-bottom:2px;
 </c:if>
 <c:if test="<%= !isIE %>">
 	margin-bottom:4px;
@@ -1797,11 +1798,11 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	text-align:center;
 }
 .ss_global_toolbar_favs div {
-	background:url(<html:imagesPath/>icons/toolbar_favorites.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_favorites.png) no-repeat top;
 	margin-left: 10px;
 }
 .ss_global_toolbar_myworkspace div {
-	background:url(<html:imagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
 }
 .ss_global_toolbar_clipboard div {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
@@ -1816,17 +1817,19 @@ div.ss_global_toolbar_show_portal {
 }
 div.ss_global_toolbar_hide_portal {
     float: right;
-    height: 20px;
-    width: 20px;
+    height: 16px;
+    width: 16px;
     margin-right: 3px;
-	background:url(<html:imagesPath/>icons/toolbar_hide_portal.gif) no-repeat top;
+	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 }
 div.ss_global_toolbar_help {
     float: right;
 	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat right top;
-	padding-right: 18px;
-	margin-right: 0px;
-	color: #484848;
+	padding-right: 22px;
+	padding-left: 6px;
+	margin-right: 12px;
+	height: 16px;
+    width: 16px;
 }
 .ss_global_toolbar_findUser {
 	background:inherit !important;
