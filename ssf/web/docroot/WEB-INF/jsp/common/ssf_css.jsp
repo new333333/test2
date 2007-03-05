@@ -2127,7 +2127,7 @@ div.ss_actions_bar_submenu {
 	z-index:500;
 }
 
-ul.ss_actions_bar_submenu.ss_actions_bar1 {
+div.ss_actions_bar_submenu ul.ss_actions_bar1 {
   background-color: #BFCA8A;
   background-image: none;
   opacity: 0.95;
@@ -2136,7 +2136,7 @@ ul.ss_actions_bar_submenu.ss_actions_bar1 {
  </c:if>
 }
 
-ul.ss_actions_bar_submenu.ss_actions_bar2 {
+div.ss_actions_bar_submenu ul.ss_actions_bar2 {
   background-color: #CECECE;
   background-image: none;
   opacity: 0.95;
