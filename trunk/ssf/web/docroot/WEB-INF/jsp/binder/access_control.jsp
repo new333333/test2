@@ -18,8 +18,21 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 function ss_selectPrincipal<portlet:namespace/>(id) {
+	ss_selectPrincipals<portlet:namespace/>([id]);
+}
+
+function ss_selectPrincipals<portlet:namespace/>(ids) {
 	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
-	formObj.principalId.value = id
+
+	for (var i = 0; i < ids.length; i++) {
+		var inputObj = document.createElement("input");
+		inputObj.setAttribute("type", "hidden");
+		inputObj.setAttribute("name", "principalId");
+		inputObj.setAttribute("value", ids[i]);
+	
+		formObj.appendChild(inputObj);
+	}
+
 	formObj.btnClicked.value = "addPrincipal";
 <c:if test="${ssUser.displayStyle == 'accessible'}" >
 	ss_selectPrincipalAccessible<portlet:namespace/>();
@@ -193,6 +206,26 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 	}
 }
 
+function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
+	var bindArgs = {
+    	url: "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>",
+		error: function(type, data, evt) {
+			
+		},
+		load: function(type, data, evt) {
+			var userIds = new Array();
+			for (var i = 0; i < data.length; i++) {
+				userIds.push(data[i][0]);
+			}
+			ss_selectPrincipals<portlet:namespace/>(userIds);		
+		},
+		mimetype: "text/json",
+		method: "get"
+	};
+   
+	dojo.io.bind(bindArgs);
+}
+
 </script>
 
 <%
@@ -302,7 +335,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
   		name="action" value="configure_access_control"/><portlet:param 
   		name="binderId" value="${ssBinder.id}"/><portlet:param 
   		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
-<input type="hidden" name="principalId"/>
+
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
 
@@ -352,6 +385,7 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 </div>
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
+
 <div id="ss_addGroupsMenu<portlet:namespace/>" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
@@ -388,7 +422,10 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
   </div>
 </div>
 
+<span class="ss_bold"><a href="javascript: ss_addClipboardUsersToAccessControlList${ss_namespace}();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
+
   <c:if test="${ssUser.displayStyle != 'accessible'}" >
+  
 	<div id="ss_addRolesMenu<portlet:namespace/>" class="ss_actions_bar2 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 		<span class="ss_bold"><ssf:nlt tag="access.addRole"/></span><br/><br/>
