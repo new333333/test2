@@ -89,7 +89,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
 		try {
 			user = getProfileDao().findUserByName(username, zoneName);
-		} catch (NoBinderByTheNameException e) {
+		} catch (NoWorkspaceByTheNameException e) {
     		//zone not setup?
     		user = addZone(zoneName, username);
     		if (user == null) {
