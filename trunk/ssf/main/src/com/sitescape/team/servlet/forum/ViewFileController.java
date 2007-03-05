@@ -59,7 +59,9 @@ public class ViewFileController extends SAbstractController {
 			
 		} else {
 			Long binderId = new Long(RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
-			Long entryId = RequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+			String strEntryId = RequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+			Long entryId = null;
+			if (!strEntryId.equals("")) entryId = Long.valueOf(strEntryId);
 			String downloadFile = RequestUtils.getStringParameter(request, WebKeys.URL_DOWNLOAD_FILE, "");
 			Binder binder = getBinderModule().getBinder(binderId);
 			DefinableEntity entity=null;

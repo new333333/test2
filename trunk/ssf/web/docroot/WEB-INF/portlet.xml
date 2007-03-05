@@ -3,9 +3,9 @@
 <portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">	
 
     <portlet>
-        <description xml:lang="en">SiteScape Sample Employees Portlet</description>
+        <description xml:lang="en">ICEcorps Sample Employees Portlet</description>
         <portlet-name>ss_employees</portlet-name>
-        <display-name xml:lang="en">SiteScape Employees</display-name>
+        <display-name xml:lang="en">ICEcorps Employees</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
@@ -22,7 +22,7 @@
     </portlet>
 
     <portlet>
-        <description xml:lang="en">SiteScape Widget Tester Portlet</description>
+        <description xml:lang="en">ICEcorps Widget Tester Portlet</description>
         <portlet-name>ss_widgettest</portlet-name>
         <display-name xml:lang="en">Widget tester</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -39,7 +39,7 @@
         <resource-bundle>content.widgettest</resource-bundle>
     </portlet>
     <portlet>
-        <description xml:lang="en">SiteScape Workspace Tree Portlet</description>
+        <description xml:lang="en">ICEcorps Workspace Tree Portlet</description>
         <portlet-name>ss_workspacetree</portlet-name>
         <display-name xml:lang="en">Workspace Tree</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -57,9 +57,9 @@
         <resource-bundle>content.workspacetree</resource-bundle>
     </portlet>
     <portlet>
-        <description xml:lang="en">SiteScape Forum Portlet</description>
+        <description xml:lang="en">ICEcorps Folder Bookmarks Portlet</description>
         <portlet-name>ss_forum</portlet-name>
-        <display-name xml:lang="en">Forum</display-name>
+        <display-name xml:lang="en">Folder bookmarks</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
@@ -77,7 +77,7 @@
 
 
      <portlet>
-        <description xml:lang="en">SiteScape Administration</description>
+        <description xml:lang="en">ICEcorps Administration</description>
         <portlet-name>ss_administration</portlet-name>
         <display-name xml:lang="en">Administration</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -95,7 +95,7 @@
     </portlet>
  
     <portlet>
-        <description xml:lang="en">SiteScape Presence</description>
+        <description xml:lang="en">ICEcorps Presence</description>
         <portlet-name>ss_presence</portlet-name>
         <display-name xml:lang="en">Presence</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -114,7 +114,7 @@
     </portlet>
  
     <portlet>
-        <description xml:lang="en">SiteScape Toolbar</description>
+        <description xml:lang="en">ICEcorps Toolbar</description>
         <portlet-name>ss_toolbar</portlet-name>
         <display-name xml:lang="en">Toolbar</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -131,7 +131,7 @@
         <resource-bundle>content.toolbar</resource-bundle>
     </portlet>
      <portlet>
-        <description xml:lang="en">SiteScape Blog Summary Portlet</description>
+        <description xml:lang="en">ICEcorps Blog Summary</description>
         <portlet-name>ss_blog</portlet-name>
         <display-name xml:lang="en">Blog Summary</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -149,7 +149,7 @@
         <resource-bundle>content.blog</resource-bundle>
     </portlet>
      <portlet>
-        <description xml:lang="en">SiteScape Guestbook Portlet</description>
+        <description xml:lang="en">ICEcorps Guestbook</description>
         <portlet-name>ss_guestbook</portlet-name>
         <display-name xml:lang="en">Guestbook</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -167,7 +167,7 @@
         <resource-bundle>content.guestbook</resource-bundle>
     </portlet>
      <portlet>
-        <description xml:lang="en">SiteScape Wiki Portlet</description>
+        <description xml:lang="en">ICEcorps Wiki</description>
         <portlet-name>ss_wiki</portlet-name>
         <display-name xml:lang="en">Wiki</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -185,7 +185,7 @@
         <resource-bundle>content.wiki</resource-bundle>
     </portlet>
      <portlet>
-        <description xml:lang="en">SiteScape Search Portlet</description>
+        <description xml:lang="en">ICEcorps Search</description>
         <portlet-name>ss_search</portlet-name>
         <display-name xml:lang="en">Search</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
@@ -204,7 +204,7 @@
     </portlet>
  
      <portlet>
-        <description xml:lang="en">SiteScape Gallery Portlet</description>
+        <description xml:lang="en">ICEcorps Photo Gallery</description>
         <portlet-name>ss_gallery</portlet-name>
         <display-name xml:lang="en">Gallery</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>

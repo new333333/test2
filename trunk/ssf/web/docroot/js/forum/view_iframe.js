@@ -89,18 +89,20 @@ function ss_positionEntryDiv() {
     wObj1.style.visibility = "visible";
 
     //Allow the entry section to grow to as large as needed to show the entry
-	if (window.ss_showentryframe && window.ss_showentryframe.document && 
-			window.ss_showentryframe.document.body) {
-	    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
-	    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
-	    if (entryHeight > ss_entryHeightHighWaterMark) {
-		    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
-		    ss_entryHeightHighWaterMark = entryHeight;
-		    
-			ss_setObjectHeight(wObj1, entryHeight);
-			ss_setObjectHeight(wObj3, entryHeight);
+	try {
+		if (window.ss_showentryframe && window.ss_showentryframe.document && 
+				window.ss_showentryframe.document.body) {
+		    var entryHeight = parseInt(window.ss_showentryframe.document.body.scrollHeight) + ss_scrollHeightFudge
+		    if (entryHeight < ss_minEntryWindowHeight) entryHeight = ss_minEntryWindowHeight;
+		    if (entryHeight > ss_entryHeightHighWaterMark) {
+			    //Only expand the height. Never shrink it. Otherwise the screen jumps around.
+			    ss_entryHeightHighWaterMark = entryHeight;
+			    
+				ss_setObjectHeight(wObj1, entryHeight);
+				ss_setObjectHeight(wObj3, entryHeight);
+			}
 		}
-	}
+	} catch(e) {}
 
 }
 
