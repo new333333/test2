@@ -125,6 +125,9 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 	<li class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';"
 	>
+     <div style="position: absolute; top: 55px;" class="ss_global_toolbar_findUser_text">
+       <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
+     </div>
 		<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized">
 			<portlet:param name="action" value="findUser"/>
@@ -135,9 +138,6 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 			    formElement="searchText" 
 			    type="user"
 			    width="70px" singleItem="true"/> 
-		      <div class="ss_global_toolbar_findUser_text">
-		        <span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span>
-		      </div>
 		  </ssHelpSpot>
 		</form>
 	</li>
