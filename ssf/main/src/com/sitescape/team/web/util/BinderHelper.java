@@ -550,7 +550,7 @@ public class BinderHelper {
 		Set newRoleIds = new HashSet();
 		String[] roleIds = new String[0];
 		String[] principalIds = new String[0];
-		String principalId = "";
+		String[] principalId = new String[0];
 		
 		Map functionMap = new HashMap();
 		Map allowedFunctions = new HashMap();
@@ -575,8 +575,7 @@ public class BinderHelper {
 				}
 			}
 			if (formData.containsKey("principalId")) {
-				String[] pIds = (String[]) formData.get("principalId");
-				if (pIds.length >= 1 && !pIds[0].equals("")) principalId = pIds[0];
+				principalId = (String[]) formData.get("principalId");
 			}
 
 			if (formData.containsKey("principalIds")) {
@@ -586,7 +585,14 @@ public class BinderHelper {
 			//Get the role and user data from the form
 			Map roleMembers = new HashMap();
 			membership = new ArrayList();
-			if (!principalId.equals("")) membership.add(Long.valueOf(principalId));
+						
+			for (int i = 0; i < principalId.length; i++) {
+				if (!principalId[i].equals("")) {
+					Long id = Long.valueOf(principalId[i]);
+					if (!membership.contains(id)) membership.add(id);
+				}
+			}			
+						
 			for (int i = 0; i < principalIds.length; i++) {
 				if (!principalIds[i].equals("")) {
 					Long id = Long.valueOf(principalIds[i]);
