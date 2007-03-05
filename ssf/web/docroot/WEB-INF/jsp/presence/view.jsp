@@ -29,7 +29,7 @@
 <div>
 
 <div class="ss_portlet_style ss_portlet">
-<table style="width:100%;">
+<table cellpadding="3" style="width:100%;">
 <tr>
 <td>
 <a class="ss_linkButton ss_bold ss_smallprint" href=""
