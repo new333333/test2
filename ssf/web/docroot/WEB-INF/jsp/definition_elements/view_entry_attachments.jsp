@@ -203,39 +203,29 @@ function ss_resetEditClicked${ssDefinitionEntry.id}<portlet:namespace/>()
 
 	<td valign="top">
 		<% if (isAppletSupported) { %>
-			<a class="ss_linkButton" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
+			<a class="ss_linkButton ss_tinyControl" id="ss_dropbox_div_position${ssDefinitionEntry.id}<portlet:namespace/>" href="javascript: ;" onClick="ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 				<ssf:nlt tag="entry.AttachFilesByApplet"/>
 			</a>
 		<% } %>
-	</td>
 
 	<% if (isIE) { %>
-	<td valign="top">
 		<c:if test="${ss_folderViewStyle == 'blog'}">
 			<c:set var="ss_entryIDForWebDAV" value="${ssDefinitionEntry.id}" />
-			<a class="ss_linkButton" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
+			<a class="ss_linkButton ss_tinyControl" style="behavior: url(#default#AnchorClick);" folder="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" href="${ssFolderEntriesWebDAVURLs[ss_entryIDForWebDAV]}" target="_blank">
 				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
 			</a>		
 		</c:if>
 		<c:if test="${ss_folderViewStyle != 'blog'}">
-			<a class="ss_linkButton" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
+			<a class="ss_linkButton ss_tinyControl" style="behavior: url(#default#AnchorClick);" folder="${ssWebDavURL}" href="${ssWebDavURL}" target="_blank">
 				<ssf:nlt tag="entry.AttachFilesByWebDav"/>
 			</a>		
 		</c:if>
-	</td>
 	<% } %>
 	
-	<td valign="top">
-		<a class="ss_linkButton" href="javascript: ;" onClick="ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
+		<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onClick="ss_showAddAttachmentBrowse${ssDefinitionEntry.id}<portlet:namespace/>(); return false;">
 			<ssf:nlt tag="entry.AttachFilesByWebBrowse"/>
 		</a>
-	</td>
 	
-	<% if (isIE) { %>
-	<td width="30%">
-	<% } else { %>
-	<td width="40%">
-	<% } %>
 		<div id="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" width="1px" height="1px" name="ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" style="visibility:hidden;display:none;">
 			<div align="right">
 				<iframe frameborder="0" scrolling="no" id="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" name="ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>" height="100%" width="100%">xxx</iframe>
