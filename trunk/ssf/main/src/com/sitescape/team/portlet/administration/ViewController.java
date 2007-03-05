@@ -86,7 +86,7 @@ public class ViewController extends  SAbstractController {
 		designerElement.addAttribute("id", String.valueOf(nextId++));
 		boolean hasDefAccess=false;
 		//Definition builder - Entry form designer
-		if (getDefinitionModule().testAccess("addEntryDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
 			element.addAttribute("image", "bullet");
@@ -101,7 +101,7 @@ public class ViewController extends  SAbstractController {
 		}
 				
 		//Definition builder - Folder view designer
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
 			element.addAttribute("image", "bullet");
@@ -116,7 +116,7 @@ public class ViewController extends  SAbstractController {
 		}
 				
 		//Definition builder - Workflow designer
-		if (getDefinitionModule().testAccess("addWorkflowDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.WORKFLOW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
 			element.addAttribute("image", "bullet");
@@ -131,7 +131,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Profile listing designer
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
 			element.addAttribute("image", "bullet");
@@ -146,7 +146,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Profile designer
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
 			element.addAttribute("image", "bullet");
@@ -161,7 +161,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - Workspace designer
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -176,7 +176,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//Definition builder - User workspace designer
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, "addDefinition")) {
 			element = designerElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_user_workspace_designer"));
 			element.addAttribute("image", "bullet");
@@ -272,7 +272,7 @@ public class ViewController extends  SAbstractController {
 		}
 	
 		//Definition import
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.import.definitions"));
 			element.addAttribute("image", "bullet");
@@ -285,7 +285,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Definition export
-		if (getDefinitionModule().testAccess("addDefinition")) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, "addDefinition")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.export.definitions"));
 			element.addAttribute("image", "bullet");
