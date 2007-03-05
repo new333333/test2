@@ -25,7 +25,7 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
   <c:if test="${ss_tabs.current_tab == tab.tabId}">
     <c:set var="active" value="_active"/>
   </c:if>
-	<td>
+	<td valign="bottom">
 	  <table cellspacing="0" cellpadding="0" style="background:transparent;">
 	  <tbody>
 	  <tr>
@@ -85,13 +85,13 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		  </c:if>
 		>
 	<c:if test="${!empty tab.icon}">
-		   <img border="0" style="position:relative; left: 0px;" 
+		   <img border="0" style="position:relative; left: 0px; vertical-align: bottom;" 
 		     src="<html:imagesPath/>${tab.icon}"/>
 	</c:if>
 		   <span>${tab.title}</span></a>
 	<c:if test="${numTabs > 1}">
 		<a href="#" onClick="ss_deleteTab(this, '${tab.tabId}');return false;">
-		  <img border="0" style="position:relative; left:8px;" 
+		  <img border="0" style="position:relative; vertical-align: bottom;" 
 		    src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete.gif"/>
 		</a>
 	</c:if>
