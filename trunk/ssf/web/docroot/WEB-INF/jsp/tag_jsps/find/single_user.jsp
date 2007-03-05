@@ -19,7 +19,7 @@
 
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
-    name="ss_findUser_searchText_${prefix}" 
+    name="<%= findUserElementName %>" 
     id="ss_findUser_searchText_${prefix}"
     onKeyUp="ss_findUserSearch('${prefix}', this.id, '<%= findUserElementName %><%= instanceCount %>', '<%= findUserGroupType %>');"
     onBlur="setTimeout('ss_hideDiv(\'ss_findUserNavBarDiv_${prefix}\')', 200);"></textarea></div>

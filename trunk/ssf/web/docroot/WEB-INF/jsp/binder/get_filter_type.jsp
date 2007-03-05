@@ -1,19 +1,9 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <%@ page contentType="text/xml; charset=UTF-8" %>
-<taconite-root xml:space="preserve">
-<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
-	<taconite-replace contextNodeID="entryList<c:out value="${ss_filterTermNumber}"/>" 
-	parseInBrowser="true"><div id="entryList<c:out value="${ss_filterTermNumber}"/>" 
-	style="display:inline;">
-	  <c:if test="${ss_filterType == 'text'}">
-         <ssf:nlt tag="filter.searchText" text="Search text"/>: <input 
-         type="text" class="ss_text" style="width:200px;" 
-         name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
-	  </c:if>
 	  <c:if test="${ss_filterType == 'entry'}">
     	<select name="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
     	   id="ss_entry_def_id<c:out value="${ss_filterTermNumber}"/>" 
@@ -31,6 +21,20 @@
 		      </c:if>
 		    </c:forEach>
     	</select>
+	  </c:if>
+
+
+<c:if test="${ss_filterType != 'entry'}">
+<taconite-root xml:space="preserve">
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+
+	<taconite-replace contextNodeID="entryList<c:out value="${ss_filterTermNumber}"/>" 
+	parseInBrowser="true"><div id="entryList<c:out value="${ss_filterTermNumber}"/>" 
+	style="display:inline;">
+	  <c:if test="${ss_filterType == 'text'}">
+         <ssf:nlt tag="filter.searchText" text="Search text"/>: <input 
+         type="text" class="ss_text" style="width:200px;" 
+         name="elementValue<c:out value="${ss_filterTermNumber}"/>" />
 	  </c:if>
 	  <c:if test="${ss_filterType == 'workflow'}">
     	<select name="ss_workflow_def_id<c:out value="${ss_filterTermNumber}"/>" 
@@ -60,5 +64,6 @@
 	id="valueList<c:out value="${ss_filterTermNumber}"/>" 
 	style="visibility:visible; display:inline;">
 	 </div></taconite-replace>
-</c:if>
 </taconite-root>
+</c:if>
+</c:if>

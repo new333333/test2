@@ -281,7 +281,9 @@ public class BinderHelper {
     	itemData = new HashMap();
     	itemData.put("type", "user_list");
     	itemData.put("caption", NLT.get("filter.author"));
-    	entryElements.put("owner", itemData);
+    	// entryElements.put(EntityIndexUtils.CREATORID_FIELD, itemData);
+    	// entryElements.put(EntityIndexUtils.CREATOR_NAME_FIELD, itemData);
+    	entryElements.put(EntityIndexUtils.CREATOR_TITLE_FIELD, itemData);
     	
     	//creation date
     	itemData = new HashMap();
