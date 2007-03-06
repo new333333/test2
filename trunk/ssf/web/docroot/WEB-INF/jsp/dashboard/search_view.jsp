@@ -25,14 +25,14 @@
 <c:set var="ss_pageNumber" value="0"/>
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+</c:if>
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
 	//Build a url to go to
-	ss_dashboardPorletUrlSupport(binderId, entryId, type);
+	ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, binderId, entryId, type);
 	return false;
 }
 </script>
-</c:if>
 
 <c:if test="${ssConfigJspStyle == 'template'}">
 <script type="text/javascript">

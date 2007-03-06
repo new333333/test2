@@ -2594,6 +2594,31 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type) {
+	//Build a url to go to
+	var url;
+	if (type == 'folderEntry') {
+		url = ss_replaceSubStr(entryUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_entry');
+	} else if (type == 'user') {
+		url = ss_replaceSubStr(entryUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
+	} else if (type == 'folder') {
+		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_listing');	
+	} else if (type == 'workspace') {
+		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');	
+	} else if (type == 'profiles') {
+		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
+	} 
+	
+	self.location.href = url;
+	return false;
+}
 
 function ss_enableFavoritesList(id, namespace) {
 	ss_debug('enable drag: '+id +', '+namespace)

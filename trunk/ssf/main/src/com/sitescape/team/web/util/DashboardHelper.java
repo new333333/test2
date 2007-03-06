@@ -774,40 +774,38 @@ public class DashboardHelper implements AllBusinessServicesInjected {
            	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
         	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 		}		
-		if (!isConfig) {
-			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
-			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
-			searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
-			Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
-			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
-			//Also get the folder titles
-			Set ids = new HashSet();
-			Iterator itEntries = entries.iterator();
-			while (itEntries.hasNext()) {
-				Map r = (Map) itEntries.next();
-				String entityType = (String) r.get("_entityType");
-				if (entityType != null && r.containsKey("_docId") && 
-						(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
-					ids.add(Long.valueOf((String)r.get("_docId")));
-				} else if (r.containsKey("_binderId")) {
-					ids.add(Long.valueOf((String)r.get("_binderId")));				
-				}
+		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
+		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
+		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
+		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
+		//Also get the folder titles
+		Set ids = new HashSet();
+		Iterator itEntries = entries.iterator();
+		while (itEntries.hasNext()) {
+			Map r = (Map) itEntries.next();
+			String entityType = (String) r.get("_entityType");
+			if (entityType != null && r.containsKey("_docId") && 
+					(entityType.equals(EntityType.folder.toString()) || entityType.equals(EntityType.workspace.toString()))) {
+				ids.add(Long.valueOf((String)r.get("_docId")));
+			} else if (r.containsKey("_binderId")) {
+				ids.add(Long.valueOf((String)r.get("_binderId")));				
 			}
-		
-			searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
-		} else {
-			
-			//Build the jsp bean (sorted by folder title)
-			List folderIds = new ArrayList();
-			if (savedFolderIds != null) {
-				for (int i = 0; i < savedFolderIds.size(); i++) {
-					folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
-				}
-				Collection folders = getFolderModule().getFolders(folderIds);				
-				idData.put(WebKeys.FOLDER_LIST, folders);
-			}
-			idData.put(WebKeys.BINDER_ID_LIST, folderIds);
 		}
+	
+		searchSearchFormData.put(WebKeys.BINDER_DATA, ResolveIds.getBinderTitlesAndIcons(ids));
+			
+		//Build the jsp bean (sorted by folder title)
+		List folderIds = new ArrayList();
+		if (savedFolderIds != null) {
+			for (int i = 0; i < savedFolderIds.size(); i++) {
+				folderIds.add(Long.valueOf((String)savedFolderIds.get(i)));
+			}
+			Collection folders = getFolderModule().getFolders(folderIds);				
+			idData.put(WebKeys.FOLDER_LIST, folders);
+		}
+		idData.put(WebKeys.BINDER_ID_LIST, folderIds);
+
 		if (component.get(Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
 			if (savedFolderIds != null && savedFolderIds.size() > 0) {
 				Binder fBinder = getBinderModule().getBinder(Long.valueOf((String)savedFolderIds.get(0)));				

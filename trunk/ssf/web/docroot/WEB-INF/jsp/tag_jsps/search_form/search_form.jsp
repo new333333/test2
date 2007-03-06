@@ -224,7 +224,7 @@ function rewriteValueIntoFormElement(id, obj) {
 //	alert(document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value);
 }
 
-tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
+var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="search"/>
 			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
 			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
