@@ -138,7 +138,6 @@ public class BuildDefinitionDivs extends TagSupport {
 		|| this.itemName.equals("middleName")
 		|| this.itemName.equals("lastName")
 		|| this.itemName.equals("emailAddress")
-		|| this.itemName.equals("country")
 		|| this.itemName.equals("organization")
 		|| this.itemName.equals("homepage")
 		|| this.itemName.equals("zonName"))

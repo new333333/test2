@@ -1539,7 +1539,6 @@
 				<option name="middleName" caption="__middleName" />
 				<option name="lastName" caption="__lastName" />
 				<option name="emailAddress" caption="__emailAddress" />
-				<option name="country" caption="__country" />
 				<option name="organization" caption="__organization" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
