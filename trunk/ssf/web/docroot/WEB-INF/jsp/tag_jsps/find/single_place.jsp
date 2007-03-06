@@ -153,14 +153,23 @@ function ss_findPlacesSelectItem0_${prefix}() {
 	}
 }
 //Routine called when item is clicked
-function ss_findPlacesSelectItem<portlet:namespace/>(obj) {
+function ss_findPlacesSelectItem<portlet:namespace/>(obj, type) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_permalink"/><portlet:param name="binderId" 
+	
+	var url="<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="ssActionPlaceHolder"/><portlet:param name="binderId" 
 		value="ss_binderIdPlaceholder"/><portlet:param name="newTab" value="1"/></portlet:renderURL>";
 	var id = ss_replaceSubStr(obj.id, 'ss_findPlaces_id_', "");
 	url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
-	self.location.href = url;
+	if (type == 'folder') {
+		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_folder_listing');
+	} else if (type == 'workspace') {
+		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_ws_listing');
+	} else {
+		url = ss_replaceSubStr(url, 'ssActionPlaceHolder', 'view_permalink');
+	}
+	self.location.href = url;	
+	return false;
 }
 
 function ss_savefindPlacesData_${prefix}() {
