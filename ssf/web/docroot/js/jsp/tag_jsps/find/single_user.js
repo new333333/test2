@@ -137,7 +137,7 @@ function ss_postFindUserRequest(obj) {
 	
 	//See if there is another search request to be done
 	if (ss_findUserSearchWaiting[prefix] == 1) {
-		setTimeout('ss_findUserSearch(' + prefix + ', ' + ss_findUserSearchLastTextObjId[prefix] + ', ' + ss_findUserSearchLastElement[prefix] + ', ' + ss_findUserSearchLastfindUserGroupType[prefix] +')', 100)
+		setTimeout(function (){ss_findUserSearch(prefix, ss_findUserSearchLastTextObjId[prefix], ss_findUserSearchLastElement[prefix], ss_findUserSearchLastfindUserGroupType[prefix])}, 100)
 	}
 
 	//See if the user typed a return. If so, see if there is a unique value to go to
@@ -145,7 +145,7 @@ function ss_postFindUserRequest(obj) {
 		var ulObj = $('available_' + prefix)
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			setTimeout("ss_findUserSelectItem0('" + prefix + "');", 100);
+			setTimeout(function (){ss_findUserSelectItem0(prefix);}, 100);
 			return;
 		}
 	}
