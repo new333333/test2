@@ -666,8 +666,6 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 						.selectSingleNode("./properties/property[@name='name']");
 				elementName = nameProperty.attributeValue("value");
 				objMap.put(ELEMENT_NAME, elementName);
-				if(entry.getFileAttachments(reposName).size() == 0)
-					return false; // The repository shouldn't be listed under the attachment.
 			} else { // primary
 				Element primaryItem = (Element) items.get(0); // only one item in there
 				Element nameProperty = (Element) primaryItem
