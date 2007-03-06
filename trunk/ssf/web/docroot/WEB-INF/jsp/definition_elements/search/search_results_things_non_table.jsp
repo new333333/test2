@@ -433,9 +433,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 					<ssf:nlt tag="entry.createdBy" />: <ssf:showUser user="${entry1._principal}" />
 				</td>
 				<td width="50%" class="ss_smallprint">
-					<ssf:nlt tag="entry.modifiedDate" />: <fmt:formatDate timeZone="${entry1._principal.timeZone.ID}"
+					<ssf:nlt tag="entry.modified" />: <fmt:formatDate timeZone="${entry1._principal.timeZone.ID}"
 				 		value="${entry1._modificationDate}" type="both" 
-				 		timeStyle="long" dateStyle="long" />
+				 		timeStyle="short" dateStyle="medium" />
 				</td>
 			</tr>
 			</table>
