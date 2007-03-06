@@ -35,7 +35,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 
 
 <div>
-  <ul class="ss_search_results_selection">
+  <ul class="ss_actions_bar ss_actions_bar1">
     <li class="ss_search_results_selection_inactive" id="ss_search_results_people_tab"><a href="#" 
       onClick="ss_showSearchResults('people');return false;"
       ><ssf:nlt tag="search.People"/></a></li>

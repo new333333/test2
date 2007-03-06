@@ -2276,7 +2276,6 @@ ul.ss_utils_bar_submenu {
 	padding:0px;
 	height:17px;
 	line-height:17px;
-	border-left:1px solid #9687A7;
 }
 .ss_search_results_selection li {
 	float:left;
