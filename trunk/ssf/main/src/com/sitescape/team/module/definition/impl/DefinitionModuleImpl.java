@@ -635,7 +635,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		|| itemNameToAdd.equals("middleName")
 		|| itemNameToAdd.equals("lastName")
 		|| itemNameToAdd.equals("emailAddress")
-		|| itemNameToAdd.equals("country")
 		|| itemNameToAdd.equals("organization")
 		|| itemNameToAdd.equals("homepage")
 		|| itemNameToAdd.equals("zonName"))

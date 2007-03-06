@@ -321,7 +321,6 @@ body.ss_style_body {
 }
 .ss_style a, .ss_style a:visited {
   color: ${ss_style_link_color};
-  text-decoration:none;
 }
 .ss_style a:hover {
   color: ${ss_style_link_hover_color};
