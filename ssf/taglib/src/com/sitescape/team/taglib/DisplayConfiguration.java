@@ -47,6 +47,7 @@ public class DisplayConfiguration extends TagSupport {
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");
 			} else if (this.configElement != null) {
+				
 				Element definitionRoot = this.configDefinition.getRootElement();
 				Iterator itItems = null;
 				if (processThisItem == true) {
@@ -108,6 +109,10 @@ public class DisplayConfiguration extends TagSupport {
 										}
 									}
 									
+									// use Map to store for while "selectbox" type properties
+									// the old code tries to get it always from request but then it gets also properties set by
+									// previouse tag calls
+									Map propertyValuesMap = new HashMap();
 									Iterator itProperties = nextItem.selectNodes("properties/property").iterator();
 									while (itProperties.hasNext()) {
 										Element property = (Element) itProperties.next();
@@ -132,16 +137,22 @@ public class DisplayConfiguration extends TagSupport {
 											} else if (propertyConfigType.equals("selectbox")) {
 												propertyValue = NLT.getDef(property.attributeValue("value", ""));
 												//There might be multiple values so bulid a list
-												List propertyValues = (List) req.getAttribute("propertyValues_"+propertyName);
+												List propertyValues = (List) propertyValuesMap.get("propertyValues_"+propertyName);
 												if (propertyValues == null) propertyValues = new ArrayList();
 												propertyValues.add(propertyValue);
-												req.setAttribute("propertyValues_"+propertyName, propertyValues);
+												propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
 											} else {
 												propertyValue = NLT.getDef(property.attributeValue("value", ""));
 											}
 											req.setAttribute("property_"+propertyName, propertyValue);
 										}
 									}
+									Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+									while (itPropertyValuesMap.hasNext()) {
+										Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+										req.setAttribute((String)entry.getKey(), entry.getValue());
+									}
+									
 									
 									//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
 									//Each property is added as a request attribute. The key name is "property_xxx" where xxx is the property name.

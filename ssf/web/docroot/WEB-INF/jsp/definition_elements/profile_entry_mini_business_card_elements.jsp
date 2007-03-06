@@ -52,9 +52,3 @@
 		</c:if>
 	</tr>
 </table>
-
-<%
-//Get the form item being displayed
-	request.removeAttribute("propertyValues__elements");
-%>
-
