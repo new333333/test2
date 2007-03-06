@@ -18,6 +18,7 @@ import com.sitescape.team.portletadapter.portlet.RenderResponseImpl;
 import com.sitescape.team.portletadapter.support.AdaptedPortlets;
 import com.sitescape.team.portletadapter.support.KeyNames;
 import com.sitescape.team.portletadapter.support.PortletInfo;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
 
 /**
@@ -43,6 +44,10 @@ public class PortletAdapterController extends SAbstractController {
 		int actionInt = RequestUtils.getIntParameter(req,
 				KeyNames.PORTLET_URL_ACTION, 0);
 
+		String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+		
+		req.setCharacterEncoding(charEncoding);
+		
 		try {
 			Map params = null;
 			
@@ -70,7 +75,7 @@ public class PortletAdapterController extends SAbstractController {
 			
 			RenderResponseImpl renderRes = new RenderResponseImpl(renderReq,
 					res, portletName);
-			renderRes.setContentType("text/html; charset=UTF-8");
+			renderRes.setContentType("text/html; charset=" + charEncoding);
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
 			
 			portlet.render(renderReq, renderRes);
