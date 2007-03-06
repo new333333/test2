@@ -1858,6 +1858,7 @@
 			<property name="caption" caption="__caption" type="text" />
 		</properties>
 		<options>
+			<option name="workspaceForm" initial="true" />
 			<option name="userWorkspaceView" initial="true" />
 		</options>
 	</item>

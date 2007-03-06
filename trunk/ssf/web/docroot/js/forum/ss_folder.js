@@ -179,9 +179,10 @@ function ss_getNextEntryId(imageId) {
 		}
 	}
 	ss_restoreImages(imageId);
+	ss_debug('entityType = '+entityType)
 	if (nextEntry != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
 		ss_currentEntryId = nextEntry;
-		ss_getNextEntryId(imageId);
+		if (ss_currentEntryId != ss_entryList[0]) ss_getNextEntryId(imageId);
 	} else if (nextEntry != "") {
 		var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", nextBinderId);
