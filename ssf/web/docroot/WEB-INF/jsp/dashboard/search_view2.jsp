@@ -41,7 +41,7 @@
 								<ssf:param name="entityType" value="folderEntry" />
 					    	    <ssf:param name="newTab" value="1"/>
 								</ssf:url>" 
-							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+							onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'user'}">
 				    	<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />" />
@@ -51,7 +51,7 @@
 								<ssf:param name="entityType" value="workspace" />
 					    	    <ssf:param name="newTab" value="1"/>
 								</ssf:url>" 
-							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+							onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'group'}">
 				    	<img border="0" src="<html:imagesPath/>icons/group.gif" alt="<ssf:nlt tag="general.groups" />"/>
@@ -94,7 +94,7 @@
 							    <ssf:param name="entityType" value="${fileEntry._entityType}" />
 					    	    <ssf:param name="newTab" value="1"/>
 								</ssf:url>" 
-							onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
+							onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
 				    </c:when>
 			 	</c:choose>
 		 	
@@ -150,7 +150,7 @@
 						    	<ssf:param name="entityType" value="folder" />
 				    	    	<ssf:param name="newTab" value="1"/>
 								</ssf:url>" 
-								onClick="if (${ss_divId}_searchurl) ${ss_divId}_searchurl('${fileEntry._binderId}','', 'folder'); return false;">
+								onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._binderId}','', 'folder'); return false;">
 								<span class="ss_underline">${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._binderId].title}</span>
 								</a>
 						</c:if>

@@ -1,7 +1,17 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
-  
+<script type="text/javascript">
+var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="ssActionPlaceHolder"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
+		name="newTab" value="1"/></portlet:renderURL>';
+var ss_dashboardViewBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="ssActionPlaceHolder"/><portlet:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+		name="newTab" value="1"/></portlet:renderURL>';
+</script>  
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig}">
   <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">

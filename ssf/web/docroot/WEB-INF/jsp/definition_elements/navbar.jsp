@@ -255,6 +255,14 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
 
+var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="search"/>
+			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
+			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
+			<portlet:param name="searchTags" value="searchTagsOr"/>
+			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
+			<portlet:param name="newTab" value="1"/>
+			</portlet:actionURL>";
 </script>
 
 <div id="ss_navbar_bottom<portlet:namespace/>"></div>

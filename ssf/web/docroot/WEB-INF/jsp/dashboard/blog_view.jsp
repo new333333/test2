@@ -25,14 +25,14 @@
 <c:set var="ss_pageNumber" value="0"/>
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
+</c:if>
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
 	//Build a url to go to
-	ss_dashboardPorletUrlSupport(binderId, entryId, type);
+	ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, binderId, entryId, type);
 	return false;
 }
 </script>
-</c:if>
 
 <c:if test="${ssConfigJspStyle == 'template'}">
 <script type="text/javascript">
@@ -40,6 +40,27 @@ function ${ss_divId}_searchurl(binderId, entryId, type) {
 	return false;
 }
 </script>
+</c:if>
+
+<c:if test="${!empty ssDashboard.beans[ssComponentId].ssFolderList}">
+<table class="ss_style" cellspacing="0" cellpadding="0">
+<c:forEach var="folder" items="${ssDashboard.beans[ssComponentId].ssFolderList}">
+<tr>
+  <td>
+    <c:if test="${empty folder.iconName}">
+      <img src="<html:imagesPath/>icons/folder.gif"/>
+    </c:if>
+    <c:if test="${!empty folder.iconName}">
+      <img src="<html:imagesPath/>${folder.iconName}"
+    </c:if>
+  </td>
+  <td><a href="javascript: ;"
+		onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${folder.id}', '', 'folder'); return false;"
+		>${folder.title}</a></td>
+</tr>
+</c:forEach>
+</table>
+<br/>
 </c:if>
 
 <div id="${ss_divId}">
