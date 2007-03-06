@@ -144,9 +144,15 @@ function ss_postFindTagRequest(obj) {
  	if (divObj != null) divObj.style.color = obj.getData('savedColor');
 	
 	//See if there is another search request to be done
+	function runItLater(a, b, c, d) {
+      return (function () {
+        ss_findTagSearch(a, b, c, d)
+      });
+    }
+	var runitRef = runItLater(prefix,ss_findTagSearchLastTextObjId[prefix],ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix]);
 	if (ss_findTagSearchWaiting[prefix] == 1) {
 //		setTimeout('ss_findTagSearch('+prefix+', '+ ss_findTagSearchLastTextObjId[prefix]+', '+ ss_findTagSearchLastElement[prefix]+', '+ ss_findTagSearchLastfindTagType[prefix]+');', 100);
-		setTimeout(function (){ss_findTagSearch(prefix,ss_findTagSearchLastTextObjId[prefix],ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix])}, 100);
+		setTimeout(runitRef, 100);
 	}
 
 	//See if the user typed a return. If so, see if there is a unique value to go to
