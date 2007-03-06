@@ -27,13 +27,22 @@
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}"><div class="ss_thumbnail_gallery ss_thumbnail_small"> 
-		   <img border="0" src="<ssf:url 
+		<a style="text-decoration: none;" href="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${ssDefinitionEntry.parentBinder.id}"
+					    entryId="${ssDefinitionEntry.id}" >
+					    <ssf:param name="fileId" value="${selection.id}"/>
+					    </ssf:url>" 
+					<c:if test="${ssConfigJspStyle != 'mail'}">    
+					    onClick="return ss_launchUrlInNewWindow(this, '${selection.fileItem.name}');"
+					</c:if>
+					     ><img border="0" src="<ssf:url 
 		    webPath="viewFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
 		    entryId="${ssDefinitionEntry.id}" >
 		    <ssf:param name="fileId" value="${selection.id}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
-		    </ssf:url>"/>
+		    </ssf:url>"/></a>
 		    </div>
 		</td>
 		<td class="ss_att_title" width="25%"><a style="text-decoration: none;" href="<ssf:url 
