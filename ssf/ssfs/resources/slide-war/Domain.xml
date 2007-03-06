@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<slide>
+<slide logger-level="6" logger="log4j.Log4jLogger">
     <namespace name="slide">
         <definition>
             <store name="simple">
