@@ -24,6 +24,9 @@
 		<property name="uploadTempDir">
 			<value>WEB-INF/tmp</value>
 		</property>	
+		<property name="defaultEncoding">
+			<value>${web.char.encoding}</value>
+		</property>
 	</bean>
 
 	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
