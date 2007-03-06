@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN" "http://java.sun.com/dtd/web-app_2_3.dtd">
 <web-app>
-    <display-name>Jakarta Slide WebDAV Server</display-name>
+    <display-name>SiteScape WebDAV Server based on Jakarta Slide WebDAV Server</display-name>
+    
+    <context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>ssfs.root</param-value>
+	</context-param>
+
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>/WEB-INF/log4j.properties</param-value>
+	</context-param>
+    
     <!-- Definition and configuration of servlet filters -->
     <filter>
         <filter-name>webdavlog</filter-name>
@@ -29,7 +40,7 @@
         </init-param>
         <init-param>
             <param-name>outputToConsole</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
             <description>If true, output is directed to STDOUT.</description>
         </init-param>
         <init-param>
@@ -37,13 +48,11 @@
             <param-value>false</param-value>
             <description>If true, output is directed to the servlet's log file.</description>
         </init-param>
-        <!--
         <init-param>
             <param-name>outputToFile</param-name>
-            <param-value>c:\webdav.log.xml</param-value>
+            <param-value>WEB-INF/logs/webdav.log</param-value>
             <description>If present, output is directed to the specified file.</description>
         </init-param>
-        -->
     </filter>
     <!-- If you're operating Slide with an SSL connection and with authentication enabled
          and you notice that Internet Explorer is unable to open some file types you may
@@ -67,6 +76,11 @@
         <servlet-name>webdav</servlet-name>
     </filter-mapping>
     -->
+    
+    <listener>
+		<listener-class>com.sitescape.team.web.util.Log4jConfigListener</listener-class>
+	</listener>
+    
     <!-- Definition and configuration of Slide's WebDAV servlet. -->
     <servlet>
         <servlet-name>webdav</servlet-name>

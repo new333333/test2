@@ -48,6 +48,7 @@
 				<include name="com/sitescape/team/ssfs/TypeMismatchException.class"/>
 	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
+	        	<include name="com/sitescape/team/web/util/Log4jConfigListener.class"/>
 			</fileset>
 		</jar>
 		<jar 
@@ -82,10 +83,12 @@
 				<include name="tm-extractors.notice"/>
 			</fileset>
 		</delete>
+		<delete file="${temp.dir}/WEB-INF/classes/log4j.properties"/>
 		<copy todir="${temp.dir}" overwrite="true">
  			<fileset dir="resources/slide-war" excludes="WEB-INF/*.tmpl,WEB-INF/*.web.xml,WEB-INF/*.jboss-web.xml,WEB-INF/*.context.xml" />
 		</copy>
 		<copy file="${jar.file}" todir="${temp.dir}/WEB-INF/lib" />
+		<copy file="${basedir}/../lib/spring.jar" todir="${temp.dir}/WEB-INF/lib" />
 	</target>
 	
 	<target name="war" depends="apply-changes">		
