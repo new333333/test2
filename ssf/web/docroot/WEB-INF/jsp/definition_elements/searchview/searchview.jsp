@@ -28,7 +28,7 @@
 
 <% // Entry toolbar %>
 <c:if test="${!empty ssEntryToolbar}">
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar" item="true" />
+<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
 </c:if>
 
 </ssf:toolbar>

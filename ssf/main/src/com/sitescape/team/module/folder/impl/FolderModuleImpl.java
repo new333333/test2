@@ -542,32 +542,34 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         }
         if (folders.size() > 0) {
 	        Hits hits = getRecentEntries(folders);
-	        Map unseenCounts = new HashMap();
-	        Date modifyDate = new Date();
-	        for (int i = 0; i < hits.length(); i++) {
-				String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
-				String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
-				Long entryId = null;
-				if (entryIdString != null && !entryIdString.equals("")) {
-					entryId = new Long(entryIdString);
+	        if (hits != null) {
+	        	Map unseenCounts = new HashMap();
+		        Date modifyDate = new Date();
+		        for (int i = 0; i < hits.length(); i++) {
+					String folderIdString = hits.doc(i).getField(IndexUtils.TOP_FOLDERID_FIELD).stringValue();
+					String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
+					Long entryId = null;
+					if (entryIdString != null && !entryIdString.equals("")) {
+						entryId = new Long(entryIdString);
+					}
+					try {
+						modifyDate = DateTools.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
+					} catch (ParseException pe) {} // no need to do anything
+					Counter cnt = (Counter)unseenCounts.get(folderIdString);
+					if (cnt == null) {
+						cnt = new Counter();
+						unseenCounts.put(folderIdString, cnt);
+					}
+					if (entryId != null && (!seenMap.checkAndSetSeen(entryId, modifyDate, false))) {
+						cnt.increment();
+					}
 				}
-				try {
-					modifyDate = DateTools.stringToDate(hits.doc(i).getField(EntityIndexUtils.MODIFICATION_DATE_FIELD).stringValue());
-				} catch (ParseException pe) {} // no need to do anything
-				Counter cnt = (Counter)unseenCounts.get(folderIdString);
-				if (cnt == null) {
-					cnt = new Counter();
-					unseenCounts.put(folderIdString, cnt);
-				}
-				if (entryId != null && (!seenMap.checkAndSetSeen(entryId, modifyDate, false))) {
-					cnt.increment();
-				}
-			}
-	        for (int i=0; i<folders.size(); ++i) {
-	        	Folder f = (Folder)folders.get(i);
-	        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
-	        	if (cnt == null) cnt = new Counter();
-	        	results.put(f, cnt);
+		        for (int i=0; i<folders.size(); ++i) {
+		        	Folder f = (Folder)folders.get(i);
+		        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
+		        	if (cnt == null) cnt = new Counter();
+		        	results.put(f, cnt);
+		        }
 	        }
         }
         return results;

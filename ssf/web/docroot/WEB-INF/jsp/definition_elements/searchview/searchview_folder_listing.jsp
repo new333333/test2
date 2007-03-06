@@ -20,7 +20,7 @@
 		<c:if test="${!empty entry._desc}">
 			<tr>
 				<td class="ss_searchviewContainer">
-					<ssf:markup type="view">
+					<ssf:markup type="view" binderId="${entry._binderId}" entryId="${entry._docId}">
 						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="60" />
 					</ssf:markup>
 				</td>
