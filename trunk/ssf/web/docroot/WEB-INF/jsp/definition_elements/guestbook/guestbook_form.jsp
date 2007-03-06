@@ -24,6 +24,9 @@
 
 <form method="<%= methodName %>" enctype="<%= enctype %>" name="<%= formName %>" 
   id="<%= formName %>" action="" onSubmit="return ss_onSubmit(this);">
+  
+<c:set var="onClickCancelRoutine" value="ss_cancelButtonCloseWindow();return false;" scope="request"/>
+
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
