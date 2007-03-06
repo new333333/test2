@@ -173,9 +173,9 @@
 						<ssf:nlt tag="entry.createdBy" />: <ssf:showUser user="${fileEntry._principal}" />
 					</td>
 					<td width="50%" class="ss_smallprint">
-						<ssf:nlt tag="entry.modifiedDate" />: <fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+						<ssf:nlt tag="entry.modified" />: <fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
 					 		value="${fileEntry._modificationDate}" type="both" 
-					 		timeStyle="long" dateStyle="long" />
+					 		timeStyle="short" dateStyle="medium" />
 					</td>
 				</tr>
 				</table>
