@@ -42,7 +42,9 @@ function ss_confFindTagSearchVariables(prefix, clickRoutine, viewUrl, leaveResul
 function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 	var textObj = document.getElementById(textObjId);
 	var text = textObj.value;
-	if (text == '' || text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
+// Renata: I have removed "text == '' ||" from the next if line, 
+// I dont understand why it shoud be, "next" page dont work with it if you look for all tags
+	if (text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
 	ss_setupStatusMessageDiv();
 	//ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
 	//Are we already doing a search?
@@ -143,7 +145,8 @@ function ss_postFindTagRequest(obj) {
 	
 	//See if there is another search request to be done
 	if (ss_findTagSearchWaiting[prefix] == 1) {
-		setTimeout('ss_findTagSearch('+prefix+', '+ ss_findTagSearchLastTextObjId[prefix]+', '+ ss_findTagSearchLastElement[prefix]+', '+ ss_findTagSearchLastfindTagType[prefix]+');', 100);
+//		setTimeout('ss_findTagSearch('+prefix+', '+ ss_findTagSearchLastTextObjId[prefix]+', '+ ss_findTagSearchLastElement[prefix]+', '+ ss_findTagSearchLastfindTagType[prefix]+');', 100);
+		setTimeout(function (){ss_findTagSearch(prefix,ss_findTagSearchLastTextObjId[prefix],ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix])}, 100);
 	}
 
 	//See if the user typed a return. If so, see if there is a unique value to go to
@@ -151,7 +154,7 @@ function ss_postFindTagRequest(obj) {
 		var ulObj = document.getElementById('available_'+prefix);
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
-			setTimeout("ss_findTagSelectItem0('" + prefix + "');", 100);
+			setTimeout(function () {ss_findTagSelectItem0(prefix);}, 100);
 			return;
 		}
 	}
@@ -172,10 +175,8 @@ function ss_findTagSelectItem0 (prefix) {
 }
 //Routine called when item is clicked
 function ss_findTagSelectItem (prefix, obj) {
-//alert("in ss_findTagSelectItem, obj: "+obj);
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var id = ss_replaceSubStr(obj.id, 'ss_findTag_id_', "");
-	// alert('ss_findTagClickRoutine[prefix]'+ss_findTagClickRoutine[prefix]+" \n tagSearchResultUrl: "+tagSearchResultUrl);
 	if (ss_findTagClickRoutine[prefix] != "") {
 		eval(ss_findTagClickRoutine[prefix] + "('"+id+"');");
 		if (ss_findTagLeaveResultsVisible[prefix]) {
