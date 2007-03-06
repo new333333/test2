@@ -3,6 +3,12 @@
 
 <beans>
 
+	<bean id="propertyPlaceholderConfigurer" 
+		class="com.sitescape.team.util.PropertyPlaceholderConfigurer" 
+		depends-on="sPropsUtil">	
+		<property name="location"><value>config/ssf.properties</value></property>								
+	</bean>
+
 	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
 	<bean id="multipartResolver" 
 		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
