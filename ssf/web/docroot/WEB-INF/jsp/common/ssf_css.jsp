@@ -163,7 +163,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_very_dim" value="0.4" scope="request"/>
 	
 	<c:set var="ss_portlet_style_background_color" value="#FFFFFF" scope="request"/>
-	<c:set var="ss_portlet_style_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_portlet_style_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_portlet_style_inherit_font_specification" value="false" scope="request"/>
 	
     <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
@@ -181,10 +181,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
-	<c:set var="ss_style_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
     <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
     <c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/>
-	<c:set var="ss_style_link_color" value="#000000" scope="request"/>
+	<c:set var="ss_style_link_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_link_hover_color" value="#3333FF" scope="request"/>
 	<c:set var="ss_style_gray_color" value="#999999" scope="request"/>
 	<c:set var="ss_style_light_color" value="#999999" scope="request"/>
@@ -218,7 +218,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
 	<c:set var="ss_form_element_border_color" value="#CCCCCC" scope="request"/>
-	<c:set var="ss_form_element_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_form_element_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 	
 
@@ -231,7 +231,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 
 	<c:set var="ss_toolbar2_background_color" value="#CECECE" scope="request"/>
-	<c:set var="ss_toolbar2_text_color" value="#000000" scope="request"/>
+	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
 	<c:set var="ss_toolbar2_dropdown_menu_color" value="#666666" scope="request"/>
@@ -244,7 +244,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_dashboard_table_border_color" value="blue" scope="request"/>
 
-	<c:set var="ss_blog_summary_title_background_color" value="#DEE7C6" scope="request"/>
+	<c:set var="ss_blog_summary_title_background_color" value="#E8EFF7" scope="request"/>
 	<c:set var="ss_blog_content_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_blog_sidebar_background_color" value="#E5E5E5" scope="request"/>
 
@@ -2631,25 +2631,25 @@ white-space: nowrap !important;
 
 .ss_table_paragraph_bld{
 	font-size: ${ss_style_font_normalprint};
-	color: #000000;
+	color: #333333;
 	font-weight: bold;
 	margin-left: 25px;
 	}
 .ss_table_paragraph{
 	font-size: ${ss_style_font_smallprint};
-	color: #000000;
+	color: #333333;
 	margin-left: 0px;
 }
 .ss_table_header{
 	font-size: ${ss_style_font_normalprint};
-	color: #000000;
+	color: #333333;
 	font-weight: bold;
 	margin-left: 0px;
 }
 .ss_table_smheaders {
 	font-size: ${ss_style_font_fineprint};
 	font-weight: bold;
-	color: #000000;
+	color: #333333;
 	line-height: normal;
 }
 .ss_table_paragraph_red {
@@ -2661,7 +2661,7 @@ white-space: nowrap !important;
 /* Muster div */
 .ss_muster_div {
 	position:absolute;
-	border:1px solid #000000;
+	border:1px solid #333333;
 	background:#ffffff;
 	padding:8px;
 }
