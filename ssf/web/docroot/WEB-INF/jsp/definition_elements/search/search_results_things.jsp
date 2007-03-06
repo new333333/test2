@@ -235,10 +235,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 </table>
 </div>
 <div class="ss_folder_border" style="position:relative; top:2; 
-  margin:0px 2px 2px 2px; padding:2px;
-  border-top:solid #666666 1px; 
-  border-right:solid #666666 1px; 
-  border-left:solid #666666 1px;">
+  margin:0px; padding:2px 0px;">
 
 <% // Add the toolbar with the navigation widgets, commands and filter %>
 <ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
