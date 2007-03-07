@@ -409,6 +409,13 @@ body.ss_style_body {
   left: -2px;
 }
 
+ul.ss_icon_list li {
+  display: inline;
+  padding-right: 25px;
+  list-style-type: none;
+}
+
+
 .ss_form, .ss_form table, .ss_style form {
   color: ${ss_form_text_color};
   background-color: ${ss_form_background_color};
