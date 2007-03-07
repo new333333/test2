@@ -382,13 +382,15 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	</tr>
 	
 	<c:set var="entryBinderId" value="${entry1._binderId}"/>
+	<c:set var="entryDocId" value="${entry1._docId}"/>	
 	<c:if test="${entry1._entityType == 'folder' || entry1._entityType == 'workspace'}">
 	  <c:set var="entryBinderId" value="${entry1._docId}"/>
+	  <c:set var="entryDocId" value=""/>
 	</c:if>
 	<tr>
 		<td class="ss_searchviewDashboardContainer">
 			<span class="ss_smallprint">
-				<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entry1._docId}">
+				<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
 					<ssf:textFormat textContent="${entry1._desc}" formatAction="limitedDescription" textMaxWords="30" />
 					<c:if test="${entry1._entityType == 'user'}">
 						<ssf:textFormat textContent="${entry1._comments}" formatAction="limitedDescription" textMaxWords="30" />
