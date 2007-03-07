@@ -182,7 +182,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 		<form method="post" id="ss_findTagsForm<portlet:namespace/>" name="ss_findTagsForm<portlet:namespace/>" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
-		  <ssHelpSpot helpId="personal_toolbar/findPlaces_button" offsetX="40" offsetY="10"
+		  <ssHelpSpot helpId="personal_toolbar/findTags_button" offsetX="40" offsetY="10"
 		    title="<ssf:nlt tag="helpSpot.findTagsButton"/>">
 			  <ssf:find 
 			    formName="ss_findTagsForm${renderResponse.namespace}" 
