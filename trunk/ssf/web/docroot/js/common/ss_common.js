@@ -240,8 +240,7 @@ function ss_showPermalink(obj) {
 	    divObj2.setAttribute("align", "right");
 	    divObj2.className = "ss_popupMenuClose";
 	    aObj = document.createElement("a");
-	    aObj.setAttribute("href", "#");
-	    aObj.setAttribute("onClick", "ss_hideDivNone('ss_permalink_display_div');return false;");
+	    aObj.setAttribute("href", "javascript: ss_hideDivNone('ss_permalink_display_div');");
 	    imgObj = document.createElement("img");
 	    imgObj.setAttribute("border", "0");
 	    imgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
