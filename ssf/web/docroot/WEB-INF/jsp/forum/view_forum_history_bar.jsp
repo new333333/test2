@@ -5,14 +5,20 @@
 <c:set var="ss_history_bar_loaded" value="1" scope="request"/>
 <script type="text/javascript">
 if (!ss_history_bar_loaded || ss_history_bar_loaded == "undefined" ) {
+var ss_entriesSeen = new Array();
 var ss_entryList = new Array();
 var ss_entryList2 = new Array();
 var ss_entryList3 = new Array();
 var ss_entryCount = 0;
 <c:forEach var="entry" items="${ssFolderEntries}" >
-ss_entryList2[ss_entryCount] = '<c:out value="${entry._binderId}"/>';
-ss_entryList3[ss_entryCount] = '<c:out value="${entry._entityType}"/>';
-ss_entryList[ss_entryCount++] = '<c:out value="${entry._docId}"/>';
+  <c:if test="${entry._entityType != 'folder' && entry._entityType != 'workspace' && entry._entityType != 'group'}">
+    if (typeof ss_entriesSeen['docId${entry._docId}'] == "undefined") {
+    	ss_entryList2[ss_entryCount] = '${entry._binderId}';
+    	ss_entryList3[ss_entryCount] = '${entry._entityType}';
+    	ss_entryList[ss_entryCount++] = '${entry._docId}';
+    	ss_entriesSeen['docId${entry._docId}'] = 1;
+    }
+  </c:if>
 </c:forEach>
 
 var left_end = "<html:imagesPath/>pics/sym_s_left_end.gif";
