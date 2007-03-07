@@ -9,8 +9,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.DispatcherServlet;
 
-import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
 import com.sitescape.team.portletadapter.support.KeyNames;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.DebugHelper;
 
 /**
@@ -31,6 +31,10 @@ public class PortletAdapterServlet extends DispatcherServlet {
     	// This attribute is used to distinguish adapter request from regular request
     	req.setAttribute(KeyNames.CTX, ctx);
     	
+		String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
+		
+		req.setCharacterEncoding(charEncoding);
+		
     	try {
 	    	// Print debug information pertaining to cross context session sharing
 			DebugHelper.testRequestEnv("PortletAdapterServlet", req);
