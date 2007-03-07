@@ -1,8 +1,7 @@
 <% // Search results listing of "people" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div id="ss_people_table" style="position:relative; 
- margin:2px; border: #666666 1px solid;">
+<div id="ss_people_table" class="ss_search_results_pane">
 
 <table cellspacing="0" cellpadding="0">
   <th align="left" style="padding-left:20px;"><ssf:nlt tag="search.Rating"/> </th>
@@ -17,9 +16,4 @@
  </tr>
 </c:forEach>
 </table>
-
-<br/>
-<br/>
-<br/>
-
 </div>

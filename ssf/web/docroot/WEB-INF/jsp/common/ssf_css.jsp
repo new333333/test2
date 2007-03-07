@@ -2279,7 +2279,16 @@ ul.ss_utils_bar_submenu {
 	font-size:${ss_style_font_smallprint};
 }
 
-
+div.ss_search_results_pane, div.ss_search_results_pane table {
+  background-color:${ss_entry_description_background_color};
+}
+div.ss_search_results_pane {
+  position: relative;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  padding-top: 10px;
+  padding-right: 20px;
+}
 
 /* Search results selection */
 .ss_search_results_selection {
@@ -2611,10 +2620,10 @@ white-space: nowrap !important;
 	background-color: ${ss_table_background_color_row_hover} !important;
 }
 /*cell and row border*/
-.ss_table td, th{
+.ss_table td, .ss_table th {
 	border: 1px dotted #CCCCCC;
 }
-.ss_table tbody td{
+.ss_table tbody td {
 	padding: 0.5em;
 }
 /*work around to eliminate borders on nested tables*/
