@@ -10,7 +10,7 @@
 	}
 %>
 <div style="display:inline;"><%= caption %>
-
+<ul class="ss_icon_list">
 <%
 	String iconValue = (String)request.getAttribute("iconValue");
 	String iconListPath = (String)request.getAttribute("iconListPath");
@@ -25,12 +25,11 @@
 		}
 
 %>
-<input type="radio" class="ss_text" name="${property_name}" 
+<li><input type="radio" class="ss_text" name="${property_name}" 
   value="<%= iconListValue %>" <%= checked %>
-/><img border="0" src="<html:imagesPath/>.<%= iconListValue %>" /><br/>
+/><img border="0" src="<html:imagesPath/>.<%= iconListValue %>" /></li>
 <%
 	}
-    
 %>
-
+</ul>
 </div>
