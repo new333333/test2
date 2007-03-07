@@ -159,7 +159,7 @@ function ss_getNextEntryId(imageId) {
 	var nextEntry = "";
 	var nextBinderId = "";
 	var entityType = "";
-	if (!ss_currentEntryId || ss_currentEntryId == "") {
+	if (typeof ss_currentEntryId == "undefined" || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {
 			nextEntry = ss_entryList[0];
 			nextBinderId = ss_entryList2[0];
@@ -179,10 +179,9 @@ function ss_getNextEntryId(imageId) {
 		}
 	}
 	ss_restoreImages(imageId);
-	ss_debug('entityType = '+entityType)
 	if (nextEntry != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
 		ss_currentEntryId = nextEntry;
-		if (ss_currentEntryId != ss_entryList[0]) ss_getNextEntryId(imageId);
+		ss_getNextEntryId(imageId);
 	} else if (nextEntry != "") {
 		var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", nextBinderId);
@@ -211,6 +210,7 @@ function ss_getPreviousEntryId(imageId) {
 		}
 	} else {
 		for (var i = 0; i < ss_entryCount; i++) {
+			ss_debug('i = '+i+', entry = '+ss_entryList[i])
 			if (ss_entryList[i] == ss_currentEntryId) {
 				i--;
 				if (i >= 0) {

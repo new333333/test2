@@ -5,9 +5,13 @@
 
 	<c:forEach var="entry" items="${ssFolderEntries}" >
 		<jsp:useBean id="entry" type="java.util.HashMap" />
+		<c:set var="entryBinderId" value="${entry._binderId}"/>
+		<c:if test="${entry._entityType == 'folder' || entry._entityType == 'workspace'}">
+		  <c:set var="entryBinderId" value="${entry._docId}"/>
+		</c:if>
 		
 		<tr>
-			<td class="ss_searchviewContainer">
+			<td class="ss_searchviewContainer">xxx${entry._entityType}xxx
 				<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
 					action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />" 
 					onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" ><span class="ss_entryTitle">
@@ -20,7 +24,7 @@
 		<c:if test="${!empty entry._desc}">
 			<tr>
 				<td class="ss_searchviewContainer">
-					<ssf:markup type="view" binderId="${entry._binderId}" entryId="${entry._docId}">
+					<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entry._docId}">
 						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="60" />
 					</ssf:markup>
 				</td>
