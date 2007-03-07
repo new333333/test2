@@ -44,10 +44,6 @@ public class PortletAdapterController extends SAbstractController {
 		int actionInt = RequestUtils.getIntParameter(req,
 				KeyNames.PORTLET_URL_ACTION, 0);
 
-		String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
-		
-		req.setCharacterEncoding(charEncoding);
-		
 		try {
 			Map params = null;
 			
@@ -75,6 +71,7 @@ public class PortletAdapterController extends SAbstractController {
 			
 			RenderResponseImpl renderRes = new RenderResponseImpl(renderReq,
 					res, portletName);
+			String charEncoding = SPropsUtil.getString("web.char.encoding", "UTF-8");
 			renderRes.setContentType("text/html; charset=" + charEncoding);
 			renderReq.defineObjects(portletInfo.getPortletConfig(), renderRes);
 			
