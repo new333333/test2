@@ -36,16 +36,16 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 
 <div>
   <ul class="ss_actions_bar ss_actions_bar1">
-    <li class="ss_search_results_selection_inactive" id="ss_search_results_people_tab"><a href="#" 
+    <li class="ss_search_results_selection_inactive" id="ss_search_results_people_tab"><a href="javascript:;" 
       onClick="ss_showSearchResults('people');return false;"
       ><ssf:nlt tag="search.People"/></a></li>
-    <li class="ss_search_results_selection_inactive" id="ss_search_results_places_tab"><a href="#" 
+    <li class="ss_search_results_selection_inactive" id="ss_search_results_places_tab"><a href="javascript:;" 
       onClick="ss_showSearchResults('places');return false;"
       ><ssf:nlt tag="search.Places"/></a></li>
-    <li class="ss_search_results_selection_inactive" id="ss_search_results_tags_tab"><a href="#" 
+    <li class="ss_search_results_selection_inactive" id="ss_search_results_tags_tab"><a href="javascript:;" 
       onClick="ss_showSearchResults('tags');return false;"
       ><ssf:nlt tag="search.Tags"/></a></li>
-    <li class="ss_search_results_selection_active" id="ss_search_results_things_tab"><a href="#" 
+    <li class="ss_search_results_selection_active" id="ss_search_results_things_tab"><a href="javascript:;" 
       onClick="ss_showSearchResults('things');return false;"
       ><ssf:nlt tag="search.Things"/></a></li>
   </ul>

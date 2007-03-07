@@ -1,19 +1,10 @@
 <% // Search results listing of "tags" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<div id="ss_tags_table" style="position:relative; 
- height:400px; overflow:visible; 
- margin:2px; border: #666666 1px solid;">
-<table cellspacing="0" cellpadding="0" width="95%" align="center">
- 
- <tr>
-  <td class="ss_bold ss_largerprint"><ssf:nlt tag="tags.community"/>:</td>
- </tr>
-
- <tr><td>&nbsp;</td></tr>
- 
- <tr>
-  <td>
+<div id="ss_tags_table" class="ss_search_results_pane">
+ <div style="padding-left: 20px;">
+  <span class="ss_bold"><ssf:nlt tag="tags.community"/>:</span>
+  <p>
    <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
    
    	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -32,23 +23,9 @@
 	  class="${tag.searchResultsRatingCSS}">&nbsp;${tag.ssTag}</a>&nbsp;&nbsp;
    	
    </c:forEach>
-  </td>
- </tr>   
-
- <tr><td>&nbsp;</td></tr>
- <tr><td>&nbsp;</td></tr>
- <tr><td>&nbsp;</td></tr>
-
- <tr>
-  <td class="ss_bold ss_largerprint"><ssf:nlt tag="tags.personal"/>:</td>
- </tr>
-
- <tr>
-  <td>&nbsp;</td>
- </tr>
-
- <tr>
-  <td>
+<p>
+<span class="ss_bold"><ssf:nlt tag="tags.personal"/>:</span>
+<p>
    <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 
    	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -64,8 +41,5 @@
 				name="tabId" value="${tabId}"/></portlet:actionURL>" class="${tag.searchResultsRatingCSS}">&nbsp;${tag.ssTag}</a>&nbsp;&nbsp;
 				
    </c:forEach>
-  </td>
- </tr>   
-
-</table>
+ </div>
 </div>
