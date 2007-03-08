@@ -108,7 +108,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_lastHighlightedFavorite = null;
 	var ss_pauseTreeIdClick = 0;
 	var ss_pauseTreeIdClickTimer = null;
-	var ss_favoritesPaneTopOffset = 50;
+	var ss_favoritesPaneTopOffset = 0;
 	var ss_favoritesPaneLeftOffset = 4;
 	var ss_favoritesMarginW = 4;
 	var ss_favoritesMarginH = 6;
