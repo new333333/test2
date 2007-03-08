@@ -13,9 +13,11 @@ import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
@@ -24,10 +26,13 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.jobs.UserTitleChange;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.team.module.profile.ProfileCoreProcessor;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
@@ -39,6 +44,8 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
@@ -71,28 +78,72 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     
     //***********************************************************************************************************
             
-    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    //inside write transaction
+   protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
         ((Principal)entry).setZoneId(binder.getZoneId());
         doProfileEntryFillin(entry, inputData, entryData);
-        super.addEntry_fillIn(binder, entry, inputData, entryData);
+        super.addEntry_fillIn(binder, entry, inputData, entryData, ctx);
      }
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//make user the owner so create_modify access works
     	if (entry instanceof User) {
     		entry.getCreation().setPrincipal((User)entry);
     		entry.getModification().setPrincipal((User)entry);
     	}
-    	super.addEntry_postSave(binder, entry, inputData, entryData);
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     }
        
     //***********************************************************************************************************	
-   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    //inside write transaction
+   protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	//see if we have updates to fields not covered by definition build
     	doProfileEntryFillin(entry, inputData, entryData);
-    	super.modifyEntry_fillIn(binder, entry, inputData, entryData);
+    	super.modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
     }
-    /**
+   //inside write transaction
+   protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
+   		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
+	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
+	   if (entry instanceof User) {
+		   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
+		   //need to schedule a reindex of entries with my title
+		   if (!entry.getTitle().equals(originalTitle)) {
+			   scheduleTitleUpdate((User)entry);
+		   }
+	   }
+		   
+   }
+   protected void scheduleTitleUpdate(User user) {
+	   List entryIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.FolderEntry where creation.principal=" +
+			   user.getId() + " or modification.principal=" + user.getId(), null);
+	   List binderIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.Binder where creation.principal=" +
+			   user.getId() + " or modification.principal=" + user.getId(), null);
+	   String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+	   String jobClass = SZoneConfig.getString(zoneName, "userConfiguration/property[@name='" + UserTitleChange.USER_TITLE_JOB + "']");
+ 	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultUserTitleChange";
+ 	   try {
+ 		   Class processorClass = ReflectHelper.classForName(jobClass);
+ 		  UserTitleChange job = (UserTitleChange)processorClass.newInstance();
+ 		  job.schedule(user, binderIds, entryIds);
+ 	
+ 	   } catch (ClassNotFoundException e) {
+ 		   throw new ConfigurationException(
+ 				"Invalid UserTitleChange class name '" + jobClass + "'",
+ 				e);
+ 	   } catch (InstantiationException e) {
+ 		   throw new ConfigurationException(
+ 				"Cannot instantiate UserTitleChange of type '"
+                     	+ jobClass + "'");
+ 	   } catch (IllegalAccessException e) {
+ 		   throw new ConfigurationException(
+ 				"Cannot instantiate UserTitleChange of type '"
+ 				+ jobClass + "'");
+ 	   } 
+ 	   	   
+	   
+   }
+   /**
      * Handle fields that are not covered by the definition builder
      * @param entry
      * @param inputData
@@ -113,13 +164,16 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     			entryData.put(ObjectKeys.FIELD_USER_MIDDLENAME, inputData.getSingleValue(ObjectKeys.FIELD_USER_MIDDLENAME));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_LOCALE) && !entryData.containsKey(ObjectKeys.FIELD_USER_LOCALE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleValue(ObjectKeys.FIELD_USER_LOCALE));
+    			entryData.put(ObjectKeys.FIELD_USER_LOCALE, inputData.getSingleObject(ObjectKeys.FIELD_USER_LOCALE));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
-    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleValue(ObjectKeys.FIELD_USER_TIMEZONE));
+    			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_PASSWORD) && !entryData.containsKey(ObjectKeys.FIELD_USER_PASSWORD)) {
+    			entryData.put(ObjectKeys.FIELD_USER_PASSWORD, inputData.getSingleValue(ObjectKeys.FIELD_USER_PASSWORD));
     		}
     	} else {
     		//must be a group
@@ -246,12 +300,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
           
     //***********************************************************************************************************
-    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
-    	super.deleteEntry_preDelete(parentBinder, entry, ctx);
-    	
-    	return ctx;
-    }
-    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
        	if (entry instanceof User) {
        		User p = (User)entry;
        		//mark deleted, cause their ids are used all over
@@ -260,7 +309,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		p.setTitle(NLT.get("profile.deleted.label") + " " + p.getTitle());
        	}
     	getProfileDao().delete((Principal)entry);   
-       	return ctx;
     }
 
     //***********************************************************************************************************    
@@ -283,25 +331,30 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     /**
      * Use to synchronize a user with an outside source.
      * Don't index if not changed - could be on a schedule and don't want to
-     * reindex all uses unnecessarily
+     * reindex all users unnecessarily
+     * Files are not handled here
      */
 	public void syncEntry(final Principal entry, final InputDataAccessor inputData) {
-	    Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
+		final Map ctx = syncEntry_setCtx(entry, null);
+		Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null, ctx);
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	        
         // The following part requires update database transaction.
         Boolean changed = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		boolean result1 = syncEntry_fillIn(entry, inputData, entryData);
+        		boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
 	                
-        		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData);
+        		boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
         		if (result1 || result2) return Boolean.TRUE;
         		return Boolean.FALSE;
         	}});
-	    if (changed.booleanValue() == true) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);		
+	    if (changed.equals(Boolean.TRUE)) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, ctx);		
 		
 	}
-	public boolean syncEntry_fillIn(Entry entry, InputDataAccessor inputData, Map entryData) {
+	protected Map syncEntry_setCtx(Entry entry, Map ctx) {
+		return modifyEntry_setCtx(entry, ctx);
+	}
+	protected boolean syncEntry_fillIn(Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 	        for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
 	        	Map.Entry mEntry = (Map.Entry)iter.next();
 	        	//need to generate id for the event so its id can be saved in customAttr
@@ -313,25 +366,33 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	        }
 	        doProfileEntryFillin(entry, inputData, entryData);
 	        boolean changed = EntryBuilder.updateEntry(entry, entryData);
+	        //don't want to do this unless a real change
 	        if (changed) {
 	 	       User user = RequestContextHolder.getRequestContext().getUser();
 	 	       entry.setModification(new HistoryStamp(user));
 	 	       entry.incrLogVersion();
-	 	       ChangeLog changes = new ChangeLog(entry, ChangeLog.MODIFYENTRY);
-	 	       ChangeLogUtils.buildLog(changes, entry);
-	 	       getCoreDao().save(changes);
+	 	       processChangeLog(entry, ChangeLog.MODIFYENTRY);
 
 	        }
 	        return changed;
 		
 	}
 
-	public boolean syncEntry_postFillIn(Entry entry, InputDataAccessor inputData, Map entryData) {
-		return false;		
+	protected boolean syncEntry_postFillIn(Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+  		if (entry.isTop() && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, 
+  				(String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
+  		if (entry instanceof User) {
+  			String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
+  			//need to schedule a reindex of entries with my title
+  			if (!entry.getTitle().equals(originalTitle)) {
+  				scheduleTitleUpdate((User)entry);
+  			}
+  		}
+  		return false;		
 	}
 	/**
 	 * Synchronize a list of entries.  The map key is the entry, value
-	 * is an InputDataAccessor of updates
+	 * is an InputDataAccessor of updates.  Only index entries that change
 	 */
 	public void syncEntries(final Map entries) {
 	    
@@ -339,18 +400,18 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         Map changedEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		Map changes = new HashMap();
-        	    for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
-        	    	Map.Entry mEntry = (Map.Entry)i.next();
-        	    	Entry entry = (Entry)mEntry.getKey();
-        	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
+                 for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
+                	 Map.Entry mEntry = (Map.Entry)i.next();
+                	 Principal entry = (Principal)mEntry.getKey();
+                	 Map ctx = syncEntry_setCtx(entry, null);
+                	 InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
         	    	
-        	    	Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null);
-        	    	Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
-        	    	boolean result1 = syncEntry_fillIn(entry, inputData, entryData);
-	                
-        	    	boolean result2 = syncEntry_postFillIn(entry, inputData, entryData);
+                	 Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null, ctx);
+                	 Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
+                	 boolean result1 = syncEntry_fillIn(entry, inputData, entryData, ctx);
+                	 boolean result2 = syncEntry_postFillIn(entry, inputData, entryData, ctx);
         	    	if (result1 || result2) changes.put(entry, inputData);
-        	    } 
+       	    } 
         	    return changes;
         	}});
         
@@ -358,7 +419,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);	
+	    	modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, null);	
 	    }
 		
 	}
@@ -368,23 +429,25 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		Map newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();
+	           		Map ctx = new HashMap();
 	        		for (int i=0; i<inputAccessors.size(); ++i) {
 	        			InputDataAccessor inputData = (InputDataAccessor)inputAccessors.get(i);
-	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null);
+	        			Map entryDataAll = addEntry_toEntryData(binder, definition, inputData, null, ctx);
 	        			Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	   	        
-	        			Entry entry = addEntry_create(definition, clazz);
+	        			Entry entry = addEntry_create(definition, clazz, ctx);
 	        			//	need to set entry/binder information before generating file attachments
 	        			//	Attachments/Events need binder info for AnyOwner
-	        			addEntry_fillIn(binder, entry, inputData, entryData);
+	        			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	                
-	        			addEntry_preSave(binder, entry, inputData, entryData);      
+	        			addEntry_preSave(binder, entry, inputData, entryData, ctx);    
 
-	        			addEntry_save(binder, entry, inputData, entryData);      
+	        			addEntry_save(binder, entry, inputData, entryData, ctx);      
 	                
-	        			addEntry_postSave(binder, entry, inputData, entryData);
+	        			addEntry_postSave(binder, entry, inputData, entryData, ctx);
 	        			newEntries.put(entry, inputData);
-	        			addEntry_startWorkflow(entry);
+	        			addEntry_startWorkflow(entry, ctx);
+	        			ctx.clear();
 	        		}
 	                return newEntries;
 	        	}
@@ -393,7 +456,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    	Map.Entry mEntry = (Map.Entry)i.next();
 	    	Entry entry = (Entry)mEntry.getKey();
 	    	InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
-	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null);	
+	    	addEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null);	
 	    }
 	    return new ArrayList(newEntries.keySet()); 
 		

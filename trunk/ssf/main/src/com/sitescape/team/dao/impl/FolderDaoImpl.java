@@ -54,7 +54,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	}
 	 	
 	/**
-    * Load 1 FolderEntry and its customAttributes collection
+    * Load 1 FolderEntry 
      * @param parentFolderId
      * @param entryId
      * @param zoneId
@@ -62,29 +62,16 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * @throws DataAccessException
 	 */
 	public FolderEntry loadFolderEntry(final Long parentFolderId, final Long entryId, final Long zoneId) throws DataAccessException {
-        return (FolderEntry)getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                        List results = session.createCriteria(FolderEntry.class)
-                    		.add(Expression.eq("id", entryId))
-                         	.setFetchMode("entryDef", FetchMode.SELECT)	
-                        	.setFetchMode("parentBinder", FetchMode.SELECT)	
-                        	.setFetchMode("topFolder", FetchMode.SELECT)	
-                           .list();
-                        if (results.size() == 0)  throw new NoFolderEntryByTheIdException(entryId);
-                        //because of join may get non-distinct results (wierd)
-                        FolderEntry entry = (FolderEntry)results.get(0);
-                        if (!entry.getParentFolder().getZoneId().equals(zoneId)) {
-                           	throw new NoFolderEntryByTheIdException(entryId);
-                        }
-                        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
-                           	throw new NoFolderEntryByTheIdException(entryId);        	
-                        }
-                        return entry;
-                    }
-                }
-             );
-    }
+		FolderEntry entry = (FolderEntry)getCoreDao().load(FolderEntry.class, entryId);
+		if (entry == null) throw new NoFolderEntryByTheIdException(entryId);
+        if (!entry.getParentFolder().getZoneId().equals(zoneId)) {
+        	throw new NoFolderEntryByTheIdException(entryId);
+        }
+        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
+        	throw new NoFolderEntryByTheIdException(entryId);        	
+        }
+        return entry;
+     }
       
      /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 

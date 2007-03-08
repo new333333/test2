@@ -46,6 +46,7 @@
 	    <value>com/sitescape/team/domain/WorkflowResponse.hbm.xml</value>
 	    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
 
+
   <!-- ############################################ -->
     <!-- # mapping files with external dependencies # -->
     <!-- ############################################ -->

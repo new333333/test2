@@ -28,7 +28,6 @@ public interface ObjectKeys {
 	public static final String DEFAULT_FOLDER_PHOTO_DEF="402883b90cc53079010cc539bf26000f";
 
 	
-	public static final String ADMINISTRATOR_ROLE_ID="402883b90cc53079010cc539bf260009";
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";
 	public static final String DEFAULT_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0002";
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
@@ -164,6 +163,8 @@ public interface ObjectKeys {
     public static final String FIELD_ENTITY_PARENTBINDER="parentBinder";
     public static final String FIELD_ENTITY_DEFTYPE="definitionType";
     public static final String FIELD_ENTITY_ICONNAME="iconName";
+    public static final String FIELD_ENTITY_CREATE_PRINCIPAL="creation.principal";
+    public static final String FIELD_ENTITY_MODIFY_PRINCIPAL="modification.principal";
     
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
@@ -176,6 +177,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL="emailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_TIMEZONE="timeZone";
+    public static final String FIELD_USER_PASSWORD="password";
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";

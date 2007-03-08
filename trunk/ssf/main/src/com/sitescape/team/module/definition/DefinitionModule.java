@@ -20,8 +20,6 @@ import com.sitescape.team.module.shared.InputDataAccessor;
  *
  */
 public interface DefinitionModule {
-	public void addIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
-	public void addNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 
 	public String addDefinition(Document doc);
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
@@ -40,8 +38,8 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
-	public Definition createDefaultDefinition(int type);
-	public Definition createDefaultDefinition(int type, String viewType);
+	public Definition addDefaultDefinition(int type);
+	public Definition addDefaultDefinition(int type, String viewType);
 	public void deleteDefinition(String id);
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
 
@@ -58,6 +56,8 @@ public interface DefinitionModule {
 	 */
 	public Map getEntryData(Document def, InputDataAccessor inputData, Map fileItems);
 	public Map getEntryDefinitionElements(String id);
+	public void getIndexFieldsForEntity(org.apache.lucene.document.Document indexDoc, DefinableEntity entity);
+	public void getNotifyElementForEntity(Element element, Notify notifyDef, DefinableEntity entity);
 	public Map getWorkflowDefinitionStates(String id);
 
 	public void modifyDefinitionName(String id, String name, String caption);

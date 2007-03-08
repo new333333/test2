@@ -56,7 +56,7 @@ import com.sitescape.util.Validator;
 public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor 
 	implements FolderCoreProcessor {
   //***********************************************************************************************************	
-    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	Folder folder = (Folder)binder;
     	FolderEntry fEntry = (FolderEntry)entry;
     	getCoreDao().refresh(folder);
@@ -64,17 +64,17 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	if (inputData.exists(ObjectKeys.INPUT_FIELD_POSTING_FROM)) {
     		fEntry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 
     	}
-    	super.addEntry_fillIn(folder, entry, inputData, entryData);
+    	super.addEntry_fillIn(folder, entry, inputData, entryData, ctx);
     	fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
  
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
-    	super.addEntry_postSave(binder, entry, inputData, entryData);
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	super.addEntry_postSave(binder, entry, inputData, entryData, ctx);
     	getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).
 							setSeen(entry);
     }
-    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
-       	super.addEntry_done(binder, entry, inputData);
+    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
+       	super.addEntry_done(binder, entry, inputData, ctx);
        	if (entry instanceof AclControlled)
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
     	else
@@ -86,22 +86,22 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
- 
-    	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems);
+    	final Map ctx = new HashMap();
+
+    	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileData = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         try {
-         	final FolderEntry entry = addReply_create(def);
-         	        
-         	Long lastParentVersion = parent.getLogVersion();
+         	final FolderEntry entry = addReply_create(def, ctx);
+          	Long lastParentVersion = parent.getLogVersion();
         	// The following part requires update database transaction.
         	getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
-        		addReply_fillIn(parent, entry, inputData, entryData);
-        		addReply_preSave(parent, entry, inputData, entryData);
-        		addReply_save(parent, entry, inputData, entryData);
-               	addReply_startWorkflow(entry);
-           		addReply_postSave(parent, entry, inputData, entryData);
+        		addReply_fillIn(parent, entry, inputData, entryData, ctx);
+        		addReply_preSave(parent, entry, inputData, entryData, ctx);
+        		addReply_save(parent, entry, inputData, entryData, ctx);
+               	addReply_startWorkflow(entry, ctx);
+           		addReply_postSave(parent, entry, inputData, entryData, ctx);
            	return null;
         	}});
         	//assume parent has been updated, index now
@@ -116,12 +116,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         		
         	}
            	// Need entry id before filtering 
-            FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData);
-        	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors);
+            FilesErrors filesErrors = addReply_filterFiles(parent.getParentFolder(), entry, entryData, fileData, ctx);
+        	filesErrors = addReply_processFiles(parent, entry, fileData, filesErrors, ctx);
                  
-        	addReply_indexAdd(parent, entry, inputData, fileData);
+        	addReply_indexAdd(parent, entry, inputData, fileData, ctx);
                 
-        	addReply_done(parent, entry, inputData);
+        	addReply_done(parent, entry, inputData, ctx);
 
         	if(filesErrors.getProblems().size() > 0) {
         		// 	At least one error occured during the operation. 
@@ -136,15 +136,15 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     }
         
-    protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) {
-     	return addEntry_toEntryData(parent.getParentBinder(), def, inputData, fileItems);
+    protected Map addReply_toEntryData(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
+     	return addEntry_toEntryData(parent.getParentBinder(), def, inputData, fileItems, ctx);
     }
     
     /**
      * Subclass must implement this.
      * @return
      */
-    protected FolderEntry addReply_create(Definition def) {
+    protected FolderEntry addReply_create(Definition def, Map ctx) {
     	try {
     		FolderEntry entry =  new FolderEntry();
            	entry.setEntryDef(def);
@@ -157,70 +157,70 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
 
     protected FilesErrors addReply_filterFiles(Binder binder, Entry reply, 
-    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
-    	return addEntry_filterFiles(binder, reply, entryData, fileUploadItems);
+    		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
+    	return addEntry_filterFiles(binder, reply, entryData, fileUploadItems, ctx);
     }
 
     protected FilesErrors addReply_processFiles(FolderEntry parent, FolderEntry entry, 
-    		List fileData, FilesErrors filesErrors) {
-    	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors);
+    		List fileData, FilesErrors filesErrors, Map ctx) {
+    	return addEntry_processFiles(parent.getParentBinder(), entry, fileData, filesErrors, ctx);
     }
     //inside write transaction
-    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addReply_fillIn(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
         parent.addReply(entry);         
     	if (inputData.exists(ObjectKeys.INPUT_FIELD_POSTING_FROM)) {
     		entry.setPostedBy(inputData.getSingleValue(ObjectKeys.INPUT_FIELD_POSTING_FROM)); 
     	}
-    	super.addEntry_fillIn(entry.getParentBinder(), entry, inputData, entryData);
+    	super.addEntry_fillIn(entry.getParentBinder(), entry, inputData, entryData, ctx);
     	entry.updateLastActivity(entry.getModification().getDate());
     }
     
     //inside write transaction
-    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-    	addEntry_preSave(parent.getParentBinder(), entry, inputData, entryData);
+    protected void addReply_preSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	addEntry_preSave(parent.getParentBinder(), entry, inputData, entryData, ctx);
     }
     
     //inside write transaction
-    protected void addReply_save(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
-    	addEntry_save(parent.getParentBinder(), entry, inputData, entryData);
+    protected void addReply_save(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
+    	addEntry_save(parent.getParentBinder(), entry, inputData, entryData, ctx);
     }
     //inside write transaction
-    protected void addReply_startWorkflow(FolderEntry entry) {
+    protected void addReply_startWorkflow(FolderEntry entry, Map ctx) {
     	FolderEntry parent = entry.getParentEntry();
    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
    	   		parent.incrLogVersion();
    			processChangeLog(parent, ChangeLog.MODIFYWORKFLOWSTATEONREPLY);
    		}
     	//Starting a workflow on a reply works the same as for the entry
-    	addEntry_startWorkflow(entry);
+    	addEntry_startWorkflow(entry, ctx);
     }
     
     //inside write transaction
-    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addReply_postSave(FolderEntry parent, FolderEntry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//will log addEntry
-    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData);
+    	addEntry_postSave(parent.getParentBinder(), entry, inputData, entryData, ctx);
 
     }
     
-    protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData) {
-    	addEntry_done(parent.getParentBinder(), entry, inputData);
+    protected void addReply_done(Entry parent, Entry entry, InputDataAccessor inputData, Map ctx) {
+    	addEntry_done(parent.getParentBinder(), entry, inputData, ctx);
     }
 
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
-    		InputDataAccessor inputData, List fileData) {
-    	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData);
+    		InputDataAccessor inputData, List fileData, Map ctx) {
+    	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
     }
     
      //***********************************************************************************************************
-   
+
 	protected void modifyEntry_postFillIn(Binder binder, Entry entry, 
- 			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo) {
- 		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
+ 			InputDataAccessor inputData, Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
+ 		super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 		getProfileDao().loadSeenMap(RequestContextHolder.getRequestContext().getUser().getId()).setSeen(entry);
     	FolderEntry fEntry = (FolderEntry)entry;
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
-	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
+	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	if (entry instanceof AclControlled)
     		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
     	else
@@ -228,7 +228,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	}
     //***********************************************************************************************************
 
-    protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
+    protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
+    	//need context to pass replies
+    	if (ctx == null) ctx = new HashMap();
+    	return super.deleteEntry_setCtx(entry, ctx);
+    }
+    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
     	super.deleteEntry_preDelete(parentBinder, entry, ctx);
       	//pass replies along as context so we can delete them all at once
      	//load in reverse hkey order so foreign keys constraints are handled correctly
@@ -241,12 +246,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		reply.updateLastActivity(reply.getModification().getDate());
     	}
       	fEntry.updateLastActivity(fEntry.getModification().getDate());
-      	return replies;
+      	ctx.put(this.getClass().getName(), replies);
     }
         
-    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
-    	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
-    	List replies = (List)ctx;
+    protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
+    	if (parentBinder.isDeleted()) return;  //will handle in bulk way
+    	List replies = (List)ctx.get(this.getClass().getName());
     	List ids = new ArrayList();
       	for (int i=0; i<replies.size(); ++i) {
     		ids.add(((FolderEntry)replies.get(i)).getId());
@@ -254,34 +259,30 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
       	ids.add(entry.getId());
       	//use optimized bulk delete
    		getFolderDao().deleteEntryWorkflows((Folder)parentBinder, ids);
-        return ctx;
     }
     
-    protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
-    	List replies = (List)ctx;
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, Map ctx) {
+    	List replies = (List)ctx.get(this.getClass().getName());
        	for (int i=0; i<replies.size(); ++i) {
     		super.deleteEntry_processFiles(parentBinder, (FolderEntry)replies.get(i), null);
     	}
        	super.deleteEntry_processFiles(parentBinder, entry, null);
-        return ctx;
     }
     
-    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
-       	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
+       	if (parentBinder.isDeleted()) return;  //will handle in bulk way
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
-       	List entries = new ArrayList((List)ctx);
+       	List entries = new ArrayList((List)ctx.get(this.getClass().getName()));
        	entries.add(entry);
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
-       	return ctx;
     }
-    protected Object deleteEntry_indexDel(Binder parentBinder, Entry entry, Object ctx) {
-       	if (parentBinder.isDeleted()) return ctx;  //will handle in bulk way
-        List replies = (List)ctx;
+    protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
+       	if (parentBinder.isDeleted());  //will handle in bulk way
+        List replies = (List)ctx.get(this.getClass().getName());
       	for (int i=0; i<replies.size(); ++i) {
     		super.deleteEntry_indexDel(parentBinder, (FolderEntry)replies.get(i), null);
     	}
 		super.deleteEntry_indexDel(parentBinder, entry, null);
-		return ctx;
    }
     
     //***********************************************************************************************************
@@ -643,6 +644,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
         // Add sortable Doc number
         IndexUtils.addSortNumber(indexDoc, fEntry);
+        // Add ReservedBy Principal Id
+       	IndexUtils.addReservedByPrincipalId(indexDoc, fEntry);
 
         // Add the folder Id
         IndexUtils.addFolderId(indexDoc, (Folder)binder);

@@ -1,46 +1,35 @@
 package com.sitescape.team.module.folder.impl;
 
-import java.util.Iterator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 
+import org.dom4j.io.SAXReader;
+import org.jbpm.JbpmContext;
+import org.jbpm.scheduler.exe.Timer;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.impl.FolderDaoImpl;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.NoWorkspaceByTheNameException;
-import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.workflow.impl.WorkflowFactory;
 import com.sitescape.team.module.workflow.impl.WorkflowModuleImpl;
+import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.util.cal.Duration;
 
-import org.dom4j.io.SAXReader;
-import org.jbpm.JbpmContext;
-import org.jbpm.db.SchedulerSession;
-import org.jbpm.scheduler.exe.Timer;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
-
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.impl.CoreDaoImpl;
-import com.sitescape.team.dao.impl.FolderDaoImpl;
-import com.sitescape.team.dao.impl.ProfileDaoImpl;
-
-public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpringContextTests {
+public class WorkflowTransitionTests extends AbstractTestBase {
 
 	protected WorkflowModuleImpl wfi;
-	protected CoreDaoImpl cdi;
 	protected FolderDaoImpl fdi;
-	protected ProfileDaoImpl pdi;
 	private static String zoneName ="testZone";
-	private static String adminGroup = "administrators";
-	private static String adminUser = "administrator";
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/team/module/folder/impl/applicationContext-workflowTransition.xml"};
 	}
@@ -55,13 +44,6 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 	}
 	public void setFolderDao(FolderDaoImpl fdi) {
 		this.fdi = fdi;
-	}
-	public void setCoreDao(CoreDaoImpl cdi) {
-		this.cdi = cdi;
-	}
-	
-	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
-		this.pdi = pdi;
 	}
 	public void testManualTransition() {
 		try {
@@ -475,28 +457,8 @@ public class WorkflowTransitionTests extends AbstractTransactionalDataSourceSpri
 		if (ws.getState().equals(stateName)) return;
 		throw new RuntimeException("Invalid transition, expecting state " + stateName + " at " + ws.getState());		
 	}
-	private Workspace createZone(String name) {
-		Workspace top;
-		try { 
-			top = cdi.findTopWorkspace(name);
-		} catch (NoWorkspaceByTheNameException nw) {
-			top = new Workspace();
-			top.setName(name);
-			top.setZoneId(new Long(-1));
-			cdi.save(top);
-			top.setZoneId(top.getId());
-			ProfileBinder profiles = new ProfileBinder();
-			profiles.setName("_profiles");
-			profiles.setZoneId(top.getZoneId());
-			profiles.setParentBinder(top);
-			//	generate id for top
-			cdi.save(profiles);
-			User user = new User();
-			user.setName(adminUser);
-			user.setZoneId(top.getZoneId());
-			user.setParentBinder(profiles);
-			cdi.save(user);
-		}
+	protected Workspace createZone(String name) {
+		Workspace top=super.createZone(name);
 		RequestContext rc = new RequestContext(name, adminUser);
 		rc.setUser(pdi.findUserByName(adminUser, name));
 		RequestContextHolder.setRequestContext(rc);

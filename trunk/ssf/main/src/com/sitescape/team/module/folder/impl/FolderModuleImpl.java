@@ -95,13 +95,13 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
 	   }
  	}
     public void startScheduledJobs(Workspace zone) {
- 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
+	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFolderDelete";
  	   try {
  		   Class processorClass = ReflectHelper.classForName(jobClass);
  		  FolderDelete job = (FolderDelete)processorClass.newInstance();
  		   //make sure a delete job is scheduled for the zone
- 		   String hrsString = (String)SZoneConfig.getString(zone.getName(), "workflowConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
+ 		   String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
  		   int hours = 24;
  		   try {
  			  hours = Integer.parseInt(hrsString);
@@ -110,15 +110,15 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
  	
  	   } catch (ClassNotFoundException e) {
  		   throw new ConfigurationException(
- 				"Invalid WorkflowTimeout class name '" + jobClass + "'",
+ 				"Invalid FolderDelete class name '" + jobClass + "'",
  				e);
  	   } catch (InstantiationException e) {
  		   throw new ConfigurationException(
- 				"Cannot instantiate WorkflowTimeout of type '"
+ 				"Cannot instantiate FolderDelete of type '"
                      	+ jobClass + "'");
  	   } catch (IllegalAccessException e) {
  		   throw new ConfigurationException(
- 				"Cannot instantiate WorkflowTimeout of type '"
+ 				"Cannot instantiate FolderDelete of type '"
  				+ jobClass + "'");
  	   } 
  	   
@@ -1046,6 +1046,21 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
    				logger.error(ex);
    			}
    		}
+    }
+    public void indexEntry(FolderEntry entry, boolean includeReplies) {
+		FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
+		processor.indexEntry(entry);
+		if (includeReplies) {
+			List<FolderEntry> replies = new ArrayList();
+			replies.addAll(entry.getReplies());
+			while (!replies.isEmpty()) {
+				FolderEntry reply = replies.get(0);
+				replies.remove(0);
+				replies.addAll(reply.getReplies());
+				processor.indexEntry(reply);
+			}
+		}
+   	
     }
     /**
      * Helper classs to return folder unseen counts as an objects

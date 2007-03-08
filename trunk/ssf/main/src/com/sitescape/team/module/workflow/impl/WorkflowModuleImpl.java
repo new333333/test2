@@ -62,6 +62,8 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
    /**
     * Called after bean is initialized.  Use this to make sure
     * scheduler has workflowtimeout job active
+    * Use named method instead of initializingBean signature, so
+    * junit test work without SZoneConfig.
     *
     */
    public void afterPropertiesSet() {

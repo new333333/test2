@@ -298,10 +298,10 @@ public class WorkflowUtils {
     	Element props = (Element)aclElement.selectSingleNode("./properties/property[@name='folderDefault']");
     	if (props != null)
     		result.setUseDefault(GetterUtil.getBoolean(props.attributeValue("value"), true));
-    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
     	props = (Element)aclElement.selectSingleNode("./properties/property[@name='userGroupAccess']");
     	if (props != null)
     		result.setPrincipals(props.attributeValue("value"));
+    	props = (Element)aclElement.selectSingleNode("./properties/property[@name='entryCreator']");
     	if ((props != null) && GetterUtil.getBoolean(props.attributeValue("value"), false)) {
     		//add special owner to allow list
     		result.getPrincipals().add(ObjectKeys.OWNER_USER_ID);

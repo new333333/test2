@@ -74,10 +74,9 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.GetterUtil;
-import com.sitescape.util.Validator;
 import com.sitescape.util.StringUtil;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
@@ -429,7 +428,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
 		element.addAttribute("href", adapterUrl.toString());
-		definitionModule.addNotifyElementForEntity(element, notifyDef, entry);	
+		definitionModule.getNotifyElementForEntity(element, notifyDef, entry);	
 	}
 	// get cached template.  If not cached yet,load it
 	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {

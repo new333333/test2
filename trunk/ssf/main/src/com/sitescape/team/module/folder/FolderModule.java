@@ -111,7 +111,7 @@ public interface FolderModule {
  	  
 	public Map getUnseenCounts(List folderIds);
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
-
+	public void indexEntry(FolderEntry entry, boolean includeReplies);
     /**
      * 
      * @param folderId

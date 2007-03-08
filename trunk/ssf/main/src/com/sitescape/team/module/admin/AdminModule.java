@@ -22,15 +22,10 @@ public interface AdminModule {
 
     public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
     public TemplateBinder addDefaultTemplate(int type);
+    public TemplateBinder addDefaultTemplate(int type, String viewStyle);
 	public Long addTemplate(int type, Map updates);
 	public Long addTemplate(Long parentId, Long srcConfigId);
 	public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;
-
-	public void addZone(String zoneName);
-
-	//TODO: temporary
-	public void setZone1(String zoneName);
-	public void setZone2(String zoneName);
 
 	public void addFunction(String name, Set operations);
     public void addPosting(Map updates);

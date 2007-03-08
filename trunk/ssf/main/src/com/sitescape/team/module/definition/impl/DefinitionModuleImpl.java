@@ -33,7 +33,6 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -402,10 +401,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @param type
 	 * @return
 	 */
-	public Definition createDefaultDefinition(int type) {
-		return createDefaultDefinition(type, null);
+	public Definition addDefaultDefinition(int type) {
+		return addDefaultDefinition(type, null);
 	}
-	public Definition createDefaultDefinition(int type, String viewType) {
+	public Definition addDefaultDefinition(int type, String viewType) {
 		// no access needed, just fills indefaults
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String definitionTitle=null;
@@ -589,7 +588,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else {
 				definitionType = Definition.FOLDER_VIEW;
 		}
-		Definition def = createDefaultDefinition(definitionType);
+		Definition def = addDefaultDefinition(definitionType);
 		binder.setEntryDef(def);
 		binder.setDefinitionType(definitionType);
 		return def;
@@ -603,7 +602,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else {
 			definitionType = Definition.FOLDER_ENTRY;
 		}
-		Definition def = createDefaultDefinition(definitionType);
+		Definition def = addDefaultDefinition(definitionType);
 		entry.setEntryDef(def);
 		entry.setDefinitionType(definitionType);
 		return def;
@@ -1564,7 +1563,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId(), type);
     	return defs;
     }
-	public void addIndexFieldsForEntity(
+	public void getIndexFieldsForEntity(
             org.apache.lucene.document.Document indexDoc,
             DefinableEntity entry) {
 		//access check not needed = assumed okay from entry
@@ -1659,7 +1658,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
         return map;
     }
-	public void addNotifyElementForEntity(Element element, Notify notifyDef, 
+	public void getNotifyElementForEntity(Element element, Notify notifyDef, 
 			DefinableEntity entry) {
 		//access check not needed = assumed okay from entry
         //Element configRoot = this.definitionConfig.getRootElement();

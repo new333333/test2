@@ -377,7 +377,6 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="authenticate">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
-				<prop key="checkZone">PROPAGATION_REQUIRES_NEW,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 			<property name="target">
@@ -456,7 +455,14 @@
 			</bean>
 		</property>
 	</bean>
-
+	<!--  Initialize the zone and checks dependencies -->
+	<bean id="zoneModule"  parent="moduleDependencyTemplate" class="com.sitescape.team.module.zone.impl.ZoneModuleImpl" depends-on="nlt,zoneConfig, binderAccessUtils" >
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+		<property name="adminModule"><ref local="adminModule"/></property>
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="profileModule"><ref local="profileModule"/></property>
+		<property name="binderModule"><ref local="binderModule"/></property>
+	</bean>
 	
 
 	<bean id="adminModule" parent="baseTransactionProxy">
