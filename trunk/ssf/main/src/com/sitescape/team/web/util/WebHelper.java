@@ -409,18 +409,19 @@ public class WebHelper {
 		outputString = outputString.replaceAll("%20", " ");
 		outputString = outputString.replaceAll("%7B", "{");
 		outputString = outputString.replaceAll("%7D", "}");
+		int loopDetector;
 
     	//Replace the markup urls with real urls {{attachmentUrl: tempFileHandle}}
     	if (httpReq != null && binderId != null) {
     		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	    	Matcher m1 = p1.matcher(outputString);
-	    	int counter = 0;
+	    	loopDetector = 0;
 	    	while (m1.find()) {
-	    		if (counter > 5000) {
+	    		if (loopDetector > 5000) {
 		        	logger.error("Error processing markup: " + inputString);
-	    			break;
+	    			return outputString;
 	    		}
-	    		counter++;
+	    		loopDetector++;
 	    		String url = m1.group(2);
 				String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
 				if (entity != null) {
@@ -447,7 +448,13 @@ public class WebHelper {
     	if (type.equals(WebKeys.MARKUP_VIEW) || type.equals(WebKeys.MARKUP_FORM)) {
 	    	Pattern p2 = Pattern.compile("(\\{\\{attachmentFileId: ([^}]*)\\}\\})");
 	    	Matcher m2 = p2.matcher(outputString);
+	    	loopDetector = 0;
 	    	while (m2.find()) {
+	    		if (loopDetector > 5000) {
+		        	logger.error("Error processing markup: " + inputString);
+	    			return outputString;
+	    		}
+	    		loopDetector++;
 	    		String fileIds = m2.group(2).trim();
 	    		//Look for the attachment
 				String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
@@ -462,7 +469,13 @@ public class WebHelper {
     	if (type.equals(WebKeys.MARKUP_VIEW)) {
 	    	Pattern p2 = Pattern.compile("(\\{\\{titleUrl: ([^\\}]*)\\}\\})");
 	    	Matcher m2 = p2.matcher(outputString);
+	    	loopDetector = 0;
 	    	while (m2.find()) {
+	    		if (loopDetector > 5000) {
+		        	logger.error("Error processing markup: " + inputString);
+	    			return outputString;
+	    		}
+	    		loopDetector++;
 	    		String urlParts = m2.group(2).trim();
 	        	String s_binderId = "";
 	        	Pattern p3 = Pattern.compile("binderId=([^ ]*)");
@@ -501,7 +514,13 @@ public class WebHelper {
 			String action = WebKeys.ACTION_VIEW_FOLDER_ENTRY;
 	    	Pattern p3 = Pattern.compile("(\\[\\[([^\\]]*)\\]\\])");
 	    	Matcher m3 = p3.matcher(outputString);
+	    	loopDetector = 0;
 	    	while (m3.find()) {
+	    		if (loopDetector > 5000) {
+		        	logger.error("Error processing markup: " + inputString);
+	    			return outputString;
+	    		}
+	    		loopDetector++;
 	    		//Get the title
 	    		String title = m3.group(2).trim();
 	    		String normalizedTitle = getNormalizedTitle(title);
