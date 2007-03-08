@@ -1267,14 +1267,8 @@ public class ListFolderController extends  SAbstractController {
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
 		if (DefinitionHelper.checkIfBinderShowingDashboard(folder)) {
-			boolean dashboardContentExists = false;
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
-				Map dashboard = (Map)ssDashboard.get("dashboard");
-				if (dashboard != null) {
-					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
-				}
-			}
+			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
 			
 			//This folder is showing the dashboard
 			qualifiers = new HashMap();

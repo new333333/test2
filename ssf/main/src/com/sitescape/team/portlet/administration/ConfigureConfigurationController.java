@@ -336,14 +336,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
 		if (DefinitionHelper.checkIfBinderShowingDashboard(config)) {
-			boolean dashboardContentExists = false;
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
-				Map dashboard = (Map)ssDashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
-				if (dashboard != null) {
-					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
-				}
-			}
+			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
 			
 			//This folder is showing the dashboard
 			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("toolbar.manageDashboard"));

@@ -1262,5 +1262,23 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	public void setIcBroker(ICBroker icBroker) {
 		this.icBroker = icBroker;
 	}
-	
+
+	public static boolean checkIfAnyContentExists(Map dashboard) {
+		boolean dashboardContentExists = false;
+		if (dashboard != null && dashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
+			Map dashboardLocal = (Map)dashboard.get("dashboard");
+			if (dashboard != null) {
+				dashboardContentExists = DashboardHelper.checkIfContentExists(dashboardLocal);
+			}
+			Map dashboardBinder = (Map)dashboard.get(WebKeys.DASHBOARD_BINDER_MAP);
+			if (!dashboardContentExists && dashboardBinder != null) {
+				dashboardContentExists = DashboardHelper.checkIfContentExists(dashboardBinder);
+			}
+			Map dashboardGlobal = (Map)dashboard.get(WebKeys.DASHBOARD_GLOBAL_MAP);
+			if (!dashboardContentExists && dashboardGlobal != null) {
+				dashboardContentExists = DashboardHelper.checkIfContentExists(dashboardGlobal);
+			}
+		}
+		return dashboardContentExists;
+	}
 }
