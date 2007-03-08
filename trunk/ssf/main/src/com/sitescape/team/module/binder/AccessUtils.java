@@ -14,11 +14,9 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
-import com.sitescape.team.security.acl.AccessType;
-import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.security.acl.AclAccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -47,9 +45,6 @@ public class AccessUtils  {
 	protected AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
-	protected static AccessControlManager getAccessManager() {
-		return getInstance().accessControlManager;
-	}
 	public void setFunctionManager(FunctionManager functionManager) {
 		this.functionManager = functionManager;
 	}
@@ -64,23 +59,21 @@ public class AccessUtils  {
 		return profileDao;
 	}
 
-    public static Set getReadAclIds(Entry entry) {
-     	if (!(entry instanceof AclControlled)) return null;
-        Set binderIds = getAccessManager().getWorkAreaAccessControl(entry.getParentBinder(), WorkAreaOperation.READ_ENTRIES);
+    public static Set getReadAccessIds(Entry entry) {
+        Set binderIds = getInstance().getAccessControlManager().getWorkAreaAccessControl(entry.getParentBinder(), WorkAreaOperation.READ_ENTRIES);
 	       
 		Set<Long> entryIds = new HashSet<Long>();
 	    if (entry instanceof WorkflowSupport) {
 			WorkflowSupport wEntry = (WorkflowSupport)entry;
 			if (wEntry.hasAclSet()) {
 				//index binders access
-				if (wEntry.checkWorkArea(AccessType.READ)) {
+				if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
 					entryIds.addAll(binderIds);
 				}
-				entryIds.addAll(wEntry.getAclSet().getMemberIds(AccessType.READ));
+				entryIds.addAll(wEntry.getStateMembers(WfAcl.AccessType.read));
 		        //replaces reserved ownerId with entry owner
-		        if (entryIds.remove(ObjectKeys.OWNER_USER_ID)) entryIds.add(wEntry.getOwnerId());
 				
-	    		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_WF_ACCESS, false)) {
+	    		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
 	    			//only index ids in both sets ie(AND)
 	    			//remove ids in entryIds but not in binderIds
 	    			entryIds.removeAll(CollectionUtil.differences(entryIds, binderIds));
@@ -94,15 +87,14 @@ public class AccessUtils  {
 				//doesn't have any active workflow, use binder access
 				return binderIds;
 			}
-		} else 
+		} else {
 			//use binder access
 			return binderIds;
+		}
     	 
      }
-     public static Set getReadAclIds(Binder binder) {
-        Set binderIds = new HashSet(getAccessManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES));
-  		return binderIds;
-     	 
+     public static Set getReadAccessIds(Binder binder) {
+        return getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);     	 
       }     	
 	
 	public static void readCheck(Entry entry) throws AccessControlException {
@@ -116,7 +108,7 @@ public class AccessUtils  {
     		
    }
 	private static void readCheck(User user, Binder binder, Entry entry) {
-      	getAccessManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
 		if (!entry.hasAclSet()) readCheck(user, binder, (Entry)entry);
@@ -124,15 +116,30 @@ public class AccessUtils  {
        		//see if pass binder test
        		readCheck(user, binder, (Entry)entry);
     	    //see if binder default is enough
-    	    if (entry.checkWorkArea(AccessType.READ)) return;
+    	    if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) return;
 		} catch (OperationAccessControlException ex) {
 			//at this point we can stop if workflow cannot widen access
 			// because the set cannot get any bigger
-	 		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_WF_ACCESS, false)) throw ex;
+	 		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
      	}
-       //This basically AND's the binder and entry
-        getAccessManager().checkAcl(user, binder, entry, AccessType.READ, false);
-	}
+       //This basically AND's the binder and entry, since we already passed the binder
+		checkAccess(user, entry, WfAcl.AccessType.read);
+ 	}
+    
+    private static void checkAccess(User user, WorkflowSupport entry, WfAcl.AccessType type) {
+        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return;
+        Set allowedIds = entry.getStateMembers(type);
+        if (testAccess(user, allowedIds)) return;
+        throw new AclAccessControlException(user.getName(), type.toString());
+    }
+    private static boolean testAccess(User user, Set allowedIds) {
+        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
+     	Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
+        for(Iterator i = principalIds.iterator(); i.hasNext();) {
+            if (allowedIds.contains(i.next())) return true;
+        }
+        return true;
+    }
     public static void modifyCheck(Entry entry) throws AccessControlException {
 		modifyCheck(RequestContextHolder.getRequestContext().getUser(), entry);
     }
@@ -145,10 +152,10 @@ public class AccessUtils  {
    }
     private static void modifyCheck(User user, Binder binder, Entry entry) {
        	try {
-       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES);
+       		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.MODIFY_ENTRIES);
        	} catch (OperationAccessControlException ex) {
       		if (user.equals(entry.getCreation().getPrincipal())) 
-      			getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
+      			getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_MODIFY);
       		else throw ex;
       	}
     }
@@ -159,15 +166,14 @@ public class AccessUtils  {
        		//see if pass binder test
        		modifyCheck(user, binder, (Entry)entry);
     	    //see if binder default is enough
-    	    if (entry.checkWorkArea(AccessType.WRITE)) return;
+    	    if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) return;
 		} catch (OperationAccessControlException ex) {
 			//at this point we can stop if workflow cannot widen access
 			// because the set cannot get any bigger
-			// note: modify is defined per binder.
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_WF_ACCESS, false)) throw ex;
+    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
      	}
-       //This basically AND's the binder and entry
-        getAccessManager().checkAcl(user, binder, entry, AccessType.WRITE, false);   	
+	       //This basically AND's the binder and entry, since we already passed the binder
+		checkAccess(user, entry, WfAcl.AccessType.write);
     }
 
      public static void deleteCheck(Entry entry) throws AccessControlException {
@@ -182,10 +188,10 @@ public class AccessUtils  {
     }
     private static void deleteCheck(User user, Binder binder, Entry entry) throws AccessControlException {
       	try {
-       		getAccessManager().checkOperation(user, binder, WorkAreaOperation.DELETE_ENTRIES);
+      		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.DELETE_ENTRIES);
        	} catch (OperationAccessControlException ex) {
       		if (user.equals(entry.getCreation().getPrincipal())) 
-   				getAccessManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
+   				getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.CREATOR_DELETE);
       		else throw ex;
       	}   
     }
@@ -196,19 +202,18 @@ public class AccessUtils  {
         	//see if pass binder test
         	deleteCheck(user, binder, (Entry)entry);
         	//see if binder default is enough
-        	if (entry.checkWorkArea(AccessType.DELETE)) return;
+        	if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) return;
         } catch (OperationAccessControlException ex) {
         	//at this point we can stop if workflow cannot widen access
         	// because the set cannot get any bigger
-        	// note: delete is defined per binder.
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_WF_ACCESS, false)) throw ex;
+    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
         }
-        //This basically AND's the binder and entry
-        getAccessManager().checkAcl(user, binder, entry, AccessType.DELETE, false);   	 	
+        //This basically AND's the binder and entry, since we already passed the binder
+		checkAccess(user, entry, WfAcl.AccessType.delete);
     }
      public static void overrideReserveEntryCheck(Entry entry) {
      	try {
-     		getAccessManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
+     		getInstance().getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
      	} catch (OperationAccessControlException ex) {
     		throw ex;
     	}
@@ -216,7 +221,7 @@ public class AccessUtils  {
      
      public static void overrideReserveEntryCheck(Binder binder) {
         try {
-        	getAccessManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+        	getInstance().getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), binder, WorkAreaOperation.BINDER_ADMINISTRATION);
         } catch (OperationAccessControlException ex) {
        		throw ex;
        	}
@@ -224,30 +229,28 @@ public class AccessUtils  {
      
      public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
      	throws AccessControlException {
-     	 WfAcl acl = WorkflowUtils.getStateTransitionInAcl(definition, toState);
-     	checkTransitionAcl(acl, binder, entry, "transitionIn");
+     	checkTransitionAcl(binder, entry, WfAcl.AccessType.transitionIn);
      }
      public static void checkTransitionOut(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
      	throws AccessControlException {
-     	 WfAcl acl = WorkflowUtils.getStateTransitionOutAcl(definition, toState);
-     	checkTransitionAcl(acl, binder, entry, "transitionOut");
+     	checkTransitionAcl(binder, entry, WfAcl.AccessType.transitionOut);
      }
-     private static void checkTransitionAcl(WfAcl acl, Binder binder, WorkflowSupport entry, String type)  
+     private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WfAcl.AccessType type)  
       	throws AccessControlException {
       	User user = RequestContextHolder.getRequestContext().getUser();
     	 try {
        		//see if pass binder test
        		modifyCheck(user, binder, (Entry)entry);
     	    //see if binder default is enough
-    	    if (acl.isUseDefault()) return;
-		} catch (OperationAccessControlException ex) {
+       	    if (entry.isWorkAreaAccess(type)) return;
+ 		} catch (OperationAccessControlException ex) {
 			//at this point we can stop if workflow cannot widen access
 			// because the set cannot get any bigger
 			// note: modify is defined per binder.
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_WF_ACCESS, false)) throw ex;
+    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
      	}
     	 //see if user can transition
-		getAccessManager().testAcl(user, entry, acl.getPrincipals());
+		checkAccess(user, entry, type);
      }
      
   	public static boolean checkIfAllOperationsAllowed(Long functionId, WorkArea workArea) {
@@ -259,7 +262,7 @@ public class AccessUtils  {
 		Iterator itOperations = f.getOperations().iterator();
 		while (itOperations.hasNext()) {
 			WorkAreaOperation o = (WorkAreaOperation) itOperations.next();
-			if (!getAccessManager().testOperation((WorkArea) workArea, o)) return false;
+			if (!getInstance().getAccessControlManager().testOperation((WorkArea) workArea, o)) return false;
 		}
 		return true;
 	}

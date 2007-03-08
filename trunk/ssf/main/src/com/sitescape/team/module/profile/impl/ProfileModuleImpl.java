@@ -315,7 +315,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, entryId);
-        checkAccess(entry, "modifyEntry");
+        //user can set their own display style
+        if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
+        		(inputData.getCount() > 1) ||
+        		!inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
+        	checkAccess(entry, "modifyEntry");
+        }
        	List atts = new ArrayList();
     	if (deleteAttachments != null) {
     		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
@@ -570,8 +575,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 
 		public Object getSingleObject(String key) {
-			return null;
-		}		
+			return (Element)source.selectSingleNode("./attribute[@name='" + key + "'] | ./property[@name='" + key + "']");
+		}
+		public int getCount() {
+			return source.nodeCount();
+		}
+
 	}
 	
     //RW transaction

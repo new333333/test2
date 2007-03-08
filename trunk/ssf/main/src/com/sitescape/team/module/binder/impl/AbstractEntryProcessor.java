@@ -65,6 +65,7 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
@@ -315,9 +316,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         entry.getEvents();
         entry.getCustomAttributes();
         
-        // The entry inherits acls from the parent by default. 
-        if (entry instanceof AclControlled) {
-        	getAclManager().doInherit(binder, (AclControlled) entry);
+        // The entry inherits acls from the parent by default, except workflow
+        if ((entry instanceof AclControlled) && (binder instanceof AclContainer)) {
+        	getAclManager().doInherit((AclContainer)binder, (AclControlled) entry);
         }
         for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
         	Object obj = iter.next();
@@ -1401,10 +1402,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Binder binder, Entry entry) {
       	EntityIndexUtils.addEntryType(indexDoc, entry);       
         // Add ACL field. We only need to index ACLs for read access.
-      	if (entry instanceof AclControlled)
-      		EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(entry), AccessUtils.getReadAclIds(binder));
-      	else 
-      		BasicIndexUtils.addReadAcls(indexDoc, binder, entry, getAclManager());
+   		EntityIndexUtils.addReadAccess(indexDoc, binder, entry);
       		
         //add parent binder - this isn't added for binders because it is used
         //in delete terms for entries in a binder. 

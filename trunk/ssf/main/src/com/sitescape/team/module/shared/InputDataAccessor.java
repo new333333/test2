@@ -41,4 +41,10 @@ public interface InputDataAccessor {
 	 * @return
 	 */
 	public Object getSingleObject(String key);
+	/**
+	 * Return count of elements
+	 * @return
+	 */
+	public int getCount();
+		
 }

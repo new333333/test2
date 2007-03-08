@@ -7,9 +7,9 @@ import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
-import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.util.Validator;
 
 /**
@@ -26,7 +26,8 @@ public class WorkflowState {
     protected long lockVersion;
     protected Long timerId=null;
     protected HistoryStamp workflowChange;
-	
+
+
 	//cached during transaction as needed 
 	protected Map wfAcls=null;
    
@@ -144,7 +145,7 @@ public class WorkflowState {
     }
 
 
-    public WfAcl getAcl(AccessType type) {
+    public WfAcl getAcl(WfAcl.AccessType type) {
     	WfAcl acl=null;
     	if (wfAcls == null) wfAcls = new HashMap();
     	else acl = (WfAcl)wfAcls.get(type);

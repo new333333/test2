@@ -15,7 +15,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WfNotify;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.security.acl.AccessType;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.GetterUtil;
@@ -231,48 +230,28 @@ public class WorkflowUtils {
 		}
 		return false;
     } 
-    public static WfAcl getStateAcl(Definition wfDef, String stateName, AccessType type) {
+    public static WfAcl getStateAcl(Definition wfDef, String stateName, WfAcl.AccessType type) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
 		Element stateEle = getState(wfDoc.getRootElement(), stateName);
 		if (stateEle != null) {
 			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
 			if (accessControls != null) {
-				if (AccessType.READ.equals(type))
-						return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"));
-				else if (AccessType.WRITE.equals(type))  
-						return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"));
-				else if (AccessType.DELETE.equals(type)) 
-						return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"));
+				if (WfAcl.AccessType.read.equals(type))
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), type);
+				else if (WfAcl.AccessType.write.equals(type))  
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), type);
+				else if (WfAcl.AccessType.delete.equals(type)) 
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), type);
+				else if (WfAcl.AccessType.transitionOut.equals(type))
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), type);
+				else if (WfAcl.AccessType.transitionIn.equals(type))
+					return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), type);
 			}
 			
 		}
-		return getAcl(null);
+		return getAcl(null, type);
     }
-    public static WfAcl getStateTransitionOutAcl(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {
-			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
-			if (accessControls != null) {
-				return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"));
-			}			
-		}
-		return getAcl(null);
-    }
-    public static WfAcl getStateTransitionInAcl(Definition wfDef, String stateName) {
-    	Document wfDoc = wfDef.getDefinition();
-		//Find the current state in the definition
-		Element stateEle = getState(wfDoc.getRootElement(), stateName);
-		if (stateEle != null) {
-			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
-			if (accessControls != null) {
-				return getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"));
-			}			
-		}
-		return getAcl(null);
-    }    
     public static Map getAcls(Definition wfDef, String stateName) {
     	Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -281,19 +260,23 @@ public class WorkflowUtils {
 		if (stateEle != null) {
 			Element accessControls = (Element)stateEle.selectSingleNode("./item[@name='accessControls']");
 			if (accessControls != null) {
-				results.put(AccessType.READ, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']")));
-				results.put(AccessType.WRITE, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']")));
-				results.put(AccessType.DELETE, 
-						getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']")));
+				results.put(WfAcl.AccessType.read, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='readAccess']"), WfAcl.AccessType.read));
+				results.put(WfAcl.AccessType.write, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='modifyAccess']"), WfAcl.AccessType.write));
+				results.put(WfAcl.AccessType.delete, 
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='deleteAccess']"), WfAcl.AccessType.delete));
+				results.put(WfAcl.AccessType.transitionOut,
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionOutAccess']"), WfAcl.AccessType.transitionOut));
+				results.put(WfAcl.AccessType.transitionIn,
+						getAcl((Element)accessControls.selectSingleNode("./item[@name='transitionInAccess']"), WfAcl.AccessType.transitionIn ));
 			}
 			
 		}
 		return results;
     }
-    private static WfAcl getAcl(Element aclElement) {
-    	WfAcl result = new WfAcl();
+    private static WfAcl getAcl(Element aclElement, WfAcl.AccessType type) {
+    	WfAcl result = new WfAcl(type);
     	if (aclElement == null) return result;
     	Element props = (Element)aclElement.selectSingleNode("./properties/property[@name='folderDefault']");
     	if (props != null)

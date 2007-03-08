@@ -1484,10 +1484,16 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							}
 						} else if (itemName.equals("profileTimeZone")) {
 							if (inputData.exists(nameValue)) {
-								String val = inputData.getSingleValue(nameValue);
-								if (Validator.isNull(val))
+								Object val = inputData.getSingleObject(nameValue);
+								if (val == null) {
 									entryData.put(nameValue, null);
-								else entryData.put(nameValue, TimeZone.getTimeZone(val));
+								} else if (val instanceof TimeZone) {
+									entryData.put(nameValue, (TimeZone)val);
+								} else {
+									String sVal = inputData.getSingleValue(nameValue);
+									if (Validator.isNull(sVal)) entryData.put(nameValue, null);
+									else entryData.put(nameValue, TimeZone.getTimeZone(sVal));
+								}
 							}
 						} else if (itemName.equals("file") || itemName.equals("graphic") || 
 								itemName.equals("profileEntryPicture")) {

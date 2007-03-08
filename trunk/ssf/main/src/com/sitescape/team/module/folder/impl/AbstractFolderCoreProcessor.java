@@ -75,11 +75,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
-       	if (entry instanceof AclControlled)
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-    	else
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
-    }
+   		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAccessIds(entry)); 
+     }
 
     //***********************************************************************************************************
     public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
@@ -221,10 +218,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
-       	if (entry instanceof AclControlled)
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
-    	else
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
+    	getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAccessIds(entry));
  	}
     //***********************************************************************************************************
 
@@ -353,10 +347,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
- 		if (entry instanceof AclControlled)
-    		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(entry)); // Just for testing
- 		else
- 			getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAclIds(binder)); // Just for testing
 	}
  	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
     		String [] entryTypes, org.dom4j.Document searchFilter) {

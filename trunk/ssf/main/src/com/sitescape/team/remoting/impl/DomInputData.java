@@ -66,5 +66,7 @@ public class DomInputData implements InputDataAccessor {
 	public Object getSingleObject(String key) {
 		return getSingleValue(key);
 	}
-
+	public int getCount() {
+		return root.nodeCount();
+	}
 }

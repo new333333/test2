@@ -189,9 +189,7 @@ public class QueryBuilder {
 			 * else
 			 * ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
 			 */
-			boolean widen = false;
-			if (SPropsUtil.getBoolean("entryacl.widens.folderacl"))
-				widen = true;
+			boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
 			//folderAcl:1,2,3...
 			qString += "(((";
 			boolean first = true;
