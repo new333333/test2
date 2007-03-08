@@ -65,7 +65,6 @@
 								  		<c:when test="${ss_showTeamMembers}">
 											<% // Navigation links %>
 											<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-											<br/>
 											
 											<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 											
@@ -81,7 +80,6 @@
 										<c:otherwise>
 											<% // Navigation links %>
 											<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-											<br/>
 											
 											<% // Show the workspace according to its definition %>
 											<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

@@ -354,6 +354,10 @@ body.ss_style_body {
 .ss_nowrap {
   white-space: nowrap;
 }
+.ss_transparent {
+  background-color: transparent !important;
+}
+
 .ss_brightest {
  opacity: ${ss_style_brightest};
  <c:if test="<%= isIE %>">
@@ -3002,6 +3006,61 @@ div.ss_smallRBoxBody {
   position: relative;
   overflow: hidden;
 }
+
+
+div.ss_profileBox1 {
+  background: #DEE7C6;
+}
+
+div.ss_profileBox2 {
+  background: #DBE6F2;
+}
+
+div.ss_profile_box_title {
+  font-size: 15px;
+  color: #666666;
+  height: 20px;
+}
+
+div.ss_profile_matte {
+  background: #ffffff;
+  padding: 5px;
+}
+div.ss_profile_picture_frame {
+  height: 200px;
+  width: 200px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+div.ss_profile_info_frame {
+  height: 200px;
+  text-align: center;
+  vertical-align: top;
+}
+
+div.ss_profile_photo_box {
+    background-color: transparent !important;
+	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.jpg);
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+div.ss_profile_info_box {
+    background-color: transparent !important;
+	background-image: url(<html:imagesPath/>pics/watermark_info.jpg);
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+div.ss_profile_contact_box {
+    background-color: transparent !important;
+	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.jpg);
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+
 
 
 /*
