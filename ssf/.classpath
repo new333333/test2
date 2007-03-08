@@ -5,7 +5,6 @@
 	<classpathentry kind="src" path="as-module/src"/>
 	<classpathentry kind="src" path="tools/src"/>
 	<classpathentry kind="src" path="ssfs/src"/>
-	<classpathentry kind="src" path="remoting/src"/>
 	<classpathentry kind="src" path="main/test/src"/>
 	<classpathentry kind="src" path="portal-module/src"/>
 	<classpathentry kind="src" path="liferay/src"/>
@@ -46,7 +45,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/easymock.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jbpm-identity.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/spring-mock.jar"/>
