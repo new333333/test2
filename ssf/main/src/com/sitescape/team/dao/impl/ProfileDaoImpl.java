@@ -69,25 +69,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	private CoreDao getCoreDao() {
 	    return coreDao;
 	}
-	//called from super-class afterPropertiesSet
-	protected void initDao() throws Exception {
-	    List<Principal> profiles = (List)getHibernateTemplate().execute(
-	            new HibernateCallback() {
-	                public Object doInHibernate(Session session) throws HibernateException {
-	                   	Query query = session.createQuery("from com.sitescape.team.domain.Principal p where not p.internalId is null");
-	                    return query.list();
-	                 }
-	            }
-	        );
-	    //keep cache of reserved ids=>database id
-	    //since the all_users group Id is requested frequently, use our own cache,
-	    //skipping hibernates object cache
-		for (Principal p:profiles) {
-			String key = p.getInternalId() + "-" + p.getZoneId();
-			reservedIds.put(key, p.getId());
-		}
-	 
-	}
 	
 	/*
 	 * In most cases this will be initialized at startup and won't change,
@@ -641,6 +622,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			users = new HashSet(result);
 			//remove postingAgent
 			users.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+			users.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
 		} else {
 			users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {

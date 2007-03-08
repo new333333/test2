@@ -631,6 +631,7 @@ public class AjaxController  extends SAbstractController {
 	   	
 		// check to see if the user has the right to see all users, just users in their community,
 		// or no users.
+/* Need a beter implemenation - disable for now
 		if (!getProfileModule().checkUserSeeAll()) {
 			Element field = sfRoot.addElement(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
 			if (getProfileModule().checkUserSeeCommunity())
@@ -641,7 +642,7 @@ public class AjaxController  extends SAbstractController {
 	    		field.addAttribute(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
 	    	}
 		}
-	   	
+*/	   	
 		//Do a search to find the first few users who match the search text
 		User u = RequestContextHolder.getRequestContext().getUser();
 		Map users = new HashMap();
@@ -718,14 +719,16 @@ public class AjaxController  extends SAbstractController {
 			
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
-			if (!getProfileModule().checkUserSeeAll()) {
+/* Need a beter implemenation - disable for now
+ * 			if (!getProfileModule().checkUserSeeAll()) {
 				if (getProfileModule().checkUserSeeCommunity())	{
 		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_COMMUNITY);
 		    	} else {
 		    		searchTermFilter.addTerm(QueryBuilder.GROUP_VISIBILITY_ELEMENT, QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE,EntityIndexUtils.GROUP_SEE_ANY);
 		    	}
 			}
-		}
+*/
+			}
 	   	
 		//Do a search to find the first few items that match the search text
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());

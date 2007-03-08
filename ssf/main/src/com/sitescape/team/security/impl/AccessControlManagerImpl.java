@@ -118,7 +118,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workArea, Long ownerId, WorkAreaOperation workAreaOperation) {
 
-		if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
+		if (user.isSuper()) return true;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
 			if (parentWorkArea == null)
@@ -205,7 +205,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     
     public boolean testAcl(User user, AclContainer parent, AclControlled aclControlledObj, AccessType accessType,
     		boolean includeParentAcl) {
-        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
+        if (user.isSuper()) return true;
          if(aclControlledObj.getInheritAclFromParent()) {
             // This object inherits ACLs from the parent for all access types. 
         	// In this case, we ignore includeCreator and includeParentAcl
@@ -233,19 +233,6 @@ public class AccessControlManagerImpl implements AccessControlManager {
            	Set memberIds = aclControlledObj.getAclSet().getMemberIds(accessType);
            	return intersectedSets(principalIds, memberIds);
         }        
-    }
-    public void checkAcl(User user, AclControlled aclControlledObj, Set memberIds)
-    	throws AccessControlException {
-    	if (!testAcl(user, aclControlledObj, memberIds))
-    		throw new AclAccessControlException(user.getName(), ""); 
-
-    }
-    public boolean testAcl(User user, AclControlled aclControlledObj, Set memberIds) {
-        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
-       	Set principalIds = getProfileDao().getPrincipalIds(user);
-       	//if owner, add special id
-        if (user.getId().equals(aclControlledObj.getOwnerId()))  principalIds.add(ObjectKeys.OWNER_USER_ID);
-     	return intersectedSets(principalIds, memberIds);      	
     }
     public void checkAcl(AclContainer aclContainer, AccessType accessType, boolean includeParentAcl) throws AccessControlException {
         checkAcl(aclContainer.getParentAclContainer(), aclContainer, accessType, includeParentAcl);

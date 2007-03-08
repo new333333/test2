@@ -24,7 +24,7 @@ public class ProfileIndexUtils  {
     public static final String EMAIL_FIELD="_email";
     public static final String ORGANIZATION_FIELD="_org";
     public static final String ZONNAME_FIELD="_zonName";
-    public static final String MEMBEROF_FIELD="_memberOf";
+//    public static final String MEMBEROF_FIELD="_memberOf";
     
     
     public static void addName(Document doc, User user) {
@@ -49,7 +49,7 @@ public class ProfileIndexUtils  {
     		doc.add(docNumField);
     	}
     } 
-    public static void addMemberOf(Document doc, User user) {
+/*    public static void addMemberOf(Document doc, User user) {
         Field racField;
         // I'm not sure if putting together a long string value is more
         // efficient than processing multiple short strings... We will see.
@@ -61,4 +61,5 @@ public class ProfileIndexUtils  {
         racField = new Field(MEMBEROF_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);      
         doc.add(racField);    	
     }
+ */
 }

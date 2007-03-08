@@ -570,6 +570,7 @@ public class FilterHelper {
 				child.setText(value);
 			}
 
+/* Need a beter implemenation - disable for now
 			Element gFilterTerm = (Element) sfRootElement
 					.selectSingleNode(QueryBuilder.GROUP_VISIBILITY_ELEMENT);
 			if (gFilterTerm != null) {
@@ -581,6 +582,7 @@ public class FilterHelper {
 								gFilterTerm
 										.attributeValue(QueryBuilder.GROUP_VISIBILITY_ATTRIBUTE));
 			}
+*/
 		}
 		// Add entrytype=user|group boolean term
 		Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);

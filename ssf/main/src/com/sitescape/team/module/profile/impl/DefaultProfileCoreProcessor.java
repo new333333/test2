@@ -321,7 +321,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addName(indexDoc, user);
 			ProfileIndexUtils.addEmail(indexDoc, user);
 			ProfileIndexUtils.addZonName(indexDoc, user);
-			ProfileIndexUtils.addMemberOf(indexDoc, user);
+//			ProfileIndexUtils.addMemberOf(indexDoc, user);
 		} else {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry);	
 		}

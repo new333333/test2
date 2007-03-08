@@ -54,9 +54,9 @@ public class QueryBuilder {
 
 	public static final String USERACL_ELEMENT = "USERACL";
 
-	public static final String GROUP_VISIBILITY_ELEMENT = "GROUPVIS";
+//	public static final String GROUP_VISIBILITY_ELEMENT = "GROUPVIS";
 
-	public static final String GROUP_VISIBILITY_ATTRIBUTE = "visibility";
+//	public static final String GROUP_VISIBILITY_ATTRIBUTE = "visibility";
 
 	public static final String RELATIVE_DATE_RANGE_ELEMENT = "DATERANGE";
 
@@ -229,7 +229,7 @@ public class QueryBuilder {
 		}
 		qString += ")";			
 			
-		} else if (operator.equals(GROUP_VISIBILITY_ELEMENT)) {
+/*		} else if (operator.equals(GROUP_VISIBILITY_ELEMENT)) {
 			//Always check for groupReadAny
 			User user = RequestContextHolder.getRequestContext().getUser();
 			qString += "(";
@@ -244,6 +244,7 @@ public class QueryBuilder {
 				}
 			}
 			qString += "))";
+*/
 		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 			qString += "(" + processPERSONALTAGS(element) + ")";
 		} else if (operator.equals(RELATIVE_DATE_RANGE_ELEMENT)) {

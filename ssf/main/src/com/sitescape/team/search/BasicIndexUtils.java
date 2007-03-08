@@ -40,7 +40,7 @@ public class BasicIndexUtils {
     public static final String ENTRY_ACL_FIELD = "_entryAcl";
     public static final String FOLDER_ACL_FIELD = "_folderAcl";
     public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
-    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
+//    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
     public static final String ACL_TAG_FIELD = "_aclTagField";
     

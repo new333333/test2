@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.team.NotSupportedException;
@@ -65,6 +66,12 @@ public abstract class Principal extends Entry  {
     }
     public boolean isReserved() {
     	return Validator.isNotNull(internalId);
+    }
+    public boolean isSuper() {
+    	if (!isReserved()) return false;
+    	if (ObjectKeys.SUPER_USER_INTERNALID.equals(internalId)) return true;
+    	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(internalId)) return true;
+    	return false;
     }
     /**
      * @hibernate.property
