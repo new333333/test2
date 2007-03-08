@@ -11,7 +11,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.client.Call;
 
-import com.sitescape.team.samples.remoting.client.FacadeClientHelper;
+import com.sitescape.team.samples.remoting.client.util.FacadeClientHelper;
 import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacade;
 import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeService;
 import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeServiceLocator;
@@ -28,8 +28,13 @@ import com.sitescape.team.samples.remoting.client.ws.jaxrpc.JaxRpcFacadeServiceL
  * in setting a tool specific property on the stub object, and 2) the use of
  * addAttachment method on the stub which provides Axis specific way of
  * adding an attachment. This is due to lack of standard support for handling
- * attachments in the current version of JAX-RPC (1.1). It should be fairly
- * easy to rewrite this program to use another JAX-RPC compliant WS tool. 
+ * attachments in the current version of JAX-RPC (1.1) that we're using. 
+ * It should be fairly easy to rewrite this program to use another JAX-RPC 
+ * compliant WS tool.
+ * Note: It appears that we should be able to use the standard SAAJ to
+ * deal with the file upload scenario. We haven't tried it yet.
+ * Note: We placed this class in .ws.jaxrpc package rather than .ws.axis
+ * since it is in most part tool neutral except where explained above. 
  * 
  * @author jong
  *
