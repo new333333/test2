@@ -3075,7 +3075,7 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     m += '<div style="position: relative; background: #666; margin: 4px;">'
     m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
 
-    m += '<table class="ss_style ss_graymenu" border="0" cellspacing="0" cellpadding="3">';
+    m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" cellspacing="0" cellpadding="3">';
     m += '<tr>';
     if (status >= 0) {
         if (status & 1) {
