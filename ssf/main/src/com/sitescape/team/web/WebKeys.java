@@ -502,7 +502,6 @@ public class WebKeys {
     public static final String SEARCH_FORM_SEARCH_FILTER_DATA="ss_searchSearchFormData";
     public static final String SEARCH_FORM_SELECTED_FILTER_NAME="ss_selectedSearchForm";
     public static final String SEARCH_RESULTS="ss_searchResults";
-    public static final String SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
     public static final String SEARCH_RESULTS_COUNT="searchResultsCount";
     public static final String SEARCH_RESULTS_RATING="searchResultsRating";
     public static final String SEARCH_RESULTS_RATING_CSS="searchResultsRatingCSS";

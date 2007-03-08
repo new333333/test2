@@ -253,7 +253,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	getCoreDao().refresh(parent);
       	parent.addBinder(binder);
  
-       	getAclManager().doInherit(parent, (AclControlled) binder);
+// not implemented
+//      	getAclManager().doInherit(parent, (AclControlled) binder);
 
         for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
         	Object obj = iter.next();
@@ -868,7 +869,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //add common fields from binder for binder and its attachments
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
-    	EntityIndexUtils.addReadAcls(indexDoc,AccessUtils.getReadAclIds(binder), null);
+    	EntityIndexUtils.addReadAccess(indexDoc, binder);
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
 

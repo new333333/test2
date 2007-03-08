@@ -62,7 +62,7 @@ public class SearchController extends AbstractBinderController {
 		
 		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
 			Map updates = new HashMap();
-			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
+			updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
 			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
 		
@@ -76,12 +76,12 @@ public class SearchController extends AbstractBinderController {
 				getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS, columns);
 				//Reset the column positions to the default
-			   	getProfileModule().setUserProperty(user.getId(), WebKeys.SEARCH_RESULTS_COLUMN_POSITIONS, "");
+			   	getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS, "");
 			} else if (formData.containsKey("defaultBtn")) {
 				getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS, null);
 				//Reset the column positions to the default
-			   	getProfileModule().setUserProperty(user.getId(), WebKeys.SEARCH_RESULTS_COLUMN_POSITIONS, "");
+			   	getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS, "");
 			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_SORT_INFO)) {
 			String folderSortBy = PortletRequestUtils.getStringParameter(request, WebKeys.FOLDER_SORT_BY, "");

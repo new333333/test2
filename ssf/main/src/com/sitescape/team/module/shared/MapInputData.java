@@ -44,4 +44,8 @@ public class MapInputData implements InputDataAccessor {
 	public Object getSingleObject(String key) {
 		return source.get(key);
 	}
+	public int getCount() {
+		return source.size();
+	}
+
 }

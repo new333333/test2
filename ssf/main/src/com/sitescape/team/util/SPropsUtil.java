@@ -34,7 +34,7 @@ public class SPropsUtil {
 	public static final String SSF_PORT = "ssf.port";
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
 	public static final String SSFS_CTX = "ssfs.ctx";
-	public static final String WIDEN_WF_ACCESS="workflow.widenAccess";
+	public static final String WIDEN_ACCESS="entryacl.widens.folderacl";
 	public SPropsUtil() {
 		if(instance != null)
 			throw new SingletonViolationException(SPropsUtil.class);

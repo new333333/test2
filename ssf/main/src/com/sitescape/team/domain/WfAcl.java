@@ -8,10 +8,22 @@ import com.sitescape.util.StringUtil;
  * Helper class for workflow Acl descriptions
  */
 public class WfAcl {
-	boolean useDefault=true;
-	Set ids;
-	
-	public WfAcl() {
+	private boolean useDefault=true;
+	private Set ids;
+	private AccessType type;
+    public enum AccessType {
+		read ,
+		write,
+		modify, 
+		delete, 
+		transitionIn, 
+		transitionOut;
+	};
+	public WfAcl(AccessType type) {
+		this.type = type;
+	}
+	public AccessType getType() {
+		return type;
 	}
 	public void setPrincipals(Set ids) {
 		this.ids = ids;

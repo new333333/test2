@@ -25,8 +25,10 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.TagUtil;
@@ -305,36 +307,50 @@ public class EntityIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    
-    public static void addReadAcls(Document doc, Set ids, Set binderIds) {
-		if (ids == null)
-			return;
-		// Add ACL field. We only need to index ACLs for read access.
-		Field racField;
-		// I'm not sure if putting together a long string value is more
-		// efficient than processing multiple short strings... We will see.
-		StringBuffer pIds = new StringBuffer();
-		for (Iterator i = ids.iterator(); i.hasNext();) {
-			pIds.append(i.next()).append(" ");
-		}
-		// leave this here for now - however, it needs to be removed in order to test the entry/folder ACLs
-		racField = new Field(BasicIndexUtils.READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);
-		doc.add(racField);
-		// Add the Entry_ACL field
-		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+    public static void addReadAccess(Document doc, Binder binder) {
+    	//set entryAcl to all
+		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED);
 		doc.add(entryAclField);
-
+		//get real binder access
+		doc.add(getBinderAccess(binder));
+    }
+    
+    private static Field getBinderAccess(Binder binder) {
+		Set binderIds = AccessUtils.getReadAccessIds(binder);
 		StringBuffer bIds = new StringBuffer();
-		if (binderIds != null) {
+		if (!binderIds.isEmpty()) {
 			for (Iterator i = binderIds.iterator(); i.hasNext();) {
 				bIds.append(i.next()).append(" ");
 			}
 		} else {
 			bIds.append(BasicIndexUtils.READ_ACL_ALL);
-		}
-		// Add the Folder_ACL field.  If the doc we're indexing is a binder, then set the Folder_ACL to READ_ALL
-		Field folderAclField = new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-		doc.add(folderAclField);
+		}   		
+		return new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+
+    }
+    public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry) {
+		// Add ACL field. We only need to index ACLs for read access.
+    	if (entry instanceof WorkflowSupport) {
+    		WorkflowSupport wEntry = (WorkflowSupport)entry;
+    		//get principals given read access 
+         	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
+         	// I'm not sure if putting together a long string value is more
+    		// efficient than processing multiple short strings... We will see.         	 
+         	StringBuffer pIds = new StringBuffer();
+    		for (Iterator i = ids.iterator(); i.hasNext();) {
+    			pIds.append(i.next()).append(" ");
+    		}
+       		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+       			//add all => folder check
+       			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
+       		}
+    		// Add the Entry_ACL field
+    		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+    		doc.add(entryAclField);
+    		//add binder access
+    		doc.add(getBinderAccess(binder));
+    		
+    	} else addReadAccess(doc, binder);
 	}
 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {

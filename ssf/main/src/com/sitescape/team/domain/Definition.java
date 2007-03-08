@@ -8,8 +8,6 @@ import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.sitescape.team.security.acl.AclControlled;
-import com.sitescape.team.security.acl.AclSet;
 import com.sitescape.util.Validator;
 /**
  * @hibernate.class table="SS_Definitions" dynamic-update="true"
@@ -19,15 +17,13 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class Definition extends PersistentTimestampObject implements AclControlled {
+public class Definition extends PersistentTimestampObject  {
     private String name="";
 	private int type=FOLDER_ENTRY;
 	private int visibility=PUBLIC;
     private byte[] xmlencoding;
     private Document doc;
     private Long zoneId;
-    private PersistentAclSet aclSet; //initialized by hiberate access=field
-    private boolean inheritAclFromParent = false;
     private String title="";
     private String iId;
     //type values
@@ -60,21 +56,6 @@ public class Definition extends PersistentTimestampObject implements AclControll
 		
 	}    
 
-     /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly.  
-     * @hibernate.component prefix="acl_" class="com.sitescape.team.domain.PersistentAclSet" 
-     */
-    public void setAclSet(AclSet aclSet) {
-        this.aclSet = (PersistentAclSet)aclSet;
-    }
-    /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly.  
-     */
-    public AclSet getAclSet() {
-        return aclSet;
-    } 
 
     /**
      * @hibernate.property length="64"
@@ -184,17 +165,6 @@ public class Definition extends PersistentTimestampObject implements AclControll
     	return name;
     }
 
-    /**
-     * @hibernate.property column="acl_inheritFromParent" not-null="true"
-     */
-    public boolean getInheritAclFromParent() {
-        return inheritAclFromParent;
-    }
-
-    public void setInheritAclFromParent(boolean inherit) {
-        this.inheritAclFromParent = inherit;
-    }
-    
     public Long getOwnerId() {
     	HistoryStamp creation = getCreation();
     	if(creation != null) {

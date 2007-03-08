@@ -71,20 +71,6 @@
 
     <property name="properties" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="functionMembershipInherited" not-null="true"/>
-    <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
-      <property name="readMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_readMembers"/>
-      </property>
-      <property name="writeMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_writeMembers"/>
-      </property>
-      <property name="deleteMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_deleteMembers"/>
-      </property>
-      <property name="changeAclMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_changeAclMembers"/>
-      </property>
-    </component>
     <property name="definitionsInherited"/>
     <property name="definitionType"/>
     <component name="averageRating" class="com.sitescape.team.domain.AverageRating">
@@ -92,7 +78,6 @@
       <property name="count" column="rating_count"/>
     </component>
     <property name="popularity" optimistic-lock="false"/>
-    <property name="inheritAclFromParent" column="acl_inheritFromParent"/>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>

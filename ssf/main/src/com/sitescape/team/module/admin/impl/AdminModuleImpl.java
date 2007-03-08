@@ -181,6 +181,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		} else if (operation.startsWith("deleteFunction")) {
 			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+		} else if (operation.startsWith("getFunctions")) {
+			//anyone can get them
+			return;
 		} else {
 			accessControlManager.checkOperation(top, WorkAreaOperation.READ_ENTRIES);
 		}
@@ -688,9 +691,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    	}	    	
 	    	getCoreDao().flush();
 	    	//need to reindex acls
-    		List binderIds = new ArrayList();
-    		binderIds.add(binder.getId());
-    		indexMembership(binderIds, AccessUtils.getReadAclIds(binder));
+    		indexMembership(binder, true);
 	    } else {
 	    	//	do child configs
 	    	//	first flush updates, addBinder does a refresh which overwrites changes
@@ -731,21 +732,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		functionManager.deleteFunction(f);
     }
     public List getFunctions() {
-		//TODO: any access?			
+		//let anyone read them			
         return  functionManager.findFunctions(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships) {
-		List folderIds = new ArrayList();
+		List binders = new ArrayList();
 		
 		checkAccess(workArea, "setWorkAreaFunctionMembership");
 		
-		// get the list of binderId's of this folder and all it's descendents who inherit
-		// Acls from their parent
-		if (functionMemberships.size() > 0 && (workArea instanceof Binder)) {
-				Binder binder = (Binder) workArea;
-				folderIds = getInheritingDescendentBinderIds((Binder) binder, new ArrayList());
-		} 
-
 		Iterator itFunctions = functionMemberships.entrySet().iterator();
 		while (itFunctions.hasNext()) {
 			Map.Entry fm = (Map.Entry)itFunctions.next();
@@ -753,33 +747,61 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
 		//flush so next query works
 		getCoreDao().flush();
-		//TODO: this needs to be fixed to index folders with different owners separatly
-		//This call replaces the owner flag (-1) with the owner of this workArea
-		indexMembership(folderIds, getAccessControlManager().getWorkAreaAccessControl(workArea, WorkAreaOperation.READ_ENTRIES));
+		if (functionMemberships.size() > 0) indexMembership(workArea, true);
 		
 	}
-	private void indexMembership(List folderIds, Set readAclIds) {
+
+	private void indexMembership(WorkArea workArea, boolean cascade) {
+		if (!(workArea instanceof Binder)) return;
 		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index with this new 
 		// Acl list.
+		Binder binder = (Binder)workArea;
+		List<Binder> binders = new ArrayList();
+		if (cascade) {
+			binders = getInheritingDescendentBinderIds(binder, binders);
+		} else {
+			binders.add(binder);
+		}
+		//find descendent binders with the same owner, and re-index together
+		//the owner may be part of the acl set, so cannot always share
+		while (!binders.isEmpty()) {
+			Binder top = binders.get(0);
+			binders.remove(0);
+			Set readAclIds =  AccessUtils.getReadAccessIds(top);
+			//collect ids of binders with the same owner
+			StringBuffer aIds = new StringBuffer();
+			if (!readAclIds.isEmpty()) {
+				for(Iterator i = readAclIds.iterator(); i.hasNext();) {
+					aIds.append(i.next()).append(" ");
+				}
+			} else {
+				aIds.append(BasicIndexUtils.READ_ACL_ALL);
+			}
+			List ids = new ArrayList();
+			ids.add(top.getId());
+			List<Binder> others = new ArrayList(binders);
+			for (Binder b:others) {
+				//have same owner, have same acl
+				if (b.getOwnerId().equals(top.getOwnerId())) {
+					binders.remove(b);
+					ids.add(b.getId());
+				}
+			}
+			Query q = buildQueryforUpdate(ids);
+			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+			try {
+				
+				luceneSession.updateDocuments(q, BasicIndexUtils.FOLDER_ACL_FIELD,
+						aIds.toString());
+			} finally {
+				luceneSession.close();
+			}
 
-		StringBuffer aIds = new StringBuffer();
-		for(Iterator i = readAclIds.iterator(); i.hasNext();) {
-			aIds.append(i.next()).append(" ");
-    	}
-		String folderAclFieldValue = aIds.toString();
-		String folderAclFieldName = BasicIndexUtils.FOLDER_ACL_FIELD;
-		Query q = buildQueryforUpdate(folderIds);
-		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-		try {
-			
-			luceneSession.updateDocuments(q, folderAclFieldName,
-					folderAclFieldValue);
-		} finally {
-			luceneSession.close();
 		}
 		
 	}
+
 	private void setWorkAreaFunctionMembership(WorkArea workArea, Long functionId, Set memberIds) {
      	Workspace zone = RequestContextHolder.getRequestContext().getZone();
       	WorkAreaFunctionMembership membership =
@@ -804,24 +826,19 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 	
 	// a recursive routine which walks down the tree
-	// from here and builds a list of the ids of folders 
+	// from here and builds a list of the binders
 	// who inherit acls from their parents.  The tree is pruned at
 	// the highest branch that does not inherit from it's parent.
-	private List getInheritingDescendentBinderIds(Binder folder, List ids) {
-		List folders = folder.getBinders();
-		if (folders.size() != 0) {
-			for (int i=0; i<folders.size(); ++i) {
-				Binder c = (Binder)folders.get(i);
-				if (c.isFunctionMembershipInherited()) {
-					ids = getInheritingDescendentBinderIds(c, ids);
-				}
-    			
-    		}
-			ids.add(folder.getId());
-    	} else {
-    		ids.add(folder.getId());
+	private List getInheritingDescendentBinderIds(Binder binder, List binders) {
+  		binders.add(binder);
+		List childBinder = binder.getBinders();
+ 		for (int i=0; i<childBinder.size(); ++i) {
+			Binder c = (Binder)childBinder.get(i);
+			if (c.isFunctionMembershipInherited()) {
+				binders = getInheritingDescendentBinderIds(c, binders);
+			}
     	}
-    	return ids;
+    	return binders;
 	}
 	
 	
@@ -876,6 +893,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    				(RequestContextHolder.getRequestContext().getZoneId(), workArea, functionId);
         if (wfm != null) {
 	        getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMembership(wfm);
+	        indexMembership(workArea, true);
 	        processAccessChangeLog(workArea, ChangeLog.ACCESSDELETE);
 
         }
@@ -885,10 +903,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	if (!workArea.getOwnerId().equals(userId)) {
     		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
     		workArea.setOwner(user);
-    		List ids = new ArrayList();
-    		ids.add(workArea.getWorkAreaId());
     		//need to update access, since owner has changed
-    		indexMembership(ids, getAccessControlManager().getWorkAreaAccessControl(workArea, WorkAreaOperation.READ_ENTRIES));
+   			indexMembership(workArea, false);
     	}
    		
     }
@@ -960,8 +976,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
      		}
     	}
+    	//see if there is a real change
     	if (workArea.isFunctionMembershipInherited()  != inherit) {
     		workArea.setFunctionMembershipInherited(inherit);
+    		//just changed from not inheritting to inherit = need to update index
+    		//if changed from inherit to not, index remains the same
+    		if (inherit) indexMembership(workArea, true);
+
     		processAccessChangeLog(workArea, ChangeLog.ACCESSMODIFY);
     	}
     } 

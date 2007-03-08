@@ -9,20 +9,6 @@
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
-    <component name="aclSet" class="com.sitescape.team.domain.PersistentAclSet">
-      <property name="readMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_readMembers"/>
-      </property>
-      <property name="writeMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_writeMembers"/>
-      </property>
-      <property name="deleteMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_deleteMembers"/>
-      </property>
-      <property name="changeAclMembers" type="com.sitescape.team.dao.util.SSClobStringType">
-        <column name="acl_changeAclMembers"/>
-      </property>
-    </component>
     <property name="name" length="64"/>
     <property name="title" length="128"/>
     <property name="type"/>
@@ -30,7 +16,6 @@
     <property name="visibility"/>
     <property name="zoneId" not-null="true"/>
     <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
-    <property name="inheritAclFromParent" column="acl_inheritFromParent" not-null="true"/>
     <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="com.sitescape.team.domain.Principal" name="principal">

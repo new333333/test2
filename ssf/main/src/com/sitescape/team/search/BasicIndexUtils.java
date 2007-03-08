@@ -143,47 +143,7 @@ public class BasicIndexUtils {
     public static  Field allTextField(String text) {
         return new Field(ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
     }   
-    public static void addReadAcls(Document doc, AclContainer container, Object entry, AclManager aclManager) {
-        // Add ACL field. We only need to index ACLs for read access. 
-        Field racField;
-        // the only path to get here shows that this entry will NEVER be AclControlled...
-        if (entry instanceof AclControlled) {
-	        StringBuffer pIds = new StringBuffer();
-	        //only want to index acls on the entry itself.  Otherwise we use READ_DEF_ACL
-	        if (((AclControlled)entry).getInheritAclFromParent() == false) {
-	        	Set readMemberIds = aclManager.getMembers(container, (AclControlled) entry, AccessType.READ);
-	        	for(Iterator i = readMemberIds.iterator(); i.hasNext();) {
-	        		pIds.append(i.next()).append(" ");
-	        	}
-	        }
-	        // I'm not sure if putting together a long string value is more
-	        // efficient than processing multiple short strings... We will see.
-	        if (pIds.length() != 0)
-	          racField = new Field(READ_ACL_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);
-	        else
-	          racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
-	        doc.add(racField);
-	    } else {
-            racField = new Field(READ_DEF_ACL_FIELD, READ_ACL_ALL, Field.Store.YES, Field.Index.TOKENIZED);
-            doc.add(racField);
-            
-    		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED);
-    		doc.add(entryAclField);
-    		
-    		Set binderIds = AccessUtils.getReadAclIds((Binder)container);
-    		StringBuffer bIds = new StringBuffer();
-    		if (binderIds != null) {
-    			for (Iterator i = binderIds.iterator(); i.hasNext();) {
-    				bIds.append(i.next()).append(" ");
-    			}
-    		} else {
-    			bIds.append(BasicIndexUtils.READ_ACL_ALL);
-    		}   		
-    		Field folderAclField = new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-    		doc.add(folderAclField);
-	    }
-    } 
-    
+   
     public static String buildAclTag(String tag, String aclId)
     {
     	String aclTag = BasicIndexUtils.TAG_ACL_PRE + aclId + BasicIndexUtils.TAG + tag;

@@ -25,4 +25,7 @@ public class EmptyInputData implements InputDataAccessor{
 	public Object getSingleObject(String key) {
 		return null;
 	}
+	public int getCount() {
+		return 0;
+	}
 }

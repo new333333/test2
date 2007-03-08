@@ -138,6 +138,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
     public static final String USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS = "userSearchResultsFolderColumns";
+    public static final String USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
 
     
     //workflow definition names

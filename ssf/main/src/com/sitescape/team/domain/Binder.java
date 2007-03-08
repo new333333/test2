@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
-import com.sitescape.team.security.acl.AclContainer;
-import com.sitescape.team.security.acl.AclSet;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.util.Validator;
 
@@ -23,7 +21,7 @@ import com.sitescape.util.Validator;
  * @author Jong Kim
  *
  */
-public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, AclContainer, InstanceLevelProcessorSupport  {
+public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, InstanceLevelProcessorSupport  {
 	protected boolean deleted=false;
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
@@ -40,8 +38,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     protected Map workflowAssociations;//initialized by hibernate access="field"
     protected boolean definitionsInherited=true;
     protected boolean functionMembershipInherited = true;
-    protected PersistentAclSet aclSet; 
-    protected boolean inheritAclFromParent = true;
     //uuid to identify a reserved binder
     private String internalId;
     //force attachments of all child objects to have unique names.
@@ -64,7 +60,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
 		 functionMembershipInherited=source.functionMembershipInherited;
-		 inheritAclFromParent=source.inheritAclFromParent;
+//		 inheritAclFromParent=source.inheritAclFromParent;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
 		 defaultPostingDef = source.defaultPostingDef;
@@ -299,40 +295,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	return true;
     }
 
-    public AclContainer getParentAclContainer() {
-        return this.getParentBinder();
-    }
-    
-    public Long getAclContainerId() {
-        return getId();
-    }
-    
-    /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly.  
-     * @hibernate.component prefix="acl_" class="com.sitescape.team.domain.PersistentAclSet" 
-     */
-    public void setAclSet(AclSet aclSet) {
-        this.aclSet = (PersistentAclSet)aclSet;
-    }
-    /**
-     * Used by security manager only. Application should NEVER invoke this
-     * method directly.  
-     */
-    public AclSet getAclSet() {
-        return aclSet;
-    } 
-    
-    /**
-     * @hibernate.property column="acl_inheritFromParent" 
-     */
-    public boolean getInheritAclFromParent() {
-        return inheritAclFromParent;
-    }
-
-    public void setInheritAclFromParent(boolean inherit) {
-        this.inheritAclFromParent = inherit;
-    }
 
     public Long getOwnerId() {
     	Principal owner = getOwner();
