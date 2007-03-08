@@ -285,7 +285,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
 
-.ss_portlet_style, .ss_portlet_style * {
+.ss_portlet_style {
 <c:if test="${!empty ss_portlet_style_background_color}">
   background-color: ${ss_portlet_style_background_color};
 </c:if>
@@ -1770,7 +1770,11 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 
 /* global toolbar: */
-div.ss_global_toolbar {
+div.ss_global_toolbar_in_portlet {
+	background: #FFFFFF;
+	height: auto;
+}
+div.ss_global_toolbar_maximized {
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
 	padding-top:2px;
@@ -1790,11 +1794,10 @@ div.ss_global_toolbar table td {
 	padding-left: 5px;
 	padding-right: 5px;
 }
-.ss_global_toolbar.ss_in_portlet {
-	background: #FFFFFF;
-	height: auto;
-}
 
+.ss_global_toolbar_portlet_box {
+	background: #EEEEEE !important;
+}
 
 .ss_global_toolbar a span, .ss_global_toolbar div span {
 	background:transparent;
@@ -1807,6 +1810,20 @@ div.ss_global_toolbar table td {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
 	padding-top: 25px;
 }
+
+.ss_global_toolbar_favs_big div {
+	background:url(<html:imagesPath/>icons/toolbar_favorites_big.jpg) no-repeat top;
+	width: 75px;
+	padding-top: 40px;
+	text-align: center;
+}
+.ss_global_toolbar_myworkspace_big div {
+	background:url(<html:imagesPath/>icons/toolbar_myworkspace_big.jpg) no-repeat top;
+	width: 75px;
+	padding-top: 40px;
+	text-align: center;
+}
+
 div.ss_global_toolbar_logo {
 	background:url(<html:imagesPath/>icons/toolbar_icecorps_logo.gif) no-repeat center center;
 	padding-top: 25px;
@@ -1825,6 +1842,7 @@ div.ss_global_toolbar_help {
 }
 .ss_global_toolbar_findUser {
 	margin-top: 0px;
+	background: transparent;
 }
 .ss_global_toolbar_findUser form {
 	background:transparent;
@@ -1835,6 +1853,7 @@ div.ss_global_toolbar_help {
 span.ss_global_toolbar_label_text {
 	color:#484848;
 	font-size: 10px;
+	background: transparent;
 }
 div.ss_global_toolbar_findUser_text span {
 }
@@ -1842,6 +1861,7 @@ div.ss_global_toolbar_findUser_text span {
 }
 .ss_global_toolbar_search {
 	margin-top: 0px;
+	background: transparent;
 }
 .ss_global_toolbar_search form {
 	background:transparent;

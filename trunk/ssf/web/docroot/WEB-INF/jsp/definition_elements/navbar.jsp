@@ -46,7 +46,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 
 <!-- Start of global toolbar -- MAXIMIZED PORTAL WINDOW MODE -->
 <c:if test="${ss_navbar_style != 'portlet'}">
-<div class="ss_global_toolbar">
+<div class="ss_global_toolbar ss_global_toolbar_maximized">
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
 <tr>
   <td valign="top" rowspan="2"><!-- My workspace -->
@@ -105,8 +105,6 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 	  </ssHelpSpot>
   </td>
 </tr>
-
-
 <tr>
   <td align="left" valign="top"><!-- Search form 
     --><div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>"
@@ -185,11 +183,11 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 </c:if>
 <!-- Start of global toolbar -- PORTLET WINDOW MODE -->
 <c:if test="${ss_navbar_style == 'portlet'}">
-<div class="ss_global_toolbar ss_in_portlet">
+<div class="ss_global_toolbar ss_global_toolbar_in_portlet">
 <table width="100%" cellpadding="1" cellspacing="0" border="0">
 <tr>
-  <td rowspan="4"><!-- My workspace -->
-	<div class="ss_global_toolbar_myworkspace" 
+  <td width="75" rowspan="4"><!-- My workspace -->
+	<div class="ss_global_toolbar_myworkspace_big" 
       onClick="self.location.href='<portlet:renderURL 
       	windowState="maximized"><portlet:param 
       	name="action" value="view_ws_listing"/><portlet:param 
@@ -206,8 +204,8 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 	  </ssHelpSpot>
 	</div>
   </td>
-  <td rowspan="4"><!-- Favorites -->
-    <div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
+  <td width="75" rowspan="4"><!-- Favorites -->
+    <div class="ss_global_toolbar_favs_big" onClick="ss_showFavoritesPane('<portlet:namespace/>');"
       onMouseOver="this.style.cursor = 'pointer';"
     >
       <ssHelpSpot helpId="personal_toolbar/favorites_button" offsetX="-15" offsetY="10" xAlignment="left" 
@@ -220,7 +218,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 	  </ssHelpSpot>
 	</div>
   </td>
-  <td colspan="3"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.search"/></span></td>
+  <td class="ss_global_toolbar_portlet_box" colspan="3"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.search"/></span></td>
   <td rowspan="4" width="100%"></td>
   <td valign="top" rowspan="4"><!-- Help button -->
 	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();"
@@ -235,7 +233,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
   </td>
 </tr>
 <tr>
-  <td colspan="3"><!-- Search form -->
+  <td class="ss_global_toolbar_portlet_box" colspan="3"><!-- Search form -->
 	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_simpleSearchForm<portlet:namespace/>" 
@@ -257,12 +255,12 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
   </td>
 </tr>
 <tr>
-  <td width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span></td>
-  <td width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span></td>
-  <td width="75px" style="padding-left: 10px;"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span></td>
+  <td class="ss_global_toolbar_portlet_box" width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span></td>
+  <td class="ss_global_toolbar_portlet_box" width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span></td>
+  <td class="ss_global_toolbar_portlet_box" width="75px" style="padding-left: 10px;"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span></td>
 </tr>
 <tr>
-  <td align="left" valign="top"><!-- Find people-->
+  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find people-->
 	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findUserForm<portlet:namespace/>" name="ss_findUserForm<portlet:namespace/>" 
@@ -279,7 +277,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 		</form>
 	</div>
   </td>
-  <td align="left" valign="top"><!-- Find places form 
+  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find places form 
     --><div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findPlacesForm<portlet:namespace/>" name="ss_findPlacesForm<portlet:namespace/>" 
@@ -296,7 +294,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 		</form>
 	</div>
   </td>
-  <td align="left" valign="top"><!-- Find tags form 
+  <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find tags form 
    --><div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<portlet:namespace/>"
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findTagsForm<portlet:namespace/>" name="ss_findTagsForm<portlet:namespace/>" 
@@ -317,10 +315,6 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 </table>
 </div>
 </c:if>
-
-
-
-
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
 
@@ -403,11 +397,10 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	  
 	  </td>
 	</tr>
-
 	</tbody>
 	</table>
   </div>
-  
+
   <div id="ss_favorites2<portlet:namespace/>">
 	<table id="ss_favorites_table2<portlet:namespace/>">
 	<tbody>
