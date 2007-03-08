@@ -46,7 +46,7 @@ function ss_findTagSearch(prefix, textObjId, elementName, findTagType) {
 // I dont understand why it shoud be, "next" page dont work with it if you look for all tags
 	if (text != ss_findTagSearchLastText[prefix]) ss_findTag_pageNumber[prefix] = 0;
 	ss_setupStatusMessageDiv();
-	//ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
+	ss_moveDivToBody('ss_findTagNavBarDiv'+prefix);
 	//Are we already doing a search?
 	if (ss_findTagSearchInProgress[prefix] == 1) {
 		//Yes, hold this request until the current one finishes

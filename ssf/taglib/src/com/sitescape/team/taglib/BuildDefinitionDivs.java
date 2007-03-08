@@ -878,9 +878,11 @@ public class BuildDefinitionDivs extends TagSupport {
 												Element itemN = (Element)root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']/properties/property[@name='name']");
 												id = itemN.attributeValue("value", "");
 												itemN = (Element)root.selectSingleNode("item[@name='profileEntryForm']/item[@name='profileEntryFormForm']/item[@id='" + id + "']/properties/property[@name='name']");
-												id2 = itemN.attributeValue("value", "");
-												sb.append("<p>" + id2 + "</p>\n");
-												sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + id + "\"/>\n");
+												if (itemN != null) {
+													id2 = itemN.attributeValue("value", "");
+													sb.append("<p>" + id2 + "</p>\n");
+													sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + id + "\"/>\n");
+												}
 											}
 											else
 											{

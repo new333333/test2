@@ -3,6 +3,7 @@
   <c:set var="ss_tagDivNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
+<ssf:find type="tags" singleItem="true"/>
 <script type="text/javascript">
 function ss_showTags<portlet:namespace/>(divNumber, entryId) {
 	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
@@ -31,6 +32,12 @@ function ss_addTag<portlet:namespace/>(divNumber, entryId) {
 	ss_modifyTags<portlet:namespace/>('add', '', divNumber, entryId);
 	
 }
+function ss_addTag2<portlet:namespace/>(id, divNumber, entryId) {
+	alert(entryId)
+	document.forms['ss_modifyTagsForm<portlet:namespace/>_'+divNumber].communityTag.value = id;
+	ss_modifyTags<portlet:namespace/>('add', '', divNumber, entryId);
+}
+
 function ss_deleteTag<portlet:namespace/>(tagId, divNumber, entryId) {
 	ss_modifyTags<portlet:namespace/>('delete', tagId, divNumber, entryId);
 }
@@ -87,4 +94,68 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <c:set var="ss_tagViewNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:set var="ssEntryId" value="${ssDefinitionEntry.id}" scope="request"/>
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
+
+<div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane">
+<div align="right">
+<a onClick="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"><img 
+  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
+</div>
+<div style="padding:0px 10px;">
+<form class="ss_style ss_form ss_tag_pane_color" 
+  method="post" action=""
+  id="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" 
+  name="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}">
+<table class="ss_tag_pane_color">
+<tbody>
+
+<tr><th align="left"><ssf:nlt tag="tags.personalTags"/></th></tr>
+
+<tr><td>
+<c:set var="ssTags" value="${ssPersonalTags}" scope="request" />
+<c:set var="ssTagsType" value="p" scope="request" />
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
+</td></tr>
+
+<tr><td>
+  <table class="ss_tag_pane_color"><tbody><tr><td>
+    <input type="text" class="ss_text" name="personalTag" />
+    </td><td>
+      <a class="ss_linkButton" href="#" 
+        onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
+      ><ssf:nlt tag="button.add"/></a>
+    </td></tr>
+  </tbody></table>
+</td></tr>
+
+<tr><td></td></tr>
+
+<tr><th align="left"><ssf:nlt tag="tags.communityTags"/></th></tr>
+
+<tr><td>
+<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
+<c:set var="ssTagsType" value="c" scope="request" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
+</td></tr>
+
+<tr><td>
+  <table class="ss_tag_pane_color"><tbody><tr><td>
+    <input type="text" class="ss_text" name="communityTag"/>
+    </td><td style="padding-left:4px;">
+    <a class="ss_linkButton" href="#" 
+      onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
+    ><ssf:nlt tag="button.add"/></a>
+    </td></tr>
+  </tbody></table>
+</td></tr>
+
+</tbody>
+</table>
+<input type="submit" value="ok" style="height:10px; width:10px;"
+  onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"/>
+<div class="ss_tag_pane_ok_cover">
+</div>
+</form>
+</div>
+
+</div>
+
