@@ -3,10 +3,12 @@ package com.sitescape.team.util;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.ByteArrayInputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -70,5 +72,41 @@ public class XmlFileUtil {
 	    	else if (fOut != null) fOut.close();
 	    }
 		
+	}
+	
+	public static Document generateSAXXMLFromString(String fileContent)
+		throws Exception {
+
+		Document generatedDocument = null;
+		if (fileContent == null || fileContent.equals("")) return generatedDocument;
+		
+		ByteArrayInputStream byteArrayInputStream = null; 
+		
+		SAXReader saxReader = new SAXReader();
+		
+		try {
+			//the fileContent must contain a valid tag at the start of the text
+			byteArrayInputStream = new ByteArrayInputStream(fileContent.getBytes());
+			generatedDocument = saxReader.read(byteArrayInputStream);
+	    } catch (Exception ex) {
+	    	logger.error("Can't write XML file content " + fileContent + ":error is: " + ex.getLocalizedMessage());
+	    }
+	    return generatedDocument;
 	}    
+
+	public static Document generateXMLFromString(String fileContent)
+		throws Exception {
+		
+		Document generatedDocument = null;
+		if (fileContent == null || fileContent.equals("")) return generatedDocument;
+		try {
+			//the fileContent must contain a valid tag at the start of the text
+			generatedDocument = DocumentHelper.parseText(fileContent);
+	    } catch (Exception ex) {
+	    	logger.error("Can't create XML file " + fileContent + ":error is: " + ex.getLocalizedMessage());
+	    	throw(ex);
+	    }
+	    return generatedDocument;
+	}
+	
 }

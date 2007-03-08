@@ -27,7 +27,7 @@
 			<tr>
 				<td class="ss_searchviewContainer">
 					<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="60" />
+						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="30" />
 					</ssf:markup>
 				</td>
 			</tr>

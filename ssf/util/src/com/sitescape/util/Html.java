@@ -165,4 +165,47 @@ public class Html {
 		return sb.toString();
 	}
 
+	//This method is similar to the stripHTML, but does not strip the img tag
+	public static String restrictiveStripHtml(String text) {
+		if (text == null) {
+			return null;
+		}
+
+		text = stripComments(text);
+
+		StringBuffer sb = new StringBuffer();
+		int x = 0;
+		int y = text.indexOf("<");
+
+		while (y != -1) {
+			
+			//Hemanth
+			//We are trying to strip all the HTML tags except img. We except the HTML to be well-formed.
+			if ( (text.substring(y, (y+4))).equalsIgnoreCase("<img") || (text.substring(y, (y+5))).equalsIgnoreCase("</img") ) {
+				int intEndIndex = text.indexOf(">", y);
+				
+				if (intEndIndex != -1) {
+					sb.append(text.substring(x, intEndIndex+1));
+				}
+				x = intEndIndex + 1;
+				
+			} else {
+				sb.append(text.substring(x, y));
+				x = text.indexOf(">", y) + 1;
+			}
+
+			if (x < y) {
+				// <b>Hello</b
+				break;
+			}
+
+			y = text.indexOf("<", x);
+		}
+
+		if (y == -1) {
+			sb.append(text.substring(x, text.length()));
+		}
+
+		return sb.toString();
+	}	
 }
