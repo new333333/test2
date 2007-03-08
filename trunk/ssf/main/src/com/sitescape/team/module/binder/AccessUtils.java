@@ -127,13 +127,13 @@ public class AccessUtils  {
  	}
     
     private static void checkAccess(User user, WorkflowSupport entry, WfAcl.AccessType type) {
-        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return;
+        if (user.isSuper()) return;
         Set allowedIds = entry.getStateMembers(type);
         if (testAccess(user, allowedIds)) return;
         throw new AclAccessControlException(user.getName(), type.toString());
     }
     private static boolean testAccess(User user, Set allowedIds) {
-        if (ObjectKeys.SUPER_USER_INTERNALID.equals(user.getInternalId())) return true;
+        if (user.isSuper()) return true;
      	Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
         for(Iterator i = principalIds.iterator(); i.hasNext();) {
             if (allowedIds.contains(i.next())) return true;
@@ -238,6 +238,7 @@ public class AccessUtils  {
      private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WfAcl.AccessType type)  
       	throws AccessControlException {
       	User user = RequestContextHolder.getRequestContext().getUser();
+        if (user.isSuper()) return;
     	 try {
        		//see if pass binder test
        		modifyCheck(user, binder, (Entry)entry);

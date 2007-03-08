@@ -209,8 +209,5 @@ public interface AccessControlManager {
     public boolean testAcl(User user, AclContainer aclContainer,
             AccessType accessType, boolean includeParentAcl);
 
-    public void checkAcl(User user, AclControlled aclControlledObj, Set memberIds)
-    	throws AccessControlException; 
-    public boolean testAcl(User user, AclControlled aclControlledObj, Set memberIds);
-
+ 
 }

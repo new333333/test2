@@ -73,7 +73,7 @@ public abstract class SSStatefulJob implements StatefulJob {
            		Long id = new Long(jobDataMap.getLong(USERID));
            		user = profileDao.loadUser(id, zoneId);
            	} else {
-           		user = profileDao.getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zoneId);
+           		user = profileDao.getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId);
            	}
     	
            	//Setup thread context expected by business logic

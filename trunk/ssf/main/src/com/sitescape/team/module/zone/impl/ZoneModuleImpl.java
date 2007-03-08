@@ -18,20 +18,18 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -88,7 +86,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
      * Check on zones
      */
  	public void afterPropertiesSet() {
- 		List companies = getCoreDao().findCompanies();
+ 		final List companies = getCoreDao().findCompanies();
  		//only execting one
  		if (companies.size() == 0) {
  			String zoneName = SZoneConfig.getDefaultZoneName();
@@ -97,27 +95,60 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
  		} else {
  			//make sure super user is set correctly
  			//there should not be any session opened, so auto-commit should be in effect
- 			for (int i=0; i<companies.size(); ++i) {
- 				Workspace zone = (Workspace)companies.get(i);
- 				String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
- 				//	get super user from config file
- 				try {
- 					User superU = getProfileDao().findUserByName(superName, zone.getName());
- 					if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
- 						superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
- 						//force update
- 						getCoreDao().merge(superU);				   
- 					}
- 					//make sure only one
- 					getCoreDao().executeUpdate(
-					   "update com.sitescape.team.domain.User set internalId=null where " +
-					   "internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
- 					RequestContextUtil.setThreadContext(superU);
- 					addDefaultConfigs();
- 				} catch (NoUserByTheNameException nu) {}
- 			}
+	        getTransactionTemplate().execute(new TransactionCallback() {
+	        	public Object doInTransaction(TransactionStatus status) {
+	        		for (int i=0; i<companies.size(); ++i) {
+	        			Workspace zone = (Workspace)companies.get(i);
+	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+	        			//	get super user from config file - must exist or throws and error
+	        			User superU = getProfileDao().findUserByName(superName, zone.getName());
+	        			if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
+	        				superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
+	        				//force update
+	        				getCoreDao().merge(superU);				   
+	        			}
+	        			//make sure only one
+	        			getCoreDao().executeUpdate(
+	        					"update com.sitescape.team.domain.User set internalId=null where " +
+	        					"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
+	        			RequestContextUtil.setThreadContext(superU);
+	        			//TODO: remove = just for development updates
+	        			addDefaultConfigs();
+	        			//adds user to profileDao cache
+	        			superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
+	        			//make sure posting agent and background user exist
+	        			try {
+	        				getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
+	        			} catch (NoUserByTheNameException nu) {
+	        				//need to add it
+	        				addJobProcessor(superU.getParentBinder(), new HistoryStamp(superU));
+	        				//updates cache
+	        				getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
+	        			}
+	        			//make sure posting agent and background user exist
+	        			try {
+	        				getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
+	        			} catch (NoUserByTheNameException nu) {
+	        				//need to add it
+	        				addPosting(superU.getParentBinder(), new HistoryStamp(superU));
+	        				//updates cache
+	        				getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
+	        			}
+	        			//make sure allUsers exists
+	        			try {
+	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+	        			} catch (NoGroupByTheNameException nu) {
+	        				//need to add it
+	        				addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
+	        				//	updates cache
+	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+	        			}
+	    	        }
+		        	return null;
+	        	}
+       	   });
  			
-	   }
+	        }
  		RequestContextHolder.clear();
  		
  	}
@@ -181,6 +212,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		user.setModification(stamp);
 			
 	        		addPosting(profiles, stamp);
+	        		addJobProcessor(profiles, stamp); 
 	        		Group group = addAllUserGroup(profiles, stamp);
 	        		addRoles(top, top, user, group);
 	        		addGlobalRoot(top, stamp);		
@@ -198,6 +230,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
 	        		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
 	        		getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
+	        		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
 	        		return null;
 	        	}
 	        });
@@ -223,7 +256,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		return group;
 	}
 	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String id) {
-		//build allUsers group
+		
 		User user = new User();
 		user.setName(name);
 		user.setForeignName(name);
@@ -238,6 +271,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
 		return addReservedUser(parent, stamp, "_postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
+	}
+	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
+		return addReservedUser(parent, stamp, "_jobProcessingAgent", ObjectKeys.JOB_PROCESSOR_INTERNALID);
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
 		Workspace team = new Workspace();
@@ -303,7 +339,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
+//		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -327,7 +363,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
+//		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
@@ -351,7 +387,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
-		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
+//		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		function.addOperation(WorkAreaOperation.TEAM_MEMBER);
 		
 		//generate functionId
@@ -376,7 +412,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		for (Iterator iter=WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation((WorkAreaOperation)iter.next());			
 		}
-		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
+//		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
 		function.removeOperation(WorkAreaOperation.SITE_ADMINISTRATION);
 		
 		//generate functionId
@@ -400,7 +436,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
 			function.addOperation(((WorkAreaOperation)iter.next()));
 		}	
-		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
+//		function.removeOperation(WorkAreaOperation.USER_SEE_COMMUNITY);
 		//generate functionId
 		getFunctionManager().addFunction(function);
 	

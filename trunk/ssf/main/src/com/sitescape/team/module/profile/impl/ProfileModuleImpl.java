@@ -295,12 +295,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
     }
 
-    public boolean checkUserSeeCommunity() {
-    	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_COMMUNITY);        
+/* HOLD OFF - need better implementation */
+      public boolean checkUserSeeCommunity() {
+    	  return false;
+  //   	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_COMMUNITY);        
     }
 
     public boolean checkUserSeeAll() {
-    	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
+    	return true;
+ //  	return getAccessControlManager().testOperation(this.getProfileBinder(), WorkAreaOperation.USER_SEE_ALL);        
     }
 
     //NO transaction
