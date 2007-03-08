@@ -257,7 +257,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	<c:set var="ss_title_line_color" value="#3333FF" scope="request"/>
 	
-	<c:set var="ss_tree_highlight_line_color" value="#6666FF" scope="request"/>
+	<c:set var="ss_tree_highlight_line_color" value="#999966" scope="request"/>
 	
 	<c:set var="ss_box_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_box_canvas_color" value="#FFFFCC" scope="request"/>
@@ -1770,10 +1770,10 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 }
 
 /* global toolbar: */
-.ss_global_toolbar {
+div.ss_global_toolbar {
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
-	padding-top:6px;
+	padding-top:2px;
 	
 <c:if test="<%= isIE %>">
 	margin-bottom:2px;
@@ -1782,77 +1782,49 @@ div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:act
 	margin-bottom:4px;
 </c:if>
 }
-
-.ss_global_toolbar.ss_in_portlet {
+div.ss_global_toolbar table {
 	background: transparent;
+}
+div.ss_global_toolbar table td {
+	white-space: nowrap;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+.ss_global_toolbar.ss_in_portlet {
+	background: #FFFFFF;
+	height: auto;
 }
 
 
 .ss_global_toolbar a span, .ss_global_toolbar div span {
 	background:transparent;
 }
-.ss_global_toolbar_links {
-	float:right;
-	margin-top:0px;
-	margin-right:20px;
-	margin-left: 0px;
-	background:inherit !important;
-}
-* html .ss_global_toolbar_links {
-	margin-right:25px;
-}
-.ss_global_toolbar_links li {
-	float:left;
-	padding-left:5px;
-}
-.ss_global_toolbar_links li:hover div:hover {
-	cursor:pointer !important;
-}
-.ss_global_toolbar_links li div {
-	display:block;
-	color:#666666;
-	text-align:center;
-}
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.png) no-repeat top;
 	padding-top: 25px;
-	margin-left: 10px;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
 	padding-top: 25px;
 }
-
-
-.ss_global_toolbar_clipboard div {
-	background:url(<html:imagesPath/>skins/${ss_user_skin}/toolbar/clipboard.gif) no-repeat top;
+div.ss_global_toolbar_logo {
+	background:url(<html:imagesPath/>icons/toolbar_icecorps_logo.gif) no-repeat center center;
+	padding-top: 25px;
 }
 
 div.ss_global_toolbar_show_portal {
-    float: right;
-    height: 20px;
-    width: 20px;
-    margin-right: 3px;
 	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 }
 div.ss_global_toolbar_hide_portal {
-    float: right;
-    height: 16px;
-    width: 16px;
-    margin-right: 3px;
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 }
 div.ss_global_toolbar_help {
-    float: right;
-	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat right top;
-	padding-right: 22px;
-	padding-left: 6px;
-	margin-right: 12px;
-	height: 16px;
-    width: 16px;
+	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat center top;
+	padding-top: 16px;
+	text-align: center;
 }
 .ss_global_toolbar_findUser {
-	margin-top: 3px;
+	margin-top: 0px;
 }
 .ss_global_toolbar_findUser form {
 	background:transparent;
@@ -1860,17 +1832,16 @@ div.ss_global_toolbar_help {
 .ss_global_toolbar_findUser .form-text {
 	width:40px;
 }
-div.ss_global_toolbar_findUser_text {
+span.ss_global_toolbar_label_text {
 	color:#484848;
-    width:70px;
-	text-align:center;
+	font-size: 10px;
 }
 div.ss_global_toolbar_findUser_text span {
 }
 .ss_global_toolbar_findUser a {
 }
 .ss_global_toolbar_search {
-	margin-top: 3px;
+	margin-top: 0px;
 }
 .ss_global_toolbar_search form {
 	background:transparent;
