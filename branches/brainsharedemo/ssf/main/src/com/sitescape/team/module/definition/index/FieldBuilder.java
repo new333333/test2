@@ -1,0 +1,16 @@
+package com.sitescape.team.module.definition.index;
+
+import java.util.Map;
+
+import org.apache.lucene.document.Field;
+
+import com.sitescape.team.domain.DefinableEntity;
+
+/**
+ *
+ * @author Jong Kim
+ */
+public interface FieldBuilder {
+    
+    public Field[] buildField(DefinableEntity entity, String dataElemName, Map args);
+}

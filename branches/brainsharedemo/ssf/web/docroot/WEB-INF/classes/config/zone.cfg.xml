@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<zoneConfiguration>
+	<property name="adminUser">liferay.com.1</property>
+	<workflowConfiguration>
+<!-- 		<property name="timeout.seconds">300</property>	-->
+	</workflowConfiguration>
+	<mailConfiguration>	
+		<notify session="java:comp/env/mail/SiteScape"/>
+		<posting session="java:comp/env/mail/SiteScapePosting"/>
+		<property name="notify.templateCacheDisabled">false</property>
+		<property name="notify.timezone">EST</property>
+	</mailConfiguration>	
+	<ldapConfiguration>	
+		<property name="java.naming.security.principal"/>
+		<property name="java.naming.security.credentials"/>
+		<property name="java.naming.provider.url">ldap://localhost:389/dc=sitescape,dc=com</property>
+		<property name="com.sitescape.ldap.user.search">(|(objectClass=person)(objectClass=inetOrgPerson)(objectClass=organizationalPerson)(objectClass=residentialPerson))</property>>
+		<property name="com.sitescape.ldap.group.search">(|(objectClass=group)(objectClass=groupOfUniqueNames)(objectClass=groupOfNames))</property>
+		<userMapping>
+			<mapping from="uid" to="name"/>
+			<mapping from="mail" to="emailAddress"/>
+			<mapping from="gn" to="firstName"/>
+			<mapping from="givenName" to="firstName"/>
+			<mapping from="sn" to="lastName"/>
+			<mapping from="surname" to="lastName"/>
+			<mapping from="telephoneNumber" to="phone"/>
+			<mapping from="description" to="description"/>
+		</userMapping>
+		<groupMapping>
+			<memberAttribute>member</memberAttribute>
+			<memberAttribute>uniqueMember</memberAttribute>	
+			<mapping from="cn" to="name"/>
+			<mapping from="commonName" to="name"/>
+			<mapping from="description" to="description"/>
+		</groupMapping>
+	</ldapConfiguration>
+	<!-- Unlike all other elements in the file, the following element is
+	     meaningful only at the top-level. In other words, it does not
+	     apply to individual zone instances. This element is required. -->
+	<defaultZone name="liferay.com"/>
+</zoneConfiguration>

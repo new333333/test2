@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+
+<project name="main" basedir="." default="compile">
+	<import file="../build-common.xml" />
+	<import file="../deploy-support.xml" />
+	
+	<property name="jar.file" value="ssf-main.jar" />
+	<property name="hibernate.dir" value="${basedir}/hibernate" />
+	<target name="clean" depends="ss-hib-clean,build-common.clean" />
+
+	<target name="compile" depends="compile-common,build-common.compile" />
+
+	<target name="compile-common">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			includes="**/portal/PortalException.java,**/portal/SystemException.java,**/portal/util/HibernateUtil.java,**/portal/util/Lucene*.java"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+		/>
+	</target>
+
+	<target name="jar" depends="compile,ss-hib-gen">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		>
+			<!-- No longer necessary
+			<manifest>
+				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>-->
+		</jar>
+		<antcall target="jar-manifest">
+			<param name="jar-manifest.jar.file" value="${jar.file}"/>
+		</antcall>
+	</target>
+
+<!--	<target name="jar-skip-hibernate" depends="compile">
+		<jar
+			basedir="${classes.dir}"
+			jarfile="${jar.file}"
+		>
+			<manifest>
+				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
+			</manifest>
+		</jar>
+	</target>
+-->
+	<target name="deploy" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+<!--	<target name="deploy-skip-hibernate" depends="jar-skip-hibernate">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+-->
+	<target name="ss-hib-clean" description="Delete Hibernate mapping files">
+		<delete failonerror="false">
+			<fileset dir="${classes.dir}" includes="**/*.hbm.xml"/>
+		</delete>		
+	</target>
+
+	<target name="ss-hib-gen"
+        description="Generate Hibernate mapping files from XDoclet in source">
+        			
+		<echo message="Building Hibernate mappings..."/>
+		
+	    <copy todir="${classes.dir}">
+	        <fileset dir="${hibernate.dir}">
+	        	<include name="**/*.hbm.xml"/>
+			</fileset>
+	    </copy>		
+<!--		<taskdef name="xdoclet2"
+		    classname="org.xdoclet.ant.XDocletTask">
+			<classpath>
+				<fileset dir="${project.dir}/lib" includes="*.jar" />
+			</classpath>
+		</taskdef>
+		
+	    <xdoclet2>
+	    	
+	        <fileset dir="${source.dir}">
+	            <include name="com/sitescape/team/**/domain/*.java"/>
+	            <include name="com/sitescape/team/security/**/*.java"/>
+	        </fileset>
+	    		    
+	    	<component 
+	    		classname="org.xdoclet.plugin.hibernate.HibernateMappingPlugin"
+		    	destdir="main/${classes.dir}"
+	    	    version="3.0"
+	    		validate="false"
+		        force="false"
+	    	/>
+	    </xdoclet2>	
+-->
+	</target>
+	
+	<!--<target name="init-database-type-script">
+		<property file="${project.dir}/tools/sql/database.${user.name}.properties" />
+		<property file="${project.dir}/tools/sql/database.properties" />
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.${user.name}.properties"/>
+		<property file="${project.dir}/tools/sql/jdbc-${database.type}.properties"/>
+		<copy file="${project.dir}/tools/sql/hibernate-${database.type}.properties" 
+			todir="${hibernate.dir}" 
+			overwrite="true"/>
+	</target>
+		
+	<target name="init-database-type" depends="init-database-type-script">
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.driver_class ${jdbc.driver}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.url ${jdbc.url}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.username ${jdbc.username}"/>
+		<echo file="${hibernate.dir}/hibernate-${database.type}.properties" append="true"
+			message="${line.separator}hibernate.connection.password ${jdbc.password}"/>
+	</target>-->
+
+<!--
+	<target name="ss-create-tables" depends="init-database-type"
+			description="Creates database creation script for all sitescape domain">
+		<property name="schemaexport.text.value" value="no" />
+		<antcall target="ss-create-tables-internal" />
+	  </target>
+
+	 <target name="ss-create-tables-script-only" depends="init-database-type-script" description="Creates database creation script for all sitescape domain">
+		<property name="schemaexport.text.value" value="yes" />
+		<antcall target="ss-create-tables-internal" />
+	  </target>
+
+	  <target name="ss-create-tables-internal" depends="ss-hib-gen" description="Creates database creation script for all sitescape domain">
+			<path id="initpath">
+	  			<pathelement location="${classes.dir}"/>
+				<fileset dir="${project.dir}/util" includes="*.jar"/>
+				<fileset dir="${project.dir}/lib" includes="*.jar" />
+			</path>
+	        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaExportTask"
+		             classpathref="initpath" name="schemaexport">
+	 		</taskdef> 
+
+		    <schemaexport delimiter=";" drop="false" output="${hibernate.dir}/ss-create-tables.sql"
+		    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
+		          	quiet="false" text="${schemaexport.text.value}">
+		    	<fileset dir="${classes.dir}" >
+		    		<include name="com/sitescape/team/**/*hbm.xml"/>
+		            <include name="com/sitescape/team/security/**/*hbm.xml"/>
+		        </fileset>
+		     </schemaexport>
+	    </target>
+-->	
+
+	<!--<target name="ss-update-tables" 
+		description="Update database tables for sitescape domain"
+		depends="ss-hib-gen, init-database-type">
+		<path id="initpath">
+  			<pathelement location="${classes.dir}"/>
+			<fileset dir="${project.dir}/util" includes="*.jar"/>
+			<fileset dir="${project.dir}/lib" includes="*.jar" />
+		</path>
+        <taskdef classname="org.hibernate.tool.hbm2ddl.SchemaUpdateTask"
+	             classpathref="initpath" name="schemaupdate">
+ 		</taskdef> 
+
+	    <schemaupdate 
+	    	properties="${hibernate.dir}/hibernate-${database.type}.properties" 
+	          	quiet="no" text="no">
+	    	<fileset dir="${classes.dir}" >
+	    		<include name="com/sitescape/team/**/*hbm.xml"/>
+	            <include name="com/sitescape/team/security/**/*hbm.xml"/>
+	        </fileset>
+	     </schemaupdate>
+	</target>-->
+			
+</project>
