@@ -28,14 +28,20 @@ public class PWCallback implements CallbackHandler {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
-
-                // Set the password given a username - Because we need to pass 
-                // both zone name and user name as a single user identity, we
-                // use our own convention where WS's user identity is made up 
-                // of zone name, ";", and user name concatenated in that order.
+                // Set the password given a username.
                 String id = pc.getIdentifer();
                 System.out.println("Identifier [" + id + "]");
-                if ("liferay.com##liferay.com.1".equals(id)) {
+                if ("liferay.com.1".equals(id)) {
+                	// Set the password to a digested value of "test". 
+                	// This digest has nothing to do with the internal digest performed 
+                	// later by WS-Security framework. With Aspen, all passwords are 
+                	// stored in encrypted form in the database using secure one-way
+                	// hash function, which can not be decrypted back into the original
+                	// password in plain text. Consequently, WS client must provide a 
+                	// password in exactly the same encrypted form, which can be 
+                	// accomplished through the use of the available password encryption 
+                	// class. For non-Java based WS clients, the exact same encryption 
+                	// steps will need to be translated and applied. 
                 	System.out.println("Setting password to [test]");
                 	String encryptedPassword = PasswordEncryptor.encrypt("test");
                 	pc.setPassword(encryptedPassword);
