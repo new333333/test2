@@ -2,21 +2,17 @@ package com.sitescape.team.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.team.remoting.api.Binder;
-import com.sitescape.team.remoting.api.Facade;
-import com.sitescape.team.remoting.api.Folder;
-import com.sitescape.team.remoting.rmi.RemoteFacade;
+import com.sitescape.team.remoting.Facade;
 
 /**
  * JAX-RPC compliant implementation that simply delegates to the Facade 
- * implementation in the root web application context. This class implements
- * both the RMI service interface (RemoteFacade) and the plain Java business
- * interface.
+ * implementation class that is loaded by Spring controlled application
+ * context. 
  * 
  * @author jong
  *
  */
-public class JaxRpcFacade extends ServletEndpointSupport implements Facade,RemoteFacade {
+public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	private Facade facade;
 	
@@ -31,10 +27,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade,Remot
 	public String getDefinitionConfigAsXML() {
 		return this.facade.getDefinitionConfigAsXML();
 	}
-
-	public Binder getBinder(long binderId) {
-		return this.facade.getBinder(binderId);
-	}
 	
 	public String getFolderEntryAsXML(long binderId, long entryId) {
 		return this.facade.getFolderEntryAsXML(binderId, entryId);
@@ -48,11 +40,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade,Remot
 			String fileUploadDataItemName, String fileName) {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
-
-	public Folder getFolder(long binderId) {
-		return this.facade.getFolder(binderId);
-	}
-
+	
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
 	}
