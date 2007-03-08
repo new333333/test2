@@ -3072,10 +3072,14 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     var ostatus = ss_ostatus_none;
     obj = self.document.getElementById(objId)
     if (obj == null) alert('Could not find '+objId)
-    m += '<div style="position: relative; background: #666; margin: 4px;">'
-    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
-
-    m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" cellspacing="0" cellpadding="3">';
+	if (divId == '') {
+	    m += '<div style="position: relative; background: #666; margin: 4px;">'
+	    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
+        m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" cellspacing="0" cellpadding="3">';
+	} else {
+        m += '<table class="ss_nowrap ss_transparent" border="0" cellspacing="0" cellpadding="3">';
+    }
+	
     m += '<tr>';
     if (status >= 0) {
         if (status & 1) {
@@ -3141,9 +3145,10 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	
     m += '</table>'
 
-    m += '</div>'
-    m += '</div>'
-
+	if (divId == '') {
+	    m += '</div>'
+	    m += '</div>'
+	}
     obj.innerHTML = m;
 
     if (divId == '') ss_activateMenuLayer(objId);
