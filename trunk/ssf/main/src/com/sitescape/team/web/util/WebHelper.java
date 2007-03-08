@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +47,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class WebHelper {
+	protected static Log logger = LogFactory.getLog(WebHelper.class);
 
 	public static boolean isUserLoggedIn(HttpServletRequest request) {
 		try {
@@ -411,7 +414,13 @@ public class WebHelper {
     	if (httpReq != null && binderId != null) {
     		Pattern p1 = Pattern.compile("(\\{\\{attachmentUrl: ([^}]*)\\}\\})");
 	    	Matcher m1 = p1.matcher(outputString);
+	    	int counter = 0;
 	    	while (m1.find()) {
+	    		if (counter > 5000) {
+		        	logger.error("Error processing markup: " + inputString);
+	    			break;
+	    		}
+	    		counter++;
 	    		String url = m1.group(2);
 				String webUrl = WebUrlUtil.getServletRootURL(httpReq) + WebKeys.SERVLET_VIEW_FILE + "?";
 				if (entity != null) {
