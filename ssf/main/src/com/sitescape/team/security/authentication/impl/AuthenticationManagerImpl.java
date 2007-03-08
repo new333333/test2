@@ -90,9 +90,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 		try {
 			user = getProfileDao().findUserByName(username, zoneName);
 		} catch (NoWorkspaceByTheNameException e) {
-    		//zone not setup?
-    		user = addZone(zoneName, username);
-    		if (user == null) {
+     		if (user == null) {
     			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
      						+ zoneName + "," + username + "]", e);
     		}
@@ -137,9 +135,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
 			User user = getProfileDao().loadUser(ws.getCreation().getPrincipal().getId(), zoneName);
 			com.sitescape.team.context.request.RequestContextUtil.setThreadContext(user);
-			//TODO: temporary to fixup zones
-			getAdminModule().setZone1(zoneName);
-			getAdminModule().setZone2(zoneName);
 		} catch (NoWorkspaceByTheNameException nw) {
 			
 		} catch (NoBinderByTheNameException nb) {
@@ -148,20 +143,5 @@ public class AuthenticationManagerImpl implements AuthenticationManager {
 
 		
 	}
-	private User addZone(String zoneName, String userName) {
-		//make sure zone exists
-		try {
-			Workspace ws = getCoreDao().findTopWorkspace(zoneName);
-		} catch (NoWorkspaceByTheNameException nw) {
-			getAdminModule().addZone(zoneName);
-		} catch (NoBinderByTheNameException nb) {
-			getAdminModule().addZone(zoneName);			
-		};
-		try {
-			return getProfileDao().findUserByName(userName, zoneName);
-		} catch (Exception ex) {
-			return null;
-		}
-		
-	}
+
 }

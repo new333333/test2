@@ -404,7 +404,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		notify.setLocale(locale);
 		notify.setDateFormat(DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale));
 		
-		getDefinitionModule().addNotifyElementForEntity(entryElem, notify, entry);
+		getDefinitionModule().getNotifyElementForEntity(entryElem, notify, entry);
 		
 	}
 	

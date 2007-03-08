@@ -97,16 +97,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // This default implementation is coded after template pattern. 
         
     	SimpleProfiler sp = new SimpleProfiler(false);
-        
+        final Map ctx = addEntry_setCtx(binder, null);
     	Map entryDataAll;
     	if (!filesFromApplet) {
         	sp.reset("addEntry_toEntryData").begin();
-            entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems);
+            entryDataAll = addEntry_toEntryData(binder, def, inputData, fileItems, ctx);
             sp.end().print();
     	}
     	else {
 	    	sp.reset("createNewEntryWithAttachmentAndTitle").begin();
-	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems);
+	    	entryDataAll = createNewEntryWithAttachmentAndTitle(def, inputData, fileItems, ctx);
 		    sp.end().print();
     	}        
         
@@ -116,7 +116,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         try {
         	
         	sp.reset("addEntry_create").begin();
-        	final Entry entry = addEntry_create(def, clazz);
+        	final Entry entry = addEntry_create(def, clazz, ctx);
         	sp.end().print();
         
         	sp.reset("addEntry_transactionExecute").begin();
@@ -125,13 +125,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		public Object doInTransaction(TransactionStatus status) {
         			//need to set entry/binder information before generating file attachments
         			//Attachments/Events need binder info for AnyOwner
-        			addEntry_fillIn(binder, entry, inputData, entryData);
-        			addEntry_preSave(binder, entry, inputData, entryData);      
-        			addEntry_save(binder, entry, inputData, entryData);      
+        			addEntry_fillIn(binder, entry, inputData, entryData, ctx);
+        			addEntry_preSave(binder, entry, inputData, entryData, ctx);      
+        			addEntry_save(binder, entry, inputData, entryData,ctx);      
                    	//After the entry is successfully added, start up any associated workflows
-                	addEntry_startWorkflow(entry);
-         			addEntry_postSave(binder, entry, inputData, entryData);
-         			if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
+                	addEntry_startWorkflow(entry, ctx);
+         			addEntry_postSave(binder, entry, inputData, entryData, ctx);
        			return null;
         		}
         	});
@@ -139,24 +138,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
             sp.reset("addEntry_filterFiles").begin();
-        	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+        	FilesErrors filesErrors = addEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
         	sp.end().print();
 
         	sp.reset("addEntry_processFiles").begin();
         	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
-        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
+        	filesErrors = addEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
         	sp.end().print();
         
  
         	sp.reset("addEntry_indexAdd").begin();
         	// This must be done in a separate step after persisting the entry,
         	// because we need the entry's persistent ID for indexing. 
-        	addEntry_indexAdd(binder, entry, inputData, fileUploadItems);
+        	addEntry_indexAdd(binder, entry, inputData, fileUploadItems, ctx);
         	sp.end().print();
         	
         	sp.reset("addEntry_done").begin();
-        	addEntry_done(binder, entry, inputData);
+        	addEntry_done(binder, entry, inputData, ctx);
         	sp.end().print();
         	
          	if(filesErrors.getProblems().size() > 0) {
@@ -172,7 +171,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 	
     //Method Used to get the files uploaded by the Applet and title information from the entry
-    protected Map createNewEntryWithAttachmentAndTitle(Definition def, InputDataAccessor inputData, Map fileItems)
+    protected Map createNewEntryWithAttachmentAndTitle(Definition def, InputDataAccessor inputData, Map fileItems, Map ctx)
     {
     	List fileData = new ArrayList();
     	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
@@ -220,9 +219,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
         return entryDataAll;
     }
+    protected Map addEntry_setCtx(Binder binder, Map ctx) {
+    	return ctx;
+    }
 
     protected FilesErrors addEntry_filterFiles(Binder binder, Entry entry, 
-    		Map entryData, List fileUploadItems) throws FilterException {
+    		Map entryData, List fileUploadItems, Map ctx) throws FilterException {
    		FilesErrors nameErrors = new FilesErrors();
    		//name must be unique within Entry
    		for (int i=0; i<fileUploadItems.size(); ++i) {
@@ -259,11 +261,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected FilesErrors addEntry_processFiles(Binder binder, 
-    		Entry entry, List fileUploadItems, FilesErrors filesErrors) {
+    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     
-    protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems) {
+    protected Map addEntry_toEntryData(Binder binder, Definition def, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
         if (def != null) {
         	return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
@@ -288,7 +290,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
     
-    protected Entry addEntry_create(Definition def, Class clazz)  {
+    protected Entry addEntry_create(Definition def, Class clazz, Map ctx)  {
     	try {
     		Entry entry = (Entry)clazz.newInstance();
            	entry.setEntryDef(def);
@@ -299,7 +301,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	}
     }
     
-    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setCreation(new HistoryStamp(user));
         entry.setModification(entry.getCreation());
@@ -329,31 +331,32 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     //inside write transaction
-    protected void addEntry_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_preSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     }
 
     //inside write transaction
-    protected void addEntry_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_save(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx){
         getCoreDao().save(entry);
     }
     
     //inside write transaction
-    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {
+    protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
+		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
     	processChangeLog(entry, ChangeLog.ADDENTRY);
     }
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
-    		InputDataAccessor inputData, List fileUploadItems) {
+    		InputDataAccessor inputData, List fileUploadItems, Map ctx){
         
     	indexEntry(binder, entry, fileUploadItems, null, true);
     }
  
-    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) {
+    protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
  
     //inside write transaction
-    protected void addEntry_startWorkflow(Entry entry) {
+    protected void addEntry_startWorkflow(Entry entry, Map ctx){
     	if (!(entry instanceof WorkflowSupport)) return;
     	Binder binder = entry.getParentBinder();
     	Map workflowAssociations = (Map) binder.getWorkflowAssociations();
@@ -382,16 +385,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet)  
     		throws WriteFilesException {
     	SimpleProfiler sp = new SimpleProfiler(false);
+        final Map ctx = modifyEntry_setCtx(entry, null);
 
     	Map entryDataAll;
     	if (!filesFromApplet) {
 	    	sp.reset("modifyEntry_toEntryData").begin();
-	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems);
+	    	entryDataAll = modifyEntry_toEntryData(entry, inputData, fileItems, ctx);
 		    sp.end().print();
     	}
     	else {
 	    	sp.reset("getFilesUploadedByApplet").begin();
-	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems);
+	    	entryDataAll = getFilesUploadedByApplet(entry, inputData, fileItems, ctx);
 		    sp.end().print();
     	}
 	    
@@ -401,13 +405,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    try {	    	
 	    	sp.reset("modifyEntry_transactionExecute").begin();
 	    	// The following part requires update database transaction.
+	    	//ctx can be used by sub-classes to pass info
 	    	getTransactionTemplate().execute(new TransactionCallback() {
 	    		public Object doInTransaction(TransactionStatus status) {
-	    			String oldNormalTitle = entry.getNormalTitle();
-	    			modifyEntry_fillIn(binder, entry, inputData, entryData);
-	    	    	modifyEntry_startWorkflow(entry);
-	    	  		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, oldNormalTitle, entry.getNormalTitle());		
-	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo);
+	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
+	    	    	modifyEntry_startWorkflow(entry, ctx);
+	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
  	    			return null;
 	    		}});
 	    	sp.end().print();
@@ -415,15 +418,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	        sp.reset("modifyBinder_removeAttachments").begin();
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
-            modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
+            modifyEntry_removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex, ctx);
 	        sp.end().print();
 	    	
 	    	sp.reset("modifyEntry_filterFiles").begin();
-	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems);
+	    	FilesErrors filesErrors = modifyEntry_filterFiles(binder, entry, entryData, fileUploadItems, ctx);
 	    	sp.end().print();
 
            	sp.reset("modifyEntry_processFiles").begin();
-	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors);
+	    	filesErrors = modifyEntry_processFiles(binder, entry, fileUploadItems, filesErrors, ctx);
 	    	sp.end().print();
 
 
@@ -432,15 +435,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	// requests respectively. 
 	    	filesToDeindex.addAll(filesToReindex);
 	    	sp.reset("modifyEntry_indexRemoveFiles").begin();
-	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex);
+	    	modifyEntry_indexRemoveFiles(binder, entry, filesToDeindex, ctx);
 	    	sp.end().print();
 	    	
 	    	sp.reset("modifyEntry_indexAdd").begin();
-	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex);
+	    	modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToReindex,ctx);
 	    	sp.end().print();
 	    	
 	    	sp.reset("modifyEntry_done").begin();
-	    	modifyEntry_done(binder, entry, inputData);
+	    	modifyEntry_done(binder, entry, inputData,ctx);
 	    	sp.end().print();
 	    		    
 	    	if(filesErrors.getProblems().size() > 0) {
@@ -456,7 +459,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	}
 
     //Method Used to get the files uploaded by the Applet
-    protected Map getFilesUploadedByApplet(Entry entry, InputDataAccessor inputData, Map fileItems)
+    protected Map getFilesUploadedByApplet(Entry entry, InputDataAccessor inputData, Map fileItems, Map ctx)
     {
     	List fileData = new ArrayList();
     	String nameValue = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER;
@@ -504,8 +507,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
         return entryDataAll;
     }
-    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
-    		Map entryData, List fileUploadItems) throws FilterException, TitleException {
+    protected Map modifyEntry_setCtx(Entry entry, Map ctx) {
+    	if (ctx == null) ctx = new HashMap();
+    	//save normalized title and title before changes
+		ctx.put(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, entry.getNormalTitle());
+		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, entry.getTitle());
+    	return ctx;
+    }
+   protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
+    		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
    		FilesErrors nameErrors = new FilesErrors();
    	 	//name must be unique within Entry
    		for (int i=0; i<fileUploadItems.size(); ++i) {
@@ -551,20 +561,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
 
     protected FilesErrors modifyEntry_processFiles(Binder binder, 
-    		Entry entry, List fileUploadItems, FilesErrors filesErrors) {
+    		Entry entry, List fileUploadItems, FilesErrors filesErrors, Map ctx) {
     	return getFileModule().writeFiles(binder, entry, fileUploadItems, filesErrors);
     }
     protected void modifyEntry_removeAttachments(Binder binder, Entry entry, 
     		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
-    		List<FileAttachment> filesToReindex) {
+    		List<FileAttachment> filesToReindex, Map ctx) {
        	removeAttachments(binder, entry, deleteAttachments, filesToDeindex, filesToReindex);
        	
     }
-    protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex) {
+    protected void modifyEntry_indexRemoveFiles(Binder binder, Entry entry, Collection<FileAttachment> filesToDeindex, Map ctx) {
     	removeFilesIndex(entry, filesToDeindex);
     }
    
-    protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems) {
+    protected Map modifyEntry_toEntryData(Entry entry, InputDataAccessor inputData, Map fileItems, Map ctx) {
         //Call the definition processor to get the entry data to be stored
         Definition def = entry.getEntryDef();
         if (def != null) {
@@ -577,7 +587,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
     //inside write transaction
-    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
         User user = RequestContextHolder.getRequestContext().getUser();
         entry.setModification(new HistoryStamp(user));
         entry.incrLogVersion();
@@ -593,10 +603,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         EntryBuilder.updateEntry(entry, entryData);
  	   takeCareOfLastModDate(entry, inputData);
-
+ 
     }
     //inside write transaction
-    protected void modifyEntry_startWorkflow(Entry entry) {
+    protected void modifyEntry_startWorkflow(Entry entry, Map ctx) {
     	if (!(entry instanceof WorkflowSupport)) return;
     	WorkflowSupport wEntry = (WorkflowSupport)entry;
     	//see if updates to entry, trigger transitions in workflow
@@ -604,8 +614,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      }   
     //inside write transaction
     protected void modifyEntry_postFillIn(Binder binder, Entry entry, InputDataAccessor inputData, 
-    		Map entryData, Map<FileAttachment,String> fileRenamesTo) {
+    		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
     	//create history - using timestamp and version from fillIn
+  		if (entry.isTop() && binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, (String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
     	processChangeLog(entry, ChangeLog.MODIFYENTRY);
  
     	if(fileRenamesTo != null)
@@ -613,16 +624,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    		String toName = fileRenamesTo.get(fa);
 	    		getFileModule().renameFile(binder, entry, fa, toName);
 	    	}
-    	
     }
     
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex) {
+    		Collection<FileAttachment> filesToIndex, Map ctx) {
     	indexEntry(binder, entry, fileUploadItems, filesToIndex, false);
     }
 
-    protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData) { 
+    protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
     protected void takeCareOfLastModDate(Entry entry, InputDataAccessor inputData) {
  	   Date lastModDate = (Date) inputData.getSingleObject("_lastModifiedDate");
@@ -635,32 +645,35 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************   
     public void deleteEntry(Binder parentBinder, Entry entry) {
     	SimpleProfiler sp = new SimpleProfiler(false);
-
+    	Map ctx = deleteEntry_setCtx(entry, null);
     	sp.reset("deleteEntry_preDelete").begin();
-        Object ctx  = deleteEntry_preDelete(parentBinder, entry, null);
+        deleteEntry_preDelete(parentBinder, entry, ctx);
         sp.end().print();
         
         sp.reset("deleteEntry_workflow").begin();
-        ctx = deleteEntry_workflow(parentBinder, entry, ctx);
+        deleteEntry_workflow(parentBinder, entry, ctx);
         sp.end().print();
         
         sp.reset("deleteEntry_processFiles").begin();
-        ctx = deleteEntry_processFiles(parentBinder, entry, ctx);
+        deleteEntry_processFiles(parentBinder, entry, ctx);
         sp.end().print();
          
         sp.reset("deleteEntry_delete").begin();
-        ctx = deleteEntry_delete(parentBinder, entry, ctx);
+        deleteEntry_delete(parentBinder, entry, ctx);
         sp.end().print();
         
         sp.reset("deleteEntry_postDelete").begin();
-        ctx = deleteEntry_postDelete(parentBinder, entry, ctx);
+        deleteEntry_postDelete(parentBinder, entry, ctx);
         sp.end().print();
         
         sp.reset("deleteEntry_indexDel").begin();
-        ctx = deleteEntry_indexDel(parentBinder, entry, ctx);
+        deleteEntry_indexDel(parentBinder, entry, ctx);
         sp.end().print();
     }
-     protected Object deleteEntry_preDelete(Binder parentBinder, Entry entry, Object ctx) {
+    protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
+    	return ctx;
+    }
+    protected void deleteEntry_preDelete(Binder parentBinder, Entry entry, Map ctx) {
    		if (entry.isTop() && parentBinder.isUniqueTitles()) 
    			getCoreDao().updateTitle(parentBinder, entry, entry.getNormalTitle(), null);		
     	//create history - using timestamp and version from fillIn
@@ -668,35 +681,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         entry.setModification(new HistoryStamp(user));
         entry.incrLogVersion();
         processChangeLog(entry, ChangeLog.DELETEENTRY);
-        return ctx;
     }
         
-    protected Object deleteEntry_workflow(Binder parentBinder, Entry entry, Object ctx) {
+    protected void deleteEntry_workflow(Binder parentBinder, Entry entry, Map ctx) {
     	if (entry instanceof WorkflowSupport)
     		getWorkflowModule().deleteEntryWorkflow((WorkflowSupport)entry);
-      	return ctx;
     }
     
-    protected Object deleteEntry_processFiles(Binder parentBinder, Entry entry, Object ctx) {
+    protected void deleteEntry_processFiles(Binder parentBinder, Entry entry, Map ctx) {
     	//attachment meta-data not deleted.  Done in optimized delete entry
     	getFileModule().deleteFiles(parentBinder, entry, null);
-      	return ctx;
     }
     
-    protected Object deleteEntry_delete(Binder parentBinder, Entry entry, Object ctx) {
+    protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
     	//use the optimized deleteEntry or hibernate deletes each collection entry one at a time
     	getCoreDao().delete(entry);   
-      	return ctx;
     }
-    protected Object deleteEntry_postDelete(Binder parentBinder, Entry entry, Object ctx) {
-      	return ctx;
+    protected void deleteEntry_postDelete(Binder parentBinder, Entry entry, Map ctx) {
    }
 
-    protected Object deleteEntry_indexDel(Binder parentBinder, Entry entry, Object ctx) {
+    protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {
         // Delete the document that's currently in the index.
     	// Since all matches will be deleted, this will also delete the attachments
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
-      	return ctx;
    }
     //***********************************************************************************************************
     public void moveEntry(Binder binder, Entry entry, Binder destination) {

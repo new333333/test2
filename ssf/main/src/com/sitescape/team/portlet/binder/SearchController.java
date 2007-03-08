@@ -435,7 +435,7 @@ public class SearchController extends AbstractBinderController {
 		model.put(WebKeys.FOLDER_SORT_DESCEND, searchSortDescend);
 		
 		//Get a default folder definition to satisfy the folder view jsps
-		Definition def = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW);
+		Definition def = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
 		model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
 		buildSearchResultsToolbars(request, response, model);

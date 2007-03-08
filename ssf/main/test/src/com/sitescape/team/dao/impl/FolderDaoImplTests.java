@@ -1,46 +1,33 @@
 package com.sitescape.team.dao.impl;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.hibernate.LazyInitializationException;
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
-import com.sitescape.team.dao.impl.CoreDaoImpl;
-import com.sitescape.team.dao.impl.FolderDaoImpl;
-import com.sitescape.team.dao.impl.ProfileDaoImpl;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoFolderByTheIdException;
-import com.sitescape.team.domain.NoBinderByTheNameException;
-import com.sitescape.team.domain.ProfileBinder;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
-
+import com.sitescape.team.support.AbstractTestBase;
 /**
  * Integration unit tests for data access layer. 
  * 
  * @author Jong Kim
  */
-public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringContextTests {
-
-	protected CoreDaoImpl cdi;
-	protected FolderDaoImpl fdi;
-	protected ProfileDaoImpl pdi;
+public class FolderDaoImplTests extends AbstractTestBase {
 	private static String zoneName ="testZone";
-	private static String adminGroup = "administrators";
-	private static String adminUser = "administrator";
+	protected FolderDaoImpl fdi;
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/team/dao/impl/applicationContext-folderdao.xml"};
 	}
@@ -50,15 +37,8 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 	 * by the Dependency Injection, which is done automatically by the
 	 * superclass.
 	 */
-	public void setCoreDaoImpl(CoreDaoImpl cdi) {
-		this.cdi = cdi;
-	}
-	
 	public void setFolderDaoImpl(FolderDaoImpl fdi) {
 		this.fdi = fdi;
-	}
-	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
-		this.pdi = pdi;
 	}
 	public void testAddFolder() {
 		Workspace top = createZone(zoneName);
@@ -262,41 +242,7 @@ public class FolderDaoImplTests extends AbstractTransactionalDataSourceSpringCon
 		fdi.delete(folder);
 		
 	}
-	private Workspace createZone(String name) {
-		Workspace top;
-		try { 
-			top = cdi.findTopWorkspace(name);
-		} catch (NoBinderByTheNameException nw) {
-			top = new Workspace();
-			top.setName(name);
-			top.setZoneId(new Long(-1));
-			cdi.save(top);
-			top.setZoneId(top.getId());
-			ProfileBinder profiles = new ProfileBinder();
-			profiles.setName("_profiles");
-			profiles.setZoneId(top.getId());
-			profiles.setParentBinder(top);
-			//	generate id for top
-			cdi.save(profiles);
-			Group group = new Group();
-			group.setName(adminGroup);
-			group.setZoneId(top.getId());
-			group.setParentBinder(profiles);
-			cdi.save(group);
-			User user = new User();
-			user.setName(adminUser);
-			user.setZoneId(top.getId());
-			user.setParentBinder(profiles);
-			cdi.save(user);
-			group.addMember(user);
-			cdi.flush();
-			
-			top = cdi.findTopWorkspace(name);
-			assertEquals(top.getName(), name);
-		}
-		return top;
-		
-	}
+
 	private Folder createFolder(Workspace top, String name) {
 		Folder folder = new Folder();
 		folder.setName(name);

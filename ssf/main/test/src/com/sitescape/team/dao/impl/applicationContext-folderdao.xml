@@ -55,6 +55,18 @@
 		</property>
 
 	</bean>
+	<bean id="zoneConfig" class="com.sitescape.team.util.SZoneConfig">
+		<property name="configDocs">
+			<bean class="com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles">
+				<property name="configFiles">
+					<list>
+						<value>config/zone.cfg.xml</value>
+					</list>		
+				</property>
+				<property name="validating"><value>false</value></property>
+			</bean>
+		</property>
+	</bean>
 
 	<bean id="coreDaoImpl" class="com.sitescape.team.dao.impl.CoreDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
@@ -64,7 +76,7 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>
-	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl">
+	<bean id="profileDaoImpl" class="com.sitescape.team.dao.impl.ProfileDaoImpl"  depends-on="zoneConfig">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<property name="coreDao"><ref bean="coreDaoImpl"/></property>
 	</bean>

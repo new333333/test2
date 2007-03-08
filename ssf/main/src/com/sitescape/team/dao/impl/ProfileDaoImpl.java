@@ -71,26 +71,6 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	}
 	//called from super-class afterPropertiesSet
 	protected void initDao() throws Exception {
-		//make sure super user is set correctly
-		//there should not be any session opened, so auto-commit should be in effect
-		List companies = getCoreDao().findCompanies();
-		for (int i=0; i<companies.size(); ++i) {
-		   Workspace zone = (Workspace)companies.get(i);
-		   String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
-		   //get super user from config file
-		   try {
-			   User superU = findUserByName(superName, zone.getName());
-			   if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
-					superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-					//force update
-					getCoreDao().merge(superU);				   
-			   }
-			   //make sure only one
-			   getCoreDao().executeUpdate(
-					   "update com.sitescape.team.domain.User set internalId=null where " +
-					   "internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
-		   } catch (NoUserByTheNameException nu) {} 
-		}
 	    List<Principal> profiles = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -193,6 +173,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
 		   			  			" p.parentBinder=:profile) and entityType in (:tList)")
 				   		.setEntity("profile", profiles)
+	   			  		.setParameterList("tList", types)
 		   				.executeUpdate();
  	       			
 		   			//delete ratings/visits for these principals
@@ -203,7 +184,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   			  		.setParameterList("tList", types)
 	   			  		.executeUpdate();
 	     	   		//delete dashboards owned
-	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id in +" +
+	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where owner_id in " +
 			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
 	   			  			" p.parentBinder=:profile) and owner_type in (:tList)")
  			   			.setEntity("profile", profiles)

@@ -32,7 +32,6 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.Principal;
@@ -53,6 +52,7 @@ import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
@@ -324,8 +324,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     			if (a != null) atts.add(a);
     		}
     	}
-         processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
-     }
+    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
+      }
 
    //NO transaction
     public void addEntries(Long binderId, Document doc) {
@@ -375,6 +375,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   for (int j=0; j<addedUsers.size(); ++j) {
     		   addUserWorkspace(addedUsers.get(j));
     	   }   	   
+    	   IndexSynchronizationManager.applyChanges();
     	}
        defList = root.selectNodes("/profiles/group");
    	   
@@ -416,11 +417,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 				logger.debug("Principal exists: " + p.getName());
 			}
 			if (!newEntries.isEmpty() || !oldEntries.isEmpty()) {
-				IndexSynchronizationManager.begin();
 				//returns list of user objects
 				allEntries.addAll(processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values())));
 				processor.syncEntries(oldEntries);
-				
+				//processor commits entries - so update indexnow
 				IndexSynchronizationManager.applyChanges();
 			}
   	   }
@@ -632,13 +632,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(user);
 		try {
-			if (EntryBuilder.updateEntry(user, updates) == true) {
-				ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
-						user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-				processor.indexEntry(user);
-				//do now, with request context set
-				IndexSynchronizationManager.applyChanges();
-			}
+			//use processor to handle title changes
+			ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
+					user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
+			processor.syncEntry(user, new MapInputData(updates));
+			//do now, with request context set
+			IndexSynchronizationManager.applyChanges();
 		} finally {
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);				

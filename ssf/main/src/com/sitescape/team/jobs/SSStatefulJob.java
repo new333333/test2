@@ -34,7 +34,7 @@ import com.sitescape.team.util.SpringContextUtil;
  * Return result objects to be handled by CleanupJobListener:
  * delete a job on unrecoverable error
  * delete a job that is complete
- * do nothing
+ * 
  */
 public abstract class SSStatefulJob implements StatefulJob {
 	protected Log logger = LogFactory.getLog(getClass());

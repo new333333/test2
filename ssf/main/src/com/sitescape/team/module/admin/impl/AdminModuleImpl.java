@@ -20,9 +20,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.InvalidArgumentException;
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Attachment;
@@ -35,10 +33,8 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -60,7 +56,6 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -72,7 +67,6 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 /**
@@ -82,10 +76,7 @@ import com.sitescape.util.Validator;
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ZONE, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
-    protected DefinitionModule definitionModule;
 	protected MailManager mailManager;
-	protected WorkspaceModule workspaceModule;
-	protected FolderModule folderModule;
 	/**
 	 * Setup by spring
 	 * @param mailManager
@@ -96,6 +87,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	protected MailManager getMailManager() {
 		return mailManager;
 	}
+    protected DefinitionModule definitionModule;
 	/**
 	 * Setup by spring
 	 * @param definitionModule
@@ -107,6 +99,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return definitionModule;
 	}
 
+	protected WorkspaceModule workspaceModule;
 	public void setWorkspaceModule(WorkspaceModule workspaceModule) {
 		this.workspaceModule = workspaceModule;
 	}
@@ -114,13 +107,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return workspaceModule;
 	}
 
+	protected FolderModule folderModule;
 	public void setFolderModule(FolderModule folderModule) {
 		this.folderModule = folderModule;
 	}
    	protected FolderModule getFolderModule() {
 		return folderModule;
 	}
-
+ 
    	/**
    	 * Use method names as operation so we can keep the logic out of application
 	 * and easisly change the required rights
@@ -252,7 +246,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		//noaccess check - should exist
 		return addDefaultTemplate(type, null);
 	}
-	private TemplateBinder addDefaultTemplate(int type, String viewType) {
+	public TemplateBinder addDefaultTemplate(int type, String viewType) {
        	//This is called as a side effect to bootstrap
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		List defs = new ArrayList();
@@ -267,12 +261,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder_blog");
 					config.setTemplateDescription("__configuration_default_folder_blog_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_WIKI.equals(viewType)) {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -281,10 +276,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder_wiki");
 					config.setTemplateDescription("__configuration_default_folder_wiki_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_WIKI_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);					
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_CALENDAR.equals(viewType)) {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -293,12 +291,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder_calendar");
 					config.setTemplateDescription("__configuration_default_folder_calendar_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CALENDAR_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -307,10 +306,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder_guestbook");
 					config.setTemplateDescription("__configuration_default_folder_guestbook_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_GUESTBOOK);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_GUESTBOOK);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -319,10 +318,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder_photo");
 					config.setTemplateDescription("__configuration_default_folder_photo_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_PHOTO_ALBUM);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_PHOTO_ALBUM);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				} else {
 					List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -331,12 +330,13 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					config.setTemplateTitle("__configuration_default_folder");
 					config.setTemplateDescription("__configuration_default_folder_description");
 					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CONFIG);
-					entryDef = getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT);
+					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT);
 					config.setEntryDef(entryDef);
 					defs.add(entryDef);
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
-					defs.add(getDefinitionModule().createDefaultDefinition(Definition.FOLDER_ENTRY));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
+					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
 					break;
 				}
 			}
@@ -347,7 +347,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				config.setTemplateTitle("__configuration_default_workspace");
 				config.setTemplateDescription("__configuration_default_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_WORKSPACE_CONFIG);
-				entryDef = getDefinitionModule().createDefaultDefinition(type);
+				entryDef = getDefinitionModule().addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);
 				break;
@@ -360,7 +360,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				config.setTemplateTitle("__configuration_default_user_workspace");
 				config.setTemplateDescription("__configuration_default_user_workspace_description");
 				config.setInternalId(ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG);
-				entryDef = getDefinitionModule().createDefaultDefinition(type);
+				entryDef = getDefinitionModule().addDefaultDefinition(type);
 				config.setEntryDef(entryDef);
 				defs.add(entryDef);
 				break;
@@ -507,7 +507,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	 public Long addTemplate(int type, Map updates) {
 	    checkAccess("addTemplate");
 		TemplateBinder config = new TemplateBinder();
-		Definition entryDef = getDefinitionModule().createDefaultDefinition(type);
+		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
 		config.setEntryDef(entryDef);
 		List definitions = new ArrayList();
 		definitions.add(entryDef);
@@ -639,7 +639,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   Binder binder;
 	   Definition def = cfg.getDefaultViewDef();
 	   if (def == null) {
-		   def = getDefinitionModule().createDefaultDefinition(cfg.getDefinitionType());
+		   def = getDefinitionModule().addDefaultDefinition(cfg.getDefinitionType());
 	   }
 	    Map fileItems = new HashMap();
 	    Map entryData = new HashMap();
@@ -647,7 +647,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
 		if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
 		entryData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-		String description = NLT.getDef(cfg.getDescription().getText());
+		String description=null;
+		if (cfg.getDescription() != null) description = NLT.getDef(cfg.getDescription().getText());
 		if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 		entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
 		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
@@ -1088,222 +1089,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		return result;
     }
 
-	public void addZone(String name) {
-		
-		String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
-		RequestContext oldCtx = RequestContextHolder.getRequestContext();
-		RequestContextUtil.setThreadContext(name, adminName);
-		try {
-			Workspace top = new Workspace();
-			top.setName(name);
-			//temporary until have read id
-			top.setZoneId(new Long(-1));
-			top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {name}, name));
-			top.setPathName("/"+top.getTitle());
-			top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
-			//generate id for top and profiles
-			getCoreDao().save(top);
-			top.setZoneId(top.getId());
-			
-			
-			ProfileBinder profiles = addPersonalRoot(top);
-		
-			//build user
-			User user = new User();
-			user.setName(adminName);
-			user.setLastName(adminName);
-			user.setForeignName(adminName);
-			user.setZoneId(top.getId());
-			user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-			user.setParentBinder(profiles);
-			getCoreDao().save(user);
-			
-			//indexing needs the user
-			RequestContextHolder.getRequestContext().setUser(user);
-			//need request context
-			getDefinitionModule().setDefaultBinderDefinition(top);
-			getDefinitionModule().setDefaultBinderDefinition(profiles);
-			getDefinitionModule().setDefaultEntryDefinition(user);
-			
-			//fill in timestampes
-			HistoryStamp stamp = new HistoryStamp(user);
-			top.setCreation(stamp);
-			top.setModification(stamp);
-			profiles.setCreation(stamp);
-			profiles.setModification(stamp);
-			user.setCreation(stamp);
-			user.setModification(stamp);
-			
-			addAnnonymous(profiles, stamp);
-			Group group = addAllUserGroup(profiles, stamp);
-			addAdminRole(top, top, user);
-			//all users are visitors
-			addVisitorsRole(top, top, group);
-			addDefaultTemplate(Definition.FOLDER_VIEW);
-			addDefaultTemplate(Definition.WORKSPACE_VIEW);
-			addDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
-			
-			BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(top, top.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(top, true);
-			processor = (BinderProcessor)getProcessorManager().getProcessor(profiles, profiles.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(profiles, true);
 
-			Workspace global = addGlobalRoot(top, stamp);		
-			processor = (BinderProcessor)getProcessorManager().getProcessor(global, global.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(global, true);
-			Workspace team = addTeamRoot(top, stamp);		
-			processor = (BinderProcessor)getProcessorManager().getProcessor(team, team.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-			processor.indexBinder(team, true);
-			//do now, with request context set
-			IndexSynchronizationManager.applyChanges();
-			//this will force the Ids to be cached
-			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
-			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
-			getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
-		} finally  {
-			//leave new context for indexing
-			RequestContextHolder.setRequestContext(oldCtx);
-		}
-
-	}
-	private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
-		//build allUsers group
-		Group group = new Group();
-		group.setName("allUsers");
-		group.setForeignName(group.getName());
-		group.setTitle(NLT.get("administration.initial.group.alluser.title", group.getName()));
-		group.setZoneId(parent.getZoneId());
-		group.setParentBinder(parent);
-		group.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
-		getDefinitionModule().setDefaultEntryDefinition(group);
-		getCoreDao().save(group);
-		group.setCreation(stamp);
-		group.setModification(stamp);
-		return group;
-	}
-	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String id) {
-		//build allUsers group
-		User user = new User();
-		user.setName(name);
-		user.setForeignName(name);
-		user.setZoneId(parent.getZoneId());
-		user.setParentBinder(parent);
-		user.setInternalId(id);
-		getDefinitionModule().setDefaultEntryDefinition(user);
-		user.setCreation(stamp);
-		user.setModification(stamp);
-		getCoreDao().save(user);
-		return user;
-	}
-	private User addAnnonymous(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
-	}
-	private void addAdminRole(Workspace top, WorkArea workArea, User user) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.admin", "Administrators"));
-		for (Iterator iter = WorkAreaOperation.getWorkAreaOperations(); iter.hasNext();) {
-			function.addOperation(((WorkAreaOperation)iter.next()));
-		}	
-		function.setInternalId(ObjectKeys.ADMINISTRATOR_ROLE_ID);
-		//generate functionId
-		getFunctionManager().addFunction(function);
-	
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(user.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);
-		
-	}
-	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
-		Workspace team = new Workspace();
-		team.setCreation(stamp);
-		team.setModification(stamp);
-		team.setName("_teams");
-		team.setTitle(NLT.get("administration.initial.team.title", "Teams"));
-		team.setPathName(top.getPathName() + "/" + team.getTitle());
-		team.setZoneId(top.getId());
-		team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
-		getDefinitionModule().setDefaultBinderDefinition(team);
-		top.addBinder(team);
-		
-		//generate id for top and profiles
-		getCoreDao().save(team);
-		getCoreDao().updateFileName(top, team, null, team.getTitle());
-		return team;
-		
-	}
-	private Workspace addGlobalRoot(Workspace top, HistoryStamp stamp) {
-		Workspace global = new Workspace();
-		global.setCreation(stamp);
-		global.setModification(stamp);
-		
-		global.setName("_global");
-		global.setTitle(NLT.get("administration.initial.global.title", "Global"));
-		global.setPathName(top.getPathName() + "/" + global.getTitle());
-		global.setZoneId(top.getId());
-		global.setInternalId(ObjectKeys.GLOBAL_ROOT_INTERNALID);
-		getDefinitionModule().setDefaultBinderDefinition(global);
-		top.addBinder(global);
-		
-		//generate id for top and profiles
-		getCoreDao().save(global);
-		getCoreDao().updateFileName(top, global, null, global.getTitle());
-		return global;
-	}
-	private ProfileBinder addPersonalRoot(Workspace top) {
-		ProfileBinder profiles = new ProfileBinder();
-		profiles.setName("_profiles");
-		profiles.setTitle(NLT.get("administration.initial.profile.title", "Personal"));
-		profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
-		profiles.setZoneId(top.getId());
-		profiles.setInternalId(ObjectKeys.PROFILE_ROOT_INTERNALID);
-		top.addBinder(profiles);
-		
-		//generate id for top and profiles
-		getCoreDao().save(profiles);
-		getCoreDao().updateFileName(top, profiles, null, profiles.getTitle());
-		return profiles;
-	}
-	
-	private void addVisitorsRole(Workspace top, WorkArea workArea, Group group) {
-		Function function = new Function();
-		function.setZoneId(top.getId());
-		function.setName(NLT.get("administration.initial.function.visitors", "Visitors"));
-
-		function.addOperation(WorkAreaOperation.READ_ENTRIES);
-		
-		//generate functionId
-		getFunctionManager().addFunction(function);
-		
-		WorkAreaFunctionMembership ms = new WorkAreaFunctionMembership();
-		ms.setWorkAreaId(workArea.getWorkAreaId());
-		ms.setWorkAreaType(workArea.getWorkAreaType());
-		ms.setZoneId(top.getId());
-		ms.setFunctionId(function.getId());
-		Set members = new HashSet();
-		members.add(group.getId());
-		ms.setMemberIds(members);
-		getCoreDao().save(ms);				
-	}
-	public void setZone1(String zoneName) {		
-	}
-	public void setZone2(String zoneName) {
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);		
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
-		addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);		
-		addDefaultTemplate(Definition.WORKSPACE_VIEW);
-		addDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
-		
-	}
    public List getChanges(Long binderId, String operation) {
 	   FilterControls filter = new FilterControls();
 	   filter.add("binderId", binderId);

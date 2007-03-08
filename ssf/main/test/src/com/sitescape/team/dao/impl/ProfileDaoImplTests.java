@@ -30,47 +30,32 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.support.AbstractTestBase;
 
 /**
  * Integration unit tests for data access layer. 
  * 
  * @author Jong Kim
  */
-public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringContextTests {
+public class ProfileDaoImplTests extends AbstractTestBase {
 
-	protected CoreDaoImpl cdi;
-	protected ProfileDaoImpl pdi;
-	private static String adminGroup = "administrators";
-	private static String adminUser = "administrator";
+	private static String zoneName ="testZone";
 	protected String[] getConfigLocations() {
 		return new String[] {"/com/sitescape/team/dao/impl/applicationContext-coredao.xml"};
 	}
 	
-	/*
-	 * This method is provided to set the CoreDaoImpl instance being tested
-	 * by the Dependency Injection, which is done automatically by the
-	 * superclass.
-	 */
-	public void setCoreDaoImpl(CoreDaoImpl cdi) {
-		this.cdi = cdi;
-	}
-	
-	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
-		this.pdi = pdi;
-	}
 	public void testFindUserByName() {
+		createZone(zoneName);
 		User user = pdi.findUserByName("liferay.com.1", "liferay.com");
 		assertNotNull(user);
 	}
 	
 	public void testFindUserByNameNoUserByTheNameException() {
-		// Test three slightly different cases: It throws the same exception
-		// for all cases. Throwing different exception for each case will make
-		// the database lookup more expensive, so it's not worth it. 
-		
+		createZone(zoneName);
+		// Test three slightly different cases:
 		// Test the situation where zone exists but username does not. 
 		try {
-			pdi.findUserByName("nonExistingUser", "liferay.com");			
+			pdi.findUserByName("nonExistingUser", zoneName);			
 			fail("Should throw NoUserByTheNameException");
 		}
 		catch(NoUserByTheNameException e) {
@@ -79,27 +64,30 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		
 		// Test the situation where username exists but zone doesn't.
 		try {
-			pdi.findUserByName("liferay.com.1", "nonExistingZone");			
+			pdi.findUserByName(adminUser, "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
-		catch(NoUserByTheNameException e) {
+		catch(NoWorkspaceByTheNameException e) {
 			assertTrue(true); // Ok
 		}
 		
-		// Test the situation where username exists but zone doesn't.
+		// Test the situation where neither exists.
 		try {
 			pdi.findUserByName("nonExistingUser", "nonExistingZone");			
 			fail("Should throw NoUserByTheNameException");
 		}
-		catch(NoUserByTheNameException e) {
+		catch(NoWorkspaceByTheNameException e) {
 			assertTrue(true); // Ok
 		}
 	}
 	
 	public void testLoadUserAndLazyLoading() {
 		// phase1: Load it. 
-		Binder top = cdi.findTopWorkspace("liferay.com");
-		User user = pdi.loadUser(new Long(59), top.getZoneId());
+		Binder top = createZone(zoneName);
+
+		User user =	pdi.findUserByName(adminUser, zoneName);	
+		cdi.evict(user);
+		user = pdi.loadUser(user.getId(), top.getId());
 		assertNotNull(user);
 		
 		// phase2: Test lazy loading, by ending the transation (it rolls back).
@@ -123,7 +111,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	}
 	
 	public void testAddGroup() {
-		Binder top = cdi.findTopWorkspace("liferay.com");
+		Binder top = createZone(zoneName);
 		FilterControls filter = new FilterControls("zoneId", top.getZoneId());
 		int count = cdi.countObjects(Group.class, filter);
 		
@@ -143,10 +131,9 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 	 *
 	 */
 	public void testAddUser() {
-		String zoneName="testZone";
 		String userName = "testUser";
-		Workspace top = createZone(zoneName);
-		FilterControls filter = new FilterControls("zoneName", zoneName);
+		Workspace top = createZone(zoneName);;
+		FilterControls filter = new FilterControls("zoneId", top.getId());
 		int count = cdi.countObjects(User.class, filter);
 		User user = createBaseUser(top, userName);
 		int newCount = cdi.countObjects(User.class, filter);
@@ -262,19 +249,10 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		Workspace top = createZone("testZone");
 		//Now add another association not handled by hibernate cascade
 		User user = createBaseUser(top, "testUser2");
-		
-		pdi.loadUserProperties(user.getId());
-		if (cdi.countObjects(UserProperties.class, new FilterControls("id.principalId", user.getId())) != 1)
-			fail("User properties were not created for user " + user.getName());
-
-		pdi.loadSeenMap(user.getId());
-		if (cdi.countObjects(SeenMap.class, new FilterControls("principalId", user.getId())) != 1)
-			fail("Seen map was not created for user " + user.getName());
-		
+			
 		cdi.flush();
 		//have to clear cache cause group owns membership and may try to re-add the user
 		cdi.clear();
-		//Use the profileDelete - this is the only way to remove userProperties
 		pdi.delete(user);
 		//make sure attributes are gone
 		checkDeleted(user);
@@ -315,39 +293,7 @@ public class ProfileDaoImplTests extends AbstractTransactionalDataSourceSpringCo
 		pdi.delete(p);
 		
 	}
-	private Workspace createZone(String name) {
-		Workspace top;
-		try { 
-			top = cdi.findTopWorkspace(name);
-		} catch (NoWorkspaceByTheNameException nw) {
-			top = new Workspace();
-			top.setName(name);
-			top.setZoneId(top.getZoneId());
-			cdi.save(top);
-			ProfileBinder profiles = new ProfileBinder();
-			profiles.setName("_profiles");
-			profiles.setZoneId(top.getZoneId());
-			profiles.setParentBinder(top);
-			//	generate id for top
-			cdi.save(profiles);
-			Group group = new Group();
-			group.setName(adminGroup);
-			group.setZoneId(top.getZoneId());
-			group.setParentBinder(profiles);
-			cdi.save(group);
-			User user = new User();
-			user.setName(adminUser);
-			user.setZoneId(top.getZoneId());
-			user.setParentBinder(profiles);
-			cdi.save(user);
-			group.addMember(user);
-			cdi.flush();
-			top = cdi.findTopWorkspace(name);
-			assertEquals(top.getName(), name);
-		}
-		return top;
-		
-	}
+
 	private User createBaseUser(Workspace top, String name) {
 		User user = new User();
 		user.setZoneId(top.getZoneId());

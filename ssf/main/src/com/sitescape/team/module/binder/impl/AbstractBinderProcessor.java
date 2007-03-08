@@ -32,7 +32,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
@@ -45,7 +44,6 @@ import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -900,9 +898,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add Modification Principal Id
         EntityIndexUtils.addModificationPrincipalId(indexDoc,entity);
         
-        // Add ReservedBy Principal Id
-        if (entity instanceof FolderEntry)
-        	IndexUtils.addReservedByPrincipalId(indexDoc,(FolderEntry) entity);
         
         // Add Doc Id
         EntityIndexUtils.addDocId(indexDoc, entity);
@@ -926,7 +921,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addAncestry(indexDoc, entity);
  
         // Add data fields driven by the entry's definition object. 
-        getDefinitionModule().addIndexFieldsForEntity(indexDoc, entity);
+        getDefinitionModule().getIndexFieldsForEntity(indexDoc, entity);
         
     }
     	
