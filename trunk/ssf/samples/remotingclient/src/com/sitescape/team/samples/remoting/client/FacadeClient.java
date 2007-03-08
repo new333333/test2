@@ -77,6 +77,12 @@ public class FacadeClient {
 			System.out.println("*** ID of the newly created entry is " + entryId);
 			System.out.println();
 		}
+		else if(args[0].equals("readWorkspaceTree")) {
+			System.out.println("*** Reading a workspace tree");
+			String wsTreeAsXML = client.facade.getWorkspaceTreeAsXML
+				(Long.parseLong(args[1]), Integer.parseInt(args[2]));
+			FacadeClientHelper.printXML(wsTreeAsXML);
+		}
 		else {
 			System.out.println("Invalid arguments");
 			printUsage();

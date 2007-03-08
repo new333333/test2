@@ -51,5 +51,15 @@ public interface Facade {
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML);
 	
 	public void deletePrincipal(long binderId, long principalId);
+	
+	/**
+	 * Returns workspace tree represented in XML.
+	 * 
+	 * @param binderId starting binder id
+	 * @param levels depth to return. -1 means all
+	 *  
+	 * @return XML representation of the workspace tree
+	 */
+	public String getWorkspaceTreeAsXML(long binderId, int levels);
 }
 

@@ -14,6 +14,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.util.Validator;
 
 public class WsDomTreeBuilder implements DomTreeBuilder {
@@ -97,6 +98,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("imageClass", imageClass);
 			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_WORKSPACE, source));
 			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_WORKSPACE, source));
+			element.addAttribute("permaLink", PermaLinkUtil.getURL(binder));
 					
 		} else if ((type == DomTreeBuilder.TYPE_FOLDER)) {
 			Folder f = (Folder)source;
@@ -107,6 +109,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("imageClass", "ss_twIcon");
 			element.addAttribute("action", helper.getAction(DomTreeBuilder.TYPE_FOLDER, source));
 			element.addAttribute("displayOnly", helper.getDisplayOnly(DomTreeBuilder.TYPE_FOLDER, source));
+			element.addAttribute("permaLink", PermaLinkUtil.getURL(f));
 		} else return null;
 		return element;
 	}

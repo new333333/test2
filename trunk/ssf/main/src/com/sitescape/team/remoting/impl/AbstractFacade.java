@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.axis.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
@@ -21,6 +20,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -40,6 +40,8 @@ import com.sitescape.team.remoting.api.Facade;
 import com.sitescape.team.remoting.api.Folder;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
@@ -339,6 +341,27 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 			throw new RemotingException(e);
 		}
 
+	}
+	
+	public String getWorkspaceTreeAsXML(long binderId, int levels) {
+		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
+
+		Document tree;
+		String treeKey = "";
+		if (binder instanceof Workspace) {
+			tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(binder, true, this, treeKey), levels);
+		} 
+		else {
+			//com.sitescape.team.domain.Folder topFolder = ((com.sitescape.team.domain.Folder)binder).getTopFolder();
+			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, treeKey), levels);
+			
+			//if (topFolder == null) topFolder = (com.sitescape.team.domain.Folder)binder;
+			//tree = getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this, treeKey));
+		}
+
+		String xml = tree.getRootElement().asXML();
+		//System.out.println(xml);
+		return xml;
 	}
 	
 	private Binder DBinderToBinder(com.sitescape.team.domain.Binder dbinder) {
