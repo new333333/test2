@@ -3,7 +3,6 @@
   <c:set var="ss_tagDivNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
-<ssf:find type="tags" singleItem="true"/>
 <script type="text/javascript">
 function ss_showTags<portlet:namespace/>(divNumber, entryId) {
 	var divId = 'ss_tags<portlet:namespace/>_' + parseInt(divNumber) + '_pane';
