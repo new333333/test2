@@ -12,6 +12,7 @@ import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 
 /**
@@ -25,16 +26,14 @@ import com.sitescape.team.util.SpringContextUtil;
  */
 public class PWCallback implements CallbackHandler {
 
-	private static final String DELIM = "##";
-	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
                 
                 // set the password given a username
-                String zoneName = parseZoneName(pc.getIdentifer());
-                String userName = parseUsername(pc.getIdentifer());
+                String userName = pc.getIdentifer();
+                String zoneName = SZoneConfig.getDefaultZoneName();
                 
         		try {
         			User user = getProfileDao().findUserByName(userName, zoneName);
@@ -56,16 +55,6 @@ public class PWCallback implements CallbackHandler {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
             }
         }
-	}
-
-	private String parseZoneName(String wssId) {
-		int index = wssId.indexOf(DELIM);
-		return wssId.substring(0, index);
-	}
-	
-	private String parseUsername(String wssId) {
-		int index = wssId.indexOf(DELIM);
-		return wssId.substring(index+2);
 	}
 	
 	private ProfileDao getProfileDao() {

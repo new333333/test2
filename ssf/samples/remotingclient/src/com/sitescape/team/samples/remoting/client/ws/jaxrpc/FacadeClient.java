@@ -78,6 +78,9 @@ public class FacadeClient {
 			else if(args[0].equals("uploadFile")){	
 				uploadFile(Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]);
 			}
+			else if(args[0].equals("readWorkspaceTree")) {
+				readWorkspaceTree(Long.parseLong(args[1]), Integer.parseInt(args[2]));
+			}
 			else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -183,6 +186,17 @@ public class FacadeClient {
 		stub.uploadFolderFile(binderId, entryId, fileUploadDataItemName, new File(filePath).getName());
 		
 		System.out.println();
+	}
+	
+	private static void readWorkspaceTree(long binderId, int levels) throws ServiceException, RemoteException {
+		System.out.println("*** Getting workspace tree ***");
+		
+		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
+		JaxRpcFacade service = locator.getFacade();
+		
+		String wsTreeAsXML = service.getWorkspaceTreeAsXML(binderId, levels);
+		
+		FacadeClientHelper.printXML(wsTreeAsXML);				
 	}
 	
 	private static void printBinder(Binder binder) {

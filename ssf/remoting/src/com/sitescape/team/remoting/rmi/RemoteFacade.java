@@ -56,5 +56,7 @@ public interface RemoteFacade extends Remote {
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) throws RemoteException;
 	
 	public void deletePrincipal(long binderId, long principalId) throws RemoteException;
+	
+	public String getWorkspaceTreeAsXML(long binderId, int levels) throws RemoteException;
 }
 
