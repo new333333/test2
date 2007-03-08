@@ -66,9 +66,6 @@ public class FacadeClient {
 			else if(args[0].equals("readDefinitionConfig")) {
 				readDefinitionConfig();
 			}
-			else if(args[0].equals("readBinder")) {
-				readBinder(Long.parseLong(args[1]));
-			}
 			else if(args[0].equals("readEntry")) {
 				readEntry(Long.parseLong(args[1]), Long.parseLong(args[2]));
 			}
@@ -112,17 +109,6 @@ public class FacadeClient {
 		String definitionConfigAsXML = service.getDefinitionConfigAsXML();
 		
 		FacadeClientHelper.printXML(definitionConfigAsXML);				
-	}
-	
-	private static void readBinder(long binderId) throws ServiceException, RemoteException {
-		System.out.println("*** Reading a binder ***");
-		
-		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
-		JaxRpcFacade service = locator.getFacade();
-		
-		Binder binder = service.getBinder(binderId);
-		
-		printBinder(binder);			
 	}
 	
 	private static void readEntry(long binderId, long entryId) throws ServiceException, RemoteException {
@@ -197,21 +183,6 @@ public class FacadeClient {
 		String wsTreeAsXML = service.getWorkspaceTreeAsXML(binderId, levels);
 		
 		FacadeClientHelper.printXML(wsTreeAsXML);				
-	}
-	
-	private static void printBinder(Binder binder) {
-		System.out.println();
-		System.out.println("*** Binder (id = " + binder.getId() + ")");
-		System.out.println("\tName: " + binder.getName());
-		System.out.println("\tZone Name: " + binder.getZoneName());
-		System.out.println("\tType: " + binder.getType());
-		System.out.println("\tTitle: " + binder.getTitle());
-		System.out.println("\tEntry Definition IDs: ");
-		String[] ids = binder.getEntryDefinitionIds();
-		for(int i = 0; i < ids.length; i++)
-			System.out.println("\t\tID: " + ids[i]); 
-		
-		System.out.println();
 	}
 	
 	private static void printUsage() {

@@ -678,7 +678,7 @@
 			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="controllerDependencyTemplate" />
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.api.Facade</value>
+			<value>com.sitescape.team.remoting.Facade</value>
 		</property>
 		<property name="interceptorNames">
 			<list>

@@ -1,4 +1,4 @@
-package com.sitescape.team.remoting.api;
+package com.sitescape.team.remoting;
 
 /**
  * WS facade for business tier.
@@ -15,28 +15,19 @@ public interface Facade {
 	public String getDefinitionConfigAsXML();
 	
 	// 
-	// Binder operations
-	// 
-	public Binder getBinder(long binderId);
-	
-	//public String[] getEntryDefinitionIds(long binderId);
-	
-	// 
 	// Folder operations
-	// 
-	public Folder getFolder(long binderId);
+	// 	
+	public String getFolderEntryAsXML(long folderId, long entryId);
 	
-	public String getFolderEntryAsXML(long binderId, long entryId);
+	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML);
+	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
 	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-    public void deleteFolderEntry(long binderId, long entryId);
+    public void deleteFolderEntry(long folderId, long entryId);
 
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
+	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML);
 
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 
 	//
@@ -51,6 +42,10 @@ public interface Facade {
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML);
 	
 	public void deletePrincipal(long binderId, long principalId);
+	
+	//
+	// Workspace operations
+	//
 	
 	/**
 	 * Returns workspace tree represented in XML.

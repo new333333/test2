@@ -3,7 +3,6 @@ package com.sitescape.team.remoting.impl;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.logging.Log;
@@ -16,7 +15,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
@@ -35,17 +33,18 @@ import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.sample.EmployeeModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.remoting.api.Binder;
-import com.sitescape.team.remoting.api.Facade;
-import com.sitescape.team.remoting.api.Folder;
+import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.rss.RssGenerator;
 import com.sitescape.team.util.AllBusinessServicesInjected;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
  * POJO implementation of Facade interface.
+ * 
+ * Important: This class is NOT tied to any specific remoting protocol 
+ * such as SOAP. Therefore don't ever put protocol or tool specific code 
+ * (such as capability that utilizes Axis engine directly) into this class.  
  * 
  * @author jong
  *
@@ -172,17 +171,11 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	}
 	
 	public String getDefinitionAsXML(String definitionId) {
-		return getDefinitionModule().getDefinition(definitionId).getDefinition().asXML();
+		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();
 	}
 	
 	public String getDefinitionConfigAsXML() {
-		return getDefinitionModule().getDefinitionConfig().asXML();
-	}
-
-	public Binder getBinder(long binderId) {
-		com.sitescape.team.domain.Binder dbinder = getBinderModule().getBinder(new Long(binderId));
-		
-		return DBinderToBinder(dbinder);
+		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 
 	public String getFolderEntryAsXML(long binderId, long entryId) {
@@ -210,7 +203,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		// Handle custom fields driven by corresponding definition. 
 		addCustomElements(entryElem, entry);
 		
-		String xml = doc.asXML();
+		String xml = doc.getRootElement().asXML();
 		
 		/*
 		System.out.println("*** XML representation for entry " + entry.getId());
@@ -236,10 +229,6 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	
 	public abstract void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
-	
-	public Folder getFolder(long binderId) {
-		return DFolderToFolder(getFolderModule().getFolder(new Long(binderId)));
-	}
 	
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
@@ -292,7 +281,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		// Handle custom fields driven by corresponding definition. 
 		addCustomElements(entryElem, entry);
 		
-		String xml = doc.asXML();
+		String xml = doc.getRootElement().asXML();
 		
 		return xml;
 	}
@@ -362,38 +351,6 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		String xml = tree.getRootElement().asXML();
 		//System.out.println(xml);
 		return xml;
-	}
-	
-	private Binder DBinderToBinder(com.sitescape.team.domain.Binder dbinder) {
-		Binder binder = new Binder();
-		
-		binder.setId(dbinder.getId().longValue());
-		binder.setName(dbinder.getName());
-		binder.setZoneName(RequestContextHolder.getRequestContext().getZoneName());
-		binder.setType(dbinder.getType());
-		binder.setTitle(dbinder.getTitle());
-		binder.setParentBinderId(dbinder.getParentBinder().getId().longValue());
-		
-		List entryDefs = dbinder.getEntryDefinitions();
-		String[] entryDefinitionIds = new String[entryDefs.size()];
-		for(int i = 0; i < entryDefinitionIds.length; i++) {
-			entryDefinitionIds[i] = ((Definition) entryDefs.get(i)).getId();
-		}
-		binder.setEntryDefinitionIds(entryDefinitionIds);
-		
-		return binder;	
-	}
-	
-	private Folder DFolderToFolder(com.sitescape.team.domain.Folder dfolder) {
-		Folder folder = new Folder();
-		
-		if(dfolder.getParentFolder() != null)		
-			folder.setParentFolderId(dfolder.getParentFolder().getId());
-		
-		if(dfolder.getTopFolder() != null)
-			folder.setTopFolderId(dfolder.getTopFolder().getId());
-		
-		return folder;
 	}
 	
 	private Document getDocument(String xml) {

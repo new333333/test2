@@ -18,6 +18,13 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 
+/**
+ * This class extends protocol-neutral <code>AbstractFacade</code> class with
+ * SOAP specific features (specifically file upload capability using SOAP
+ * attachment). The additional feature is implemented using Axis library.
+ * @author jong
+ *
+ */
 public class FacadeImpl extends AbstractFacade {
 
 	public void uploadFolderFile(long binderId, long entryId, 
