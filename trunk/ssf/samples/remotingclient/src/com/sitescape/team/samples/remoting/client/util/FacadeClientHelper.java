@@ -1,4 +1,4 @@
-package com.sitescape.team.samples.remoting.client;
+package com.sitescape.team.samples.remoting.client.util;
 
 import java.io.IOException;
 import java.util.Date;
