@@ -433,14 +433,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
 		//	The "Manage dashboard" menu
 		if (DefinitionHelper.checkIfBinderShowingDashboard(workspace)) {
-			boolean dashboardContentExists = false;
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
-			if (ssDashboard != null && ssDashboard.containsKey(WebKeys.DASHBOARD_COMPONENTS_LIST)) {
-				Map dashboard = (Map)ssDashboard.get("dashboard");
-				if (dashboard != null) {
-					dashboardContentExists = DashboardHelper.checkIfContentExists(dashboard);
-				}
-			}
+			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
+
 			dashboardToolbar.addToolbarMenu("5_manageDashboard", NLT.get("toolbar.manageDashboard"));
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
