@@ -10,8 +10,16 @@
     parseInBrowser="true">
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
   </taconite-replace>
-  <taconite-replace contextNodeID="<c:out value="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane"/>" 
+  <taconite-replace contextNodeID="<c:out value="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_data_pane_p"/>" 
     parseInBrowser="true">
+	<c:set var="ssTags" value="${ssPersonalTags}" scope="request" />
+	<c:set var="ssTagsType" value="p" scope="request" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
+  </taconite-replace>
+  <taconite-replace contextNodeID="<c:out value="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_data_pane_c"/>" 
+    parseInBrowser="true">
+	<c:set var="ssTags" value="${ssCommunityTags}" scope="request" />
+	<c:set var="ssTagsType" value="c" scope="request" />
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data.jsp" />
   </taconite-replace>
 </c:if>
