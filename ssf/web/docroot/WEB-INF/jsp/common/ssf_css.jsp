@@ -560,15 +560,11 @@ input.ss_linkButton, input.ss_submit, a.ss_linkButton:link, a.ss_linkButton:visi
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 1px;
-  vertical-align: middle;
+  vertical-align: bottom;
   text-decoration: none;
   cursor: pointer;
   }
 
-a.ss_linkButton {
-    padding-bottom: 2px;
-    padding-top: 1px;
-}
 
 a.ss_linkButton:focus, a.ss_linkButton:hover {
   color: ${ss_linkbutton_link_hover_color};
@@ -584,7 +580,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
   padding-left: 10px;
   padding-right: 10px;
   padding-bottom: 1px;
-  vertical-align: middle;
+  vertical-align: bottom;
   text-decoration: none;
   cursor: pointer;
   }
