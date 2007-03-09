@@ -1,10 +1,13 @@
 package com.sitescape.team.taglib;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -18,6 +21,8 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
+import com.sitescape.util.servlet.DynamicServletRequest;
+import com.sitescape.util.servlet.StringServletResponse;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -1328,6 +1333,22 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("<div id=\"conditionOperand\"></div>\n");
 						
 					
+					} else if (type.equals("userGroupSelect")) {
+						HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+						HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+						RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/user_group_select.jsp");
+
+						ServletRequest req = null;
+						req = new DynamicServletRequest(httpReq);
+						req.setAttribute("propertyId", propertyId);
+						req.setAttribute("propertyValue", propertyValue0);
+						
+						StringServletResponse res = new StringServletResponse(httpRes);
+						try {
+							rd.include(req, res);
+							sb.append(res.getString().replaceAll("&", "&amp;"));
+						} catch(Exception e) {}
+						
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption")));
