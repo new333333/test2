@@ -27,3 +27,6 @@ to change the username and/or password:
 convert the batch file.
 
 4. Make sure that the server is running, and execute print_workspace_tree.bat.
+
+Note: You can retrieve WSDL from http://<hostname>:8080/ssf/ws/Facade?wsdl
+Not all operations described in the WSDL are currently operable though.
