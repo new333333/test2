@@ -24,7 +24,7 @@
 <div style="margin:0px; padding:0px;display:inline;">
 
 <img src="<html:imagesPath/>pics/1pix.gif" 
-		onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', ss_tagSearchResultUrl, '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
+		onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:'', '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
 />
 
 <textarea 
