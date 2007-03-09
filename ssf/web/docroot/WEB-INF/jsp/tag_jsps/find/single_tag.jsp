@@ -16,31 +16,15 @@
 <c:set var="tagType" value="<%= findTagType %>" />
 <c:set var="leaveResultsVisible" value="<%= leaveResultsVisible %>"/>
 
-<c:if test="${empty noInit || !noInit}">
     <c:if test="${empty ss_single_tag_js_loaded}" >
       <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_tag.js"></script>
       <c:set var="ss_single_tag_js_loaded" value="1" scope="request"/>
     </c:if>
-    <script type="text/javascript">
-    function ss_tagVarOnload${prefix}() {
-    	var url = "<ssf:url 
-    				adapter="true" 
-    				portletName="ss_forum" 
-    				action="__ajax_request" 
-    				actionUrl="false"><ssf:param 
-    				name="operation" 
-    				value="find_tag_search" /></ssf:url>";
-    	ss_confFindTagSearchVariables("${prefix}", "<%= clickRoutine %>", tagSearchResultUrl, "${leaveResultsVisible}", url); 
-    	ss_findTagInitializeForm("<%= findTagFormName %>", "${prefix}");
-    }
-    </script>
-</c:if>
 
-<c:if test="${empty initOnly || !initOnly}">
-<div style="margin:0px; padding:0px; display:inline;">
+<div style="margin:0px; padding:0px;display:inline;">
 
 <img src="<html:imagesPath/>pics/1pix.gif" 
-  onload="ss_tagVarOnload${prefix}();"
+		onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', tagSearchResultUrl, '${leaveResultsVisible}', '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false"><ssf:param name="operation" value="find_tag_search" /></ssf:url>'); ss_findTagInitializeForm('<%= findTagFormName %>', '${prefix}'); "
 />
 
 <textarea 
@@ -58,5 +42,4 @@
       </ul>
     </div>
 </div>	
-</c:if>
-
+  
