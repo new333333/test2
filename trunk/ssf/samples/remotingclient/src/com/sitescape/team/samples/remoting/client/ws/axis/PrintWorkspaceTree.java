@@ -29,7 +29,7 @@ public class PrintWorkspaceTree
 	
 	private static void printWorkspaceTree() throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://peace:8080/ssf/ws/Facade";
+		String endpoint = "http://localhost:8080/ssf/ws/Facade";
 		
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
