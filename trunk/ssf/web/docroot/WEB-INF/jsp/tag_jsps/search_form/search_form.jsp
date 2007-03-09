@@ -201,9 +201,6 @@ function t_searchForm_wsTree_showId(forum, obj) {
 }
 
 
-function putValueInto(inputId, value) {
-	document.getElementById(inputId).value = value;
-}
 var currentEntryCreatorIndex = 1;
 
 function saveCurrentEntryClick(ind) {
@@ -211,17 +208,9 @@ function saveCurrentEntryClick(ind) {
 }
 
 function rewriteValueIntoFormElement(id, obj) {
-//	alert("ID: "+id);
-//	alert("Obj: "+obj+" \n"+obj.innerHTML);
 	var spanObj = obj.getElementsByTagName("span").item(0);
-//	alert("User: "+spanObj.innerHTML);
-//	alert(document.getElementById("elementValue"+currentEntryCreatorIndex));
-//	alert("currentEntryCreatorIndex: "+currentEntryCreatorIndex);
-//	alert(document.getElementsByName("elementValue"+currentEntryCreatorIndex).length);
 	document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value = spanObj.innerHTML;
 	document.getElementById("elementValue"+currentEntryCreatorIndex).value=id;
-//	alert(document.getElementById("elementValue"+currentEntryCreatorIndex).value);
-//	alert(document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value);
 }
 
 var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
@@ -232,9 +221,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>";
-// ss_declareFindTagSearchVariables();
 </script>
-<!-- p> TAG SSF:TREE START</p -->
 <ssf:tree 
   treeName="t_searchForm_wsTree" 
   treeDocument="${ssDomTree}"  
@@ -242,9 +229,6 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
   multiSelect="<%= new ArrayList() %>" 
   multiSelectPrefix="ss_sf_id_" 
   initOnly="true" />
-
-<!-- p>AFTER TAG SSF TREE</p -->
-
 
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="searchForm.terms"/></legend>
@@ -457,4 +441,3 @@ ss_filterTermNumberMax++;
 <input type="hidden" name="ss_filterTermNumberMax"/>
 <input type="hidden" name="selectedSearchFilter" value="<c:out value="${ss_selectedFilter}"/>"/>
 <input type="hidden" name="ss_filterTags" />
-<!-- p> AFTER SEARCH FORM</p -->
