@@ -34,7 +34,7 @@ var ss_debugTextareaId = "debugTextarea<portlet:namespace/>"
 <script type="text/javascript">
 
 // global variable for tag search
-var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
+var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="search"/>
 			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
 			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
@@ -42,6 +42,7 @@ var tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode
 			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
 			<portlet:param name="newTab" value="1"/>
 			</portlet:actionURL>";
+	
 </script>
 
 <!-- Start of global toolbar -- MAXIMIZED PORTAL WINDOW MODE -->
@@ -357,14 +358,6 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
 
-var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="search"/>
-			<portlet:param name="searchCommunityTags" value="ss_tagPlaceHolder"/>
-			<portlet:param name="searchPersonalTags" value="ss_tagPlaceHolder"/>
-			<portlet:param name="searchTags" value="searchTagsOr"/>
-			<portlet:param name="tabTitle" value="ss_tagPlaceHolder"/>
-			<portlet:param name="newTab" value="1"/>
-			</portlet:actionURL>";
 </script>
 
 <div id="ss_navbar_bottom<portlet:namespace/>"></div>
