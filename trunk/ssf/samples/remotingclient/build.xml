@@ -4,7 +4,7 @@
 	<property name="project.dir" value="../.." />
 	<property name="generated.dir" value="${basedir}/generated" />
 
-	<property name="remotingclient.zip.file" value="remotingclient.zip"/>
+	<property name="remotingclient.zip.file" value="remotingclient-sample.zip"/>
 
 	<import file="${project.dir}/build-common.xml"/>
 
