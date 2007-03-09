@@ -3996,3 +3996,9 @@ function ss_submitParentForm(htmlObj) {
 		ss_submitParentForm(htmlObj.parentNode);
 	}
 }
+
+
+
+function ss_putValueInto(objId, value) {
+	document.getElementById(objId).value = value;
+}
