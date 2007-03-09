@@ -28,5 +28,15 @@ convert the batch file.
 
 4. Make sure that the server is running, and execute print_workspace_tree.bat.
 
-Note: You can retrieve WSDL from http://<hostname>:8080/ssf/ws/Facade?wsdl
-Not all operations described in the WSDL are currently operable though.
+5. The XML representation of the workspace tree returned from the WS call
+contains the following attributes:
+
+image="/icons/<gif file name>"
+
+The image file can be retrieved directly by prefixing it with 
+http://<hostname>:8080/ssf/images. For example, 
+http://<hostname>:8080/ssf/images/icons/workspace.gif
+
+6. You can retrieve WSDL from http://<hostname>:8080/ssf/ws/Facade?wsdl
+Please note that not all operations described in the WSDL are currently 
+operable though (work in progress).
