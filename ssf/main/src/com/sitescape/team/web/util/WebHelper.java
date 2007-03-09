@@ -312,7 +312,12 @@ public class WebHelper {
     	String fileHandle = "";
     	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
     	Matcher m = pattern.matcher(description.getText());
+    	int loopDetector = 0;
     	while (m.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup: " + description.getText());
+    			break;
+    		}
     		String img = m.group(0);
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
         	Matcher m2 = p2.matcher(img);
@@ -349,7 +354,12 @@ public class WebHelper {
 	public static void scanDescriptionForAttachmentFileUrls(Description description) {
     	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewAttachmentFile[^>]*>)");
     	Matcher m = pattern.matcher(description.getText());
+    	int loopDetector = 0;
     	while (m.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup: " + description.getText());
+    			break;
+    		}
     		String fileId = "";
     		String img = m.group(0);
         	Pattern p2 = Pattern.compile("fileId=([^\\&\"]*)");
@@ -418,7 +428,7 @@ public class WebHelper {
 		    	Matcher m1 = p1.matcher(outputString);
 		    	loopDetector = 0;
 		    	while (m1.find()) {
-		    		if (loopDetector > 5000) {
+		    		if (loopDetector > 2000) {
 			        	logger.error("Error processing markup: " + inputString);
 		    			return outputString;
 		    		}
@@ -451,7 +461,7 @@ public class WebHelper {
 		    	Matcher m2 = p2.matcher(outputString);
 		    	loopDetector = 0;
 		    	while (m2.find()) {
-		    		if (loopDetector > 5000) {
+		    		if (loopDetector > 2000) {
 			        	logger.error("Error processing markup: " + inputString);
 		    			return outputString;
 		    		}
@@ -472,7 +482,7 @@ public class WebHelper {
 		    	Matcher m2 = p2.matcher(outputString);
 		    	loopDetector = 0;
 		    	while (m2.find()) {
-		    		if (loopDetector > 5000) {
+		    		if (loopDetector > 2000) {
 			        	logger.error("Error processing markup: " + inputString);
 		    			return outputString;
 		    		}
@@ -517,7 +527,7 @@ public class WebHelper {
 		    	Matcher m3 = p3.matcher(outputString);
 		    	loopDetector = 0;
 		    	while (m3.find()) {
-		    		if (loopDetector > 5000) {
+		    		if (loopDetector > 2000) {
 			        	logger.error("Error processing markup: " + inputString);
 		    			return outputString;
 		    		}
@@ -560,7 +570,12 @@ public class WebHelper {
 		//Start by removing all quoted characters (e.g., &QUOT;)
 		Pattern p1 = Pattern.compile("(\\&[^;]*;)");
     	Matcher m1 = p1.matcher(title);
+    	int loopDetector = 0;
     	while (m1.find()) {
+    		if (loopDetector > 2000) {
+	        	logger.error("Error processing markup: " + title);
+    			break;
+    		}
 			title = m1.replaceFirst(" ");
 			m1 = p1.matcher(title);
     	}
