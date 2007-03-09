@@ -40,8 +40,8 @@
 		<parameter name="scope" value="application"/>
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->
 		<!-- The host name portion must be substituted appropriately. -->
-		<endpointURL>http://peace:8080/ssf/ws/Facade</endpointURL>
-		<!--<namespace>http://peace:8080/ssf/ws/</namespace>-->
+		<endpointURL>http://localhost:8080/ssf/ws/Facade</endpointURL>
+		<!--<namespace>http://localhost:8080/ssf/ws/</namespace>-->
 	</service>
 	<!--<service name="Version" provider="java:RPC">
 		<parameter name="allowedMethods" value="getVersion"/>
