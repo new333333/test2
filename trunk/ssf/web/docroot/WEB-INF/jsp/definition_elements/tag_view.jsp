@@ -57,7 +57,7 @@ function ss_modifyTags<portlet:namespace/>(operation2, tagId, divNumber, entryId
 	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>")
 	ajaxRequest.addKeyValue("tagToDelete", tagToDelete)
 	ajaxRequest.addKeyValue("tagDivNumber", divNumber)
-	ajaxRequest.addKeyValue("entryId", entryId)
+	ajaxRequest.addKeyValue("entryId", entryId);
 	ajaxRequest.addFormElements("ss_modifyTagsForm<portlet:namespace/>_"+divNumber);
 	ajaxRequest.setData("divNumber", divNumber);
 	ajaxRequest.setData("entryId", entryId);
@@ -117,7 +117,8 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 <tr><td>
   <table class="ss_tag_pane_color"><tbody><tr><td>
-    <input type="text" class="ss_text" name="personalTag" />
+    <!-- input type="text" class="ss_text" name="personalTag" / -->
+<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="personalTag" type="personalTags" width="70px" singleItem="true" />
     </td><td>
       <a class="ss_linkButton" href="#" 
         onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
@@ -138,7 +139,9 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 <tr><td>
   <table class="ss_tag_pane_color"><tbody><tr><td>
-    <input type="text" class="ss_text" name="communityTag"/>
+    <!--input type="text" class="ss_text" name="communityTag"/ -->
+<ssf:find formName="ss_modifyTagsForm${ss_tagViewNamespace}_${ss_tagDivNumber}" formElement="communityTag" type="communityTags" width="70px" singleItem="true" />
+   
     </td><td style="padding-left:4px;">
     <a class="ss_linkButton" href="#" 
       onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"
