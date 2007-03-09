@@ -172,39 +172,52 @@ public class Html {
 		}
 
 		text = stripComments(text);
+		
+		int intTextLength = text.length();
+		String strTag = "img";
 
 		StringBuffer sb = new StringBuffer();
 		int x = 0;
 		int y = text.indexOf("<");
 
 		while (y != -1) {
-			
 			//Hemanth
 			//We are trying to strip all the HTML tags except img. We except the HTML to be well-formed.
-			if (y+5 < text.length() && ((text.substring(y, (y+4))).equalsIgnoreCase("<img") || (text.substring(y, (y+5))).equalsIgnoreCase("</img"))) {
+			
+			int intStartTagCheck = y + strTag.length() + 1;
+			int intEndTagCheck = y + strTag.length() + 2;
+
+			//This code makes sure the img tag is not removed
+			if ( ( (intStartTagCheck < intTextLength) && (text.substring(y, intStartTagCheck)).equalsIgnoreCase("<"+strTag) ) || 
+				 ( (intEndTagCheck < intTextLength) && (text.substring(y, intEndTagCheck)).equalsIgnoreCase("</"+strTag) ) ) {
+				//If we encounter a tag <img or </img, then we need to find the equivalent > tag and then append the whole
+				//img tag as part of the string buffer.  
 				int intEndIndex = text.indexOf(">", y);
 				
-				if (intEndIndex != -1) {
+				if (intEndIndex != -1 && x < intTextLength) {
 					sb.append(text.substring(x, intEndIndex+1));
 				}
+				//we are incrementing the x value by 1 from the intEndIndex, because intEndIndex is index of > and we want
+				//to continue from the next character of >
 				x = intEndIndex + 1;
-				
 			} else {
-				sb.append(text.substring(x, y));
+				//This code removes the HTML tags apart from img tags 
+				if (x < intTextLength) {
+					sb.append(text.substring(x, y));
+				}
 				x = text.indexOf(">", y) + 1;
 			}
-
-			if (x < y) {
+			
+			if (x < y || x >= intTextLength) {
 				// <b>Hello</b
 				break;
 			}
-			if (x >= text.length()) break;
 
 			y = text.indexOf("<", x);
 		}
 
-		if (y == -1 && x < text.length()) {
-			sb.append(text.substring(x, text.length()));
+		if (y == -1 && x < intTextLength) {
+			sb.append(text.substring(x, intTextLength));
 		}
 
 		return sb.toString();
