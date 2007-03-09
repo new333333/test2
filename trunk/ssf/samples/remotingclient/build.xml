@@ -4,6 +4,8 @@
 	<property name="project.dir" value="../.." />
 	<property name="generated.dir" value="${basedir}/generated" />
 
+	<property name="remotingclient.zip.file" value="remotingclient.zip"/>
+
 	<import file="${project.dir}/build-common.xml"/>
 
 	<!-- This overrides the imported definition -->
@@ -21,7 +23,7 @@
 		<pathelement location="${project.dir}/lib/wsdl4j.jar" />
 		<pathelement location="${project.dir}/lib/wss4j.jar" />
 		<pathelement location="${project.dir}/lib/addressing.jar" />
-		<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar.jar" />
+		<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar" />
 		<pathelement location="${project.dir}/lib/commons-codec.jar" />
 		<pathelement location="${project.dir}/lib/opensaml.jar" />
 		<pathelement location="${project.dir}/lib/xalan.jar" />
@@ -213,4 +215,44 @@
 		</java>
 	</target>
 	
+	<target name="zip" depends="compileButGenerated">
+		<delete dir="${basedir}/lib"/>
+		<mkdir dir="${basedir}/lib"/>
+		<copy todir="${basedir}/lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="activation.jar" />
+				<include name="mail.jar" />
+				<include name="dom4j.jar" />
+				<include name="axis.jar" />
+				<include name="axis-ant.jar" />
+				<include name="jaxrpc.jar" />
+				<include name="commons-logging.jar" />
+				<include name="commons-discovery.jar" />
+				<include name="saaj.jar" />
+				<include name="wsdl4j.jar" />
+				<include name="wss4j.jar" />
+				<include name="addressing.jar" />
+				<include name="bcprov-jdk13-128.jar" />
+				<include name="commons-codec.jar" />
+				<include name="opensaml.jar" />
+				<include name="xalan.jar" />
+				<include name="xmlsec.jar" />
+			</fileset>
+		</copy>
+		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
+			basedir="${basedir}"
+			includes="classes/**/*.class,src/**/*.java,*.bat,*.wsdd"
+			excludes="classes/**/jaxrpc/*.class,src/**/jaxrpc/*.java"
+		/>
+		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
+			basedir="${project.dir}/util"
+			includes="classes/**/PasswordEncryptor.class,src/**/PasswordEncryptor.java"
+			update="true"
+		/>
+		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
+			basedir="${basedir}"
+			includes="lib/*.*"
+			update="true"
+		/>
+	</target>
 </project>
