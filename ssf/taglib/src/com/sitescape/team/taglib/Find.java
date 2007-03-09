@@ -33,8 +33,6 @@ public class Find extends TagSupport {
     private Boolean showClipboard;
     private Boolean showTeamMembers;
     private Integer instanceCount = 0;
-    private Boolean initOnly = false;
-    private Boolean noInit = false;
     
 	public int doStartTag() throws JspException {
 		try {
@@ -86,13 +84,12 @@ public class Find extends TagSupport {
 			req.setAttribute("singleItem", this.singleItem);
 			req.setAttribute("clickRoutine", this.clickRoutine);
 			req.setAttribute("instanceCount", this.instanceCount);
+			req.setAttribute("instanceCode", this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
 			req.setAttribute("binderId", this.binderId);
 			req.setAttribute("show_clipboard", this.showClipboard);
 			req.setAttribute("show_team_members", this.showTeamMembers);
-			req.setAttribute("initOnly", this.initOnly);
-			req.setAttribute("noInit", this.noInit);
 			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -116,8 +113,6 @@ public class Find extends TagSupport {
 			this.binderId = "";
 			this.searchSubFolders = false;
 			this.showTeamMembers = false;
-			this.initOnly = false;
-			this.noInit = false;
 		}
 	}
 
@@ -171,14 +166,6 @@ public class Find extends TagSupport {
 
 	public void setShowTeamMembers(Boolean showTeamMembers) {
 		this.showTeamMembers = showTeamMembers;
-	}
-
-	public void setInitOnly(Boolean initOnly) {
-		this.initOnly = initOnly;
-	}
-
-	public void setNoInit(Boolean noInit) {
-		this.noInit = noInit;
 	}
 
 }
