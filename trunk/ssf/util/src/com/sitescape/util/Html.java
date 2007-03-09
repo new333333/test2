@@ -181,7 +181,7 @@ public class Html {
 			
 			//Hemanth
 			//We are trying to strip all the HTML tags except img. We except the HTML to be well-formed.
-			if ( (text.substring(y, (y+4))).equalsIgnoreCase("<img") || (text.substring(y, (y+5))).equalsIgnoreCase("</img") ) {
+			if (y+5 < text.length() && ((text.substring(y, (y+4))).equalsIgnoreCase("<img") || (text.substring(y, (y+5))).equalsIgnoreCase("</img"))) {
 				int intEndIndex = text.indexOf(">", y);
 				
 				if (intEndIndex != -1) {
@@ -198,11 +198,12 @@ public class Html {
 				// <b>Hello</b
 				break;
 			}
+			if (x >= text.length()) break;
 
 			y = text.indexOf("<", x);
 		}
 
-		if (y == -1) {
+		if (y == -1 && x < text.length()) {
 			sb.append(text.substring(x, text.length()));
 		}
 
