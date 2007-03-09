@@ -9,10 +9,12 @@
 	String findTagElementWidth = (String) request.getAttribute("element_width");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String instanceCode = (String) request.getAttribute("instanceCode");
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
-<c:set var="prefix" value="${renderResponse.namespace}_${iCount}" />
+<c:set var="iCode" value="<%= instanceCode %>"/>
+<c:set var="prefix" value="${renderResponse.namespace}_${iCode}_${iCount}" />
 <c:set var="tagType" value="<%= findTagType %>" />
 <c:set var="leaveResultsVisible" value="<%= leaveResultsVisible %>"/>
 
