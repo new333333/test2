@@ -1,0 +1,68 @@
+<div>
+	
+<b>The Aspen Help System</b>
+
+<br/>
+<br/>
+<b>ssHelpSpot</b>
+<br/>
+<br/>
+To add a help spot, enclose the target item with &lt;ssHelpSpot&gt; tags.
+The browser will automatically find these help spots and add them to the 
+table of contents.
+<br/>
+Include the following attributes in each help spot:
+<ul>
+	<li>helpId - The name of the jsp to be shown. All help jsps must come from
+		the jsp/help directory.</li>
+	
+	<li>align - Specifies how to horitontally align the help spot in the target area. 
+		values can be "left", "center" or "right".</li>
+	
+	<li>valign - Specifies how to vertically align the help spot in the target area. 
+		values can be "top", "middle" or "bottom".</li>
+	
+	<li>title - The title line for the help spot.</li>
+	
+	<li>offsetX - the number of pixels to offset the help spot horizontally 
+		(can be negative).</li>
+	
+	<li>offsetY - the number of pixels to offset the help spot vertically 
+		(can be negative).</li>
+	
+	
+</ul>
+
+<br/>
+<br/>
+<b>ss_helpSystem functions</b>
+<br/>
+<br/>
+There are various functions that can be used when writing help pages. 
+Here are the most common:
+<br/>
+<br/>
+<ul>
+	<li>ss_helpSystem.showHelpPanel(id, panelId, x, y)
+		<br/>
+		id - the help jsp to be shown
+		<br/>
+		panelId - the id of the panel div to use. A div will be created
+		automatically if none by that name exists.
+		<br/>
+		x - the horizontal placement of the panel. if x = "", then leave the
+		panel where it was. if x = "left", "center" or "right" than position 
+		the panel horizontally at the left, right or center of the window.
+		<br/>
+		y - the vertical placement of the panel. if y = "", then leave the
+		panel where it was. if y = "top", "middle" or "bottom" than position 
+		the panel vertically at the top, bottom or middle of the window.
+	</li>
+	
+	<li>ss_helpSystem.highlight(id)
+		<br/>
+		id - the id of the div on the original page to highlight.
+	</li>
+</ul>
+
+</div>

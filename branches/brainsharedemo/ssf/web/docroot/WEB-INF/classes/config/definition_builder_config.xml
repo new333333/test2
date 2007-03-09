@@ -1,0 +1,1889 @@
+
+<!--
+	Concepts
+	
+	- Definitions (definitionType) must track the definition types defined in Definition.class
+	- Items can be added as needed. Each item specifies its properties, the jsps to draw the item, and its indexer routine
+	- Item type="data" indicates a data element to be processed and saved during "Add" and "Modify" operations.
+	- Item type="dataView" indicates that this item is shadowing a data element from the "form" definition.
+	- Item type="form" indicates that the item is a "<form>...</form>" element. 
+-->
+
+<!-- Definitions -->
+<definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../main/classes/dtd/definition_builder_config.xsd">
+	<definition name="entryTypeDefinition" definitionType="1" caption="__entry_definitions" canBeDeleted="false">		
+		<operations>
+			<operation name="addDefinition" item="entryType" caption="__add_a_new_entry_definition" />
+		</operations>
+	</definition>
+	
+	<definition name="workflowProcessDefinition" definitionType="2" caption="__workflow_processes" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="workflowProcessType" caption="__add_a_new_workflow_process" />
+		</operations>
+	</definition>
+	
+	<definition name="forumViewDefinition" definitionType="5" caption="__folder_views" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="forumViewType" caption="__add_a_new_folder_view" />
+		</operations>
+	</definition>
+	
+	<definition name="profileViewDefinition" definitionType="6" caption="__profile_views" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="profileViewType" caption="__add_a_new_profile_view" />
+		</operations>
+	</definition>
+	
+	<definition name="profileEntryViewDefinition" definitionType="7" caption="__profile_entry_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="profileEntryViewType" caption="__add_a_new_profile_entry_view" />
+		</operations>
+	</definition>
+	
+	<definition name="workspaceViewDefinition" definitionType="8" caption="__workspace_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="workspaceViewType" caption="__add_a_new_workspace_view" />
+		</operations>
+	</definition>
+	
+	<definition name="userWorkspaceViewDefinition" definitionType="12" caption="__user_workspace_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="userWorkspaceViewType" caption="__add_a_new_user_workspace_view" />
+		</operations>
+	</definition>
+
+	
+<!-- Items -->
+
+<!-- Entry items -->
+	<item name="entryType" definitionType="1" caption="__entry_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.entry" type="iconList" path="icons.entry" 
+				default="/icons/page.png" />
+			<property name="replyStyle" caption="__reply_style" type="replyStyle" />
+		</properties>
+		
+		<options>
+			<option name="entryForm" initial="true" />
+			<option name="entryView" initial="true" />
+			<option name="entryBlogView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="entryForm" caption="__entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="entryFormForm" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="entryView" caption="__entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="entryView" value="entryView">
+				<option name="entryView" caption="__entry_view" />
+				<option name="guestbook" caption="__entry_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
+		</properties>
+
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" caption="__title" initial="true" />
+			<option name="entrySignatureView" caption="__entry_signature" initial="true" />
+			<option name="entryCreatorView" caption="__entry_creator" />
+			<option name="entryDateView" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" initial="true" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryWorkflow" caption="__entry_workflow" initial="true" />
+			<option name="entryAttachments" caption="__entry_attachments" initial="true" />
+			<option name="entryReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryBlogView" caption="__entry_blog_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="blog" value="blog">
+				<option name="blog" caption="__blog_view" />
+				<option name="guestbook" caption="__entry_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
+		</properties>
+
+		<options optionCaption="__standard_entry_options">
+			<option name="titleBlogView" caption="__title" initial="true" />
+			<option name="descriptionBlogView" caption="__description" initial="true" />
+			<option name="entryBlogDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="entryBlogWorkflow" caption="__entry_workflow" initial="true" />
+			<option name="entryBlogAttachments" caption="__entry_attachments" initial="true" />
+			<option name="entryBlogReplies" caption="__entry_replies" initial="true" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/blog_view.jsp" />
+		</jsps>
+	</item>
+
+	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
+		<properties>
+			<property name="name" caption="__data_item_name" type="selectbox">
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
+					optionCaption="__data_items_from_the_entry_form">
+					<exclude name="title" />
+					<exclude name="description" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryAttachments" type="dataView" caption="__entry_attachments" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryReplies" type="dataView" caption="__entry_replies" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_replies.jsp" />
+			
+		</jsps>
+	</item>
+		
+	<item name="entryWorkflow" type="dataView" caption="__entry_workflow" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_workflow.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				value="form1" setAttribute="formName"/>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="form" value="form">
+				<option name="form" caption="__entry_form" />
+				<option name="guestbook" caption="__entry_form_guestbook" />
+				<help>__help_entry_view_type</help>
+			</property>
+		</properties>
+		<options>
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="entryIcon" />
+			<option name="attachFiles" default="true" initial="true"/>
+			<option name="entryFormButtons" initial="true" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="title" caption="__title" type="data" canBeDeleted="false" 
+		multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="generated" caption="__isTitleGenerated" type="boolean">
+				<help>__help_mark_as_title</help>
+			</property>
+			<property name="itemSource" caption="__file_items_from_the_entry_form_for_title" type="selectbox">
+				<option name="ss_none" caption="__none"/>
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" 
+					optionCaption="__file_items_from_the_entry_form_for_title"/>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+		</jsps>
+		<help>__help_title_field</help>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
+	</item>
+	
+	<item name="titleView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+	</item>
+	
+	<item name="event" caption="__event" type="data" category="entryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
+			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true"/>
+			<property name="required" caption="__required" type="boolean" default="false" >
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
+	</item>
+	
+	<item name="description" caption="__description" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  value="description" readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+			<property name="height" caption="__height_px" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
+	<item name="entrySignatureView" caption="__entry_signature">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value=""/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryCreatorView" caption="__entry_creator">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_creator"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryDateView" caption="__entry_date">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_date"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="descriptionView" caption="__description">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="form" caption="__form" category="entryLayout">
+		<properties>
+			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
+		</properties>
+		<options>
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout">
+		<properties>
+		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
+				<option name="left" caption="__left" />
+				<option name="right" caption="__right" />
+			    <help>__help_form_button_alignment</help>
+		    </property>
+		</properties>
+		<options>
+			<option name="okButton" caption="__ok_button" initial="true" />
+			<option name="cancelButton" caption="__cancel_button" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="okButton" caption="__ok_button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="__button_text" type="text" value="__ok"/>
+			<property name="onClick" caption="__onclick_routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="cancelButton" caption="__cancel_button" category="entryLayout">
+		<properties>
+			<property name="caption" caption="__button_text" type="text" value="__cancel"/>
+			<property name="onClick" caption="__onclick_routine" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
+		</jsps>
+	</item>
+		
+<!-- Blog entry view items -->
+	<item name="titleBlogView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_title.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="descriptionBlogView" caption="__description">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__description"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
+		<properties>
+			<property name="name" caption="__data_item_name" type="selectbox">
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item" 
+					optionCaption="__data_items_from_the_entry_form">
+					<exclude name="title" />
+					<exclude name="description" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogAttachments" type="dataView" caption="__entry_attachments" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogReplies" type="dataView" caption="__entry_replies" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_replies.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="entryBlogWorkflow" type="dataView" caption="__entry_workflow" category="entryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_workflow.jsp" />
+		</jsps>
+	</item>
+		
+<!-- Common entry form items -->
+	<item name="text" caption="__text" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
+	</item>
+	
+	<item name="textarea" caption="__simple_text_area" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__textareaWidth" type="text" default="60"/>
+			<property name="rows" caption="__rows" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
+	</item>
+	
+	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="height" caption="__height_px" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+	</item>
+	
+	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
+			<property name="size" caption="__size" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<options>
+			<option name="selectboxSelection" caption="__selectbox_option" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
+	</item>
+
+	<item name="selectboxSelection" caption="__selection">
+		<properties>
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>__help_selection_data_name</help>
+			</property>
+			<property name="caption" caption="__selection_string" type="text">
+				<help>__help_selection_string</help>
+			</property>			
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<options>
+			<option name="radioSelection" caption="__radio_button_option" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
+	</item>
+	
+	<item name="radioSelection" caption="__radio_button">
+		<properties>
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				<help>__help_selection_data_name</help>
+			</property>
+			<property name="caption" caption="__selection_string" type="text">
+				<help>__help_radio_string</help>
+			</property>			
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderCheck" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
+	</item>
+
+	<item name="graphic" caption="__graphic" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="maxWidth" caption="__max_graphic_width" type="text"
+				characterMask="^[0-9]*$">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_graphic_height" type="text"
+				characterMask="^[0-9]*$">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
+				<help>__help_storage_media</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+		</jsps>
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
+	</item>
+
+	<item name="attachFiles" caption="__attach_files" type="data"
+			multipleAllowed="false" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60" value="60"/>
+			<property name="number" caption="__number_of_file_select_boxes_to_be_shown" type="integer"/>
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
+				<!-- 
+					IMPORTANT: Make sure that the following option list contains
+				    union of all repository names appearing in this definition. 
+				    Any file uploaded through one of the named element becomes
+				    visible through "attachFiles" type element. Therefore it is 
+				    illogical to display a list other than the full union. In
+				    the current version, the software is not capable of computing
+				    this master list dynamically. So it must be listed explicitly.
+				-->   
+				<help>__help_storage_media</help>
+			</property>
+			<property name="hide" caption="__hideFormElement" type="boolean" default="false"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
+		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments" />
+	</item>
+	
+	<item name="file" caption="__file_upload" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
+				<help>__help_storage_media</help>
+			</property>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
+		</jsps>
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
+	</item>
+	
+	<item name="date" caption="__date" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__text" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
+	</item>
+	
+	<item name="user_list" caption="__user_list" type="data" category="commonEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__text" type="text"/>
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserList" />
+	</item>
+		
+<!-- General layout items -->
+	<item name="box" caption="__box" category="generalLayout">
+		<properties>
+			<property name="style" caption="__box_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="square" caption="__box_square" />
+				<option name="squareNoBorder" caption="__box_square_no_border" />
+			</property>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="expandableDiv" caption="__expandable_div" category="generalLayout">
+		<properties>
+			<property name="caption" caption="__text" type="text"/>
+			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
+				<option name="square" caption="__box_square" />
+			</property>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="fieldset" caption="__fieldset" category="generalLayout">
+		<properties>
+			<property name="legend" caption="__legend" type="text"/>
+		</properties>
+		<options>
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="divider" caption="__divider" category="generalLayout">
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="table2" caption="__two_column_table" category="generalLayout">
+		<properties>
+			<property name="name" caption="__name" type="text"/>
+			<property name="caption" caption="__text" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__form_elements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__form_elements" />
+			<option_select path="//item[@category='commonEntryData']" optionCaption="__form_elements_common" />
+			<option_select path="//item[@category='entryLayout']" optionCaption="__entry_layout_options"  />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="table3" caption="__three_column_table" category="generalLayout">
+		<properties>
+			<property name="name" caption="__name" type="text"/>
+			<property name="caption" caption="__text" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+		</jsps>
+	</item>
+
+	<item name="html" caption="__html" category="generalLayout">
+		<properties>
+			<property name="name" caption="__name" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="htmlTop" caption="__html_top" type="textarea"/>
+			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements"/>
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="customJsp" caption="__custom_jsp" category="generalLayout">
+		<properties>
+			<property name="formJsp" caption="__form_jsp_name" type="text"/>
+			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
+		</properties>
+		<options>
+			<option name="titleView" caption="__title" />
+			<option name="entrySignatureView" definitionType="1" caption="__entry_signature" />
+			<option name="entryCreatorView" definitionType="1" caption="__entry_creator" />
+			<option name="entryDateView" definitionType="1" caption="__entry_date" />
+			<option name="descriptionView" caption="__description" />
+			<option name="entryWorkflow" caption="__entry_workflow" />
+			<option name="entryDataItem" caption="__entry_data_item" definitionType="1" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="entryAttachments" caption="__entry_attachments" />
+			<option name="entryReplies" caption="__entry_replies" />
+			<option_select definitionType="1" path="//item[@category='entryData']" optionCaption="__entryDataElements" />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" optionCaption="__entryDataElements" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+		
+<!-- Folder items -->
+	<item name="forumViewType" definitionType="5" caption="__folder_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.folder" type="iconList" 
+				path="icons.folder" default="/icons/folder.png" />
+		</properties>
+		
+		<options>
+			<option name="folderForm" caption="__folder_form" initial="true" multipleAllowed="false" />
+			<option name="forumView" caption="__folder_view" initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="folderForm" caption="__folder_form" type="form" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="binderName" initial="true" />
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="folderIcon" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option_select path="//item[@category='folderForm']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/folder_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="binderName" caption="__binder_name" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__binder_name" type="text" value="binderName"
+				  readonly="true" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			    <help>__help_binder_name</help>
+	        </property>
+			<property name="caption" caption="__caption" type="text" value="__folderName"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/binder_name_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+	</item>
+	
+	<item name="forumView" caption="__folder_view" 
+		canBeDeleted="false" multipleAllowed="false" >		
+		<properties>
+			<property name="type" caption="__type" type="selectbox" 
+				  default="folder" value="folder">
+				<option name="folder" caption="__folder_folder" />
+				<option name="event" caption="__folder_event" />
+				<option name="blog" caption="__folder_blog" />
+				<option name="wiki" caption="__folder_wiki" />
+				<option name="photo" caption="__folder_photo" />
+				<option name="file" caption="__folder_file" />
+				<option name="guestbook" caption="__folder_guestbook" />
+				<option name="search" caption="__folder_search" />
+				<help>__help_folder_view_type</help>
+			</property>
+		</properties>
+		<options>
+			<option name="folderTitleView" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="descriptionView" initial="true" />
+			<option name="folderDataItem" caption="__folder_data_item" 
+				definitionType="5" />
+			<option name="folderList" initial="true" />
+			<option name="viewEntry" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="folderTitleView" caption="__title">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="folderDataItem" type="dataView" 
+		caption="__folder_data_item" category="folderViewData">
+		<properties>
+			<property name="name" caption="__folder_data_item_name" 
+				type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='folderForm']/.//item" 
+					optionCaption="__folder_form_data_items" >
+					<exclude name="binderName" />
+					<exclude name="title" />
+					<exclude name="description" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_folder_data.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="folderList" caption="__folder_listing">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
+		</jsps>
+	</item>
+
+	<item name="viewEntry" caption="__view_entry_selectbox">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_entry_selectbox.jsp" />
+		</jsps>
+	</item>
+		
+
+<!-- Workflow items -->
+	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="workflowProcess" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workflowProcess" caption="__workflow_process" canBeDeleted="false" multipleAllowed="false">
+		<properties>
+			<property name="initialState" caption="__initialState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" 
+				path="//item[@name='state']" multipleAllowed="true"/>
+		</properties>
+
+		<options>
+			<option name="state" caption="__state" multipleAllowed="true" />
+			<option name="parallelThread" caption="__parallelThread" multipleAllowed="true" />
+		</options>
+	</item>
+	
+	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
+		<properties>
+			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="description" caption="__description" type="textarea" />
+		</properties>
+		<options>
+			<option name="onEntry"/>
+			<option name="transitions" initial="true" />
+			<option name="accessControls"/>
+			<option name="onExit"/>
+			<option name="workflowQuestion" />
+		</options>
+	</item>
+	
+	<item name="transitions" caption="__transitions" canBeDeleted="false" unique="./item[@name='transitions']">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		<options>
+			<option name="transitionManual" />
+			<option name="transitionOnModify" />
+			<option name="transitionOnReply" />
+			<option name="transitionOnResponse" />
+			<option name="transitionOnEntryData" />
+			<option name="transitionOnElapsedTime" />
+			<option name="transitionOnVariable" />
+			<option name="waitForParallelThread" />
+		</options>
+	</item>
+	
+	<item name="transitionManual" caption="__transitionManual" type="transition" >
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	
+	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true">
+		<properties>
+			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="startState" caption="__startState" type="itemSelect" path="//item[@name='state']" />
+			<property name="endState" caption="__endState" type="itemSelect" 
+				path="//item[@name='state']" multipleAllowed="true"/>
+		</properties>
+	</item>
+	
+	<item name="transitionOnModify" caption="__transition_on_modify" type="transition">
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	
+	<item name="transitionOnReply" caption="__transition_on_reply" type="transition">
+		<properties>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+
+	<item name="transitionOnResponse" caption="__transition_on_response" type="transition">
+		<properties>
+			<property name="question" caption="__transition_on_question" type="text" />
+			<property name="response" caption="__transition_on_response" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	<item name="transitionOnEntryData" caption="__transition_on_entry_data" type="transition">
+		<properties>
+			<property name="allMustMatch" caption="__matchEntryData" type="radio" default="true">
+				<option name="true" caption="__matchAll" />
+				<option name="false" caption="__matchAny" />
+				<help>__allMustMatchHelp</help>
+			</property>
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="workflowEntryDataValue" />
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+		<help>__help_workflow_condition</help>
+	</item>
+	<item name="transitionOnElapsedTime" caption="__transition_on_elapsed_time" type="transition">
+		<properties>
+			<property name="days" caption="__transition_on_days" type="text" 
+				characterMask="^[0-9]*$" />
+			<property name="hours" caption="__transition_on_hours" type="text"
+				characterMask="^[0-9]*$" />
+			<property name="mins" caption="__transition_on_mins" type="text"
+				characterMask="^[0-9]*$" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	<item name="transitionOnVariable" caption="__transition_on_variable" type="transition">
+		<properties>
+			<property name="name" caption="__transition_on_variable_name" type="text" />
+			<property name="value" caption="__transition_on_variable_value" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+		<options>
+			<option name="variable" caption="__workflow_variable_set_on_transition" />
+		</options>
+	</item>
+	
+	<item name="workflowEntryDataValue" caption="__workflow_entry_data_value" 
+		multipleAllowed="true" >
+		<properties>
+			<property name="condition" caption="__workflow_entry_data_value" 
+				type="workflowCondition" />
+		</properties>
+	</item>
+	
+	<item name="workflowQuestion" caption="__workflow_question" type="workflowQuestion">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				unique="//item[@type='workflowQuestion']" />
+			<property name="question" caption="__workflow_question_text" type="text" />
+		</properties>
+		<options>
+			<option name="workflowResponse" caption="__workflow_response" />
+		</options>
+	</item>
+	
+	<item name="workflowResponse" caption="__workflow_response" type="workflowResponse" >
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
+				unique="//item[@type='workflowResponse']" />
+			<property name="response" caption="__workflow_response_text" type="text" />
+		</properties>
+	</item>
+	
+	<item name="variable" caption="__workflow_variable" >
+		<properties>
+			<property name="name" caption="__workflow_variable_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" />
+			<property name="value" caption="__workflow_variable_value" type="text" />
+		</properties>
+	</item>
+	
+	<item name="accessControls" caption="__accessControls" canBeDeleted="true" unique="./item[@name='accessControls']">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		<options>
+			<option_select path="//item[@category='accessControlsLayout']" />
+		</options>
+	</item>
+	
+	<item name="readAccess" caption="__readAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout">
+		<properties>
+			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
+		</properties>
+	</item>
+	
+
+	
+	<item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']">
+		<operations>
+			<operation name="addOption" caption="__add" />
+			<operation name="deleteItem" caption="__delete" />
+		</operations>
+		<options>
+			<option name="variable" caption="__workflow_variable_set" />
+			<option name="startParallelThread" />
+			<option name="stopParallelThread" />
+			<option name="notifications" />
+		</options>
+	</item>
+	
+	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']">
+		<operations>
+			<operation name="addOption" caption="__add" />
+			<operation name="deleteItem" caption="__delete" />
+		</operations>
+		<options>
+			<option name="variable" caption="__workflow_variable_set" />
+			<option name="startParallelThread" />
+			<option name="stopParallelThread" />
+			<option name="notifications" />
+		</options>
+	</item>
+	
+	<item name="notifications" caption="__notifications">
+		<properties>
+			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
+			<property name="userGroupNotification" caption="__userGroup" type="userGroupSelect" />
+			<property name="subjText" caption="__notification_subject_text" type="text" />
+			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
+			<property name="bodyText" caption="__notification_body_text" type="text" />
+			<property name="appendBody" caption="__notification_append_Body" type="checkbox" />
+		</properties>
+	</item>
+	
+	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread">
+		<properties>
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
+		</properties>
+	</item>
+	
+	<item name="waitForParallelThread" caption="__waitForParallelThread" >
+		<properties>
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" multipleAllowed="true" />
+			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+	</item>
+	
+	<item name="stopParallelThread" caption="__stopParallelThread">
+		<properties>
+			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />
+		</properties>
+	</item>
+	
+<!-- Profile list items -->
+	<item name="profileViewType" definitionType="6" caption="__profile_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.profileList" type="iconList" 
+				path="icons.profileList" default="/icons/profile_list.png" />
+		</properties>
+		
+		<options>
+			<option name="profileForm" caption="__profile_view" initial="true" multipleAllowed="false" />
+			<option name="profileView" caption="__profile_view" initial="true" multipleAllowed="false" />
+		</options>
+	</item>
+	
+	<item name="profileForm" caption="__profile_form" type="form" 
+		canBeDeleted="false" multipleAllowed="false" >		
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		
+		<options>
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option_select path="//item[@category='profileForm']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileView" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+		
+		<options>
+			<option name="folderTitleView" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="descriptionView" initial="true" />
+			<option name="profileList" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+	</item>
+	
+	<item name="profileList" caption="__profile_listing">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+		</jsps>
+	</item>
+
+
+<!-- Profile entry items -->
+	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="profileEntryForm" initial="true" />
+			<option name="profileEntryView" initial="true" />
+			<option name="profileEntryBusinessCard" initial="true" />
+			<option name="profileEntryMiniBusinessCard" initial="true" />			
+		</options>
+	</item>
+	
+	<item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" 
+		canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="profileEntryFormForm" initial="true" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+
+	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
+		  multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__form_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
+		</properties>
+		<options>
+			<option name="profileName" initial="true" />
+			<option name="profileTimeZone" initial="true" />
+			<option name="profileEntryPicture" initial="true" />
+			<option name="entryFormButtons" initial="true" />
+			<option name="attachFiles" />
+			<option_select path="//item[@category='profileEntryData']" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select path="//item[@category='entryLayout']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="profileName" caption="__profile_name" type="data" 
+		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="name" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_name_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
+	</item>
+	
+	<item name="profileTimeZone" caption="__preferred_timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="timeZone" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_timeZone_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_timezone_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_timezone_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileElements" caption="__profile_elements" type="data" category="profileEntryData">
+		<properties>
+		    <property name="name" caption="__profile_element" type="selectbox">
+				<option name="firstName" caption="__firstName" />
+				<option name="middleName" caption="__middleName" />
+				<option name="lastName" caption="__lastName" />
+				<option name="emailAddress" caption="__emailAddress" />
+				<option name="organization" caption="__organization" />
+				<option name="zonName" caption="__zonName" />
+		    </property>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>__help_required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+	</item>
+		
+	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" 
+			  value="picture" readonly="true" unique="//item[@type='data']"/>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
+			<property name="maxWidth" caption="__max_graphic_width" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_graphic_height" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="storage" caption="__storage_media" type="repositoryList" default="simpleFileRepository">
+				<help>__help_storage_media</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" />
+		</jsps>
+		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
+	</item>
+
+	<item name="profileEntryView" caption="__profile_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<operations>
+			<operation name="addOption" caption="__add" />
+		</operations>
+
+		<options>
+			<option name="profileTitle" caption="__profile_title" />
+			<option name="profileEntryTimeZone" caption="__preferred_timeZone" />
+			<option name="profileEntryPicture" caption="__profile_entry_picture" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
+				definitionType="7" initial="true" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<options>
+			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
+				definitionType="7" initial="true" />
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryAttachments" caption="__profile_entry_attachments" />
+			<option_select path="//item[@category='profileLayout']" optionCaption="__profile_entry_layout_options" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__general_layout_options" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card.jsp" />
+		</jsps>
+	</item>	
+	
+	<item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<properties>
+		    <property name="_elements" caption="__profile_elements_to_show" 
+				  type="selectbox" multipleAllowed="true">
+				<option name="name" caption="__userName" />
+				<option name="title" caption="__userTitle" />
+				<option name="organization" caption="__organization" />
+				<option name="phone" caption="__phone" />
+				<option name="emailAddress" caption="__emailAddress" />
+				<option name="zonName" caption="__zonName" />
+		    </property>
+			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+			<property name="maxHeight" caption="__max_profile_picture_height" type="text"
+				characterMask="^[0-9]*$" default="200">
+				<help>__help_graphic_constraints</help>
+			</property>
+		</properties>
+
+		<options>
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card_elements.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
+		  canBeDeleted="false" multipleAllowed="false">
+		<properties>
+		    <property name="_elements" caption="__profile_elements_to_show" 
+				  type="selectbox" multipleAllowed="true">
+				<option name="name" caption="__userName" initial="true"/>
+				<option name="title" caption="__userTitle" />
+				<option name="organization" caption="__organization" initial="true"/>
+				<option name="phone" caption="__phone"/>
+				<option name="emailAddress" caption="__emailAddress" initial="true"/>
+				<option name="zonName" caption="__zonName" initial="true"/>
+		    </property>
+		</properties>
+
+		<options>
+			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card_elements.jsp" />
+		</jsps>
+	</item>	
+	
+	<item name="profileTitle" type="dataView" caption="__profile_title" 
+		    multipleAllowed="true" category="profileEntryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="profileEntryTimeZone" caption="__preferred_timeZone" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryViewData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__preferred_timeZone"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" />
+		</jsps>
+	</item>
+	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
+		    category="profileEntryViewData">
+		<properties>
+			<property name="name" caption="__profile_data_item_name" type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='profileEntryForm']/.//item" 
+					optionCaption="__profile_data_items_from_the_profile_form">
+					<exclude name="title" />
+					<exclude name="timeZone" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="profileEntryAttachments" type="dataView" caption="__profile_entry_attachments" category="profileEntryData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+<!-- Workspace items -->
+	<item name="workspaceViewType" definitionType="8" caption="__workspace_view">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+			<property name="icon" caption="__icons.workspace" type="iconList" 
+				path="icons.workspace" default="/icons/workspace.gif" />
+		</properties>
+		
+		<options>
+			<option name="workspaceForm" initial="true" />
+			<option name="workspaceView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="binderName" />
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+			<option name="workspaceIcon" initial="true" />
+			<option name="htmlEditorTextarea" />
+			<option name="textarea" />
+			<option name="graphic" />
+			<option name="file" />
+			<option name="attachFiles" />
+			<option_select path="//item[@category='workspaceForm']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="iconName" 
+			  readonly="true" unique="//item[@type='data']">
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__icon"/>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/icon_view.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
+	</item>
+	
+	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="workspaceTitleView" />
+			<option name="descriptionView" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="workspaceDataItem" caption="__workspace_data_item" 
+				definitionType="8" />
+			<option name="workspaceBinderList"/>
+			<option_select path="//item[@category='workspaceView']" />
+			<option_select path="//item[@category='generalLayout']" 
+				optionCaption="__layout_options" />
+		</options>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceTitleView" caption="__title" canBeDeleted="true" 
+		multipleAllowed="true">
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceDataItem" type="dataView" 
+		caption="__workspace_data_item" category="workspaceViewData">
+		<properties>
+			<property name="name" caption="__workspace_data_item_name" 
+				type="selectbox">
+			    <option_entry_data select_type="data" 
+					path="//item[@name='workspaceForm']/.//item" 
+					optionCaption="__workspace_form_data_items">
+					<exclude name="binderName" />
+					<exclude name="title" />
+					<exclude name="description" />
+				</option_entry_data>
+			</property>
+			<property name="caption" caption="__caption" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceBinderList" caption="__workspace_binder_list" >
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
+		</jsps>
+	</item>
+
+	<item name="workspaceAttachments" type="dataView" 
+		caption="__workspace_attachments" category="workspaceView">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__workspace_attachments"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__dashboard_canvas"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
+			<jsp name="template" value="/WEB-INF/jsp/definition_elements/view_dashboard_canvas.jsp" />
+		</jsps>
+	</item>
+
+<!-- User Workspace items -->
+	<item name="userWorkspaceViewType" definitionType="12" caption="__user_workspace_view">
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		<options>
+			<option name="workspaceForm" initial="true" />
+			<option name="userWorkspaceView" initial="true" />
+		</options>
+	</item>
+	
+	<item name="userWorkspaceView" caption="__user_workspace_view" canBeDeleted="false" 
+		multipleAllowed="false" >		
+		<options>
+			<option name="userWorkspaceBusinessCard" initial="true"/>
+			<option name="descriptionView" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="workspaceBinderList" />
+		</options>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_view.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" >		
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__user_workspace_businessCard"/>
+		</properties>
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/user_workspace_business_card.jsp" />
+		</jsps>
+	</item>
+	
+		
+</definitions>

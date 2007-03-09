@@ -1,0 +1,29 @@
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<div class="ss_style" align="left">
+
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.manageFolderMenu"/></span>  (5/7)<br />
+<span style="font-weight:bold;"><ssf:nlt tag="help.folderMenu.subtopic.moveThisFolder"/></span>
+
+<p><ssf:nlt tag="help.moveFolder.content.listIntro"/></p>
+
+<ol>
+
+<li><ssf:nlt tag="help.moveFolder.content.listItem"/></li>
+
+<li><ssf:nlt tag="help.globalStrings.listItem.clickOK"/></li>
+
+</ol>
+
+</div>
+
+<br/>
+
+<div align="center">
+<div class="ss_style" style="display:inline;margin-right:10px;">
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/edit_forms', 'ss_help_panel', '', '');">&lt;&lt;&lt; <ssf:nlt tag="helpPanel.button.previous"/></a>
+</div>
+
+<div class="ss_style" style="display:inline;margin-right:6px;">
+<a href="javascript: ss_helpSystem.showHelpPanel('folder_menu/configure_folder', 'ss_help_panel', '', '');"><ssf:nlt tag="helpPanel.button.next"/> &gt;&gt;&gt;</a>
+</div>
+</div>

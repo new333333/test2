@@ -1,0 +1,28 @@
+<html>
+<head>
+	<title></title>
+<script type="text/javascript" language="javascript">
+var status = 0;
+if (self.parent && self.parent.ss_nextUrl) {
+	var s = "<"
+	s += "meta HTTP-EQUIV=\"Refresh\" content=\"0;URL=";
+	s += self.parent.ss_nextUrl;
+	s += "\"/>";
+	document.writeln(s);
+	status = 1;
+}
+function checkStatus() {
+	if (status == 0) {
+		document.getElementById('statusMessage').style.visibility = 'visible';
+	}
+}
+</script>
+</head>
+<body onLoad="checkStatus()">
+<div id="statusMessage" style="visibility:hidden;">
+<span style="font-family: arial, helvetica, sans-serif;
+    color: #000000; font-weight: bold; 
+	font-size: 12px;">Error: no target url.</span>
+</div>
+</body>
+</html>

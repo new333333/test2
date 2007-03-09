@@ -1,0 +1,73 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<style>
+.ss_browseHelpText {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 0.7em;
+  }
+</style>
+<script type="text/javascript">
+var strNoFileWarningMessage = "";
+var strCloseDivFunction = "";
+function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction, closeDivAndAjaxCallFunction, strBrowseFileAddAttachment) {
+
+	var formName = document.getElementById("browseForm");
+	formName.action = url;
+	
+	var submitControl = document.getElementById("ssBrowseSubmit");
+	var closeControl = document.getElementById("ssCloseBrowse");
+	var closeDivFunctionName = document.getElementById("ssCloseDivFunctionName");
+	var divObj = document.getElementById("ssBrowseAddAttachment");
+	
+	submitControl.value = submitButtonName;
+	closeControl.value = cancelButtonName;
+	closeDivFunctionName.value = closeDivAndAjaxCallFunction;
+	divObj.innerHTML = strBrowseFileAddAttachment;
+	
+	strNoFileWarningMessage = noFileWarningMessage;
+	strCloseDivFunction = closeDivFunction;
+}
+
+function ssCloseDiv() {
+	eval("parent."+strCloseDivFunction);
+}
+
+function checkForFile() {
+	var fileName = browseForm.filesFromApplet1.value;
+	if (fileName == "") {
+		alert(strNoFileWarningMessage);
+		return false;
+	}
+	else {
+		return true;
+	}
+}
+</script>
+</head>
+<body>
+<form action="" id="browseForm" name="browseForm" method="post" enctype="multipart/form-data">
+
+<table width="100%">
+<tbody>
+	<tr>
+		<td width="100%">
+			<input id="filesFromApplet1" name="filesFromApplet1" type="file" size="35" />	
+		</td>
+	</tr>
+	<tr>
+		<td width="100%">
+			<input type="submit" id="ssBrowseSubmit" name="ssBrowseSubmit" value="" onClick="return (checkForFile());" />&nbsp;&nbsp;
+			<input type="submit" id="ssCloseBrowse" name="ssCloseBrowse" value="" onClick="ssCloseDiv(); return false;" />
+			<input type="hidden" id="ssCloseDivFunctionName" name="ssCloseDivFunctionName" value="" />
+		</td>
+	</tr>
+	<tr>
+		<td width="100%" class="ss_browseHelpText">
+			<div id="ssBrowseAddAttachment" name="ssBrowseAddAttachment"></div>
+		</td>
+	</tr>
+</tbody>
+</table>
+</form>
+</body>
+</html>

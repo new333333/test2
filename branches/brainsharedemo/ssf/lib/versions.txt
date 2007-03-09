@@ -1,0 +1,70 @@
+addressing 1.0 (WS-Addressing implementation; required by WSS4J)
+Ant 1.6.2
+Ant Contrib 0.6
+Antlr 2.7.6rc1 (needed by Hibernate)
+Axis 1.2.1
+bcprov-jdk13-128.jar (BouncyCastle library; required by WSS4J)
+bsh 2.0b2
+Commons Beanutils 1.6.1
+Commons Codec 1.3 (required by WSS4J)
+Commons Collections 3.1
+Commons Discovery 0.2
+Commons Fileupload 1.0
+Commons HttpClient 2.0.2
+Commons Lang 2.0
+Commons Logging 1.0.3
+Commons Transaction 1.1.1pre1
+Concurrent Library
+cglib (not sure 2.1.3 didn't work which is what Hibernate 3.1.3shipped, used the version liferay supplied)
+DbUnit 2.1
+dom4j 1.5.2
+EasyMock 1.2 (Java 1.3)
+Ehcache 1.1 (needed by Hibernate)
+Hibernate 3.1.3
+Jackrabbit core 1.0.1
+Jaxen 1.1-beta-7
+JAXRPC 1.1
+JBoss App Server 4.0.4.GA jbosssx.jar
+JBoss Portal 2.6 DR1 portal-identity-lib.jar
+JBPM 3.1.4 (not using/shipping jbpm-identity)
+JCR 1.0
+JDOM 1.0
+JSon-lib 1.0b2 for jdk15
+JSTL 1.0.5
+JSTL Implementation (from Apache) 1.0.6
+JTA 1.0.1b
+JTDS 0.9.1
+JUnit 3.8.1
+Liferay portal-ejb.jar 3.6.1 (modified portal.properties)
+Log4j 1.2.8
+Lucene 1.9.1+indexupdater
+md5crypt.jar
+mysql-connector-java-5.0.4-bin.jar
+opensaml 1.0.1 (SAML implementation; used by WSS4J)
+Portlet 1.0
+Quartz 1.4.5
+SAAJ 1.2
+Servlet 2.3.1/JSP 1.2.1
+Simple Logging Facade for Java (SLF4J) log4j12 1.0
+Slide jaas 2.2pre1
+Slide Kernel 2.2pre1
+Slide WCK 1.0
+Slide WebDAV client library 2.1
+Spring 1.2.2
+Spring mock 1.2.2 (comes with Spring)
+Spring Portlet spring-portlet.jar
+Trove 1.0.2
+Velocity 1.4
+WSDL4J 1.5.1
+WSS4J 1.1.0
+Xalan 2.6.0 (XPath and XSLT implementation; used by WSS4J)
+Xerces 2.7.1
+xmlrpc 2.0.1
+xmlsec 1.2.1
+java_uno.jar				(begin OpenOffice 2.0 Jars)
+java_uno_accessbridge.jar
+juh.jar
+jurt.jar
+jut.jar
+ridl.jar
+unoil.jar					(end OpenOffice 2.0 Jars)

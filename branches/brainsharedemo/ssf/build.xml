@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+
+<project name="ssf" basedir="." default="compile">
+
+	<property name="docs.api.dir" value="docs/api" />
+
+	<target name="init">
+		<property environment="env" />
+		<property name="project.dir" value="." />
+		<property file="app.server.${user.name}.properties" />
+		<property file="app.server.properties" />
+  		<property file="build.${user.name}.properties" />
+  		<property file="build.properties" />
+		<property file="release.${user.name}.properties" />
+		<property file="release.properties" />
+		<property name="temp.dir" value="${basedir}/temp" />
+		<pathconvert targetos="unix" property="temp.dir.path">
+			<path>
+				<pathelement location="${temp.dir}"/>
+			</path>
+		</pathconvert>
+		<path id="project.classpath">
+			<pathelement path="${classpath}" />
+			<fileset dir="lib" includes="*.jar" />
+		</path>
+		<path id="project.sourcepath">
+			<pathelement path="${sourcepath}" />
+		</path>
+		<taskdef classpathref="project.classpath" resource="net/sf/antcontrib/antcontrib.properties" />
+	</target>
+
+	<!--<target name="clean-build-and-full-deploy" depends="clean,build,deploy-internal" />
+
+	<target name="build-and-full-deploy" depends="build,deploy-internal" />-->
+
+	<!-- Do NOT run the following target on its own. When executed on its own, 
+	     it may very well be deploying an artifact built for different portal. 
+	     So when in doubt, ALWAYS run either "clean-build-and-full-deploy" or 
+	     "build-and-full-deploy", which will re-build correct artifacts before 
+	     deploying them. -->
+	<target name="full-deploy-internal" depends="init">
+		<if>
+			<equals arg1="${portal.type}" arg2="liferay" />
+			<then>				
+				<ant dir="liferay" target="full-deploy" inheritAll="false" />
+			</then>
+			<elseif>
+				<equals arg1="${portal.type}" arg2="jbossportal" />
+				<then>				
+					<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+				</then>
+			</elseif>
+		</if>
+	</target>
+	
+	<target name="build">
+		<antcall target="compile" />
+		<antcall target="jar" />
+	</target>
+
+	<target name="clean-build" depends="clean,build" />
+	
+	<target name="clean-build-and-full-deploy" depends="clean-build,full-deploy-internal"/>
+	
+	<target name="build-and-full-deploy" depends="build,full-deploy-internal"/>
+	
+	<target name="clean">
+		<delete dir="${temp.dir}" />
+		<delete dir="${docs.api.dir}" />
+		
+		<ant dir="util" target="clean" />
+		<ant dir="indexer-lucene" target="clean" />
+		<ant dir="as-module" target="clean" />
+
+		<ant dir="applets" target="clean" />
+
+		<ant dir="main" target="clean" />
+		<ant dir="portal-module" target="clean" />
+		<ant dir="liferay" target="clean" />
+		<ant dir="jboss-portal" target="clean" />
+		<ant dir="taglib" target="clean" />
+
+		<ant dir="tools" target="clean" />
+		
+		<ant dir="web" target="clean" />
+
+		<ant dir="war" target="clean" />
+		
+		<ant dir="ssfs" target="clean" />
+	</target>
+
+	<target name="compile">
+		<ant dir="util" target="compile" />
+		<ant dir="indexer-lucene" target="compile" />			
+		<ant dir="as-module" target="compile" />
+
+		<ant dir="main" target="compile-common" />
+
+		<ant dir="applets" target="compile" />
+
+		<ant dir="main" target="compile" />
+
+		<ant dir="portal-module" target="compile" />
+		<ant dir="liferay" target="compile" />
+		<ant dir="jboss-portal" target="compile" />
+		<ant dir="taglib" target="compile" />
+		
+		<ant dir="tools" target="compile" />
+		
+		<ant dir="samples" target="compile" />
+	</target>
+
+	<target name="jar">
+		<ant dir="util" target="jar" />
+		<ant dir="indexer-lucene" target="jar" />
+		<ant dir="as-module" target="jar" />
+
+		<ant dir="applets" target="jar" />
+
+		<ant dir="main" target="compile-common" />
+		<ant dir="main" target="jar" />
+		<ant dir="portal-module" target="jar" />
+		<ant dir="liferay" target="jar" />
+		<ant dir="jboss-portal" target="jar" />
+		<ant dir="taglib" target="jar" />
+
+		<ant dir="tools" target="jar" />
+		
+		<ant dir="web" target="war" />
+
+		<ant dir="war" target="war" />
+		
+		<ant dir="ssfs" target="war" />
+	</target>
+
+	<target name="deploy">
+		<ant dir="util" target="deploy" />
+		<ant dir="indexer-lucene" target="deploy" />
+		<ant dir="as-module" target="deploy" />
+
+		<ant dir="applets" target="deploy" />
+
+		<ant dir="main" target="deploy" />
+		<ant dir="portal-module" target="deploy" />
+		<ant dir="liferay" target="deploy" />
+		<ant dir="jboss-portal" target="deploy" />
+		<ant dir="taglib" target="deploy" />
+
+		<!-- Do NOT deploy tools archive -->
+		<!--<ant dir="tools" target="deploy" />-->
+		
+		<ant dir="web" target="deploy" />
+		
+		<ant dir="ssfs" target="deploy" />
+	</target>
+
+	<target name="java2html">
+		<delete dir="${docs.api.dir}" />
+
+		<ant dir="util" target="java2html" />
+		<ant dir="indexer-lucene" target="java2html" />
+		<ant dir="as-module" target="java2html" />
+
+		<ant dir="applets" target="java2html" />
+
+		<ant dir="main" target="java2html" />
+		<ant dir="portal-module" target="java2html" />
+		<ant dir="liferay" target="java2html" />
+		<ant dir="jboss-portal" target="java2html" />
+		<ant dir="taglib" target="java2html" />
+		<ant dir="tools" target="java2html" />
+	</target>
+
+	<target name="javadoc">
+		<delete dir="${javadoc.combined.dir}" />
+
+		<ant dir="util" target="javadoc" />
+		<ant dir="indexer-lucene" target="javadoc" />
+		<ant dir="as-module" target="javadoc" />
+		
+		<ant dir="applets" target="javadoc" />
+
+		<ant dir="main" target="javadoc" />
+		<ant dir="portal-module" target="javadoc" />
+		<ant dir="liferay" target="javadoc" />
+		<ant dir="jboss-portal" target="javadoc" />
+		<ant dir="taglib" target="javadoc" />
+		<ant dir="tools" target="javadoc" />
+	</target>
+
+
+	<target name="javadoc-combined" depends="init">
+		<delete dir="${docs.api.dir}" />
+		<mkdir dir="${docs.api.dir}" />
+		<javadoc
+			additionalparam="-J-Xmx128m"
+			classpathref="project.classpath"
+			destdir="${docs.api.dir}"
+			packagenames="*.*"
+			sourcepathref="project.sourcepath"
+			stylesheetfile="tools/javadoc.css"
+		/>	</target>
+	
+	<!-- This will not run properly unless you've already deployed -->
+	<target name="precompile-jsp">
+  		<ant dir="web" target="precompile-jsp" />
+	</target>
+		
+	<!--<target name="zip">
+		<antcall target="zip-docs" />
+		<antcall target="zip-src" />
+		<antcall target="zip-war" />
+		<antcall target="liferay-tomcat-bundle" />
+		<antcall target="liferay-jboss-tomcat-bundle" />
+		<antcall target="jbossportal-jboss-tomcat-bundle" />
+  		<ant dir="indexer-lucene" target="zip" />
+  		<ant dir="stellent" target="zip" />
+	</target>-->
+
+	<!--<target name="zip-docs" depends="init">
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-doc-${product.version}.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-doc-${product.version}.zip"
+			basedir="."
+			includes="docs/**/*.*"
+		/>
+	</target>-->
+
+	<!--<target name="zip-src" depends="init">
+		<delete file="${dist.dir}/sitescape-forum-src-${product.version}.zip" failonerror="false" />
+		<zip zipfile="${dist.dir}/sitescape-forum-src-${product.version}.zip"
+			basedir="${ssf.source.dir}"
+			excludes="**/CVS/**,**/*.scc"
+		/>
+	</target>-->
+
+	<!--<target name="zip-war" depends="init">
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-ssf-${product.version}.war" failonerror="false" />
+		<delete file="${dist.dir}/sitescape-forum-ssfs-${product.version}.war" failonerror="false" />
+		<copy file="war/ssf.war" tofile="${dist.dir}/sitescape-forum-ssf-${product.version}.war" />
+		<copy file="ssfs/ssfs.war" tofile="${dist.dir}/sitescape-forum-ssfs-${product.version}.war" />
+	</target>-->
+
+	<!-- Build Aspen kit bundled with Liferay-Tomcat -->
+	<!--<target name="liferay-tomcat-bundle" depends="init">
+		<delete dir="${temp.dir}" />
+		<unzip src="liferay/download/${liferay.tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=liferay
+app.server.type=tomcat
+app.server.liferay.tomcat.dir=${temp.dir.path}
+		</echo>
+		<ant dir="liferay" target="full-deploy" inheritAll="false" />
+		
+		<mkdir dir="${temp.dir}/common/endorsed" />
+		<copy file="lib/xalan.jar" todir="${temp.dir}/common/endorsed" />
+		<copy file="lib/xercesImpl.jar" todir="${temp.dir}/common/endorsed" />
+		<delete file="temp/webapps/ROOT/WEB-INF/lib/xercesImpl.java" />
+		
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${product.version}-liferay-tomcat-${liferay.version.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-liferay-tomcat-${liferay.version.tomcat}.zip"
+			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>-->
+	
+	<!--<target name="jong-copy-liferay-tomcat-bundle-archives-to-aspen-lib-for-checkin" depends="init">
+		<copy file="${temp.dir}/webapps/ROOT/WEB-INF/lib/portal-ejb.jar" todir="lib"/>
+	</target>-->
+	
+	<!-- Build Aspen kit bundled with Liferay-JBoss-Tomcat -->
+	<!--<target name="liferay-jboss-tomcat-bundle" depends="init">
+		<delete dir="${temp.dir}" />
+		<unzip src="liferay/download/${liferay.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=liferay
+app.server.type=jboss-tomcat
+app.server.liferay.jboss-tomcat.dir=${temp.dir.path}
+		</echo>
+		<ant dir="liferay" target="full-deploy" inheritAll="false" />
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${product.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-liferay-jboss-tomcat-${liferay.version.jboss.tomcat}.zip"
+			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>-->
+	
+	<!-- Build Aspen kit bundled with JBoss-JBoss-Tomcat -->
+	<!--<target name="jbossportal-jboss-tomcat-bundle" depends="init">
+		<delete dir="${temp.dir}" />
+		<unzip src="jboss-portal/download/${jbossportal.jboss-tomcat.zip.file.name}" dest="${temp.dir}/" />
+		<property name="aspen-jboss-portal.top.dir" value="${temp.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}" />
+		<rename dest="${aspen-jboss-portal.top.dir}" src="${temp.dir}/${jbossportal.jboss-tomcat.zip.file.top.dir}"/>
+		<pathconvert targetos="unix" property="aspen-jboss-portal.top.dir.path">
+			<path>
+				<pathelement location="${aspen-jboss-portal.top.dir}"/>
+			</path>
+		</pathconvert>
+		<move file="app.server.${user.name}.properties" tofile="app.server.${user.name}.properties.moved" failonerror="false"/>
+		<echo file="app.server.${user.name}.properties">portal.type=jbossportal
+app.server.type=jboss-tomcat
+app.server.jbossportal.jboss-tomcat.dir=${aspen-jboss-portal.top.dir.path}
+		</echo>
+		<ant dir="jboss-portal" target="full-deploy" inheritAll="false" />
+		<mkdir dir="${dist.dir}" />
+		<delete file="${dist.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip" failonerror="false" />
+		<zip destfile="${dist.dir}/sitescape-forum-${product.version}-jboss-portal-${jbossportal.version.jboss.tomcat}.zip"
+			basedir="${temp.dir}" />
+		<delete file="app.server.${user.name}.properties" />
+		<move file="app.server.${user.name}.properties.moved" tofile="app.server.${user.name}.properties" failonerror="false"/>		
+	</target>-->
+
+	<target name="tcpmon" description="Run Apache Axis tcpmon utility">
+		<java classname="org.apache.axis.utils.tcpmon" fork="true" failonerror="true">
+			<arg value="8079"/> 		<!-- Listen port tcpmon is monitoring -->
+			<arg value="localhost"/>	<!-- Target host to forward to --> 
+			<arg value="8080"/>			<!-- Target port to forward to -->
+			<classpath>
+				<pathelement location="lib/axis.jar" />
+				<pathelement location="lib/axis-ant.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="unit-test" description="Run unit tests">
+  		<ant dir="main" target="unit-test" />
+	</target>
+	
+</project>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The document root. -->
+<!ELEMENT model-processor-mapping (
+	processors,
+	default-mappings
+)>
+
+<!-- processors element -->
+<!ELEMENT processors (
+	processor*
+)>
+
+<!-- default-mappings element -->
+<!ELEMENT default-mappings (
+	model-class*
+)>
+
+<!-- processor element -->
+<!ELEMENT processor EMPTY>
+
+<!-- attributes of processor element -->
+<!ATTLIST processor class CDATA #REQUIRED>
+<!ATTLIST processor spring-bean-type (external|internal|none) "none">
+<!ATTLIST processor spring-bean-name CDATA #IMPLIED>
+
+<!-- model-class element -->
+<!ELEMENT model-class (
+	mapping*
+)>
+
+<!-- name attribute of model-class element - full Java class name -->
+<!ATTLIST model-class name CDATA #REQUIRED>
+
+<!-- mapping element. -->
+<!ELEMENT mapping EMPTY>
+	
+<!-- Attributes for mapping element -->
+<!ATTLIST mapping processor-key CDATA #REQUIRED>  
+<!ATTLIST mapping processor-class CDATA #REQUIRED>
+
+
