@@ -3043,21 +3043,21 @@ div.ss_profile_info_frame {
 
 div.ss_profile_photo_box {
     background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.jpg);
+	background-image: url(<html:imagesPath/>pics/watermark_person.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_info_box {
     background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_info.jpg);
+	background-image: url(<html:imagesPath/>pics/watermark_info.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 }
 
 div.ss_profile_contact_box {
     background-color: transparent !important;
-	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.jpg);
+	background-image: url(<html:imagesPath/>pics/watermark_talkbubbles.gif);
 	background-position: center;
 	background-repeat: no-repeat;
 }
