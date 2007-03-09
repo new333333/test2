@@ -17,6 +17,20 @@
 <c:set var="addUserToListRoutine" value="ss_addUserToUserList_${prefix}"/>
 
 <script type="text/javascript">
+      
+function ss_addUserIdToFormElement(userId) {
+	var formObj = document.forms['<%= userListFormName %>'];
+	var hiddenUserIdObj = document.createElement('input');
+	hiddenUserIdObj.setAttribute("type", "hidden");
+	hiddenUserIdObj.setAttribute("name", "<%= userListElementName %>");
+	hiddenUserIdObj.setAttribute("value", userId);
+	hiddenUserIdObj.setAttribute("id", "userIds_${prefix}_" + userId);
+	formObj.appendChild(hiddenUserIdObj);
+}
+
+<c:forEach var="item" items="${userList}">
+	ss_addUserIdToFormElement('<c:out value="${item.id}"/>');
+</c:forEach>
 
 function afterAddUser${prefix}(obj) {
 	dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
@@ -42,6 +56,9 @@ function ss_userListSelectItem${prefix}(id, obj) {
 	newAnchorObj.appendChild(newImgObj);
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
+	
+	ss_addUserIdToFormElement(id);
+	
 	afterAddUser${prefix}(newLiObj);	
 }
 
@@ -66,6 +83,9 @@ function ${addUserToListRoutine}(userId, userName) {
 	newAnchorObj.appendChild(newImgObj);
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
+	
+	ss_addUserIdToFormElement(userId);
+		
 	afterAddUser${prefix}(newLiObj);	
 }
 
@@ -86,6 +106,12 @@ function ss_userListSelectItemAlreadyAdded${prefix}(id) {
 function ss_userListRemove${prefix}(obj) {
 	var liObj = obj.parentNode;
 	liObj.parentNode.removeChild(liObj);
+	
+	var userId = liObj.id;
+	var userHiddenIdObj = document.getElementById("userIds_${prefix}_" + userId);
+	var p = userHiddenIdObj.parentNode;
+	p.removeChild(userHiddenIdObj);
+
 }
 
 </script>
@@ -126,7 +152,7 @@ function ss_userListRemove${prefix}(obj) {
 </td>
 </tr>
 </table>
-<input type="hidden" name="<%= userListElementName %>"/>		
+		
 
 <script type="text/javascript">
 function ss_saveUserListData_${prefix}() {
