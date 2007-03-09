@@ -2972,17 +2972,23 @@ div.ss_cal_monthGridDayBadge a:hover {
  *   box bottom 2
  *
  */
+<c:set var="sboxMargin" value="0px" />
+<c:if test="<%= isIE %>">
+    <c:set var="sboxMargin" value="-1px" />
+</c:if>
+
+
 
 div.ss_smallRBoxTop2 {
   line-height: 1px;
-  margin: 0px 2px;
+  margin: ${sboxMargin} 2px;
   height: 1px;
   font-size: 1px;
 }
 
 div.ss_smallRBoxTop1 {
   line-height: 1px;
-  margin: 0px 1px;
+  margin: ${sboxMargin} 1px;
   height: 1px;
   font-size: 1px;
 }
@@ -2990,14 +2996,14 @@ div.ss_smallRBoxTop1 {
 
 div.ss_smallRBoxBtm1 {
   line-height: 0px;
-  margin: 0px 1px;
+  margin: ${sboxMargin} 1px;
   height: 1px;
   font-size: 0px;
 }
 
 div.ss_smallRBoxBtm2 {
   line-height: 0px;
-  margin: 0px 2px;
+  margin: ${sboxMargin} 2px;
   height: 1px;
   font-size: 0px;
 }
