@@ -241,7 +241,7 @@
 		</copy>
 		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
 			basedir="${basedir}"
-			includes="classes/**/*.class,src/**/*.java,*.bat,*.wsdd"
+			includes="classes/**/*.class,src/**/*.java,*.bat,*.wsdd,readme.txt"
 			excludes="classes/**/jaxrpc/*.class,src/**/jaxrpc/*.java"
 		/>
 		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
