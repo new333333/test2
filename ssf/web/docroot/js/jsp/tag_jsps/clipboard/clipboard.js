@@ -104,14 +104,14 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 		hrefSelectAllObj.setAttribute("onClick", "ss_clipboardUsersSelectAll('" + prefix + "')");
 		hrefSelectAllObj.className = "ss_linkButton";
 		hrefSelectAllObj.style.marginRight = "5px";
-		hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
+		hrefSelectAllObj.appendChild(document.createTextNode(ss_selectAllBtnText));
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
 		hrefDeselectAllObj.setAttribute("onClick", "ss_clipboardUsersDeselectAll('" + prefix + "')");
 		hrefDeselectAllObj.className = "ss_linkButton";
 		hrefDeselectAllObj.style.marginRight = "5px";
-		hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
+		hrefDeselectAllObj.appendChild(document.createTextNode(ss_clearAllBtnText));
 
 		$(ajaxLoadingIndicatorPane).appendChild(document.createElement("br"));
 		$(ajaxLoadingIndicatorPane).appendChild(hrefSelectAllObj);
@@ -120,7 +120,7 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 		$(ajaxLoadingIndicatorPane).appendChild(tableObj);
 		
 	} else {
-		$(ajaxLoadingIndicatorPane).innerHTML = "There are no users on clipboard";
+		$(ajaxLoadingIndicatorPane).innerHTML = ss_noUsersOnClipboardText;
 	}
 }
 

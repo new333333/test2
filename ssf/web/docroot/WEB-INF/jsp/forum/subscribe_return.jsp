@@ -13,20 +13,20 @@
 <br/>
 <br/>
 <div class="ss_indent_medium">
-  <input type="radio" name="notifyType" value="1" 
+  <input type="radio" name="notifyType" value="1" id="notifyType_${ssSubscription.id.entityId}_1"
   <c:if test="${ssSubscription.style=='1'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.digest"/><br/>
-  <input type="radio" name="notifyType" value="2"
+  /><label for="notifyType_${ssSubscription.id.entityId}_1"><ssf:nlt tag="subscribe.digest"/></label><br/>
+  <input type="radio" name="notifyType" value="2" id="notifyType_${ssSubscription.id.entityId}_2"
   <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.message"/><br/>
-  <input type="radio" name="notifyType" value="3"
+  /><label for="notifyType_${ssSubscription.id.entityId}_2"><ssf:nlt tag="subscribe.message"/></label><br/>
+  <input type="radio" name="notifyType" value="3" id="notifyType_${ssSubscription.id.entityId}_3"
   <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.noattachments"/><br/>
-  <input type="radio" name="notifyType" value="-1"/><ssf:nlt tag="subscribe.delete"/><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
+  <input type="radio" name="notifyType" value="-1" id="notifyType_${ssSubscription.id.entityId}_delete"/><label for="notifyType_${ssSubscription.id.entityId}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
 <br/>
-  <input type="radio" name="notifyType" value="4"
+  <input type="radio" name="notifyType" value="4" id="notifyType_${ssSubscription.id.entityId}_4"
   <c:if test="${ssSubscription.style=='4'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.disable"/><br/>
+  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label><br/>
   
   <br/>
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">

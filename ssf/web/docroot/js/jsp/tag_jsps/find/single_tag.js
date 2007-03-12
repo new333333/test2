@@ -151,7 +151,6 @@ function ss_postFindTagRequest(obj) {
     }
 	var runitRef = runItLater(prefix,ss_findTagSearchLastTextObjId[prefix],ss_findTagSearchLastElement[prefix], ss_findTagSearchLastfindTagType[prefix]);
 	if (ss_findTagSearchWaiting[prefix] == 1) {
-//		setTimeout('ss_findTagSearch('+prefix+', '+ ss_findTagSearchLastTextObjId[prefix]+', '+ ss_findTagSearchLastElement[prefix]+', '+ ss_findTagSearchLastfindTagType[prefix]+');', 100);
 		setTimeout(runitRef, 100);
 	}
 

@@ -7,6 +7,7 @@
 	String findUserElementName = (String) request.getAttribute("form_element");
 	String findUserElementWidth = (String) request.getAttribute("element_width");
 	String clickRoutine = (String) request.getAttribute("clickRoutine");
+	String clickRoutineArgs = (String) request.getAttribute("clickRoutineArgs");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
 %>
@@ -31,11 +32,11 @@
       </ul>
     </div>
 </div>
-<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
+<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUserConfVariableForPrefix('${prefix}', '${clickRoutine}', '${clickRoutineArgs}', '<ssf:url action="view_ws_listing"><ssf:param name="binderId" 
 		value="${ssUser.parentBinder.id}"/><ssf:param name="entryId" 
 		value="ss_entryIdPlaceholder"/><ssf:param name="newTab" value="1"/></ssf:url>', ${leaveResultsVisible}, '<ssf:url 
     	adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >
 		<ssf:param name="operation" value="find_user_search" />
-    	</ssf:url>');" />
+    	</ssf:url>'); ss_findUserInitializeForm('${form_name}', '${prefix}')" />
 <input type="hidden" name="<%= findUserElementName %><%= instanceCount %>"/>
 

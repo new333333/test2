@@ -87,14 +87,14 @@
 		name="operation" value="subscribe"/></portlet:actionURL>" 
   style="display:inline;">
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
-  <input type="radio" name="notifyType" value="2"
+  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_2" value="2"
   <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.message"/><br/>
-  <input type="radio" name="notifyType" value="3"
+  /><label for="notifyType_${entryIdString}_2"><ssf:nlt tag="subscribe.message"/></label><br/>
+  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_3" value="3"
   <c:if test="${ssBlogEntries[entryIdString].ssSubscription.style=='3'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.noattachments"/><br/>
+  /><label for="notifyType_${entryIdString}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
 <c:if test="${!empty ssBlogEntries[entryIdString].ssSubscription}">
-  <input type="radio" name="notifyType" value="-1"/><ssf:nlt tag="subscribe.delete"/><br/>
+  <input type="radio" name="notifyType" id="notifyType_${entryIdString}_delete" value="-1"/><label for="notifyType_${entryIdString}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
 </c:if>
   <br/>
   <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">

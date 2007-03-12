@@ -28,10 +28,9 @@ public class Find extends TagSupport {
     private Boolean singleItem;
     private Boolean leaveResultsVisible;
     private String clickRoutine = "";
+    private String clickRoutineArgs = "";
     private String binderId = "";
     private Boolean searchSubFolders;
-    private Boolean showClipboard;
-    private Boolean showTeamMembers;
     private Integer instanceCount = 0;
     
 	public int doStartTag() throws JspException {
@@ -44,8 +43,6 @@ public class Find extends TagSupport {
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
-			if (this.showClipboard == null) this.showClipboard = false;
-			if (this.showTeamMembers == null) this.showTeamMembers = false;
 			this.instanceCount++;
 			
 			//Output the start of the area
@@ -83,13 +80,12 @@ public class Find extends TagSupport {
 			req.setAttribute("list_type", this.type);
 			req.setAttribute("singleItem", this.singleItem);
 			req.setAttribute("clickRoutine", this.clickRoutine);
+			req.setAttribute("clickRoutineArgs", this.clickRoutineArgs);
 			req.setAttribute("instanceCount", this.instanceCount);
 			req.setAttribute("instanceCode", this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
 			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
 			req.setAttribute("binderId", this.binderId);
-			req.setAttribute("show_clipboard", this.showClipboard);
-			req.setAttribute("show_team_members", this.showTeamMembers);
 			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -105,14 +101,13 @@ public class Find extends TagSupport {
 		finally {
 			this.formName = "";
 			this.userList = null;
-			this.showClipboard = false;
 			this.singleItem = false;
 			this.width = "30";
 			this.clickRoutine = "";
+			this.clickRoutineArgs = "";
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
-			this.showTeamMembers = false;
 		}
 	}
 
@@ -144,6 +139,10 @@ public class Find extends TagSupport {
 	    this.clickRoutine = clickRoutine;
 	}
 
+	public void setClickRoutineArgs(String clickRoutineArgs) {
+		this.clickRoutineArgs = clickRoutineArgs;
+	}
+	
 	public void setSingleItem(Boolean singleItem) {
 	    this.singleItem = singleItem;
 	}
@@ -158,14 +157,6 @@ public class Find extends TagSupport {
 
 	public void setSearchSubFolders(Boolean searchSubFolders) {
 	    this.searchSubFolders = searchSubFolders;
-	}
-
-	public void setShowClipboard(Boolean showClipboard) {
-		this.showClipboard = showClipboard;
-	}
-
-	public void setShowTeamMembers(Boolean showTeamMembers) {
-		this.showTeamMembers = showTeamMembers;
 	}
 
 }

@@ -119,10 +119,17 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_nlt_navigation_maximize = "<ssf:nlt tag="navigation.maximize"/>";
 	
 	//Clipboard text
+	ss_clipboardTitleText = "<ssf:nlt tag="clipboard.title"/>";
 	ss_addContributesToClipboardText = "<ssf:nlt tag="button.add_contributes_to_clipboard"/>";
 	ss_addTeamMembersToClipboardText = "<ssf:nlt tag="button.sdd_team_members_to_clipboard"/>";
 	ss_clearClipboardText = "<ssf:nlt tag="button.clear_clipboard"/>";
+	ss_noUsersOnClipboardText = "<ssf:nlt tag="clipboard.noUsers"/>";
 	ss_closeButtonText = "<ssf:nlt tag="button.close"/>";
+	ss_selectAllBtnText = "<ssf:nlt tag="button.selectAll"/>";
+	ss_clearAllBtnText = "<ssf:nlt tag="button.clearAll"/>";
+	
+	// Team memmbers text
+	ss_noTeamMembersText = "<ssf:nlt tag="teamMembers.noUsers"/>";
 }
 
 function ss_loadDojoFiles() {

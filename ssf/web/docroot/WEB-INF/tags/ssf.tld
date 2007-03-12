@@ -389,6 +389,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
+			<name>clickRoutineArgs</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>leaveResultsVisible</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

@@ -65,7 +65,8 @@
     formElement="elementValue${ss_filterTermNumber}" 
     type="user"
     width="170px" 
-    clickRoutine="saveCurrentEntryClick(${ss_filterTermNumber});rewriteValueIntoFormElement"
+    clickRoutine="ss_rewriteValueIntoFormElement"
+    clickRoutineArgs="${ss_filterTermNumber}"
     leaveResultsVisible="false"
     singleItem="true"/> 
 	         

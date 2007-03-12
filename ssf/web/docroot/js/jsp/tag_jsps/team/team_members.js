@@ -103,14 +103,14 @@ try {
 		hrefSelectAllObj.setAttribute("onClick", "ss_teamMembersSelectAll('" + prefix + "')");
 		hrefSelectAllObj.className = "ss_linkButton";
 		hrefSelectAllObj.style.marginRight = "5px";
-		hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
+		hrefSelectAllObj.appendChild(document.createTextNode(ss_selectAllBtnText));
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
 		hrefDeselectAllObj.setAttribute("onClick", "ss_teamMembersDeselectAll('" + prefix + "')");
 		hrefDeselectAllObj.className = "ss_linkButton";
 		hrefDeselectAllObj.style.marginRight = "5px";
-		hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
+		hrefDeselectAllObj.appendChild(document.createTextNode(ss_clearAllBtnText));
 
 		$(ajaxLoadingIndicatorPane).appendChild(document.createElement("br"));
 		$(ajaxLoadingIndicatorPane).appendChild(hrefSelectAllObj);
@@ -119,7 +119,7 @@ try {
 		$(ajaxLoadingIndicatorPane).appendChild(tableObj);
 		
 	} else {
-		$(ajaxLoadingIndicatorPane).innerHTML = "There are no users in team";
+		$(ajaxLoadingIndicatorPane).innerHTML = ss_noTeamMembersText;
 	}
 	
 } catch (e){alert(e)}	
