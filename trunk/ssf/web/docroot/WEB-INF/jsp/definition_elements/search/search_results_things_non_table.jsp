@@ -391,9 +391,13 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<td class="ss_searchviewDashboardContainer">
 			<span class="ss_smallprint">
 				<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-					<ssf:textFormat textContent="${entry1._desc}" formatAction="limitedDescription" textMaxWords="30" />
+					<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
+						${entry1._desc}
+					</ssf:textFormat>
 					<c:if test="${entry1._entityType == 'user'}">
-						<ssf:textFormat textContent="${entry1._comments}" formatAction="limitedDescription" textMaxWords="30" />
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
+							${entry1._comments}
+						</ssf:textFormat>
 					</c:if>
 				</ssf:markup>
 			</span>	

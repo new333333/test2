@@ -2,20 +2,34 @@ package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
 
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
-import javax.servlet.jsp.tagext.TagSupport;
+import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Html;
 
-public class TextFormat extends TagSupport {
-	
-	private String textContent;
+public class TextFormat extends BodyTagSupport {
+	private String _bodyContent;
 	private String formatAction;
 	private String textMaxWords;
 	
-	public int doStartTag() throws JspException {
-		
+	public int doStartTag() {
+		return EVAL_BODY_BUFFERED;
+	}
+
+	public int doAfterBody() {
+		_bodyContent = getBodyContent().getString();
+
+		return SKIP_BODY;
+	}
+	
+	public int doEndTag() throws JspException {
 		//textContent will be mandatory
 		
 		//formatAction will not be mandatory
@@ -24,10 +38,13 @@ public class TextFormat extends TagSupport {
 		
 		String[] startMUArray = { "[[", "<", "{{" };
 		String[] endMUArray = { "]]", ">", "}}" };
+		
+		String textContent= _bodyContent;
+		if (textContent == null) textContent = "";
 
 		try {
 			//Check for the Text Content to be formatted and the Formatting Action to be done. 
-			if(textContent == null) throw new JspException("TextFormat: Text Content Missing");
+			//if(textContent == null) throw new JspException("TextFormat: Text Content Missing");
 			
 			if (formatAction == null) formatAction = ""; 
 			
@@ -145,14 +162,9 @@ public class TextFormat extends TagSupport {
 		} catch (Exception e) {
 			throw new JspException(e);
 		} finally {
-			this.textContent = null;
 			this.formatAction = null;
 			this.textMaxWords = null;			
 		}
-	}
-	
-	public void setTextContent(String textContent) {
-		this.textContent = textContent;
 	}
 
 	public void setFormatAction(String formatAction) {

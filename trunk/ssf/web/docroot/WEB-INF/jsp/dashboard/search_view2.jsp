@@ -128,9 +128,14 @@
 					    </c:when>
 				 	</c:choose>
 					<ssf:markup type="view" binderId="${binderId}" entryId="${entryId}">
-						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+							${fileEntry._desc}
+						</ssf:textFormat>
+						
 						<c:if test="${fileEntry._entityType == 'user'}">
-							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
+							<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+								${fileEntry._comments}
+							</ssf:textFormat>
 						</c:if>
 					</ssf:markup>
 				</span>	
