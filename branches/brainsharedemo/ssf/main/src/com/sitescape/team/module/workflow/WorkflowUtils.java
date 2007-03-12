@@ -67,6 +67,25 @@ public class WorkflowUtils {
 		}
 		return transitionData;
     }
+    public static Set getQuestionNames(Definition wfDef, String stateName) {
+    	Set qNames = new HashSet();
+    	Document wfDoc = wfDef.getDefinition();
+		Element wfRoot = wfDoc.getRootElement();
+		//Find the current state in the definition
+		Element stateEle = getState(wfRoot, stateName);
+		if (stateEle != null) {
+			//Build a list of all questions for this state
+			List questions = stateEle.selectNodes("./item[@name='workflowQuestion']");
+			if (questions != null) {
+				for (int j = 0; j < questions.size(); j++) {
+					String questionName = DefinitionUtils.getPropertyValue((Element)questions.get(j), "name");
+					qNames.add(questionName);
+				}
+			}
+		}
+		return qNames;
+    	
+    }
     public static Map getQuestions(Definition wfDef, String stateName) {
 		Map questionsData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
