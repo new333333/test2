@@ -502,6 +502,20 @@ function ss_postLoadNextDivRequest(obj) {
 	}
 }
 
+function ss_saveUserGroupResults(s, elementName) {
+	var eleObj = document.getElementById(elementName);
+	eleObj.value = s;
+}
+function ss_resizeUserGroupsIFrame(height) {
+	var iframeDiv = document.getElementById('ss_userGroupSelectIframe')
+	if (window.frames['ss_userGroupSelectIframe'] != null) {
+		var iframeHeight = parseInt(height);
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + 40 + "px"
+		}
+	}
+}
+
 ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 
 </script>

@@ -3972,7 +3972,7 @@ function ss_synchronizeCheckboxes(selectAllCheckboxObj, synchronizedCheckboxesOb
 
 //Routine to pop-up an edit window for editing an element
 var ss_minEditWidth = 300;
-var ss_minEditHeight = 150;
+var ss_minEditHeight = 480;
 var ss_editWidthOffset = 20;
 var ss_editHeightOffset = 100;
 var ss_editScreenWidthOfset = 60;

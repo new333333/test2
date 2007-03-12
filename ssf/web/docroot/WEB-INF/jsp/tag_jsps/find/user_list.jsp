@@ -59,6 +59,10 @@ function ss_userListSelectItem${prefix}(id, obj) {
 	
 	ss_addUserIdToFormElement(id);
 	
+	<c:if test="${!empty clickRoutine}">
+	  ${clickRoutine}
+	</c:if>
+	
 	afterAddUser${prefix}(newLiObj);	
 }
 
@@ -111,7 +115,9 @@ function ss_userListRemove${prefix}(obj) {
 	var userHiddenIdObj = document.getElementById("userIds_${prefix}_" + userId);
 	var p = userHiddenIdObj.parentNode;
 	p.removeChild(userHiddenIdObj);
-
+	<c:if test="${!empty clickRoutine}">
+	  ${clickRoutine}
+	</c:if>
 }
 
 </script>
@@ -124,7 +130,7 @@ function ss_userListRemove${prefix}(obj) {
     type="${list_type}"
     width="70px" 
     clickRoutine="ss_userListSelectItem${prefix}"
-    leaveResultsVisible="true"
+    leaveResultsVisible="${leaveResultsVisible}"
     singleItem="true"/> 
     <c:if test="${list_type == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
