@@ -285,22 +285,10 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-    <a 
-    class="ss_title_menu" 
-    href="<ssf:url     
-    adapter="<%= useAdaptor %>" 
-    portletName="ss_forum" 
-    folderId="${ssFolder.id}" 
-    action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
-    onMouseOver="ss_linkMenu.showButton(this);"
-    onMouseOut="ss_linkMenu.hideButton(this);"
-    ><img border="0" class="ss_title_menu"
-    onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${ssBinder.id}', '${entry1._entityType}');"
-    src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="${empty entry1.title}"
-    ><span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span
-    ></c:if><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
+	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="<%= useAdaptor %>" entryId="<%= entry1.get("_docId").toString() %>" 
+	folderId="${ssFolder.id}" binderId="${ssBinder.id}" entityType="${entry1._entityType}" seenStyle="<%= seenStyle %>" seenStyleFine="<%= seenStyleFine %>" >
+		${entry1.title}
+	</ssf:menuLink>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -336,23 +324,13 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </c:forEach>
 </ssf:slidingTable>
 </div>
-<div id="ss_emd" class="ss_link_menu">
-<ul id="ss_folderMenuShowFileLink" class="ss_title_menu"><li><a href="#" 
-  onClick="ss_linkMenu.showFile(); return false;"><ssf:nlt 
-  tag="linkMenu.showFile"/></a></li></ul>
-<ul id="ss_folderMenuShowEntryLink" class="ss_title_menu"><li><a href="#" 
-  onClick="ss_linkMenu.showEntry(); return false;"><ssf:nlt 
-  tag="linkMenu.showEntry"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="ss_linkMenu.currentTab(); return false;"><ssf:nlt tag="linkMenu.currentTab"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li></ul>
-</div>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}">
+</ssf:menuLink>
+
 <script type="text/javascript">
 function ss_initLinkMenu() {
-	ss_linkMenu.menuDiv = "ss_emd";
+	ss_linkMenu.menuDiv = "ss_emd_${renderResponse.namespace}";
 	ss_linkMenu.binderId = "${ssBinder.id}";
 	ss_linkMenu.entityType = "folderEntry";
 	ss_linkMenu.binderDefinitionType = "${ssBinder.definitionType}";
