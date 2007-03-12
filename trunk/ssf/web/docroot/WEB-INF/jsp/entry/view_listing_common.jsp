@@ -174,6 +174,7 @@ if (self.parent && self.parent.ss_highlightLineById) {
 }
 //Define the url of this page in case the entry needs to reload this page
 var ss_reloadUrl = "${ss_reloadUrl}";
+
 </script>
 
 <ssf:ifnotadapter>
@@ -207,14 +208,14 @@ var ss_reloadUrl = "${ss_reloadUrl}";
   style="display:none; visibility:hidden; padding:4px;" class="ss_popupMenu ss_indent_medium">
 <form class="ss_style ss_form" method="post" action="" style="display:inline;">
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
-  <input type="radio" name="notifyType" value="2"
+  <input type="radio" name="notifyType" value="2" id="notifyType_${ssEntry.id}_2"
   <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.message"/><br/>
-  <input type="radio" name="notifyType" value="3"
+  /><label for="notifyType_${ssEntry.id}_2"><ssf:nlt tag="subscribe.message"/></label><br/>
+  <input type="radio" name="notifyType" value="3" id="notifyType_${ssEntry.id}_3"
   <c:if test="${ssSubscription.style=='3'}"> checked="checked"</c:if>
-  /><ssf:nlt tag="subscribe.noattachments"/><br/>
+  /><label for="notifyType_${ssEntry.id}_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
 <c:if test="${!empty ssSubscription}">
-  <input type="radio" name="notifyType" value="-1"/><ssf:nlt tag="subscribe.delete"/><br/>
+  <input type="radio" name="notifyType" id="notifyType_${ssEntry.id}_delete" value="-1"/><label for="notifyType_${ssEntry.id}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
 </c:if>
   <br/>
   <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">

@@ -3073,13 +3073,13 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     obj = self.document.getElementById(objId)
     if (obj == null) alert('Could not find '+objId)
 	if (divId == '') {
-	    m += '<div style="position: relative; background: #666; margin: 4px;">'
-	    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
+    m += '<div style="position: relative; background: #666; margin: 4px;">'
+    m += '<div style="position: relative; left: -2px; top: -2px; border-top-width:1px; border: 1px solid #666666; background-color:white">'
         m += '<table class="ss_style ss_graymenu ss_nowrap" border="0" cellspacing="0" cellpadding="3">';
 	} else {
         m += '<table class="ss_nowrap ss_transparent" border="0" cellspacing="0" cellpadding="3">';
     }
-	
+
     m += '<tr>';
     if (status >= 0) {
         if (status & 1) {
@@ -3146,8 +3146,8 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     m += '</table>'
 
 	if (divId == '') {
-	    m += '</div>'
-	    m += '</div>'
+    m += '</div>'
+    m += '</div>'
 	}
     obj.innerHTML = m;
 
@@ -3576,7 +3576,7 @@ function ss_Clipboard () {
 		formTitle.style.marginBottom="7px";  
 		formTitle.style.borderBottom="1px solid black"; 
 		formTitle.style.fontWeight="bold";
-		formTitle.appendChild(document.createTextNode("Clipboard"));
+		formTitle.appendChild(document.createTextNode(ss_clipboardTitleText));
 		musterDiv.appendChild(formTitle);
 		
 		
@@ -3693,14 +3693,14 @@ function ss_Clipboard () {
 			hrefSelectAllObj.setAttribute("onClick", "ss_muster.selectAll()");
 			hrefSelectAllObj.className = "ss_linkButton";
 			hrefSelectAllObj.style.marginRight = "5px";
-			hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
+			hrefSelectAllObj.appendChild(document.createTextNode(ss_selectAllBtnText));
 
 			var hrefDeselectAllObj = document.createElement("a");
 			hrefDeselectAllObj.href = "javascript: //";
-			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.deselectAll()");
+			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.clearAll()");
 			hrefDeselectAllObj.className = "ss_linkButton";
 			hrefDeselectAllObj.style.marginRight = "5px";
-			hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
+			hrefDeselectAllObj.appendChild(document.createTextNode(ss_clearAllBtnText));
 
 			containerObj.innerHTML = "";
 			containerObj.appendChild(ulObj);
@@ -3715,7 +3715,7 @@ function ss_Clipboard () {
 		}
 	}
 	
-	this.deselectAll = function () {
+	this.clearAll = function () {
 		for (var i = 0; i < usersCheckboxes.length; i++) {
 			usersCheckboxes[i].checked = false;
 		}
@@ -3998,7 +3998,7 @@ function ss_submitParentForm(htmlObj) {
 }
 
 
-
 function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
+

@@ -11,12 +11,13 @@ if (!window.ss_findUserSearchLastTextObjId) window.ss_findUserSearchLastTextObjI
 if (!window.ss_findUserSearchLastElement) window.ss_findUserSearchLastElement = new Array();
 if (!window.ss_findUserSearchLastfindUserGroupType) window.ss_findUserSearchLastfindUserGroupType = new Array();
 if (!window.ss_findUserClickRoutine) window.ss_findUserClickRoutine = new Array();
+if (!window.ss_findUserClickRoutineArgs) window.ss_findUserClickRoutineArgs = new Array();
 if (!window.ss_findUserViewUrl) window.ss_findUserViewUrl = new Array();
 if (!window.ss_findUserLeaveResultsVisible) window.ss_findUserLeaveResultsVisible = new Array();
 if (!window.ss_findUserSearchUrl) window.ss_findUserSearchUrl = new Array();
 
 
-function ss_findUserConfVariableForPrefix(prefix, clickRoutine, viewUrl, leaveResultsVisible, userSearchUrl) {
+function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs, viewUrl, leaveResultsVisible, userSearchUrl) {
 	ss_findUser_searchText[prefix] = "";
 	ss_findUser_pageNumber[prefix] = 0;
 	ss_findUserDivTopOffset[prefix] = 2;
@@ -29,6 +30,10 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, viewUrl, leaveRe
 	ss_findUserSearchLastElement[prefix] = "";
 	ss_findUserSearchLastfindUserGroupType[prefix] = "";
 	ss_findUserClickRoutine[prefix] = clickRoutine;
+	if (clickRoutineArgs && clickRoutineArgs != "")
+		ss_findUserClickRoutineArgs[prefix] = clickRoutineArgs.split(",");
+	else
+		ss_findUserClickRoutineArgs[prefix] = new Array();
 	ss_findUserViewUrl[prefix] = viewUrl;
 	ss_findUserLeaveResultsVisible[prefix] = leaveResultsVisible;
 	ss_findUserSearchUrl[prefix] = userSearchUrl;
@@ -178,9 +183,9 @@ function ss_findUserSelectItem(prefix, obj) {
 		var textObj = $(ss_findUserSearchLastTextObjId[prefix]);
 		textObj.value = "";
 	if (ss_findUserClickRoutine[prefix] != "") {
-		eval(ss_findUserClickRoutine[prefix]+"(id, obj);")
+		window[ss_findUserClickRoutine[prefix]].apply(this, [id, obj].concat(ss_findUserClickRoutineArgs[prefix]));
 		if (ss_findUserLeaveResultsVisible[prefix]) {
-		  setTimeout("ss_showFindUserSelections('" + prefix + "');", 200)
+			setTimeout(function() {ss_showFindUserSelections(prefix)}, 200); // faster then "ss_showFindUserSelections(prefix)"
 		}
 	} else {
 		url = ss_replaceSubStr(ss_findUserViewUrl[prefix], 'ss_entryIdPlaceholder', id);
@@ -218,7 +223,6 @@ function ss_findUserPrevPage(prefix) {
 function ss_findUserClose(prefix) {
 	$('ss_findUser_searchText_' + prefix).focus();
 }
-
 
 function ss_findUserInitializeForm(formName, prefix) {
 	if (formName != '') {

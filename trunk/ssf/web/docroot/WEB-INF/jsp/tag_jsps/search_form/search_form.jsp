@@ -59,9 +59,7 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 	if (op2 == 'tags') { 
 		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
 		ss_fetch_url(url, showTagComponents, termNumber);
-//		alert("after fetch_url");
 	} else if (op2 == 'entry') {
-//		alert(obj.id + ' entry'); 
 		url = url+ "&"+ ajaxRequest.getQueryString()+"&ss_formName=formObj.name";
 		ss_fetch_url(url, showEntryComponents, [termNumber, nameRoot]);
 	} else {
@@ -71,8 +69,6 @@ function ss_getFilterSelectionBox(obj, nameRoot, op, op2) {
 	}
 }
 function showTagComponents(response, ind) {
-// 	alert("response: "+response);
-	
 	document.getElementById("entryList"+ind).innerHTML = response;
 	document.getElementById("entryList"+ind).style.disply="block";
 	document.getElementById("entryList"+ind).style.visibility="visible";
@@ -82,12 +78,9 @@ function showTagComponents(response, ind) {
 	document.getElementById("valueList"+ind).style.visibility="hidden";
 }
 function showEntryComponents (response, params) {
-//	alert("response: "+response);
 	var ind = params[0];
 	var objId = params[1];
-// 	alert("Ind: "+ind+" objId: "+objId);
 	if (objId == "typeList") {
-		// alert("level1");
 		document.getElementById("entryList"+ind).innerHTML = response;
 		document.getElementById("entryList"+ind).style.disply="block";
 		document.getElementById("entryList"+ind).style.visibility="visible";
@@ -97,14 +90,12 @@ function showEntryComponents (response, params) {
 		document.getElementById("valueList"+ind).style.visibility="hidden";
 		
 	} else if (objId == "ss_entry_def_id") {
-		// alert("level2");
 		document.getElementById("elementList"+ind).innerHTML=response;
 		document.getElementById("elementList"+ind).style.disply="block";
 		document.getElementById("elementList"+ind).style.visibility="visible";
 		document.getElementById("valueList"+ind).innerHTML="";
 		document.getElementById("valueList"+ind).style.visibility="hidden";		
 	} else {
-		// alert("level3");
 		document.getElementById("valueList"+ind).innerHTML=response;
 		document.getElementById("valueList"+ind).style.disply="block";
 		document.getElementById("valueList"+ind).style.visibility="visible";	
@@ -200,14 +191,7 @@ function t_searchForm_wsTree_showId(forum, obj) {
 	return false
 }
 
-
-var currentEntryCreatorIndex = 1;
-
-function saveCurrentEntryClick(ind) {
-	currentEntryCreatorIndex = ind;
-}
-
-function rewriteValueIntoFormElement(id, obj) {
+function ss_rewriteValueIntoFormElement(id, obj, currentEntryCreatorIndex) {
 	var spanObj = obj.getElementsByTagName("span").item(0);
 	document.getElementsByName("elementValue"+currentEntryCreatorIndex).item(0).value = spanObj.innerHTML;
 	document.getElementById("elementValue"+currentEntryCreatorIndex).value=id;
