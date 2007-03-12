@@ -464,25 +464,19 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * @param att
      */
     protected void cleanupAttributes(Attachment attachment) {
-    	Map attrs = getCustomAttributes();
-    	for (Iterator iter=attrs.values().iterator(); iter.hasNext();) {
-    		CustomAttribute attr = (CustomAttribute)iter.next();
+    	//make a copy so removes won't collide with iterator
+    	Set<CustomAttribute> attrs = new HashSet(getCustomAttributes().values());
+    	for (CustomAttribute attr:attrs) {
     		int type = attr.getValueType();
     		if (type == CustomAttribute.ATTACHMENT) {
-    			if (attachment.getId().equals(attr.getValue())) 
+    			if (attachment.equals(attr.getValue())) 
     				removeCustomAttribute(attr);
     		} else if (type == CustomAttribute.SET) {
     			Set vals = (Set)attr.getValue();
-    			
-    			Iterator vIter=vals.iterator();
-    			if (vIter.hasNext()) {
-    				Object obj = vIter.next();
-    				//see if set of attachments
-    				if (obj instanceof Attachment) {
-    					vals.remove(attachment);
-    					if (vals.isEmpty()) removeCustomAttribute(attr);
-    					else attr.setValue(vals);
-    				}
+    			//if in set, see if set now empty, otherwise update value
+    			if (vals.remove(attachment)) {	
+    				if (vals.isEmpty()) removeCustomAttribute(attr);
+    				else attr.setValue(vals);
     			}
     		}
     	}
