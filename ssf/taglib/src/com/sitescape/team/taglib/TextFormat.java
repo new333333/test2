@@ -2,16 +2,10 @@ package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Html;
 
 public class TextFormat extends BodyTagSupport {
