@@ -125,8 +125,8 @@
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_bold\"";
-		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
+		seenStyle = "class=\"ss_unseen\"";
+		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 %>
 		    <tr><td><div style="margin:0px 4px 4px 8px;">

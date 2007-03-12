@@ -264,8 +264,8 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_bold\"";
-		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
+		seenStyle = "class=\"ss_unseen\"";
+		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 %>
 <ssf:slidingTableRow id="<%= folderLineId %>">

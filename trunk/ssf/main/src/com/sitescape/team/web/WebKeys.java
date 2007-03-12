@@ -210,6 +210,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String OPERATION_GET_USERS_AND_GROUPS = "get_users_and_groups";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
@@ -362,6 +363,7 @@ public class WebKeys {
     public static final String DOM_TREE="ssDomTree";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
+    public static final String ELEMENT_NAME="ssElementName";
     public static final String EMAIL_ADDRESSES="ssEmailAddresses";
     public static final String EMAIL_ALIASES="ssEmailAliases";
     public static final String ENTRY="ssEntry";
@@ -541,6 +543,7 @@ public class WebKeys {
     public static final String TAG_SIGN="ssTagSign";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
 	public static final String USER_ID = "com.sitescape.userId";
+	public static final String USER_LIST = "ss_userList";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
     public static final String USER_SEARCH_USER_GROUP_TYPE="ss_userGroupType";

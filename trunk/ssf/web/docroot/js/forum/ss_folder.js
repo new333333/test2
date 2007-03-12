@@ -31,6 +31,7 @@ function ss_highlightLineById(id) {
 					}
 					ss_highlightedLine = id;
 					rowObj.className = ss_highlightClassName;
+					ss_clearUnseen(rowObj);
 			    }
 			    if (colObj != null) {
 					//Found a col; go highlight it
@@ -49,6 +50,7 @@ function ss_highlightLineById(id) {
 					}
 					ss_highlightedColLine = id;
 					colObj.className = ss_highlightColClassName;
+					ss_clearUnseen(colObj);
 			    }
     		}
     	}
@@ -62,7 +64,15 @@ function ss_highlightLineById(id) {
 			ss_highlightedLine = obj;
 			ss_savedHighlightClassName = ss_highlightedLine.className;
 			ss_highlightedLine.className = ss_highlightClassName;
+			ss_clearUnseen(obj);
 		}
+	}
+}
+
+function ss_clearUnseen(obj) {
+	var objs = ss_getElementsByClass("ss_unseen", obj);
+	for (var i = 0; i < objs.length; i++) {
+		objs[i].className = ss_replaceSubStr(objs[i].className, "ss_unseen", "");
 	}
 }
 

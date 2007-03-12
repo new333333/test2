@@ -265,8 +265,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_bold\"";
-		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
+		seenStyle = "class=\"ss_unseen\"";
+		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 %>
 
