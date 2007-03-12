@@ -1382,7 +1382,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		boolean isAppletSupported = SsfsUtil.supportApplets();
 		
-		if (isAppletSupported) {
+		if (isAppletSupported && getFolderModule().testAccess(folder, "addEntry")) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_showFolderAddAttachmentDropbox" + folder.getId().toString() + response.getNamespace() + "()" +"; return false;");
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
