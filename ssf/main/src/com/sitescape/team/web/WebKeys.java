@@ -369,6 +369,7 @@ public class WebKeys {
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
+    public static final String ENTRY_ATTACHMENTS="Attachments";
     public static final String ENTRY_ATTACHMENT_URL="ssEntryAttachmentURL";
     public static final String ENTRY_ATTACHMENT_ALLOW_EDIT="ssEntryAttachmentAllowEdit";
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE="ssEntryAttachmentEditTypeForIE";
@@ -384,6 +385,7 @@ public class WebKeys {
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
     public static final String ENTRY_DEFINITION="ssEntryDefinition";
     public static final String ENTRY_DEFINTION_MAP="ssEntryDefinitionMap";
+    public static final String ENTRY_HAS_META_HIT="entryHasMetaHit";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_TOOLBAR="ssEntryToolbar";
     public static final String ENTRY_ATTACHMENT_FILE_RECEIVER_URL = "ssAttachmentFileReceiverURL";
