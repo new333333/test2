@@ -137,14 +137,9 @@
 					    </c:when>
 				 	</c:choose>
 					<ssf:markup type="view" binderId="${binderId}" entryId="${entryId}">
-						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-							${fileEntry._desc}
-						</ssf:textFormat>
-						
+						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
 						<c:if test="${fileEntry._entityType == 'user'}">
-							<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
-								${fileEntry._comments}
-							</ssf:textFormat>
+							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
 						</c:if>
 					</ssf:markup>
 				</span>	
@@ -202,6 +197,7 @@
 		
 	  </table>
 	</div>
+
 <%	
 	}
 	entriesSeen.put(fileEntry.get("_docId"), "1");
