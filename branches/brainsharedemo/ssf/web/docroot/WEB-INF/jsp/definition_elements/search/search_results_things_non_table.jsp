@@ -270,8 +270,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_unseen\"";
-		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
+		seenStyle = "class=\"ss_bold\"";
+		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
 	}
 	if (!entriesSeen.containsKey(entry1.get("_docId"))) {
 %>
@@ -397,13 +397,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<td class="ss_searchviewDashboardContainer">
 			<span class="ss_smallprint">
 				<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-					<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
-						${entry1._desc}
-					</ssf:textFormat>
+					<ssf:textFormat textContent="${entry1._desc}" formatAction="limitedDescription" textMaxWords="30" />
 					<c:if test="${entry1._entityType == 'user'}">
-						<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
-							${entry1._comments}
-						</ssf:textFormat>
+						<ssf:textFormat textContent="${entry1._comments}" formatAction="limitedDescription" textMaxWords="30" />
 					</c:if>
 				</ssf:markup>
 			</span>	
