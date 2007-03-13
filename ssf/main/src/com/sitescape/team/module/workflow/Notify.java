@@ -19,6 +19,8 @@ import com.sitescape.team.domain.WfNotify;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.jobs.SendEmail;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
 public class Notify extends AbstractActionHandler {
@@ -82,15 +84,31 @@ public class Notify extends AbstractActionHandler {
 				}
 			} 
 
+			AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+
 			details.put(SendEmail.TO, addrs);
-			StringBuffer tMsg = new StringBuffer(notify.getBody());
+			StringBuffer tMsg = new StringBuffer();
+			tMsg.append(adapterUrl.toString());
+			tMsg.append("\n\n");
+			tMsg.append(notify.getBody());
 			if (notify.isAppendBody()) {
 				tMsg.append("\n");
 				tMsg.append(entry.getDescription().getStrippedText());
 				tMsg.append("\n");
 			}
 			details.put(SendEmail.TEXT_MSG, tMsg.toString());
-			StringBuffer hMsg = new StringBuffer(notify.getBody());
+			StringBuffer hMsg = new StringBuffer();
+			hMsg.append("<a href=\"");
+			hMsg.append(adapterUrl.toString());
+			hMsg.append("\">");
+			hMsg.append(entry.getTitle());
+			hMsg.append("</a>");
+			hMsg.append("<br/><br/>");
+			hMsg.append(notify.getBody());
 			if (notify.isAppendBody()) {
 				hMsg.append("<p>");
 				hMsg.append(entry.getDescription().getText());
