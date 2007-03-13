@@ -100,14 +100,23 @@ try {
 						
 		var hrefSelectAllObj = document.createElement("a");
 		hrefSelectAllObj.href = "javascript: //";
-		hrefSelectAllObj.setAttribute("onClick", "ss_teamMembersSelectAll('" + prefix + "')");
+//		hrefSelectAllObj.setAttribute("onClick", "ss_teamMembersSelectAll('" + prefix + "')");
+		dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+			ss_teamMembersSelectAll(prefix);
+	    });
+			
+		
 		hrefSelectAllObj.className = "ss_linkButton";
 		hrefSelectAllObj.style.marginRight = "5px";
 		hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
-		hrefDeselectAllObj.setAttribute("onClick", "ss_teamMembersDeselectAll('" + prefix + "')");
+//		hrefDeselectAllObj.setAttribute("onClick", "ss_teamMembersDeselectAll('" + prefix + "')");
+		dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+			ss_teamMembersDeselectAll(prefix);
+	    });
+	    		
 		hrefDeselectAllObj.className = "ss_linkButton";
 		hrefDeselectAllObj.style.marginRight = "5px";
 		hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));

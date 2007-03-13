@@ -101,14 +101,20 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 	
 		var hrefSelectAllObj = document.createElement("a");
 		hrefSelectAllObj.href = "javascript: //";
-		hrefSelectAllObj.setAttribute("onClick", "ss_clipboardUsersSelectAll('" + prefix + "')");
+//		hrefSelectAllObj.setAttribute("onClick", "ss_clipboardUsersSelectAll('" + prefix + "')");
+		dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+			ss_clipboardUsersSelectAll(prefix);
+	    });		
 		hrefSelectAllObj.className = "ss_linkButton";
 		hrefSelectAllObj.style.marginRight = "5px";
 		hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
-		hrefDeselectAllObj.setAttribute("onClick", "ss_clipboardUsersDeselectAll('" + prefix + "')");
+//		hrefDeselectAllObj.setAttribute("onClick", "ss_clipboardUsersDeselectAll('" + prefix + "')");
+		dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+			ss_clipboardUsersDeselectAll(prefix);
+	    });
 		hrefDeselectAllObj.className = "ss_linkButton";
 		hrefDeselectAllObj.style.marginRight = "5px";
 		hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
