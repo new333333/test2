@@ -29,6 +29,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -311,6 +312,7 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexSearcher indexSearcher;
 		TreeSet results = new TreeSet();
 		ArrayList resultTags = new ArrayList();
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		//block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
@@ -326,12 +328,15 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 		try {
 			final BitSet userDocIds = new BitSet(indexReader.maxDoc());
-			indexSearcher.search(query, new HitCollector() {
-				public void collect(int doc, float score) {
-					userDocIds.set(doc);
-				}
-			});
-
+			if (!user.isSuper()) {
+				indexSearcher.search(query, new HitCollector() {
+					public void collect(int doc, float score) {
+						userDocIds.set(doc);
+					}
+				});
+			} else {
+				userDocIds.set(0, userDocIds.size());
+			}
 			String[] fields = null;
 			if (type != null && type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
 				fields = new String[1];

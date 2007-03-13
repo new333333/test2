@@ -1147,7 +1147,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		
 		Element rootElement = qTree.getRootElement();
 		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-		boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+		//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
 		
 		// look for the specific binder id
 		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
