@@ -14,7 +14,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.security.authentication.AuthenticationManager;
+import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
 import com.sitescape.team.ssfs.LockException;
@@ -43,7 +43,7 @@ public class DispatchServer extends GenericServlet {
 
 			// Authenticate the user against SSF user database.
 			try {
-				getAuthenticationManager().authenticate(zoneName, userName, password, false);
+				AuthenticationManagerUtil.authenticate(zoneName, userName, password, false);
 			}
 			catch(Exception e) {
 				// Instead of throwing ServletException to indicate an error, we pass
@@ -227,10 +227,6 @@ public class DispatchServer extends GenericServlet {
 		else {
 			throw new ServletException("Invalid operation " + operation);
 		}		
-	}
-	
-	private AuthenticationManager getAuthenticationManager() {
-		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
 	}
 	
 	private SiteScapeFileSystem getSiteScapeFileSystem() {
