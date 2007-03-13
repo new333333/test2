@@ -15,6 +15,8 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="hitCount" value="0"/>
 <c:set var="componentId" value="${ssComponentId}"/>
@@ -27,7 +29,14 @@
   <c:set var="summaryWordCount" value="${ssDashboard.dashboard.components[ssComponentId].data.summaryWordCount[0]}"/>
 </c:if>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}">
+<jsp:useBean id="fileEntry" type="java.util.HashMap" />
+<%
+	if (!entriesSeen.containsKey(fileEntry.get("_docId"))) {
+%>
 <c:set var="hitCount" value="${hitCount + 1}"/>
 	<div class="ss_blog_summary_title">
 		<table class="ss_searchviewDashboardContainer" cellspacing="0" cellpadding="0" width="100%" border="0" align="center">
@@ -128,9 +137,14 @@
 					    </c:when>
 				 	</c:choose>
 					<ssf:markup type="view" binderId="${binderId}" entryId="${entryId}">
-						<ssf:textFormat textContent="${fileEntry._desc}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+							${fileEntry._desc}
+						</ssf:textFormat>
+						
 						<c:if test="${fileEntry._entityType == 'user'}">
-							<ssf:textFormat textContent="${fileEntry._comments}" formatAction="limitedDescription" textMaxWords="${summaryWordCount}" />
+							<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
+								${fileEntry._comments}
+							</ssf:textFormat>
 						</c:if>
 					</ssf:markup>
 				</span>	
@@ -188,7 +202,10 @@
 		
 	  </table>
 	</div>
-
+<%	
+	}
+	entriesSeen.put(fileEntry.get("_docId"), "1");
+%>
 </c:forEach>
 
 <div>
