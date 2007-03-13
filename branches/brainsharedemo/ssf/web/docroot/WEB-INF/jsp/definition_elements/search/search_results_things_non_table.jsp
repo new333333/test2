@@ -1,4 +1,6 @@
 <% // Search results listing of "things" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
@@ -257,6 +259,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 </div>
 </div>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 
 <jsp:useBean id="entry1" type="java.util.HashMap" />
@@ -265,9 +270,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(entry1)) {
-		seenStyle = "class=\"ss_bold\"";
-		seenStyleFine = "class=\"ss_bold ss_fineprint\"";
+		seenStyle = "class=\"ss_unseen\"";
+		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
+	if (!entriesSeen.containsKey(entry1.get("_docId"))) {
 %>
 
 <div class="ss_blog_summary_title">
@@ -391,9 +397,13 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		<td class="ss_searchviewDashboardContainer">
 			<span class="ss_smallprint">
 				<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-					<ssf:textFormat textContent="${entry1._desc}" formatAction="limitedDescription" textMaxWords="30" />
+					<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
+						${entry1._desc}
+					</ssf:textFormat>
 					<c:if test="${entry1._entityType == 'user'}">
-						<ssf:textFormat textContent="${entry1._comments}" formatAction="limitedDescription" textMaxWords="30" />
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
+							${entry1._comments}
+						</ssf:textFormat>
 					</c:if>
 				</ssf:markup>
 			</span>	
@@ -452,6 +462,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
   </table>
 </div>
 
+<%	
+	}
+	entriesSeen.put(entry1.get("_docId"), "1");
+%>
 </c:forEach>
 
 
