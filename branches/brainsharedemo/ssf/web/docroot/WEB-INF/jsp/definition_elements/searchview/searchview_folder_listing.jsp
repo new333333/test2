@@ -7,6 +7,7 @@
 	Map entriesSeen = new HashMap();
 %>
 <table class="ss_blog" width="100%" border="0">
+
 	<c:forEach var="entry" items="${ssFolderEntries}" >
 		<jsp:useBean id="entry" type="java.util.HashMap" />
 		<%
@@ -34,9 +35,7 @@
 			<tr>
 				<td class="ss_searchviewContainer">
 					<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-						<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
-							${entry._desc}
-						</ssf:textFormat>
+						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="30" />
 					</ssf:markup>
 				</td>
 			</tr>
@@ -77,7 +76,9 @@
 			<td class="ss_searchviewContainer">
 				<div class="ss_line"></div>
 			</td>
-		</tr>		<%
+		</tr>
+				
+		<%
 			}
 			entriesSeen.put(entry.get("_docId"), "1");
 		%>
