@@ -16,22 +16,24 @@ import com.sitescape.util.PasswordEncryptor;
  * with the application to retrieve specific authentication data. 
  * The class is implemented using Apache WSS4J library.
  * 
+ * This implementation passes Aspen-encrypted password to WS-Security framework.
+ * 
  * @author jong
  *
  */
-public class PWCallback implements CallbackHandler {
+public class PWCallbackDigest implements CallbackHandler {
 
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
 
-		//System.out.println("*** Client-side PWCallback is called");
+		//System.out.println("*** Client-side PWCallbackDigest is called");
 
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
-                // Set the password given a username.
                 String id = pc.getIdentifer();
                 //System.out.println("Identifier [" + id + "]");
                 if ("liferay.com.1".equals(id)) {
+                	String clearPassword = "test";
                 	// Set the password to a digested value of "test". 
                 	// This digest has nothing to do with the internal digest performed 
                 	// later by WS-Security framework. With Aspen, all passwords are 
@@ -42,8 +44,8 @@ public class PWCallback implements CallbackHandler {
                 	// accomplished through the use of the available password encryption 
                 	// class. For non-Java based WS clients, the exact same encryption 
                 	// steps will need to be translated and applied. 
-                	//System.out.println("Setting password to [test]");
                 	String encryptedPassword = PasswordEncryptor.encrypt("test");
+                	//System.out.println("Client: Aspen-encrypted password is [" + encryptedPassword + "]");
                 	pc.setPassword(encryptedPassword);
                 }
                 else {
