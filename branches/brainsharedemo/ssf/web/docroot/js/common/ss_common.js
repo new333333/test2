@@ -3476,7 +3476,7 @@ function ss_deleteTab(obj, tabId) {
 			}
 			if (tabCount > 1) {
 				//Ok, delete this td from the tab table
-				tabParentTdObject.parentNode.removeChild(tabParentTdObject)
+				tabParentTdObject.parentNode.removeChild(tabParentTdObject);
 				//Hide the tab contents
 				var tabDataObj = document.getElementById("ss_tab_data_" + tabId);
 				if (tabDataObj != null) tabDataObj.style.display = "none";
@@ -3535,7 +3535,6 @@ function ss_showThisImage(obj) {
 	}
 }
 
-
 //Mustering routines
 function ss_Clipboard () {
 
@@ -3583,6 +3582,11 @@ function ss_Clipboard () {
 	    var formObj = document.createElement("form");
 	    formObj.setAttribute("id", "ss_muster_form");
 	    formObj.setAttribute("name", "ss_muster_form");
+		dojo.event.connect(formObj, "onsubmit", function(evt) {
+			return dojoformfunction(this);
+	    });
+
+	    
 		musterDiv.appendChild(formObj);
 	    var hiddenObj = document.createElement("input");
 	    hiddenObj.setAttribute("type", "hidden");
@@ -3601,14 +3605,21 @@ function ss_Clipboard () {
 		addContrBtnObj.setAttribute("type", "button");
 		addContrBtnObj.setAttribute("name", "add");
 		addContrBtnObj.setAttribute("value", ss_addContributesToClipboardText);
-		addContrBtnObj.setAttribute("onClick", "ss_muster.addContributesToClipboard();return false;");
+//		addContrBtnObj.setAttribute("onClick", "ss_muster.addContributesToClipboard();return false;");
+		dojo.event.connect(addContrBtnObj, "onclick", function(evt) {
+			ss_muster.addContributesToClipboard();
+			return false;
+	    });
 
 		var addTeamMembersBtnObj = document.createElement("input");
 		addTeamMembersBtnObj.setAttribute("type", "button");
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
-		addTeamMembersBtnObj.setAttribute("onClick", "ss_muster.addTeamMembersToClipboard();return false;");
-
+//		addTeamMembersBtnObj.setAttribute("onClick", "ss_muster.addTeamMembersToClipboard();return false;");
+		dojo.event.connect(addTeamMembersBtnObj, "onclick", function(evt) {
+			ss_muster.addTeamMembersToClipboard();
+			return false;
+	    });
 
 		addBtnDivObj.appendChild(addContrBtnObj);
 		addBtnDivObj.appendChild(brObj.cloneNode(false));
@@ -3625,16 +3636,25 @@ function ss_Clipboard () {
 		
 		//Add the buttons 		
 		var deleteBtnObj = document.createElement("input");
-		deleteBtnObj.setAttribute("type", "submit");
+		deleteBtnObj.setAttribute("type", "button");
 		deleteBtnObj.setAttribute("name", "clear");
 		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
-		deleteBtnObj.setAttribute("onClick", "ss_muster.removeFromClipboard('ss_muster_form');return false;");
+//		deleteBtnObj.setAttribute("onClick", "ss_muster.removeFromClipboard('ss_muster_form');return false;");
+		dojo.event.connect(deleteBtnObj, "onclick", function(evt) {
+			ss_muster.removeFromClipboard('ss_muster_form');
+			return false;
+	    });
+	    		
 		deleteBtnObj.style.marginRight = "15px"
 		var cancelBtnObj = document.createElement("input");
 		cancelBtnObj.setAttribute("type", "button");
 		cancelBtnObj.setAttribute("name", "cancel");
 		cancelBtnObj.setAttribute("value", ss_closeButtonText);
-		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel();");
+//		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel();");	
+		dojo.event.connect(cancelBtnObj, "onclick", function(evt) {
+			ss_muster.cancel();
+	    });
+		
 		cancelBtnObj.style.marginRight = "15px"
 
 		formObj.appendChild(brObj.cloneNode(false));
@@ -3665,10 +3685,11 @@ function ss_Clipboard () {
 				displayUsers(data, divObj);			
 			},
 			mimetype: "text/json",
-			method: "get"
+			transport: "XMLHTTPTransport",
+			method: "post"
 		};
 	   
-		dojo.io.bind(bindArgs);
+		var req = dojo.io.bind(bindArgs);
 	}
 	
 	function displayUsers(data, containerObj) {
@@ -3690,14 +3711,23 @@ function ss_Clipboard () {
 			
 			var hrefSelectAllObj = document.createElement("a");
 			hrefSelectAllObj.href = "javascript: //";
-			hrefSelectAllObj.setAttribute("onClick", "ss_muster.selectAll()");
+//			hrefSelectAllObj.setAttribute("onClick", "ss_muster.selectAll()");
+			dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
+				ss_muster.selectAll();
+		    });
+		    			
 			hrefSelectAllObj.className = "ss_linkButton";
 			hrefSelectAllObj.style.marginRight = "5px";
 			hrefSelectAllObj.appendChild(document.createTextNode("Select all"));
 
 			var hrefDeselectAllObj = document.createElement("a");
 			hrefDeselectAllObj.href = "javascript: //";
-			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.deselectAll()");
+//			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.deselectAll()");
+			dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
+				ss_muster.deselectAll();
+		    });
+
+			
 			hrefDeselectAllObj.className = "ss_linkButton";
 			hrefDeselectAllObj.style.marginRight = "5px";
 			hrefDeselectAllObj.appendChild(document.createTextNode("Clear all"));
@@ -3809,7 +3839,7 @@ function ss_Clipboard () {
 	}
 	
 	this.removeFromClipboard = function (formName) {
-		ss_setupStatusMessageDiv()
+		ss_setupStatusMessageDiv();
 		var url = ss_musterUrl;
 		url = ss_replaceSubStr(url, "ss_operation_place_holder",  "remove_from_clipboard");
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
@@ -3818,7 +3848,6 @@ function ss_Clipboard () {
 		ajaxRequest.setPostRequest(postRemoveFromClipboard);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
-
 	}
 	
 	function postRemoveFromClipboard (obj) {
