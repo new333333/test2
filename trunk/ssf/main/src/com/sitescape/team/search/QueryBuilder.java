@@ -12,6 +12,7 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -90,6 +91,10 @@ public class QueryBuilder {
 	}
 
 	public SearchObject buildQuery(Document domQuery) {
+		return buildQuery(domQuery, false);
+	}
+
+	public SearchObject buildQuery(Document domQuery, boolean ignoreAcls) {
 		SearchObject so = new SearchObject();
 
 		Element root = domQuery.getRootElement();
@@ -101,8 +106,21 @@ public class QueryBuilder {
 		}
 
 		parseRootElement(root, so);
-		//String qString = parseRootElement(root);
 
+		// add acl check to every query. (If it's the superuser doing this query, then this clause
+		// will return the empty string.
+		
+		if (ignoreAcls) return so;
+		
+		String acls = getAclClause();
+		if (acls.length() != 0) {
+			String q = so.getQueryString();
+			if (q.length() > 0)
+				q += "AND ";
+			q += acls;
+			so.setQueryString(q);
+		}
+		
 		return so;
 		/*
 		 * 	For testing only	
@@ -182,69 +200,7 @@ public class QueryBuilder {
 		} else if (operator.equals(RANGE_ELEMENT)) {
 			qString += "(" + processRANGE(element) + ")";
 		} else if (operator.equals(USERACL_ELEMENT)) {
-			/*
-			 * if widen, then acl query is:
-			 * (folderACL:1,2,3 AND entryAcl:all,1,2,3)
-			 * 
-			 * else
-			 * ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
-			 */
-			boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
-			//folderAcl:1,2,3...
-			qString += "(((";
-			boolean first = true;
-			for (Iterator i = principalIds.iterator(); i.hasNext();) {
-				if (!first) {
-					qString += " OR";
-				}
-				qString += " " + BasicIndexUtils.FOLDER_ACL_FIELD + ":"
-						+ i.next();
-				first = false;
-			}
-			qString += ") AND ";
-			if (widen) {
-				// entryAcl:all
-				qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL + " ))";
-				qString += " OR (";
-				//OR entryAcl:1,2,3
-				first = true;
-				for (Iterator i = principalIds.iterator(); i.hasNext();) {
-					if (!first) {
-						qString += " OR";
-					}
-					qString += " " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-							+ i.next();
-					first = false;
-				}
-				qString += ")";
-			} else {
-			
-				qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":" + BasicIndexUtils.READ_ACL_ALL;
-				for (Iterator i = principalIds.iterator(); i.hasNext();) {
-				
-				qString += " OR " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
-						+ i.next();
-			}
-			qString += "))";
-		}
-		qString += ")";			
-			
-/*		} else if (operator.equals(GROUP_VISIBILITY_ELEMENT)) {
-			//Always check for groupReadAny
-			User user = RequestContextHolder.getRequestContext().getUser();
-			qString += "(";
-			String viz = element.attributeValue(GROUP_VISIBILITY_ATTRIBUTE);
-			qString += " " + BasicIndexUtils.GROUP_VISIBILITY_FIELD + ":"
-					+ BasicIndexUtils.GROUP_ANY + " ";
-			if (viz.equals(EntityIndexUtils.GROUP_SEE_COMMUNITY)) {
-				List groups = user.getMemberOf();
-				for (int gcount = 0; gcount < groups.size(); gcount++) {
-					qString += " OR " + BasicIndexUtils.GROUP_VISIBILITY_FIELD
-							+ ":" + groups.get(gcount);
-				}
-			}
-			qString += "))";
-*/
+			return qString;
 		} else if (operator.equals(PERSONALTAGS_ELEMENT)) {
 			qString += "(" + processPERSONALTAGS(element) + ")";
 		} else if (operator.equals(RELATIVE_DATE_RANGE_ELEMENT)) {
@@ -422,6 +378,65 @@ public class QueryBuilder {
 					+ finishText + " }");
 
 		return termText;
+	}
+
+
+	private String getAclClause() {
+
+		String qString = "";
+		//if this is the super user, then don't add any acl controls.
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		if (user.isSuper())
+			return qString;
+
+		
+		/*
+		 * if widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+		 * 
+		 * else ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
+		 */
+		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
+		// folderAcl:1,2,3...
+		qString += "(((";
+		boolean first = true;
+		for (Iterator i = principalIds.iterator(); i.hasNext();) {
+			if (!first) {
+				qString += " OR";
+			}
+			qString += " " + BasicIndexUtils.FOLDER_ACL_FIELD + ":" + i.next();
+			first = false;
+		}
+		qString += ") AND ";
+		if (widen) {
+			// entryAcl:all
+			qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
+					+ BasicIndexUtils.READ_ACL_ALL + " ))";
+			qString += " OR (";
+			// OR entryAcl:1,2,3
+			first = true;
+			for (Iterator i = principalIds.iterator(); i.hasNext();) {
+				if (!first) {
+					qString += " OR";
+				}
+				qString += " " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
+						+ i.next();
+				first = false;
+			}
+			qString += ")";
+		} else {
+
+			qString += "( " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
+					+ BasicIndexUtils.READ_ACL_ALL;
+			for (Iterator i = principalIds.iterator(); i.hasNext();) {
+
+				qString += " OR " + BasicIndexUtils.ENTRY_ACL_FIELD + ":"
+						+ i.next();
+			}
+			qString += "))";
+		}
+		qString += ")";
+		return qString;
 	}
 
 	public void test() {

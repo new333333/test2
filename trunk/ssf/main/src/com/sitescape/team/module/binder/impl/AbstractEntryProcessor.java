@@ -1202,7 +1202,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (rootElement == null) return qTree;
     	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
     	if (boolElement == null) return qTree;
-    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
      	
     	//Look only for binderId=binder and doctype = entry (not attachement)
     	if (binder != null) {

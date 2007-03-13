@@ -581,7 +581,7 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
     	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
     	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	andElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	//andElement.addElement(QueryBuilder.USERACL_ELEMENT);
     	Element rangeElement = andElement.addElement(QueryBuilder.RANGE_ELEMENT);
     	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
     	rangeElement.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);

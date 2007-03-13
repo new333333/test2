@@ -556,7 +556,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	        		//If there isn't one, then create one.
 	        		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
 	        	}
-	        	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+	        	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
 
 	        	//Create the Lucene query
 		    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
@@ -611,7 +611,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		// Top of query doc 
 		Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
+		//qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
 			
     	//Create the query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));

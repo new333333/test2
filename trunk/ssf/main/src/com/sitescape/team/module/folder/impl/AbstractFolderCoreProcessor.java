@@ -366,7 +366,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		//If there isn't one, then create one.
     		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
     	}
-    	boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
  
     	//Look only for entryType=entry
        	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
