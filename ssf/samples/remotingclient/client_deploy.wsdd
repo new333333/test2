@@ -5,9 +5,20 @@
    <requestFlow >
     <handler type="java:org.apache.ws.axis.security.WSDoAllSender" >
      <parameter name="action" value="UsernameToken"/>
+     <!-- The following parameter is useful if all Web Services call is
+          made using a single user credential. -->
      <!--<parameter name="user" value="liferay.com.1"/>-->
+     <!-- Again, if a single user credential is used, the follownig parameter
+          can be used to specify a password instead of specifying a callback
+          class name. The password should be a Base64-encoded SHA-1 password. -->
+     <!--<parameter name="password" value="qUqP5cyxm6YcTAhz05Hph5gvu9M="/>-->
+     <!-- Using PasswordText allows client to send a cleartext password. -->
      <parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackText"/>
      <parameter name="passwordType" value="PasswordText"/>
+     <!-- With PasswordDigest, a password digest value is sent to the server. 
+          In this case, WS client must Aspen-encrypt the cleartext password
+          before passing it to the WS-Security tool for further digest. 
+          In other words, the password is digested twice in this case. -->
      <!--<parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackDigest"/>
      <parameter name="passwordType" value="PasswordDigest"/>-->
     </handler>
