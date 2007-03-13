@@ -1,4 +1,6 @@
 <% // Search results listing of "things" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
@@ -257,6 +259,9 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 </div>
 </div>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 
 <jsp:useBean id="entry1" type="java.util.HashMap" />
@@ -268,6 +273,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		seenStyle = "class=\"ss_unseen\"";
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
+	if (!entriesSeen.containsKey(entry1.get("_docId"))) {
 %>
 
 <div class="ss_blog_summary_title">
@@ -456,6 +462,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
   </table>
 </div>
 
+<%	
+	}
+	entriesSeen.put(entry1.get("_docId"), "1");
+%>
 </c:forEach>
 
 
