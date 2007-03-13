@@ -1,10 +1,17 @@
 <% //View the listing in the search view format %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.HashMap" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<%
+	Map entriesSeen = new HashMap();
+%>
 <table class="ss_blog" width="100%" border="0">
-
 	<c:forEach var="entry" items="${ssFolderEntries}" >
 		<jsp:useBean id="entry" type="java.util.HashMap" />
+		<%
+			if (!entriesSeen.containsKey(entry.get("_docId"))) {
+		%>
 		<c:set var="entryBinderId" value="${entry._binderId}"/>
 		<c:set var="entryDocId" value="${entry._docId}"/>	
 		<c:if test="${entry._entityType == 'folder' || entry._entityType == 'workspace'}">
@@ -27,7 +34,9 @@
 			<tr>
 				<td class="ss_searchviewContainer">
 					<ssf:markup type="view" binderId="${entryBinderId}" entryId="${entryDocId}">
-						<ssf:textFormat textContent="${entry._desc}" formatAction="limitedDescription" textMaxWords="30" />
+						<ssf:textFormat formatAction="limitedDescription" textMaxWords="30">
+							${entry._desc}
+						</ssf:textFormat>
 					</ssf:markup>
 				</td>
 			</tr>
@@ -68,6 +77,9 @@
 			<td class="ss_searchviewContainer">
 				<div class="ss_line"></div>
 			</td>
-		</tr>				
+		</tr>		<%
+			}
+			entriesSeen.put(entry.get("_docId"), "1");
+		%>
 	</c:forEach>
 </table>
