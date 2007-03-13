@@ -33,6 +33,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
@@ -833,5 +834,70 @@ public class BinderHelper {
 			operations.put(operationName, NLT.get("workarea_operation." + operationName));
 		}
 		model.put(WebKeys.WORKAREA_OPERATIONS, operations);
+	}
+	
+	// Walk the list of entries returned by the search engine.  If
+	// an entry has doctype=attachment then see if it's entry is
+	// already in the list, and add this attachment to it's map.
+	// if not, just leave the attachment in the list.
+	//
+	// Note that if an entry was on this list, then a new key/value pair of
+	// (WebKeys.ENTRY_HAS_META_HIT, true) will be added to it's map.
+	//
+	// if attachments are found for an entry, then they will be taken off
+	// the entry list, and added to an list of attachments for that entry
+	// in the list. (key value - WebKeys.ENTRY_ATTACHMENTS
+	public static List filterEntryAttachmentResults(List entries) {
+
+		String docId = null;
+		HashMap entriesFound = new HashMap();
+		for (int count = 0; count < entries.size(); count++) {
+			Map entry = (Map)entries.get(count);
+			String type = (String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD);
+			// if it's an entry, see if there's already an attachment in the list for it.
+			if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ENTRY)) {
+				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
+				boolean found = false;
+				int i = 0;
+				for (i=0; i < count; i++) {
+					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
+					if (d.equalsIgnoreCase(docId)) {
+						// if it's already in the list, then it's an attachment, 
+						// so insert ourselves in here, add the attachment to 
+						// the entry, and delete this entry from the list.
+						Map att = (Map)entries.get(i);
+						entry.put(WebKeys.ENTRY_ATTACHMENTS, att);
+						entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
+						entries.remove(i);
+						break;
+					}
+				}
+				if (i == count || count == 1) {
+					entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
+				}
+			} else if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
+				for (int i=0; i < count; i++) {
+					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
+					if (d.equalsIgnoreCase(docId)) {
+						// if it's already in the list, then it's an attachment, 
+						// so insert ourselves in here, add the attachment to 
+						// the entry, and delete this entry from the list.
+						Map att = (Map)entries.get(count);
+						entry = (Map)entries.get(i);
+						// see if this entry already has attachments
+						List attachments = (List)entry.get(WebKeys.ENTRY_ATTACHMENTS);
+						if (attachments == null) { 
+							attachments = new ArrayList();
+						}
+					    attachments.add(att);	
+						entry.put(WebKeys.ENTRY_ATTACHMENTS, attachments);
+						entries.remove(count);
+						break;
+					}
+				}
+			}
+		}
+		return entries;		
 	}
 }
