@@ -16,21 +16,26 @@
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 <c:set var="addUserToListRoutine" value="ss_addUserToUserList_${prefix}"/>
 
+
+<input type="hidden" name="<%= userListElementName %>" value="" id="ss_usersListInput${prefix}"/>
+
 <script type="text/javascript">
       
 function ss_addUserIdToFormElement(userId) {
-	var formObj = document.forms['<%= userListFormName %>'];
-	var hiddenUserIdObj = document.createElement('input');
-	hiddenUserIdObj.setAttribute("type", "hidden");
-	hiddenUserIdObj.setAttribute("name", "<%= userListElementName %>");
-	hiddenUserIdObj.setAttribute("value", userId);
-	hiddenUserIdObj.setAttribute("id", "userIds_${prefix}_" + userId);
-	formObj.appendChild(hiddenUserIdObj);
-}
 
-<c:forEach var="item" items="${userList}">
-	ss_addUserIdToFormElement('<c:out value="${item.id}"/>');
-</c:forEach>
+	var hiddenUserIdObj = $("ss_usersListInput${prefix}");
+
+	var newValue = "";
+	if (hiddenUserIdObj.value) {
+		newValue = hiddenUserIdObj.value;
+	}
+
+	newValue += " ";
+	newValue += userId;
+	newValue += " ";
+
+	hiddenUserIdObj.value = newValue;
+}
 
 function afterAddUser${prefix}(obj) {
 	dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
@@ -48,7 +53,10 @@ function ss_userListSelectItem${prefix}(id, obj) {
 	newLiObj.innerHTML = spanObj.innerHTML;
 	var newAnchorObj = document.createElement("a");
 	newAnchorObj.setAttribute("href", "javascript: ;");
-	newAnchorObj.setAttribute("onClick", "ss_userListRemove${prefix}(this);");
+//	newAnchorObj.setAttribute("onClick", "ss_userListRemove${prefix}(this);");
+	dojo.event.connect(newAnchorObj, "onclick", function(evt) {
+		ss_userListRemove${prefix}(evt.target.parentNode);
+    });	
 	var newImgObj = document.createElement("img");
 	newImgObj.setAttribute("src", "<html:imagesPath/>pics/sym_s_delete.gif");
 	newImgObj.setAttribute("border", "0");
@@ -75,7 +83,13 @@ function ${addUserToListRoutine}(userId, userName) {
 	newLiObj.appendChild(newSpanObj);
 	var newAnchorObj = document.createElement("a");
 	newAnchorObj.setAttribute("href", "javascript: ;");
-	newAnchorObj.setAttribute("onClick", "ss_userListRemove${prefix}(this);");
+//	newAnchorObj.setAttribute("onClick", "ss_userListRemove${prefix}(this);");
+	dojo.event.connect(newAnchorObj, "onclick", function(evt) {
+		ss_userListRemove${prefix}(this);
+    });
+	
+	
+	
 	var newImgObj = document.createElement("img");
 	newImgObj.setAttribute("src", "<html:imagesPath/>pics/sym_s_delete.gif");
 	newImgObj.setAttribute("border", "0");
@@ -109,9 +123,15 @@ function ss_userListRemove${prefix}(obj) {
 	
 	var userId = liObj.id;
 	var userHiddenIdObj = document.getElementById("userIds_${prefix}_" + userId);
-	var p = userHiddenIdObj.parentNode;
-	p.removeChild(userHiddenIdObj);
-
+	if (userHiddenIdObj) {
+		var p = userHiddenIdObj.parentNode;
+		p.removeChild(userHiddenIdObj);
+	}
+	
+	var hiddenUserIdObj = $("ss_usersListInput${prefix}");
+	var value = hiddenUserIdObj.value;
+	value = value.replace(" " + userId + " ", " ");
+	hiddenUserIdObj.value = value;
 }
 
 </script>
@@ -152,7 +172,7 @@ function ss_userListRemove${prefix}(obj) {
 </td>
 </tr>
 </table>
-		
+
 
 <script type="text/javascript">
 function ss_saveUserListData_${prefix}() {
@@ -169,5 +189,8 @@ function ss_saveUserListData_${prefix}() {
 }
 
 ss_createOnSubmitObj('${prefix}onSubmit', '<%= userListFormName %>', ss_saveUserListData_${prefix});
+<c:forEach var="item" items="${userList}">
+	ss_addUserIdToFormElement(<c:out value="${item.id}"/>);
+</c:forEach>
 
 </script>

@@ -3878,7 +3878,7 @@ function ss_launchMeeting(id) {
 */
 function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 	ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane, true);
-	
+		
 	var bindArgs = {
     	url: url,
 		error: function(type, data, evt) {
