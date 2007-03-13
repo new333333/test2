@@ -110,7 +110,7 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		actionUrl="true" >
 		<ssf:param name="operation" value="ss_operation_place_holder" />
 		</ssf:url>";
-
+		
 	//Not logged in message
 	ss_not_logged_in = "<ssf:nlt tag="general.notLoggedIn"/>";
 	
@@ -231,6 +231,20 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 	}
 }
 var ss_js_files_loaded = 1;
+
+<ssf:ifnotadapter>
+var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+	name="action" value="ssActionPlaceHolder"/><portlet:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
+	name="newTab" value="1"/></portlet:renderURL>';
+	
+var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+	name="action" value="ssActionPlaceHolder"/><portlet:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+	name="newTab" value="1"/></portlet:renderURL>';
+</ssf:ifnotadapter>
+
 </script>
 
 <c:if test="${!empty ss_servlet && ss_servlet == 'true'}">

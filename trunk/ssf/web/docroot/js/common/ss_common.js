@@ -2593,6 +2593,12 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+//Routine to go to a permalink without actually using the permalink
+function ss_gotoPermalink(binderId, entryId, entityType) {
+	if (!ss_baseBinderUrl || !ss_baseEntryUrl) return true;
+	return ss_dashboardPorletUrlSupport(ss_baseBinderUrl, ss_baseEntryUrl, binderId, entryId, entityType);
+}
+
 function ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type) {
 	//Build a url to go to
 	var url;
