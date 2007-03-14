@@ -252,6 +252,14 @@ public class EntityIndexUtils {
   
     }
     
+    public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
+		List atts = entry.getFileAttachments();
+        for (int j = 0; j < atts.size(); j++) {
+        	FileAttachment fa = (FileAttachment)atts.get(j);
+        	addFileAttachmentUid(doc, fa);
+        }
+    }
+    
     public static void addCommandDefinition(Document doc, DefinableEntity entry) {
         if (entry.getEntryDef() != null) {
         	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
