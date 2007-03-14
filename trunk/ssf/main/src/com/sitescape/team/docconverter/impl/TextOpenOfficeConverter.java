@@ -127,12 +127,9 @@ public class TextOpenOfficeConverter
 		try
 		{
 			// OpenOffice can not conver these types of files. Will cause OpenOffice crash in some cases
-			if (ifp.endsWith(".jpg")
-			|| ifp.endsWith(".JPG")
-			|| ifp.endsWith(".jpeg")
-			|| ifp.endsWith(".JPEG")
-			|| ifp.endsWith(".gif")
-			|| ifp.endsWith(".GIF"))
+			if (ifp.toLowerCase().endsWith(".jpg")
+			|| ifp.toLowerCase().endsWith(".jpeg")
+			|| ifp.toLowerCase().endsWith(".gif"))
 				return "";
 
 			/**
