@@ -23,23 +23,16 @@
 </c:if>
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
+<c:set var="portletNamespace" value=""/>
+<ssf:ifnotadapter>
+<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
+</ssf:ifnotadapter>
 
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 <script type="text/javascript">
 function ${ss_divId}_galleryurl(binderId, entryId, type) {
-	var entryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	var folderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	//Build a url to go to
-	ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type);
-	return false;
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
 }
 </script>
 </c:if>
