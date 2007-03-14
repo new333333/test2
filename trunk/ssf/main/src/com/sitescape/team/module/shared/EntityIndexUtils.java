@@ -496,6 +496,20 @@ public class EntityIndexUtils {
        	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
     }
+    
+    // in the _allText field for this attachment, just add the contents of
+    // the file attachment, it's name, and it's creator/modifier
+    public static Document addFileAttachmentAllText(Document doc) {
+       	doc.removeFields(BasicIndexUtils.ALL_TEXT_FIELD);
+       	String text = doc.getField(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD).stringValue();
+       	doc.removeFields(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD);
+       	text += " " + doc.getField(EntityIndexUtils.FILENAME_FIELD).stringValue();
+       	text += " " + doc.getField(EntityIndexUtils.MODIFICATION_NAME_FIELD).stringValue();
+       	text += " " + doc.getField(EntityIndexUtils.CREATOR_NAME_FIELD).stringValue();
+       	Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
+       	doc.add(allText);
+       	return doc;
+    }
     public static void addFileUnique(Document doc, boolean unique) {
        	Field uniqueField = new Field(FILE_UNIQUE_FIELD, Boolean.toString(unique), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(uniqueField);     	

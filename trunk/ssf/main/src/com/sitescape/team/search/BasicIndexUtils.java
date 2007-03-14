@@ -36,6 +36,7 @@ public class BasicIndexUtils {
     public static final String DOC_TYPE_FIELD = "_docType";
     public static final String THIS_CLASS_FIELD = "_class";
     public static final String ALL_TEXT_FIELD = "_allText";
+    public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
     public static final String READ_ACL_FIELD = "_readAcl";
     public static final String ENTRY_ACL_FIELD = "_entryAcl";
     public static final String FOLDER_ACL_FIELD = "_folderAcl";
@@ -136,8 +137,10 @@ public class BasicIndexUtils {
 	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.THIS_CLASS_FIELD);	  
 	    return classField.stringValue();
     }
-    public static  void addAllText(Document doc, String text) {
-        doc.add(allTextField(text));
+    
+    public static  void addFileContents(Document doc, String text) {
+    	Field contents = new Field(TEMP_FILE_CONTENTS_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
+        doc.add(contents);
     }
     
     public static  Field allTextField(String text) {

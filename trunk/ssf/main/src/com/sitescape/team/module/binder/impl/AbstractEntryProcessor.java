@@ -1370,6 +1370,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	try {
         		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, fui, null);
            		// Register the index document for indexing.
+        		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
         		docs.add(indexDoc);
 	        } catch (Exception ex) {
 		       		//log error but continue
