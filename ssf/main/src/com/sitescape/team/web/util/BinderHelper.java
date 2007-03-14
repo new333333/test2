@@ -869,6 +869,7 @@ public class BinderHelper {
 						entry.put(WebKeys.ENTRY_ATTACHMENTS, att);
 						entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
 						entries.remove(i);
+						count--;
 						break;
 					}
 				}
@@ -893,6 +894,7 @@ public class BinderHelper {
 					    attachments.add(att);	
 						entry.put(WebKeys.ENTRY_ATTACHMENTS, attachments);
 						entries.remove(count);
+						count--;
 						break;
 					}
 				}

@@ -455,6 +455,22 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		</td>
 	</tr>
 	
+<c:if test="${!empty entry1._attachments}"> 
+	<tr>
+		<td>
+			<table width="100%">
+			<c:forEach var="attachment" items="${entry1._attachments}">
+			<tr>
+				<td>
+					attachment: ${attachment._fileName}
+				</td>
+			</tr>
+			</c:forEach>
+			</table>
+		</td>
+	</tr>
+</c:if>
+	
 	<tr>
 		<td><div class="ss_line"></div></td>
 	</tr>
