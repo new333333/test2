@@ -97,6 +97,7 @@ public class ImageOpenOfficeConverter
 	{
 		FileInputStream is = null;
 		FileOutputStream os = null;
+		ByteArrayOutputStream baos = null;
 		byte[] inputData = null;
 		File ifile = null,
 			 ofile = null;
@@ -130,18 +131,15 @@ public class ImageOpenOfficeConverter
 				is.read(inputData);			
 			}
 			
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	
+			baos = new ByteArrayOutputStream();
 			if (maxHeight == 0) {
 				Thumbnail.createThumbnail(inputData, baos, maxWidth);
 			} else {
 				Thumbnail.createThumbnail(inputData, baos, maxWidth, maxHeight);
 			}
 
-			if (!(ofp.toLowerCase().endsWith(".gif")
-			|| ofp.toLowerCase().endsWith(".jpg")
-			|| ofp.toLowerCase().endsWith(".jpeg")
-			|| ofp.toLowerCase().endsWith(".png")))
+			if (!(ofp.toLowerCase().endsWith(".jpg")
+			|| ofp.toLowerCase().endsWith(".jpeg")))
 				os = new FileOutputStream(ofp + IImageConverterManager.IMG_EXTENSION);
 			else
 				os = new FileOutputStream(ofp);
