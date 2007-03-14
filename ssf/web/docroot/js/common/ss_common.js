@@ -2594,33 +2594,67 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 }
 
 //Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType) {
-	if (!ss_baseBinderUrl || !ss_baseEntryUrl) return true;
-	return ss_dashboardPorletUrlSupport(ss_baseBinderUrl, ss_baseEntryUrl, binderId, entryId, entityType);
-}
+function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
+	alert(namespace)
+	var binderUrl = "";
+	var entryUrl = "";
+	//Try to find the base urls from this namespace or from the parent or the opener
+	try {
+		eval("binderUrl = ss_baseBinderUrl" + namespace)
+		eval("entryUrl = ss_baseEntryUrl" + namespace)
+	} catch(e) {alert('no base url');}
+	if (binderUrl == "" || entryUrl == "") {
+		try {
+			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
+			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
+		} catch(e) {alert('no parent base url');}
+	}
+	if (binderUrl == "" || entryUrl == "") {
+		try {
+			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
+			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
+		} catch(e) {alert('no opener base url');}
+	}
+	if (binderUrl == "" || entryUrl == "") {
+		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
+			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
+				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
+					binderUrl = self.opener.ss_baseBinderUrl;
+					entryUrl = self.opener.ss_baseEntryUrl;
+				}
+			} else {
+				binderUrl = self.parent.ss_baseBinderUrl;
+				entryUrl = self.parent.ss_baseEntryUrl;
+			}
+		} else {
+			binderUrl = ss_baseBinderUrl;
+			entryUrl = ss_baseEntryUrl;
+		}
+	}
+	if (binderUrl == "" || entryUrl == "") return true;
 
-function ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type) {
 	//Build a url to go to
 	var url;
-	if (type == 'folderEntry') {
+	if (entityType == 'folderEntry') {
 		url = ss_replaceSubStr(entryUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_entry');
-	} else if (type == 'user') {
+	} else if (entityType == 'user') {
 		url = ss_replaceSubStr(entryUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
-	} else if (type == 'folder') {
-		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+	} else if (entityType == 'folder') {
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_listing');	
-	} else if (type == 'workspace') {
-		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+	} else if (entityType == 'workspace') {
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');	
-	} else if (type == 'profiles') {
-		url = ss_replaceSubStr(folderUrl, "ssBinderIdPlaceHolder", binderId);
+	} else if (entityType == 'profiles') {
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
 	
+	alert(url)
 	self.location.href = url;
 	return false;
 }

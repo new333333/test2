@@ -20,6 +20,10 @@
 <c:if test="${!empty ssComponentId}">
 <c:set var="ssNamespace" value="${ssNamespace}_${ssComponentId}"/>
 </c:if>
+<c:set var="portletNamespace" value=""/>
+<ssf:ifnotadapter>
+<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
+</ssf:ifnotadapter>
 
 <c:set var="ss_divId" value="ss_searchResults_${ssNamespace}"/>
 <c:set var="ss_pageNumber" value="0"/>
@@ -29,8 +33,7 @@
 <script type="text/javascript">
 function ${ss_divId}_searchurl(binderId, entryId, type) {
 	//Build a url to go to
-	ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, binderId, entryId, type);
-	return false;
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
 }
 </script>
 

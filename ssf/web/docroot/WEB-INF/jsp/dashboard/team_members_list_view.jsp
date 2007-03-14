@@ -25,23 +25,16 @@
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
+<c:set var="portletNamespace" value=""/>
+<ssf:ifnotadapter>
+<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
+</ssf:ifnotadapter>
 
 <c:if test="${ssDashboard.scope == 'portlet'}">
 <%@ include file="/WEB-INF/jsp/dashboard/portletsupport.jsp" %>
 <script type="text/javascript">    	
 function ${ssNamespace}_user_url(binderId, entryId, type) {
-	//Build a url to go to
-	var entryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	var folderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/></portlet:renderURL>';
-	ss_dashboardPorletUrlSupport(folderUrl, entryUrl, binderId, entryId, type);
-	return false;
+	return ss_gotoPermalink(binderId, entryId, type, '${portletNamespace}');
 }
 </script>
 </c:if>

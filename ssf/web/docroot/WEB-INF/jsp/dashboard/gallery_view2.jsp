@@ -20,6 +20,10 @@
 <c:if test="${empty ssComponentId}">
 <c:set var="componentId" value="${ssDashboard.ssComponentId}" />
 </c:if>
+<c:set var="portletNamespace" value=""/>
+<ssf:ifnotadapter>
+<c:set var="portletNamespace" value="${renderResponse.namespace}"/>
+</ssf:ifnotadapter>
 
 <table><tr><td>
 <c:choose>
@@ -34,7 +38,6 @@
 <c:set var="resultCount" value="0"/>
 <c:forEach var="fileEntry" items="${ssDashboard.beans[componentId].ssSearchFormData.searchResults}" >
   <c:set var="resultCount" value="${resultCount + 1}"/>
-
   <c:if test="${not empty fileEntry._fileID}">
 
   <c:set var="hitCount" value="${hitCount + 1}"/>
@@ -48,7 +51,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>"
-		onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'user'}">
@@ -58,7 +61,7 @@
 			<ssf:param name="entityType" value="workspace" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}'); return false;">
+		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'group'}">
@@ -73,7 +76,7 @@
 		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
     	    <ssf:param name="newTab" value="1"/>
 			</ssf:url>" 
-		onClick="ss_dashboardPorletUrlSupport(ss_dashboardViewBinderUrl, ss_dashboardViewEntryUrl, '${fileEntry._docId}','', '${fileEntry._entityType}'); return false;">
+		onClick="return ss_gotoPermalink('${fileEntry._docId}','', '${fileEntry._entityType}', '${portletNamespace}');">
 
     </c:when>
  	</c:choose>
