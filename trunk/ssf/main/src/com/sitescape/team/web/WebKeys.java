@@ -369,7 +369,7 @@ public class WebKeys {
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
-    public static final String ENTRY_ATTACHMENTS="Attachments";
+    public static final String ENTRY_ATTACHMENTS="_attachments";
     public static final String ENTRY_ATTACHMENT_URL="ssEntryAttachmentURL";
     public static final String ENTRY_ATTACHMENT_ALLOW_EDIT="ssEntryAttachmentAllowEdit";
     public static final String ENTRY_ATTACHMENT_EDIT_TYPE_FOR_IE="ssEntryAttachmentEditTypeForIE";

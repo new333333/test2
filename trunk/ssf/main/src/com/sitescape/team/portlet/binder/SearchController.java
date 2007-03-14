@@ -333,6 +333,7 @@ public class SearchController extends AbstractBinderController {
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			//peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
 			entries = (List) entryMap.get(WebKeys.FOLDER_ENTRIES);
+			entries = BinderHelper.filterEntryAttachmentResults(entries);
 			//people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
 			
 			int intEntriesLength = entries.size();
