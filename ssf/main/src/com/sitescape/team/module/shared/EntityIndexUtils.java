@@ -4,7 +4,9 @@ import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
@@ -73,8 +76,10 @@ public class EntityIndexUtils {
     public static final String DESC_FIELD = "_desc";
     public static final String EVENT_FIELD = "_event";
     public static final String EVENT_FIELD_START_DATE = "StartDate";
-    public static final String EVENT_FIELD_END_DATE = "EndDate";
+    public static final String EVENT_FIELD_END_DATE = "EndDate";    
     public static final String EVENT_COUNT_FIELD = "_eventCount";
+    public static final String EVENT_FIELD_DATES = "_eventDates";
+    public static final String EVENT_FIELD_RECURRENCE_DATES = "RecurrenceDates";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
@@ -235,31 +240,71 @@ public class EntityIndexUtils {
 		Set keyset = customAttrs.keySet();
 		Iterator attIt = keyset.iterator();
 		// look through the custom attrs of this entry for any of type EVENT
+
+		Set entryEventsDates = new HashSet();
+
 		while (attIt.hasNext()) {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
 				// set the event name to event + count
+				Event event = (Event)att.getValue();
+				entryEventsDates.addAll(event.getAllEventDays());
+								
 				if (att.getValue() != null) {
 					eventName = new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 					doc.add(eventName);
 					count++;
 				}
+				doc.add(getRecurrenceDatesField(event));
 			}
-		}    	
+		}
+		
+		doc.add(getEntryEventDaysField(entryEventsDates));
+		
 		// Add event count field
     	Field eventCountField = new Field(EVENT_COUNT_FIELD, Integer.toString(count), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(eventCountField);
-  
     }
     
-    public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
+    
+	private static Field getEntryEventDaysField(Set dates) {
+		StringBuilder sb = new StringBuilder();
+		Iterator datesIt = dates.iterator();
+		while (datesIt.hasNext()) {
+			sb.append(DateTools.dateToString(((Calendar)datesIt.next()).getTime(), DateTools.Resolution.DAY));
+			sb.append(" ");
+		}
+
+		if (sb.length() > 0)
+			sb.deleteCharAt(sb.length() - 1);
+		
+		return new Field(EVENT_FIELD_DATES, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	}
+	
+	private static Field getRecurrenceDatesField(Event event) {
+		StringBuilder sb = new StringBuilder();
+		Iterator it = event.getAllRecurrenceDates().iterator();
+		while (it.hasNext()) {
+			Calendar[] eventDates = (Calendar[]) it.next();
+			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.SECOND));
+			sb.append(" ");
+			sb.append(DateTools.dateToString(eventDates[1].getTime(), DateTools.Resolution.SECOND));
+			sb.append(",");
+		}
+		if (sb.length() > 0)
+			sb.deleteCharAt(sb.length() - 1);
+
+		return new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_RECURRENCE_DATES, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	}
+	
+	public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
 		List atts = entry.getFileAttachments();
         for (int j = 0; j < atts.size(); j++) {
         	FileAttachment fa = (FileAttachment)atts.get(j);
         	addFileAttachmentUid(doc, fa);
         }
     }
-    
+        
     public static void addCommandDefinition(Document doc, DefinableEntity entry) {
         if (entry.getEntryDef() != null) {
         	Field cdefField = new Field(COMMAND_DEFINITION_FIELD, entry.getEntryDef().getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -342,24 +387,24 @@ public class EntityIndexUtils {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
     		//get principals given read access 
          	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
-         	// I'm not sure if putting together a long string value is more
-    		// efficient than processing multiple short strings... We will see.         	 
-         	StringBuffer pIds = new StringBuffer();
-    		for (Iterator i = ids.iterator(); i.hasNext();) {
-    			pIds.append(i.next()).append(" ");
-    		}
+		// I'm not sure if putting together a long string value is more
+		// efficient than processing multiple short strings... We will see.
+		StringBuffer pIds = new StringBuffer();
+		for (Iterator i = ids.iterator(); i.hasNext();) {
+			pIds.append(i.next()).append(" ");
+		}
        		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
        			//add all => folder check
        			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
        		}
-    		// Add the Entry_ACL field
-    		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-    		doc.add(entryAclField);
+		// Add the Entry_ACL field
+		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+		doc.add(entryAclField);
     		//add binder access
     		doc.add(getBinderAccess(binder));
-    		
+
     	} else addReadAccess(doc, binder);
-	}
+			}
 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
     	List pubTags = new ArrayList<Tag>();

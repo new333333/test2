@@ -1004,7 +1004,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	            while (flds.hasMoreElements()) {
 	            	fld = (Field)flds.nextElement();
 	            	//TODO This hack needs to go.
-	            	if (fld.name().toLowerCase().indexOf("date") > 0) {
+	            	if (isDateField(fld.name())) {
 	            		try {
 	            			ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
 	            		} catch (ParseException e) {ent.put(fld.name(),new Date());
@@ -1042,6 +1042,27 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return childEntries;
    }
  
+    
+    private boolean isDateField(String fieldName) {
+    	
+    	if (fieldName == null)
+    		return false;
+    	
+    	if (fieldName.equals(EntityIndexUtils.CREATION_DATE_FIELD))
+    		return true;
+    	
+    	if (fieldName.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD))
+    		return true;
+
+    	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_START_DATE))
+    		return true;
+
+    	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_END_DATE))
+    		return true;
+    	
+    	return false;
+    }
+    
     protected abstract String getEntryPrincipalField();
     
 
