@@ -10,8 +10,8 @@ public class MethodInvocationTraceInterceptor implements MethodInterceptor {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		if(logger.isInfoEnabled())
-			logger.info(invocation.toString());
+		if(logger.isDebugEnabled())
+			logger.debug(invocation.toString());
 		
 		return invocation.proceed();
 	}

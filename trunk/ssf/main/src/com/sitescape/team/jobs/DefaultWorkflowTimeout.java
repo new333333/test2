@@ -46,11 +46,13 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
     		boolean isDueDateInPast=true; 
     		while( (iter.hasNext()) && (isDueDateInPast)) {
     			Timer timer = (Timer) iter.next();
-    			logger.debug("found timer "+timer);
+    			if(logger.isDebugEnabled())
+    				logger.debug("found timer "+timer);
     			//Do work inside a transaction in the workflowModule
     			// if this timer is due
     			if (timer.isDue()) {
-    				logger.debug("executing timer '"+timer+"'");
+    				if(logger.isDebugEnabled())
+    					logger.debug("executing timer '"+timer+"'");
     				timers.add(new Long(timer.getId()));
  
     			} else { // this is the first timer that is not yet due
