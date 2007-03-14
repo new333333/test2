@@ -920,6 +920,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        
         // Add ancestry 
         EntityIndexUtils.addAncestry(indexDoc, entity);
+        
+        // Add attached file ids
+        EntityIndexUtils.addAttachedFileIds(indexDoc, entity);
  
         // Add data fields driven by the entry's definition object. 
         getDefinitionModule().getIndexFieldsForEntity(indexDoc, entity);
