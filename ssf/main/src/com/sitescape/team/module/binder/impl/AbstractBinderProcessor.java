@@ -697,6 +697,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	try {
         		indexDoc = buildIndexDocumentFromBinderFile(binder, fa, fui, tags);
            		// Register the index document for indexing.
+        		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
            		IndexSynchronizationManager.addDocument(indexDoc);
            	} catch (Exception ex) {
         		logger.error("Error index file for binder " + binder + " attachment" + fa + " " + ex.getLocalizedMessage());
@@ -850,7 +851,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addFileAttachmentName(indexDoc, fa.getFileItem().getName());        
         
         if(text != null)
-        	BasicIndexUtils.addAllText(indexDoc, text);
+        	BasicIndexUtils.addFileContents(indexDoc, text);
         
         // TBD Add the filetype and Extension
         //EntryIndexUtils.addFileType(indexDoc,tempFile);
@@ -861,8 +862,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         // Add the tags for this entry
         if (tags == null) tags =  getCoreDao().loadAllTagsByEntity(entity.getEntityIdentifier());
         EntityIndexUtils.addTags(indexDoc, entity, tags);
- 
-             
+   
         return indexDoc;
     }
     
