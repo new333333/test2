@@ -657,11 +657,13 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
     					}
     					timer.setDueDate( dueDate );
     					// save the updated timer in the database
-    					logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
+    					if(logger.isDebugEnabled())
+    						logger.debug("saving updated timer for repetition '"+timer+"' in '"+(dueDate.getTime()-System.currentTimeMillis())+"' millis");
     					schedulerSession.saveTimer(timer);
     				} else {
     					// 	delete this timer
-    					logger.debug("deleting timer '"+timer+"'");
+    					if(logger.isDebugEnabled())
+    						logger.debug("deleting timer '"+timer+"'");
     					schedulerSession.deleteTimer(timer);
     				}
 				} else {

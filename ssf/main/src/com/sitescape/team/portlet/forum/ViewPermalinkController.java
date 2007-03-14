@@ -64,8 +64,8 @@ public class ViewPermalinkController  extends SAbstractController {
  		
 		model.put(WebKeys.PERMALINK, url);
 			
-    	if(logger.isInfoEnabled()) {
-    		logger.info("Permalink followed: " + url);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Permalink followed: " + url);
     	}
 
     	return new ModelAndView("binder/view_permalink", model);

@@ -1167,9 +1167,9 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	// create Lucene query    	
     	Query soQuery = so.getQuery();
     	    	
-    	if(logger.isInfoEnabled()) {
-    		logger.info("Query is: " + qTree.asXML());
-    		logger.info("Query is: " + soQuery.toString());
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + qTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
     	}
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();

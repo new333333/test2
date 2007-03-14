@@ -422,7 +422,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					newEntries.remove(p.getName());
 					oldEntries.put(p,data);
 				}
-				logger.debug("Principal exists: " + p.getName());
+				if(logger.isDebugEnabled())
+					logger.debug("Principal exists: " + p.getName());
 			}
 			if (!newEntries.isEmpty() || !oldEntries.isEmpty()) {
 				//returns list of user objects

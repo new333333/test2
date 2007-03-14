@@ -883,7 +883,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, entryTags);
       				docs.add(indexDoc);
             		if (logger.isDebugEnabled())
-            			logger.info("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
+            			logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
        		        //Create separate documents one for each attached file and index them.
        				List atts = entry.getFileAttachments();
        		        for (int j = 0; j < atts.size(); j++) {
@@ -922,7 +922,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//make sure this gets out first
        	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         try {	            
-	        logger.info("Indexing (" + binder.getId().toString() + ") ");
+	        logger.info("Deleting index entries for binder (" + binder.getId().toString() + ") ");
 	        
 	        // Delete the document that's currently in the index.
 	        luceneSession.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
@@ -1173,9 +1173,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
-    	if(logger.isInfoEnabled()) {
-    		logger.info("Query is: " + queryTree.asXML());
-    		logger.info("Query is: " + soQuery.toString());
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
     	}
     	
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();

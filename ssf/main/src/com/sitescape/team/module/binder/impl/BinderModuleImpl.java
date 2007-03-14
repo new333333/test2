@@ -568,9 +568,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		    	
 		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
 		    	
-		    	if(logger.isInfoEnabled()) {
-		    		logger.info("Query is in executeSearchQuery: " + searchQuery.asXML());
-		    		logger.info("Query is in executeSearchQuery: " + soQuery.toString());
+		    	if(logger.isDebugEnabled()) {
+		    		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
+		    		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
 		    	}
 		    	
 		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();

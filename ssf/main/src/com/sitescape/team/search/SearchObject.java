@@ -26,7 +26,7 @@ public class SearchObject {//implements Serializable {
 		super();
 		//synchronized(SearchObject.class){
 		if (qp == null) {
-			logger.info("QueryParser instantiating new QP");
+			logger.debug("QueryParser instantiating new QP");
 			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 		}

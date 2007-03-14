@@ -37,7 +37,8 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 				ps.setBytes(paramIndex, null);
 			else 
 				setBlobAsBinaryStream(ps, paramIndex, new ByteArrayInputStream(content), content.length);
-			logger.debug(content != null ? "Set bytes for BLOB with length " + content.length :
+			if(logger.isDebugEnabled())
+				logger.debug(content != null ? "Set bytes for BLOB with length " + content.length :
 					"Set BLOB to null");
 		}
 
@@ -45,7 +46,8 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 				PreparedStatement ps, int paramIndex, InputStream binaryStream, int contentLength)
 				throws SQLException {
 			ps.setObject(paramIndex, binaryStream, Types.BLOB);
-			logger.debug(binaryStream != null ? "Set binary stream for BLOB with length " + contentLength :
+			if(logger.isDebugEnabled())
+				logger.debug(binaryStream != null ? "Set binary stream for BLOB with length " + contentLength :
 					"Set BLOB to null");
 		}
 
@@ -56,7 +58,8 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 				ps.setString(paramIndex, null);
 			else
 				setClobAsCharacterStream(ps, paramIndex, new StringReader(content), content.length());
-		    logger.debug(content != null ? "Set string for CLOB with length " + content.length() :
+			if(logger.isDebugEnabled())
+				logger.debug(content != null ? "Set string for CLOB with length " + content.length() :
 					"Set CLOB to null");
 		}
 
@@ -64,7 +67,8 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 				PreparedStatement ps, int paramIndex, InputStream asciiStream, int contentLength)
 		    throws SQLException {
 			ps.setAsciiStream(paramIndex, asciiStream, contentLength);
-			logger.debug(asciiStream != null ? "Set ASCII stream for CLOB with length " + contentLength :
+			if(logger.isDebugEnabled())
+				logger.debug(asciiStream != null ? "Set ASCII stream for CLOB with length " + contentLength :
 					"Set CLOB to null");
 		}
 
@@ -73,7 +77,8 @@ public class FrontbaseLobHandler extends DefaultLobHandler {
 				PreparedStatement ps, int paramIndex, Reader characterStream, int contentLength)
 		    throws SQLException {
 			ps.setCharacterStream(paramIndex, characterStream, contentLength);
-			logger.debug(characterStream != null ? "Set character stream for CLOB with length " + contentLength :
+			if(logger.isDebugEnabled())
+				logger.debug(characterStream != null ? "Set character stream for CLOB with length " + contentLength :
 					"Set CLOB to null");
 		}
 
