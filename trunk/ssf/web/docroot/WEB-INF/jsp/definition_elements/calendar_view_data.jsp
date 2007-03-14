@@ -26,7 +26,7 @@ var inputEvents = [<%--
             --%><jsp:useBean id="evim" type="java.util.Map" /><%--
             --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
             --%>
-  {eventId: "${evim.entry._docId}", day: ${i}, start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${evim.cal_duration}, title: "${evim.entry.title}", text: "${evim.cal_endtimestring} // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm z"/>  ", calsrc: "cal1",
+  {eventId: "${evim.eventid}", day: ${i}, start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${evim.cal_duration}, title: "${evim.entry.title}", text: "${evim.cal_endtimestring} // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm z"/>  ", calsrc: "cal1",
    viewHref: "<ssf:url adapter="<%= useAdaptor %>" portletName="ss_forum" folderId="${ssFolder.id}" action="view_folder_entry" entryId="<%= e.get("_docId").toString() %>" actionUrl="true" />",
    viewOnClick: "ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');return false;"},<%--
           --%></c:forEach><% // end of events within a single time slot %><%--
