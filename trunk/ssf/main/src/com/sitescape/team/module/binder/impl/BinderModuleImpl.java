@@ -583,7 +583,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		        try {
 			        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
 		        }
-		        catch(Exception e) {}
+		        catch(Exception e) {
+		        	System.out.println("Exception:" + e);
+		        }
 		        finally {
 		            luceneSession.close();
 		        }
@@ -608,19 +610,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public ArrayList getSearchTags(String wordroot, String type) {
 		ArrayList tags = new ArrayList();
 		
-		// Top of query doc 
-		Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		//qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
-			
-    	//Create the query
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
-    	SearchObject so = qb.buildQuery(qTree);
-    	
+		User user = RequestContextHolder.getRequestContext().getUser();
+		SearchObject so = null;
+		if (!user.isSuper()) {		
+			// Top of query doc 
+			Document qTree = DocumentHelper.createDocument();
+			Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+			//qTreeRootElement.addElement(QueryBuilder.USERACL_ELEMENT);
+				
+	    	//Create the query
+	    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+			qb.buildQuery(qTree);
+		}
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
         try {
-	        tags = luceneSession.getTags(so.getQuery(), wordroot, type);
+	        tags = luceneSession.getTags(so!=null?so.getQuery():null, wordroot, type);
         }
         finally {
             luceneSession.close();
