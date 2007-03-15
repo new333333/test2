@@ -1183,6 +1183,25 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	}
        	}
+
+       	//See if there are event days
+       	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
+        	Element rootElement = queryTree.getRootElement();
+        	if (rootElement != null) {
+        		Element andBoolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+        		if (andBoolElement != null) {
+	        		Element orBoolElement = andBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+	        		Iterator it = ((List)options.get(ObjectKeys.SEARCH_EVENT_DAYS)).iterator();
+	        		while (it.hasNext()) {
+	        			String eventDay = (String)it.next();
+		    			Element field = orBoolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+		    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		    	    	child.setText(eventDay);
+	        		}
+        		}
+        	}
+       	}       	
        	//queryTree.asXML();
        	
        	//Create the Lucene query

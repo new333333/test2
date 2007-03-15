@@ -90,6 +90,80 @@ public class ListFolderController extends  SAbstractController {
 			NLT.get("calendar.december")
 		};
 	
+	private static class CalendarViewRangeDates {
+		
+		GregorianCalendar startViewCal = new GregorianCalendar();
+		
+		GregorianCalendar endViewCal = new GregorianCalendar();
+		
+		/* It's a full week before startViewCal */
+		GregorianCalendar startViewExtWindow = new GregorianCalendar();
+		
+		/* It's a full week after startViewCal */
+		GregorianCalendar endViewExtWindow = new GregorianCalendar();
+
+		public CalendarViewRangeDates(Date currentDate, String viewMode) {
+			super();
+			
+			// calculate the start and end of the range as defined by current date and current view
+			this.startViewCal = new GregorianCalendar();
+			// Allow the pruning of events to extend beyond the prescribed dates so we 
+			// can display a grid.
+			this.startViewExtWindow = new GregorianCalendar();
+			this.endViewExtWindow = new GregorianCalendar();
+
+			// this trick zeros the low order parts of the time
+			this.startViewCal.setTimeInMillis(0);
+			this.startViewCal.setTime(currentDate);
+			this.startViewExtWindow.setTime(startViewCal.getTime());
+			this.endViewCal = new GregorianCalendar();
+			this.endViewCal.setTimeInMillis(0);
+			this.endViewCal.setTime(currentDate);
+			this.endViewExtWindow.setTime(endViewCal.getTime());
+			
+			if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
+				this.endViewCal.add(Calendar.DATE, 1);
+			} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
+				this.startViewCal.set(Calendar.DAY_OF_WEEK, this.startViewCal.getFirstDayOfWeek());
+				this.startViewExtWindow.setTime(startViewCal.getTime());
+				this.endViewCal.setTime(this.startViewCal.getTime());
+				this.endViewCal.add(Calendar.DATE, 7);
+				this.endViewExtWindow.setTime(endViewCal.getTime());
+			} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
+				this.startViewCal.set(Calendar.DAY_OF_MONTH, 1);
+				this.startViewExtWindow.setTime(startViewCal.getTime());
+				this.startViewExtWindow.set(Calendar.DAY_OF_WEEK, this.startViewExtWindow.getFirstDayOfWeek());	
+				this.endViewCal.setTime(this.startViewCal.getTime());
+				this.endViewCal.add(Calendar.MONTH, 1);
+				this.endViewExtWindow.setTime(endViewCal.getTime());
+				if (this.endViewExtWindow.get(Calendar.DAY_OF_WEEK) != this.endViewExtWindow.getFirstDayOfWeek()) {
+					this.endViewExtWindow.set(Calendar.DAY_OF_WEEK, this.endViewExtWindow.getFirstDayOfWeek());
+					this.endViewExtWindow.add(Calendar.DATE, 7);
+				}
+			}
+			this.startViewCal.set(Calendar.HOUR_OF_DAY, 0);
+			this.startViewCal.set(Calendar.MINUTE, 0);
+			this.startViewCal.set(Calendar.SECOND, 0);
+			this.endViewCal.set(Calendar.HOUR_OF_DAY, 0);
+			this.endViewCal.set(Calendar.MINUTE, 0);
+			this.endViewCal.set(Calendar.SECOND, 0);
+		}
+
+		public List getExtViewDayDates() {
+			List result = new ArrayList();
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+			Calendar date = (Calendar)startViewExtWindow.clone();
+
+			while (date.getTimeInMillis() <= endViewExtWindow.getTimeInMillis()) {
+				result.add(formatter.format(date.getTime()));
+				date.add(Calendar.DAY_OF_MONTH, 1);
+			}
+			
+			return result;
+		}		
+	}
+	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
@@ -453,6 +527,7 @@ public class ListFolderController extends  SAbstractController {
 		
 		
 	}
+
 	protected Tabs initTabs(RenderRequest request, Binder binder) throws Exception {
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
@@ -619,8 +694,9 @@ public class ListFolderController extends  SAbstractController {
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
 		Map folderEntries;
 		Long folderId = folder.getId();
-		String forumId = folderId.toString();
-
+		
+		CalendarViewRangeDates calendarViewRangeDates = null;
+			
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			folderEntries = getFolderModule().getFullEntries(folderId, options);
 			//Get the WebDAV URLs
@@ -629,6 +705,19 @@ public class ListFolderController extends  SAbstractController {
 			//Get the list of all entries to build the archive list
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+				
+				String viewMode = ListFolderController.getCalendarViewMode(model);
+				model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
+
+				Date currentDate = ListFolderController.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+				
+				calendarViewRangeDates = new CalendarViewRangeDates(currentDate, viewMode);
+		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+			}
+			
 			folderEntries = getFolderModule().getEntries(folderId, options);
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				//Get the list of all entries to build the archive list
@@ -637,6 +726,32 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 
+		model.putAll(getSearchAndPagingModels(folderEntries, options));
+		
+		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		
+		//See if this folder is to be viewed as a calendar
+		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+			//This is a calendar view, so get the event beans
+			buildCaledarView(calendarViewRangeDates, folder, entries, model, req, response);
+		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+			//This is a blog view, so get the extra blog beans
+			getBlogEntries(folder, folderEntries, model, req, response);
+		}
+		
+		//Build the navigation beans
+		BinderHelper.buildNavigationLinkBeans(this, folder, model);
+		
+		String forumId = folderId.toString();
+		buildFolderToolbars(req, response, folder, forumId, model);
+		return BinderHelper.getViewListingJsp(this, getViewType(forumId));
+	}
+	
+
+	protected Map getSearchAndPagingModels(Map folderEntries, Map options) {
+		Map model = new HashMap();
+		
 		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
 		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
 		
@@ -670,26 +785,10 @@ public class ListFolderController extends  SAbstractController {
 		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
 		
 		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
-		
-		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-		model.put(WebKeys.FOLDER_ENTRIES, entries);
 		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-				
-		//See if this folder is to be viewed as a calendar
-		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-			//This is a calendar view, so get the event beans
-			buildCaledarView(folder, entries, model, req, response);
-		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//This is a blog view, so get the extra blog beans
-			getBlogEntries(folder, folderEntries, model, req, response);
-		}
 		
-		//Build the navigation beans
-		BinderHelper.buildNavigationLinkBeans(this, folder, model);
-		
-		buildFolderToolbars(req, response, folder, forumId, model);
-		return BinderHelper.getViewListingJsp(this, getViewType(forumId));
-	}
+		return model;
+	}	
 	
 	protected String getTeamMembers(Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
@@ -765,8 +864,18 @@ public class ListFolderController extends  SAbstractController {
 			//Get the list of all entries to build the archive list
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 		} else 	if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
+			CalendarViewRangeDates calendarViewRangeDates = null;
+			
+			String viewMode = ListFolderController.getCalendarViewMode(model);
+			model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
+
+			Date currentDate = ListFolderController.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+			
+			calendarViewRangeDates = new CalendarViewRangeDates(currentDate, viewMode);
+			
 			//This is a calendar view, so get the event beans
-			buildCaledarView(folder, entries, model, req, response);
+			buildCaledarView(calendarViewRangeDates, folder, entries, model, req, response);
 		}
 		
 	}
@@ -1422,79 +1531,48 @@ public class ListFolderController extends  SAbstractController {
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	protected static void buildCaledarView(Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
- 					
-		String viewMode = ListFolderController.getCalendarViewMode(model);
-		model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
-
-		Date currentDate = ListFolderController.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
-		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+	protected static void buildCaledarView(CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
+		Date currentDate = (Date)model.get(WebKeys.CALENDAR_CURRENT_DATE);
+		String viewMode = (String)model.get(WebKeys.CALENDAR_VIEWMODE);
 		
 		model.putAll(ListFolderController.getCalendarViewsURLs(folder.getId(), response));
 
-		getEvents(currentDate, viewMode, folder, entrylist, model, req, response);
+		getEvents(currentDate, viewMode, calendarViewRangeDates, folder, entrylist, model, req, response);
 	}
 	
-	private static void getEvents(Date currentDate, String viewMode, Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
-		// calculate the start and end of the range as defined by current date and current view
-		GregorianCalendar startViewCal = new GregorianCalendar();
-		// Allow the pruning of events to extend beyond the prescribed dates so we 
-		// can display a grid.
-		GregorianCalendar startViewExtWindow = new GregorianCalendar();
-		GregorianCalendar endViewExtWindow = new GregorianCalendar();
-
-		// this trick zeros the low order parts of the time
-		startViewCal.setTimeInMillis(0);
-		startViewCal.setTime(currentDate);
-		startViewExtWindow.setTime(startViewCal.getTime());
-		GregorianCalendar endViewCal = new GregorianCalendar();
-		endViewCal.setTimeInMillis(0);
-		endViewCal.setTime(currentDate);
-		endViewExtWindow.setTime(endViewCal.getTime());
+	 
+	
+	private static void getEvents(Date currentDate, String viewMode, CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
 		
-		if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
-			endViewCal.add(Calendar.DATE, 1);
-		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-			startViewCal.set(Calendar.DAY_OF_WEEK, startViewCal.getFirstDayOfWeek());
-			startViewExtWindow.setTime(startViewCal.getTime());
-			endViewCal.setTime(startViewCal.getTime());
-			endViewCal.add(Calendar.DATE, 7);
-			endViewExtWindow.setTime(endViewCal.getTime());
-		} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-			startViewCal.set(Calendar.DAY_OF_MONTH, 1);
-			startViewExtWindow.setTime(startViewCal.getTime());
-			startViewExtWindow.set(Calendar.DAY_OF_WEEK, startViewExtWindow.getFirstDayOfWeek());	
-			endViewCal.setTime(startViewCal.getTime());
-			endViewCal.add(Calendar.MONTH, 1);
-			endViewExtWindow.setTime(endViewCal.getTime());
-			// I may only want to do this if the end of the month isn't a Sunday
-			endViewExtWindow.set(Calendar.DAY_OF_WEEK, endViewExtWindow.getFirstDayOfWeek());
-			endViewExtWindow.add(Calendar.DATE, 7);			
-		}
-		startViewCal.set(Calendar.HOUR_OF_DAY, 0);
-		startViewCal.set(Calendar.MINUTE, 0);
-		startViewCal.set(Calendar.SECOND, 0);
-		endViewCal.set(Calendar.HOUR_OF_DAY, 0);
-		endViewCal.set(Calendar.MINUTE, 0);
-		endViewCal.set(Calendar.SECOND, 0);
+		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, calendarViewRangeDates.startViewCal.getTime());
+		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, calendarViewRangeDates.endViewCal.getTime());
 		
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, startViewCal.getTime());
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, endViewCal.getTime());
-		
-		Map calendarEventDates = getCalendarEventDates(entrylist, startViewExtWindow, endViewExtWindow);
+		Map calendarEventDates = getCalendarEvents(entrylist, calendarViewRangeDates.startViewExtWindow, calendarViewRangeDates.endViewExtWindow);
 		model.put(WebKeys.CALENDAR_EVENTDATES, calendarEventDates);
 				
-		GregorianCalendar endDateViewCal = endViewCal;
-				
+		GregorianCalendar endDateViewCal = calendarViewRangeDates.endViewCal;
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-			endDateViewCal = endViewExtWindow;
+			endDateViewCal = calendarViewRangeDates.endViewExtWindow;
 		} // else WEEK or DAY		
 		
-		if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK) ||
-				viewMode.equals(WebKeys.CALENDAR_VIEW_DAY) ||
-				viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-			getCalendarViewBean(folder, startViewCal, endDateViewCal, response, calendarEventDates, viewMode, model);
+		if (isCalandarViewMode(viewMode)) {
+			getCalendarViewBean(folder, calendarViewRangeDates.startViewCal, endDateViewCal, response, calendarEventDates, viewMode, model);
 		}
+	}
+	
+	/**
+	 * Is day, week or month view mode?
+	 * 
+	 * @param viewMode
+	 * @return
+	 */
+	private static boolean isCalandarViewMode(String viewMode) {
+		return viewMode != null && 
+				(		
+				viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK) ||
+				viewMode.equals(WebKeys.CALENDAR_VIEW_DAY) ||
+				viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)
+				);
 	}
 	
 	/*
@@ -1506,7 +1584,7 @@ public class ListFolderController extends  SAbstractController {
 	 * 
 	 * Entry modifications are also added as events (start date = modification date).
 	 */
-	private static Map getCalendarEventDates(List entrylist, GregorianCalendar startViewDate, GregorianCalendar endViewDate) {
+	private static Map getCalendarEvents(List entrylist, GregorianCalendar startViewDate, GregorianCalendar endViewDate) {
 		
 		long startMilis = startViewDate.getTime().getTime();
 		long endMilis = endViewDate.getTime().getTime();
@@ -1561,7 +1639,7 @@ public class ListFolderController extends  SAbstractController {
 			for (int j = 0; j < count; j++) {
 				String name = (String)e.get(EntityIndexUtils.EVENT_FIELD + j);
 				
-				String recurrenceDatesField = (String)e.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_RECURRENCE_DATES);
+				String recurrenceDatesField = (String)e.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
 				if (recurrenceDatesField != null) {
 					String[] recurrenceDates = recurrenceDatesField.split(",");
 					for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {

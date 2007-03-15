@@ -268,7 +268,7 @@ var ss_cal_Grid = {
         while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 
 
-        for (var x = 0; x < 35; x++) {
+        for (var x = 0; x < ticks.length; x++) {// 35 is not enougth: 1 Sep 2007 is last day of week, so there are: 6 + 30 + 6 = 42 days
             var d = (x % 7);
             var w = Math.floor(x / 7);
             var badge = document.createElement("div");
