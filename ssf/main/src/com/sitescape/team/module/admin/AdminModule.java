@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.jobs.ScheduleInfo;
@@ -22,7 +24,7 @@ public interface AdminModule {
 
     public Long addBinderFromTemplate(Long configId, Long parentBinderId, String title, String name) throws AccessControlException, WriteFilesException;
     public TemplateBinder addDefaultTemplate(int type);
-    public TemplateBinder addDefaultTemplate(int type, String viewStyle);
+	public Long addTemplate(Element config);
 	public Long addTemplate(int type, Map updates);
 	public Long addTemplate(Long parentId, Long srcConfigId);
 	public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException;

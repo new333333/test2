@@ -688,7 +688,24 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
              );
     }
  
- 
+    public Definition loadReservedDefinition(final String reservedId, final Long zoneId) {
+        return (Definition)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List results = session.createCriteria(Definition.class)
+                             		.add(Expression.eq("internalId", reservedId))
+                             		.add(Expression.eq("zoneId", zoneId))
+                             		.setCacheable(true)
+                             		.list();
+                        if (results.isEmpty()) {
+                            throw new NoDefinitionByTheIdException(reservedId); 
+                        }
+                        return results.get(0);
+                    }
+                }
+             );
+   	
+    }
 	public Definition loadDefinition(String defId, Long zoneId) {
   		Definition def = (Definition)load(Definition.class, defId);
         if (def == null) {throw new NoDefinitionByTheIdException(defId);}

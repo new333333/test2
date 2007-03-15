@@ -33,6 +33,7 @@
     <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>
     <xsd:attribute name="replyStyle" type="xsd:string"/>
     <xsd:attribute name="databaseId" type="xsd:string"/>
+    <xsd:attribute name="internalId" type="xsd:string"/>
   </xsd:complexType>
 
   <xsd:complexType name="operationsType">

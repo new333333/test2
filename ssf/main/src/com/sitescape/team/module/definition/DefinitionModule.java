@@ -39,7 +39,6 @@ public interface DefinitionModule {
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException;
 	public Definition addDefaultDefinition(int type);
-	public Definition addDefaultDefinition(int type, String viewType);
 	public void deleteDefinition(String id);
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException;
 

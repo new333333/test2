@@ -7,10 +7,7 @@ package com.sitescape.team;
  *
  */
 public interface ObjectKeys {
-    /**
-     * Note: Maintain the symbols in alphabetical order. 
-     */
-	
+ 	
 	/**
 	 * reserved ids for reserved objects
 	 */
@@ -21,11 +18,6 @@ public interface ObjectKeys {
 	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
 	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
-	public static final String DEFAULT_FOLDER_BLOG_DEF="402883b90cc53079010cc539bf26000a";
-	public static final String DEFAULT_FOLDER_CALENDAR_DEF="402883b90cc53079010cc539bf26000c";
-	public static final String DEFAULT_FOLDER_WIKI_DEF="402883b90cc53079010cc539bf26000d";
-	public static final String DEFAULT_FOLDER_GUESTBOOK_DEF="402883b90cc53079010cc539bf26000e";
-	public static final String DEFAULT_FOLDER_PHOTO_DEF="402883b90cc53079010cc539bf26000f";
 
 	
 	public static final String DEFAULT_FOLDER_CONFIG="402883b90d0de1f3010d0df5582b0001";

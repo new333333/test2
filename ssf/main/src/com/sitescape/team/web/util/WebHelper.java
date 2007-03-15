@@ -566,6 +566,7 @@ public class WebHelper {
 	
 	//Routine to compute a normalized title
 	public static String getNormalizedTitle(String title) {
+		if (title == null) return null;
         //compute normalized title
 		//Start by removing all quoted characters (e.g., &QUOT;)
 		Pattern p1 = Pattern.compile("(\\&[^;]*;)");
