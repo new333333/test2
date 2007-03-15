@@ -301,7 +301,7 @@ public class LocalLuceneSession implements LuceneSession {
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
 	 * 
-	 * @param query
+	 * @param query can be null for superuser
 	 * @param tag
 	 * @param type 
 	 * @return
