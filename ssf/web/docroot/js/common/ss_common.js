@@ -2595,7 +2595,6 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 
 //Routine to go to a permalink without actually using the permalink
 function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
-	alert(namespace)
 	var binderUrl = "";
 	var entryUrl = "";
 	//Try to find the base urls from this namespace or from the parent or the opener
@@ -2654,7 +2653,6 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
 	
-	alert(url)
 	self.location.href = url;
 	return false;
 }
