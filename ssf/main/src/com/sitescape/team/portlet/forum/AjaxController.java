@@ -212,7 +212,8 @@ public class AjaxController  extends SAbstractController {
 				op.equals(WebKeys.OPERATION_FIND_ENTRIES_SEARCH) || 
 				op.equals(WebKeys.OPERATION_FIND_TAG_SEARCH)) {
 			return ajaxFindUserSearch(request, response);
-
+		} else if (op.equals(WebKeys.OPERATION_FIND_TAG_WIDGET)) {
+			return ajaxGetTags(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
@@ -287,6 +288,21 @@ public class AjaxController  extends SAbstractController {
 
 		return ajaxReturn(request, response);
 	} 
+	
+	private ModelAndView ajaxGetTags(RenderRequest request, RenderResponse response) {
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String findType = PortletRequestUtils.getStringParameter(request, "findType", "tags");
+		String wordRoot = searchText;
+		int i = wordRoot.indexOf("*");
+		if (i > 0) wordRoot = wordRoot.substring(0, i);
+		
+		List tags = getBinderModule().getSearchTags(wordRoot, findType);
+		Map model = new HashMap();
+		model.put(WebKeys.TAGS, tags);
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/find_tags_widget", model);
+	}
 	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = null;

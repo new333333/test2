@@ -69,7 +69,9 @@ public class SearchObject {//implements Serializable {
 			Query retQ = qp.parse(queryString);
 			long endTime = System.currentTimeMillis();
 			return retQ;
-		} catch (ParseException pe){ return new BooleanQuery();}
+		} catch (ParseException pe){ 
+			System.out.println("Parser exception: "+pe+" queryString in parser: "+queryString);
+			return new BooleanQuery();}
 	}
 
 }
