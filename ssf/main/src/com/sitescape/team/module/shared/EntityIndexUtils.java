@@ -78,8 +78,8 @@ public class EntityIndexUtils {
     public static final String EVENT_FIELD_START_DATE = "StartDate";
     public static final String EVENT_FIELD_END_DATE = "EndDate";    
     public static final String EVENT_COUNT_FIELD = "_eventCount";
-    public static final String EVENT_FIELD_DATES = "_eventDates";
-    public static final String EVENT_FIELD_RECURRENCE_DATES = "RecurrenceDates";
+    public static final String EVENT_DATES_FIELD = "_eventDates";
+    public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
@@ -278,7 +278,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 		
-		return new Field(EVENT_FIELD_DATES, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		return new Field(EVENT_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.TOKENIZED);
 	}
 	
 	private static Field getRecurrenceDatesField(Event event) {
@@ -294,7 +294,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 
-		return new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_RECURRENCE_DATES, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		return new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	}
 	
 	public static void addAttachedFileIds(Document doc, DefinableEntity entry) {
