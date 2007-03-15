@@ -9,7 +9,10 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.portletadapter.taglib.PortletURLTag;
 import com.sitescape.team.web.WebKeys;
 
 /**
@@ -19,6 +22,8 @@ import com.sitescape.team.web.WebKeys;
  */
 public class EscapeJavaScript extends TagSupport {
 
+	protected static final Log logger = LogFactory.getLog(EscapeJavaScript.class);
+
 	private String value;
 
 	public int doStartTag() throws JspTagException {
@@ -27,7 +32,7 @@ public class EscapeJavaScript extends TagSupport {
 				pageContext.getOut().print(
 						StringEscapeUtils.escapeJavaScript(value));
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			this.value = null;
 		}

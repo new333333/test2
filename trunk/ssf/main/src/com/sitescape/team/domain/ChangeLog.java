@@ -5,6 +5,10 @@ import java.io.StringWriter;
 import java.util.Date;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.util.SimpleProfiler;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -35,6 +39,7 @@ public class ChangeLog {
 	public static final String ACCESSDELETE="deleteAccess";
 	public static final String ACCESSMODIFY="modifyAccess";
 
+	protected static final Log logger = LogFactory.getLog(ChangeLog.class);
 	
 	protected String id;
 	protected String operation;
@@ -213,7 +218,7 @@ public class ChangeLog {
     			xOut.close();
     			xmlString = baos.toString(); 
     		} catch (Exception fe) {
-    			fe.printStackTrace();
+    			logger.error(fe.getMessage(), fe);
     		}
     	}
     	return xmlString;
@@ -236,7 +241,7 @@ public class ChangeLog {
     			xOut.close();
     			xml = baos.toString(); 
     		} catch (Exception fe) {
-    			fe.printStackTrace();
+    			logger.error(fe.getMessage(), fe);
     		}
     	}
     	return xml;
@@ -252,7 +257,7 @@ public class ChangeLog {
     		document = xIn.read(ois);   
     		ois.close();
     	} catch (Exception fe) {
-    		fe.printStackTrace();
+    		logger.error(fe.getMessage(), fe);
     	}
         return document;
     }

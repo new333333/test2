@@ -4,6 +4,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
@@ -52,6 +54,8 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int LOCAL=2;
 	public static final int PERSONAL=3;
 	
+	protected static final Log logger = LogFactory.getLog(Definition.class);
+
 	public Definition() {
 		
 	}    
@@ -142,7 +146,7 @@ public class Definition extends PersistentTimestampObject  {
     		doc = xIn.read(ois);   
     		ois.close();
     	} catch (Exception fe) {
-    		fe.printStackTrace();
+    		logger.error(fe.getMessage(), fe);
     	}
         return doc;
     }
@@ -155,7 +159,7 @@ public class Definition extends PersistentTimestampObject  {
     		xOut.close();
     		xmlencoding = baos.toByteArray(); 
     	} catch (Exception fe) {
-    		fe.printStackTrace();
+    		logger.error(fe.getMessage(), fe);
     	}
     	this.doc = doc;
     }
