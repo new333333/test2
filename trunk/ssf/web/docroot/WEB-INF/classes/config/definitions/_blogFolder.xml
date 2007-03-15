@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_blogFolder" caption="__definition_default_folder_blog" type="5" nextId="11" definitionType="5" databaseId="402880e51065644f01106564cbb60001">
+  <item name="folderForm" caption="__folder_form" type="form" id="1">
+    <properties/>
+    <item name="binderName" caption="__binder_name" type="data" id="2">
+      <properties>
+        <property name="name" value="binderName">
+          <help>__help_binder_name</help>
+        </property>
+        <property name="caption" value="__folderName"/>
+      </properties>
+    </item>
+    <item name="title" caption="__title" type="data" id="3">
+      <properties>
+        <property name="name" value="title">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" value="__title"/>
+        <property name="width" value="60"/>
+        <property name="inline">
+          <help>__help_mark_as_inline</help>
+        </property>
+        <property name="generated">
+          <help>__help_mark_as_title</help>
+        </property>
+        <property name="itemSource">
+          <option name="ss_none" caption="__none"/>
+          <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" optionCaption="__file_items_from_the_entry_form_for_title"/>
+        </property>
+      </properties>
+    </item>
+    <item name="description" caption="__description" type="data" id="4">
+      <properties>
+        <property name="name" value="description">
+          <help>__help_data_name</help>
+        </property>
+        <property name="caption" value="__description"/>
+        <property name="height"/>
+        <property name="required">
+          <help>__help_required</help>
+        </property>
+      </properties>
+    </item>
+    <item name="folderIcon" caption="__icon" type="data" id="5">
+      <properties>
+        <property name="name" value="iconName"></property>
+        <property name="caption" value="__icon"/>
+      </properties>
+    </item>
+  </item>
+  <item name="forumView" caption="__folder_view" id="6">
+    <properties>
+      <property name="type" value="blog">
+        <option name="folder" caption="__folder_folder"/>
+        <option name="event" caption="__folder_event"/>
+        <option name="blog" caption="__folder_blog"/>
+        <help>__help_folder_view_type</help>
+      </property>
+    </properties>
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="7">
+      <properties>
+        <property name="caption" value="__dashboard_canvas"/>
+      </properties>
+    </item>
+    <item name="descriptionView" caption="__description" id="8">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="folderList" caption="__folder_listing" id="9">
+      <properties/>
+    </item>
+    <item name="viewEntry" caption="__view_entry_selectbox" id="10">
+      <properties/>
+    </item>
+  </item>
+  <properties/>
+</definition>

@@ -32,6 +32,7 @@ import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
@@ -107,15 +108,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Element root = doc.getRootElement();
 		String type = root.attributeValue("type");
     	checkAccess(Integer.valueOf(type), "addDefinition");
-    	return doAddDefinition(doc, null).getId();
+    	return doAddDefinition(doc).getId();
     }
-    protected Definition doAddDefinition(Document doc, String internalId) {
+    protected Definition doAddDefinition(Document doc) {
     	Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
 		String caption = root.attributeValue("caption");
 		String type = root.attributeValue("type");
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
+		String internalId = root.attributeValue("internalId", null);
+		if (!Validator.isNull(internalId)) {
+			//make sure doesn't exist
+			try {
+				getCoreDao().loadReservedDefinition(internalId, zoneId);
+				//alread exists
+				throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[]{internalId});
+			} catch (NoDefinitionByTheIdException nd) {}
+			
+		}
 		Definition def=null;
 		if (Validator.isNull(id)) {
 			//doesn't have an id, so generate one
@@ -402,9 +413,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	 * @return
 	 */
 	public Definition addDefaultDefinition(int type) {
-		return addDefaultDefinition(type, null);
-	}
-	public Definition addDefaultDefinition(int type, String viewType) {
 		// no access needed, just fills indefaults
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String definitionTitle=null;
@@ -412,57 +420,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		String definitionName=null;
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
-				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) {
-					List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_BLOG_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder_blog";
-					definitionName="Blog folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_BLOG_DEF;
-					break;
-					
-				} else if (Definition.VIEW_STYLE_WIKI.equals(viewType)) {
-					List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_WIKI_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder_wiki";
-					definitionName="Wiki folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_WIKI_DEF;
-					break;
-				} else if (Definition.VIEW_STYLE_CALENDAR.equals(viewType)) {
-					List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CALENDAR_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder_calendar";
-					definitionName="Calendar folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_CALENDAR_DEF;
-					break;
-				} else if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) {
-					List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_PHOTO_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder_photo";
-					definitionName="Photo album folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_PHOTO_DEF;
-					break;
-				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
-					List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder_guestbook";
-					definitionName="Guestbook folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_DEF;
-					break;
-				} else {
-					List result = getCoreDao().loadObjects(Definition.class, 
+				List result = getCoreDao().loadObjects(Definition.class, 
 							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (Definition)result.get(0);
-					definitionTitle = "__definition_default_folder";
-					definitionName="Discussion folder";
-					internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
-					break;
-				}
- 
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				definitionTitle = "__definition_default_folder";
+				definitionName="_discussionFolder";
+				internalId = ObjectKeys.DEFAULT_FOLDER_DEF;
+				break; 
 			}
 			case Definition.FOLDER_ENTRY: {
 				List result = getCoreDao().loadObjects(Definition.class, 
@@ -470,7 +434,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder_entry";
 				internalId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
-				definitionName="Folder entry";
+				definitionName="_discussionEntry";
 				break;
 			}
 			case Definition.WORKSPACE_VIEW: {
@@ -522,11 +486,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
-		if (Validator.isNotNull(viewType)) {
-			Element element = (Element)doc.getRootElement().selectSingleNode(".//item[@name='forumView']/properties/property[@name='type']");
-			element.addAttribute("value", viewType);			
-		}
-		return doAddDefinition(doc, internalId);
+		doc.getRootElement().addAttribute("internalId", internalId);
+		return doAddDefinition(doc);
 	}
 	
 /*

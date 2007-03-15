@@ -1,11 +1,16 @@
 package com.sitescape.team.module.zone.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.dom4j.Document;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -35,7 +40,10 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SessionUtil;
+import com.sitescape.util.Validator;
 
 public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
@@ -112,8 +120,6 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        					"update com.sitescape.team.domain.User set internalId=null where " +
 	        					"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
 	        			RequestContextUtil.setThreadContext(superU);
-	        			//TODO: remove = just for development updates
-	        			addDefaultConfigs();
 	        			//adds user to profileDao cache
 	        			superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
 	        			//make sure posting agent and background user exist
@@ -152,26 +158,21 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
  		RequestContextHolder.clear();
  		
  	}
- 	private void addDefaultConfigs() {
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);		
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
-		getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);		
-		getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW);
-		getAdminModule().addDefaultTemplate(Definition.USER_WORKSPACE_VIEW);
- 		
- 	}
+
 	public void addZone(final String name) {
 		
 		final String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
+		boolean closeSession = false;
 		try {
+ 			if (!SessionUtil.sessionActive()) {
+ 				SessionUtil.sessionStartup();	
+ 				closeSession = true;
+ 			}
+    		final Workspace top = new Workspace();
 	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
-	        		Workspace top = new Workspace();
 	        		top.setName(name);
 	        		//temporary until have read id
 	        		top.setZoneId(new Long(-1));
@@ -196,7 +197,8 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			
 	        		//indexing needs the user
 	        		RequestContextHolder.getRequestContext().setUser(user);
-	        		
+	        		importDefaultDefs(name);
+
 	        		//need request context
 	        		getDefinitionModule().setDefaultBinderDefinition(top);
 	        		getDefinitionModule().setDefaultBinderDefinition(profiles);
@@ -217,30 +219,67 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		addRoles(top, top, user, group);
 	        		addGlobalRoot(top, stamp);		
 	        		addTeamRoot(top, stamp);		
-	        		addDefaultConfigs();
 			
-	        		//use module so index synchronziation works correctly
+	        		//use module instead of processor directly so index synchronziation works correctly
+	        		//index flushes entries from session - don't make changes without reload
 	        		getBinderModule().indexTree(top.getId());
-	        		//add user workspace
-	        		getProfileModule().addUserWorkspace(user);
-
-	        		//do now, with request context set - won't have one if 
-	        		IndexSynchronizationManager.applyChanges();
-	        		//this will force the Ids to be cached
+	        		//this will force the Ids to be cached 
 	        		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
 	        		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
-	        		getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
+	        		//reload user as side effect after index flush
+	        		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
 	        		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
+
+	        		//add user workspace	        		
+	        		getProfileModule().addUserWorkspace(user);
+	        		//do now, with request context set - won't have one if here on zone startup
+	        		IndexSynchronizationManager.applyChanges();
 	        		return null;
 	        	}
 	        });
 		} finally  {
+			if (closeSession) SessionUtil.sessionStop();
 			//leave new context for indexing
 			RequestContextHolder.setRequestContext(oldCtx);
 		}
 
 	}
-	private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
+	private void importDefaultDefs(String zoneName) {
+		//default definitions stored in separate config file
+		String startupConfig = SZoneConfig.getString(zoneName, "property[@name='startupConfig']", "config/startup.xml");
+		SAXReader reader = new SAXReader(false);  
+		try {
+			Document cfg = reader.read(new ClassPathResource(startupConfig).getInputStream());
+			
+			List elements = cfg.getRootElement().selectNodes("definitionFile");
+			for (int i=0; i<elements.size(); ++i) {
+				Element element = (Element)elements.get(i);
+				String file = element.getTextTrim();
+				reader = new SAXReader(false);  
+				try {
+					Document doc = reader.read(new ClassPathResource(file).getInputStream());
+					getDefinitionModule().addDefinition(doc);
+					//TODO:if support multiple zones, database and replyIds may have to be changed
+				} catch (Exception ex) {
+	        	logger.error("Cannot read definition from file: " + file);
+				}
+			}
+			
+			//Now setup configurations
+			elements = cfg.getRootElement().selectNodes("template");
+			for (int i=0; i<elements.size(); ++i) {
+				Element element = (Element)elements.get(i);
+				try {
+					getAdminModule().addTemplate(element);
+				} catch (Exception ex) {
+					logger.error("Cannot add template:" + ex.getMessage());
+				}
+			}
+		} catch (Exception ex) {
+			logger.error("Cannot read startup configuration:" + ex.getMessage());
+		}
+	}
+    private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group
 		Group group = new Group();
 		group.setName("allUsers");

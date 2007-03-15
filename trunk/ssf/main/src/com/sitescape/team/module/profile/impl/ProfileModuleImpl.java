@@ -465,7 +465,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    			logger.error("Cannot create user workspace: ", wf);
    			FilterControls fc = new FilterControls();
    			fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, entry.getParentBinder());
-   			fc.add(ObjectKeys.FIELD_PRINCIPAL_NAME, entry.getName());
+   			fc.add(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
    			List results = getCoreDao().loadObjects(Workspace.class, fc);
    			if (!results.isEmpty()) return (Workspace)results.get(0);
    		}
@@ -490,7 +490,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         checkAccess(entry, "deleteEntry");
        	if (entry.isReserved()) 
     		throw new NotSupportedException(NLT.get("errorcode.group.reserved", new Object[]{entry.getName()}));       	
-        if (entry instanceof User) {
+/* Don't automatically delete user workspace - to dangerous
+ *        if (entry instanceof User) {
         	//delete workspace
         	User u = (User)entry;
         	Long wsId = u.getWorkspaceId();
@@ -499,7 +500,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
            		u.setWorkspaceId(null);       		
         	} catch (Exception ue) {}       	
         }
-        processor.deleteEntry(binder, entry); 
+*/
+       	processor.deleteEntry(binder, entry); 
      }
     
     //RO transaction

@@ -316,6 +316,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         );
 
     }
+    //used for login
     public User findUserByName(final String userName, String zoneName) {
     	final Binder top = getCoreDao().findTopWorkspace(zoneName);
         return (User)getHibernateTemplate().execute(
@@ -327,7 +328,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                         		.setLong(ParameterNames.ZONE_ID, top.getId())
                         		.setCacheable(true)
                         		.uniqueResult();
-                   if ((user == null) || !user.isActive()) {
+                   //query ensures user is not deleted and not disabled
+            	   if (user == null) {
                        throw new NoUserByTheNameException(userName); 
                    }
                    return user;

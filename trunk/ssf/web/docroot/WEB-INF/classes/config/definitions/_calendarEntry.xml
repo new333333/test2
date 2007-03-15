@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="25" definitionType="1" databaseId="402883b9114739b30111473c61fe0001">
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
+    <properties/>
+    <item name="entryFormForm" caption="__form" id="2">
+      <properties>
+        <property name="name" value="form1" setAttribute="formName"/>
+        <property name="type" value="form">
+          <option name="form" caption="__entry_form"/>
+          <option name="guestbook" caption="__entry_form_guestbook"/>
+          <help>__help_entry_view_type</help>
+        </property>
+      </properties>
+      <item name="title" caption="__title" type="data" id="3">
+        <properties>
+          <property name="name" value="title">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" value="__title"/>
+          <property name="width" value="60"/>
+          <property name="inline">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="generated">
+            <help>__help_mark_as_title</help>
+          </property>
+          <property name="itemSource">
+            <option name="ss_none" caption="__none"/>
+            <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" optionCaption="__file_items_from_the_entry_form_for_title"/>
+          </property>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" category="entryData" id="22">
+        <properties>
+          <property name="name" type="text" value="event"/>
+          <property name="caption" type="text" value="__calendar_event"/>
+          <property name="hasDuration" type="boolean" value="true"/>
+          <property name="hasRecurrence" type="boolean" value="true"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="description" caption="__description" type="data" id="4">
+        <properties>
+          <property name="name" value="description">
+            <help>__help_data_name</help>
+          </property>
+          <property name="caption" value="__description"/>
+          <property name="height"/>
+          <property name="required">
+            <help>__help_required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="attachFiles" caption="__attach_files" type="data" id="5">
+        <properties>
+          <property name="name" value="ss_attachFile"/>
+          <property name="caption"/>
+          <property name="width" value="60"/>
+          <property name="number"/>
+          <property name="storage">
+            <!-- 
+					IMPORTANT: Make sure that the following option list contains
+				    union of all repository names appearing in this definition. 
+				    Any file uploaded through one of the named element becomes
+				    visible through "attachFiles" type element. Therefore it is 
+				    illogical to display a list other than the full union. In
+				    the current version, the software is not capable of computing
+				    this master list dynamically. So it must be listed explicitly.
+				-->
+            <help>__help_storage_media</help>
+          </property>
+          <property name="hide"/>
+        </properties>
+      </item>
+      <item name="entryFormButtons" caption="__form_buttons" id="6">
+        <properties>
+          <property name="alignment">
+            <option name="left" caption="__left"/>
+            <option name="right" caption="__right"/>
+            <help>__help_form_button_alignment</help>
+          </property>
+        </properties>
+        <item name="okButton" caption="__ok_button" id="7">
+          <properties>
+            <property name="caption" value="__ok"/>
+            <property name="onClick"/>
+          </properties>
+        </item>
+        <item name="cancelButton" caption="__cancel_button" id="8">
+          <properties>
+            <property name="caption" value="__cancel"/>
+            <property name="onClick"/>
+          </properties>
+        </item>
+      </item>
+    </item>
+  </item>
+  <item name="entryView" caption="__entry_view_definition" id="9">
+    <properties>
+      <property name="type" value="entryView">
+        <option name="entryView" caption="__entry_view"/>
+        <option name="guestbook" caption="__entry_guestbook"/>
+        <help>__help_entry_view_type</help>
+      </property>
+    </properties>
+    <item name="titleView" caption="__title" id="10">
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="entrySignatureView" caption="__entry_signature" id="11">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
+    <item name="descriptionView" caption="__description" id="12">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryAttachments" caption="__entry_attachments" type="dataView" id="14">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="24" formItem="event">
+      <properties>
+        <property name="name" type="selectbox" value="event"/>
+        <property name="caption" type="text" value="__calendar_event"/>
+      </properties>
+    </item>
+  </item>
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
+    <properties>
+      <property name="type" value="blog">
+        <option name="blog" caption="__blog_view"/>
+        <option name="guestbook" caption="__entry_guestbook"/>
+        <help>__help_entry_view_type</help>
+      </property>
+    </properties>
+    <item name="titleBlogView" caption="__title" id="17">
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="23" formItem="event">
+      <properties>
+        <property name="name" type="selectbox" value="event"/>
+        <property name="caption" type="text" value="__calendar_event"/>
+      </properties>
+    </item>
+    <item name="descriptionBlogView" caption="__description" id="18">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" type="dataView" id="20">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+  </item>
+  <properties>
+    <property name="name" type="text" value="_calendarEntry"/>
+    <property name="caption" type="text" value="__calendar_entry"/>
+    <property name="icon" type="iconList" path="icons.entry" value="/icons/entry_table.gif"/>
+    <property name="replyStyle" type="replyStyle" value=""/>
+  </properties>
+</definition>

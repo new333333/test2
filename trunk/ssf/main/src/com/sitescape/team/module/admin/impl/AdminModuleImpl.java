@@ -67,6 +67,7 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -244,104 +245,26 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
                             + emailPostingClass + "'");
         }
     }
- 
+    //These should be created when the zone is created, but just incase provide minimum backup
 	public TemplateBinder addDefaultTemplate(int type) {
-		//noaccess check - should exist
-		return addDefaultTemplate(type, null);
-	}
-	public TemplateBinder addDefaultTemplate(int type, String viewType) {
-       	//This is called as a side effect to bootstrap
+	   	//This is called as a side effect to bootstrap
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		List defs = new ArrayList();
 		TemplateBinder config = new TemplateBinder();
 		Definition entryDef;
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
-				if (Definition.VIEW_STYLE_BLOG.equals(viewType)) {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder_blog");
-					config.setTemplateDescription("__configuration_default_folder_blog_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_BLOG_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				} else if (Definition.VIEW_STYLE_WIKI.equals(viewType)) {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_WIKI_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder_wiki");
-					config.setTemplateDescription("__configuration_default_folder_wiki_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_WIKI_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);					
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				} else if (Definition.VIEW_STYLE_CALENDAR.equals(viewType)) {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CALENDAR_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder_calendar");
-					config.setTemplateDescription("__configuration_default_folder_calendar_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CALENDAR_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				} else if (Definition.VIEW_STYLE_GUESTBOOK.equals(viewType)) {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder_guestbook");
-					config.setTemplateDescription("__configuration_default_folder_guestbook_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_GUESTBOOK_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_GUESTBOOK);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				} else if (Definition.VIEW_STYLE_PHOTO_ALBUM.equals(viewType)) {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder_photo");
-					config.setTemplateDescription("__configuration_default_folder_photo_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_PHOTO_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_PHOTO_ALBUM);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				} else {
-					List result = getCoreDao().loadObjects(TemplateBinder.class, 
+				List result = getCoreDao().loadObjects(TemplateBinder.class, 
 							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, zoneId, Integer.valueOf(type)}));
-					if (!result.isEmpty()) return (TemplateBinder)result.get(0);
-					config.setTemplateTitle("__configuration_default_folder");
-					config.setTemplateDescription("__configuration_default_folder_description");
-					config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CONFIG);
-					entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_DEFAULT);
-					config.setEntryDef(entryDef);
-					defs.add(entryDef);
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_CALENDAR));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_BLOG));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW,  Definition.VIEW_STYLE_WIKI));
-					defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
-					break;
-				}
+				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
+				config.setTemplateTitle("__configuration_default_folder");
+				config.setTemplateDescription("__configuration_default_folder_description");
+				config.setInternalId(ObjectKeys.DEFAULT_FOLDER_CONFIG);
+				entryDef = getDefinitionModule().addDefaultDefinition(Definition.FOLDER_VIEW);
+				config.setEntryDef(entryDef);
+				defs.add(entryDef);
+				defs.add(getDefinitionModule().addDefaultDefinition(Definition.FOLDER_ENTRY));
+				break;
 			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
@@ -382,7 +305,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (type == Definition.USER_WORKSPACE_VIEW) {
 			//get default folder definition
 			HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
-			TemplateBinder def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_DEFAULT);
+			TemplateBinder def = addDefaultTemplate(Definition.FOLDER_VIEW);
 			TemplateBinder newDef = new TemplateBinder(def);
 			copyBinderAttributes(def, newDef);
 			newDef.setCreation(stamp);
@@ -391,50 +314,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			config.addBinder(newDef);
 			
-			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_BLOG);
-			newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
-			newDef.setCreation(stamp);
-			newDef.setModification(stamp);
-			newDef.setFunctionMembershipInherited(true);
-			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
-			config.addBinder(newDef);
-			
-			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_WIKI);
-			newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
-			newDef.setCreation(stamp);
-			newDef.setModification(stamp);
-			newDef.setFunctionMembershipInherited(true);
-			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
-			config.addBinder(newDef);
-			
-			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_CALENDAR);
-			newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
-			newDef.setCreation(stamp);
-			newDef.setModification(stamp);
-			newDef.setFunctionMembershipInherited(true);
-			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
-			config.addBinder(newDef);
-
-			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_GUESTBOOK);
-			newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
-			newDef.setCreation(stamp);
-			newDef.setModification(stamp);
-			newDef.setFunctionMembershipInherited(true);
-			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
-			config.addBinder(newDef);
-			
-			def = addDefaultTemplate(Definition.FOLDER_VIEW, Definition.VIEW_STYLE_PHOTO_ALBUM);
-			newDef = new TemplateBinder(def);
-			copyBinderAttributes(def, newDef);
-			newDef.setCreation(stamp);
-			newDef.setModification(stamp);
-			newDef.setFunctionMembershipInherited(true);
-			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
-			config.addBinder(newDef);
 		}
 		return config;
 	 }
@@ -509,16 +388,100 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	//add top level template
 	 public Long addTemplate(int type, Map updates) {
 	    checkAccess("addTemplate");
-		TemplateBinder config = new TemplateBinder();
+		TemplateBinder template = new TemplateBinder();
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
-		config.setEntryDef(entryDef);
+		template.setEntryDef(entryDef);
 		List definitions = new ArrayList();
 		definitions.add(entryDef);
-		config.setDefinitionsInherited(false);
-		config.setDefinitions(definitions);
-		config.setFunctionMembershipInherited(true);
-		doAddTemplate(config, type, updates);
-	    return config.getId();
+		template.setDefinitionsInherited(false);
+		template.setDefinitions(definitions);
+		template.setFunctionMembershipInherited(true);
+		doAddTemplate(template, type, updates);
+	    return template.getId();
+	 }
+	 public Long addTemplate(Element config) {
+		 checkAccess("addTemplate");
+		 TemplateBinder template = new TemplateBinder();
+		 template.setDefinitionsInherited(false);
+		 template.setFunctionMembershipInherited(true);
+		 template.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+		 Integer type = Integer.valueOf(config.attributeValue("type"));
+		 template.setDefinitionType(type);
+		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		 template.setModification(template.getCreation());
+		 template.setName(getPropertyValue(config, "name"));
+		 template.setTemplateDescription(getPropertyValue(config, "templateDescription"));
+		 template.setTemplateTitle(getPropertyValue(config, "templateTitle"));
+		 template.setTitle(getPropertyValue(config, "title"));
+		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
+		 template.setDescription(getPropertyValue(config, "description"));
+		 String bVal = getPropertyValue(config, "library");
+		 if (!Validator.isNull(bVal)) {
+			 template.setLibrary(GetterUtil.get(bVal, false));
+		 }
+		 bVal = getPropertyValue(config, "uniqueTitles");
+		 if (!Validator.isNull(bVal)) {
+			 template.setUniqueTitles(GetterUtil.get(bVal, false));
+		 }	
+		 template.setPathName("/" + template.getTitle());
+		 
+		 String entryDefName = getPropertyValue(config, "entryDef");
+		 Definition def = null;
+		 if (Validator.isNotNull(entryDefName)) {
+			 FilterControls fc = new FilterControls();
+			 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+			 fc.add("name", entryDefName);
+			 fc.add("type", type);
+			 List results = getCoreDao().loadObjects(Definition.class, fc);
+			 if (!results.isEmpty()) {
+				 def = (Definition)results.get(0);
+			 }			 
+		 }
+		 if (def != null) template.setEntryDef(def);
+		 else template.setEntryDef(getDefinitionModule().addDefaultDefinition(type));
+		 List definitions = new ArrayList();
+		 //get default definitions for this template
+		 List nodes = config.selectNodes("./property[@name='definition']");
+		 if (nodes.isEmpty()) {
+			 template.setDefinitionsInherited(true);
+		 } else {
+			 for (int i=0; i<nodes.size(); ++i) {
+				 Element element = (Element)nodes.get(i);
+				 String name = element.getStringValue();
+				 if (Validator.isNull(name)) continue;
+				 FilterControls fc = new FilterControls();
+				 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+				 fc.add("name", name);
+				 List results = getCoreDao().loadObjects(Definition.class, fc);
+				 if (results.isEmpty()) continue;
+				 definitions.add(results.get(0));
+			 }
+			 template.setDefinitionsInherited(false);
+			 template.setDefinitions(definitions);
+		 }
+		 
+		 getCoreDao().save(template);
+		 //see if any child configs need to be copied
+		 nodes = config.selectNodes("./property[@name='template']");
+		 for (int i=0; i<nodes.size(); ++i) {
+			 Element element = (Element)nodes.get(i);
+			 String name = element.getStringValue();
+			 if (Validator.isNull(name)) continue;
+			 FilterControls fc = new FilterControls();
+			 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+			 fc.add(ObjectKeys.FIELD_BINDER_NAME, name);
+			 List results = getCoreDao().loadObjects(TemplateBinder.class, fc);
+			 if (results.isEmpty()) continue;
+			 TemplateBinder child = (TemplateBinder)results.get(0);
+			 addTemplate(template, child);
+		 }
+		 
+		 return template.getId();
+	 }
+	 private String getPropertyValue(Element element, String name) {
+		 Element variableEle = (Element)element.selectSingleNode("./property[@name='" + name + "']");
+		 if (variableEle == null) return null;
+		 return variableEle.getStringValue();   	
 	 }
 	 protected TemplateBinder doAddTemplate(TemplateBinder config, int type, Map updates) {
 		 config.setZoneId(RequestContextHolder.getRequestContext().getZoneId());

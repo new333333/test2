@@ -296,7 +296,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
            
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), true);        
+        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), false);        
     }
           
     //***********************************************************************************************************
