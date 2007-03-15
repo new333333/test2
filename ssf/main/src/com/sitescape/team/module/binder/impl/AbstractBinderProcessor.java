@@ -809,7 +809,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		{
 			// Most like conversion did not succeed, nothing client can do about this
 			// limitation of Software.
-			e.printStackTrace();
+			logger.error(e);
 		}
 		finally
 		{

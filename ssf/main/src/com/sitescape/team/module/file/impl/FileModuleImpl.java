@@ -650,7 +650,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 			if (fos != null)
@@ -661,7 +661,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}
@@ -720,7 +720,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 			if (fos != null)
@@ -731,7 +731,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 				}
 				catch(Exception e)
 				{
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 				}
 			}
 		}

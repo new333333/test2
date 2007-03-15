@@ -11,7 +11,12 @@ import javax.portlet.PortletConfig;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspTagException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public abstract class PortletURLTag extends ParamAncestorTagImpl {
+
+	protected static final Log logger = LogFactory.getLog(PortletURLTag.class);
 
 	private String _windowState;
 	private String _portletMode;
@@ -64,7 +69,7 @@ public abstract class PortletURLTag extends ParamAncestorTagImpl {
 			return EVAL_PAGE;
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new JspTagException(e.getMessage());
 		}
 		finally {

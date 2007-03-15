@@ -9,6 +9,8 @@ import javax.portlet.PortletContext;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -18,11 +20,14 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.context.ServletContextAware;
 
 import com.sitescape.team.SingletonViolationException;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.portletadapter.portlet.PortletConfigImpl;
 import com.sitescape.team.portletadapter.portlet.PortletContextImpl;
 
 public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 	DisposableBean {
+
+	protected static final Log logger = LogFactory.getLog(AdaptedPortlets.class);
 
 	private static AdaptedPortlets instance; // singleton instance
 	
@@ -77,7 +82,7 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
         try {
 			doc = reader.read(getServletContext().getResourceAsStream("/WEB-INF/portlet.xml"));
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 			throw new ServletException(e);
 		}
 
@@ -106,7 +111,7 @@ public class AdaptedPortlets implements ServletContextAware, InitializingBean,
 				try {
 					portlets.put(portletName, new PortletInfo(portletName, portletClassName, portletConfig, mimeTypes));
 				} catch (Exception e) {
-					e.printStackTrace();
+					logger.error(e.getMessage(), e);
 					throw new ServletException(e);
 				}
 			}
