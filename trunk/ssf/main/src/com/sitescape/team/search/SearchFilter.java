@@ -15,10 +15,12 @@ import com.sitescape.team.web.util.FilterHelper;
 
 public class SearchFilter {
 
-	private Document filter;
-	private Element sfRoot;
-	private Element currentFilterTerms = null;
+	protected Document filter;
+	protected Element sfRoot;
+	protected Element currentFilterTerms = null;
+
 	
+
 	private void addFilter(String field, String type, String searchTerm) {
 		if (currentFilterTerms == null) {
 			newCurrent();
@@ -52,9 +54,8 @@ public class SearchFilter {
 		} else if (tagsType != null && tagsType == FilterHelper.FilterTypePersonalTagSearch) {
 			addTermInCurrentFilter(tagsType, searchTerm);
 		} else {
-			// add both community and personal
-			addTermInCurrentFilter(FilterHelper.FilterTypeCommunityTagSearch, searchTerm);
-			addTermInCurrentFilter(FilterHelper.FilterTypePersonalTagSearch, searchTerm);
+			// add general
+			addTermInCurrentFilter(FilterHelper.FilterTypeTags, searchTerm);
 		}
 	}
 	
@@ -155,23 +156,23 @@ public class SearchFilter {
 		}
 	}
 	
-	public void addCommunityTagField (String tag) {
-		currentFilterTerms = sfRoot.addElement(QueryBuilder.FIELD_ELEMENT);
-		currentFilterTerms.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
-		Element child = currentFilterTerms.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(tag);
-	}
-	
-	public void addPersonalTagField (String tags) {
-		Element fieldTag = sfRoot.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
-	    String [] strTagArray = tags.split("\\s");
-	    for (int k = 0; k < strTagArray.length; k++) {
-	    	String strTag = strTagArray[k];
-	    	if (strTag.equals("")) continue;
-    		Element childTag = fieldTag.addElement(QueryBuilder.TAG_ELEMENT);
-    		childTag.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
-	    }
-	}
+//	public void addCommunityTagField (String tag) {
+//		currentFilterTerms = sfRoot.addElement(QueryBuilder.FIELD_ELEMENT);
+//		currentFilterTerms.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.TAG_FIELD);
+//		Element child = currentFilterTerms.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+//		child.setText(tag);
+//	}
+//	
+//	public void addPersonalTagField (String tags) {
+//		Element fieldTag = sfRoot.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
+//	    String [] strTagArray = tags.split("\\s");
+//	    for (int k = 0; k < strTagArray.length; k++) {
+//	    	String strTag = strTagArray[k];
+//	    	if (strTag.equals("")) continue;
+//    		Element childTag = fieldTag.addElement(QueryBuilder.TAG_ELEMENT);
+//    		childTag.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, strTag);
+//	    }
+//	}
 	
 	public void addPlacesFilter(String searchText) {
 		if (currentFilterTerms == null) {
@@ -203,8 +204,13 @@ public class SearchFilter {
 }
 	
 	
-	private void newCurrent() {
+	protected void newCurrent() {
 		currentFilterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
+	}
+	protected void checkCurrent() {
+		if (currentFilterTerms == null) {
+			newCurrent();
+		}
 	}
 	public SearchFilter() {
 		this(FilterHelper.FilterRootName);

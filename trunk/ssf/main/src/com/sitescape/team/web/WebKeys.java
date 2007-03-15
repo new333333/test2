@@ -121,6 +121,7 @@ public class WebKeys {
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
     public static final String ACTION_ADD_BINDER = "add_binder";
+    public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CONFIG_EMAIL="config_email";
  	public static final String ACTION_ADD_FOLDER_REPLY = "add_folder_reply";
@@ -195,6 +196,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
+	public static final String OPERATION_FIND_TAG_WIDGET = "get_tags_widget";	
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
