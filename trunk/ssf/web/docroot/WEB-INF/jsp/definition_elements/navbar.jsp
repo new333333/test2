@@ -436,4 +436,10 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 </div>
 <!-- End of favorites pane -->
 
+<a href="<portlet:actionURL windowState="maximized" portletMode="view">
+			<portlet:param name="action" value="advanced_search"/>
+			<portlet:param name="tabTitle" value="SEARCH FORM"/>
+			<portlet:param name="newTab" value="0"/>
+			</portlet:actionURL>" > ADVANCED SEARCH</a>
+
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
