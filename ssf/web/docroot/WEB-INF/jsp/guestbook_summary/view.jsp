@@ -17,12 +17,27 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <table class="ss_style" width="100%"><tr><td>
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder}">
-<a href="<portlet:renderURL><portlet:param 
+<span class="ss_normal">
+<c:if test="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.entityIdentifier.entityType == 'folder'}">
+  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="view_folder_listing"/><portlet:param 
+		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.id}"/></portlet:renderURL>">
+		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.title}</a> // 
+</c:if>
+<c:if test="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.entityIdentifier.entityType != 'folder'}">
+  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
+		name="action" value="view_ws_listing"/><portlet:param 
+		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.id}"/></portlet:renderURL>">
+		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.parentBinder.title}</a> // 
+</c:if>
+</span>
+<span class="ss_bold">
+<a href="<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="view_folder_listing"/><portlet:param 
 		name="binderId" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.id}"/></portlet:renderURL>">
 		${ssDashboard.beans[ssComponentId].ssSearchFormData.ssGuestbookBinder.title}</a>
+</span>
 </c:if>
 
 <br/><br/>

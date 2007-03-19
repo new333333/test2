@@ -22,9 +22,13 @@
 </c:if>
 
 <c:set var="wikiEntry" value="${ssDashboard.beans[componentId].wikiHomepageEntry}" />
+<c:if test="${empty wikiEntry}">
+  <span class="ss_light">--<ssf:nlt tag="entry.noWikiHomepageSet"/>--</span>
+</c:if>
+<c:if test="${!empty wikiEntry.title}">
 <div>
 <span class="ss_entryTitle">
-  <a style="text-decoration: none;" href="<ssf:url 
+  <a href="<ssf:url 
     folderId="${wikiEntry.parentFolder.id}" 
     action="view_folder_entry"
     entryId="${wikiEntry.id}">
@@ -43,5 +47,6 @@
  <span><ssf:markup type="view" entity="${wikiEntry}"><c:out 
    value="${wikiEntry.description.text}" escapeXml="false"/></ssf:markup></span>
 </div>
+</c:if>
 </c:if>
 
