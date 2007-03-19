@@ -620,7 +620,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				
 	    	//Create the query
 	    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
-			qb.buildQuery(qTree);
+			so = qb.buildQuery(qTree);
 		}
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
