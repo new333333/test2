@@ -112,7 +112,10 @@ public interface ObjectKeys {
     public static final String SEARCH_COMMUNITY_TAG = "searchCommunityTag";
     public static final String SEARCH_PERSONAL_TAG = "searchPersonalTag";
     public static final String SEARCH_TITLE = "searchTitle";
-
+    public static final String SEARCH_MODIFICATION_DATE_START = "modificationDateStart";
+    public static final String SEARCH_MODIFICATION_DATE_END = "modificationDateEnd";
+    
+    
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";
     
