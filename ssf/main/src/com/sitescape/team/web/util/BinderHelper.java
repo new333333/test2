@@ -839,38 +839,49 @@ public class BinderHelper {
 	// Walk the list of entries returned by the search engine.  If
 	// an entry has doctype=attachment then see if it's entry is
 	// already in the list, and add this attachment to it's map.
-	// if not, just leave the attachment in the list.
+	// if not, see if there is an attachment for the same entry
+	// already in the list.  If so, add this as an attachment to that 
+	// attachment.
 	//
 	// Note that if an entry was on this list, then a new key/value pair of
 	// (WebKeys.ENTRY_HAS_META_HIT, true) will be added to it's map.
 	//
 	// if attachments are found for an entry, then they will be taken off
-	// the entry list, and added to an list of attachments for that entry
+	// the entry list, and added to the list of attachments for that entry
 	// in the list. (key value - WebKeys.ENTRY_ATTACHMENTS
+	//
+	// if attachments are found, but not the entry they're associated
+	// with, then leave an attachment on the list, and if there are 
+	// mulitple attachments for the same entry, then the attachment
+	// will contain a map entry (WebKeys.ENTRY_ATTACHMENTS), which
+	// contains all the attachments for that entry.
 	public static List filterEntryAttachmentResults(List entries) {
 
 		String docId = null;
-		HashMap entriesFound = new HashMap();
 		for (int count = 0; count < entries.size(); count++) {
 			Map entry = (Map)entries.get(count);
 			String type = (String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD);
 			// if it's an entry, see if there's already an attachment in the list for it.
 			if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ENTRY)) {
 				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
-				boolean found = false;
 				int i = 0;
 				for (i=0; i < count; i++) {
 					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
 					if (d.equalsIgnoreCase(docId)) {
 						// if it's already in the list, then it's an attachment, 
 						// so insert ourselves in here, add the attachment to 
-						// the entry, and delete this entry from the list.
+						// the entry, and delete this attachment from the list.
 						Map att = (Map)entries.get(i);
-						entry.put(WebKeys.ENTRY_ATTACHMENTS, att);
+						// see if the attachment has other attachments added to it.
+						// if it does, then add those to this entry.
+						List attachments = (List)att.get(WebKeys.ENTRY_ATTACHMENTS);
+						if (attachments != null) 
+							entry.put(WebKeys.ENTRY_ATTACHMENTS, attachments);
+						else
+							entry.put(WebKeys.ENTRY_ATTACHMENTS, att);
 						entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
 						entries.remove(i);
 						count--;
-						break;
 					}
 				}
 				if (i == count || count == 1) {
@@ -878,21 +889,32 @@ public class BinderHelper {
 				}
 			} else if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
 				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
-				for (int i=0; i < count; i++) {
-					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
+				for (int i = 0; i < count; i++) {
+					String d = (String) ((Map) entries.get(i))
+							.get(EntityIndexUtils.DOCID_FIELD);
 					if (d.equalsIgnoreCase(docId)) {
-						// if it's already in the list, then it's an attachment, 
-						// so insert ourselves in here, add the attachment to 
-						// the entry, and delete this entry from the list.
-						Map att = (Map)entries.get(count);
-						entry = (Map)entries.get(i);
+						// if it's already in the list, then check if it's an
+						// entry. If it is an entry, then add this attachment to
+						// the entry, and delete this attachment from the list.
+						// if it's an attachment, then if the attachment already
+						// has an attachments map, add this to it. Otherwise,
+						// create the attachments map, and add the attachment, and this
+						// entry to it.
+						Map ent = (Map) entries.get(i);
+						String typ = (String) ent.get(BasicIndexUtils.DOC_TYPE_FIELD);
+
+						// entry = (Map)entries.get(count);
 						// see if this entry already has attachments
-						List attachments = (List)entry.get(WebKeys.ENTRY_ATTACHMENTS);
-						if (attachments == null) { 
+						List attachments = (List) ent.get(WebKeys.ENTRY_ATTACHMENTS);
+						if (attachments == null) {
 							attachments = new ArrayList();
 						}
-					    attachments.add(att);	
-						entry.put(WebKeys.ENTRY_ATTACHMENTS, attachments);
+						if (typ.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+							attachments.add(ent);
+						}
+						attachments.add(entry);
+						ent.put(WebKeys.ENTRY_ATTACHMENTS, attachments);
+					
 						entries.remove(count);
 						count--;
 						break;
