@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import javax.portlet.ActionRequest;
@@ -53,6 +54,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -92,31 +94,35 @@ public class ListFolderController extends  SAbstractController {
 	
 	private static class CalendarViewRangeDates {
 		
-		GregorianCalendar startViewCal = new GregorianCalendar();
+		Calendar startViewCal;
 		
-		GregorianCalendar endViewCal = new GregorianCalendar();
+		Calendar endViewCal;
 		
-		/* It's a full week before startViewCal */
-		GregorianCalendar startViewExtWindow = new GregorianCalendar();
+		/* starts on first day of the week */
+		Calendar startViewExtWindow;
 		
-		/* It's a full week after startViewCal */
-		GregorianCalendar endViewExtWindow = new GregorianCalendar();
+		/* ends on the last day of the week */
+		Calendar endViewExtWindow;
 
 		public CalendarViewRangeDates(Date currentDate, String viewMode) {
 			super();
 			
+			User user = RequestContextHolder.getRequestContext().getUser();
+			TimeZone timeZone = user.getTimeZone();
+			
 			// calculate the start and end of the range as defined by current date and current view
-			this.startViewCal = new GregorianCalendar();
+			this.startViewCal = new GregorianCalendar(timeZone);
+			this.endViewCal = new GregorianCalendar(timeZone);
+			
 			// Allow the pruning of events to extend beyond the prescribed dates so we 
 			// can display a grid.
-			this.startViewExtWindow = new GregorianCalendar();
-			this.endViewExtWindow = new GregorianCalendar();
+			this.startViewExtWindow = new GregorianCalendar(timeZone);
+			this.endViewExtWindow = new GregorianCalendar(timeZone);
 
 			// this trick zeros the low order parts of the time
 			this.startViewCal.setTimeInMillis(0);
 			this.startViewCal.setTime(currentDate);
-			this.startViewExtWindow.setTime(startViewCal.getTime());
-			this.endViewCal = new GregorianCalendar();
+			this.startViewExtWindow.setTime(startViewCal.getTime());			
 			this.endViewCal.setTimeInMillis(0);
 			this.endViewCal.setTime(currentDate);
 			this.endViewExtWindow.setTime(endViewCal.getTime());
@@ -141,27 +147,41 @@ public class ListFolderController extends  SAbstractController {
 					this.endViewExtWindow.add(Calendar.DATE, 7);
 				}
 			}
-			this.startViewCal.set(Calendar.HOUR_OF_DAY, 0);
-			this.startViewCal.set(Calendar.MINUTE, 0);
-			this.startViewCal.set(Calendar.SECOND, 0);
-			this.endViewCal.set(Calendar.HOUR_OF_DAY, 0);
-			this.endViewCal.set(Calendar.MINUTE, 0);
-			this.endViewCal.set(Calendar.SECOND, 0);
+			
+			setMidnight(startViewCal);
+			setMidnight(startViewExtWindow);
+			setMidnight(endViewCal);
+			setMidnight(endViewExtWindow);
+			
+			TimeZone zulu = TimeZone.getTimeZone("GMT");
+			this.startViewCal = CalendarHelper.convertToTimeZone(this.startViewCal, zulu);
+			this.endViewCal = CalendarHelper.convertToTimeZone(this.endViewCal, zulu);
+			this.startViewExtWindow = CalendarHelper.convertToTimeZone(this.startViewExtWindow, zulu);
+			this.endViewExtWindow = CalendarHelper.convertToTimeZone(this.endViewExtWindow, zulu);
+		}
+		
+		private void setMidnight(Calendar cal) {
+			cal.set(Calendar.HOUR_OF_DAY, 0);
+			cal.set(Calendar.MINUTE, 0);
+			cal.set(Calendar.SECOND, 0);
 		}
 
 		public List getExtViewDayDates() {
+			Calendar start = (Calendar)startViewExtWindow.clone();
+			Calendar end = (Calendar)endViewExtWindow.clone();
+						
 			List result = new ArrayList();
 			
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-			Calendar date = (Calendar)startViewExtWindow.clone();
+			Calendar date = start;
 
-			while (date.getTimeInMillis() <= endViewExtWindow.getTimeInMillis()) {
+			while (date.getTimeInMillis() <= end.getTimeInMillis()) {
 				result.add(formatter.format(date.getTime()));
 				date.add(Calendar.DAY_OF_MONTH, 1);
 			}
 			
 			return result;
-		}		
+		}
 	}
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -556,8 +576,7 @@ public class ListFolderController extends  SAbstractController {
 	}
 	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
 		//See if the url contains an ending date
-		Calendar cal = Calendar.getInstance();
-		cal.setTimeZone(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+		Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
 		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
 		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
 		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
@@ -716,6 +735,10 @@ public class ListFolderController extends  SAbstractController {
 				
 				calendarViewRangeDates = new CalendarViewRangeDates(currentDate, viewMode);
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+		       	
+    	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.startViewExtWindow.getTime()));
+		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.endViewExtWindow.getTime()));
 			}
 			
 			folderEntries = getFolderModule().getEntries(folderId, options);
@@ -1550,7 +1573,7 @@ public class ListFolderController extends  SAbstractController {
 		Map calendarEventDates = getCalendarEvents(entrylist, calendarViewRangeDates.startViewExtWindow, calendarViewRangeDates.endViewExtWindow);
 		model.put(WebKeys.CALENDAR_EVENTDATES, calendarEventDates);
 				
-		GregorianCalendar endDateViewCal = calendarViewRangeDates.endViewCal;
+		Calendar endDateViewCal = calendarViewRangeDates.endViewCal;
 		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
 			endDateViewCal = calendarViewRangeDates.endViewExtWindow;
 		} // else WEEK or DAY		
@@ -1584,12 +1607,16 @@ public class ListFolderController extends  SAbstractController {
 	 * 
 	 * Entry modifications are also added as events (start date = modification date).
 	 */
-	private static Map getCalendarEvents(List entrylist, GregorianCalendar startViewDate, GregorianCalendar endViewDate) {
+	private static Map getCalendarEvents(List entrylist, Calendar startViewDate, Calendar endViewDate) {
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		TimeZone timeZone = user.getTimeZone();
 		
 		long startMilis = startViewDate.getTime().getTime();
 		long endMilis = endViewDate.getTime().getTime();
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		sdf.setTimeZone(timeZone);
 		Map results = new HashMap();  
 		
 		Iterator entryIterator = entrylist.iterator();
@@ -1610,8 +1637,9 @@ public class ListFolderController extends  SAbstractController {
 				long thisDateMillis = modifyDate.getTime();
 				if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
 					Event ev = new Event();
-					GregorianCalendar gcal = new GregorianCalendar();
+					Calendar gcal = new GregorianCalendar();
 					gcal.setTime(modifyDate);
+					gcal = CalendarHelper.convertToTimeZone(gcal, timeZone);
 					ev.setDtStart(gcal);
 					ev.setDtEnd(gcal);				
 					String dateKey = sdf.format(modifyDate);
@@ -1655,11 +1683,16 @@ public class ListFolderController extends  SAbstractController {
 	            		}
 
 						Event ev = new Event();
-						GregorianCalendar gcal = new GregorianCalendar();
-						gcal.setTime(evStartDate);
-						ev.setDtStart(gcal);
-						gcal.setTime(evEndDate);
-						ev.setDtEnd(gcal);				
+						Calendar startCal = new GregorianCalendar();
+						startCal.setTime(evStartDate);
+						startCal = CalendarHelper.convertToTimeZone(startCal, timeZone);
+						ev.setDtStart(startCal);
+						
+						Calendar endCal = new GregorianCalendar();
+						endCal.setTime(evEndDate);
+						endCal = CalendarHelper.convertToTimeZone(endCal, timeZone);
+						ev.setDtEnd(endCal);
+
 						long thisDateMillis = evStartDate.getTime();
 						if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
 							String dateKey = sdf.format(evStartDate);
@@ -1802,7 +1835,14 @@ public class ListFolderController extends  SAbstractController {
 		String folderId = folder.getId().toString();
 		Map monthBean = new HashMap(2);
 		List dayheaders = new ArrayList();
-		GregorianCalendar loopCal = new GregorianCalendar();
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		TimeZone timeZone = user.getTimeZone();
+		
+		Calendar startUserLocalTime = CalendarHelper.convertToTimeZone(startCal, timeZone);
+		Calendar endUserLocalTime = CalendarHelper.convertToTimeZone(endCal, timeZone);
+		
+		Calendar loopCal = new GregorianCalendar(timeZone);
 		int j = loopCal.getFirstDayOfWeek();
 		for (int i=0; i< 7; i++) {
 			dayheaders.add(DateHelper.getDayAbbrevString(j));
@@ -1812,7 +1852,7 @@ public class ListFolderController extends  SAbstractController {
 			}
 		}
 		monthBean.put("dayHeaders",dayheaders);
-		loopCal.setTime(startCal.getTime());
+		loopCal.setTime(startUserLocalTime.getTime());
 		// Move calendar to the beginning of the week
 		loopCal.set(Calendar.DAY_OF_WEEK, loopCal.getFirstDayOfWeek());
 
@@ -1828,7 +1868,7 @@ public class ListFolderController extends  SAbstractController {
 		String urldatestring2;
 		PortletURL url;
 		// main loop, loops through days in the range, periodically recycling the week stuff
-		while (loopCal.getTime().getTime() < endCal.getTime().getTime()) {
+		while (loopCal.getTime().getTime() < endUserLocalTime.getTime().getTime()) {
 			urldatestring = urldatesdf.format(loopCal.getTime());
 			if (++dayCtr > 6) {
 				dayCtr = 0;
@@ -1840,6 +1880,7 @@ public class ListFolderController extends  SAbstractController {
 				weekMap = new HashMap();
 				// "w" is format pattern for week number in the year
 				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
+				sdfweeknum.setTimeZone(timeZone);
 				String wn = sdfweeknum.format(loopCal.getTime());
 				weekMap.put("weekNum", wn);
 
@@ -1868,9 +1909,10 @@ public class ListFolderController extends  SAbstractController {
 			
 			
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+			sdf.setTimeZone(timeZone);
 			String dateKey = sdf.format(loopCal.getTime());
 			// is this loop date today? We need to beanify that fact so that the calendar view can shade it
-			GregorianCalendar today = new GregorianCalendar();
+			GregorianCalendar today = new GregorianCalendar(timeZone);
 			if (sdf.format(today.getTime()).equals(dateKey)) {
 				daymap.put("isToday", new Boolean(true));
 			} else {
@@ -1890,6 +1932,7 @@ public class ListFolderController extends  SAbstractController {
 					HashMap e = (HashMap) thisMap.get("entry");
 					Event ev = (Event) thisMap.get("event");
 					SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+					sdf2.setTimeZone(timeZone);
 					// we build up the dataMap for this instance
 					dataMap.put("entry", e);
 					dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD) + "-" + dateKey + "-" + eventCounter);

@@ -398,7 +398,10 @@ public class Datepicker extends TagSupport {
 			  .append(prefix)
 			  .append("_hidden\" value=\"\" />\n");
 
-			TimeZone tz = TimeZone.getDefault();
+			
+			
+			
+			TimeZone tz = user.getTimeZone();
 			sb.append("<input type=\"hidden\" name=\"")
 			  .append(prefix)
 			  .append("_timezoneid\" value=\"")
@@ -422,6 +425,7 @@ public class Datepicker extends TagSupport {
         }
 	   return SKIP_BODY;
 	}
+  	
 	public int doEndTag () throws JspException {
 	    try {
 	        this.initDate = null;
