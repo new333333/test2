@@ -82,6 +82,7 @@ var ss_cal_Grid = {
     readOnly: false,
     dayGridDrawn: false,
     monthGridDrawn: false,
+    monthGridWeeks: 5,
     currentType: 'day',
 
     activateGrid: function(gridType) {
@@ -207,8 +208,12 @@ var ss_cal_Grid = {
         var container = dojo.byId("ss_cal_monthGrid");
         var vOffset = 0;
         var hOffset = 0;
+        this.monthGridWeeks = 5;
+        if (ticks.length > 35) {
+        	this.monthGridWeeks = 6;
+        }
         var vOffsetSize = (1.0 / 7) * 100.0;
-        var hOffsetSize = (1.0 / 5) * 100.0;
+        var hOffsetSize = (1.0 / this.monthGridWeeks) * 100.0;
         var t = 0;
         var header = dojo.byId("ss_cal_monthGridHeader");
 
@@ -221,7 +226,7 @@ var ss_cal_Grid = {
             todayMarker.style.display = "none";
             container.appendChild(todayMarker);
 
-            for (var x = 0; x < 6; x++) {
+            for (var x = 0; x < (this.monthGridWeeks + 1); x++) {
                 vOffset += vOffsetSize;
                 var vrule = document.createElement("div");
                 vrule.className = "ss_cal_monthVRule";
@@ -623,8 +628,18 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
 function ss_cal_drawMonthEventBlock(containerId, dayNumber, eventCount, eventList) {
     var container = dojo.byId(containerId);
     var vOffsetSize = (1.0 / 7) * 100.0;
-    var hOffsetSize = (1.0 / 5) * 100.0;
+    var hOffsetSize = (1.0 / ss_cal_Grid.monthGridWeeks) * 100.0;
     var resultDisplayIds = new Array();
+    var heightFactor = 19.05;
+    var heightFactor1 = 19.4;
+    var badgeOffset = 4.5;
+    var eventOffset = 5.18;
+    if (ss_cal_Grid.monthGridWeeks > 5) {
+        heightFactor = 25.1;
+        heightFactor1 = 25.5;
+	    badgeOffset = 4.2;
+	    eventOffset = 4.1;
+    }
 
     var eventHeight = 1;
     if (eventCount > 3) {
@@ -645,11 +660,11 @@ function ss_cal_drawMonthEventBlock(containerId, dayNumber, eventCount, eventLis
 
         ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
     
-        ebox.style.top = ((w * hOffsetSize) + 4.5 + (i * 5.18)) + "%";
+        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (i * eventOffset)) + "%";
         ebox.style.width = "13.79%";
 
         ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
-        ebox.style.height = ((eventHeight/19.05) * 100) + "%";
+        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
         var e = ss_cal_Events.eventData[eventList[i]];
         ebox.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
 		ebox.innerHTML = '<a href="'+e.viewHref+'" onClick="'+e.viewOnClick+'">'+e.title+'</a>';
@@ -665,12 +680,12 @@ function ss_cal_drawMonthEventBlock(containerId, dayNumber, eventCount, eventLis
 
         ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
     
-        ebox.style.top = ((w * hOffsetSize) + 4.5 + (2 * 5.18)) + "%";
+        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (2 * eventOffset)) + "%";
         ebox.style.width = "13.79%";
 
         ebox.setAttribute("id", "calevt" + ss_cal_Events.displayId);
         ebox.style.backgroundColor = "#BBBBBB";
-        ebox.style.height = ((eventHeight/19.4) * 100) + "%";
+        ebox.style.height = ((eventHeight/heightFactor1) * 100) + "%";
         ebox.innerHTML = "... plus " + (eventCount - 2) + " other events...";
 
         container.appendChild(ebox);
