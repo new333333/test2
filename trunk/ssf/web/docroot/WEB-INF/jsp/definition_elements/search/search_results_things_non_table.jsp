@@ -376,7 +376,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		      entryId="${entry1._docId}" 
 		      action="view_group"
 		      actionUrl="true" />" 
-		    onClick="alert('This is a group'); //ss_loadGroup(this, '${entry1._docId}');return false;">
+		    onClick="//ss_loadGroup(this, '${entry1._docId}');return false;">
 		  </c:if>
 		  
 		    <c:if test="${empty entry1.title}">
@@ -384,6 +384,12 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 		    </c:if>
 	    
 	    	<span class="ss_entryTitle ss_underline"><c:out value="${entry1.title}"/></span></a>
+			<c:if test="${entry1._entryHasMetaHit}">
+			  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasFoundInTheMetaData"/>]</span>
+			</c:if>
+			<c:if test="${empty entry1._entryHasMetaHit || !entry1._entryHasMetaHit}">
+			  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasNotFoundInTheMetaData"/>]</span>
+			</c:if>
 		</td>
 	</tr>
 	
@@ -462,7 +468,13 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 			<c:forEach var="attachment" items="${entry1._attachments}">
 			<tr>
 				<td>
-					attachment: ${attachment._fileName}
+					<span class="ss_fineprint"><ssf:nlt tag="search.textFoundInFile"/></span>
+					<span class="ss_bold"><a target="_blank" href="<ssf:url
+					    	webPath="viewFile"
+					    	binderId="${entry1._binderId}">
+			    	    	<ssf:param name="entryId" value="${attachment._docId}"/>
+			    	    	<ssf:param name="fileId" value="${attachment._fileID}"/>
+							</ssf:url>">${attachment._fileName}</a></span>
 				</td>
 			</tr>
 			</c:forEach>
