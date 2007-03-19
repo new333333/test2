@@ -116,6 +116,12 @@
 			    </c:if>
 		    
 		    	<span class="ss_entryTitle ss_underline"><c:out value="${fileEntry.title}"/></span></a>
+				<c:if test="${fileEntry._entryHasMetaHit}">
+				  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasFoundInTheMetaData"/>]</span>
+				</c:if>
+				<c:if test="${empty fileEntry._entryHasMetaHit || !fileEntry._entryHasMetaHit}">
+				  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasNotFoundInTheMetaData"/>]</span>
+				</c:if>
 			</td>
 		</tr>
 		
@@ -199,6 +205,28 @@
 				</table>
 			</td>
 		</tr>
+		
+		<c:if test="${!empty fileEntry._attachments}"> 
+			<tr>
+				<td>
+					<table width="100%">
+					<c:forEach var="attachment" items="${fileEntry._attachments}">
+					<tr>
+						<td>
+							<span class="ss_fineprint"><ssf:nlt tag="search.textFoundInFile"/></span>
+							<span class="ss_bold"><a target="_blank" href="<ssf:url
+							    	webPath="viewFile"
+							    	binderId="${fileEntry._binderId}">
+					    	    	<ssf:param name="entryId" value="${attachment._docId}"/>
+					    	    	<ssf:param name="fileId" value="${attachment._fileID}"/>
+									</ssf:url>">${attachment._fileName}</a></span>
+						</td>
+					</tr>
+					</c:forEach>
+					</table>
+				</td>
+			</tr>
+		</c:if>
 		
 		<tr>
 			<td><div class="ss_line"></div></td>

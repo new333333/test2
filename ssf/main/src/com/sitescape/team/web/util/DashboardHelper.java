@@ -776,6 +776,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}		
 		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+		entries = BinderHelper.filterEntryAttachmentResults(entries);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
 		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
