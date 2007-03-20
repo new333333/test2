@@ -1845,11 +1845,6 @@ div.ss_global_toolbar table td {
 	text-align: center;
 }
 
-div.ss_global_toolbar_logo {
-	background:url(<html:imagesPath/>icons/toolbar_icecorps_logo.gif) no-repeat center center;
-	padding-top: 25px;
-}
-
 div.ss_global_toolbar_show_portal {
 	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 }

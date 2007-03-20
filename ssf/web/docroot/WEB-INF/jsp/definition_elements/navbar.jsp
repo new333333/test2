@@ -86,7 +86,7 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
   <td width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span></td>
   <td width="75px"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span></td>
   <td width="75px" style="padding-left: 10px;"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span></td>
-  <td rowspan="2" align="center" width="100%"><div class="ss_global_toolbar_logo">&nbsp;</div></td>
+  <td rowspan="2" align="center" width="100%"></td>
   <td valign="top" rowspan="2" width="50px"><!-- Help button -->
 	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();"
       onMouseOver="this.style.cursor = 'pointer';">
