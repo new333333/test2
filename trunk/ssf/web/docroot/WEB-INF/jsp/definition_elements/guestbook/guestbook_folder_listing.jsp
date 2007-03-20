@@ -8,7 +8,7 @@
 		<jsp:useBean id="entry" type="java.util.HashMap" />
 		
 		<tr>
-			<td class="ss_miniBusinessCard">
+			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;">
 				<ssf:miniBusinessCard user="<%=(User)entry.get("_principal")%>"/> 
 			</td>
 			<td class="ss_guestbookContainer">

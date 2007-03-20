@@ -532,7 +532,28 @@ div.ss_replies div.ss_entryDescription {
 	margin-top: 3px;
 }
 
+.ss_blockquote_watermark {
+	background-color: transparent;
+	background-image: url(<html:imagesPath/>pics/watermark_blockquote_blue.gif);
+    background-position: top left;
+    background-repeat: no-repeat;
+    padding: 7px 6px 33px 20px;
+}
+.ss_blockquote_watermark_content {
+	margin-top: -25px;
+	padding-left: 10px;
+}
+
+div.ss_blockquote_start p, div.ss_blockquote_watermark_content p {
+	margin-top: 0px;
+}
       
+table.ss_guestbook {
+	background: #E8EFF7;
+	margin-bottom: 3px;
+	padding: 5px 0px 0px 5px;
+}
+
 /* Text styled as buttons */
 
 
@@ -2440,6 +2461,11 @@ div.ss_thumbnail_gallery {
     padding-bottom: 0px;
     padding-top: 0px;
 }
+
+div.ss_thumbnail_standalone {
+	padding: 0px;
+}
+
 div.ss_thumbnail_small div {
     width: 77px;
     height: 105px;
@@ -2458,6 +2484,19 @@ div.ss_thumbnail_small_no_text a img {
     filter:alpha(opacity=60);
 </c:if>
 }
+
+div.ss_thumbnail_standalone a img {
+    opacity: 1.0 !important;
+<c:if test="<%= isIE %>">
+    filter:alpha(opacity=100) !important;
+</c:if>
+}
+
+div.ss_thumbnail_standalone_small a:hover img {
+    border-color: blue;
+}
+
+
 div.ss_thumbnail_small_no_text a:hover img {
     border-color: blue;
     opacity: 1.0;
@@ -2469,7 +2508,7 @@ div.ss_thumbnail_small img {
     width: 75px;
     height: 75px;
 }
-div.ss_thumbnail_small_no_text img {
+div.ss_thumbnail_small_no_text img,  div.ss_thumbnail_standalone_small img {
     width: 50px;
     height: 50px;    
 }
@@ -2513,7 +2552,7 @@ div.ss_thumbnail_gallery div {
 	font-weight: bold;
 }
 	
-div.ss_thumbnail_gallery img {
+div.ss_thumbnail_gallery img, div.ss_thumbnail_standalone img {
     border-width: 1px;
     border-style: solid;
     border-color: ${ss_gallery_image_background_color};
@@ -3062,7 +3101,10 @@ div.ss_profile_contact_box {
 	background-repeat: no-repeat;
 }
 
-
+table.ss_minicard_interior {
+	background-color: white;
+	padding-right: 5px;
+}
 
 
 /*
