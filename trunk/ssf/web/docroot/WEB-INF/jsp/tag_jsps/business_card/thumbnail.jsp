@@ -19,9 +19,9 @@
 		    entryId="${photo_entry}" >
 		    <ssf:param name="fileId" value="${thumbnail.id}"/>
 		    <ssf:param name="viewType" value="thumbnail"/>
-		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<ssf:nlt tag="photo.none"/>');" />
+		    </ssf:url>" onerror="ss_buddyPhotoLoadError(this, '<img border=&quot;0&quot; src=&quot;<html:imagesPath/>pics/thumbnail_no_photo.jpg&quot;>');" />
 	</c:if>
 	<c:if test="${empty thumbnail}">
-		<ssf:nlt tag="photo.none"/>
+		<img border="0" src="<html:imagesPath/>pics/thumbnail_no_photo.jpg">
 	</c:if>
 </div></div>
