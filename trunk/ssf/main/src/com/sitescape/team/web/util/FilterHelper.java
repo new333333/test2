@@ -410,11 +410,11 @@ public class FilterHelper {
     		Element filterRoot = filter.getRootElement();
     		qTreeAndElement.add((Element)filterRoot.clone());
     		
-    		System.out.println("AND IN OPTIONS: "+filter.asXML());
+    		//System.out.println("AND IN OPTIONS: "+filter.asXML());
     	}
     	
-    	System.out.println("BEFORE CONVERT: "+searchFilter.asXML());
-    	System.out.println("AFTER CONVERT: "+qTree.asXML());
+    	//System.out.println("BEFORE CONVERT: "+searchFilter.asXML());
+    	//System.out.println("AFTER CONVERT: "+qTree.asXML());
     	return qTree;
 	}
    	
