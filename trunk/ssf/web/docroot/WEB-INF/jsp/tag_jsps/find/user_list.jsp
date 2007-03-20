@@ -9,18 +9,21 @@
 	String userListFormName = (String) request.getAttribute("form_name");
 	String userListElementName = (String) request.getAttribute("form_element");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
+	String clickRoutine = (String) request.getAttribute("clickRoutine");
+	String clickRoutineArgs = (String) request.getAttribute("clickRoutineArgs");
 %>
 <c:set var="iCount" value="<%= instanceCount %>"/>
 <c:set var="userList" value="<%= userList %>"/>
 <c:set var="binderId" value="<%= binderId %>"/>
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 
-
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 
 <table class="ss_style" cellspacing="2px" cellpadding="5px">
 <tr>
 <td valign="top">
+<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>'); <c:if test="${!empty userList}"> ss_addUserIdsToFormElement('${prefix}', <c:forEach var="item" items="${userList}" varStatus="status">'<c:out value="${item.id}"/>'<c:if test="${!status.last}">, </c:if></c:forEach>);</c:if>" />
+
   <ssf:find formName="" 
     formElement="searchText" 
     type="${list_type}"
@@ -56,6 +59,4 @@
 </tr>
 </table>
 <input type="hidden" name="<%= userListElementName %>"/>		
-
-<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>'); <c:if test="${!empty userList}"> ss_addUserIdsToFormElement('${prefix}', <c:forEach var="item" items="${userList}" varStatus="status">'<c:out value="${item.id}"/>'<c:if test="${!status.last}">, </c:if></c:forEach>);</c:if>" />
 

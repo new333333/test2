@@ -1555,9 +1555,12 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		String elementName = PortletRequestUtils.getStringParameter(request, "elementName", "");
 		String userList = PortletRequestUtils.getStringParameter(request, "userList", "");
+		String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "");
 		model.put(WebKeys.ELEMENT_NAME, elementName);
-		FindIdsHelper.getIdsAsLongSet((String)userList);
-		model.put(WebKeys.USER_LIST, userList);
+		model.put(WebKeys.PREFIX, prefix);
+		Set ids = FindIdsHelper.getIdsAsLongSet((String)userList);
+		model.put(WebKeys.USER_LIST, getProfileModule().getUsers(ids));
+		model.put(WebKeys.GROUP_LIST, getProfileModule().getGroups(ids));
 			
 		return new ModelAndView("definition_builder/user_group_select_ajax", model);
 	}

@@ -49,41 +49,11 @@ function ss_userListSelectItem(id, obj, prefix) {
 
 	ss_addUserIdsToFormElement(prefix, [id]);
 	
-	if (ss_findUsersClickRoutine[prefix] && window[ss_findUserClickRoutine[prefix]]) {
-		window[ss_findUserClickRoutine[prefix]]();
+	if (typeof ss_findUsersClickRoutine[prefix] != "undefined" && typeof window[ss_findUsersClickRoutine[prefix]] != "undefined") {
+		window[ss_findUsersClickRoutine[prefix]]();
 	}
 
 	afterAddUser(prefix, newLiObj);
-}
-
-//Routine called when item is selected, it takes as parameters user id and user name
-function ss_addUserToUserList(prefix, userId, userName) {
-	if (ss_userListSelectItemAlreadyAdded(prefix, userId))
-		return;
-	var ulObj = document.getElementById('added_' + prefix);
-	var newLiObj = document.createElement("li");
-	newLiObj.setAttribute("id", userId);
-	var newSpanObj = document.createElement("span");
-	newSpanObj.className = "ss_nowrap";
-	newSpanObj.appendChild(document.createTextNode(userName));
-	newLiObj.appendChild(newSpanObj);
-	var newAnchorObj = document.createElement("a");
-	newAnchorObj.setAttribute("href", "javascript: ;");
-	newAnchorObj.setAttribute("onClick", "ss_userListRemove('" + prefix + "', this);");
-	var newImgObj = document.createElement("img");
-	newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
-	newImgObj.setAttribute("border", "0");
-	newImgObj.style.paddingLeft = "5px";
-	newAnchorObj.appendChild(newImgObj);
-	newLiObj.appendChild(newAnchorObj);
-	ulObj.appendChild(newLiObj);
-	
-	ss_addUserIdsToFormElement(prefix, [userId]);
-	if (ss_findUsersClickRoutine[prefix] && window[ss_findUserClickRoutine[prefix]]) {
-		window[ss_findUserClickRoutine[prefix]]();
-	}	
-	
-	afterAddUser(prefix, newLiObj);	
 }
 
 // Check if user allready added to list, if yes highlight it
