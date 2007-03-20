@@ -12,7 +12,7 @@
 <c:if test="${empty property_maxHeight}">
   <c:set var="property_maxHeight" value="200" scope="request"/>
 </c:if>
-<table width="100%">
+<table width="99%">
 <tr>
 <td valign="top" style="width:${property_maxWidth + 30}px; >
 <div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div>
@@ -104,7 +104,7 @@
 </table>
 
 <c:if test="${pictureCount > 1}">
-<table width="100%">
+<table width="99%">
 <tr>
 <td align="left">
 <div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div><div class="ss_profileBox1" style="height:50px; padding: 3px;">

@@ -36,9 +36,9 @@
   <c:set var="hitCount" value="${hitCount + 1}"/>
 
 
-  <table cellspacing="0" cellpadding="0" width="100%">
+  <table class="ss_guestbook" cellspacing="0" cellpadding="0" width="100%">
 	  <tr> 	
-			<td class="ss_miniBusinessCard" valign="top">
+			<td class="ss_miniBusinessCard" style="padding-bottom: 5px;" valign="top">
 				<ssf:miniBusinessCard user="${fileEntry._principal}"/> 
 			</td>		 	
 			<td class="ss_guestbookContainer" valign="top">
@@ -52,9 +52,9 @@
 			</ssf:url>"
 			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
 		
-				<span class="ss_entryTitle">
+				<span class="ss_entryTitle ss_normalprint">
 					<c:if test="${empty fileEntry.title}">
-				    	<i>(no title)</i>
+				    	${fileEntry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
 				    </c:if>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
 				</span></a>
@@ -63,7 +63,8 @@
 					  timeStyle="short" dateStyle="short" /></span>
 				
 				<c:if test="${!empty fileEntry._desc}">
-				<div class="ss_entryContent ss_entryDescription">
+				<div class="ss_blockquote_watermark"></div>
+				<div class="ss_blockquote_watermark_content">
 					<span><ssf:markup type="view" binderId="${fileEntry._binderId}" 
 					  entryId="${fileEntry._docId}"><c:out value="${fileEntry._desc}" escapeXml="false"/></ssf:markup></span>
 				</div>
