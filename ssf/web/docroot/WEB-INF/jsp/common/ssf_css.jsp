@@ -1154,7 +1154,7 @@ table.ss_attachments_list hr.ss_att_divider {
 	height: 0px;
 }
 
-table.ss_attachments_list td.ss_att_meta {
+table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-size: 10px;
 	white-space: nowrap;
 	padding-left: 5px;
