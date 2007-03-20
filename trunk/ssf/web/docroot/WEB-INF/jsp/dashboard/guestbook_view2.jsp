@@ -58,7 +58,7 @@
 				    </c:if>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
 				</span></a>
-				<span class="ss_entrySignature"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
+				<span class="ss_att_meta"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
 				      value="${fileEntry._modificationDate}" type="both" 
 					  timeStyle="short" dateStyle="short" /></span>
 				
