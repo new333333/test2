@@ -3080,7 +3080,7 @@ div.ss_profile_info_frame {
   vertical-align: top;
 }
 
-div.ss_profile_photo_box {
+div.ss_profile_photo_box_empty {
     background-color: transparent !important;
 	background-image: url(<html:imagesPath/>pics/watermark_person.gif);
 	background-position: center;

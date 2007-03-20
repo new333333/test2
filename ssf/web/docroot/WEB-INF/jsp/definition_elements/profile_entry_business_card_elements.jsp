@@ -19,8 +19,11 @@
 <div class="ss_profileBox1" style="padding: 10px;"><div style="height:${property_maxHeight + 25}px;">
  <div class="ss_profile_box_title">Photo</div>
  <div class="ss_profile_matte">
-  <div class="ss_profile_picture_frame ss_profile_photo_box">
+<c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
+  <div class="ss_profile_picture_frame ss_profile_photo_box_empty">
+</c:if>
 <c:if test="${!empty ssDefinitionEntry.customAttributes['picture']}">
+  <div class="ss_profile_picture_frame">
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes['picture'].value}" />
 <c:set var="pictureCount" value="0"/>
 <c:forEach var="selection" items="${selections}">
