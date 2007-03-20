@@ -441,6 +441,7 @@ public class WebKeys {
     public static final String FUNCTION_MAP="ssFunctionMap";
     public static final String FUNCTIONS_ALLOWED="ssFunctionsAllowed";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
+    public static final String GROUP_LIST="ss_groupList";
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";
     public static final String HELP_PANEL_JSP="ss_help_panel_jsp";
@@ -467,6 +468,7 @@ public class WebKeys {
     public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
     public static final String POSTINGS="ssPostings";
+    public static final String PREFIX="ssPrefix";
     public static final String PRESENCE_COMPONENT_ID="ss_presence_component_id";
     public static final String PRESENCE_DIV_ID="ss_presence_div_id";
     public static final String PRESENCE_DUDE="ss_presence_dude";

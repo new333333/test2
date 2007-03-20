@@ -28,6 +28,7 @@
     	actionUrl="true" >
 		<ssf:param name="operation" value="get_users_and_groups" />
 		<ssf:param name="elementName" value="propertyId_${propertyId}" />
+		<ssf:param name="prefix" value="${ssPrefix}" />
 		<ssf:param name="userList" value="${propertyValue}" />
     	</ssf:url>">xxx</iframe>
 </div>

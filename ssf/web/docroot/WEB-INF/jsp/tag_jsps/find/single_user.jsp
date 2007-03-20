@@ -6,8 +6,6 @@
 	String findUserGroupType = (String) request.getAttribute("list_type");
 	String findUserElementName = (String) request.getAttribute("form_element");
 	String findUserElementWidth = (String) request.getAttribute("element_width");
-	String clickRoutine = (String) request.getAttribute("clickRoutine");
-	String clickRoutineArgs = (String) request.getAttribute("clickRoutineArgs");
 	String instanceCount = ((Integer) request.getAttribute("instanceCount")).toString();
 	String leaveResultsVisible = ((Boolean) request.getAttribute("leaveResultsVisible")).toString();
 %>

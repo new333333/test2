@@ -64,7 +64,7 @@ function saveResults() {
 		<td valign="top">
 			<ssf:find formName="userGroupsForm" formElement="data_users" 
 				type="user" userList="${ss_userList}"
-				clickRoutine="saveResults();"/>
+				clickRoutine="saveResults"/>
 		</td>
 	</tr>
 	<tr>
@@ -73,8 +73,8 @@ function saveResults() {
 	<tr>
 		<td valign="top">
 			<ssf:find formName="userGroupsForm" formElement="data_groups" 
-				type="group" userList="${ss_userList}"
-				clickRoutine="saveResults();"/>
+				type="group" userList="${ss_groupList}"
+				clickRoutine="saveResults"/>
 		</td>
 	</tr>
 </table>
