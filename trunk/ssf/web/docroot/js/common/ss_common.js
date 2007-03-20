@@ -3254,7 +3254,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 }
 
 //Routines that support the link dropdown menu concept
-var ss_linkMenu = new function() {
+var ss_linkMenu = new ss_linkMenuObj();
+
+function ss_linkMenuObj() {
 	this.menuDiv;	           //Div id of the menu div
 	this.binderId;             //Binder id of the current folder
 	this.definitionType;       //Definition type default of the current entry
