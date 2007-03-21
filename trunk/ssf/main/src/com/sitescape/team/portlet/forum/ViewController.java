@@ -138,6 +138,15 @@ public class ViewController  extends SAbstractController {
   			}
  			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
+			Workspace binder = getWorkspaceModule().getWorkspace();
+			Document wsTree;
+			if (request.getWindowState().equals(WindowState.NORMAL)) {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, this), 0);
+			} else {
+				wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, this), 1);									
+			}
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
