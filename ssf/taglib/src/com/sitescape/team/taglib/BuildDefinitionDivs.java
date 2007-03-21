@@ -15,20 +15,31 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Set;
 
 
 /**
@@ -1342,6 +1353,20 @@ public class BuildDefinitionDivs extends TagSupport {
 						req = new DynamicServletRequest(httpReq);
 						req.setAttribute("propertyId", propertyId);
 						req.setAttribute("propertyValue", propertyValue0);
+						Set ids = FindIdsHelper.getIdsAsLongSet((String)propertyValue0);
+						ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+					    User user = RequestContextHolder.getRequestContext().getUser();
+
+						Set userListSet = new HashSet();
+						List userList = profileDao.loadPrincipals(ids, user.getZoneId(), true);
+						for (int i = 0; i < userList.size(); i++) {
+							if (((Principal)userList.get(i)).getEntityType().equals(EntityType.user)) userListSet.add(userList.get(i));
+						}
+						Set groupListSet = new HashSet();
+						List groupList = profileDao.loadGroups(ids, user.getZoneId());
+						for (int i = 0; i < groupList.size(); i++) groupListSet.add(groupList.get(i));
+						req.setAttribute(WebKeys.USER_LIST, userListSet);
+						req.setAttribute(WebKeys.GROUP_LIST, groupListSet);
 						
 						StringServletResponse res = new StringServletResponse(httpRes);
 						try {

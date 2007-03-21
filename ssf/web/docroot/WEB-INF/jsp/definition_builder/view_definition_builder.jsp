@@ -37,6 +37,8 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 <script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
@@ -502,21 +504,24 @@ function ss_postLoadNextDivRequest(obj) {
 	}
 }
 
-function ss_saveUserGroupResults(s, elementName) {
-	var eleObj = document.getElementById(elementName);
-	eleObj.value = s;
-}
-function ss_resizeUserGroupsIFrame(height) {
-	var iframeDiv = document.getElementById('ss_userGroupSelectIframe')
-	if (window.frames['ss_userGroupSelectIframe'] != null) {
-		var iframeHeight = parseInt(height);
-		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + 40 + "px"
-		}
+ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
+
+function ss_ug_saveResults() {
+	var formName = "definitionbuilder"
+	var formObj = document.getElementById(formName);
+	var s = "";
+	var items = formObj.getElementsByTagName( "li" );
+	for (var i = 0; i < items.length; i++) {
+		s += items[i].id + " ";
 	}
+	ss_saveUserGroupResults(s);
 }
 
-ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
+function ss_saveUserGroupResults(s) {
+	var formObj = document.getElementById('definitionbuilder');
+	var eleObjs = ss_getElementsByClass('ss_user_group_results', formObj);
+	eleObjs[0].value = s;
+}
 
 </script>
 <div class="ss_style ss_portlet">
@@ -569,7 +574,7 @@ ss_createOnLoadObj('initializeStateMachine', initializeStateMachine);
 			<form class="ss_form" action="<portlet:actionURL windowState="maximized">
 				<portlet:param name="action" value="definition_builder" />
 				<portlet:param name="definition_type" value="<%= definitionType %>" />
-				</portlet:actionURL>" method="post" name="definitionbuilder" 
+				</portlet:actionURL>" method="post" name="definitionbuilder" id="definitionbuilder" 
 				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>
 			  <ssf:param name="box_id" value="displaydivbox" />

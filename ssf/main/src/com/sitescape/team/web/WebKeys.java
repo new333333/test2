@@ -212,7 +212,6 @@ public class WebKeys {
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
-	public static final String OPERATION_GET_USERS_AND_GROUPS = "get_users_and_groups";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
