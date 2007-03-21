@@ -95,10 +95,11 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 <jsp:include page="/WEB-INF/jsp/definition_elements/tag_view_data_cloud.jsp" />
 
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_pane" class="ss_tag_pane">
-<div align="right">
-<a onClick="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"><img 
-  border="0" src="<html:imagesPath/>box/close_off.gif"/></a>
-</div>
+
+
+<ssf:popupPane width="220px" titleTag="tags.manageTags"
+     closeScript="ss_hideTags${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;">
+
 <div style="padding:0px 10px;">
 <form class="ss_style ss_form ss_tag_pane_color" 
   method="post" action=""
@@ -152,12 +153,13 @@ function ss_postModifyTags<portlet:namespace/>(obj) {
 
 </tbody>
 </table>
-<input type="submit" value="ok" style="height:10px; width:10px;"
+<input type="submit" value="ok" style="height:10px; width:10px; margin-left: -8000px;"
   onClick="ss_addTag${ss_tagViewNamespace}('${ss_tagDivNumber}', '${ssEntryId}');return false;"/>
-<div class="ss_tag_pane_ok_cover">
 </div>
 </form>
 </div>
+
+</ssf:popupPane>
 
 </div>
 

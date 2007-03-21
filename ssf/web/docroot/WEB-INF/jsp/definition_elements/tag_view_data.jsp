@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_tags${ss_tagViewNamespace}_${ss_tagDivNumber}_data_pane_${ssTagsType}">
 <c:if test="${!empty ssTags}">
-<table>
+<table style="background: transparent;">
 <tbody>
 <c:forEach var="ptag" items="${ssTags}">
 <tr>
@@ -19,7 +19,7 @@
 </table>
 </c:if>
 <c:if test="${empty ssTags}">
-<table>
+<table style="background: transparent;">
 <tbody>
 <tr><td colspan="2"><ssf:nlt tag="tags.none" text="--none--"/></td></tr>
 </tbody>
