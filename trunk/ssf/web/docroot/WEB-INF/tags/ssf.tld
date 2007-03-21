@@ -721,6 +721,30 @@
 		</attribute>
 	</tag>
 
+
+	<tag>
+		<name>popupPane</name>
+		<tag-class>com.sitescape.team.taglib.PopupPaneTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>width</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>titleTag</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>closeScript</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+
+
 	<tag>
 		<name>presenceInfo</name>
 		<tag-class>com.sitescape.team.taglib.PresenceInfo</tag-class>
