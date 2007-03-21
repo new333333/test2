@@ -146,6 +146,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${ss_color_theme == 'blackandwhite'}">
 	<c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/>
 	<c:set var="ss_style_folder_view_font_family" value="Arial, sans-serif" scope="request"/>
+	<c:set var="ss_style_title_font_family" value="Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_style_font_size" value="12px" scope="request"/>
 	<c:set var="ss_style_font_finestprint" value="0.7em" scope="request"/>
 	<c:set var="ss_style_font_fineprint" value="0.8em" scope="request"/>
@@ -280,7 +281,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_gallery_anchor_hover_color" value="blue" scope="request"/>
 
 	<c:set var="ss_tag_color" value="#999966" scope="request"/>
-	<c:set var="ss_tag_pane_background_color" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/>
 </c:if>
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
@@ -481,7 +482,7 @@ div.ss_replies div.ss_entryDescription {
 .ss_entryTitle {
   font-weight: bold;
   font-size: ${ss_style_font_largerprint};
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ${ss_style_title_font_family};
   margin-bottom: 4px;
   margin-top: 4px;
   }
@@ -684,6 +685,81 @@ div.ss_send_friend {
   background-color:${ss_style_background_color};
   }
 
+
+table.ss_popup {
+	position: relative;
+	background: transparent;
+}
+
+div.ss_popup_topleft {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_tl_blue.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  height: 24px;
+  width: 30px;
+  padding: 0px;
+}
+
+div.ss_popup_topright {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_tr_blue.gif);
+  background-repeat: no-repeat;
+  background-position: top right;
+  height: 24px;
+  padding: 0px;
+}
+
+div.ss_popup_bottomleft {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_bl_blue.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  height: 16px;
+  width: 30px;
+  padding: 0px;
+}
+
+div.ss_popup_bottomright {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_br_blue.gif);
+  background-repeat: no-repeat;
+  background-position: top right;
+  height: 16px;
+  padding: 0px;
+}
+
+div.ss_popup_title {
+   font-family: ${ss_style_title_font_family};
+   font-weight: bold;
+   color: ${ss_style_header_bar_title_color};
+   position: relative;
+   margin-left: -25px;
+   margin-right: 25px;
+   padding-top: 3px;
+   text-align: center;
+}
+
+div.ss_popup_close {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
+  background-repeat: no-repeat;
+  width: 10px;
+  height: 10px;
+  float: right;
+  margin-right: 11px;
+  top: 7px;
+}
+
+div.ss_popup_body {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_bg_blue.gif);
+  background-repeat: repeat-y;
+  background-position: top right;
+  padding: 1px 5px 1px 5px;
+}
+
+
 .ss_edit_button {
 	color:${edit_text_color};
 }
@@ -833,7 +909,7 @@ div.ss_clear_float {
 }
 
 span.ss_blog_summary_title_text {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: ${ss_style_title_font_family};
   font-weight: bold;
   font-size: 13px;
 }
@@ -852,7 +928,7 @@ div.ss_blog_title  {
 }
 
 div.ss_header_bar_timestamp {
-	font-family: Arial, sans-serif;
+	font-family: ${ss_style_title_font_family};
 	font-size: 11px;
 	color: ${ss_style_header_bar_timestamp_color};
 	margin-top: 3px;
@@ -886,7 +962,7 @@ div.ss_header_bar_title_text {
 }
 
 span.ss_header_bar_title_text {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: ${ss_style_title_font_family};
     font-weight: bold;
 	color: ${ss_style_header_bar_title_color};
 	font-size: 15px;
@@ -1220,8 +1296,6 @@ table.ss_attachments_list td.ss_att_space {
   visibility:hidden; 
   margin:0px;
   padding:2px;
-  border: 1px ${ss_style_border_color} solid;
-  background-color: ${ss_tag_pane_background_color}; 
   opacity: 0.95;
  <c:if test="<%= isIE %>">
   filter: alpha(opacity=95);
@@ -1923,7 +1997,7 @@ div.ss_tabs {
     margin-right:40px;
 }
 .ss_tabs_td {
-	font-family: Arial, helvetica;
+	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
 	font-size: 11px;
 	color:#5A3C68;
@@ -1934,7 +2008,7 @@ div.ss_tabs {
 	padding:3px 0px 0px 0px;
 }
 .ss_tabs_td_active {
-	font-family: Arial, helvetica;
+	font-family: ${ss_style_title_font_family};
 	font-weight: bold;
 	font-size:11px;
 	color:#5A3C68;
@@ -2049,7 +2123,7 @@ a.ss_breadcrumb {
 	background-color: #DCE2BE;
 	font-weight: normal;
 	font-size: 11px;
-	font-family: Arial;
+	font-family: ${ss_style_title_font_family};
 }
 
 ul.ss_actions_bar1  {
@@ -2066,7 +2140,7 @@ ul.ss_actions_bar2 {
 	background-color: #CECECE;
 	font-weight: normal;
 	font-size: 11px;
-	font-family: Arial;
+	font-family: ${ss_style_title_font_family};
 }
 
 .ss_actions_bar {
@@ -2091,7 +2165,7 @@ ul.ss_actions_bar2 {
 }
 .ss_actions_bar_history_bar {
 	font-size: 11px;
-	font-family: Arial;
+	font-family: ${ss_style_title_font_family};
 }
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
