@@ -238,10 +238,6 @@
 	}
 	entriesSeen.put(fileEntry.get("_docId"), "1");
 %>
-<%	
-	}
-	entriesSeen.put(fileEntry.get("_docId"), "1");
-%>
 </c:forEach>
 
 <div>
