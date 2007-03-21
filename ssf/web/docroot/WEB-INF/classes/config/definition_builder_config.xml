@@ -1368,7 +1368,7 @@
 			<property name="subjText" caption="__notification_subject_text" type="text" />
 			<property name="appendTitle" caption="__notification_append_title" type="checkbox" />
 			<property name="bodyText" caption="__notification_body_text" type="text" />
-			<property name="appendBody" caption="__notification_append_Body" type="checkbox" />
+			<property name="appendBody" caption="__notification_append_body" type="checkbox" />
 		</properties>
 	</item>
 	
