@@ -115,7 +115,7 @@ public class Notify extends AbstractActionHandler {
 				hMsg.append("</p>");
 			}
 			details.put(SendEmail.HTML_MSG, hMsg.toString());
-			getMailManager().scheduleMail(entry.getParentBinder(), details, "Workflow notify for binder " + 
+			getMailManager().sendMail(entry.getParentBinder(), details, "Workflow notify for binder " + 
 					entry.getParentBinder().getId() + " entry " + entry.getId());
 			 
 		}

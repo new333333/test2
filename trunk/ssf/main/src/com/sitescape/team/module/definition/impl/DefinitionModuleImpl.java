@@ -35,6 +35,7 @@ import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -933,11 +934,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
 						item.attributeValue("name", "").equals("state")) {
 					//This is a workflow state. Make sure no entries are using that state
-					//TODO ???Add code to check if any entries are in this state
-					throw new DefinitionInvalidException("definition.error.cannotDelete", new Object[] {defId});
-
-					//throw new DefinitionInvalidException(defId, 
-					//		"Error: this state name cannot be deleted because some entries are in this state.");
+					FilterControls fc = new FilterControls();
+					fc.add("definition", def);
+					fc.add("state", DefinitionUtils.getPropertyValue(item, "name"));
+					List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
+					if (!inUse.isEmpty()) throw new DefinitionInvalidException("definition.error.cannotDelete", new Object[] {defId});
 				}
 
 				//Find the selected item type in the configuration document

@@ -9,7 +9,10 @@ package com.sitescape.team.module.workflow;
  *
  */
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.dom4j.Element;
 import org.jbpm.context.exe.ContextInstance;
@@ -21,7 +24,9 @@ import org.jbpm.graph.exe.ProcessInstance;
 import org.jbpm.graph.exe.Token;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.util.Validator;
@@ -56,6 +61,20 @@ public class EnterExitEvent extends AbstractActionHandler {
 				ws.setState(state);
 				entry.setStateChange(ws);
 				if (infoEnabled) logger.info("Workflow event (" + executionContext.getEvent().getEventType() + ") recorded: " + state);
+				//remove old responses associated with this state
+				Set names = WorkflowUtils.getQuestionNames(ws.getDefinition(), ws.getState());
+				if (!names.isEmpty()) {
+					//now see if response to this question from this user exists
+					Set<WorkflowResponse> responses = new HashSet<WorkflowResponse>(entry.getWorkflowResponses());
+					for (WorkflowResponse wr:responses) {
+						if (ws.getDefinition().getId().equals(wr.getDefinitionId())) {
+							String name = wr.getName();
+							//if question is defined here, clear any old answers
+							if (names.contains(name)) entry.removeWorkflowResponse(wr);
+						}			
+					}
+
+				}
 				items  = WorkflowUtils.getOnEntry(ws.getDefinition(), state);
 			} else {
 				//cancel timers associated with this state.

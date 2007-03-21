@@ -772,6 +772,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
 	               		count = countObjects(com.sitescape.team.domain.Principal.class, new FilterControls("entryDef", def));
 	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		count = countObjects(com.sitescape.team.domain.Binder.class, new FilterControls("entryDef", def));
+	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
 	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("definitions")
 	               			.add(Expression.eq("id", def.getId()))
