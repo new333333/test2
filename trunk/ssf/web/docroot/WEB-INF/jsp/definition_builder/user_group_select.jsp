@@ -17,32 +17,32 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div>
-<iframe id="ss_userGroupSelectIframe"
-	name="ss_userGroupSelectIframe"
-	style="height:350; width:350; margin:0px; padding:0px;" 
-	frameBorder="0"
-	src="<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="get_users_and_groups" />
-		<ssf:param name="elementName" value="propertyId_${propertyId}" />
-		<ssf:param name="prefix" value="${ssPrefix}" />
-		<ssf:param name="userList" value="${propertyValue}" />
-    	</ssf:url>">xxx</iframe>
-</div>
-<table cellspacing="10px" cellpadding="10px" width="100%">
-<tbody>
+<input type="hidden" class="ss_user_group_results" id="propertyId_${propertyId}" 
+  name="propertyId_${propertyId}"
+  value="${propertyValue}" />
+<table cellspacing="0px" cellpadding="0px" width="100%">
+	<tr>
+		<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
+	</tr>
 	<tr>
 		<td valign="top">
-			<input type="text" class="ss_text" id="propertyId_${propertyId}" 
-			  name="propertyId_${propertyId}" size="40"
-			  value="${propertyValue}" />
+			<ssf:find formName="definitionbuilder" formElement="data_users" 
+				type="user" userList="${ss_userList}"
+				clickRoutine="ss_ug_saveResults"/>
 		</td>
 	</tr>
-</tbody>
+	<tr>
+		<td class="ss_bold" valign="top"><ssf:nlt tag="general.groups" text="Groups"/></td>
+	</tr>
+	<tr>
+		<td valign="top">
+			<ssf:find formName="definitionbuilder" formElement="data_groups" 
+				type="group" userList="${ss_groupList}"
+				clickRoutine="ss_ug_saveResults"/>
+		</td>
+	</tr>
 </table>
+</div>
 
 
 

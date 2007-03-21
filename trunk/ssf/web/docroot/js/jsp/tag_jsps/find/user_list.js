@@ -72,14 +72,14 @@ function ss_userListSelectItemAlreadyAdded(prefix, id) {
 //Routine to remove a user
 function ss_userListRemove(prefix, obj) {
 	var liObj = obj.parentNode;
-	liObj.parentNode.removeChild(liObj);
 	
 	var userId = liObj.id;
 	var userHiddenIdObj = document.getElementById("userIds_" + prefix + "_" + userId);
-	var p = userHiddenIdObj.parentNode;
-	p.removeChild(userHiddenIdObj);
-	if (ss_findUsersClickRoutine[prefix] && window[ss_findUserClickRoutine[prefix]]) {
-		window[ss_findUserClickRoutine[prefix]]();
+	//var p = userHiddenIdObj.parentNode;
+	//p.removeChild(userHiddenIdObj);
+	liObj.parentNode.removeChild(liObj);
+	if (ss_findUsersClickRoutine[prefix] && window[ss_findUsersClickRoutine[prefix]]) {
+		window[ss_findUsersClickRoutine[prefix]]();
 	}
 }
 

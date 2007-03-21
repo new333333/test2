@@ -17,7 +17,9 @@
 <c:set var="binderId" value="<%= binderId %>"/>
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 
+<ssf:ifnotadapter>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
+</ssf:ifnotadapter>
 
 <table class="ss_style" cellspacing="2px" cellpadding="5px">
 <tr>

@@ -282,8 +282,6 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_USERS_AND_GROUPS)) {
-			return ajaxGetUsersAndGroups(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1548,21 +1546,6 @@ public class AjaxController  extends SAbstractController {
 			
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_binder_owner", model);
-	}
-	
-	private ModelAndView ajaxGetUsersAndGroups(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		String elementName = PortletRequestUtils.getStringParameter(request, "elementName", "");
-		String userList = PortletRequestUtils.getStringParameter(request, "userList", "");
-		String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "");
-		model.put(WebKeys.ELEMENT_NAME, elementName);
-		model.put(WebKeys.PREFIX, prefix);
-		Set ids = FindIdsHelper.getIdsAsLongSet((String)userList);
-		model.put(WebKeys.USER_LIST, getProfileModule().getUsers(ids));
-		model.put(WebKeys.GROUP_LIST, getProfileModule().getGroups(ids));
-			
-		return new ModelAndView("definition_builder/user_group_select_ajax", model);
 	}
 	
 	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 

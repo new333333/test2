@@ -31,7 +31,7 @@ function init() {
 		self.parent.ss_resizeUserGroupsIFrame(self.document.body.scrollHeight);
 	}
 }
-function saveResults() {
+function ss_ug_saveResults() {
 	var formObj = document.getElementById('userGroupsForm');
 	var s = "";
 	var items = formObj.getElementsByTagName( "li" );
@@ -56,7 +56,7 @@ function saveResults() {
 </script>
 
 <form id="userGroupsForm" name="userGroupsForm">
-<table cellspacing="10px" cellpadding="10px" width="100%">
+<table cellspacing="0px" cellpadding="0px" width="100%">
 	<tr>
 		<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 	</tr>
@@ -64,7 +64,7 @@ function saveResults() {
 		<td valign="top">
 			<ssf:find formName="userGroupsForm" formElement="data_users" 
 				type="user" userList="${ss_userList}"
-				clickRoutine="saveResults"/>
+				clickRoutine="ss_ug_saveResults"/>
 		</td>
 	</tr>
 	<tr>
@@ -74,7 +74,7 @@ function saveResults() {
 		<td valign="top">
 			<ssf:find formName="userGroupsForm" formElement="data_groups" 
 				type="group" userList="${ss_groupList}"
-				clickRoutine="saveResults"/>
+				clickRoutine="ss_ug_saveResults"/>
 		</td>
 	</tr>
 </table>
