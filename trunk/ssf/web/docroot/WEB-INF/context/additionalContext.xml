@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "../dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- ============================== Modules ============================= -->
+
+	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
+
+	<!-- ============================== Services ============================= -->
+
+	<bean id="archiveStore" class="com.sitescape.team.module.file.impl.NullArchiveStore">
+	</bean>
+	
+	<!-- ============================== Document Converter ============================ -->
+
+    <bean id="textConverter" class="com.sitescape.team.docconverter.impl.TextOpenOfficeConverter">
+    </bean>
+    
+	<!-- View file as HTML manager implementation -->
+    <bean id="htmlConverterManager" class="com.sitescape.team.docconverter.impl.HtmlConverterManagerImpl">
+    	<!-- Options 1=OpenOffice conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="htmlOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="textConverterManager" class="com.sitescape.team.docconverter.impl.TextConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="textOpenOfficeConverter"/></property>
+    </bean>
+    
+    <bean id="imageConverterManager" class="com.sitescape.team.docconverter.impl.ImageConverterManagerImpl">
+    	<!-- Options 1=OpenOffice, 2=Stellent conversion implementation -->
+    	<property name="active"><value>1</value></property>
+    	<property name="openOfficeConverter"><ref bean="imageOpenOfficeConverter"/></property>
+    </bean>
+    
+</beans>
