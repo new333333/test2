@@ -12,7 +12,7 @@
 <table id="ss_favorites_table${ss_namespace}" cellspacing="0" cellpadding="0" >
 <tbody>
 <tr>
-  <td colspan="2" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
+  <td colspan="2" ></td>
   <td align="right"><a onClick="ss_hideDivFadeOut('ss_favorites_pane${ss_namespace}', 0);return false;"
     ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
 </tr>
@@ -21,7 +21,7 @@
 
 <c:if test="${!empty ss_favoritesTree}">
 <ssf:tree treeName="favTree${ss_namespace}" treeDocument="${ss_favoritesTree}"
-  rootOpen="true" displayStyle="sortable" nowrap="true" showIdRoutine="ss_treeShowId"/>
+  rootOpen="true" displayStyle="normal" nowrap="true" showIdRoutine="ss_treeShowId"/>
 </c:if>
 
 </td>
@@ -32,7 +32,7 @@
 <br/>
 <c:if test="${!empty ss_favoritesTree && !empty ss_favoritesTreeDelete}">
 <ssf:tree treeName="favTreeDelete${ss_namespace}" treeDocument="${ss_favoritesTreeDelete}"
-  rootOpen="true" displayStyle="sortable" nowrap="true" />
+  rootOpen="true" displayStyle="normal" nowrap="true" />
 </c:if>
 
 </td>
