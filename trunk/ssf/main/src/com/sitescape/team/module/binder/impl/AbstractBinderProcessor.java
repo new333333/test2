@@ -433,6 +433,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		InputDataAccessor inputData, List fileUploadItems,
     		Collection<FileAttachment> filesToIndex) {
     	indexBinder(binder, fileUploadItems, filesToIndex, false);
+    	
+    	//Also re-index all of the direct children binders to get the correct folder extended title indexed
+    	Iterator itBinders = binder.getBinders().iterator();
+    	while (itBinders.hasNext()) {
+    		indexBinder((Binder) itBinders.next(), false);
+    	}
     }
     protected void modifyBinder_indexRemoveFiles(Binder binder, Collection<FileAttachment> filesToDeindex) {
     	removeFilesIndex(binder, filesToDeindex);

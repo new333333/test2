@@ -119,6 +119,8 @@ public class EntityIndexUtils {
                 if ((entry.getEntityType().equals(EntityType.folder) || entry.getEntityType().equals(EntityType.workspace)) &&
                 		entry.getParentBinder() != null) {
                 	String extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
+                	//Special case: user workspaces don't show parent folder
+                	if (entry.getParentBinder().getEntityType().equals(EntityType.profiles)) extendedTitle = title;
         	        Field extendedTitleField = new Field(EntityIndexUtils.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.TOKENIZED);
         	        doc.add(extendedTitleField);
                 }
