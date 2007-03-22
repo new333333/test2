@@ -55,12 +55,9 @@
     	<div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 				
 			<% // Folder toolbar %>
-			<c:if test="${!empty ssFolderToolbar}">
-				<div class="ss_content_inner">
-					<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
-				</div>
-			</c:if>
-
+			<div class="ss_content_inner">
+				<ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
+			</div>
 			<div class="ss_content_inner">
 				<% // Navigation links %>
 				<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>

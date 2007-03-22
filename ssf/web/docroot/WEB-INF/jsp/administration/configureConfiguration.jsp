@@ -148,11 +148,9 @@ function ss_confirmDeleteConfig() {
 			    <div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">
 				
 <% // Folder toolbar %>
-<c:if test="${!empty ssForumToolbar}">
 <div class="ss_content_inner">
 <ssf:toolbar toolbar="${ssForumToolbar}" style="ss_actions_bar2 ss_actions_bar"/>
 </div>
-</c:if>
 
 <div class="ss_content_inner">
 <% // Navigation links %>
