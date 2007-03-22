@@ -308,13 +308,22 @@ body.ss_style_body {
 	margin: 0px 3px 0px 1px;
 }
 
-.ss_style, .ss_style table {
+.ss_style {
   font-family: ${ss_style_font_family};
   font-weight: inherit;
   font-size: ${ss_style_font_size}; 
   background-color: ${ss_style_background_color};
   color: ${ss_style_text_color};
   }
+
+.ss_style_trans {
+  font-family: ${ss_style_font_family};
+  font-weight: inherit;
+  font-size: ${ss_style_font_size}; 
+  background-color: transparent;
+  color: ${ss_style_text_color};
+  }
+
 .ss_style li, .ss_portlet_style li {
   list-style-image:none;
   list-style-position:outside;
@@ -712,7 +721,7 @@ div.ss_popup_topright {
 
 div.ss_popup_bottomleft {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_bl_blue.gif);
+  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
   background-position: top left;
   height: 16px;
@@ -722,7 +731,7 @@ div.ss_popup_bottomleft {
 
 div.ss_popup_bottomright {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_br_blue.gif);
+  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
   background-repeat: no-repeat;
   background-position: top right;
   height: 16px;
