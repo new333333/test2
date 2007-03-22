@@ -365,18 +365,18 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 </c:if>
 
 <!-- Start of favorites pane -->
-<div class="ss_style" id="ss_favorites_pane<portlet:namespace/>" 
-  style="position:absolute; visibility:hidden;
-  border:solid 1px black; height:200px;">
+<div class="ss_style_trans" id="ss_favorites_pane<portlet:namespace/>" 
+  style="position:absolute; visibility:hidden;">
+
+<ssf:popupPane width="250px" titleTag="favorites"
+      closeScript="ss_hideFavoritesPane('<portlet:namespace/>');return false;">
+
+
+
   <div>
-  <div class="ss_style" id="ss_favorites<portlet:namespace/>" align="left">
+  <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
 	<table id="ss_favorites_table<portlet:namespace/>" cellspacing="0" cellpadding="0">
 	<tbody>
-	<tr>
-	  <td align="left" class="ss_bold ss_largerprint"><ssf:nlt tag="favorites" text="Favorites"/></td>
-	  <td align="right"><a onClick="ss_hideFavoritesPane('<portlet:namespace/>');return false;"
-        ><img border="0" src="<html:imagesPath/>box/close_off.gif"/></a></td>
-	</tr>
 	<tr><td colspan="2"></td></tr>
 	<tr>
 	  <td colspan="2"><ssf:nlt tag="Loading"/></td>
@@ -385,7 +385,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	  <td colspan="2">
 	  <c:set var="namespace" value="${renderResponse.namespace}"/>
 	  <ssf:tree treeName="favTree${namespace}" treeDocument="${ss_favoritesTree}"
-  		rootOpen="true" displayStyle="sortable" nowrap="true" showIdRoutine="ss_treeShowId"
+  		rootOpen="true" displayStyle="normal" nowrap="true" showIdRoutine="ss_treeShowId"
   		initOnly="true" />
 	  
 	  </td>
@@ -403,7 +403,7 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		<td nowrap="nowrap">
 		<a href="javascript: ;" 
 		 onClick="ss_addForumToFavorites('<portlet:namespace/>');return false;"
-		><span class="ss_bold"><ssf:nlt tag="favorites.addCurrentPage" 
+		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
 		</td>
 		</tr>
@@ -412,14 +412,14 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	<tr>
 	<td nowrap="nowrap">
 	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div<portlet:namespace/>');ss_setFavoritesPaneSize('<portlet:namespace/>');return false;">
-	    <span class="ss_bold"><ssf:nlt tag="favorites.addCategory" 
+	    <span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCategory" 
 		  	text="Add a new favorites category..."/></span>
 	  </a>
 	  <br />
 	  <div id="ss_favorites_form_div<portlet:namespace/>" style="visibility:hidden; display:none; margin:4px;">
-		<form class="ss_style ss_style_color" id="ss_favorites_form<portlet:namespace/>" 
+		<form class="ss_style_trans" id="ss_favorites_form<portlet:namespace/>" 
 		  method="post" onSubmit="return false;" >
-		  <span class="ss_style_color ss_labelAbove"><ssf:nlt tag="favorites.categoryName" 
+		  <span class="ss_style_trans ss_labelAbove"><ssf:nlt tag="favorites.categoryName" 
 		  	text="Category name:"/></span>
 		  <input class="ss_style_color" type="text" size="20" name="new_favorites_category" />
 		  <input class="ss_style_color" type="submit" name="add_favorites_category" 
@@ -433,6 +433,9 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 	</table>
   </div>
   </div>
+
+</ssf:popupPane>
+
 </div>
 <!-- End of favorites pane -->
 
