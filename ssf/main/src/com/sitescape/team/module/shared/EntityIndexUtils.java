@@ -501,7 +501,8 @@ public class EntityIndexUtils {
     }
     
     public static void addFileAttachmentUid(Document doc, FileAttachment fa) {
-       	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	doc.removeFields(FILE_ID_FIELD);
+    	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
     }
     
