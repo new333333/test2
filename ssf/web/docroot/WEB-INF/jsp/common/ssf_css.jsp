@@ -702,7 +702,7 @@ table.ss_popup {
 
 div.ss_popup_topleft {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_tl_blue.gif);
+  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
   background-position: top left;
   height: 24px;
@@ -712,7 +712,7 @@ div.ss_popup_topleft {
 
 div.ss_popup_topright {
   position: relative;
-  background-image: url(<html:imagesPath/>pics/popup_tr_blue.gif);
+  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
   background-repeat: no-repeat;
   background-position: top right;
   height: 24px;
