@@ -1465,6 +1465,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the workflows - different for files
         EntityIndexUtils.addWorkflow(indexDoc, entry);
    		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+   		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
    		return indexDoc;
  
     }
