@@ -106,17 +106,15 @@ public class EditController extends SAbstractController {
 		}
 		prefs.store();
 	}
+	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-
-
         //Make the prefs available to the jsp
 		PortletPreferences prefs= request.getPreferences();
         Map model = new HashMap();
 		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 		if (Validator.isNull(displayType)) {
 			displayType = ViewController.getDisplayType(request);
-			
 		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {	
 			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 

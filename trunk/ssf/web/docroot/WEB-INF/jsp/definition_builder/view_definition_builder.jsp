@@ -309,7 +309,7 @@ function getConditionSelectbox(obj, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadGetConditionRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -490,7 +490,7 @@ function ss_loadNextDiv(option, itemId, itemName, selectionId) {
 	//alert(url)
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
@@ -500,7 +500,18 @@ function ss_postLoadNextDivRequest(obj) {
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	} else {
+		ss_doImgOnloadCalls()
 		showDisplayDiv()
+	}
+}
+function ss_doImgOnloadCalls() {
+	var displaydivObj = document.getElementById('displaydiv');
+	var imgObjs = displaydivObj.getElementsByTagName('img');
+	for (var i=0; i<imgObjs.length; i++) {
+		if (imgObjs[i].ssf_onload && imgObjs[i].ssf_onload != '') {
+			//alert(imgObjs[i].ssf_onload)
+			eval(imgObjs[i].ssf_onload)
+		}
 	}
 }
 

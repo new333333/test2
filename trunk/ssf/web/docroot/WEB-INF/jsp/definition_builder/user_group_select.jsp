@@ -21,6 +21,7 @@
   name="propertyId_${propertyId}"
   value="${propertyValue}" />
 <table cellspacing="0px" cellpadding="0px" width="100%">
+  <tbody>
 	<tr>
 		<td class="ss_bold" valign="top"><ssf:nlt tag="general.users" text="Users"/></td>
 	</tr>
@@ -41,6 +42,7 @@
 				clickRoutine="ss_ug_saveResults"/>
 		</td>
 	</tr>
+  </tbody>
 </table>
 </div>
 

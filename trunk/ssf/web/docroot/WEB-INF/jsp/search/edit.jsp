@@ -27,5 +27,8 @@
 <br/>
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">
+<input style="margin-left:15px;" type="submit" class="ss_submit" name="closeBtn"
+ value="<ssf:nlt tag="button.close"/>"
+ onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;"
 
 </form>

@@ -13,9 +13,9 @@ function afterAddUser(prefix, obj) {
 	dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
 }
 
-function ss_addUserIdsToFormElement(prefix, userIds) {
-	for (var i = 0; i < userIds.length; i++) {
-		var userId = userIds[i];
+function ss_addUserIdsToFormElement(prefix) {
+	for (var i = 1; i < ss_addUserIdsToFormElement.arguments.length; i++) {
+		var userId = ss_addUserIdsToFormElement.arguments[i];
 		var formObj = document.forms[ss_findUsersFormName[prefix]];
 		var hiddenUserIdObj = document.createElement('input');
 		hiddenUserIdObj.setAttribute("type", "hidden");
@@ -47,7 +47,7 @@ function ss_userListSelectItem(id, obj, prefix) {
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
 
-	ss_addUserIdsToFormElement(prefix, [id]);
+	ss_addUserIdsToFormElement(prefix, id);
 	
 	if (typeof ss_findUsersClickRoutine[prefix] != "undefined" && typeof window[ss_findUsersClickRoutine[prefix]] != "undefined") {
 		window[ss_findUsersClickRoutine[prefix]]();

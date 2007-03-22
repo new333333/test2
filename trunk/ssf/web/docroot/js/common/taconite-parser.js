@@ -145,7 +145,7 @@ function XhtmlToDOMParser(xml){
                                 }
                                 else if(name.trim().toLowerCase().substring(0, 2) == "on") {
                                         /* IE workaround for event handlers */
-                                        //domNode.setAttribute(name,value);
+                                        domNode.setAttribute("ssf_"+name,value);
                                         eval("domNode." + name.trim().toLowerCase() + "=function(){" + value + "}");
                                 }
                                 else {
