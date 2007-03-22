@@ -16,9 +16,7 @@
 <jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 <% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar2 ss_actions_bar" />
-</c:if>
 
 <% // List of users %>
 <%@ include file="/WEB-INF/jsp/definition_elements/profile_list.jsp" %>

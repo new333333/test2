@@ -21,9 +21,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
 <% // Toolbar %>
-<c:if test="${!empty ssFolderToolbar}">
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
-</c:if>
 
 <% // Show the folder default parts %>
 
