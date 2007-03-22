@@ -3609,21 +3609,20 @@ function ss_Clipboard () {
 	    musterDiv.style.visibility = "hidden";
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
-	
-		var formTitle = document.createElement("div");
-		formTitle.style.padding="3px"; 
-		formTitle.style.marginTop="0"; 
-		formTitle.style.marginBottom="7px";  
-		formTitle.style.borderBottom="1px solid black"; 
-		formTitle.style.fontWeight="bold";
-		formTitle.appendChild(document.createTextNode(ss_clipboardTitleText));
-		musterDiv.appendChild(formTitle);
-		
+		musterDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
+         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close"></div><div id="ss_muster_title" class="ss_popup_title"></div></div>' +
+         '</td></tr><tr><td colspan="2"><div id="ss_muster_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div>' +
+         '<td width="100%"><div class="ss_popup_bottomright"></div></tr></tbody></table>';
+
+		// Link into the document tree
+		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
+   
+		dojo.byId("ss_muster_title").appendChild(document.createTextNode(ss_clipboardTitleText));
 		
 	    var formObj = document.createElement("form");
 	    formObj.setAttribute("id", "ss_muster_form");
 	    formObj.setAttribute("name", "ss_muster_form");
-		musterDiv.appendChild(formObj);
+		dojo.byId("ss_muster_inner").appendChild(formObj);
 	    var hiddenObj = document.createElement("input");
 	    hiddenObj.setAttribute("type", "hidden");
 	    hiddenObj.setAttribute("name", "muster_class");
@@ -3641,13 +3640,13 @@ function ss_Clipboard () {
 		addContrBtnObj.setAttribute("type", "button");
 		addContrBtnObj.setAttribute("name", "add");
 		addContrBtnObj.setAttribute("value", ss_addContributesToClipboardText);
-		addContrBtnObj.setAttribute("onClick", "ss_muster.addContributesToClipboard();return false;");
+		addContrBtnObj.onclick = ss_muster.addContributesToClipboard;
 
 		var addTeamMembersBtnObj = document.createElement("input");
 		addTeamMembersBtnObj.setAttribute("type", "button");
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
-		addTeamMembersBtnObj.setAttribute("onClick", "ss_muster.addTeamMembersToClipboard();return false;");
+		addTeamMembersBtnObj.onclick = ss_muster.addTeamMembersToClipboard;
 
 
 		addBtnDivObj.appendChild(addContrBtnObj);
@@ -3668,20 +3667,14 @@ function ss_Clipboard () {
 		deleteBtnObj.setAttribute("type", "submit");
 		deleteBtnObj.setAttribute("name", "clear");
 		deleteBtnObj.setAttribute("value", ss_clearClipboardText);
-		deleteBtnObj.setAttribute("onClick", "ss_muster.removeFromClipboard('ss_muster_form');return false;");
+		deleteBtnObj.onclick = function () { ss_muster.removeFromClipboard('ss_muster_form'); };
 		deleteBtnObj.style.marginRight = "15px"
-		var cancelBtnObj = document.createElement("input");
-		cancelBtnObj.setAttribute("type", "button");
-		cancelBtnObj.setAttribute("name", "cancel");
-		cancelBtnObj.setAttribute("value", ss_closeButtonText);
-		cancelBtnObj.setAttribute("onClick", "ss_muster.cancel();");
-		cancelBtnObj.style.marginRight = "15px"
+
+		dojo.byId("ss_muster_close").onclick = ss_muster.cancel;
 
 		formObj.appendChild(brObj.cloneNode(false));
 		formObj.appendChild(deleteBtnObj);
-		formObj.appendChild(cancelBtnObj);
 		
-		document.getElementsByTagName("body").item(0).appendChild(musterDiv);
 
 		loadUsers(divObj);
 	}
@@ -3729,15 +3722,15 @@ function ss_Clipboard () {
 			}
 			
 			var hrefSelectAllObj = document.createElement("a");
-			hrefSelectAllObj.href = "javascript: //";
-			hrefSelectAllObj.setAttribute("onClick", "ss_muster.selectAll()");
+			hrefSelectAllObj.href = "javascript:;";
+			hrefSelectAllObj.onclick = ss_muster.selectAll;
 			hrefSelectAllObj.className = "ss_linkButton";
 			hrefSelectAllObj.style.marginRight = "5px";
 			hrefSelectAllObj.appendChild(document.createTextNode(ss_selectAllBtnText));
 
 			var hrefDeselectAllObj = document.createElement("a");
 			hrefDeselectAllObj.href = "javascript: //";
-			hrefDeselectAllObj.setAttribute("onClick", "ss_muster.clearAll()");
+			hrefDeselectAllObj.onclick = ss_muster.clearAll;
 			hrefDeselectAllObj.className = "ss_linkButton";
 			hrefDeselectAllObj.style.marginRight = "5px";
 			hrefDeselectAllObj.appendChild(document.createTextNode(ss_clearAllBtnText));
