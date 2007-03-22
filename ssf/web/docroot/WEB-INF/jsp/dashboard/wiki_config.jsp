@@ -32,7 +32,8 @@ function ${treeName}_showId(forum, obj) {
 </script>
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>${ssDashboard.beans[ssComponentId].ssBinder.title}
+<span><ssf:nlt tag="portlet.forum.selected.folder"/></span>
+<span class="ss_bold">${ssDashboard.beans[ssComponentId].ssBinder.title}</span>
 </c:if>
 <br/><br/>
 <span class="ss_bold">

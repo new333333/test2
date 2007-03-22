@@ -114,7 +114,7 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 	ajaxRequest.addKeyValue("findType", findUserGroupType)
 	ajaxRequest.addKeyValue("listDivId", "available_" + prefix)
 	ajaxRequest.addKeyValue("namespace", prefix);
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
 	ajaxRequest.setPostRequest(ss_postFindUserRequest);
 	ajaxRequest.setData("prefix", prefix);
