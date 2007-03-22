@@ -183,13 +183,13 @@ public class SearchFilter {
 		// the setText method is called on filterTerm and not on filterTermValueElem
 		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
 		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
 		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 		filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
 		
 		filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
 		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
 		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
 		filterTerm.setText(searchText.trim());
 	

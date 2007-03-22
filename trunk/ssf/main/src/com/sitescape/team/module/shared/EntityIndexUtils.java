@@ -31,6 +31,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -71,6 +72,7 @@ public class EntityIndexUtils {
     public static final String TITLE_FIELD = "title";
     public static final String SORT_TITLE_FIELD = "_sortTitle";
     public static final String TITLE1_FIELD = "_title1";
+    public static final String EXTENDED_TITLE_FIELD = "_extendedTitle";
     public static final String NAME_FIELD = "_name";
     public static final String NAME1_FIELD = "_name1";
     public static final String DESC_FIELD = "_desc";
@@ -114,6 +116,12 @@ public class EntityIndexUtils {
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
                 doc.add(allTextField);
+                if ((entry.getEntityType().equals(EntityType.folder) || entry.getEntityType().equals(EntityType.workspace)) &&
+                		entry.getParentBinder() != null) {
+                	String extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
+        	        Field extendedTitleField = new Field(EntityIndexUtils.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.TOKENIZED);
+        	        doc.add(extendedTitleField);
+                }
             }
     	}
     }
