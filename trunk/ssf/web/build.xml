@@ -170,6 +170,11 @@
 	</target>
 	
 	<target name="deploy">
+		<copy todir="${app.server.ssf.dir}" overwrite="true">
+			<fileset dir="${web.dir}"
+				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml"
+			/>
+		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"
 				excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml"
