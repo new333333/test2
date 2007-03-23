@@ -115,6 +115,8 @@ public class QueryBuilder {
 		String acls = getAclClause();
 		if (acls.length() != 0) {
 			String q = so.getQueryString();
+			if (q.equalsIgnoreCase("(  )"))
+				q = "";
 			if (q.length() > 0)
 				q += "AND ";
 			q += acls;
