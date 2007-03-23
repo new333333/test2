@@ -117,6 +117,7 @@ public class WebKeys {
 
 	//session attributes
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
+	
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
@@ -196,10 +197,15 @@ public class WebKeys {
     public static final String OPERATION_DASHBOARD_SEARCH_MORE="search_more";
     public static final String OPERATION_DELETE_TAB="delete_tab";
 	public static final String OPERATION_FIND_ENTRIES_SEARCH = "find_entries_search";
+	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";
+	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
+	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
 	public static final String OPERATION_FIND_TAG_WIDGET = "get_tags_widget";	
 	public static final String OPERATION_FIND_USER_SEARCH = "find_user_search";
+	public static final String OPERATION_FIND_WORKFLOWS_WIDGET = "get_workflows_widget";	
+	public static final String OPERATION_FIND_WORKFLOW_STEP_WIDGET = "get_workflow_step_widget";	
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
