@@ -30,7 +30,7 @@
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="configure_roles"/></portlet:actionURL>">
 		
-	<span><b><ssf:nlt tag="administration.configure_roles.name" text="Name"/></b></span>
+	<span class="ss_bold"><ssf:nlt tag="administration.configure_roles.name" text="Name"/></span>
 	<input type="text" class="ss_text" size="70" name="roleName"><br>
 		
 	<c:forEach var="operation" items="${ssWorkAreaOperations}">

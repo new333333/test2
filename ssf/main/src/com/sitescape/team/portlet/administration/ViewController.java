@@ -258,6 +258,19 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("url", url.toString());
 		}
 
+		//Manage groups
+		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), "addEntries")) {
+			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.manage.groups"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_GROUPS);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+		}
+	
 		//Import profiles
 		if (getProfileModule().testAccess((ProfileBinder)user.getParentBinder(), "addEntries")) {
 			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);

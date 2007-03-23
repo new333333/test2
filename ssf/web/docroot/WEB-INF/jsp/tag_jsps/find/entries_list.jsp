@@ -75,7 +75,7 @@ function ss_findUserSearch(textObjId, elementName, findPlacesType) {
 	ajaxRequest.addKeyValue("findType", findPlacesType)
 	ajaxRequest.addKeyValue("listDivId", "available_"+elementName+"_${prefix}")
 	ajaxRequest.addKeyValue("namespace", "<portlet:namespace/>");
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	//ajaxRequest.setPreRequest(ss_preFindUserRequest);
 	ajaxRequest.setPostRequest(ss_postFindUserRequest<portlet:namespace/>);
 	ajaxRequest.setData("elementName", elementName)
