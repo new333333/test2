@@ -511,8 +511,13 @@ public class EntityIndexUtils {
     // in the _allText field for this attachment, just add the contents of
     // the file attachment, it's name, and it's creator/modifier
     public static Document addFileAttachmentAllText(Document doc) {
+       	String text = "";
        	doc.removeFields(BasicIndexUtils.ALL_TEXT_FIELD);
-       	String text = doc.getField(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD).stringValue();
+       	// just in case there wasn't any text from the converted file 
+       	// i.e. the file didn't really exist
+       	try {
+       		text = doc.getField(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD).stringValue();
+       	} catch (Exception e) {}
        	doc.removeFields(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD);
        	text += " " + doc.getField(EntityIndexUtils.FILENAME_FIELD).stringValue();
        	text += " " + doc.getField(EntityIndexUtils.MODIFICATION_NAME_FIELD).stringValue();
