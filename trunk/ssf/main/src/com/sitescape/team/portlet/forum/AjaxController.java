@@ -132,6 +132,8 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_MANAGE_GROUP)) {
+				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
 			response.setContentType("text/xml");			
@@ -292,6 +294,8 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
+		} else if (op.equals(WebKeys.OPERATION_MANAGE_GROUP)) {
+			return ajaxGetGroup(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1613,6 +1617,19 @@ public class AjaxController  extends SAbstractController {
 			
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_binder_owner", model);
+	}
+	
+	private ModelAndView ajaxGetGroup(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+		model.put(WebKeys.BINDER_ID, binderId);
+		model.put(WebKeys.ENTRY_ID, groupId);
+		Principal group = getProfileModule().getEntry(binderId, groupId);
+		model.put(WebKeys.GROUP, group);
+			
+		return new ModelAndView("administration/manage_group", model);
 	}
 	
 	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 

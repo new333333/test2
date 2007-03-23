@@ -15,17 +15,35 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<portlet:actionURL>
-		 <portlet:param name="action" value="manage_groups"/>
-		 <portlet:param name="binderId" value="${ssBinder.id}"/>
-		 </portlet:actionURL>" name="<portlet:namespace />fm">
+<script type="text/javascript">
+function ss_showGroupList<portlet:namespace/>(obj, id) {
+	var iframeDiv = document.getElementById('ss_group_iframe<portlet:namespace/>')
+	iframeDiv.src = obj.href;
+	return false;
+}
+var ss_groupIframeOffset = 20;
+var ss_groupIframeXOffset = -20;
+var ss_groupIframeYOffset = 15;
+function ss_size_group_iframe<portlet:namespace/>(obj) {
+	var targetDiv = document.getElementById('ss_groupsDiv<portlet:namespace/>')
+	targetDiv.style.display = "block";
+	var iframeDiv = document.getElementById('ss_group_iframe<portlet:namespace/>')
+	if (window.frames['ss_group_iframe<portlet:namespace/>'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_group_iframe<portlet:namespace/>.document.body.scrollHeight);")
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + ss_groupIframeOffset + "px"
+		}
+	}
+	ss_setObjectTop(targetDiv, parseInt(ss_getClickPositionY() + ss_groupIframeYOffset))
+	ss_setObjectLeft(targetDiv, parseInt(ss_getClickPositionX() + ss_groupIframeXOffset))
+}
+</script>
+
 <div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.groups" /></span>
 <br>
-
-<div class="ss_divider"></div>
 <br>
+<div>
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>">
@@ -35,12 +53,46 @@
 		
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
+</div>
 <br/>
+<br/>
+
+<span class="ss_bold"><ssf:nlt tag="administration.selectGroupToManage"/></span>
+<br/>
+<div class="ss_indent_medium">
+  <c:forEach var="group" items="${ss_groupList}">
+  	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+		    action="__ajax_request"
+		    binderId="${ssBinder.id}"
+		    entryId="${group._docId}">
+    	    <ssf:param name="operation" value="manage_group"/>
+			</ssf:url>" 
+  	  onClick="ss_showGroupList<portlet:namespace/>(this, '${group._docId}');return false;"><span>${group.title}</span> <span class="ss_smallprint">(${group._name})</span></a><br/>
+  </c:forEach>
+</div>
+<br/>
+
 <div class="ss_formBreak"/>
 
+<form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
+		  action="<portlet:actionURL>
+		 <portlet:param name="action" value="manage_groups"/>
+		 <portlet:param name="binderId" value="${ssBinder.id}"/>
+		 </portlet:actionURL>" name="<portlet:namespace />fm">
 <div class="ss_buttonBarLeft">
 
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
-</div>
 </form>
+</div>
+
+<div class="ss_popupMenu" style="display:none;" id="ss_groupsDiv<portlet:namespace/>">
+<iframe 
+  id="ss_group_iframe<portlet:namespace/>"
+  name="ss_group_iframe<portlet:namespace/>"
+  onLoad="if (parent.ss_size_group_iframe<portlet:namespace/>) parent.ss_size_group_iframe<portlet:namespace/>(this);" 
+  width="100%">xxx</iframe>
+</div>
+
+</div>
+

@@ -222,6 +222,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
+	public static final String OPERATION_MANAGE_GROUP = "manage_group";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
@@ -448,6 +449,7 @@ public class WebKeys {
     public static final String FUNCTION_MAP="ssFunctionMap";
     public static final String FUNCTIONS_ALLOWED="ssFunctionsAllowed";
     public static final String FUNCTION_MEMBERSHIP="ssFunctionMemberships";
+    public static final String GROUP="ss_group";
     public static final String GROUP_LIST="ss_groupList";
     public static final String GROUPS="ssGroups";
     public static final String HELP_PANEL_ID="ss_help_panel_id";
