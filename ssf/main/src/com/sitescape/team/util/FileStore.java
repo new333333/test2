@@ -21,6 +21,10 @@ public class FileStore {
 		this.rootPath = rootPath;
 	}
 	
+	public String getRootPath() {
+		return rootPath;
+	}
+	
 	/**
 	 * Copy the source file to the target. 
 	 * If target file already exists, it is overwritten.

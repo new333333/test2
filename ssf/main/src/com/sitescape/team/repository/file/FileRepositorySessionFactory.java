@@ -6,7 +6,8 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class FileRepositorySessionFactory implements RepositorySessionFactory {
+public class FileRepositorySessionFactory implements RepositorySessionFactory,
+FileRepositorySessionFactoryMBean {
 
 	private String repositoryRootDir;
 

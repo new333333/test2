@@ -40,7 +40,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class HtmlOpenOfficeConverter
 	extends HtmlConverter
-	implements InitializingBean, DisposableBean
+	implements HtmlOpenOfficeConverterMBean, InitializingBean, DisposableBean
 {
 	private String _host = null;
 	private int _port = 0;

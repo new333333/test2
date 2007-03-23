@@ -25,7 +25,8 @@ import com.sitescape.team.repository.jcr.JCRRepositorySession;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 
-public class JCRRepositorySessionFactory implements RepositorySessionFactory {
+public class JCRRepositorySessionFactory implements RepositorySessionFactory,
+JCRRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -50,13 +51,22 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 	public void setConfigFileName(String configFileName) {
 		this.configFileName = configFileName;
 	}
+	public String getConfigFileName() {
+		return configFileName;
+	}
 
 	public void setHomeSubdirName(String homeSubdirName) {
 		this.homeSubdirName = homeSubdirName;
 	}
+	public String getHomeSubdirName() {
+		return homeSubdirName;
+	}
 
 	public void setPassword(String password) {
 		this.password = password.toCharArray();
+	}
+	public String getPassword() {
+		return new String(password);
 	}
 
 	public void setInitializeOnStartup(boolean initializeOnStartup) {
@@ -69,9 +79,15 @@ public class JCRRepositorySessionFactory implements RepositorySessionFactory {
 		else
 			this.repositoryRootDir = repositoryRootDir + Constants.SLASH;
 	}
+	public String getRepositoryRootDir() {
+		return repositoryRootDir;
+	}
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	public String getUsername() {
+		return username;
 	}
 
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
