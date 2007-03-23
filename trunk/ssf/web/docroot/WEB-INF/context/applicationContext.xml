@@ -792,7 +792,7 @@
 	        <entry key="SiteScape:type=Converter,name=imageOpenOfficeConverter">
 	          <ref local="imageOpenOfficeConverter"/>
 	        </entry>
-	        <entry key="SiteScape:type=Misc,name=rssGenerator">
+	        <entry key="SiteScape:type=Others,name=rssGenerator">
 	          <ref local="rssGenerator"/>
 	        </entry>
 	        <entry key="SiteScape:type=Repository,name=simpleFileRepository">
