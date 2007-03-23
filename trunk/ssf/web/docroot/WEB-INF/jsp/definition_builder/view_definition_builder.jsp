@@ -309,7 +309,7 @@ function getConditionSelectbox(obj, op, op2) {
     if (op2 != null && op2 != "") url += "&operation2=" + op2;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadGetConditionRequest);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
@@ -490,7 +490,7 @@ function ss_loadNextDiv(option, itemId, itemName, selectionId) {
 	//alert(url)
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request

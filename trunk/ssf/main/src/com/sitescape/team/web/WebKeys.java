@@ -74,6 +74,7 @@ public class WebKeys {
 	public static final String URL_FILE_TITLE = "fileTitle";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
+	public static final String URL_GROUP_NAME="groupName";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MUSTER_CLASS="muster_class";
     public static final String URL_MUSTER_IDS="muster_ids";
@@ -155,6 +156,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_IMPORT="import_definition";
 	public static final String ACTION_DEFINITION_EXPORT="export_definition";
 	public static final String ACTION_CONFIGURATION="configure_configuration";
+	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
@@ -607,6 +609,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_PROFILES ="administration/importProfiles"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
+    public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
