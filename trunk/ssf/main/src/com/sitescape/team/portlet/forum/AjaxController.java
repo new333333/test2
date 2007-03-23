@@ -707,8 +707,10 @@ public class AjaxController  extends SAbstractController {
 		Element filterTerm = filterTerms.addElement(FilterHelper.FilterTerm);
 		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
 		filterTerm.addAttribute(FilterHelper.FilterElementName, nameType);
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-		filterTermValueEle.setText(searchText);
+		if (searchText.length() > 0) {
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTermValueEle.setText(searchText);
+		}
 	   	
 		// check to see if the user has the right to see all users, just users in their community,
 		// or no users.
@@ -770,11 +772,13 @@ public class AjaxController  extends SAbstractController {
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 
-			searchTermFilter.addPlacesFilter(searchText);
+			if (searchText.length()>0)
+				searchTermFilter.addPlacesFilter(searchText);
 
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
-			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
+			if (searchText.length()>0)
+				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
 
 			List searchTerms = new ArrayList();
 			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
@@ -795,9 +799,10 @@ public class AjaxController  extends SAbstractController {
 			// searchTermFilter.addTagsFilter(FilterHelper.FilterTypeTags, searchText);
 		} else {
 			//Add the login name term
-			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
-			searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, searchText);
-			
+			if (searchText.length()>0) {
+				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
+				searchTermFilter.addLoginNameFilter(FilterHelper.FilterTypeEntry, searchText);
+			}
 			// check to see if the user has the right to see all users, just users in their community,
 			// or no users.
 /* Need a beter implemenation - disable for now
