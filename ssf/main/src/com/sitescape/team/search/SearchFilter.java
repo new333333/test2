@@ -181,18 +181,20 @@ public class SearchFilter {
 	
 		// this is not the same as in addFilter! 
 		// the setText method is called on filterTerm and not on filterTermValueElem
-		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
-		Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-		filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
+		if (searchText.length()>0) {
+			Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			Element filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTerm.setText(searchText.replaceFirst("\\*", "").trim());
+			
+			filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+			filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
+			filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
+			filterTerm.setText(searchText.trim());
+		}
 		
-		filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeElement);
-		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
-		filterTermValueEle = filterTerm.addElement(FilterHelper.FilterElementValue);
-		filterTerm.setText(searchText.trim());
-	
 		List searchTerms = new ArrayList(2);
 		searchTerms.add(EntityIdentifier.EntityType.folder.name());
 		searchTerms.add(EntityIdentifier.EntityType.workspace.name());
