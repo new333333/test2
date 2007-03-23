@@ -1,7 +1,12 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
 <script type="text/javascript">
-dojo.require('dojo.widget.ComboBox');
+dojo.require('dojo.widget.*');
+
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/WorkflowSelect.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/EntrySelect.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/widget/FieldSelect.js"></script>
+<script type="text/javascript">
 
 // TODO move this stuff to js file when ready
 var ss_userOptionsCounter = 0;
@@ -18,8 +23,14 @@ function ss_addOption(type) {
 	   case "tag" :
 	      ss_addTag(ss_userOptionsCounter);
 	      break;
-	   case "date" :
-	      ss_addDate(ss_userOptionsCounter);
+	   case "creation_date" :
+	      ss_addDate(ss_userOptionsCounter, "creation");
+	      break;
+	   case "modification_date" :
+	      ss_addDate(ss_userOptionsCounter, "modification");
+	      break;
+	   case "author" :
+	      ss_addAuthor(ss_userOptionsCounter);
 	      break;
 	   default : alert("Unknown type: "+type);
 	}
@@ -34,8 +45,21 @@ function ss_addWorkflow(orderNo) {
 	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
 	removeLink.appendChild(document.createTextNode("remove "));
 	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" Workflow"));
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="filter.workflows"/>: "));
+
+	var wDiv = document.createElement('div');
+	wDiv.id = "placeholderWorkflow"+orderNo;
+	div.appendChild(wDiv);
+	var sDiv = document.createElement('div');
+	sDiv.id = "workflowSteps"+orderNo;
+	sDiv.setAttribute("style", "display:inline;");
+	div.appendChild(sDiv);
 	document.getElementById('searchForm_additionalFilters').appendChild(div);
+		
+	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:baseUrl+"&operation=get_workflows_widget", nestedUrl:baseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo};
+	dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
+
 }
 function ss_addEntry(orderNo) {
 	var div = document.createElement('div');
@@ -45,8 +69,21 @@ function ss_addEntry(orderNo) {
 	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
 	removeLink.appendChild(document.createTextNode("remove "));
 	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" Entry"));
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.entry"/>: "));
+	
+	var eDiv = document.createElement('div');
+	eDiv.id = "placeholderEntry"+orderNo;
+	div.appendChild(eDiv);
+	var sDiv = document.createElement('div');
+	sDiv.id = "entryFields"+orderNo;
+	sDiv.setAttribute("style", "display:inline;");
+	div.appendChild(sDiv);
 	document.getElementById('searchForm_additionalFilters').appendChild(div);
+		
+	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:baseUrl+"&operation=get_entry_types_widget", nestedUrl:baseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo};
+	dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
+	
 }
 function ss_addTag(orderNo) {
 	
@@ -71,17 +108,39 @@ function ss_addTag(orderNo) {
 	
 	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	url += "&operation=get_tags_widget";
-	var propertiesCommunity = {name:"communityTag"+orderNo+"", id:"communityTag"+orderNo+"", dataUrl:url+"&findType=communityTags"};
-	var propertiesPersonal = {name:"personalTag"+orderNo+"", id:"personalTag"+orderNo+"", dataUrl:url+"&findType=personalTags"};
+	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", id:"searchCommunityTags"+orderNo+"", dataUrl:url+"&findType=communityTags"};
+	var propertiesPersonal = {name:"searchPersonalTags"+orderNo+"", id:"searchPersonalTags"+orderNo+"", dataUrl:url+"&findType=personalTags"};
 	dojo.widget.createWidget("ComboBox", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
 	dojo.widget.createWidget("ComboBox", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+}
+
+function ss_addAuthor(orderNo) {
+	var div = document.createElement('div');
+	div.id = "block"+ss_userOptionsCounter;
+	div.setAttribute("style", "border: 1px solid pink;padding:5px;margin:5px;");
+	var removeLink = document.createElement('a');
+	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
+	removeLink.appendChild(document.createTextNode("remove "));
+	div.appendChild(removeLink);
+
+	var aDiv = document.createElement('div');
+	aDiv.id = "placeholderAuthor"+orderNo;
+
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.author"/>: "));
+	div.appendChild(aDiv);
+	document.getElementById('searchForm_additionalFilters').appendChild(div);
+	
+	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+	url += "&operation=get_users_widget";
+	var props = {name:"searchAuthors"+orderNo+"", id:"searchAuthors"+orderNo+"", dataUrl:url};
+	dojo.widget.createWidget("ComboBox", props, document.getElementById("placeholderAuthor"+orderNo+""));
 }
 
 function ss_callRemove(orderNo) { 
 	return function(evt) {ss_removeOption(orderNo);};
 }
 
-function ss_addDate(orderNo) {
+function ss_addDate(orderNo, type) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	div.setAttribute("style", "border: 1px solid green;padding:5px;margin:5px;");
@@ -89,27 +148,57 @@ function ss_addDate(orderNo) {
 	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
 	removeLink.appendChild(document.createTextNode("remove "));
 	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" Date"));
+//	var inutType = document.createElement('input');
+//	inputType.setAttribute("name", "dateType"+orderNo);
+//	inputType.setAttribute("type", "hidden");
+//	inputType.setAttribute("value", type);
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.Date"/>: "));
+	
+	var sdDiv = document.createElement('div');
+	sdDiv.id = "placeholderStartDate"+orderNo;
+	div.appendChild(sdDiv);
+	var edDiv = document.createElement('div');
+	edDiv.id = "placeholderEndDate"+orderNo;
+	div.appendChild(edDiv);
+	
 	document.getElementById('searchForm_additionalFilters').appendChild(div);
+	
+	dojo.widget.createWidget("DropDownDatePicker", {value:'', id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
+	dojo.widget.createWidget("DropDownDatePicker", {value:'today', id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
+
 function ss_removeOption(orderNo) {
 	ss_optionsArray[orderNo]="";
 	document.getElementById('searchForm_additionalFilters').removeChild(document.getElementById('block'+orderNo));
 }
 
-</script>
+function prepareAdditionalOptions() {
+	var numbers = new Array();
+	var types = new Array();
+	for (var i=0; i<ss_userOptionsCounter; i++) {
+		if (ss_optionsArray[i] != "") {
+			numbers[numbers.length] = i;
+			types[types.length] = ss_optionsArray[i];
+		}
+	}
+	document.getElementById("searchNumbers").value = numbers.join(" ");
+	document.getElementById("searchTypes").value = types.join(" ");
+	return true;
+}
 
+</script>
+<div class="ss_style ss_portlet">
 <form action="<portlet:actionURL windowState="maximized" portletMode="view">
 			<portlet:param name="action" value="advanced_search"/>
 			<portlet:param name="tabTitle" value=""/>
 			<portlet:param name="newTab" value="1"/>
-			</portlet:actionURL>" method="post">
+			</portlet:actionURL>" method="post" onSubmit="return prepareAdditionalOptions();">
 
 	<div id="searchForm_main" style='border: 1px solid gray;padding:5px;margin:5px;'>
 		<ssf:nlt tag="searchForm.searchText"/>: <input type="text" name="searchText"/>
 		<ssf:nlt tag="searchForm.searchAuthor"/>: <input type="text" name="searchAuthors"/>
 		<ssf:nlt tag="searchForm.searchTag"/>: <input type="text" name="searchTags"/>
-		<ssf:nlt tag="searchForm.searchJoiner"/>: <input type="radio" name="searchJoiner" value="true"/><ssf:nlt tag="searchForm.searchJoiner.And"/>
+		<ssf:nlt tag="searchForm.searchJoiner"/>: <input type="radio" name="searchJoiner" value="true" selected="selected"/><ssf:nlt tag="searchForm.searchJoiner.And"/>
 			<input type="radio" name="searchJoiner" value="false"/><ssf:nlt tag="searchForm.searchJoiner.Or"/>
 	</div>
 
@@ -117,14 +206,19 @@ function ss_removeOption(orderNo) {
 		<a href="#" onClick="ss_addOption('workflow');">+ workflows</a>
 		<a href="#" onClick="ss_addOption('entry');">+ entry attributes</a>
 		<a href="#" onClick="ss_addOption('tag');">+ tags filter</a>
-		<a href="#" onClick="ss_addOption('date');">+ date filter</a>
+		<a href="#" onClick="ss_addOption('creation_date');">+ creation date filter</a>
+		<a href="#" onClick="ss_addOption('modification_date');">+ modification date filter</a>
+		<a href="#" onClick="ss_addOption('author');">+ author</a>				
 	</div>
 	
-	<div id="searchForm_additionalFilters">
+	<div id="searchForm_additionalFilters"  class="ss_style">
 	</div>
 	
 	<div id="buttonBar">
 		<input type="hidden" name="operation" value="ss_searchResults"/>
+		<input type="hidden" name="searchNumbers" id="searchNumbers" value=""/>		
+		<input type="hidden" name="searchTypes" id="searchTypes" value=""/>		
 		<input type="submit" name="searchBtn" value="Submit"/>
 	</div>
 </form>
+</div>
