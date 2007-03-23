@@ -22,20 +22,24 @@ function ss_showGroupList<portlet:namespace/>(obj, id) {
 	return false;
 }
 var ss_groupIframeOffset = 20;
-var ss_groupIframeXOffset = -20;
-var ss_groupIframeYOffset = 15;
+var ss_groupIframeYOffset = -20;
 function ss_size_group_iframe<portlet:namespace/>(obj) {
 	var targetDiv = document.getElementById('ss_groupsDiv<portlet:namespace/>')
+	ss_moveObjectToBody(targetDiv);
 	targetDiv.style.display = "block";
+	targetDiv.style.visibility = "visible";
 	var iframeDiv = document.getElementById('ss_group_iframe<portlet:namespace/>')
-	if (window.frames['ss_group_iframe<portlet:namespace/>'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_group_iframe<portlet:namespace/>.document.body.scrollHeight);")
-		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + ss_groupIframeOffset + "px"
+	if (iframeDiv.src) {
+		if (window.frames['ss_group_iframe<portlet:namespace/>'] != null) {
+			eval("var iframeHeight = parseInt(window.ss_group_iframe<portlet:namespace/>.document.body.scrollHeight);")
+			if (iframeHeight > 0) {
+				iframeDiv.style.height = iframeHeight + ss_groupIframeOffset + "px"
+			}
 		}
+		ss_setObjectTop(targetDiv, parseInt(ss_getClickPositionY() + ss_groupIframeYOffset)+"px")
+		var objLeft = parseInt(ss_getWindowWidth() / 3);
+		ss_setObjectLeft(targetDiv, objLeft+"px")
 	}
-	ss_setObjectTop(targetDiv, parseInt(ss_getClickPositionY() + ss_groupIframeYOffset))
-	ss_setObjectLeft(targetDiv, parseInt(ss_getClickPositionX() + ss_groupIframeXOffset))
 }
 </script>
 
@@ -86,8 +90,12 @@ function ss_size_group_iframe<portlet:namespace/>(obj) {
 </form>
 </div>
 
-<div class="ss_popupMenu" style="display:none;" id="ss_groupsDiv<portlet:namespace/>">
-<iframe 
+<div class="ss_popupMenu" style="visibility:hidden; display:none;" id="ss_groupsDiv<portlet:namespace/>">
+<div align="right"><a href="#" 
+  onClick="ss_hideDivNone('ss_groupsDiv<portlet:namespace/>');return false;"><img 
+  border="0" alt="<ssf:nlt tag="button.close"/>" 
+  src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
+<iframe frameBorder="0"
   id="ss_group_iframe<portlet:namespace/>"
   name="ss_group_iframe<portlet:namespace/>"
   onLoad="if (parent.ss_size_group_iframe<portlet:namespace/>) parent.ss_size_group_iframe<portlet:namespace/>(this);" 

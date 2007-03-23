@@ -57,7 +57,9 @@ public interface ProfileModule {
     public Map getGroups(Long binderId);
     public Map getGroups(Long binderId, Map options);
 	public Collection getGroups(Set groupIds);
-    public Map getUsers(Long binderId);
+	public List getGroupMembers(Long groupId, Long zoneId);
+	public List loadPrincipals(Set ids, Long zoneId);
+	public Map getUsers(Long binderId);
     public Map getUsers(Long binderId, Map options);
 	public Collection getUsers(Set userIds);
 	/**

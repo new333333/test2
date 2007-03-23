@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
@@ -29,6 +31,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
@@ -1621,6 +1624,7 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetGroup(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
@@ -1628,6 +1632,15 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.ENTRY_ID, groupId);
 		Principal group = getProfileModule().getEntry(binderId, groupId);
 		model.put(WebKeys.GROUP, group);
+		List memberList = getProfileModule().getGroupMembers(groupId, user.getZoneId());
+		Set ids = new HashSet();
+		Iterator itUsers = memberList.iterator();
+		while (itUsers.hasNext()) {
+			Membership member = (Membership) itUsers.next();
+			ids.add(member.getUserId());
+		}
+		List userList = getProfileModule().loadPrincipals(ids, user.getZoneId());
+		model.put(WebKeys.USER_LIST, userList);
 			
 		return new ModelAndView("administration/manage_group", model);
 	}

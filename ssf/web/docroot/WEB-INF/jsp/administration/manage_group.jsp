@@ -14,6 +14,16 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-xxxxxxxxxxxxxxxxxxxx
+<%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
+<body>
+
+<div>
+<c:forEach var="user" items="${ss_userList}">
+  ${user.title} (${user.name})<br/>
+</c:forEach>
+</div>
+
+
+</body>
+</html>
 

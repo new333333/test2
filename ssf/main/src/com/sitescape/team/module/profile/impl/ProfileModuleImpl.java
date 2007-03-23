@@ -283,6 +283,16 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 		return result;
 	}
+	public List getGroupMembers(Long groupId, Long zoneId) {
+		ProfileBinder binder = getProfileBinder();
+		checkAccess(binder, "getEntries");
+		return getProfileDao().getMembership(groupId, zoneId);
+	}
+	public List loadPrincipals(Set ids, Long zoneId) {
+		ProfileBinder binder = getProfileBinder();
+		checkAccess(binder, "getEntries");
+		return getProfileDao().loadPrincipals(ids, zoneId, false);
+	}
     
     //***********************************************************************************************************	
     //NO transaction
