@@ -12,9 +12,12 @@ import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +58,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	public static final String NEW_TAB_VALUE = "1";
 	
+	public static String SearchBlockTypeCreationDate = "creation_date";
+	public static String SearchBlockTypeModificationDate = "modification_date";
+	public static String SearchBlockTypeWorkflow = "workflow";
+	public static String SearchBlockTypeEntry = "entry";
+	public static String SearchBlockTypeAuthor = "author";
+	public static String SearchBlockTypeTag = "tag";
+		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.SEARCH_FORM_FORM)) {
@@ -101,7 +111,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 		String tabType = tabs.getTabType(tabs.getCurrentTab());
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 
-		
 		// Document searchQuery = FilterHelper.getSearchTextQuery(searchText);
 		Document searchQuery = getSearchQuery(request);
 		Map results =  getBinderModule().executeSearchQuery(searchQuery);
@@ -199,7 +208,65 @@ public class AdvancedSearchController extends AbstractBinderController {
 			for (int i=0; i<tagsArr.length; i++) {
 				searchFilter.addTag(tagsArr[i]);
 			}
-		}		
+		}
+		
+		String[] numbers = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchNumbers, "").split(" ");
+		String[] types = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchTypes, "").split(" ");
+		
+		for (int i=0; i<types.length; i++) {
+			if (types[i].equals(SearchBlockTypeWorkflow)) {
+				String workflowId =  PortletRequestUtils.getStringParameter(request, FilterHelper.SearchWorkflowId.concat(numbers[i]), "");
+				String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, FilterHelper.SearchWorkflowStep.concat(numbers[i]));
+				if (!workflowId.equals("")) searchFilter.addWorkflow(workflowId, workflowSteps);
+			}
+			if (types[i].equals(SearchBlockTypeEntry)) {
+				String entryTypeId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterEntryDefIdField.concat(numbers[i]), "");
+				String entryFieldId = PortletRequestUtils.getStringParameter(request, FilterHelper.FilterElementNameField.concat(numbers[i]), "");
+				String[] value = PortletRequestUtils.getStringParameters(request, FilterHelper.FilterElementValueField.concat(numbers[i]));
+//				String[] valueType = PortletRequestUtils.getStringParameters(request, FilterElementValueTypeField + String.valueOf(i));
+//				if (valueType.length > 0 && valueType[0].equals("checkbox")) {
+//					//Fix up the value for a checkbox. Make it either true or false
+//					if (value.length > 0 && value[0].equals("on")) {
+//						value[0] = "true";
+//					} else if (value.length > 0) {
+//						value[0] = "false";
+//					} else {
+//						value = new String[] {"false"};
+//					}
+//				}
+				
+				if (!entryTypeId.equals("")) searchFilter.addEntryType(entryTypeId, entryFieldId, value);
+
+			}
+			if (types[i].equals(SearchBlockTypeCreationDate) || types[i].equals(SearchBlockTypeModificationDate)) {
+				String startDate = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchStartDate.concat(numbers[i]), "");
+				String endDate = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchEndDate.concat(numbers[i]), "");
+				SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
+				User user = RequestContextHolder.getRequestContext().getUser();
+				inputFormater.setTimeZone(user.getTimeZone());
+				Date startD = null;
+				Date endD = null;
+				if (!startDate.equals(""))
+					try {startD = inputFormater.parse(startDate);} catch (ParseException e) {System.out.println("Parse exception by date:"+startDate);}
+				if (!endDate.equals(""))	
+					try {endD = inputFormater.parse(endDate);} catch (ParseException e) {System.out.println("Parse exception by date:"+endDate);}
+				if (types[i].equals(SearchBlockTypeCreationDate))
+					searchFilter.addCreationDateRange(startD, endD);
+				else if (types[i].equals(SearchBlockTypeModificationDate))
+					searchFilter.addModificationDateRange(startD, endD);
+				
+			}
+			if (types[i].equals(SearchBlockTypeAuthor)) {
+				String author = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
+				if (!author.equals("")) searchFilter.addCreatorById(author);
+			}
+			if (types[i].equals(SearchBlockTypeTag)) {
+				String personalTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags.concat(numbers[i]), "");
+				String communityTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchCommunityTags.concat(numbers[i]), "");
+				if (!personalTag.equals("")) searchFilter.addPersonalTag(personalTag);
+				if (!communityTag.equals("")) searchFilter.addCommunityTag(communityTag);
+			}
+		}
 		return searchFilter.getFilter();
 	}
 

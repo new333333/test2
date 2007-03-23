@@ -32,7 +32,13 @@ import com.sitescape.team.web.WebKeys;
 public class FilterHelper {  
 	//Search form field names
 	public final static String SearchAuthors = "searchAuthors";
+	public final static String SearchNumbers = "searchNumbers";
+	public final static String SearchStartDate = "searchStartDate";
+	public final static String SearchEndDate = "searchEndDate";
+	public final static String SearchTypes = "searchTypes";
 	public final static String SearchText = "searchText";
+	public final static String SearchWorkflowId = "searchWorkflow";
+	public final static String SearchWorkflowStep ="searchWorkflowStep";
 	public final static String SearchJoiner = "searchJoiner";
 	public final static String SearchCommunityTags = "searchCommunityTags";
 	public final static String SearchPersonalTags = "searchPersonalTags";
@@ -55,6 +61,7 @@ public class FilterHelper {
    	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeAuthor = "author";
+   	public final static String FilterTypeDate = "date";
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntry = "entry";
@@ -65,6 +72,8 @@ public class FilterHelper {
    	public final static String FilterTypeDocTypes = "docTypes";
    	public final static String FilterTypeEntityTypes = "entityTypes";
    	public final static String FilterTypeElement = "element";
+   	public final static String FilterStartDate = "startDate";
+   	public final static String FilterEndDate = "endDate";
    	public final static String FilterWorkflowDefId = "filterWorkflowDefId";
    	public final static String FilterWorkflowStateName = "filterWorkflowStateName";
    	
@@ -87,6 +96,9 @@ public class FilterHelper {
    	public final static String FilterWorkflowDefIdCaptionField = "ss_workflow_def_id_caption";
    	public final static String FilterWorkflowStateNameField = "ss_stateNameData";
 
+   	public static String MinimumSystemDate = "19000000";
+   	public static String MaximumSystemDate = "30000000";
+   	
 	//Routine to parse the results of submitting the search form
    	static public Document getEmptySearchQuery () throws Exception {
 		Document searchFilter = DocumentHelper.createDocument();
@@ -400,6 +412,8 @@ public class FilterHelper {
     	    			addCommunityTagField(block, filterTerm.getText());
     	    		} else if (filterType.equals(FilterTypePersonalTagSearch)) {
     	    			addPersonalTagField(block, filterTerm.getText());
+    		    	} else if (filterType.equals(FilterTypeDate)) {
+    		    		addDateRange(block, filterTerm.attributeValue(FilterElementName, ""), filterTerm.attributeValue(FilterStartDate, ""),filterTerm.attributeValue(FilterEndDate, ""));
     		    	}
             	}
     		}
@@ -418,7 +432,21 @@ public class FilterHelper {
     	return qTree;
 	}
    	
-   	private static void addPersonalTagField(Element block, String personalTag) {
+   	private static void addDateRange(Element block, String fieldName, String startDate, String endDate) {
+   		
+   		Element range = block.addElement(QueryBuilder.RANGE_ELEMENT);
+   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
+   		if (startDate == null || startDate.equals("")) startDate = MinimumSystemDate;
+   		if (endDate == null || endDate.equals("")) endDate = MaximumSystemDate;
+   		
+		Element start = range.addElement(QueryBuilder.RANGE_START);
+		start.setText(startDate);
+   		
+		Element end = range.addElement(QueryBuilder.RANGE_FINISH);
+		end.setText(endDate);
+	}
+
+	private static void addPersonalTagField(Element block, String personalTag) {
 		Element field = block.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
 	    String [] strTagArray = personalTag.split("\\s");
 	    for (int k = 0; k < strTagArray.length; k++) {
@@ -508,16 +536,18 @@ public class FilterHelper {
 		}
 		
     	//Add an OR field with all of the desired states
-		Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
-		Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();
-		while (itTermStates.hasNext()) {
-			String stateName = ((Element) itTermStates.next()).getText();
-			if (!stateName.equals("")) {
-				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
-				field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				child2.setText(stateName);
+		if (filterTerm.selectNodes(FilterWorkflowStateName).size()>0) {
+			Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+			Iterator itTermStates = filterTerm.selectNodes(FilterWorkflowStateName).iterator();			
+			while (itTermStates.hasNext()) {
+				String stateName = ((Element) itTermStates.next()).getText();
+				if (!stateName.equals("")) {
+					Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+					field2.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+					Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					child2.setText(stateName);
+				}
 			}
 		}
 	}

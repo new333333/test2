@@ -214,6 +214,16 @@ public class AjaxController  extends SAbstractController {
 			return ajaxFindUserSearch(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_TAG_WIDGET)) {
 			return ajaxGetTags(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOWS_WIDGET)) {
+			return ajaxGetWorkflows(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_WORKFLOW_STEP_WIDGET)) {
+			return ajaxGetWorkflowSteps(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_TYPES_WIDGET)) {
+			return ajaxGetEntryTypes(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FIELDS_WIDGET)) {
+			return ajaxGetEntryFields(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_USERS_WIDGET)) {
+			return ajaxGetUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
 				op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS) || 
 				op.equals(WebKeys.OPERATION_GET_ELEMENT_VALUES) || 
@@ -287,6 +297,53 @@ public class AjaxController  extends SAbstractController {
 		return ajaxReturn(request, response);
 	} 
 	
+	
+	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		List users = (List) ((Map)getProfileModule().getUsers(currentUser.getParentBinder().getId())).get("search_entries");
+		model.put(WebKeys.USERS, users);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_users_widget", model);
+	}
+	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
+		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+		
+		Map model = new HashMap();
+		// TODO if unlogged... - in all widgets!!!
+		model.put(WebKeys.ENTRY, entryTypes);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_entry_types_widget", model);
+	}
+	
+	private ModelAndView ajaxGetEntryFields(RenderRequest request, RenderResponse response) {
+		String entryTypeId = PortletRequestUtils.getStringParameter(request,WebKeys.FILTER_ENTRY_DEF_ID, "");
+		
+		Map model = new HashMap();
+		response.setContentType("text/json");
+		
+		String entryField = PortletRequestUtils.getStringParameter(request,FilterHelper.FilterElementNameField, "");
+		Map fieldsData = getDefinitionModule().getEntryDefinitionElements(entryTypeId);
+	
+		if (entryField.equals("")) {
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+			return new ModelAndView("forum/json/find_entry_fields_widget", model);
+		} else {
+			Map valuesData = (Map)((Map) fieldsData.get(entryField)).get("values");
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, valuesData);
+			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
+		}
+ 	}
+
+	private ModelAndView ajaxGetWorkflowSteps(RenderRequest request, RenderResponse response) {
+		String workflowId = PortletRequestUtils.getStringParameter(request, "workflowId", "");
+		Map model = new HashMap();
+		Map stateData = getDefinitionModule().getWorkflowDefinitionStates(workflowId);
+		model.put(WebKeys.WORKFLOW_DEFINTION_STATE_DATA, stateData);
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_workflow_steps_widget", model);
+	}
 	private ModelAndView ajaxGetTags(RenderRequest request, RenderResponse response) {
 		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String findType = PortletRequestUtils.getStringParameter(request, "findType", "tags");
@@ -299,7 +356,15 @@ public class AjaxController  extends SAbstractController {
 		model.put(WebKeys.TAGS, tags);
 		
 		response.setContentType("text/json");
-		return new ModelAndView("forum/find_tags_widget", model);
+		return new ModelAndView("forum/json/find_tags_widget", model);
+	}
+	
+	private ModelAndView ajaxGetWorkflows(RenderRequest request, RenderResponse response) {
+		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+		Map model = new HashMap();
+		model.put(WebKeys.WORKFLOW_DEFINTION_MAP, workflows);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
 	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
