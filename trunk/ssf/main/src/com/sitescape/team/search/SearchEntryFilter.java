@@ -1,5 +1,6 @@
 package com.sitescape.team.search;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -15,7 +16,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.web.util.FilterHelper;
 
 /**
- * @author renata
+ * @author Renata Nowicka
  *
  */
 public class SearchEntryFilter extends SearchFilter {
@@ -76,30 +77,79 @@ public class SearchEntryFilter extends SearchFilter {
 		newTerm.setText(userId);
 	}
 	
-	public void addCreationDateBefore(String date) {
-		// TODO implement
-	}
-	public void addCreationDateAfter(String date) {
-		// TODO implement
-	}
-	public void addModificationDateBefore(String date) {
-		// TODO implement
-	}
-	public void addModificationDateAfter(String date) {
-		// TODO implement
+	public void addCreationDateRange(String startDate, String endDate) {
+		addDateRange(EntityIndexUtils.CREATION_DAY_FIELD, startDate, endDate);
 	}
 	
+	public void addCreationDate(String date) {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
+		filterTerm.addAttribute(FilterHelper.FilterEndDate, date);
+	}
+	
+	public void addModificationDate(String date) {
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+		filterTerm.addAttribute(FilterHelper.FilterEndDate, date);
+	}
+	public void addModificationDateRange(String startDate, String endDate) {
+		addDateRange(EntityIndexUtils.MODIFICATION_DAY_FIELD, startDate, endDate);
+	}
+	
+	private void addDateRange(String fieldName, String startDate, String endDate) {
+		if ((startDate== null || startDate.equals("")) && ((endDate == null) || endDate.equals(""))) return;
+		checkCurrent();
+		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeDate);
+		filterTerm.addAttribute(FilterHelper.FilterElementName, fieldName);
+		if (startDate != null && !startDate.equals("")) { filterTerm.addAttribute(FilterHelper.FilterStartDate, startDate);}
+		if (endDate != null && !endDate.equals("")) { filterTerm.addAttribute(FilterHelper.FilterEndDate, endDate);}		
+	}
+	
+	public void addCreationDate(Date date) {
+		addCreationDate(searchFormated(date));
+	}
 	public void addCreationDateBefore(Date date) {
-		// TODO implement
+		addCreationDateRange(null, searchFormated(date));
 	}
 	public void addCreationDateAfter(Date date) {
-		// TODO implement
+		addCreationDateRange(searchFormated(date), null);
+	}
+	
+	public void addCreationDateRange(Date startDate, Date endDate) {
+		String formatedStartDate = null;
+		if (startDate != null) formatedStartDate = searchFormated(startDate);
+		String formatedEndDate = null;
+		if (endDate != null) formatedEndDate = searchFormated(endDate);
+		addCreationDateRange(formatedStartDate, formatedEndDate);
+	}
+	
+	private String searchFormated(Date date) {
+		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyyMMdd");
+		String outputDate = outputFormater.format(date);
+		return outputDate;
+	}
+	
+	public void addModificationDateRange(Date startDate, Date endDate) {
+		String formatedStartDate = null;
+		if (startDate != null) formatedStartDate = searchFormated(startDate);
+		String formatedEndDate = null;
+		if (endDate != null) formatedEndDate = searchFormated(endDate);
+		addModificationDateRange(formatedStartDate, formatedEndDate);
+	}
+
+	public void addModificationDate(Date date) {
+		addModificationDate(searchFormated(date));
 	}
 	public void addModificationDateBefore(Date date) {
-		// TODO implement
+		addModificationDateRange(null, searchFormated(date));
 	}
 	public void addModificationDateAfter(Date date) {
-		// TODO implement
+		addModificationDateRange(searchFormated(date), null);
 	}
 	
 	public void addTitle(String title) {
@@ -175,8 +225,11 @@ public class SearchEntryFilter extends SearchFilter {
 		addAndFilter(FilterHelper.FilterTypeDocTypes,FilterHelper.FilterDocType, searchTerms);	
 	}
 	
-	public  void addEntryType() {
-		// TODO implement
+	public  void addEntryType(String defId, String name, String[] value) {
+		// TODO implement it better, it should be possible look for entry type independent of value...
+		if (name.equals("description")) name="_desc";
+		addEntryTypeFilter(defId, name, value);
+		
 	}
 	
 }
