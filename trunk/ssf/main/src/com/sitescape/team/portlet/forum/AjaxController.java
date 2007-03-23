@@ -771,10 +771,7 @@ public class AjaxController  extends SAbstractController {
 		SearchFilter searchTermFilter = new SearchFilter();
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
-
-			if (searchText.length()>0)
-				searchTermFilter.addPlacesFilter(searchText);
-
+			searchTermFilter.addPlacesFilter(searchText);
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)
