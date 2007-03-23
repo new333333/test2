@@ -39,7 +39,8 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 
-public class RssGenerator extends CommonDependencyInjection {
+public class RssGenerator extends CommonDependencyInjection 
+implements RssGeneratorMBean {
 
 	//TODO MAXITEMS should be set in properties or via that application context file.
 	private final int MAXITEMS = 20;

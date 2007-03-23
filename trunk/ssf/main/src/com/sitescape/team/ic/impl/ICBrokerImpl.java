@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderResponse;
-
 import org.apache.xmlrpc.*;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -26,7 +23,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 
 public class ICBrokerImpl extends CommonDependencyInjection implements
-		ICBroker, InitializingBean, DisposableBean {
+		ICBroker, ICBrokerImplMBean, InitializingBean, DisposableBean {
 	private final static String AUTHENTICATE_USER = "addressbk.authenticate_user";
 
 	private final static String FIND_USERS = "addressbk.find_users_by_screenname";

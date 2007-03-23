@@ -38,7 +38,7 @@ import com.sitescape.team.util.Thumbnail;
  */
 public class ImageOpenOfficeConverter
 	extends ImageConverter
-	implements InitializingBean, DisposableBean
+	implements ImageOpenOfficeConverterMBean, InitializingBean, DisposableBean
 {
 	private int _port = 0;
 	FileStore _cacheFileStore = null;

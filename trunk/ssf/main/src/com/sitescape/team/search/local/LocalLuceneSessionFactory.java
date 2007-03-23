@@ -1,6 +1,5 @@
 package com.sitescape.team.search.local;
 
-import java.io.File;
 import java.io.IOException;
 
 import com.sitescape.team.search.AbstractLuceneSessionFactory;
@@ -13,7 +12,8 @@ import com.sitescape.team.util.FileHelper;
  * @author Jong Kim
  *
  */
-public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory {
+public class LocalLuceneSessionFactory extends AbstractLuceneSessionFactory 
+implements LocalLuceneSessionFactoryMBean {
     
 	private String indexRootDir;
 

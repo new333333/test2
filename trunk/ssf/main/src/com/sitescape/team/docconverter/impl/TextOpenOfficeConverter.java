@@ -41,7 +41,7 @@ import org.springframework.beans.factory.InitializingBean;
  */
 public class TextOpenOfficeConverter
 	extends TextConverter
-	implements InitializingBean, DisposableBean
+	implements TextOpenOfficeConverterMBean, InitializingBean, DisposableBean
 {
 	private int _port = 0;
 	private String _host = null,

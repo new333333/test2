@@ -83,6 +83,12 @@
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
 	
+	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
+	     property must be set to true in the hibernate.cfg.xml file. -->
+	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+	</bean>
+	
 	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
 		<property name="hibernateSessionFactory"><ref local="sessionFactory"/></property>
 	</bean> 
@@ -716,16 +722,6 @@
 		<property name="repositoryRootDir"><value>${data.root.dir}/filerepository</value></property>
 	</bean>
 
-	<bean id="webdavRepository" class="com.sitescape.team.repository.webdav.WebdavRepositorySessionFactory"
-		init-method="initialize" destroy-method="shutdown">
-		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
-		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
-		<property name="docRootPath"><value>${webdav.repository.document.root.path}</value></property>
-		<property name="username"><value>${webdav.repository.username}</value></property>
-		<property name="password"><value>${webdav.repository.password}</value></property>
-		<property name="versionDeletionAllowed"><value>false</value></property>
-	</bean>
-	
 	<bean id="jackrabbitRepository" class="com.sitescape.team.repository.jcr.jackrabbit.JCRRepositorySessionFactory"
 		init-method="initialize" destroy-method="shutdown">	
 		<property name="fileTypeMap"><ref local="mimeTypes"/></property>
@@ -737,6 +733,17 @@
 		<property name="password"><value>none</value></property>
 		<property name="versionDeletionAllowed"><value>true</value></property>
 	</bean>
+	
+	<!-- Uncomment this to use Slide-based WebDAV server as a repository -->
+	<!--<bean id="webdavRepository" class="com.sitescape.team.repository.webdav.WebdavRepositorySessionFactory"
+		init-method="initialize" destroy-method="shutdown">
+		<property name="hostUrl"><value>${webdav.repository.hosturl}</value></property>
+		<property name="contextPath"><value>${webdav.repository.context.path}</value></property>
+		<property name="docRootPath"><value>${webdav.repository.document.root.path}</value></property>
+		<property name="username"><value>${webdav.repository.username}</value></property>
+		<property name="password"><value>${webdav.repository.password}</value></property>
+		<property name="versionDeletionAllowed"><value>false</value></property>
+	</bean>-->
 	
 	<!-- ================================ Presence Service =============================== -->
 	<bean id="presenceService" class="com.sitescape.team.presence.impl.PresenceServiceImpl">
@@ -773,29 +780,41 @@
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
 	      <map>
-	        <entry key="sitescape:name=presenceService">
+	        <entry key="SiteScape:type=Indexing,name=localLuceneSessionFactory">
+	          <ref local="luceneSessionFactory"/>
+	        </entry>
+	        <entry key="SiteScape:type=Converter,name=htmlOpenOfficeConverter">
+	          <ref local="htmlOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="SiteScape:type=Converter,name=textOpenOfficeConverter">
+	          <ref local="textOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="SiteScape:type=Converter,name=imageOpenOfficeConverter">
+	          <ref local="imageOpenOfficeConverter"/>
+	        </entry>
+	        <entry key="SiteScape:type=Misc,name=rssGenerator">
+	          <ref local="rssGenerator"/>
+	        </entry>
+	        <entry key="SiteScape:type=Repository,name=simpleFileRepository">
+	          <ref local="simpleFileRepository"/>
+	        </entry>
+	        <entry key="SiteScape:type=Repository,name=jackrabbitRepository">
+	          <ref local="jackrabbitRepository"/>
+	        </entry>
+	        <!--<entry key="SiteScape:type=Repository,name=webdavRepository">
+	          <ref local="webdavRepository"/>
+	        </entry>-->
+	        <entry key="SiteScape:type=Realtime,name=presenceService">
 	          <ref local="presenceService"/>
 	        </entry>
-	        <entry key="sitescape:name=hibernateStatisticsService">
+	        <entry key="SiteScape:type=Realtime,name=icBroker">
+	          <ref local="icBroker"/>
+	        </entry>
+	        <entry key="SiteScape:type=Hibernate,name=hibernateStatisticsService">
 	          <ref local="hibernateStatisticsService"/>
 	        </entry>
 	      </map>
 	    </property>
-	    <property name="assembler">
-	      <bean class="org.springframework.jmx.export.assembler.MethodNameBasedMBeanInfoAssembler">
-	      	<property name="methodMappings">
-	      		<map>
-	      			<entry key="sitescape:name=presenceService"><value>getJabberServer,getJabberServerPort,getEnable</value></entry>
-	      		</map>
-	      	</property>
-	      </bean>
-	    </property>
-	</bean>
-
-	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
-	     property must be set to true in the Hibernate configuration file. -->
-	<bean id="hibernateStatisticsService" class="org.hibernate.jmx.StatisticsService">
-		<property name="sessionFactory"><ref local="sessionFactory"/></property>
 	</bean>
 	
 </beans>

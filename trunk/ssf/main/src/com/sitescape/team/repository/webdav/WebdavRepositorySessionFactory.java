@@ -2,9 +2,9 @@ package com.sitescape.team.repository.webdav;
 
 import java.io.IOException;
 
-import javax.jcr.Session;
-
 import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.repository.RepositoryServiceException;
@@ -12,7 +12,10 @@ import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class WebdavRepositorySessionFactory implements RepositorySessionFactory {
+public class WebdavRepositorySessionFactory implements RepositorySessionFactory,
+WebdavRepositorySessionFactoryMBean {
+
+	protected Log logger = LogFactory.getLog(getClass());
 
 	protected String hostUrl;
 	protected String contextPath;
@@ -24,6 +27,9 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 	public void setHostUrl(String hostUrl) {
 		this.hostUrl = hostUrl;
 	}
+	public String getHostUrl() {
+		return hostUrl;
+	}
 
 	public void setContextPath(String contextPath) {
 		// The context path must end with '/'. Otherwise it appears that
@@ -33,6 +39,9 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 			this.contextPath = contextPath;
 		else
 			this.contextPath = contextPath + Constants.SLASH;
+	}
+	public String getContextPath() {
+		return contextPath;
 	}
 
 	public void setDocRootPath(String docRootPath) {
@@ -44,16 +53,40 @@ public class WebdavRepositorySessionFactory implements RepositorySessionFactory 
 		else
 			this.docRootPath = docRootPath + Constants.SLASH;
 	}
+	public String getDocRootPath() {
+		return docRootPath;
+	}
 	
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public String getPassword() {
+		return password;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	public String getUsername() {
+		return username;
+	}
 	
 	public void initialize() throws RepositoryServiceException, UncheckedIOException {
+		// Test if we can make a connection. This will check whether the webdav 
+		// server is properly set up or not. Better find problem at startup time.
+		
+		try {
+			RepositorySession ses = openSession();
+			ses.close();
+		}
+		catch(RepositoryServiceException e) {
+			logger.error("Failed to initialize. It appears that the webdav repository is not configured properly");
+			throw e;
+		}
+		catch(UncheckedIOException e) {
+			logger.error("Failed to initialize. It appears that the webdav repository is not configured properly"); 
+			throw e;
+		}
 	}
 
 	public void shutdown() {
