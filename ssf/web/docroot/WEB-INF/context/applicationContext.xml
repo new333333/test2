@@ -462,13 +462,12 @@
 	</bean>
 
 
+	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
+	</bean>
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
-		<property name="target">
-			<bean parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
-				<property name="definitionModule"><ref local="definitionModule"/></property>
-				<property name="fileModule"><ref local="fileModule"/></property>
-			</bean>
-		</property>
+		<property name="target"><ref local="folderModuleTarget"/></property>
 		<!-- addEntry, addReply, modifyEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
@@ -812,6 +811,9 @@
 	        </entry>
 	        <entry key="SiteScape:type=Hibernate,name=hibernateStatisticsService">
 	          <ref local="hibernateStatisticsService"/>
+	        </entry>
+	        <entry key="SiteScape:type=Module,name=folderModule">
+	          <ref local="folderModuleTarget"/>
 	        </entry>
 	      </map>
 	    </property>

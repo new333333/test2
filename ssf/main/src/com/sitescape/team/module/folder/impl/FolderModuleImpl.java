@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
@@ -77,11 +78,16 @@ import com.sitescape.util.Validator;
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl extends CommonDependencyInjection implements FolderModule, InitializingBean {
+public class FolderModuleImpl extends CommonDependencyInjection 
+implements FolderModule, FolderModuleImplMBean, InitializingBean {
    	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
+    
+    AtomicInteger aeCount = new AtomicInteger();
+    AtomicInteger meCount = new AtomicInteger();
+    AtomicInteger deCount = new AtomicInteger();
 
     /**
      * Called after bean is initialized.  
@@ -295,6 +301,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Boolean filesFromApplet) throws AccessControlException, WriteFilesException {
+    	aeCount.incrementAndGet();
+
         Folder folder = loadFolder(folderId);
         checkAccess(folder, "addEntry");
         Definition def = null;
@@ -333,6 +341,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Boolean filesFromApplet) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+    	meCount.incrementAndGet();
+
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -638,6 +648,8 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
         return processor.getEntryTree(folder, entry);   	
     }
     public void deleteEntry(Long parentFolderId, Long entryId) {
+    	deCount.incrementAndGet();
+
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -1083,4 +1095,19 @@ public class FolderModuleImpl extends CommonDependencyInjection implements Folde
     	}
     	
     }
+    
+	public void clearStatistics() {
+		aeCount.set(0);
+		meCount.set(0);
+		deCount.set(0);
+	}
+	public int getAddEntryCount() {
+		return aeCount.get();
+	}
+	public int getDeleteEntryCount() {
+		return deCount.get();
+	}
+	public int getModifyEntryCount() {
+		return meCount.get();
+	}
  }
