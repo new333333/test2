@@ -88,6 +88,8 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
     AtomicInteger aeCount = new AtomicInteger();
     AtomicInteger meCount = new AtomicInteger();
     AtomicInteger deCount = new AtomicInteger();
+    AtomicInteger arCount = new AtomicInteger();
+    AtomicInteger afCount = new AtomicInteger();
 
     /**
      * Called after bean is initialized.  
@@ -280,6 +282,8 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
    
     public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
+    	afCount.incrementAndGet();
+    	
         Folder parentFolder = loadFolder(parentFolderId);
         checkAccess(parentFolder, "addFolder");
         Definition def = null;
@@ -317,6 +321,8 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
+    	arCount.incrementAndGet();
+    	
         Folder folder = loadFolder(folderId);
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderCoreProcessor processor = loadProcessor(folder);
@@ -1100,6 +1106,8 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 		aeCount.set(0);
 		meCount.set(0);
 		deCount.set(0);
+		arCount.set(0);
+		afCount.set(0);
 	}
 	public int getAddEntryCount() {
 		return aeCount.get();
@@ -1109,5 +1117,11 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 	}
 	public int getModifyEntryCount() {
 		return meCount.get();
+	}
+	public int getAddFolderCount() {
+		return afCount.get();
+	}
+	public int getAddReplyCount() {
+		return arCount.get();
 	}
  }
