@@ -462,10 +462,6 @@
 	</bean>
 
 
-	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
-		<property name="definitionModule"><ref local="definitionModule"/></property>
-		<property name="fileModule"><ref local="fileModule"/></property>
-	</bean>
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
 		<property name="target"><ref local="folderModuleTarget"/></property>
 		<!-- addEntry, addReply, modifyEntry provide transaction semantics at a finer
@@ -483,6 +479,10 @@
 				<prop key="unreserveEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
+	</bean>
+	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.FolderModuleImpl">
+		<property name="definitionModule"><ref local="definitionModule"/></property>
+		<property name="fileModule"><ref local="fileModule"/></property>
 	</bean>
 
 	<bean id="profileModule" parent="baseTransactionProxy">
