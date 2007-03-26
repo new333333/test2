@@ -105,13 +105,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		}
    	}
-    public String addDefinition(Document doc) {
+    public String addDefinition(Document doc, boolean replace) {
     	Element root = doc.getRootElement();
 		String type = root.attributeValue("type");
     	checkAccess(Integer.valueOf(type), "addDefinition");
-    	return doAddDefinition(doc).getId();
+    	return doAddDefinition(doc, replace).getId();
     }
-    protected Definition doAddDefinition(Document doc) {
+    protected Definition doAddDefinition(Document doc, boolean replace) {
     	Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
 		String caption = root.attributeValue("caption");
@@ -119,16 +119,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
 		String internalId = root.attributeValue("internalId", null);
+		Definition def=null;
 		if (!Validator.isNull(internalId)) {
 			//make sure doesn't exist
 			try {
-				getCoreDao().loadReservedDefinition(internalId, zoneId);
+				def = getCoreDao().loadReservedDefinition(internalId, zoneId);
+				if (replace) {
+					def.setName(name);
+					def.setTitle(caption);
+					def.setType(Integer.parseInt(type));
+					def.setInternalId(internalId);	
+					setDefinition(def, doc);
+					return def;
+				}
 				//alread exists
 				throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[]{internalId});
 			} catch (NoDefinitionByTheIdException nd) {}
 			
 		}
-		Definition def=null;
 		if (Validator.isNull(id)) {
 			//doesn't have an id, so generate one
 			def = new Definition();
@@ -157,6 +165,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				setDefinition(def,doc);
 				getCoreDao().replicate(def);				
 			} else {
+				if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
+
 				//see if matches zone
 				boolean found=false;
 				for (int i=0; i<oldDefs.size(); ++i) {
@@ -489,7 +499,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
 		doc.getRootElement().addAttribute("internalId", internalId);
-		return doAddDefinition(doc);
+		return doAddDefinition(doc, true);
 	}
 	
 /*

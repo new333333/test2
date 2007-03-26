@@ -21,7 +21,7 @@ import com.sitescape.team.module.shared.InputDataAccessor;
  */
 public interface DefinitionModule {
 
-	public String addDefinition(Document doc);
+	public String addDefinition(Document doc, boolean replace);
 	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData);
 	/**
 	 * Adds an item to an item in a definition tree.

@@ -35,7 +35,7 @@ public class ImportDefinitionController extends  SAbstractController {
 		    		SAXReader xIn = new SAXReader();
 		    		Document doc = xIn.read(fIn);   
 		    		fIn.close();
-		    		getDefinitionModule().addDefinition(doc);
+		    		getDefinitionModule().addDefinition(doc, true);
 		    	} catch (Exception fe) {
 //		    		errorMap.put(entry.getKey(), fe.getLocalizedMessage());	
 		    		logger.error(fe.getMessage(), fe);
