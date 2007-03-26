@@ -121,7 +121,7 @@
 	    folderId="${ssDefinitionEntry.parentBinder.id}"
 	    entryId="${ssDefinitionEntry.id}" >
 	    <ssf:param name="fileId" value="${selection.id}"/>
-	    <ssf:param name="viewType" value="scaled"/>
+	    <ssf:param name="viewType" value="thumbnail"/>
 	    </ssf:url>" /></a></div>
   </c:forEach>
   </div>
