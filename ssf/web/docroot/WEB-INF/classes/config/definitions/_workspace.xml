@@ -1,69 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_workspace" caption="__definition_default_workspace" type="8" nextId="11" definitionType="8" databaseId="402883b90cc53079010cc539bf260005" internalId="402883b90cc53079010cc539bf260005">
+<definition name="_workspace" caption="__definition_default_workspace" type="8" nextId="8" definitionType="8" internalId="402883b90cc53079010cc539bf260005" databaseId="402883b90cc53079010cc539bf260005">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
       <properties>
-        <property name="name" value="title">
-          <help>__help_data_name</help>
-        </property>
+        <property name="name" value="title"/>
         <property name="caption" value="__title"/>
         <property name="width" value="60"/>
-        <property name="inline">
-          <help>__help_mark_as_inline</help>
-        </property>
+        <property name="inline" value=""/>
+        <property name="generated" value=""/>
+        <property name="itemSource" value=""/>
       </properties>
     </item>
     <item name="description" caption="__description" type="data" id="3">
       <properties>
-        <property name="name" value="description">
-          <help>__help_data_name</help>
-        </property>
+        <property name="name" value="description"/>
         <property name="caption" value="__description"/>
-        <property name="height"/>
-        <property name="required">
-          <help>__help_required</help>
-        </property>
+        <property name="height" value=""/>
+        <property name="required" value=""/>
       </properties>
     </item>
     <item name="workspaceIcon" caption="__icon" type="data" id="4">
       <properties>
-        <property name="name" value="iconName"></property>
+        <property name="name" value="iconName"/>
         <property name="caption" value="__icon"/>
-      </properties>
-    </item>
-    <item name="textarea" caption="__simple_text_area" type="data" category="commonEntryData" id="9">
-      <properties>
-        <property name="name" type="text" value="displaystuff"/>
-        <property name="caption" type="text" value="Welcome"/>
-        <property name="width" type="text" value=""/>
-        <property name="rows" type="text" value="2"/>
-        <property name="inline" caption="__inline" type="boolean" value="false">
-          <help>__help_mark_as_inline</help>
-        </property>
-        <property name="required" caption="__required" type="boolean" default="false" value="false">
-          <help>__help_required</help>
-        </property>
       </properties>
     </item>
   </item>
   <item name="workspaceView" caption="__workspace_view" id="5">
     <properties/>
-    <item name="dashboardCanvas" caption="__dashboard_canvas" id="6">
-      <properties>
-        <property name="caption" value="__dashboard_canvas"/>
-      </properties>
-    </item>
-    <item name="descriptionView" caption="__description" id="7">
+    <item name="descriptionView" caption="__description" id="6">
       <properties>
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="workspaceDataItem" type="dataView" caption="__workspace_data_item" category="workspaceViewData" id="10" formItem="textarea">
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="7">
       <properties>
-        <property name="name" type="selectbox" value="displaystuff"/>
-        <property name="caption" type="text" value="Welcome"/>
+        <property name="caption" value="__dashboard_canvas"/>
       </properties>
     </item>
   </item>

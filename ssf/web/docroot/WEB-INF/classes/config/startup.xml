@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <zoneConfiguration>
 <!-- keep as separate file - only need to load once -->
+	<definitionFile>config/definitions/_user.xml</definitionFile>		
 	<definitionFile>config/definitions/_blogEntry.xml</definitionFile>		
+	<definitionFile>config/definitions/_comment.xml</definitionFile>		
 	<definitionFile>config/definitions/_calendarEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussionEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		

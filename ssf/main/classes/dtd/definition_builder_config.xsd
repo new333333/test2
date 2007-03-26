@@ -53,6 +53,7 @@
       <xsd:element name="properties" type="propertiesType"  minOccurs="0" maxOccurs="1"/>
       <xsd:element name="operations" type="operationsType"  minOccurs="0" maxOccurs="1"/>
       <xsd:element name="options" type="optionsType"  minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="option_entry_data" type="option_select_dataType" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="jsps" type="jspsType" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
 	  <xsd:element name="help" type="xsd:string" minOccurs="0" maxOccurs="1"/>
@@ -100,12 +101,14 @@
     <xsd:attribute name="path" type="xsd:string"/>
     <xsd:attribute name="unique" type="xsd:string"/>
     <xsd:attribute name="multipleAllowed" type="xsd:boolean"/>
+    <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>
   </xsd:complexType>
 
   <xsd:complexType name="optionsType">
     <xsd:sequence>
       <xsd:element name="option" type="optionType" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="option_select" type="option_selectType" minOccurs="0" maxOccurs="unbounded"/>
+ 
     </xsd:sequence>
     <xsd:attribute name="optionCaption" type="xsd:string"/>
   </xsd:complexType>
@@ -130,6 +133,7 @@
     <xsd:attribute name="initial" type="xsd:boolean"/>
     <xsd:attribute name="default" type="xsd:boolean"/>
   </xsd:complexType>
+
 
   <xsd:complexType name="option_select_dataType">
     <xsd:sequence>

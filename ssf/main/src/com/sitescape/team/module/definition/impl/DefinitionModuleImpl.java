@@ -444,7 +444,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_workspace";
 				internalId = ObjectKeys.DEFAULT_WORKSPACE_DEF;
-				definitionName="Workspace";
+				definitionName="_workspace";
 				break;				
 			}
 			
@@ -454,7 +454,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_user_workspace";
 				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_DEF;
-				definitionName="User workspace";
+				definitionName="_userWorkspace";
 				break;				
 			}
 			
@@ -464,7 +464,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_PROFILES_DEF;
 				definitionTitle = "__definition_default_profiles";
-				definitionName="Profiles";
+				definitionName="_profiles";
 				break;				
 			}
 			case Definition.PROFILE_ENTRY_VIEW: {
@@ -473,7 +473,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_USER_DEF;
 				definitionTitle = "__definition_default_user";
-				definitionName="User";
+				definitionName="_user";
 				break;				
 			}
 			case Definition.PROFILE_GROUP_VIEW: {
@@ -482,7 +482,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_GROUP_DEF;
 				definitionTitle = "__definition_default_group";
-				definitionName="Group";
+				definitionName="_group";
 				break;				
 			}
 		}
@@ -589,32 +589,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		checkAccess(def.getType(), "addItem");
 		
 		Document definitionTree = def.getDefinition();
-		/**
-		 * (rsordillo) Determine what type of Item we are adding to document
-		 */
-		if (itemNameToAdd.equals("firstName")
-		|| itemNameToAdd.equals("middleName")
-		|| itemNameToAdd.equals("lastName")
-		|| itemNameToAdd.equals("emailAddress")
-		|| itemNameToAdd.equals("organization")
-		|| itemNameToAdd.equals("homepage")
-		|| itemNameToAdd.equals("zonName"))
-			itemNameToAdd = "profileElements";
-		else
-		if (itemNameToAdd.length() > 0
-		&& Character.isDigit(itemNameToAdd.charAt(0)))
-		{
-			Element item = (Element)definitionTree.getRootElement().selectSingleNode("//item[@id=" + itemId + "]");
-			if (item.attributeValue("name", "").equals("entryView"))
-			{
-				itemNameToAdd = "entryDataItem";
-			}
-			else
-			if (item.attributeValue("name", "").equals("profileEntryView"))
-			{
-				itemNameToAdd = "profileElements";
-			}
-		}
 			
 		Element newItem = addItemToDefinitionDocument(def.getId(), definitionTree, itemId, itemNameToAdd, inputData);
 		if (newItem != null) {
@@ -738,29 +712,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						}
 						
 						Element newPropertyEle = newPropertiesEle.addElement("property");
-						//jsut copy attributes, don't need content
-						newPropertyEle.appendAttributes(configProperty);
-						// (rsordillo) remove Attributes that don't concern definition
-						Attribute attr = newPropertyEle.attribute("caption");
-						if (attr != null)
-							newPropertyEle.remove(attr);
-						
-						attr = newPropertyEle.attribute("unique");
-						if (attr != null)
-							newPropertyEle.remove(attr);
-						
-						attr = newPropertyEle.attribute("readonly");
-						if (attr != null)
-							newPropertyEle.remove(attr);
-						
-						attr = newPropertyEle.attribute("default");
-						if (attr != null)
-							newPropertyEle.remove(attr);
-
-						attr = newPropertyEle.attribute("characterMask");
-						if (attr != null)
-							newPropertyEle.remove(attr);
-
+						//just copy name and value
+						newPropertyEle.addAttribute("name", attrName);
 						if (type.equals("text")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("textarea")) {
@@ -1034,7 +987,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	
 	//Routine to check that the source item is allowed to be added to the target item type
 	private boolean checkTargetOptions(Document definitionTree, String targetItemType, String sourceItemType) {
-		Element configRoot = definitionTree.getRootElement();
+		//check against base config document
+		Element configRoot = definitionConfig.getRootElement();
 		Element targetItem = (Element) configRoot.selectSingleNode("item[@name='"+targetItemType+"']");
 		Element sourceItem = (Element) configRoot.selectSingleNode("item[@name='"+sourceItemType+"']");
 		if (targetItem == null || sourceItem == null) {return false;}
@@ -1081,8 +1035,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					(includeDefault && nextOption.attributeValue("default", "").equals("true"))) {
 				//This option is required. Copy it to the target
 				Element item = target.addElement("item");
-				item.addAttribute("name", (String)nextOption.attributeValue("name"));
-				Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+nextOption.attributeValue("name")+"']");
+				String name = nextOption.attributeValue("name");
+				item.addAttribute("name", name);
+				Element itemElement = (Element) configRoot.selectSingleNode("item[@name='"+name+"']");
 				if (itemElement == null) {continue;}
 				//Copy all of the attributes that should be in the definition
 				String caption = itemElement.attributeValue("caption", nextOption.attributeValue("name"));
@@ -1098,23 +1053,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				// Attributes that are not needed for runtime.
 				setDefinitionProperties(item, itemElement);
 				
-/*
-				List itemElementList = itemElement.elements("properties");
-				if (!itemElementList.isEmpty()) {
-					Element itemProperties = (Element) itemElementList.get(0);
-					item.add(itemProperties.createCopy());
-				}
-*/
-
-				//Get the jsps to be copied
-				//(rsordillo) Don't copy JSP tags
-/*
-				itemElementList = itemElement.elements("jsps");
-				if (!itemElementList.isEmpty()) {
-					Element itemJsps = (Element) itemElementList.get(0);
-					item.add(itemJsps.createCopy());
-				}
-*/
 				//Bump up the unique id
 				id++;
 				
@@ -1145,23 +1083,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					// Attributes that are not needed for runtime.
 					setDefinitionProperties(item, itemElement);
 					
-/*
-					List itemElementList = itemElement.elements("properties");
-					if (!itemElementList.isEmpty()) {
-						Element itemProperties = (Element) itemElementList.get(0);
-						item.add(itemProperties.createCopy());
-					}
-*/					
-					//Get the jsps to be copied
-					//(rsordillo) Don't copy JSP tags
-/*
-					itemElementList = itemElement.elements("jsps");
-					if (!itemElementList.isEmpty()) {
-						Element itemJsps = (Element) itemElementList.get(0);
-						item.add(itemJsps.createCopy());
-					}
-*/					
-					//Bump up the unique id
+
 					id++;
 					
 					//Now see if this item has some required options of its own
@@ -1244,21 +1166,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					// Attributes that are not needed for runtime.
 					setDefinitionProperties(item, itemElement);
 					
-/*
-					List itemElementList = itemElement.elements("properties");
-					if (!itemElementList.isEmpty()) {
-						Element itemProperties = (Element) itemElementList.get(0);
-						item.add(itemProperties.createCopy());
-					}
-*/	
-					//Get the jsps to be copied
-/*
-					itemElementList = itemElement.elements("jsps");
-					if (!itemElementList.isEmpty()) {
-						Element itemJsps = (Element) itemElementList.get(0);
-						item.add(itemJsps.createCopy());
-					}
-*/	
 					//Bump up the unique id
 					id++;
 					
@@ -1292,22 +1199,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						// Attributes that are not needed for runtime.
 						setDefinitionProperties(item, itemElement);
 						
-/*
-						List itemElementList = itemElement.elements("properties");
-						if (!itemElementList.isEmpty()) {
-							Element itemProperties = (Element) itemElementList.get(0);
-							item.add(itemProperties.createCopy());
-						}
-*/						
-						//Get the jsps to be copied
-/*
-						itemElementList = itemElement.elements("jsps");
-						if (!itemElementList.isEmpty()) {
-							Element itemJsps = (Element) itemElementList.get(0);
-							item.add(itemJsps.createCopy());
-						}
-*/						
-						//Bump up the unique id
+
 						id++;
 						
 						//Now see if this item has some required options of its own
@@ -1840,42 +1732,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
      * @param configItem	Base configuration Item Element that we are copying properties Element from
      * 
      */
-    private void setDefinitionProperties(Element parent, final Element configItem)
-    {
-    	List<Element> propertyItems = null;
-    	Element property = null,
-    			properties  = null;
-    	
-    	properties = parent.addElement("properties");
-		propertyItems = configItem.selectNodes("properties/property");
-		for (int x=0; x < propertyItems.size(); x++)
+    private void setDefinitionProperties(Element parent, final Element configItem)    {
+    	Element properties = parent.addElement("properties");
+    	List<Element> propertyItems = propertyItems = configItem.selectNodes("properties/property");
+		for (Element configProperty:propertyItems)
 		{
-			property = propertyItems.get(x).createCopy();
-			Attribute attr = property.attribute("caption");
-			if (attr != null)
-				property.remove(attr);
-			
-			attr = property.attribute("type");
-			if (attr != null)
-				property.remove(attr);
-			
-			attr = property.attribute("unique");
-			if (attr != null)
-				property.remove(attr);
-			
-			attr = property.attribute("readonly");
-			if (attr != null)
-				property.remove(attr);
-			
-			attr = property.attribute("default");
-			if (attr != null)
-				property.remove(attr);
-
-			attr = property.attribute("characterMask");
-			if (attr != null)
-				property.remove(attr);
-			
-			properties.add(property);
+			Element property = properties.addElement("property");
+			property.addAttribute("name", configProperty.attributeValue("name"));
+			property.addAttribute("value", configProperty.attributeValue("value", ""));
 		}
 		
 		return;

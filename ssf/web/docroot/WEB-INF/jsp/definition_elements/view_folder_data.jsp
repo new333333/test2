@@ -8,7 +8,7 @@
 	String itemType = (String) item.attributeValue("formItem", "");
 
 	if (itemType.equals("title")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" %><%
 
 	} else if (itemType.equals("description")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_description.jsp" %><%
@@ -23,13 +23,10 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" %><%
 		
 	} else if (itemType.equals("graphic")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" %><%		
-	
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" %><%
+		
 	} else if (itemType.equals("attachFiles")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
 	
 	}
-	
-	
-	
 %>

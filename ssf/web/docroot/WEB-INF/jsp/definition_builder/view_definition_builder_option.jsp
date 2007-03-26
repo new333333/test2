@@ -35,7 +35,7 @@
 		  option="<%= (String) data.get("option") %>" 
 		  itemId="<%= (String) data.get("itemId") %>" 
 		  itemName="<%= (String) data.get("itemName") %>" 
-		  selectionId="<%= (String) data.get("selectionId") %>" 
+		  refItemId="<%= (String) data.get("refItemId") %>" 
 		/>
 <%
 	} else {
@@ -63,7 +63,7 @@
 		  option="<%= (String) data.get("option") %>" 
 		  itemId="<%= (String) data.get("itemId") %>" 
 		  itemName="<%= (String) data.get("itemName") %>" 
-		  selectionId="<%= (String) data.get("selectionId") %>" 
+		  refItemId="<%= (String) data.get("refItemId") %>" 
 		/>
 	  </div>
 	</taconite-replace>

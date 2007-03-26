@@ -142,7 +142,6 @@ public class ViewController extends SAbstractController {
 		String selectedItem = PortletRequestUtils.getStringParameter(request, "selectedItem", "");
 		if (selectedItem.equals("0")) selectedItem = "";
 		String selectedItemTitle = "";
-
 		//See if there is a definition type requested
 		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
@@ -150,9 +149,6 @@ public class ViewController extends SAbstractController {
 		Document definitionConfig = getDefinitionModule().getDefinitionConfig();
 		model.put(WebKeys.CONFIG_DEFINITION, definitionConfig);
 			
-		if (!selectedItem.equals("")) {
-			model.put(WebKeys.DEFINITION, getDefinitionModule().getDefinition(selectedItem));
-		}
 
 		Map data = new HashMap();
 			
@@ -169,9 +165,11 @@ public class ViewController extends SAbstractController {
 		idData.put("captions",idDataCaptions);
 		
 		Document definitionTree;
-		if (!Validator.isNull(selectedItem)) {
+		if (Validator.isNotNull(selectedItem)) {
 			//A definition was selected, go view it
-			Definition def = (Definition)model.get(WebKeys.DEFINITION);
+			Definition def =  getDefinitionModule().getDefinition(selectedItem);
+			model.put(WebKeys.DEFINITION, def);
+			
 			idDataNames.put(def.getId(), NLT.getDef(def.getName()));
 			definitionType = String.valueOf(def.getType());
 			Document sourceDefinition = def.getDefinition();
@@ -246,21 +244,17 @@ public class ViewController extends SAbstractController {
 			}
 		}
 		//Set up the other data items
-		String option = PortletRequestUtils.getStringParameter(request, "option", "");
-		
+		String option = PortletRequestUtils.getStringParameter(request, "option", "");		
 		data.put("option", option);
 		
-		String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");
-		
+		String itemId = PortletRequestUtils.getStringParameter(request, "itemId", "");		
 		data.put("itemId", itemId);
 		
-		String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");
-		
+		String itemName = PortletRequestUtils.getStringParameter(request, "itemName", "");		
 		data.put("itemName", itemName);
 		
-		String selectionId = PortletRequestUtils.getStringParameter(request, "selectionId", "");
-		
-		data.put("selectionId", selectionId);
+		String refItemId = PortletRequestUtils.getStringParameter(request, "refItemId", "");		
+		data.put("refItemId", refItemId);
 		
         //There is a forum specified, so get the forum object
 		model.put("definitionTree", definitionTree);
@@ -271,7 +265,7 @@ public class ViewController extends SAbstractController {
 			model.put("ss_configErrorMessage", ((String[]) formData.get("ss_configErrorMessage"))[0]);
 		}
 		model.put("data", data);
-		if (!option.equals("")) {
+		if (Validator.isNotNull(option)) {
 			response.setContentType("text/xml");			
 			Map statusMap = new HashMap();
 			if(!WebHelper.isUserLoggedIn(request)) {
