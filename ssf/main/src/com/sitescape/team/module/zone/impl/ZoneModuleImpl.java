@@ -120,6 +120,8 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        					"update com.sitescape.team.domain.User set internalId=null where " +
 	        					"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
 	        			RequestContextUtil.setThreadContext(superU);
+	        			//TODO: temporary to reload
+	        			importDefaultDefs(zone.getName());
 	        			//adds user to profileDao cache
 	        			superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
 	        			//make sure posting agent and background user exist
@@ -258,13 +260,15 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 				reader = new SAXReader(false);  
 				try {
 					Document doc = reader.read(new ClassPathResource(file).getInputStream());
-					getDefinitionModule().addDefinition(doc);
+					getDefinitionModule().addDefinition(doc, false);
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
 	        	logger.error("Cannot read definition from file: " + file);
 				}
 			}
-			
+			//TODO:: temp to reload everyone
+			List templates = getAdminModule().getTemplates();
+			if (templates.isEmpty()) return;
 			//Now setup configurations
 			elements = cfg.getRootElement().selectNodes("template");
 			for (int i=0; i<elements.size(); ++i) {
