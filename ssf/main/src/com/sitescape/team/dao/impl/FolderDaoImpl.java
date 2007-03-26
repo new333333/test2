@@ -122,8 +122,11 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                             return session.createCriteria(FolderEntry.class)
                             	.add(Expression.disjunction()
                                 	.add(Expression.in("HKey.sortKey", keys))
-                                	.add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey()))
-                            	)
+                                	.add(Expression.conjunction()
+                                			.add(Expression.ge("HKey.sortKey", entry.getHKey().getSortKey()))
+                                			.add(Expression.lt("HKey.sortKey", next.getSortKey()))
+                                	)
+                            	 )
                             	.setFetchMode("entryDef", FetchMode.SELECT)	
                             	.setFetchMode("parentBinder", FetchMode.SELECT)	
                             	.setFetchMode("topFolder", FetchMode.SELECT)	
@@ -168,8 +171,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                 		int nextPos = Integer.parseInt(entry.getHKey().getRelativeNumber(entry.getDocLevel())) + 1;
                		 	HKey next = new HKey(entry.getParentEntry().getHKey(), nextPos);    
         				crit = session.createCriteria(FolderEntry.class)
-                            .add(Expression.between("HKey.sortKey", entry.getHKey().getSortKey(), next.getSortKey())
-                     		);
+        					.add(Expression.conjunction()
+                    			.add(Expression.gt("HKey.sortKey", entry.getHKey().getSortKey()))
+                    			.add(Expression.lt("HKey.sortKey", next.getSortKey()))
+							);
                 	 } else {
                 		 //this works better as an index with the DBs
                 		 crit = session.createCriteria(FolderEntry.class)

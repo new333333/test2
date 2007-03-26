@@ -1492,7 +1492,6 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		Folder folder = null;
 		FolderEntry entry = null;
-		Map folderEntries = null;
 
 		// User context
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -1500,8 +1499,7 @@ public class AjaxController  extends SAbstractController {
 
 
 		if (!entryId.equals("")) {
-			folderEntries  = getFolderModule().getEntryTree(folderId, Long.valueOf(entryId));
-			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			entry  = getFolderModule().getEntry(folderId, Long.valueOf(entryId));
 			folder = entry.getParentFolder();
 		} else {
 			folder = getFolderModule().getFolder(folderId);

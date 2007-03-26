@@ -854,7 +854,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		indexBinder(binder, null, null, false);
    		SFQuery query = indexEntries_getQuery(binder);
 	   	
-	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
        	try {       
   			List batch = new ArrayList();
   			List docs = new ArrayList();
@@ -901,38 +900,25 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
       				getCoreDao().evict(entry);
       				indexEntries_postIndex(binder, entry);
        			}
+       			IndexSynchronizationManager.addDocuments(docs);
+       			IndexSynchronizationManager.applyChanges();
 	            
        			// Delete the document that's currently in the index.
  // turn back on later when don't delete everything
 //       				luceneSession.deleteDocument(entry.getIndexDocumentUid());
 	            
        			// Register the index document for indexing.
-       			luceneSession.addDocuments(docs);
        			logger.info("Indexing done at " + total + "("+ binder.getId().toString() + ")");
        		
         	}
         	
         } finally {
         	query.close();
-        	luceneSession.close();
-        }
+         }
  
     }
     protected void indexEntries_preIndex(Binder binder) {
-         //need to use session directly, cause index_entries does.
-    	//make sure this gets out first
-       	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-        try {	            
-	        logger.info("Deleting index entries for binder (" + binder.getId().toString() + ") ");
-	        
-	        // Delete the document that's currently in the index.
-	        luceneSession.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
-
-	            
-        } finally {
-	        luceneSession.close();
-	    }
- 
+    	indexDeleteEntries(binder); 
     }
     
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
