@@ -1984,11 +1984,12 @@ public class ListFolderController extends  SAbstractController {
 			entries.put(entry.getId().toString(), entryMap);
 			entryMap.put("entry", entry);
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
+				//this will fill it the entryDef for the entry
 				DefinitionHelper.getDefaultEntryView(entry, entryMap, "//item[@name='entryBlogView']");				
 			}
 			//See if this entry can have replies added
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
-			Definition def = (Definition)entryMap.get(WebKeys.ENTRY_DEFINITION);
+			Definition def = entry.getEntryDef();
 			if (getFolderModule().testAccess(entry, "addReply")) {
 				Document defDoc = def.getDefinition();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");

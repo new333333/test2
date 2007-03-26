@@ -11,7 +11,7 @@
 	if (itemType.equals("name")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
 	
-	} else if (itemType.equals("profileElements")) {
+	} else {
 		User entry = (User) request.getAttribute("ssDefinitionEntry");
 		String value = "";
 		if (entry != null) {

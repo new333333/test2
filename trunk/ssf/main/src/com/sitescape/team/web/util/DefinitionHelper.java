@@ -91,17 +91,18 @@ public class DefinitionHelper {
 	 * @return
 	 */
 	public static boolean getDefinition(Definition currentDef, Map model, String node) {
-		model.put(WebKeys.ENTRY_DEFINITION, currentDef);
-		model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 		if (currentDef == null) {
 			model.put(WebKeys.CONFIG_ELEMENT, null);
+			model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 			return false;
 		}
 		Document configDoc = currentDef.getDefinition();
 		if (configDoc == null) { 
 			model.put(WebKeys.CONFIG_ELEMENT, null);
+			model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());
 			return false;
 		} else {
+			model.put(WebKeys.CONFIG_DEFINITION, configDoc);
 			Element configRoot = configDoc.getRootElement();
 			if (configRoot == null) {
 				model.put(WebKeys.CONFIG_ELEMENT, null);

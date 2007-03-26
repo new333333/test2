@@ -1,25 +1,26 @@
 package com.sitescape.team.taglib;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -30,187 +31,158 @@ import com.sitescape.util.servlet.StringServletResponse;
  *
  */
 public class DisplayConfiguration extends TagSupport {
+	private static final long serialVersionUID=1L;
     private Document configDefinition;
     private Element configElement;
     private String configJspStyle;
     private boolean processThisItem = false;
     private DefinableEntity entry;
-    private Document configDefaultDefinition;
     
 	public int doStartTag() throws JspException {
+		DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
-			this.configDefaultDefinition = DefinitionHelper.getDefinitionBuilderConfig().getAsMergedDom4jDocument();
 			
 			if (this.configDefinition == null) {
 					throw new JspException("No configuration definition available for this item.");
 			} else if (this.configElement != null) {
 				
-				Element definitionRoot = this.configDefinition.getRootElement();
-				Iterator itItems = null;
+				List<Element> itemList;
 				if (processThisItem == true) {
-					List itemList = new ArrayList();
+					itemList = new ArrayList();
 					itemList.add(this.configElement);
-					itItems = itemList.iterator();
 				} else {
-					itItems = this.configElement.elementIterator("item");
+					itemList = this.configElement.elements("item");
 				}
-				if (itItems != null) {
-					
-					
-					while (itItems.hasNext()) {
-						Element nextItem = (Element) itItems.next();
+				if (itemList != null) {										
+					for (Element nextItem:itemList) {
 						
 						//Find the jsp to run. Look in the definition configuration for this.
-						//Get the item type of the current item being processed
+						//Get the item type of the current item being processed 
 						String itemType = nextItem.attributeValue("name", "");
-						Element itemDefinition = (Element) definitionRoot.selectSingleNode("//item[@name='"+itemType+"']");
+						//get Item from main config document
+						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
 							// (rsordillo) Jsps contained in configDefaultDefinition only, removed code to check Definition
-							String jsp = DefinitionHelper.getDefinitionBuilderConfig().getItemJspByStyle(itemType, this.configJspStyle);
-
-								if (!Validator.isNull(jsp)) {
-									RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+							String jsp = configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
+							if (!Validator.isNull(jsp)) {
+								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
-									ServletRequest req = null;
-									req = new DynamicServletRequest(
+								ServletRequest req = null;
+								req = new DynamicServletRequest(
 										(HttpServletRequest)pageContext.getRequest());
 									
-									req.setAttribute("item", nextItem);
-									req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
-									req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
-									req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
+								req.setAttribute("item", nextItem);
+								req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
+								req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
+								req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
 									
-									//Each item property that has a value is added as a "request attribute". 
-									//  The key name is "property_xxx" where xxx is the property name.
-									//At a minimum, make sure the name and caption variables are defined
-									req.setAttribute("property_name", "");
-									req.setAttribute("property_caption", "");
+								//Each item property that has a value is added as a "request attribute". 
+								//  The key name is "property_xxx" where xxx is the property name.
+								//At a minimum, make sure the name and caption variables are defined
+								req.setAttribute("property_name", "");
+								req.setAttribute("property_caption", "");
 									
-									//Also set up the default values for all properties defined in the definition configuration
-									//  These will be overwritten by the real values (if they exist) below
-									Iterator itItemDefinitionProperties = itemDefinition.selectNodes("properties/property").iterator();
-									Map propertyDefaultValues = new HashMap();
-									while (itItemDefinitionProperties.hasNext()) {
-										Element property = (Element) itItemDefinitionProperties.next();
-										String propertyName = property.attributeValue("name", "");
-										String propertyDefaultValue = NLT.getDef(property.attributeValue("default", ""));
-										//Get the value from the actual definition
-										Element itemProperty = (Element) nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
-										if (itemProperty != null) {
-											propertyDefaultValue = NLT.getDef(itemProperty.attributeValue("value", propertyDefaultValue));
-										}
-										if (!propertyName.equals("")) {
-											req.setAttribute("property_"+propertyName, propertyDefaultValue);
-											//Remember the default setting so it won't get cleared later
-											propertyDefaultValues.put("property_"+propertyName, propertyDefaultValue);
-										}
-									}
-									
-									// use Map to store for while "selectbox" type properties
-									// the old code tries to get it always from request but then it gets also properties set by
-									// previouse tag calls
-									Map propertyValuesMap = new HashMap();
-									Iterator itProperties = nextItem.selectNodes("properties/property").iterator();
-									while (itProperties.hasNext()) {
-										Element property = (Element) itProperties.next();
-										String propertyName = property.attributeValue("name", "");
-										
-										if (!propertyName.equals("")) {												
-											if (!propertyDefaultValues.containsKey("property_"+propertyName)) 
-												req.setAttribute("property_"+propertyName, "");
-
-											//Get the type from the config definition
-											Element propertyConfig = (Element) itemDefinition.selectSingleNode("properties/property[@name='"+propertyName+"']");
-											String propertyConfigType = "";
-											if (propertyConfig != null) {
-												propertyConfigType = propertyConfig.attributeValue("type", "text");
-											}
+								//Also set up the default values for all properties defined in the definition configuration
+								//  These will be overwritten by the real values (if they exist) below
+								List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
+								Map propertyValuesMap = new HashMap();
+								Map savedReqAttributes = new HashMap();
+								for (Element property:itemDefinitionProperties) {
+									String propertyName = property.attributeValue("name", "");
+									if (Validator.isNull(propertyName)) continue;
+									//Get the type from the config definition
+									String propertyConfigType = property.attributeValue("type", "text");
+									String propertyValue = "";	
+									//Get the value(s) from the actual definition
+									if (propertyConfigType.equals("selectbox")) {
+										//get all items with same name
+										List<Element> selProperties = nextItem.selectNodes("properties/property[@name='"+propertyName+"']");
+										//There might be multiple values so bulid a list
+										List propertyValues = new ArrayList();
+										for (Element selItem:selProperties) {
+											String selValue = NLT.getDef(selItem.attributeValue("value", ""));
+											if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
 											
-											String propertyValue = "";
-											if (propertyConfigType.equals("textarea")) {
-												propertyValue = property.getText();
-											} else if (propertyConfigType.equals("boolean") || propertyConfigType.equals("checkbox")) {
-												propertyValue = NLT.getDef(property.attributeValue("value", ""));
-											} else if (propertyConfigType.equals("selectbox")) {
-												propertyValue = NLT.getDef(property.attributeValue("value", ""));
-												//There might be multiple values so bulid a list
-												List propertyValues = (List) propertyValuesMap.get("propertyValues_"+propertyName);
-												if (propertyValues == null) propertyValues = new ArrayList();
-												propertyValues.add(propertyValue);
-												propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
-											} else {
-												propertyValue = NLT.getDef(property.attributeValue("value", ""));
-											}
-											req.setAttribute("property_"+propertyName, propertyValue);
 										}
-									}
-									Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
-									while (itPropertyValuesMap.hasNext()) {
-										Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
-										req.setAttribute((String)entry.getKey(), entry.getValue());
-									}
-									
-									
-									//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
-									//Each property is added as a request attribute. The key name is "property_xxx" where xxx is the property name.
-									Map savedReqAttributes = new HashMap();
-									itProperties = itemDefinition.selectNodes("properties/property[@setAttribute]").iterator();
-									while (itProperties.hasNext()) {
-										Element property = (Element) itProperties.next();
+										propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
+										propertyValuesMap.put("property_"+propertyName, "");
+									} else {
+										Element selItem = (Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
+										if (propertyConfigType.equals("textarea")) {
+											propertyValue = selItem.getText();
+										} else {										
+											propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
+										}
+										//defaults don't apply here
+										//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
 										String reqAttrName = property.attributeValue("setAttribute", "");
-										if (!reqAttrName.equals("")) {
+										if (Validator.isNotNull(reqAttrName)) {
 											//Find this property in the current config
-											String propertyName = property.attributeValue("name", "");
-											Element configProperty = 
-												(Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
-											if (configProperty != null) {
-												String value = NLT.getDef(configProperty.attributeValue("value", ""));
-												savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
-												req.setAttribute(reqAttrName, value);
-											}
-										}
-									}
-									//Store the entry object
-									if (this.entry != null) {
-										req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
-									}
-									
-									StringServletResponse res = new StringServletResponse(httpRes);
-									rd.include(req, res);
-									pageContext.getOut().print(res.getString());
-
-									//Restore the saved properties
-									itProperties = itemDefinition.selectNodes("properties/property[@name='setAttribute']").iterator();
-									while (itProperties.hasNext()) {
-										Element property = (Element) itProperties.next();
-										String reqAttrName = property.attributeValue("setAttribute", "");
-										if (!reqAttrName.equals("")) {
 											savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
-											req.setAttribute(reqAttrName, req.getAttribute(reqAttrName));
+											req.setAttribute(reqAttrName, propertyValue);
 										}
+										if (Validator.isNull(propertyValue)) {
+											propertyValue = property.attributeValue("default", "");
+											if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
+										}
+										propertyValuesMap.put("property_"+propertyName, propertyValue);
+									
 									}
-								} else {
-									pageContext.getOut().print("<br><i>[No jsp for configuration element: "
-											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+										
+								}
+									
+								//not sure if this is necessary
+//								List<Element> itProperties = nextItem.selectNodes("properties/property");
+//								for (Element property:itProperties) {
+//									String propertyName = property.attributeValue("name", "");
+//									if (Validator.isNull(propertyName)) continue;
+//									if (!propertyValuesMap.containsKey("property_"+propertyName)) 
+//										propertyValuesMap.put("property_"+propertyName, "");
+//								}
+								
+								Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+								while (itPropertyValuesMap.hasNext()) {
+									Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+									req.setAttribute((String)entry.getKey(), entry.getValue());
+								}
+									
+									
+								//Store the entry object
+								if (this.entry != null) {
+									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
+								}
+									
+								StringServletResponse res = new StringServletResponse(httpRes);
+								rd.include(req, res);
+								pageContext.getOut().print(res.getString());
+
+								//Restore the saved properties
+								for (Element property:itemDefinitionProperties) {
+									String reqAttrName = property.attributeValue("setAttribute", "");
+									if (Validator.isNotNull(reqAttrName)) {
+										savedReqAttributes.put(reqAttrName, req.getAttribute(reqAttrName));
+										req.setAttribute(reqAttrName, req.getAttribute(reqAttrName));
+									}
 								}
 							} else {
 								if (!"mail".equals(configJspStyle)) {
 									pageContext.getOut().print("<br><i>[No jsp for configuration element: "
-										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+											+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
 								}
 							}
-//						}
-					}
-				}
+						} else {
+							pageContext.getOut().print("<br><i>[No configuration element: "
+										+NLT.getDef(nextItem.attributeValue("caption", "unknown"))+"]</i><br>");
+						}
+					} //end for
+				} //end no itemlist
 			}
-		}
-	    catch(Exception e) {
+		}  catch(Exception e) {
 	        throw new JspException(e);
-	    }
-	    finally {
+	    }  finally {
 	    	this.configDefinition = null;
 	    	this.configElement = null;
 	    	this.configJspStyle = null;

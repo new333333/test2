@@ -5,83 +5,51 @@
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
       <properties>
-        <property name="name" value="form1" setAttribute="formName"/>
-        <property name="type" value="form">
-          <option name="form" caption="__entry_form"/>
-          <option name="guestbook" caption="__entry_form_guestbook"/>
-          <help>__help_entry_view_type</help>
-        </property>
+        <property name="name" value="form1"/>
+        <property name="type" value="form"/>
       </properties>
       <item name="title" caption="__title" type="data" id="3">
         <properties>
-          <property name="name" value="title">
-            <help>__help_data_name</help>
-          </property>
+          <property name="name" value="title"/>
           <property name="caption" value="__title"/>
           <property name="width" value="60"/>
-          <property name="inline">
-            <help>__help_mark_as_inline</help>
-          </property>
-          <property name="generated">
-            <help>__help_mark_as_title</help>
-          </property>
-          <property name="itemSource">
-            <option name="ss_none" caption="__none"/>
-            <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" optionCaption="__file_items_from_the_entry_form_for_title"/>
-          </property>
+          <property name="inline" value=""/>
+          <property name="generated" value=""/>
+          <property name="itemSource" value=""/>
         </properties>
       </item>
       <item name="description" caption="__description" type="data" id="4">
         <properties>
-          <property name="name" value="description">
-            <help>__help_data_name</help>
-          </property>
+          <property name="name" value="description"/>
           <property name="caption" value="__description"/>
-          <property name="height"/>
-          <property name="required">
-            <help>__help_required</help>
-          </property>
+          <property name="height" value=""/>
+          <property name="required" value=""/>
         </properties>
       </item>
       <item name="attachFiles" caption="__attach_files" type="data" id="5">
         <properties>
           <property name="name" value="ss_attachFile"/>
-          <property name="caption"/>
+          <property name="caption" value=""/>
           <property name="width" value="60"/>
-          <property name="number"/>
-          <property name="storage">
-            <!-- 
-					IMPORTANT: Make sure that the following option list contains
-				    union of all repository names appearing in this definition. 
-				    Any file uploaded through one of the named element becomes
-				    visible through "attachFiles" type element. Therefore it is 
-				    illogical to display a list other than the full union. In
-				    the current version, the software is not capable of computing
-				    this master list dynamically. So it must be listed explicitly.
-				-->
-            <help>__help_storage_media</help>
-          </property>
-          <property name="hide"/>
+          <property name="number" value=""/>
+          <property name="storage" value=""/>
+          <property name="hide" value=""/>
         </properties>
       </item>
       <item name="entryFormButtons" caption="__form_buttons" id="6">
         <properties>
-          <property name="alignment">
-            <option name="left" caption="__left"/>
-            <option name="right" caption="__right"/>
-            <help>__help_form_button_alignment</help>
-          </property>
+          <property name="alignment" value=""/>
         </properties>
         <item name="okButton" caption="__ok_button" id="7">
           <properties>
             <property name="caption" value="__ok"/>
-            <property name="onClick"/>
+            <property name="onClick" value=""/>
           </properties>
         </item>
         <item name="cancelButton" caption="__cancel_button" id="8">
           <properties>
             <property name="caption" value="__cancel"/>
-            <property name="onClick"/>
+            <property name="onClick" value=""/>
           </properties>
         </item>
       </item>
@@ -89,11 +57,7 @@
   </item>
   <item name="entryView" caption="__entry_view_definition" id="9">
     <properties>
-      <property name="type" value="entryView">
-        <option name="entryView" caption="__entry_view"/>
-        <option name="guestbook" caption="__entry_guestbook"/>
-        <help>__help_entry_view_type</help>
-      </property>
+      <property name="type" value="entryView"/>
     </properties>
     <item name="titleView" caption="__title" id="10">
       <properties>
@@ -128,11 +92,7 @@
   </item>
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
     <properties>
-      <property name="type" value="blog">
-        <option name="blog" caption="__blog_view"/>
-        <option name="guestbook" caption="__entry_guestbook"/>
-        <help>__help_entry_view_type</help>
-      </property>
+      <property name="type" value="blog"/>
     </properties>
     <item name="titleBlogView" caption="__title" id="17">
       <properties>
@@ -161,9 +121,8 @@
     </item>
   </item>
   <properties>
-    <property name="name" type="text" value="_discussionEntry"/>
-    <property name="caption" type="text" value="__folder_entry"/>
-    <property name="icon" type="iconList" path="icons.entry" value="/icons/entry_blogpage.gif"/>
-    <property name="replyStyle" type="replyStyle" value="402883b9114739b301114752e8b70005"/>
+    <property name="name" value="_discussionEntry"/>
+    <property name="caption" value="__definition_default_discussion_entry"/>
+    <property name="replyStyle" value="402883c6115753d801115773ea5a000a"/>
   </properties>
 </definition>

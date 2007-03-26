@@ -48,6 +48,7 @@ var lastSelectedId = null;
 var operationSelection = null;
 var operationSelectedItem = "";
 var operationSelectedItemName = "";
+var operationReferenceItem="";
 
 var selectedIdText = null;
 var selectedCaptionText = null;
@@ -81,9 +82,9 @@ function initializeStateMachine() {
 	ss_showHideObj('definitionbuilder_tree', 'visible', 'block')
 }
 
-function loadDiv(option, itemId, itemName, selectionId) {
-	//alert("Load div: " + option + ", " + itemId + ", " + itemName)
-	ss_loadNextDiv(option, itemId, itemName, selectionId)
+function loadDiv(option, itemId, itemName, refItemId) {
+	//alert("Load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
+	ss_loadNextDiv(option, itemId, itemName, refItemId)
 	return
 	
 	
@@ -96,7 +97,7 @@ function loadDiv(option, itemId, itemName, selectionId) {
 	url += "\&option=" + option
 	if (itemId != "") {url += "\&itemId=" + itemId;}
 	if (itemName != "") {url += "\&itemName=" + itemName;}
-	if (selectionId != "") {url += "\&selectionId=" + selectionId;}
+	if (refItemId != "") {url += "\&refItemId=" + refItemId;}
 	url += "\&rn=" + rn++
 	//alert(url)
 	ss_fetch_url(url, loadDivCallback)
@@ -333,12 +334,13 @@ function showOptions(id, name, item) {
 	return false;
 }
 
-function showProperties(id, name, item) {
-	//alert('showProperties: ' + id + ', ' + name + ', ' + item)
+function showProperties(name, refItem) {
+	//alert('showProperties: ' + name + ', ' + refItem)
 	//User selected an option, show the properties
 	operationSelection = "addItem";
-	operationSelectedItem = id;
+	operationSelectedItem = name;
 	operationSelectedItemName = name;
+	operationReferenceItem = refItem;
 	setStateMachine("addItem")
 	return false;
 }
@@ -410,14 +412,12 @@ function setStateMachine(newState) {
 		//ss_addToDiv("displaydiv", "info_"+operationSelectedItem)
 		//ss_addToDiv("displaydiv", "properties_"+operationSelectedItem)
 		showDisplayButtons()
-		//loadDiv('properties', operationSelection, operationSelectedItem)
-		//loadDiv('properties', "", operationSelectedItem, operationSelection)
-		loadDiv('properties', "", operationSelectedItem, operationSelectedItem)
+		loadDiv('properties', "", operationSelectedItem, operationReferenceItem);
+		operationReferenceItem = "";
 	} else if (state == "modifyItem") {
 		ss_setDivHtml("displaydiv", "")
 		showDisplayButtons()
-		//loadDiv('properties', selectedIdMapped, "")
-		loadDiv('properties', selectedIdMapped, "", selectedIdMapped)
+		loadDiv('properties', selectedIdMapped, "")
 	} else if (state == "deleteItem") {
 		//alert("deleteItem: " + selectedId)
 		ss_setDivHtml("displaydiv", "")
@@ -473,9 +473,9 @@ function setSubmitData(formObj) {
 	formObj.sourceDefinitionId.value = sourceDefinitionId;
 }
 
-function ss_loadNextDiv(option, itemId, itemName, selectionId) {
+function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	ss_setupStatusMessageDiv()
-	//alert("load div: " + option + ", " + itemId + ", " + itemName)
+	//alert("load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
 	hideDisplayDiv();
 	var url = "<ssf:url adapter="true" 
 		portletName="ss_administration" 
@@ -485,7 +485,7 @@ function ss_loadNextDiv(option, itemId, itemName, selectionId) {
 	url += "\&option=" + option
 	if (itemId != "") {url += "\&itemId=" + itemId;}
 	if (itemName != "") {url += "\&itemName=" + itemName;}
-	if (selectionId != "") {url += "\&selectionId=" + selectionId;}
+	if (refItemId != "") {url += "\&refItemId=" + refItemId;}
 	url += "\&rn=" + rn++
 	//alert(url)
 	

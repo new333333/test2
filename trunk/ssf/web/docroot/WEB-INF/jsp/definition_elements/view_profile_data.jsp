@@ -9,10 +9,7 @@
 
 	if (itemType.equals("name")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_name.jsp" %><%
-	
-	} else if (itemType.equals("profileElements")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_element.jsp" %><%
-	
+		
 	} else if (itemType.equals("timeZone")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_timezone.jsp" %><%
 
@@ -48,5 +45,7 @@
 		
 	} else if (itemType.equals("event")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_event.jsp" %><%
+	} else  {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_profile_data_element.jsp" %><%
 	}
 %>

@@ -1,28 +1,34 @@
 package com.sitescape.team.taglib;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import com.sitescape.util.servlet.DynamicServletRequest;
+import com.sitescape.util.servlet.StringServletResponse;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletRequest;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Definition;
+
+import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
+import com.sitescape.team.module.definition.DefinitionUtils;
+
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ResolveIds;
+
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -30,8 +36,6 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.FindIdsHelper;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
-import com.sitescape.util.servlet.DynamicServletRequest;
-import com.sitescape.util.servlet.StringServletResponse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -40,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
 
 /**
@@ -47,10 +52,7 @@ import java.util.Set;
  *
  */
 public class BuildDefinitionDivs extends TagSupport {
-	private final int ENTRYFORM = 1,
-					  PROFILEENTRYFORM = 2;
     private String title;
-    private int formType = 0;
     private Document configDocument;
     private Document sourceDocument;
     private Map divNames;
@@ -58,7 +60,7 @@ public class BuildDefinitionDivs extends TagSupport {
     private String option = "";
     private String itemId = "";
     private String itemName = "";
-    private String selectionId = "";
+    private String refItemId="";
 	private int helpDivCount;
 	
 	private String helpImgUrl = "";
@@ -67,7 +69,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	private String rootElementName;
 	private Element rootConfigElement;
 	private String contextPath;
-	
+	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
+
     
 	public int doStartTag() throws JspException {
 	    if(this.title == null)
@@ -91,7 +94,7 @@ public class BuildDefinitionDivs extends TagSupport {
 			Element root = this.sourceDocument.getRootElement();
 			
 			//See if we are just building a single option, or the whole page
-			if (this.option.equals("")) {
+			if (Validator.isNull(this.option)) {
 				//Build the selection instructions div (only do this if building the whole page)
 				sb.append("\n<div id=\"info_select\" class=\"ss_definitionBuilder\">\n");
 				sb.append("<span class=\"ss_titlebold\">" + this.title + "</span>\n");
@@ -103,17 +106,13 @@ public class BuildDefinitionDivs extends TagSupport {
 				sb.append("    var idMapCaption;\n");
 				sb.append("    if (!idMapCaption) {idMapCaption = new Array();}\n");
 				sb.append("</script>\n");
-			}
-			
-			//Build the divs for each element
-			if (this.option.equals("")) {
+				//Build the divs for each element
 				buildDivs(configRoot, root, sb, hb, "");
-			}
-			buildDivs(root, root, sb, hb, "item");
-			
-			if (this.option.equals("")) {
+				buildDivs(root, root, sb, hb, "item");
 				buildDefaultDivs(sb, hb);
 				jspOut.print(hb.toString());
+			} else {
+				buildDivs(root, root, sb, hb, "item");
 			}
 			jspOut.print(sb.toString());
 		}
@@ -126,140 +125,35 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 	private void buildDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		Iterator itRootElements;
-		Iterator itRootElements2;
-		boolean found = false;
-
 		helpImgUrl = contextPath + "/images/pics/sym_s_help.gif";
 
-		if (filter.equals("")) {
-			itRootElements = root.elementIterator();
-			itRootElements2 = root.elementIterator();
-		} else {
-			itRootElements = root.elementIterator(filter);
-			itRootElements2 = root.elementIterator(filter);
-		}
-		
 		//See if this is a request for just one item
-		if (this.itemName.equals("profileElements")
-		|| this.itemName.equals("profileEntryDataItem")
-		|| this.itemName.equals("entryDataItem")
-		)
-		{
-			found = true;
-			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
-			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='" + this.itemName + "']").iterator();
-		}
-		else
-		if (this.itemName.equals("firstName")
-		|| this.itemName.equals("middleName")
-		|| this.itemName.equals("lastName")
-		|| this.itemName.equals("emailAddress")
-		|| this.itemName.equals("organization")
-		|| this.itemName.equals("homepage")
-		|| this.itemName.equals("zonName"))
-		{
-			// Processing Form Profile Element
-			// Get information from root document
-			found = true;
-			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();
-			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileElements']").iterator();	
-		}
-		else
-		if (!this.selectionId.equals("")
-		&& !this.selectionId.equals("undefined")
-		&& Character.isDigit(this.selectionId.charAt(0)))
-		{
-			Element item = null;
-			
-			item = (Element)root.selectSingleNode("item[@name='profileEntryForm']//item[@id='" + this.selectionId + "']");
-			if (item != null)
-				this.formType = this.PROFILEENTRYFORM;
-			else
-			{
-				item = (Element)root.selectSingleNode("item[@name='entryForm']//item[@id='" + this.selectionId + "']");
-				if (item != null)
-					this.formType = this.ENTRYFORM;
-			}
-				
-			if (item != null && item.attributeValue("type", "").equals("data"))
-			{
-/*
-				try
-				{
-					OutputFormat format = OutputFormat.createPrettyPrint();
-					XMLWriter writer = new XMLWriter(System.out, format);
-					writer.write(item);
-				} catch (Exception e) {}
-				System.out.println("Form");
-*/				
-				found = true;
-				itRootElements = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
-				itRootElements2 = root.selectNodes("//item[@id='"+this.selectionId+"'] | //definition[@name='"+this.selectionId+"']").iterator();
-			}
-			else
-			{	
-				item = (Element) root.selectSingleNode("item[@name='profileEntryView']//item[@id='" + this.selectionId + "']");
-				if (item != null)
-					this.formType = this.PROFILEENTRYFORM;
-				else
-				{
-					item = (Element) root.selectSingleNode("item[@name='entryView']//item[@id='" + this.selectionId + "']");
-					if (item != null)
-						this.formType = this.ENTRYFORM;
-				}
-				
-				if (item != null && item.attributeValue("type", "").equals("data"))
-				{
-/*
-					try
-					{
-						OutputFormat format = OutputFormat.createPrettyPrint();
-						XMLWriter writer = new XMLWriter(System.out, format);
-						writer.write(item);
-					} catch (Exception e) {}
-					System.out.println("View");
-*/					
-					found = true;
-					if (this.formType == this.PROFILEENTRYFORM)
-					{
-						itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
-						itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='profileEntryDataItem']").iterator();
-					}
-					else
-					if (this.formType == this.ENTRYFORM)
-					{
-						itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='entryDataItem']").iterator();
-						itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='entryDataItem']").iterator();
-					}
+		if (Validator.isNotNull(this.option)) {
+			if (Validator.isNotNull(this.itemId)) {
+				//We are looking for a single item, so only do that item
+				itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
+			} else if (Validator.isNotNull(this.itemName)) {
+				//	We are looking for an item in the definition config
+				itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
+			} else  {
+				//We are looking for the definition itself
+				String definitionType = root.attributeValue("type", "");
+				if (Validator.isNotNull(definitionType)) {
+					itRootElements = root.selectNodes(".").iterator();
+				} else {
+					itRootElements = root.elementIterator();
 				}
 			}
-		}
-		
-		if (!found && !this.option.equals("") && !this.itemId.equals("") && this.itemName.equals("")) {
-			//We are looking for a single item, so only do that item
-			itRootElements = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
-			itRootElements2 = root.selectNodes("//item[@id='"+this.itemId+"'] | //definition[@name='"+this.itemId+"']").iterator();
-		} else if (!found && !this.option.equals("") && !this.itemName.equals("")) {
-			//We are looking for an item in the definition config
-			itRootElements = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
-			itRootElements2 = this.configDocument.getRootElement().selectNodes("//item[@name='"+this.itemName+"'] | //definition[@name='"+this.itemName+"']").iterator();
-		} else if (!found && !this.option.equals("") && this.itemId.equals("") && this.itemName.equals("")) {
-			//We are looking for the definition itself
-			String definitionType = root.attributeValue("type", "");
-			if (!definitionType.equals("")) {
-				itRootElements = root.selectNodes(".").iterator();
-				itRootElements2 = root.selectNodes(".").iterator();
-			}
-		}
-		
-		if (this.option.equals("") && filter.equals("")) {
+		} else if (Validator.isNull(filter)) {
+			itRootElements = root.elementIterator();
+			Iterator itRootElements2 = root.elementIterator();
 			//Only do this routine once
 			sb.append("<script type=\"text/javascript\">\n");
 			while (itRootElements2.hasNext()) {
 				rootElement = (Element) itRootElements2.next();
 				rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
 				rootElementName = rootElement.attributeValue("name");
-				
+					
 				//Get the config version of this item
 				rootConfigElement = null;
 				if (rootElement.getDocument().getRootElement() == rootElement) {
@@ -269,32 +163,34 @@ public class BuildDefinitionDivs extends TagSupport {
 						rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@definitionType='"+definitionType+"']");
 					}
 				} else {
-					rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
+					rootConfigElement = configBuilder.getItem(this.configDocument, rootElementName);
 				}
 				if (rootConfigElement == null) {rootConfigElement = rootElement;}
-				
+					
 				//Build the javascript map info
 				buildMaps(root, sourceRoot, sb, hb, filter);
 			}
 			sb.append("</script>\n");
+		} else {
+			itRootElements = root.elementIterator(filter);
 		}
-
+		
 		while (itRootElements.hasNext()) {
 			rootElement = (Element) itRootElements.next();
-			rootElementId = rootElement.attributeValue("id", rootElement.attributeValue("name"));
-			rootElementName = rootElement.attributeValue("name");
+			rootElementName = rootElement.attributeValue("name", "");
+			rootElementId = rootElement.attributeValue("id", rootElementName);
 			helpDivCount = 0;
 			
 			//Get the config version of this item
 			rootConfigElement = null;
 			if (rootElement.getDocument().getRootElement() == rootElement) {
 				//This is the root node
-				String definitionType = rootElement.attributeValue("type", "");
-				if (!definitionType.equals("")) {
+				String definitionType = rootElement.attributeValue("type");
+				if (Validator.isNotNull(definitionType)) {
 					rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("//item[@definitionType='"+definitionType+"']");
 				}
 			} else {
-				rootConfigElement = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+rootElementName+"']");
+				rootConfigElement = configBuilder.getItem(this.configDocument, rootElementName);
 			}
 			if (rootConfigElement == null) {rootConfigElement = rootElement;}
 			
@@ -323,21 +219,17 @@ public class BuildDefinitionDivs extends TagSupport {
 			buildHelpDivs(root, sourceRoot, sb, hb, filter);
 
 			//See if this element has any sub elements to do
-			if (this.option.equals("")) {
+			if (Validator.isNull(this.option)) {
 				buildDivs(rootElement, sourceRoot, sb, hb, "item");
 			}
 		}
 	}
 
 	private void buildMaps(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("maps_"+rootElementId)) {
+		if (Validator.isNull(this.option) && !this.divNames.containsKey("maps_"+rootElementId)) {
 			this.divNames.put("maps_"+rootElementId, "1");
-			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
-			String propertyCaptionValue = "";
-			if (property != null) {
-				propertyCaptionValue = property.attributeValue("value", "");
-			}
-			if (propertyCaptionValue.equals("")) {
+			String propertyCaptionValue = DefinitionUtils.getPropertyValue(rootElement, "caption");
+			if (Validator.isNull(propertyCaptionValue)) {
 				propertyCaptionValue = rootElement.attributeValue("caption", "");
 			}
 			//sb.append("self.ss_setDeclaredDiv('info_" + rootElementId + "')\n");
@@ -350,32 +242,19 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildInfoDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("info") && !this.divNames.containsKey("info_"+rootElementId)) {
 			this.divNames.put("info_"+rootElementId, "1");
-			if (this.option.equals("")) {
-				sb.append("\n<div id=\"info_" + rootElementId + "\" ");
-				sb.append("class=\"ss_definitionBuilder\">\n");
-			}
 			sb.append("<span class=\"ss_bold\">" + NLT.getDef(rootElement.attributeValue("caption")));
-			Element property = (Element) rootElement.selectSingleNode("./properties/property[@name='caption']");
-			String propertyCaptionValue = "";
-			if (property != null) {
-				propertyCaptionValue = property.attributeValue("value", "");
-				if (!propertyCaptionValue.equals("")) {
-					sb.append(" - " + propertyCaptionValue);
-				}
-			}
-			if (propertyCaptionValue.equals("")) {
+			String propertyCaptionValue = DefinitionUtils.getPropertyValue(rootElement, "caption");
+			if (Validator.isNull(propertyCaptionValue)) {
 				propertyCaptionValue = rootElement.attributeValue("caption", "");
 			}
+			sb.append(" - " + propertyCaptionValue);
 			sb.append("</span>\n<br/><br/>\n");
-			if (this.option.equals("")) {
-				sb.append("</div>\n");
-			}
 		}
 
 	}
 	
 	private void buildInfoOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("infoDefinitionOptions")) {
+		if (Validator.isNull(this.option) && !this.divNames.containsKey("infoDefinitionOptions")) {
 			this.divNames.put("infoDefinitionOptions", "1");
 			sb.append("\n<div id=\"infoDefinitionOptions\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
@@ -439,7 +318,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	}
 	
 	private void buildDeleteDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (this.option.equals("") && !this.divNames.containsKey("delete_definition")) {
+		if (Validator.isNull(option) && !this.divNames.containsKey("delete_definition")) {
 			this.divNames.put("delete_definition", "1");
 			sb.append("\n<div id=\"delete_definition\" ");
 			sb.append("class=\"ss_definitionBuilder\">\n");
@@ -462,10 +341,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
 			this.divNames.put("operations_"+rootElementId, "1");
-			if (this.option.equals("")) {
-				sb.append("\n<div id=\"operations_" + rootElementId + "\" "); 
-				sb.append("class=\"ss_definitionBuilder\">\n");
-			}
 			sb.append("<table cellpadding=\"0\" cellspacing=\"0\"><tbody>\n");
 
 			//Add the list of operations
@@ -522,188 +397,160 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 
 			sb.append("</tbody></table>\n");
-			if (this.option.equals("")) {
-				sb.append("</div>\n");
-				//sb.append("<script type=\"text/javascript\">\n");
-				//sb.append("    self.ss_setDeclaredDiv('operations_" + rootElementId + "')\n");
-				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				//sb.append("</script>\n");
-			}
 		}
 	}
 	
 	private void buildOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("options") && !this.divNames.containsKey("options_"+rootElementId)) {
 			this.divNames.put("options_"+rootElementId, "1");
-			if (this.option.equals("")) {
-				sb.append("\n<div id=\"options_" + rootElementId + "\" "); 
-				sb.append("class=\"ss_definitionBuilder\">\n");
-			}
 
 			//Add the list of options
 			Element e_options = rootConfigElement.element("options");
 			Element e_option;
 			Map optionsSeen = new HashMap();
-
+			//keep sorted list of options
+			Map<String, StringBuffer[]> optionsMap = new TreeMap();
 			String optionCaption = "";
 			if (e_options != null) {
 				optionCaption = NLT.getDef(e_options.attributeValue("optionCaption", ""));
-				if (!optionCaption.equals("")) {
+				if (Validator.isNotNull(optionCaption)) {
 					sb.append("<b>").append(optionCaption).append("</b>\n");
 				}
 			}
 
 			sb.append("<ul>\n");
 			if (e_options != null) {
-				Iterator itOptions = e_options.elementIterator("option");
+				Iterator itOptions = e_options.elementIterator();
 				while (itOptions.hasNext()) {
 					e_option = (Element) itOptions.next();
-					String optionId = e_option.attributeValue("id", e_option.attributeValue("name"));
-					String optionName = e_option.attributeValue("name");
 					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
-					String optionDefinitionType = e_option.attributeValue("definitionType", "");
-					if (!optionDefinitionType.equals("")) {
+					String optionDefinitionType = e_option.attributeValue("definitionType");
+					if (Validator.isNotNull(optionDefinitionType)) {
 						//This request is for a specific definition type.
 						//Check that the definition type from the actual definition matches the desired type.
 						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
 					}
-					//Find this item in the definition config
-					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
-					if (optionItem != null) {
-						//See if multiple are allowed
-						if (!optionsSeen.containsKey(optionName)) {
+					String optionFormat = e_option.getName();
+					if ("option".equals(optionFormat)) {
+						String optionName = e_option.attributeValue("name");
+						//Find this item in the definition config
+						Element optionItem = (Element) configBuilder.getItem(configDocument, optionName);
+						if (optionItem == null) continue;
+						if (optionsSeen.containsKey(optionName)) continue;
+						//if the option item is a dataView item, process the select now
+						String optionType = optionItem.attributeValue("type");
+						Element optionSelect = null;
+						if ("dataView".equals(optionType)) optionSelect = (Element)optionItem.selectSingleNode("./option_entry_data");
+						//this is the item
+						if (optionSelect == null) {
 							if (testOption(optionItem, sourceRoot, optionName)) {
-								/**
-								 * (rsordillo) Add property options a links (Profile definition view)
-								 */
-								if (optionName.equals("profileEntryDataItem"))
-								{
-									Iterator options = null;
-									
-									options = sourceRoot.selectNodes("//item[@name='profileEntryFormForm']/item[@name='profileElements']/properties/property[@name='caption']").iterator();
-									while (options.hasNext())
-									{
-										Element o = (Element)options.next();
-										addOption(sb, hb, o, o.getParent().getParent().attributeValue("id"), o.attributeValue("value"));
-									}
-									sb.append("<br />");
-								}
-								else
-								if (optionName.equals("entryDataItem"))
-								{
-									Iterator options = null;
-									boolean addOption = true;
-									List<Element> exclude = rootConfigElement.selectNodes("//item[@name='entryDataItem']/properties/property/option_entry_data/exclude");
-									
-									options = sourceRoot.selectNodes("//item[@name='entryFormForm']/item[@type='data']/properties/property[@name='caption']").iterator();
-									while (options.hasNext())
-									{
-										addOption = true;
-										Element o = (Element)options.next();
-										for (Element i: exclude)
-										{
-											if (i.attributeValue("name", "").equalsIgnoreCase(NLT.getDef(o.attributeValue("value", ""))))
-											{
-												addOption = false;
-												break;
-											}	
-										}
-										
-										// We need to exclude Items from options list
-										if (addOption && o.attributeValue("value") != null)
-											addOption(sb, hb, o, o.getParent().getParent().attributeValue("id"), o.attributeValue("value"));
-									}
-									sb.append("<br />");
-								}
-								else
-									addOption(sb, hb, optionItem, optionId, optionName);
-								optionsSeen.put(optionName, optionName);								
+								addOption(optionsMap, optionItem, optionName, "");
+								optionsSeen.put(optionName, optionName);
 							}
+						
+						} else {
+							//flag that already handled
+							optionsSeen.put(optionName, optionName);
+							//build list of names to exclude
+							List<Element> excludes = optionSelect.selectNodes("./exclude");
+							List excludeNames = new ArrayList();
+							for (Element ex:excludes) {
+								excludeNames.add(ex.attributeValue("name"));
+							}
+							String optionPath = optionSelect.attributeValue("path");
+							optionType = optionSelect.attributeValue("select_type");
+							if (Validator.isNull(optionType)) optionType = null; //get rid of null string
+							//search for items to include
+							List<Element> selectedItems = sourceRoot.selectNodes(optionPath);
+							for (Element selItem:selectedItems) {
+								if (optionType != null) {
+									//check if item is the correct type
+									if (!optionType.equals(selItem.attributeValue("type"))) continue;
+								}
+								//this won't work if these items are nested
+								String selName = selItem.attributeValue("name");
+								if (excludeNames.contains(selName)) continue;
+								if (optionsSeen.containsKey(selName)) continue;
+								String optionId = selItem.attributeValue("id", optionName);
+								//	See if multiple are allowed
+								if (testOption(selItem, sourceRoot, optionName)) {
+									addOption(optionsMap, selItem, optionName, optionId);
+									optionsSeen.put(selName, selName);
+								}
+							}	
+						}					
+					}  else {				
+					
+						String optionPath = e_option.attributeValue("path", "");
+						Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
+						if (!itOptionsSelect.hasNext()) continue;
+					
+						optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
+						if (!optionCaption.equals("")) {
+							//flush contents of current buffers to make way for new header
+							for (Map.Entry<String, StringBuffer[]> me: optionsMap.entrySet()) {
+								sb.append(me.getValue()[0]);
+								hb.append(me.getValue()[1]);
+							}
+							optionsMap.clear();
+							sb.append("</ul>\n<br/>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
 						}
-					}
-				}
-				
-				itOptions = e_options.elementIterator("option_select");
-				while (itOptions.hasNext()) {
-					e_option = (Element) itOptions.next();
-					
-					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
-					String optionDefinitionType = e_option.attributeValue("definitionType", "");
-					if (!optionDefinitionType.equals("")) {
-						//This request is for a specific definition type.
-						//Check that the definition type from the actual definition matches the desired type.
-						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
-					}
-					String optionPath = e_option.attributeValue("path", "");
-					Iterator itOptionsSelect = rootConfigElement.selectNodes(optionPath).iterator();
-					if (!itOptionsSelect.hasNext()) continue;
-					
-					optionCaption = NLT.getDef(e_option.attributeValue("optionCaption", ""));
-					if (!optionCaption.equals("")) {
-						sb.append("</ul>\n<br/>\n<b>").append(optionCaption).append("</b>\n<ul>\n");
-					}
-					while (itOptionsSelect.hasNext()) {
-						Element optionSelect = (Element) itOptionsSelect.next();
-						String optionSelectId = optionSelect.attributeValue("id", optionSelect.attributeValue("name"));
-						String optionSelectName = optionSelect.attributeValue("name");
-						//See if multiple are allowed
-						if (!optionsSeen.containsKey(optionSelectName)) {
-							if (testOption(optionSelect, sourceRoot, optionSelectName)) {
-								/**
-								 * (rsordillo) Add property options a links (Profile definition form)
-								 */
-								if (optionSelectName.equals("profileElements"))
-								{
-									Iterator options = optionSelect.selectNodes("properties/property/option").iterator();
-									while (options.hasNext())
-									{
-										Element o = (Element)options.next();
-										addOption(sb, hb, o, o.attributeValue("name"), o.attributeValue("name"));
-									}
-									sb.append("<br />");
+						while (itOptionsSelect.hasNext()) {
+							Element optionSelectItem = (Element) itOptionsSelect.next();
+							String optionSelectName = optionSelectItem.attributeValue("name");
+							//See if multiple are allowed
+							if (optionsSeen.containsKey(optionSelectName)) continue;
+							//flag that already handled
+							optionsSeen.put(optionSelectName, optionSelectName);
+							String optionType = optionSelectItem.attributeValue("type");
+							Element optionSelect = null;
+							if ("dataView".equals(optionType)) optionSelect = (Element)optionSelectItem.selectSingleNode("./option_entry_data");
+							if (optionSelect == null) {
+								if (testOption(optionSelectItem, sourceRoot, optionSelectName)) {
+									addOption(optionsMap, optionSelectItem, optionSelectName, "");
+									optionsSeen.put(optionSelectName, optionSelectName);
 								}
-								else
-								if (optionSelectName.equals("entryDataItem"))
-								{
-									boolean addOption = true;
-									List<Element> exclude = optionSelect.selectNodes("properties/property/option_entry_data/exclude");
-									
-									Iterator options = optionSelect.selectNodes("properties/property/option").iterator();
-									while (options.hasNext())
-									{
-										addOption = true;
-										Element o = (Element)options.next();
-										for (Element i: exclude)
-										{
-											if (i.attributeValue("name", "").equals(o.attributeValue("name")))
-											{
-												addOption = false;
-												break;
-											}	
-										}
-										
-										// We need to exclude Items from options list
-										if (addOption)
-											addOption(sb, hb, o, o.attributeValue("name"), o.attributeValue("name"));
-									}
-									sb.append("<br />");
+							} else {
+								//build list of names to exclude
+								List<Element> excludes = optionSelect.selectNodes("./exclude");
+								List excludeNames = new ArrayList();
+								for (Element ex:excludes) {
+									excludeNames.add(ex.attributeValue("name"));
 								}
-									addOption(sb, hb, optionSelect, optionSelectId, optionSelectName);
-								optionsSeen.put(optionSelectName, optionSelectName);
-							}
+								optionPath = optionSelect.attributeValue("path");
+								optionType = optionSelect.attributeValue("select_type");
+								if (Validator.isNull(optionType)) optionType = null; //get rid of null string
+								//search for items to include
+								List<Element> selectedItems = sourceRoot.selectNodes(optionPath);
+								for (Element selItem:selectedItems) {
+									if (optionType != null) {
+										//	check if item is the correct type
+										if (!optionType.equals(selItem.attributeValue("type"))) continue;
+									}
+									//this won't work if these items are nested
+									String selName = selItem.attributeValue("name");
+									if (excludeNames.contains(selName)) continue;
+									if (optionsSeen.containsKey(selName)) continue;
+									String optionId = selItem.attributeValue("id", optionSelectName);
+									//	See if multiple are allowed
+									if (testOption(selItem, sourceRoot, optionSelectName)) {
+										addOption(optionsMap, selItem, optionSelectName, optionId);
+										optionsSeen.put(selName, selName);
+									}
+								}
+							}	
 						}
 					}
 				}
 			}
+			//flush contents of current buffers to make way for new header
+			for (Map.Entry<String, StringBuffer[]> me: optionsMap.entrySet()) {
+				sb.append(me.getValue()[0]);
+				hb.append(me.getValue()[1]);
+			}
+
 			sb.append("</ul>\n");
 			sb.append("<br/>\n");
-			if (this.option.equals("")) {
-				sb.append("</div>\n");
-				//sb.append("<script type=\"text/javascript\">\n");
-				//sb.append("    self.ss_setDeclaredDiv('options_" + rootElementId + "')\n");
-				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				//sb.append("</script>\n");
-			}
 		}
 	}
 	//see if new item will meet uniqueness constaints
@@ -720,18 +567,13 @@ public class BuildDefinitionDivs extends TagSupport {
 		return false;
 		
 	}
-	protected void addOption(StringBuffer sb, StringBuffer hb, Element item, String id, String name) {
-		
+	protected void addOption(Map<String, StringBuffer[]> optionsMap, Element item, String name, String refId) {
+		StringBuffer sb=new StringBuffer();
+		StringBuffer hb = new StringBuffer();
 		sb.append("<li>");
-		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+id+"', '"+name+"');return false;\">");
-
-		/**
-		 * (rsordillo) have to take into account a property can be an Option
-		 */
-		if (item.getName().equals("property"))
-			sb.append(NLT.getDef(item.attributeValue("value", name)));
-		else
-			sb.append(NLT.getDef(item.attributeValue("caption", name)));
+		sb.append("<a href=\"javascript: ;\" onClick=\"showProperties('"+name+"', '"+refId+"');return false;\">");
+		String caption = NLT.getDef(item.attributeValue("caption", name));
+		sb.append(caption);
 		sb.append("</a>");
 		//See if this item has any help
 		Element help = (Element) item.selectSingleNode("./help");
@@ -750,6 +592,8 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("');return false;\"><img border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 		}
 		sb.append("</li>\n");
+		//build sorted list 
+		optionsMap.put(caption, new StringBuffer[]{sb,hb});
 		
 	}
 	private void buildPropertiesDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
@@ -757,55 +601,31 @@ public class BuildDefinitionDivs extends TagSupport {
 		if ((this.option.equals("properties")) && 
 				!this.divNames.containsKey("properties_"+rootElementId)) {
 			this.divNames.put("properties_"+rootElementId, "1");
-			if (this.option.equals("")) {
-				sb.append("\n<div id=\"properties_" + rootElementId + "\" "); 
-				sb.append("class=\"ss_definitionBuilder\">\n");
-			}
 
 			//Add the list of properties
-			/**
-			 * (rsordillo) If we have an itemId at this point we are working with the
-			 * items instance document. We need to reference the root config document to
-			 * determine what items to exclude from modify screen. We must determine if the itemId
-			 * if a View or Form item to show the correct properties
-			 */
-			boolean found = false;
-			Element propertiesConfig = null;
-			if (this.formType == this.PROFILEENTRYFORM && !this.selectionId.equals("") && root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']") != null)
-			{
-				Element item = (Element)root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']");
-				if (item != null && item.attributeValue("type", "").equals("data"))
-				{
-					found = true;
-					if (this.formType == this.PROFILEENTRYFORM)
-					{
-						propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='profileEntryDataItem']/properties");
-					}
-					else
-					if (this.formType == this.ENTRYFORM)
-						propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='entryDataItem']/properties");
-				}
-			}
-			else
-			if (this.formType == this.ENTRYFORM && !this.selectionId.equals("") && root.selectSingleNode("item[@name='entryView']/item[@id='" + this.selectionId + "']") != null)
-			{
-				Element item = (Element)root.selectSingleNode("item[@name='entryView']/item[@id='" + this.selectionId + "']");
-				if (item != null && item.attributeValue("type", "").equals("data"))
-				{
-					found = true;
-					propertiesConfig = (Element)this.configDocument.selectSingleNode("//item[@name='entryDataItem']/properties");
-				}
-			}
-			
-			if (!found)
-				propertiesConfig = rootConfigElement.element("properties");
-			
-			Element properties = rootElement.element("properties");
+			Element propertiesConfig = rootConfigElement.element("properties");
 			if (propertiesConfig != null) {
+				String  itemType = rootConfigElement.attributeValue("type");
+				//	see if we are adding a "dataView" element
+				Element properties=null;
+				//if adding a new dataView item, see if we have a reference to the data item
+				if (Validator.isNotNull(this.refItemId) && "dataView".equals(itemType)) {
+					Element refItem = (Element)sourceRoot.selectSingleNode("//item[@id='"+this.refItemId+"'] ");
+					if (refItem != null) properties = refItem.element("properties");
+				}	 
+				
+				if (properties == null) properties = rootElement.element("properties");
 				Iterator itProperties = propertiesConfig.elementIterator("property");
 				while (itProperties.hasNext()) {
 					//Get the next property from the base config file
 					Element propertyConfig = (Element) itProperties.next();
+					//See if this search is limited to a particular definition type (e.g., COMMAND or PROFILE_ENTRY_VIEW)
+					String propDefinitionType = propertyConfig.attributeValue("definitionType");
+					if (Validator.isNotNull(propDefinitionType)) {
+						//This request is for a specific definition type.
+						//Check that the definition type from the actual definition matches the desired type.
+						if (!propDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
+					}
 					//Get the name and id (if any) from the config file
 					String propertyId = propertyConfig.attributeValue("id", propertyConfig.attributeValue("name", ""));
 					String propertyName = propertyConfig.attributeValue("name", "");
@@ -819,15 +639,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						List propertyNameElements = (List) properties.selectNodes("property[@name='"+propertyId+"']");
 						if (propertyNameElements != null) {
 							for (int i = 0; i < propertyNameElements.size(); i++) {
-								String propertyValue = "";
-								// (rsordillo) Goto instance document to get info
-								if (found && this.formType == this.PROFILEENTRYFORM)
-								{
-									Element item = (Element)root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']/properties/property[@name='" + propertyId + "']");
-									propertyValue = item.attributeValue("value", "");
-								}
-								else
-									propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
+								String propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
 								if (!propertyValue.equals("")) {
 									//Add this value to the list so it can be used to set "selected" or "checked" values later
 									propertyValues.add(propertyValue);
@@ -865,110 +677,43 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append("\n<br/>\n");
 						}
 						if (type.equals("selectbox")) {
-							if (rootConfigElement.attributeValue("name").equals("profileElements")
-							|| rootConfigElement.attributeValue("name").equals("profileEntryDataItem")
-							|| rootConfigElement.attributeValue("name").equals("entryDataItem"))
-							{
-								String name = "";
-								
-								name = this.itemName;
-								if (rootConfigElement.attributeValue("name").equals("profileElements")
-								|| rootConfigElement.attributeValue("name").equals("profileEntryDataItem")
-								|| rootConfigElement.attributeValue("name").equals("entryDataItem"))
-								{
-									Element item = ((Element)this.sourceDocument.getRootElement().selectSingleNode("//item[@id='" + this.selectionId + "']/properties/property[@name='name']"));
-									if (item == null && (rootConfigElement.attributeValue("name").equals("profileElements") || rootConfigElement.attributeValue("name").equals("entryDataItem")))
-									{
-										sb.append("<p>" + name + "</p>\n");
-										sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
-									}
-									else
-									{
-										if (this.formType == this.PROFILEENTRYFORM)
-										{
-											if (root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']") != null)
-											{
-												String id = "",
-													   id2 = "";
-												
-												Element itemN = (Element)root.selectSingleNode("item[@name='profileEntryView']/item[@id='" + this.selectionId + "']/properties/property[@name='name']");
-												id = itemN.attributeValue("value", "");
-												itemN = (Element)root.selectSingleNode("item[@name='profileEntryForm']/item[@name='profileEntryFormForm']/item[@id='" + id + "']/properties/property[@name='name']");
-												if (itemN != null) {
-													id2 = itemN.attributeValue("value", "");
-													sb.append("<p>" + id2 + "</p>\n");
-													sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + id + "\"/>\n");
-												}
-											}
-											else
-											{
-												// (rsordillo) The Form selectboxes should have a name as a "value" not Id
-												name = item.attributeValue("value");
-												sb.append("<p>" + name + "</p>\n");
-												if (this.itemName.equals(""))
-													sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + name + "\"/>\n");
-												else
-													sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + this.itemName + "\"/>\n");
-											}
-										}
-										else
-										if (this.formType == this.ENTRYFORM)
-										{
-											name = item.attributeValue("value");
-											sb.append("<p>" + name + "</p>\n");
-											sb.append("<input type=\"hidden\" name=\"propertyId_" + propertyId + "\" value=\"" + name + "\"/>\n");
-										}
-									}
-								}
-							}
-							else
-							{
-								//See if multiple selections are allowed
-								String multipleText = "";
-								String sizeText = "";
-								if (propertyConfig.selectNodes("option").size() > 1) 
-									sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
-								if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
-								sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
-							}
+							//See if multiple selections are allowed
+							String multipleText = "";
+							String sizeText = "";
+							if (propertyConfig.selectNodes("option").size() > 1) 
+								sizeText = " size=\"" + String.valueOf(propertyConfig.selectNodes("option").size()) + "\"";
+							if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
+							sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + sizeText + ">\n");
 						}
-						
 						//See if there are any built-in options
-						Iterator  itSelections = null;
-						if (!rootConfigElement.attributeValue("name").equals("profileElements")
-						&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem")
-						&& !rootConfigElement.attributeValue("name").equals("entryDataItem"))
-						{
-							itSelections = propertyConfig.elementIterator("option");
-							while (itSelections.hasNext()) {
-								Element selection = (Element) itSelections.next();
-								String checked = "";
-								for (int i = 0; i < propertyValues.size(); i++) {
-									if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
-										checked = " selected=\"selected\"";
-										if (type.equals("radio")) checked = " checked=\"checked\"";
-										break;
-									}
-								}
-								if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
-										propertyValueDefault.equals(selection.attributeValue("name", "")))) {
+						Iterator  itSelections = propertyConfig.elementIterator("option");
+						while (itSelections.hasNext()) {
+							Element selection = (Element) itSelections.next();
+							String checked = "";
+							for (int i = 0; i < propertyValues.size(); i++) {
+								if (((String)propertyValues.get(i)).equals(selection.attributeValue("name", ""))) {
 									checked = " selected=\"selected\"";
-									if (type.equals("radio")) checked = " checked=\"checked\"";							}
-								if (type.equals("selectbox")) {
-									sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
-									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-									sb.append("</option>\n");
-									optionCount++;
-								} else if (type.equals("radio")) {
-									sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
-									sb.append(selection.attributeValue("name", ""));
-									sb.append("\"").append(checked).append("/>");
-									sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
-									sb.append("<br/>\n");
+									if (type.equals("radio")) checked = " checked=\"checked\"";
+									break;
 								}
 							}
+							if ((propertyValues.size() == 0 && !propertyValueDefault.equals("") && 
+									propertyValueDefault.equals(selection.attributeValue("name", "")))) {
+								checked = " selected=\"selected\"";
+								if (type.equals("radio")) checked = " checked=\"checked\"";							}
+							if (type.equals("selectbox")) {
+								sb.append("<option value=\"").append(selection.attributeValue("name", "")).append("\"").append(checked).append(">");
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append("</option>\n");
+								optionCount++;
+							} else if (type.equals("radio")) {
+								sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
+								sb.append(selection.attributeValue("name", ""));
+								sb.append("\"").append(checked).append("/>");
+								sb.append(NLT.getDef(selection.attributeValue("caption", selection.attributeValue("name", ""))));
+								sb.append("<br/>\n");
+							}
 						}
-						
 						//See if there are any items to be shown from the "sourceRoot"
 						itSelections = propertyConfig.elementIterator("option_entry_data");
 						while (itSelections.hasNext()) {
@@ -1028,15 +773,10 @@ public class BuildDefinitionDivs extends TagSupport {
 										}
 
 										if (type.equals("selectbox")) {
-											if (!rootConfigElement.attributeValue("name").equals("profileElements")
-											&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem")
-											&& !rootConfigElement.attributeValue("name").equals("entryDataItem"))
-											{
-												sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
-												sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
-												sb.append("</option>\n");
-												optionCount++;
-											}
+											sb.append("<option value=\"").append(entryFormItemNamePropertyName).append("\"").append(checked).append(">");
+											sb.append(NLT.getDef(entryFormItemCaptionPropertyValue));
+											sb.append("</option>\n");
+											optionCount++;
 										} else if (type.equals("radio")) {
 											sb.append("<input type=\"radio\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" value=\"");
 											sb.append(entryFormItemNamePropertyName);
@@ -1049,11 +789,7 @@ public class BuildDefinitionDivs extends TagSupport {
 							}
 						}
 						
-						if (type.equals("selectbox")
-						&& !rootConfigElement.attributeValue("name").equals("profileElements")
-						&& !rootConfigElement.attributeValue("name").equals("profileEntryDataItem")
-						&& !rootConfigElement.attributeValue("name").equals("entryDataItem")) 
-						{
+						if (type.equals("selectbox")) {
 							if (optionCount == 0) {
 								//No options were output, show something to avoid having an empty select box
 								sb.append("<option value=\"\">"+NLT.get("definition.noOptions")+"</option>\n");
@@ -1407,13 +1143,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<br/>");
 			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
 
-			if (this.option.equals("")) {
-				sb.append("</div>\n");
-				//sb.append("<script type=\"text/javascript\">\n");
-				//sb.append("    self.ss_setDeclaredDiv('properties_" + rootElementId + "')\n");
-				//sb.append("    idMap['"+rootElementId+"'] = '"+rootElementName+"';\n");
-				//sb.append("</script>\n");
-			}
 		}
 	}
 	
@@ -1482,7 +1211,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (!optionDefinitionType.equals(sourceRoot.attributeValue("type", ""))) continue;
 					}
 					//Find this item in the definition config
-					Element optionItem = (Element) this.configDocument.getRootElement().selectSingleNode("item[@name='"+optionName+"']");
+					Element optionItem = (Element) configBuilder.getItem(configDocument, optionName);
 					if (optionItem != null) {
 						//See if multiple are allowed
 						if (!optionItem.attributeValue("multipleAllowed", "").equalsIgnoreCase("false") || 
@@ -1547,7 +1276,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		}
 
 		//Build the properties div
-		if ((this.option.equals("")) && !this.divNames.containsKey("helpPropertiesDivs_"+rootElementId)) {
+		if (Validator.isNull(this.option) && !this.divNames.containsKey("helpPropertiesDivs_"+rootElementId)) {
 			this.divNames.put("helpPropertiesDivs_"+rootElementId, "1");
 			//Get the list of properties
 			Element propertiesConfig = rootConfigElement.element("properties");
@@ -1561,7 +1290,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					Element help = (Element) propertyConfig.selectSingleNode("./help");
 					if (help != null) {
 						helpDivCount++;
-						hb.append("<div align=\"left\" id=\"help_div_" + rootElementId);
+						hb.append("<div id=\"help_div_" + rootElementId);
 						hb.append(Integer.toString(helpDivCount));
 						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
 						hb.append("<span>");
@@ -1602,11 +1331,13 @@ public class BuildDefinitionDivs extends TagSupport {
 	    this.itemName = itemName;
 	}
 	
-	public String getSelectionId() {
-	    return this.selectionId;
+	public String getRefItemId() {
+	    return this.refItemId;
 	}
 	
-	public void setSelectionId(String selectionId) {
-	    this.selectionId = selectionId;
+	public void setRefItemId(String refItemId) {
+	    this.refItemId = refItemId;
 	}
 }
+
+
