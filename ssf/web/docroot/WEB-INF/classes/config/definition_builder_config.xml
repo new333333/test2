@@ -610,7 +610,7 @@
 	</item>
 
 <!-- Group definition: we don't allow creation of new groups.  This is here so common code works -->
-	<item name="groupEntryViewType" definitionType="11" caption="__group_view_definition">		
+	<item name="groupEntryViewType" definitionType="11" caption="__group_entry_view">		
 		<properties>
 			<property name="name" caption="__name" type="text" />
 			<property name="caption" caption="__caption" type="text" />
