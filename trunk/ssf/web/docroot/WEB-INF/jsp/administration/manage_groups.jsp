@@ -21,29 +21,33 @@ function ss_showGroupList<portlet:namespace/>(obj, id) {
 	iframeDiv.src = obj.href;
 	return false;
 }
-var ss_groupIframeOffset = 20;
-var ss_groupIframeYOffset = -20;
-function ss_size_group_iframe<portlet:namespace/>(obj) {
+var ss_groupIframeWidthOffset = -40;
+var ss_groupIframeHeightOffset = 300;
+var ss_groupIframeYOffset = 0;
+function ss_size_group_iframe() {
 	var targetDiv = document.getElementById('ss_groupsDiv<portlet:namespace/>')
 	ss_moveObjectToBody(targetDiv);
-	targetDiv.style.display = "block";
-	targetDiv.style.visibility = "visible";
 	var iframeDiv = document.getElementById('ss_group_iframe<portlet:namespace/>')
+	var anchorDiv = document.getElementById('ss_modifyGroups');
 	if (iframeDiv.src) {
+		targetDiv.style.display = "block";
+		targetDiv.style.visibility = "visible";
 		if (window.frames['ss_group_iframe<portlet:namespace/>'] != null) {
 			eval("var iframeHeight = parseInt(window.ss_group_iframe<portlet:namespace/>.document.body.scrollHeight);")
 			if (iframeHeight > 0) {
-				iframeDiv.style.height = iframeHeight + ss_groupIframeOffset + "px"
+				iframeDiv.style.height = iframeHeight + ss_groupIframeHeightOffset + "px"
 			}
+			iframeDiv.style.width = parseInt(2 * ss_getDivWidth('ss_manageGroups') / 3) + ss_groupIframeWidthOffset + "px"
 		}
-		ss_setObjectTop(targetDiv, parseInt(ss_getClickPositionY() + ss_groupIframeYOffset)+"px")
-		var objLeft = parseInt(ss_getWindowWidth() / 3);
+		ss_setObjectTop(targetDiv, parseInt(dojo.html.getAbsolutePosition(anchorDiv, true).y + ss_groupIframeYOffset)+"px");
+		var objLeft = parseInt(dojo.html.getAbsolutePosition(anchorDiv, true).x + ss_getDivWidth('ss_manageGroups') / 3);
 		ss_setObjectLeft(targetDiv, objLeft+"px")
 	}
 }
 </script>
 
 <div class="ss_style ss_portlet">
+<div style="padding:10px;" id="ss_manageGroups">
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.groups" /></span>
 <br>
 <br>
@@ -63,13 +67,14 @@ function ss_size_group_iframe<portlet:namespace/>(obj) {
 
 <span class="ss_bold"><ssf:nlt tag="administration.selectGroupToManage"/></span>
 <br/>
-<div class="ss_indent_medium">
+<div class="ss_indent_medium" id="ss_modifyGroups">
   <c:forEach var="group" items="${ss_groupList}">
   	<a href="<ssf:url adapter="true" portletName="ss_forum" 
 		    action="__ajax_request"
+		    actionUrl="false"
 		    binderId="${ssBinder.id}"
 		    entryId="${group._docId}">
-    	    <ssf:param name="operation" value="manage_group"/>
+    	    <ssf:param name="operation" value="modify_group"/>
 			</ssf:url>" 
   	  onClick="ss_showGroupList<portlet:namespace/>(this, '${group._docId}');return false;"><span>${group.title}</span> <span class="ss_smallprint">(${group._name})</span></a><br/>
   </c:forEach>
@@ -98,9 +103,10 @@ function ss_size_group_iframe<portlet:namespace/>(obj) {
 <iframe frameBorder="0"
   id="ss_group_iframe<portlet:namespace/>"
   name="ss_group_iframe<portlet:namespace/>"
-  onLoad="if (parent.ss_size_group_iframe<portlet:namespace/>) parent.ss_size_group_iframe<portlet:namespace/>(this);" 
+  onLoad="if (parent.ss_size_group_iframe) parent.ss_size_group_iframe();" 
   width="100%">xxx</iframe>
 </div>
 
+</div>
 </div>
 

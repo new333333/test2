@@ -180,6 +180,7 @@ public class WebKeys {
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
     public static final String OPERATION_DELETE="delete";
     public static final String OPERATION_MODIFY="modify";
+    public static final String OPERATION_MODIFY_GROUP="modify_group";
     public static final String OPERATION_MOVE="move";
     public static final String OPERATION_LOCK="lock";
     public static final String OPERATION_UNLOCK="unlock";
@@ -222,7 +223,6 @@ public class WebKeys {
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
-	public static final String OPERATION_MANAGE_GROUP = "manage_group";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";

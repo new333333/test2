@@ -106,6 +106,8 @@ public class AjaxController  extends SAbstractController {
 				ajaxRemoveFromClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 				ajaxSetBinderOwnerId(request, response);
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
+				ajaxModifyGroup(request, response);
 			}
 		}
 	}
@@ -135,7 +137,7 @@ public class AjaxController  extends SAbstractController {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
-			} else if (op.equals(WebKeys.OPERATION_MANAGE_GROUP)) {
+			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			}
 			
@@ -297,7 +299,7 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
-		} else if (op.equals(WebKeys.OPERATION_MANAGE_GROUP)) {
+		} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 			return ajaxGetGroup(request, response);
 		}
 
@@ -1060,6 +1062,7 @@ public class AjaxController  extends SAbstractController {
 		String selectId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT_ID, "");
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");
 		if (binderId != null) {
+			String page = PortletRequestUtils.getStringParameter(request, "page", "");
 			String treeName = PortletRequestUtils.getStringParameter(request, "treeName", "");
 			String treeKey = PortletRequestUtils.getStringParameter(request, "treeKey", "");
 			model.put("ss_tree_treeName", treeName);
@@ -1226,6 +1229,15 @@ public class AjaxController  extends SAbstractController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId));
 		}
+	}
+	
+	private void ajaxModifyGroup(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+		List userIds = PortletRequestUtils.getLongListParameters(request, "users");
+		List groupIds = PortletRequestUtils.getLongListParameters(request, "groups");
+		Binder binder = getBinderModule().getBinder(binderId);
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -1639,10 +1651,10 @@ public class AjaxController  extends SAbstractController {
 			Membership member = (Membership) itUsers.next();
 			ids.add(member.getUserId());
 		}
-		List userList = getProfileModule().loadPrincipals(ids, user.getZoneId());
-		model.put(WebKeys.USER_LIST, userList);
+		model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
+		model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			
 			
-		return new ModelAndView("administration/manage_group", model);
+		return new ModelAndView("administration/modify_group", model);
 	}
 	
 	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 

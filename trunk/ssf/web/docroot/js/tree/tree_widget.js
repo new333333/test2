@@ -1,8 +1,9 @@
 //Routines to display an expandable/contractable tree
 //
-function ss_treeToggle(treeName, id, parentId, bottom, type) {
+function ss_treeToggle(treeName, id, parentId, bottom, type, page) {
+	if (page == null) page = "";
 	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
-		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type);
+		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page);
 	}
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
@@ -10,17 +11,13 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
     var iObj = self.document.getElementById(treeName + "icon" + id);
     eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
     if (tObj == null) {
-    	//alert("ss_treeToggle div obj = null: " + treeName + "div" + id)
-    } else {
-    	//alert("ss_treeToggle id: " + tObj.id)
-    }
-    if (tObj == null) {
         //The div hasn't been loaded yet. Go get the div via ajax
 		eval("var url = ss_treeAjaxUrl_" + treeName);
 		url = ss_replaceSubStrAll(url, "&amp;", "&");
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
+		ajaxRequest.addKeyValue("page", page)
 		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
  		eval("var treeKey = ss_treeKey_"+treeName);
 		if (treeKey != null)
@@ -95,7 +92,8 @@ function ss_treeToggle(treeName, id, parentId, bottom, type) {
 	}
 }
 
-function ss_treeToggleAccessible(treeName, id, parentId, bottom, type) {
+function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page) {
+	if (page == null) page = "";
     var tempObj = self.document.getElementById(treeName + "temp" + id);
     var tempObjParent = self.parent.document.getElementById(treeName + "temp" + id);
     var iframeDivObj = self.document.getElementById("ss_treeIframeDiv");
@@ -235,10 +233,16 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 	}
 }
 
-function ss_treeToggleAll(treeName, id, parentId, bottom, type) {
+function ss_treeToggleAll(treeName, id, parentId, bottom, type, page) {
+	if (page == null) page = "";
     var tObj = self.document.getElementById(treeName + "div" + id);
+    if (tObj == null) {
+    	//The div hasn't been loaded yet. Only load one div at a time
+    	ss_treeToggle(treeName, id, parentId, bottom, type, page)
+    	return
+    }
 	if (tObj.style.display == "none") {
-		ss_treeToggle(treeName, id, parentId, bottom, type)
+		ss_treeToggle(treeName, id, parentId, bottom, type, page)
 	}
     var children = tObj.childNodes;
     for (var i = 0; i < children.length; i++) {
@@ -246,9 +250,9 @@ function ss_treeToggleAll(treeName, id, parentId, bottom, type) {
 			var nodeRoot = treeName + "div";
 			var childnode = children[i].id.substr(nodeRoot.length)
     		if (children[i].style.display == "none") {
-    			ss_treeToggle(treeName, childnode, id, bottom, type)
+    			ss_treeToggle(treeName, childnode, id, bottom, type, "")
     		}
-    		ss_treeToggleAll(treeName, childnode, id, bottom, type)
+    		ss_treeToggleAll(treeName, childnode, id, bottom, type, "")
     	}
     }
 }
