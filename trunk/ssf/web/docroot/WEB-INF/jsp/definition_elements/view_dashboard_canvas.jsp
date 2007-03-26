@@ -1,6 +1,11 @@
 <% //View dashboard canvas %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
+
+<%
+String iframeBoxId = renderResponse.getNamespace() + "_dashboard_iframe_box_div";
+%>
+
 <script type="text/javascript">
 var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
@@ -11,7 +16,78 @@ var ss_dashboardViewBinderUrl = '<portlet:renderURL windowState="maximized"><por
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 		name="newTab" value="1"/></portlet:renderURL>';
-</script>  
+		
+
+var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
+var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
+function ss_showForumEntryInIframe_Popup(url) {
+    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    var wObj = self.document.getElementById('ss_showfolder')
+	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
+    return false;
+}
+		
+function ss_showForumEntryInIframe_Overlay(url) {
+	//ss_debug('show url in frame = '+url)
+	ss_positionEntryDiv();
+    var wObj = self.document.getElementById('ss_showentryframe')
+    var wObj1 = self.document.getElementById('ss_showentrydiv')
+	if (wObj1 == null) return true;
+	
+    ss_hideSpannedAreas();
+    wObj1.style.display = "block";
+    wObj1.style.zIndex = ssEntryZ;
+    wObj1.style.visibility = "visible";
+    //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
+
+    if (wObj.src && wObj.src == url) {
+    	ss_nextUrl = url
+    	wObj.src = ss_forumRefreshUrl;
+    } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
+    	wObj.src = ss_forumRefreshUrl;
+    } else {
+    	wObj.src = url
+    }
+
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+
+    return false;
+}
+</script>
+
+<div id="ss_showentrydiv_dashboard" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
+  style="position:absolute; visibility:hidden;
+  width:600px; height:80%; display:none;">
+  <ssf:box>
+    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+    <ssf:param name="box_width" value="400" />
+    <ssf:param name="box_color" value="${ss_entry_border_color}" />
+    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
+    <ssf:param name="box_title" useBody="true">
+      <div style="position:relative;">
+      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
+      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+      </div>
+    </ssf:param>
+    <ssf:param name="box_show_resize_icon" value="true" />
+    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
+    <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
+    <ssf:param name="box_show_move_icon" value="true" />
+    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
+    <ssf:param name="box_show_close_icon" value="true" />
+    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
+  <iframe id="ss_showentryframe_dashboard" name="ss_showentryframe_dashboard" style="width:100%; 
+    display:block; position:relative; left:5px;"
+    src="<html:rootPath/>js/forum/null.html" 
+    height="95%" width="100%" 
+    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+  </ssf:box>
+</div>
+  
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig}">
   <div id="<portlet:namespace/>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">

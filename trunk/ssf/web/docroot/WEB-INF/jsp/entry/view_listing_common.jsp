@@ -47,6 +47,24 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 %>
 <c:if test="<%= !isViewEntry %>">
 <c:set var="showEntryCallbackRoutine" value="ss_showEntryInDiv" scope="request"/>
+
+
+<script type="text/javascript">
+var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
+var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
+function ss_showForumEntryInPopupWindow() {
+    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    var wObj = self.document.getElementById('ss_showfolder')
+	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
+    return false;
+}
+</script>
+
+
+
 <script type="text/javascript">
 
 //Define the url of this page in case the entry needs to reload this page
@@ -54,7 +72,6 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 var ssLoadEntryUrl = "<%= ssLoadEntryUrl %>";
 var autoScroll = "<%= autoScroll %>";
 var ss_displayStyle = "<%= displayStyle %>";
-
 <%
 	if (!ssLoadEntryUrl.equals("")) {
 %>
@@ -66,13 +83,28 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 	}
 %>
 
-function ss_showForumEntry(url, callbackRoutine) {
+function ss_showForumEntry(url, callbackRoutine, isDashboard) {
 <%
 	if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
 		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 %>
-	return ss_showForumEntryInIframe(url);
+	if (isDashboard == "yes") {
+<%		
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
+		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+%>		
+			return ss_showForumEntryInIframe_Overlay(url);
+<%		
+		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ) {
+%>		
+			return ss_showForumEntryInIframe_Popup(url);			
+<%
+		}
+%>
+	} else {
+		return ss_showForumEntryInIframe(url);
+	}
 <%
 	}
 %>
@@ -118,6 +150,7 @@ function ss_loadEntry(obj, id, binderId, entityType) {
 		return false;
 	}
 	ss_linkMenu.showingMenu = 0;
+	
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
@@ -127,6 +160,7 @@ function ss_loadEntry(obj, id, binderId, entityType) {
 			restoreImages(id);
 		}
 	}
+	
 	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
@@ -142,6 +176,7 @@ function ss_loadEntryUrl(url,id) {
 	if (window.ss_highlightLineById) {
 		ss_highlightLineById(folderLine);
 	}
+	
 	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
