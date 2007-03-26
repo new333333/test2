@@ -20,5 +20,7 @@
 			<param name="deploy-support.applet.deploy.dir" value="applets/workflow-viewer" />
 		</antcall>
 	</target>
+	
+	<target name="compile" depends="compile_1.4"/>
 
 </project>

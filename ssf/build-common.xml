@@ -50,6 +50,24 @@
 		/>
 	</target>
 
+	<target name="compile_1.4">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			bootclasspath="${javac.bootclasspath}"
+			compiler="javac1.4"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}"
+			srcdir="${source.dir}"
+			source="1.4"
+			target="1.4"
+		/>
+	</target>
+
 	<target name="jar" depends="compile">
 		<jar
 			basedir="${classes.dir}"
