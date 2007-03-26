@@ -57,9 +57,9 @@ public class ManageSearchIndexController extends  SAbstractController {
 			for (Long id:folderIdList) {
 				exclude.addAll(getBinderModule().indexTree(id, exclude));
 			}
-			//if people selected and not yet index; index content only
+			//if people selected and not yet index; index content only, not the whole ws tree
 			if ((profileId != null) && !exclude.contains(profileId))
-				getBinderModule().indexBinder(profileId);
+				getBinderModule().indexBinder(profileId, true);
 			
 			response.setRenderParameter("redirect", "true");
 			

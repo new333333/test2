@@ -619,6 +619,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
    	    	indexedIds.addAll(processor.indexTree(b, exclusions));
    	   	 }
+   		IndexSynchronizationManager.applyChanges();
    		return indexedIds;
         	
     }

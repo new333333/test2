@@ -341,10 +341,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	FilterControls filter = new FilterControls(ObjectKeys.FIELD_ENTITY_PARENTBINDER, binder);
         return getFolderDao().queryEntries(filter);
    	}
- 	protected void indexEntries_preIndex(Binder binder) {
- 		super.indexEntries_preIndex(binder);
-		getRssGenerator().deleteRssFile(binder); 		
- 	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
 	}
