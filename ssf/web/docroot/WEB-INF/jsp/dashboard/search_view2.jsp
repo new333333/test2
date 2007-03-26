@@ -47,75 +47,90 @@
 	  	<tr>
 			<td valign="top" class="ss_searchviewDashboardContainer">
 			  	<c:choose>
-				  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-					    <a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"
-								binderId="${fileEntry._binderId}"
-								entryId="${fileEntry._docId}">
-								<ssf:param name="entityType" value="folderEntry" />
-					    	    <ssf:param name="newTab" value="1"/>
-								</ssf:url>" 
-							onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
-				    </c:when>
 				    <c:when test="${fileEntry._entityType == 'user'}">
 				    	<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />" />
-					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-								action="view_permalink"
-								binderId="${fileEntry._principal.workspaceId}">
-								<ssf:param name="entityType" value="workspace" />
-					    	    <ssf:param name="newTab" value="1"/>
-								</ssf:url>" 
-							onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${portletNamespace}');">
 				    </c:when>
+				    
 				    <c:when test="${fileEntry._entityType == 'group'}">
 				    	<img border="0" src="<html:imagesPath/>icons/group.gif" alt="<ssf:nlt tag="general.groups" />"/>
-					    <a target="_blank" href="<ssf:url action="view_profile_entry" 
-					    		folderId="${fileEntry._binderId}"
-					    		entryId="${fileEntry._docId}" />">
 				    </c:when>
-				    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
-					    
-					    <c:if test="${fileEntry._entityType == 'folder'}">
-					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.folder" />"/>
-					    	</c:if>
-					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>icons/folder.gif" alt="<ssf:nlt tag="general.type.folder" />"/>
-					    	</c:if>
-					    </c:if>
-					    
-					    <c:if test="${fileEntry._entityType == 'workspace'}">
-					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
-					    	</c:if>
-					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
-					    	</c:if>
-					    </c:if>
 
-					    <c:if test="${fileEntry._entityType == 'profiles'}">
-					    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.profiles" />"/>
-					    	</c:if>
-					    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
-					    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" alt="<ssf:nlt tag="general.profiles" />"/>
-					    	</c:if>
-					    </c:if>
-					    
-					    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-							    action="view_permalink"
-							    binderId="${fileEntry._docId}">
-							    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-					    	    <ssf:param name="newTab" value="1"/>
-								</ssf:url>" 
-							onClick="return ss_gotoPermalink('${fileEntry._docId}','', '${fileEntry._entityType}', '${portletNamespace}');">
+				    <c:when test="${fileEntry._entityType == 'folder'}">
+				    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.folder" />"/>
+				    	</c:if>
+				    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>icons/folder.gif" alt="<ssf:nlt tag="general.type.folder" />"/>
+				    	</c:if>
+				    </c:when>
+
+				    <c:when test="${fileEntry._entityType == 'workspace'}">
+				    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
+				    	</c:if>
+				    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
+				    	</c:if>
+				    </c:when>
+
+				    <c:when test="${fileEntry._entityType == 'profiles'}">
+				    	<c:if test="${!empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>${ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}" alt="<ssf:nlt tag="general.profiles" />"/>
+				    	</c:if>
+				    	<c:if test="${empty ssDashboard.beans[componentId].ssSearchFormData.ssBinderData[fileEntry._docId].iconName}">
+				    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" alt="<ssf:nlt tag="general.profiles" />"/>
+				    	</c:if>
 				    </c:when>
 			 	</c:choose>
-		 	
-			    <c:if test="${empty fileEntry.title}">
-			    	<span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle"/>)</i></span>
-			    </c:if>
-		    
-		    	<span class="ss_entryTitle ss_underline"><c:out value="${fileEntry.title}"/></span></a>
+
+				<span class="ss_entryTitle ss_underline">
+
+				<ssf:menuLink 
+					displayDiv="false" entryId="${fileEntry._docId}" 
+					folderId="${fileEntry._binderId}" binderId="${fileEntry._binderId}" 
+					entityType="${fileEntry._entityType}" imageId='menuimg_${fileEntry._docId}_${renderResponse.namespace}' 
+			    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+					namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="yes">
+					
+					<ssf:param name="url" useBody="true">
+					  	<c:choose>
+						  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
+								<ssf:url adapter="true" portletName="ss_forum" folderId="${fileEntry._binderId}" 
+								action="view_folder_entry" entryId="${fileEntry._docId}" actionUrl="true" />						  	
+						    </c:when>
+						    
+						    <c:when test="${fileEntry._entityType == 'user'}">
+								<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"
+									binderId="${fileEntry._principal.workspaceId}">
+									<ssf:param name="entityType" value="workspace" />
+						    	    <ssf:param name="newTab" value="1"/>
+								</ssf:url>
+						    </c:when>
+						    
+						    <c:when test="${fileEntry._entityType == 'group'}">
+							    <ssf:url action="view_profile_entry" 
+						    		folderId="${fileEntry._binderId}"
+						    		entryId="${fileEntry._docId}" />
+						    </c:when>
+						    
+						    <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
+							    <ssf:url adapter="true" portletName="ss_forum"
+								    action="view_permalink"
+								    binderId="${fileEntry._docId}">
+								    <ssf:param name="entityType" value="${fileEntry._entityType}" />
+						    	    <ssf:param name="newTab" value="1"/>
+								</ssf:url>
+						    </c:when>
+					 	</c:choose>
+					</ssf:param>
+					    <c:if test="${empty fileEntry.title}">
+					    	(<ssf:nlt tag="entry.noTitle"/>)
+					    </c:if>
+				    	<c:out value="${fileEntry.title}"/>
+				</ssf:menuLink>
+				
+				</span>
+		    	
 				<c:if test="${fileEntry._entryHasMetaHit}">
 				  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasFoundInTheMetaData"/>]</span>
 				</c:if>
@@ -283,3 +298,11 @@
 	</tr>
 	</table>
 </div>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
+
+<script type="text/javascript">
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+</script>

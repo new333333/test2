@@ -9,9 +9,6 @@
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
-<portletadapter:defineObjects1/>
-<ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
-<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 <%
 // General variables
 String title = ParamUtil.get(request, "title", "");
@@ -27,20 +24,20 @@ String binderId = ParamUtil.get(request, "binderId", "");
 String entityType = ParamUtil.get(request, "entityType", "");
 String seenStyle = ParamUtil.get(request, "seenStyle", "");
 String seenStyleFine = ParamUtil.get(request, "seenStyleFine", "");
+String imageId = ParamUtil.get(request, "imageId", "");
+String linkMenuObj = ParamUtil.get(request, "linkMenuObj", "");
+String menuDivId = ParamUtil.get(request, "menuDivId", "");
+String namespace = ParamUtil.get(request, "namespace", "");
+String entryCallbackRoutine = ParamUtil.get(request, "entryCallbackRoutine", "");
+String url = ParamUtil.get(request, "url", "");
+String isDashboard = ParamUtil.get(request, "isDashboard", "no");
 %>
 
-<a 
-class="ss_title_menu" 
-href="<ssf:url     
-adapter="<%= blnAdapter %>" 
-portletName="ss_forum" 
-folderId="<%= folderId %>" 
-action="view_folder_entry" 
-entryId="<%= entryId %>" actionUrl="true" />" 
-onClick="ss_loadEntry(this, '<%= entryId %>');return false;" 
-onMouseOver="ss_linkMenu.showButton(this);"
-onMouseOut="ss_linkMenu.hideButton(this);"
-><img border="0" class="ss_title_menu"
-onClick="ss_linkMenu.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
+<a class="ss_title_menu" href="<%= url %>" 
+onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
+onMouseOver="<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
+onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
+><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
+onClick="setMenuGenericLinks('<%= linkMenuObj %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>

@@ -12,19 +12,26 @@
 				<ssf:miniBusinessCard user="<%=(User)entry.get("_principal")%>"/> 
 			</td>
 			<td class="ss_guestbookContainer">
-				<a href="<portlet:renderURL windowState="maximized"><portlet:param 
-					name="action" value="view_folder_entry"/><portlet:param 
-					name="binderId" value="${entry._binderId}"/><portlet:param 
-					name="entryId" value="${entry._docId}"/><portlet:param 
-					name="newTab" value="1"/></portlet:renderURL>">
 				<span class="ss_entryTitle ss_normalprint">
-					<c:if test="${empty entry.title}">
-				    	${entry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
-				    </c:if>
-					<c:out value="${entry.title}" escapeXml="false"/>
-				</span></a>
-
-
+					<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${entry._docId}" 
+					folderId="${entry._binderId}" binderId="${entry._binderId}" entityType="${entry._entityType}" 
+					imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+				    menuDivId="ss_emd_${renderResponse.namespace}"
+					linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+					namespace="${renderResponse.namespace}"
+					entryCallbackRoutine="${showEntryCallbackRoutine}">
+					
+						<ssf:param name="url" useBody="true">
+							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+							action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+						</ssf:param>
+					
+						<c:if test="${empty entry.title}">
+					    	${entry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
+					    </c:if>
+						<c:out value="${entry.title}" escapeXml="false"/>
+					</ssf:menuLink>
+				</span>
 
 				<span class="ss_entrySignature"><fmt:formatDate timeZone="${fileEntry._principal.timeZone.ID}"
 				      value="${entry._modificationDate}" type="both" 
@@ -40,3 +47,13 @@
 		</tr>
 </table>
 	</c:forEach>
+
+</table>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
+
+<script type="text/javascript">
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+</script>

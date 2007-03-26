@@ -237,14 +237,16 @@ var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/></portlet:renderURL>';
+	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
 var ss_baseEntryUrl<portlet:namespace/> = ss_baseEntryUrl;
-	
 var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/></portlet:renderURL>';
+	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
 var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
+var ss_baseFileUrl = '<ssf:url webPath="viewFile" folderId="ssBinderIdPlaceHolder" 
+   	entryId="ssEntryIdPlaceHolder"></ssf:url>';
+var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
 </ssf:ifnotadapter>
 
 </script>

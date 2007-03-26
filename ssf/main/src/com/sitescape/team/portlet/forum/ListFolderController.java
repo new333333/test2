@@ -1348,21 +1348,30 @@ public class ListFolderController extends  SAbstractController {
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
 		//Folder action menu
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals("")) {
+		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_BLOG) 
+				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) || viewType.equals(Definition.VIEW_STYLE_SEARCH) || 
+				viewType.equals("")) {
 			//Only show these options if in the folder table style
 			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
 
-			//vertical
-			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
-					NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			
+			//Do not display - Show entries at bottom for the Blog, Guestbook and Search View
+			if (!viewType.equals(Definition.VIEW_STYLE_BLOG) && !viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
+					&& !viewType.equals(Definition.VIEW_STYLE_SEARCH)) {
+			
+				//vertical
+				qualifiers = new HashMap();
+				if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
+				url = response.createActionURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+				entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			}
+			
 			//accessible
 			qualifiers = new HashMap();
 			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 

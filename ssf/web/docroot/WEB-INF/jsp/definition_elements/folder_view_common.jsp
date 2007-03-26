@@ -6,27 +6,26 @@
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 
 <%
-	String displayStyle = ssUser.getDisplayStyle();
-	if (displayStyle == null) displayStyle = "";
-	
-	String slidingTableStyle = "sliding";
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-		slidingTableStyle = "sliding_scrolled";
-	}
-	boolean useAdaptor = true;
-	if (ssUser.getDisplayStyle() != null && 
-	        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
-		useAdaptor = false;
-	}
-	String ssFolderTableHeight = "";
-	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
-	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
-		ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
-	}
-	if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
-			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
-			
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null) displayStyle = "";
+
+String slidingTableStyle = "sliding";
+if (ssUser.getDisplayStyle() != null && 
+        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+	slidingTableStyle = "sliding_scrolled";
+}
+boolean useAdaptor = true;
+if (ssUser.getDisplayStyle() != null && 
+        ssUser.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+	useAdaptor = false;
+}
+String ssFolderTableHeight = "";
+Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
+if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
+	ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+}
+if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
+		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle %>";
@@ -38,18 +37,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="action" value="${action}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
 		name="operation" value="subscribe"/></portlet:actionURL>";
-var ss_placeholderEntryUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_entry"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-		name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>";
-var ss_placeholderFileUrl = "<ssf:url 
-    	webPath="viewFile"
-    	folderId="ssBinderIdPlaceHolder"
-    	entryId="ssEntryIdPlaceHolder" >
-    	</ssf:url>";
 var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
-
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
@@ -62,9 +50,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 
 	<tr>
 		<td align="left" width="55%">
-		
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
-
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
 		</td>
 
 		<td align="right" width="20%">
@@ -283,9 +269,21 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="<%= useAdaptor %>" entryId="<%= entry1.get("_docId").toString() %>" 
-	folderId="${ssFolder.id}" binderId="${ssBinder.id}" entityType="${entry1._entityType}" seenStyle="<%= seenStyle %>" seenStyleFine="<%= seenStyleFine %>" >
-		${entry1.title}
+	<ssf:menuLink 
+		displayDiv="false" entryId="${entry1._docId}" 
+		folderId="${ssFolder.id}" binderId="${ssBinder.id}" 
+		entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
+		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no">
+		
+		<ssf:param name="url" useBody="true">
+			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssFolder.id}" 
+			action="view_folder_entry" entryId="${entry1._docId}" actionUrl="true" />					
+		</ssf:param>
+		    <c:if test="${empty entry1.title}">
+		    	(<ssf:nlt tag="entry.noTitle"/>)
+		    </c:if>
+	    	<c:out value="${entry1.title}"/>
 	</ssf:menuLink>
   </ssf:slidingTableColumn>
  </c:if>
@@ -323,23 +321,13 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </ssf:slidingTable>
 </div>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}">
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
 </ssf:menuLink>
 
 <script type="text/javascript">
-function ss_initLinkMenu() {
-	ss_linkMenu.menuDiv = "ss_emd_${renderResponse.namespace}";
-	ss_linkMenu.binderId = "${ssBinder.id}";
-	ss_linkMenu.entityType = "folderEntry";
-	ss_linkMenu.binderDefinitionType = "${ssBinder.definitionType}";
-	ss_linkMenu.entryUrl = ss_placeholderEntryUrl;
-	ss_linkMenu.fileUrl = ss_placeholderFileUrl;
-	ss_linkMenu.menuLinkShowEntry = 'ss_folderMenuShowEntryLink';
-	ss_linkMenu.menuLinkShowFile = 'ss_folderMenuShowFileLink';
-}
-ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
 </script>
+
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
-
-
-

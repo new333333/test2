@@ -21,12 +21,22 @@
 		
 		<tr>
 			<td class="ss_searchviewContainer">
-				<a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-					action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />" 
-					onClick="ss_loadEntry(this,'<c:out value="${entry._docId}"/>');return false;" ><span class="ss_entryTitle">
-					<c:out value="${entry._docNum}" escapeXml="false"/>.&nbsp;<c:out value="${entry.title}" escapeXml="false"/>
-					</span>
-				</a>
+				<span class="ss_entryTitle">
+					<c:out value="${entry._docNum}" escapeXml="false"/>.
+					<ssf:menuLink 
+						displayDiv="false" action="view_folder_entry" 
+						adapter="true" entryId="${entry._docId}" 
+						folderId="${entry._binderId}" binderId="${entry._binderId}" 
+						entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
+				    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+						namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}">
+						<ssf:param name="url" useBody="true">
+							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+							action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+						</ssf:param>
+						<c:out value="${entry.title}" escapeXml="false"/>
+					</ssf:menuLink>
+				</span>
 			</td>
 		</tr>
 
@@ -83,3 +93,11 @@
 		%>
 	</c:forEach>
 </table>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
+
+<script type="text/javascript">
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+</script>

@@ -30,6 +30,11 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String menuDivId = "";
 	private String seenStyle = ""; 
 	private String seenStyleFine = "";
+	private String imageId = "";
+	private String linkMenuObj = "";
+	private String namespace = "";
+	private String entryCallbackRoutine = "";
+	private String isDashboard = "";
 	
 	private Map _params;
     
@@ -69,6 +74,12 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("entityType", new String[] {this.entityType});
 				_params.put("seenStyle", new String[] {this.seenStyle});
 				_params.put("seenStyleFine", new String[] {this.seenStyleFine});
+				_params.put("imageId", new String[] {this.imageId});
+				_params.put("menuDivId", new String[] {this.menuDivId});
+				_params.put("linkMenuObj", new String[] {this.linkMenuObj});
+				_params.put("namespace", new String[] {this.namespace});
+				_params.put("entryCallbackRoutine", new String[] {this.entryCallbackRoutine});
+				_params.put("isDashboard", new String[] {this.isDashboard});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -80,6 +91,9 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menulink/menulinkdiv.jsp");
 				
 				_params.put("menuDivId", new String[] {this.menuDivId});
+				_params.put("linkMenuObj", new String[] {this.linkMenuObj});
+				_params.put("namespace", new String[] {this.namespace});
+				_params.put("isDashboard", new String[] {this.isDashboard});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -100,7 +114,14 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			folderId = "";
 			binderId = "";
 			entityType = "";
+			displayDiv = "false";
+			menuDivId = "";
 			seenStyle = "";
+			seenStyleFine = "";
+			imageId = "";
+			linkMenuObj = "";
+			namespace = "";
+			entryCallbackRoutine = "";
 			if (_params != null) {
 				_params.clear();
 			}
@@ -169,4 +190,24 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	public void setSeenStyleFine(String seenStyleFine) {
 	    this.seenStyleFine = seenStyleFine;
 	}
+	
+	public void setImageId(String imageId) {
+	    this.imageId = imageId;
+	}
+	
+	public void setLinkMenuObj(String linkMenuObj) {
+	    this.linkMenuObj = linkMenuObj;
+	}
+	
+	public void setNamespace(String namespace) {
+	    this.namespace = namespace;
+	}
+	
+	public void setEntryCallbackRoutine(String entryCallbackRoutine) {
+	    this.entryCallbackRoutine = entryCallbackRoutine;
+	}
+
+	public void setIsDashboard(String isDashboard) {
+	    this.isDashboard = isDashboard;
+	}	
 }

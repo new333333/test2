@@ -2593,26 +2593,63 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-//Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
+function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
+
+	var linkMenuObj = eval(linkMenu+"");
+	
+	if (ss_displayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
+	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the entry
+		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
+		if (entityType != null && entityType != "") linkMenuObj.entityType = entityType;
+		linkMenuObj.showingMenu = 0;
+		return false;
+	}
+	
+	linkMenuObj.showingMenu = 0;
+	if (id == "") return false;
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	if (window.ss_highlightLineById) {
+		ss_highlightLineById(folderLine);
+		if (window.swapImages && window.restoreImages) {
+			restoreImages(id);
+		}
+	}
+	
+	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard);
+	
+	return false;
+}
+
+var menuLinkAdapterURL = "";
+
+function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL) {
+
+	if (adapterURL) menuLinkAdapterURL = adapterURL;
+
+	var linkMenuObj = eval(linkMenu+"");
 	var binderUrl = "";
 	var entryUrl = "";
 	//Try to find the base urls from this namespace or from the parent or the opener
 	try {
 		eval("binderUrl = ss_baseBinderUrl" + namespace)
 		eval("entryUrl = ss_baseEntryUrl" + namespace)
-	} catch(e) {alert('no base url');}
+	} catch(e) {}
 	if (binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
-		} catch(e) {alert('no parent base url');}
+		} catch(e) {}
 	}
 	if (binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
-		} catch(e) {alert('no opener base url');}
+		} catch(e) {}
 	}
 	if (binderUrl == "" || entryUrl == "") {
 		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
@@ -2630,6 +2667,52 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 			entryUrl = ss_baseEntryUrl;
 		}
 	}
+
+	linkMenuObj.menuDiv = menuDivId;
+	linkMenuObj.binderUrl = binderUrl;
+	linkMenuObj.entryUrl = entryUrl;
+	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
+}
+
+//Routine to go to a permalink without actually using the permalink
+function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
+
+	var binderUrl = "";
+	var entryUrl = "";
+	//Try to find the base urls from this namespace or from the parent or the opener
+	try {
+		eval("binderUrl = ss_baseBinderUrl" + namespace)
+		eval("entryUrl = ss_baseEntryUrl" + namespace)
+	} catch(e) {}
+	if (binderUrl == "" || entryUrl == "") {
+		try {
+			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
+			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
+		} catch(e) {}
+	}
+	if (binderUrl == "" || entryUrl == "") {
+		try {
+			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
+			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
+		} catch(e) {}
+	}
+	if (binderUrl == "" || entryUrl == "") {
+		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
+			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
+				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
+					binderUrl = self.opener.ss_baseBinderUrl;
+					entryUrl = self.opener.ss_baseEntryUrl;
+				}
+			} else {
+				binderUrl = self.parent.ss_baseBinderUrl;
+				entryUrl = self.parent.ss_baseEntryUrl;
+			}
+		} else {
+			binderUrl = ss_baseBinderUrl;
+			entryUrl = ss_baseEntryUrl;
+		}
+	}
+	
 	if (binderUrl == "" || entryUrl == "") return true;
 
 	//Build a url to go to
@@ -2652,6 +2735,8 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
+	
+	alert("ss_gotoPermalink: url: "+url);
 	
 	self.location.href = url;
 	return false;
@@ -2900,6 +2985,7 @@ function ss_createPopupDiv(obj, divId) {
 	
 	ss_fetch_url(url, ss_callbackPopupDiv, divId);
 }
+
 // Lightbox a dialog centered.  Optionally take an id to set focus on.
 function ss_showPopupDivCentered(divId, focusId) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
@@ -2912,7 +2998,6 @@ function ss_showPopupDivCentered(divId, focusId) {
 		document.getElementById(focusId).focus();
 	}
 }
-
 
 function ss_setupPopupDiv(targetDiv) {
 		targetDiv.style.display = "block";
@@ -2928,6 +3013,7 @@ function ss_setupPopupDiv(targetDiv) {
 		//Signal that the layout changed
 		if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
+
 function ss_callbackPopupDiv(s, divId) {
 	var targetDiv = document.getElementById(divId);
 	if (targetDiv) {
@@ -2937,14 +3023,15 @@ function ss_callbackPopupDiv(s, divId) {
 		ss_setupPopupDiv(targetDiv);
 	}
 }
+
 function ss_setActionUrl(formObj, url) {
 	formObj.action = url;
 }
+
 function ss_cancelPopupDiv(divId) {
 	ss_hideLightbox();
 	ss_hideDiv(divId);
 }
-
 
 function ss_dashboardInitialization(divId) {
 	//Turn off ie's 3d table look
@@ -3100,6 +3187,7 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     ss_moveObjectToBody(obj)
 	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge);
 }
+
 function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
     var obj;
     var objId = divId;
@@ -3280,11 +3368,19 @@ function ss_linkMenuObj() {
 	this.type_group = 'group';
 	this.type_workspace = 'workspace';
 	
-	this.showButton = function(obj) {
+	this.showButton = function(obj, imgid) {
+		if (imgid != null && imgid != "") {
+			var imgObj = document.getElementById(imgid);
+			if (imgObj != null) {
+				imgObj.src = ss_imagesPath + "pics/downarrow.gif";
+				this.lastShownButton = obj;
+				return;
+			}
+		} 
 		if (this.lastShownButton && this.lastShownButton != obj) this.hideMenu(obj);
 		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow.gif";
 		this.lastShownButton = obj;
-	}
+	}	
 	
 	this.showMenu = function(obj, id, binderId, definitionType) {
 		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', definition = '+definitionType)
@@ -3306,8 +3402,10 @@ function ss_linkMenuObj() {
 		if (this.menuDiv != "") {
 			var menuObj = document.getElementById(this.menuDiv);
 			ss_moveObjectToBody(menuObj)
-			var x = parseInt(ss_getObjAbsX(obj) + 1)
-			var y = parseInt(ss_getObjAbsY(obj) + ss_getObjectHeight(obj) + 8);
+			
+	    	var x = dojo.html.getAbsolutePosition(obj, true).x + 1;
+	    	var y = dojo.html.getAbsolutePosition(obj, true).y	+ 16;
+			
 			menuObj.style.top = y + "px";
 			menuObj.style.left = x + "px";
 			menuObj.style.zIndex = ssMenuZ;
@@ -3332,8 +3430,15 @@ function ss_linkMenuObj() {
 			ss_HideDivOnSecondClick(this.menuDiv)
 		}
 	}
-	
-	this.hideButton = function(obj) {
+
+	this.hideButton = function(obj, imgid) {
+		if (imgid != null && imgid != "") {
+			var imgObj = document.getElementById(imgid);
+			if (imgObj != null) {
+				imgObj.src = ss_imagesPath + "pics/downarrow_off.gif";
+				return;
+			}
+		} 
 		obj.parentNode.getElementsByTagName("img").item(0).src = ss_imagesPath + "pics/downarrow_off.gif";
 	}
 	
@@ -3360,8 +3465,14 @@ function ss_linkMenuObj() {
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
 		self.location.href = url;
 	}
-	
+
 	this.newWindow = function() {
+		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
+		ss_showForumEntryInPopupWindow();
+		return false;
+	}
+	
+	this.newWindowOld = function() {
 		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
@@ -3395,6 +3506,9 @@ function ss_linkMenuObj() {
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+		
+		alert("this.buildBaseUrl: url: "+url);
+		
 		ss_debug('buildBaseUrl - '+ url);
 		return url;
 	}
@@ -3460,6 +3574,7 @@ function ss_showSubmenu(obj) {
 		}
 	}
 }
+
 function ss_hideSubmenu(obj) {
 	ss_debug('ss_hideSubmenu')
 	var ulElements = obj.getElementsByTagName('ul')
@@ -3471,7 +3586,6 @@ function ss_hideSubmenu(obj) {
 }
 
 // Tabs
-
 function ss_addTab(obj, type, binderId, entryId) {
 	if (binderId == null) binderId = "";
 	if (entryId == null) entryId = "";
@@ -3499,7 +3613,7 @@ function ss_addTab(obj, type, binderId, entryId) {
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-	
+
 function ss_deleteTab(obj, tabId) {
 	ss_setupStatusMessageDiv();
 	//Check if this is pointing to a tab
@@ -3536,6 +3650,7 @@ function ss_deleteTab(obj, tabId) {
 		}
 	}
 }
+
 function ss_changeTabDone(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
@@ -3546,7 +3661,6 @@ function ss_changeTabDone(obj) {
 }
 
 //Search functions from the navbar
-
 function ss_doSearch(obj, title) {
 	ss_addTab(obj, "query");
 }
@@ -3577,14 +3691,10 @@ function ss_showThisImage(obj) {
 	}
 }
 
-
 //Mustering routines
 function ss_Clipboard () {
-
 	var usersCheckboxes = new Array();
-
 	var contributorsIds = new Array();
-
 	var sBinderId;
 	
 	this.showForm = function (musterClass, userIds, binderId) {
@@ -3630,7 +3740,6 @@ function ss_Clipboard () {
 	    hiddenObj.setAttribute("name", "muster_class");
 	    hiddenObj.setAttribute("value", musterClass);
 	    formObj.appendChild(hiddenObj);
-
 		
 		var brObj = document.createElement("br");
 
@@ -3649,7 +3758,6 @@ function ss_Clipboard () {
 		addTeamMembersBtnObj.setAttribute("name", "add");
 		addTeamMembersBtnObj.setAttribute("value", ss_addTeamMembersToClipboardText);
 		addTeamMembersBtnObj.onclick = ss_muster.addTeamMembersToClipboard;
-
 
 		addBtnDivObj.appendChild(addContrBtnObj);
 		addBtnDivObj.appendChild(brObj.cloneNode(false));
@@ -3680,7 +3788,6 @@ function ss_Clipboard () {
 
 		loadUsers(divObj);
 	}
-	
 	
 	function loadUsers (divObj) {
 		if (!divObj)
@@ -3833,7 +3940,6 @@ function ss_Clipboard () {
 		ajaxRequest.sendRequest();  //Send the request
 	}
 	
-	
 	function postAddToClipboard (obj) {
 		//See if there was an error
 		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
@@ -3853,7 +3959,6 @@ function ss_Clipboard () {
 		ajaxRequest.setPostRequest(postRemoveFromClipboard);
 		ajaxRequest.setUsePOST();
 		ajaxRequest.sendRequest();  //Send the request
-
 	}
 	
 	function postRemoveFromClipboard (obj) {
@@ -3863,7 +3968,6 @@ function ss_Clipboard () {
 		}
 		ss_cancelPopupDiv('ss_muster_div');
 	}
-
 
 }
 
@@ -3951,7 +4055,6 @@ function $(id) {
 	return document.getElementById(id);
 }
 
-
 /*
  	Summary:
  	
@@ -4022,8 +4125,6 @@ function ss_editablePopUp(url, sourceDivId) {
 	self.window.open(url, '_blank', 'width='+width+',height='+height+',directories=no,location=no,menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');
 }
 
-
-
 function ss_submitParentForm(htmlObj) {
 	if (htmlObj.submit) {
 		htmlObj.submit();
@@ -4032,8 +4133,6 @@ function ss_submitParentForm(htmlObj) {
 	}
 }
 
-
 function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
-

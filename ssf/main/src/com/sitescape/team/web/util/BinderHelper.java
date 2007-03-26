@@ -70,6 +70,7 @@ public class BinderHelper {
 	//The getViewListingJSP function has been overloaded, to check if the displayDefinition is of type
 	//search. For the 'search' display defintion, we should not have the display at bottom (vertical)
 	//option. So when a user chooses display at bottom option, we will be showing the user a overlay display
+	//Along with 'search', we have added 'blog' and 'guestbook' to above check 
 	static public String getViewListingJsp(AllBusinessServicesInjected bs, String displayDefinition) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
@@ -84,7 +85,10 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-			if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_SEARCH) || displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY))) {
+			if (displayDefinition != null && (displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_SEARCH) 
+					|| displayDefinition.equalsIgnoreCase(ObjectKeys.SEARCH_RESULTS_DISPLAY)
+					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_BLOG)
+					|| displayDefinition.equalsIgnoreCase(Definition.VIEW_STYLE_GUESTBOOK))) {
 				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_VERTICAL;

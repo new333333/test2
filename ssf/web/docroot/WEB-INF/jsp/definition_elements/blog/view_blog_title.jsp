@@ -39,19 +39,29 @@
 %>
 <div class="ss_header_bar_title_text">
 <span class="ss_header_bar_title_text">
- <a class="ss_header_bar_title_link" 
-   href="<ssf:url action="view_folder_entry" 
-		binderId="${ssDefinitionEntry.parentFolder.id}"
-		entryId="${ssDefinitionEntry.id}" >
-    	<ssf:param name="newTab" value="1"/>
-		</ssf:url>">
-<%= docNumber %>
-<c:if test="${empty ssDefinitionEntry.title}">
-  <span class="ss_light">
-    --<ssf:nlt tag="entry.noTitle"/>--
-  </span>
-</c:if>
-<c:out value="${ssDefinitionEntry.title}"/></a>
+	<%= docNumber %>
+	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
+	folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+	imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}' 
+    menuDivId="ss_emd_${renderResponse.namespace}"
+	linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}"
+	entryCallbackRoutine="${showEntryCallbackRoutine}">
+
+		<ssf:param name="url" useBody="true">
+			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
+			action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" />
+		</ssf:param>
+
+		<c:if test="${empty ssDefinitionEntry.title}">
+		  <span class="ss_light">
+		    --<ssf:nlt tag="entry.noTitle"/>--
+		  </span>
+		</c:if>
+
+		<c:out value="${ssDefinitionEntry.title}"/>
+	</ssf:menuLink>
+
 </span>
 </div>
 </div>
@@ -105,3 +115,11 @@
 </div>	
 
 </c:if>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
+
+<script type="text/javascript">
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+</script>

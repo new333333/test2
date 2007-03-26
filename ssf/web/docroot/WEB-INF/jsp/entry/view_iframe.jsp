@@ -85,7 +85,7 @@
 	</div>
 </div>
 
-<c:if test="${ss_folderViewStyle != 'blog' && ss_folderViewStyle != 'wiki' && ss_folderViewStyle != 'guestbook'}">
+<c:if test="${ss_folderViewStyle != 'wiki'}">
 	<div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
 	  style="position:absolute; visibility:hidden;
 	  width:600px; height:80%; display:none;">
