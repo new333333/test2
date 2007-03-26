@@ -26,7 +26,7 @@
           <property name="required" value=""/>
         </properties>
       </item>
-      <item name="graphic" caption="__graphic" type="data" category="commonEntryData" id="22">
+      <item name="graphic" caption="__graphic" type="data" id="22">
         <properties>
           <property name="name" value="photo"/>
           <property name="caption" value="__photo"/>
@@ -84,13 +84,13 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="23" formItem="graphic">
+    <item name="entryDataItem" caption="__entry_data_item" id="23" formItem="graphic">
       <properties>
         <property name="name" value="photo"/>
         <property name="caption" value="__photo"/>
       </properties>
     </item>
-    <item name="entryReplies" caption="__entry_replies" type="dataView" id="15">
+    <item name="entryReplies" caption="__entry_replies" id="15">
       <properties>
         <property name="caption" value="__entry_replies"/>
       </properties>
@@ -110,12 +110,12 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryBlogReplies" caption="__entry_replies" type="dataView" id="21">
+    <item name="entryBlogReplies" caption="__entry_replies" id="21">
       <properties>
         <property name="caption" value="__entry_replies"/>
       </properties>
     </item>
-    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="24" formItem="graphic">
+    <item name="entryBlogDataItem" caption="__entry_data_item" id="24" formItem="graphic">
       <properties>
         <property name="name" value="photo"/>
         <property name="caption" value="__photo"/>

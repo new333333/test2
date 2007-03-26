@@ -346,8 +346,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (defItem.attributeValue(attr.getName()) == null)
 					{
 						// (rsordillo) Do not add non-required Attributes to new item
-						if (attr.getName().equals("canBeDeleted")
-						|| attr.getName().equals("multipleAllowed"))
+						if (attr.getName().equals("canBeDeleted") ||
+								attr.getName().equals("category") ||
+								attr.getName().equals("multipleAllowed"))
 							continue;
 						defItem.addAttribute(attr.getName(), attr.getValue());
 						defChanged = true;

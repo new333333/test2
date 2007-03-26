@@ -20,7 +20,7 @@
           <property name="itemSource" value="upload"/>
         </properties>
       </item>
-      <item name="file" caption="__file_upload" type="data" category="commonEntryData" id="22">
+      <item name="file" caption="__file_upload" type="data" id="22">
         <properties>
           <property name="name" value="upload"/>
           <property name="caption" value="__file_upload"/>
@@ -80,7 +80,7 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryWorkflow" caption="__entry_workflow" type="dataView" id="13">
+    <item name="entryWorkflow" caption="__entry_workflow" id="13">
       <properties>
         <property name="caption" value="__entry_workflow"/>
       </properties>
@@ -100,7 +100,7 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryBlogWorkflow" caption="__entry_workflow" type="dataView" id="19">
+    <item name="entryBlogWorkflow" caption="__entry_workflow" id="19">
       <properties>
         <property name="caption" value="__entry_workflow"/>
       </properties>

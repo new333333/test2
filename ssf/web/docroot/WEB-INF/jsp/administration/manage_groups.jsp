@@ -54,10 +54,11 @@ function ss_size_group_iframe() {
 <div>
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL><portlet:param 
+	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.group"/></span>
-	<input type="text" class="ss_text" size="70" name="groupName"><br>
+	<input type="text" class="ss_text" size="70" name="name"><br>
 		
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
@@ -76,7 +77,7 @@ function ss_size_group_iframe() {
 		    entryId="${group._docId}">
     	    <ssf:param name="operation" value="modify_group"/>
 			</ssf:url>" 
-  	  onClick="ss_showGroupList<portlet:namespace/>(this, '${group._docId}');return false;"><span>${group.title}</span> <span class="ss_smallprint">(${group._name})</span></a><br/>
+  	  onClick="ss_showGroupList<portlet:namespace/>(this, '${group._docId}');return false;"><span>${group.title}</span> <span class="ss_smallprint">(${group._groupName})</span></a><br/>
   </c:forEach>
 </div>
 <br/>

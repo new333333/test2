@@ -488,7 +488,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         checkAccess(binder, "addEntry");
-        Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
+        Definition definition;
+        if (!Validator.isNull(definitionId))
+        	definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
+        else {
+        	//get the default
+        	definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_GROUP_VIEW);
+        }
         return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
     }
 

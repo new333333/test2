@@ -26,7 +26,7 @@
           <property name="required" value=""/>
         </properties>
       </item>
-      <item name="event" caption="__event" type="data" category="entryData" id="22">
+      <item name="event" caption="__event" type="data" id="22">
         <properties>
           <property name="name" value="event"/>
           <property name="caption" value="__event"/>
@@ -85,13 +85,13 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="23" formItem="event">
+    <item name="entryDataItem" caption="__entry_data_item" id="23" formItem="event">
       <properties>
         <property name="name" value="event"/>
         <property name="caption" value="__event"/>
       </properties>
     </item>
-    <item name="entryAttachments" caption="__entry_attachments" type="dataView" id="14">
+    <item name="entryAttachments" caption="__entry_attachments" id="14">
       <properties>
         <property name="caption" value="__entry_attachments"/>
       </properties>
@@ -111,13 +111,13 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="24" formItem="event">
+    <item name="entryBlogDataItem" caption="__entry_data_item" id="24" formItem="event">
       <properties>
         <property name="name" value="event"/>
         <property name="caption" value="__event"/>
       </properties>
     </item>
-    <item name="entryBlogAttachments" caption="__entry_attachments" type="dataView" id="20">
+    <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
       <properties>
         <property name="caption" value="__entry_attachments"/>
       </properties>
