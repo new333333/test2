@@ -268,7 +268,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			}
 			//TODO:: temp to reload everyone
 			List templates = getAdminModule().getTemplates();
-			if (templates.isEmpty()) return;
+			if (!templates.isEmpty()) return;
 			//Now setup configurations
 			elements = cfg.getRootElement().selectNodes("template");
 			for (int i=0; i<elements.size(); ++i) {
