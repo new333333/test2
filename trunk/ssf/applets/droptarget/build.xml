@@ -48,4 +48,5 @@
 		keystore="sitescape.keystore" storepass="spDJOQ"/>
 	</target>
 	
+	<target name="compile" depends="compile_1.4"/>
 </project>
