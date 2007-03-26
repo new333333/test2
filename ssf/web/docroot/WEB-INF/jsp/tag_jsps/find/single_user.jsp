@@ -18,6 +18,7 @@
 </ssf:ifnotadapter>
 
 
+<div class="ss_style">
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
     name="<%= findUserElementName %>" 
@@ -39,4 +40,5 @@
 		<ssf:param name="operation" value="find_user_search" />
     	</ssf:url>'); ss_findUserInitializeForm('${form_name}', '${prefix}')" />
 <input type="hidden" name="<%= findUserElementName %><%= instanceCount %>"/>
+</div>
 
