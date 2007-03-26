@@ -74,7 +74,6 @@ public class WebKeys {
 	public static final String URL_FILE_TITLE = "fileTitle";
 	public static final String URL_FILE_VIEW_TYPE = "viewType";
 	public static final String URL_GROUP_ID="groupId";
-	public static final String URL_GROUP_NAME="groupName";
 	public static final String URL_ADD_DEFAULT_ENTRY_FROM_INFRAME = "addEntryFromIFrame";
     public static final String URL_MUSTER_CLASS="muster_class";
     public static final String URL_MUSTER_IDS="muster_ids";

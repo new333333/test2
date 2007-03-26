@@ -71,17 +71,17 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryWorkflow" caption="__entry_workflow" type="dataView" id="13">
+    <item name="entryWorkflow" caption="__entry_workflow" id="13">
       <properties>
         <property name="caption" value="__entry_workflow"/>
       </properties>
     </item>
-    <item name="entryAttachments" caption="__entry_attachments" type="dataView" id="14">
+    <item name="entryAttachments" caption="__entry_attachments" id="14">
       <properties>
         <property name="caption" value="__entry_attachments"/>
       </properties>
     </item>
-    <item name="entryReplies" caption="__entry_replies" type="dataView" id="15">
+    <item name="entryReplies" caption="__entry_replies" id="15">
       <properties>
         <property name="caption" value="__entry_replies"/>
       </properties>
@@ -104,17 +104,17 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
-    <item name="entryBlogWorkflow" caption="__entry_workflow" type="dataView" id="19">
+    <item name="entryBlogWorkflow" caption="__entry_workflow" id="19">
       <properties>
         <property name="caption" value="__entry_workflow"/>
       </properties>
     </item>
-    <item name="entryBlogAttachments" caption="__entry_attachments" type="dataView" id="20">
+    <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
       <properties>
         <property name="caption" value="__entry_attachments"/>
       </properties>
     </item>
-    <item name="entryBlogReplies" caption="__entry_replies" type="dataView" id="21">
+    <item name="entryBlogReplies" caption="__entry_replies" id="21">
       <properties>
         <property name="caption" value="__entry_replies"/>
       </properties>

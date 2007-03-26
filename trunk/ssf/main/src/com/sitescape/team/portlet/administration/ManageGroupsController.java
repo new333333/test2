@@ -1,22 +1,21 @@
 package com.sitescape.team.portlet.administration;
 
-import java.io.StringReader;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
-import org.dom4j.io.SAXReader;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -27,8 +26,15 @@ public class ManageGroupsController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("addBtn")) {
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-			String groupName = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_GROUP_NAME);
-		
+			String name = PortletRequestUtils.getRequiredStringParameter(request, "name");
+			MapInputData inputData = new MapInputData(formData);
+			Map fileMap=null;
+			if (request instanceof MultipartFileSupport) {
+				fileMap = ((MultipartFileSupport) request).getFileMap();
+			} else {
+				fileMap = new HashMap();
+			}
+			getProfileModule().addGroup(binderId, null, inputData, fileMap);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
 		} else

@@ -40,6 +40,12 @@
 			<operation name="addDefinition" item="profileEntryViewType" caption="__add_a_new_profile_entry_view" />
 		</operations>
 	</definition>
+
+	<definition name="groupEntryViewDefinition" definitionType="11" caption="__group_entry_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="groupEntryViewType" caption="__add_a_new_group_entry_view" />
+		</operations>
+	</definition>
 	
 	<definition name="workspaceViewDefinition" definitionType="8" caption="__workspace_view" canBeDeleted="false">
 		<operations>
@@ -55,6 +61,33 @@
 
 	
 <!-- Items -->
+	<item name="title" caption="__title" type="data" canBeDeleted="false" 
+		multipleAllowed="false" >
+		<properties>
+			<property name="name" caption="__data_name" type="text" value="title" 
+			  readonly="true" unique="//item[@type='data']">
+				<help>__help_data_name</help>
+			</property>
+			<property name="caption" caption="__caption" type="text" value="__title"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
+			<property name="inline" caption="__inline" type="boolean">
+				<help>__help_mark_as_inline</help>
+			</property>
+			<property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1">
+				<help>__help_mark_as_title</help>
+			</property>
+			<property name="itemSource" caption="__file_items_from_the_entry_form_for_title" definitionType="1" type="selectbox">
+				<option name="ss_none" caption="__none"/>
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" 
+					optionCaption="__file_items_from_the_entry_form_for_title"/>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+		</jsps>
+		<help>__help_title_field</help>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
+	</item>
 
 <!-- shared view items ie)no category -->
 	
@@ -175,33 +208,6 @@
 		</jsps>
 	</item>
 <!-- folder entry form data items -->
-	<item name="title" caption="__title" type="data" canBeDeleted="false" 
-		multipleAllowed="false" >
-		<properties>
-			<property name="name" caption="__data_name" type="text" value="title" 
-			  readonly="true" unique="//item[@type='data']">
-				<help>__help_data_name</help>
-			</property>
-			<property name="caption" caption="__caption" type="text" value="__title"/>
-			<property name="width" caption="__textboxWidth" type="text" default="60" value="60" />
-			<property name="inline" caption="__inline" type="boolean">
-				<help>__help_mark_as_inline</help>
-			</property>
-			<property name="generated" caption="__isTitleGenerated" type="boolean" definitionType="1">
-				<help>__help_mark_as_title</help>
-			</property>
-			<property name="itemSource" caption="__file_items_from_the_entry_form_for_title" definitionType="1" type="selectbox">
-				<option name="ss_none" caption="__none"/>
-			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='file' or @name='graphic']" 
-					optionCaption="__file_items_from_the_entry_form_for_title"/>
-			</property>
-		</properties>
-		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
-		</jsps>
-		<help>__help_title_field</help>
-		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
-	</item>
 	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false" category="entryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -603,7 +609,57 @@
 		</jsps>
 	</item>
 
+<!-- Group definition: we don't allow creation of new groups.  This is here so common code works -->
+	<item name="groupEntryViewType" definitionType="11" caption="__group_view_definition">		
+		<properties>
+			<property name="name" caption="__name" type="text" />
+			<property name="caption" caption="__caption" type="text" />
+		</properties>
+		
+		<options>
+			<option name="groupEntryForm" initial="true" />
+			<option name="groupEntryView" initial="true" />
+		</options>
+	</item>
 
+	<item name="groupEntryForm" caption="__group_entry_form_definition" type="form" 
+		canBeDeleted="false" multipleAllowed="false">
+
+		<options>
+			<option name="groupEntryFormForm" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+	
+
+	<item name="groupEntryFormForm" caption="__form" canBeDeleted="false" 
+		  multipleAllowed="false">
+		<properties>
+			<property name="name" caption="__form_name" type="text" 
+				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+	<item name="groupEntryView" caption="__group_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" initial="true"/>
+			<option name="descriptionView" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
 <!-- Profile entry items -->
 	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
 		<properties>
@@ -634,6 +690,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
+	
 <!-- Profile entry form -->
 
 	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
@@ -840,7 +897,7 @@
 
 		<options optionCaption="__standard_entry_options">
 			<option name="profileTitle" caption="__profile_title" initial="true"/>
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryDataItem" definitionType="7" />
 			<option_select path="//item[@category='commonEntryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -867,8 +924,7 @@
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
 			<property name="caption" caption="__caption" type="text"/>
 		</properties>
-		<option_entry_data select_type="data" path="//item[@name='profileEntryForm']/.//item" 
-					optionCaption="__profile_data_items_from_the_profile_form">
+		<option_entry_data select_type="data" path="//item[@name='profileEntryForm']/.//item" >
 			<exclude name="title" />
 			<exclude name="attachFiles" />
 			<exclude name="description"/>
@@ -885,7 +941,7 @@
 		<options>
 			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
 				definitionType="7" initial="true" />
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -901,7 +957,7 @@
 		<options>
 			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 				definitionType="7" initial="true" />
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryDataItem" definitionType="7" />
 			<option name="entryAttachments" caption="__entry_attachments" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 		</options>
@@ -934,7 +990,7 @@
 		</properties>
 
 		<options>
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryDataItem" definitionType="7" />
 		</options>
 		
 		<jsps>
@@ -957,7 +1013,7 @@
 		</properties>
 
 		<options>
-			<option name="profileEntryDataItem" caption="__profile_entry_data_item" definitionType="7" />
+			<option name="profileEntryDataItem" definitionType="7" />
 		</options>
 		
 		<jsps>

@@ -14,7 +14,7 @@
           <property name="width" value=""/>
         </properties>
       </item>
-      <item name="table3" caption="__three_column_table" category="generalLayout" id="19">
+      <item name="table3" caption="__three_column_table" id="19">
         <properties>
           <property name="name" value="table1"/>
           <property name="caption" value=""/>
@@ -47,7 +47,7 @@
           </properties>
         </item>
       </item>
-      <item name="profileEntryPicture" caption="__profile_entry_picture" type="data" id="4" category="profileEntryData">
+      <item name="profileEntryPicture" caption="__profile_entry_picture" type="data" id="4" >
         <properties>
           <property name="name" value="picture"/>
           <property name="caption" value="__profile_entry_picture"/>
@@ -99,19 +99,19 @@
         <property name="caption" value="__profile_title"/>
       </properties>
     </item>
-    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="20" formItem="profileEmailAddress">
+    <item name="profileEntryDataItem" caption="__profile_entry_data_item" id="20" formItem="profileEmailAddress">
       <properties>
         <property name="name" value="emailAddress"/>
         <property name="caption" value="__emailAddress"/>
       </properties>
     </item>
-    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="21" formItem="profileZonName">
+    <item name="profileEntryDataItem" caption="__profile_entry_data_item" id="21" formItem="profileZonName">
       <properties>
         <property name="name" value="zonName"/>
         <property name="caption" value="__zonName"/>
       </properties>
     </item>
-    <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="22" formItem="profileEntryPicture">
+    <item name="profileEntryDataItem" caption="__profile_entry_data_item" id="22" formItem="profileEntryPicture">
       <properties>
         <property name="name" value="picture"/>
         <property name="caption" value="__profile_entry_picture"/>
