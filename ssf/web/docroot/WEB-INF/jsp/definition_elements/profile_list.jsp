@@ -25,10 +25,28 @@
 <br />
 
 <div style="margin:0px;">
+
+<div align="right" style="margin:0px 4px 0px 0px;">
+    
+<table width="99%" border="0" cellspacing="0px" cellpadding="0px">
+
+	<tr>
+		<td align="left" width="55%">
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
+		</td>
+
+		<td align="right" width="20%">&nbsp;
+		</td>
+	</tr>
+</table>
+
+</div>
+
 <div class="ss_folder_border" style="position:relative; top:2; margin:2px; 
   border-top:solid #666666 1px; 
   border-right:solid #666666 1px; 
   border-left:solid #666666 1px;">
+  
 <table cellspacing="0" cellpadding="0" width="95%">
 <tr>
 <td align="center">
