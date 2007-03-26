@@ -260,7 +260,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 				reader = new SAXReader(false);  
 				try {
 					Document doc = reader.read(new ClassPathResource(file).getInputStream());
-					getDefinitionModule().addDefinition(doc, false);
+					getDefinitionModule().addDefinition(doc, true);
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
 	        	logger.error("Cannot read definition from file: " + file);
