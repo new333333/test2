@@ -3559,7 +3559,9 @@ function ss_showProfileImg(obj, targetImgId) {
 		var imgObj = imgObjs.item(0);
 		var targetImgObj = document.getElementById(targetImgId);
 		if (targetImgObj != null) {
-			targetImgObj.src = imgObj.src;
+			var url = imgObj.src
+			url = ss_replaceSubStr(url, "viewType=thumbnail", "viewType=scaled")
+			targetImgObj.src = url;
 		}
 	}
 }
@@ -3570,7 +3572,7 @@ function ss_showThisImage(obj) {
 	if (imgObjs != null) {
 		var imgObj = imgObjs.item(0);
 		var url = imgObj.src
-		url = ss_replaceSubStr(url, "viewType=scaled", "viewType=normal")
+		url = ss_replaceSubStr(url, "viewType=thumbnail", "viewType=normal")
 		self.window.open(url, "_blank")
 	}
 }
