@@ -449,17 +449,6 @@ public class ListProfilesController extends   SAbstractController {
 		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
 		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_vertical"), 
 				url, qualifiers);
-		//accessible
-		qualifiers = new HashMap();
-		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) 
-			qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
-		toolbar.addToolbarMenuItem("3_display_styles", "", NLT.get("toolbar.menu.display_style_accessible"), 
-				url, qualifiers);
 		//iframe
 		qualifiers = new HashMap();
 		if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
