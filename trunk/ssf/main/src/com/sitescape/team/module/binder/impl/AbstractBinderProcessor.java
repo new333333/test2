@@ -664,8 +664,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void indexDeleteBinder(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
 		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-	//TODO: what is this?
-		IndexSynchronizationManager.deleteDocuments(new Term("_binderId",binder.getIndexDocumentUid()));
    	
     }
     /**

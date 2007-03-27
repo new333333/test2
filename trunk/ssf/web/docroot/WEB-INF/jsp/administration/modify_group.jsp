@@ -25,7 +25,7 @@ function ss_saveResults() {
 </script>
 
 <div class="ss_style ss_portlet">
-<span class="ss_bold ss_largerprint">${ss_group.title}</span> <span class="ss+smallprint">(${ss_group.name})</span>
+<span class="ss_bold ss_largerprint">${ssGroup.title}</span> <span class="ss+smallprint">(${ssGroup.name})</span>
 <br/>
 <br/>
 <form name="ss_groupForm" id="ss_groupForm" method="post"
@@ -33,7 +33,7 @@ function ss_saveResults() {
 		    action="__ajax_request"
 		    actionUrl="true"
 		    binderId="${ssBinderId}"
-		    entryId="${ssEntryId}">
+		    entryId="${ssGroup.id}">
 			<ssf:param name="operation" value="modify_group"/>
 			</ssf:url>">
 

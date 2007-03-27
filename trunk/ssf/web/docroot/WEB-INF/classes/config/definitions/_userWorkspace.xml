@@ -30,19 +30,14 @@
   </item>
   <item name="userWorkspaceView" caption="__user_workspace_view" id="5">
     <properties/>
-    <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6">
-      <properties>
-        <property name="caption" value="__user_workspace_businessCard"/>
-      </properties>
-    </item>
-    <item name="descriptionView" caption="__description" id="7">
-      <properties>
-        <property name="caption" value="__description"/>
-      </properties>
-    </item>
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="8">
       <properties>
         <property name="caption" value="__dashboard_canvas"/>
+      </properties>
+    </item>
+    <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6">
+      <properties>
+        <property name="caption" value="__user_workspace_businessCard"/>
       </properties>
     </item>
   </item>

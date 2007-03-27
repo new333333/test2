@@ -21,7 +21,7 @@ public class MapInputData implements InputDataAccessor {
 		else if (result instanceof String[]) 
 			return ((String[]) result)[0];
 		else
-			throw new InternalException("Illgal value type [" + result.getClass() + "]");
+			throw new InternalException("Illegal value type [" + result.getClass() + "]");
 	}
 
 	public String[] getValues(String key) {
@@ -33,7 +33,7 @@ public class MapInputData implements InputDataAccessor {
 		else if(result instanceof String)
 			return new String[] { (String) result };
 		else {
-			throw new InternalException("Illgal value type [" + result.getClass() + "]");			
+			throw new InternalException("Illegal value type [" + result.getClass() + "]");			
 		}
 	}
 

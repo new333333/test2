@@ -180,7 +180,10 @@ public class EditController extends SAbstractController {
 			try {
 				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
 				DashboardHelper.getDashboardMap(d, userProperties, model, true);
-			} catch (Exception no) {}
+			} catch (NoObjectByTheIdException no) {
+				//setup dummy dashboard for config
+				DashboardHelper.initDashboardComponent(userProperties, model, componentName);				
+			}
 		} else {
 			//setup dummy dashboard for config
 			DashboardHelper.initDashboardComponent(userProperties, model, componentName);

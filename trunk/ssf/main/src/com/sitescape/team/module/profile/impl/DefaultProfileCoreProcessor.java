@@ -178,7 +178,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	} else {
     		//must be a group
         	if (inputData.exists(ObjectKeys.FIELD_GROUP_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
-    			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, inputData.getSingleValue(ObjectKeys.FIELD_GROUP_MEMBERS));
+    			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, inputData.getSingleObject(ObjectKeys.FIELD_GROUP_MEMBERS));
         	}
         	//hack to get member names from input and convert to set - Mostly for user/group load
         	if (inputData.exists(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {

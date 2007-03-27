@@ -26,6 +26,7 @@ public class ManageGroupsController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		if (formData.containsKey("addBtn")) {
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			//make sure it is present
 			String name = PortletRequestUtils.getRequiredStringParameter(request, "name");
 			MapInputData inputData = new MapInputData(formData);
 			Map fileMap=null;
