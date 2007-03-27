@@ -75,7 +75,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {}
 
-		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);						
+		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		BinderHelper.getBinderAccessibleUrl(this, binderId, entryId, request, response, model);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (operation.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
@@ -94,7 +96,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
 		String entryIdString =  PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (!entryIdString.equals("") && !entryIdString.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) {
-			Long entryId =  PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
 			if (entryId != null) {
 				User entry = (User)getProfileModule().getEntry(binderId, entryId);
 				if (entry.getWorkspaceId() == null) {
@@ -166,7 +167,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
 		//See if this is a user workspace
-		if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
+		if ((binder.getDefinitionType() != null) && 
+				(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
 				binder.getOwner() != null) {
 			Principal owner = binder.getOwner();
 			if (owner != null) {
@@ -179,6 +181,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 					model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 							profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 					model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+					model.put(WebKeys.USER_WORKSPACE, true);
 				} catch (Exception ex) {} //user may have been deleted, but ws left around
 			}
 		}

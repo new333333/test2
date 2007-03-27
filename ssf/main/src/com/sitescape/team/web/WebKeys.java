@@ -287,6 +287,7 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
 	public static final String ACCESS_SUPER_USER = "ss_superUser";
+	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
 	public static final String ACTION = "action";
 	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
@@ -363,6 +364,7 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DISPLAY_STYLE="ss_displayStyle";
     public static final String DISPLAY_STYLE_BLOG="blog";
     public static final String DISPLAY_STYLE_SEARCH="search";
     public static final String DISPLAY_STYLE_GALLERY="gallery";
@@ -567,6 +569,7 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS="communityTags";
     public static final String USER_SEARCH_USER_GROUP_TYPE_ENTRIES="entries";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
+    public static final String USER_WORKSPACE="ss_userWorkspace";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";

@@ -41,7 +41,7 @@ public class WidgetTestController extends SAbstractController {
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
 			
 			PortletURL url;
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
 		}
 		//Dispatch the the desired jsp
