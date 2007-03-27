@@ -80,26 +80,29 @@ public class LocalLuceneSession implements LuceneSession {
 			throw new LuceneException(
 					"Document must contain a UID with field name "
 							+ BasicIndexUtils.UID_FIELD);
-		//block until updateDocs is completed
+		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexWriter = null;
-		}
-		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open writer on the index ["
-					+ this.indexPath + "]", e);
-		}
 
-		try {
-			indexWriter.addDocument(doc);
-		} catch (IOException e) {
-			throw new LuceneException("Could not add document to the index ["
-					+ indexPath + "]", e);
-		} finally {
 			try {
-				indexWriter.close();
+				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
+			}
+
+			try {
+				indexWriter.addDocument(doc);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not add document to the index [" + indexPath
+								+ "]", e);
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
@@ -107,35 +110,37 @@ public class LocalLuceneSession implements LuceneSession {
 	public void addDocuments(Collection docs) {
 
 		IndexWriter indexWriter;
-		
-		//block until updateDocs is completed
+
+		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexWriter = null;
-		}
-		
-		try {
-			indexWriter = LuceneUtil.getWriter(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open writer on the index ["
-					+ this.indexPath + "]", e);
-		}
 
-		try {
-			for (Iterator iter = docs.iterator(); iter.hasNext();) {
-				Document doc = (Document) iter.next();
-				if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
-					throw new LuceneException(
-							"Document must contain a UID with field name "
-									+ BasicIndexUtils.UID_FIELD);
-				indexWriter.addDocument(doc);
-			}
-		} catch (IOException e) {
-			throw new LuceneException("Could not add document to the index ["
-					+ indexPath + "]", e);
-		} finally {
 			try {
-				indexWriter.close();
+				indexWriter = LuceneUtil.getWriter(indexPath);
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
+			}
+
+			try {
+				for (Iterator iter = docs.iterator(); iter.hasNext();) {
+					Document doc = (Document) iter.next();
+					if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
+						throw new LuceneException(
+								"Document must contain a UID with field name "
+										+ BasicIndexUtils.UID_FIELD);
+					indexWriter.addDocument(doc);
+				}
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not add document to the index [" + indexPath
+								+ "]", e);
+			} finally {
+				try {
+					indexWriter.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
@@ -146,57 +151,59 @@ public class LocalLuceneSession implements LuceneSession {
 
 	public void deleteDocuments(Term term) {
 		IndexReader indexReader;
-		
-		//block until updateDocs is completed
+
+		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexReader = null;
-		}
 
-		try {
-			indexReader = LuceneUtil.getReader(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open reader on the index ["
-					+ this.indexPath + "]", e);
-		}
-
-		try {
-			indexReader.deleteDocuments(term);
-		} catch (IOException e) {
-			throw new LuceneException(
-					"Could not delete documents from the index [" + indexPath
-							+ "]", e);
-		} finally {
 			try {
-				indexReader.close();
+				indexReader = LuceneUtil.getReader(indexPath);
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open reader on the index [" + this.indexPath
+								+ "]", e);
+			}
+
+			try {
+				indexReader.deleteDocuments(term);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not delete documents from the index ["
+								+ indexPath + "]", e);
+			} finally {
+				try {
+					indexReader.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
 
 	public void deleteDocuments(Query query) {
 		IndexSearcher indexSearcher;
-		
-		//block until updateDocs is completed
+
+		// block until updateDocs is completed
 		synchronized (LocalLuceneSession.class) {
 			indexSearcher = null;
-		}
 
-		try {
-			indexSearcher = LuceneUtil.getSearcher(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open searcher on the index ["
-					+ this.indexPath + "]", e);
-		}
-
-		try {
-			deleteDocs(indexSearcher.search(query));
-		} catch (IOException e) {
-			throw new LuceneException("Error searching index [" + indexPath
-					+ "]", e);
-		} finally {
 			try {
-				indexSearcher.close();
+				indexSearcher = LuceneUtil.getSearcher(indexPath);
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open searcher on the index ["
+								+ this.indexPath + "]", e);
+			}
+
+			try {
+				deleteDocs(indexSearcher.search(query));
+			} catch (IOException e) {
+				throw new LuceneException("Error searching index [" + indexPath
+						+ "]", e);
+			} finally {
+				try {
+					indexSearcher.close();
+				} catch (IOException e) {
+				}
 			}
 		}
 	}
@@ -307,95 +314,111 @@ public class LocalLuceneSession implements LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getTags(Query query, String tag, String type) throws LuceneException {
+	public ArrayList getTags(Query query, String tag, String type)
+			throws LuceneException {
 		IndexReader indexReader = null;
-		IndexSearcher indexSearcher;
+		IndexSearcher indexSearcher = null;
+		;
 		TreeSet results = new TreeSet();
 		ArrayList resultTags = new ArrayList();
 		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		//block until updateDocs is completed
-		synchronized (LocalLuceneSession.class) {
-			indexSearcher = null;
-		}
 
+		// block until updateDocs is completed
 		try {
-			indexReader = LuceneUtil.getReader(indexPath);
-			indexSearcher = LuceneUtil.getSearcher(indexReader);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open reader on the index ["
-					+ this.indexPath + "]", e);
-		}
-		try {
-			final BitSet userDocIds = new BitSet(indexReader.maxDoc());
-			if (!user.isSuper()) {
-				indexSearcher.search(query, new HitCollector() {
-					public void collect(int doc, float score) {
-						userDocIds.set(doc);
-					}
-				});
-			} else {
-				userDocIds.set(0, userDocIds.size());
-			}
-			String[] fields = null;
-			if (type != null && type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
-				fields = new String[1];
-				fields[0] = BasicIndexUtils.ACL_TAG_FIELD;
-			} else if ( type != null && type.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
-				fields = new String[1];
-				fields[0] = BasicIndexUtils.TAG_FIELD;
-			} else {
-				fields = new String[2];
-				fields[0] = BasicIndexUtils.TAG_FIELD;
-				fields[1] = BasicIndexUtils.ACL_TAG_FIELD;
-			}
-			int preTagLength = 0;
-			for (int i = 0; i < fields.length; i++) {
-				if (fields[i].equalsIgnoreCase("_aclTagField")) {
-					String preTag = BasicIndexUtils.TAG_ACL_PRE
-							+ RequestContextHolder.getRequestContext()
-									.getUserId().toString() + BasicIndexUtils.TAG;
-					preTagLength = preTag.length();
-					tag = preTag + tag;
-				}
-				TermEnum enumerator = indexReader
-						.terms(new Term(fields[i], tag));
+			synchronized (LocalLuceneSession.class) {
 
-				TermDocs termDocs = indexReader.termDocs();
-				if (enumerator.term() == null) {
-					// no matches
-					return null;
+				try {
+					indexReader = LuceneUtil.getReader(indexPath);
+					indexSearcher = LuceneUtil.getSearcher(indexReader);
+				} catch (IOException e) {
+					throw new LuceneException(
+							"Could not open reader on the index ["
+									+ this.indexPath + "]", e);
 				}
-				do {
-					Term term = enumerator.term();
-					// stop when the field is no longer the field we're looking
-					// for, or, when
-					// the term doesn't startwith the string we're matching.
-					if (term.field().compareTo(fields[i]) != 0
-							|| !term.text().startsWith(tag)) {
-						break; // no longer in '_tagField' field
+				try {
+					final BitSet userDocIds = new BitSet(indexReader.maxDoc());
+					if (!user.isSuper()) {
+						indexSearcher.search(query, new HitCollector() {
+							public void collect(int doc, float score) {
+								userDocIds.set(doc);
+							}
+						});
+					} else {
+						userDocIds.set(0, userDocIds.size());
 					}
-					termDocs.seek(enumerator);
-					while (termDocs.next()) {
-						if (userDocIds.get((termDocs.doc()))) {
-							// Add term.text to results
-							String matchingTerm = term.text();
-							results.add(term.text().substring(preTagLength));
-							break;
+					String[] fields = null;
+					if (type != null
+							&& type
+									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
+						fields = new String[1];
+						fields[0] = BasicIndexUtils.ACL_TAG_FIELD;
+					} else if (type != null
+							&& type
+									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+						fields = new String[1];
+						fields[0] = BasicIndexUtils.TAG_FIELD;
+					} else {
+						fields = new String[2];
+						fields[0] = BasicIndexUtils.TAG_FIELD;
+						fields[1] = BasicIndexUtils.ACL_TAG_FIELD;
+					}
+					int preTagLength = 0;
+					for (int i = 0; i < fields.length; i++) {
+						if (fields[i].equalsIgnoreCase("_aclTagField")) {
+							String preTag = BasicIndexUtils.TAG_ACL_PRE
+									+ RequestContextHolder.getRequestContext()
+											.getUserId().toString()
+									+ BasicIndexUtils.TAG;
+							preTagLength = preTag.length();
+							tag = preTag + tag;
 						}
+						TermEnum enumerator = indexReader.terms(new Term(
+								fields[i], tag));
+
+						TermDocs termDocs = indexReader.termDocs();
+						if (enumerator.term() == null) {
+							// no matches
+							return null;
+						}
+						do {
+							Term term = enumerator.term();
+							// stop when the field is no longer the field we're
+							// looking
+							// for, or, when
+							// the term doesn't startwith the string we're
+							// matching.
+							if (term.field().compareTo(fields[i]) != 0
+									|| !term.text().startsWith(tag)) {
+								break; // no longer in '_tagField' field
+							}
+							termDocs.seek(enumerator);
+							while (termDocs.next()) {
+								if (userDocIds.get((termDocs.doc()))) {
+									// Add term.text to results
+									results.add(term.text().substring(preTagLength));
+									break;
+								}
+							}
+						} while (enumerator.next());
 					}
-				} while (enumerator.next());
+				} catch (Exception e) {
+					System.out.println(e.toString());
+				}
+
+				Iterator iter = results.iterator();
+				while (iter.hasNext())
+					resultTags.add(iter.next());
+
+				return resultTags;
 			}
-		} catch (Exception e) {
-			System.out.println(e.toString());
+		} finally {
+			try {
+				indexReader.close();
+				indexSearcher.close();
+			} catch (Exception e) {
+			}
+
 		}
-
-		Iterator iter = results.iterator();
-		while (iter.hasNext())
-			resultTags.add(iter.next());
-
-		return resultTags;
-
 	}
 	
 	
@@ -505,7 +528,6 @@ public class LocalLuceneSession implements LuceneSession {
 				} catch (Exception e) {}
 				try {
 					indexWriter = LuceneUtil.getWriter(indexPath);
-					indexWriter.optimize();
 					indexWriter.close();
 				} catch (Exception e) {}
 			}
