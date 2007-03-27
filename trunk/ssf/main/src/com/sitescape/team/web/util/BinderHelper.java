@@ -26,11 +26,13 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -45,6 +47,7 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.DomTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
+import com.sun.org.apache.bcel.internal.generic.INSTANCEOF;
 
 public class BinderHelper {
 
@@ -116,6 +119,7 @@ public class BinderHelper {
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
 		}
 	}
+	
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
 	static public String getBinderPermaLink(AllBusinessServicesInjected bs) {
@@ -125,6 +129,32 @@ public class BinderHelper {
 		if (url == null) url = "";
 		return url;
 	}
+	
+	static public void getBinderAccessibleUrl(AllBusinessServicesInjected bs, Long binderId, Long entryId,
+			RenderRequest request, RenderResponse response, Map model) {
+		Binder binder = bs.getBinderModule().getBinder(binderId);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (displayStyle == null || displayStyle.equals("")) {
+			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+		}
+		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
+		
+		PortletURL url = response.createActionURL();
+		if (binder instanceof Workspace) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
+		else if (binder instanceof Folder) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+		else if (binder instanceof Folder) url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+		url.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+		} else {
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
+		}
+		model.put(WebKeys.ACCESSIBLE_URL, url.toString());
+}
 
 	static public Map getAccessControlEntityMapBean(Map model, DefinableEntity entity) {
 		//Initialize the acl bean

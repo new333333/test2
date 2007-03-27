@@ -94,6 +94,22 @@
 
 			<% // Footer toolbar %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+			
+			<c:if test="${ss_userWorkspace}">
+				<div align="right" width="100%" style="margin:10px;">
+				<c:if test="${ss_displayStyle == 'accessible'}">
+				  <a href="${ss_accessibleUrl}">
+				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
+				  </a>
+				</c:if>
+				<c:if test="${ss_displayStyle != 'accessible'}">
+				  <a href="${ss_accessibleUrl}">
+				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
+				  </a>
+				</c:if>
+				</div>
+			</c:if>
+
 
 		</div>
 	</div>
