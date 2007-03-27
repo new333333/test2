@@ -75,6 +75,17 @@ public interface LuceneSession {
 	 */
 	public void updateDocuments(Query query, String fieldname, String fieldvalue)
 			throws LuceneException;
+	
+	/**
+	 * Update all documents matching the query.
+	 * 
+	 * @param query
+	 * @param fieldname
+	 * @param fieldvalue
+	 * @throws LuceneException
+	 */
+	public void updateDocuments(ArrayList<Query> queries, String fieldname, ArrayList<String> values)
+			throws LuceneException;
 
 	/**
 	 * Delete the document identified by the uid. 

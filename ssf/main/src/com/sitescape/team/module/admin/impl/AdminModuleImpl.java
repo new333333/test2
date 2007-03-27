@@ -715,6 +715,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	}
 
 	private void indexMembership(WorkArea workArea, boolean cascade) {
+		ArrayList<Query> updateQueries = new ArrayList();
+		ArrayList<String> updateIds = new ArrayList();
 		if (!(workArea instanceof Binder)) return;
 		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index with this new 
@@ -752,15 +754,19 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 				}
 			}
 			Query q = buildQueryforUpdate(ids);
-			LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+			// add this query and list of ids to the lists we'll pass to updateDocs.
+			updateQueries.add(q);
+			updateIds.add(aIds.toString());
+		}
+		if (updateQueries.size() > 0) {
+		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
 			try {
 				
-				luceneSession.updateDocuments(q, BasicIndexUtils.FOLDER_ACL_FIELD,
-						aIds.toString());
+				luceneSession.updateDocuments(updateQueries, BasicIndexUtils.FOLDER_ACL_FIELD,
+						updateIds);
 			} finally {
 				luceneSession.close();
 			}
-
 		}
 		
 	}

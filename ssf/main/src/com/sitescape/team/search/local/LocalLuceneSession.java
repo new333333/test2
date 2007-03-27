@@ -230,6 +230,16 @@ public class LocalLuceneSession implements LuceneSession {
 					+ "]", e);
 		}
 	}
+	
+	public void updateDocuments(ArrayList queries, String fieldname, ArrayList values) {
+
+		try {
+			updateDocs(queries, fieldname, values);
+		} catch (Exception e) {
+			throw new LuceneException("Error updating index [" + indexPath
+					+ "]", e);
+		}
+	}
 
 	public com.sitescape.team.lucene.Hits search(Query query) {
 		return this.search(query, 0, -1);
@@ -492,7 +502,6 @@ public class LocalLuceneSession implements LuceneSession {
 		
 		//block every read/write while updateDocs is in progress
 		synchronized (LocalLuceneSession.class) {
-			IndexUpdater updater = null;
 			// first Optimize the index.
 			IndexWriter indexWriter = null;
 
@@ -506,31 +515,68 @@ public class LocalLuceneSession implements LuceneSession {
 			try {
 				indexWriter.optimize();
 				indexWriter.close();
-
-				Directory indDir = FSDirectory.getDirectory(indexPath, false);
-				updater = new IndexUpdater(indDir);
-				DocumentSelection docsel = updater.createDocSelection(q);
-				if (docsel.size() != 0)
-					updater.updateField(new Field(fieldname, fieldvalue,
-						Field.Store.NO, Field.Index.TOKENIZED),
-						new SsfIndexAnalyzer(), docsel);
-				updater.close();
-				updater = null;
+				doUpdate(q,fieldname,fieldvalue);
 			} catch (IOException ioe) {
 				throw new LuceneException(
 						"Could not update fields on the index ["
 								+ this.indexPath + " ], query is: "
 								+ q.toString() + " field: " + fieldname);
-			} finally {
-				try {
-					if (updater != null)
-						updater.close();
-				} catch (Exception e) {}
-				try {
-					indexWriter = LuceneUtil.getWriter(indexPath);
-					indexWriter.close();
-				} catch (Exception e) {}
+			} 
+		}
+	}
+
+	private void updateDocs(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
+		
+		//block every read/write while updateDocs is in progress
+		int count = 0;
+		synchronized (LocalLuceneSession.class) {
+			// first Optimize the index.
+			IndexWriter indexWriter = null;
+
+			try {
+				indexWriter = LuceneUtil.getWriter(indexPath);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open writer on the index [" + this.indexPath
+								+ "]", e);
+			}
+			try {
+				indexWriter.optimize();
+				indexWriter.close();
+				for (count = 0; count < queries.size(); count++)
+					doUpdate(queries.get(count),fieldname,values.get(count));
+			} catch (IOException ioe) {
+				throw new LuceneException(
+						"Could not update fields on the index ["
+								+ this.indexPath + " ], query is: "
+								+ queries.get(count).toString() + " field: " + fieldname);
+			} 
+		}
+	}
+
+	private void doUpdate(Query q, String fieldname, String fieldvalue) {
+		IndexUpdater updater = null;
+		try {
+			Directory indDir = FSDirectory.getDirectory(indexPath, false);
+			updater = new IndexUpdater(indDir);
+			DocumentSelection docsel = updater.createDocSelection(q);
+			if (docsel.size() != 0)
+				updater.updateField(new Field(fieldname, fieldvalue,
+						Field.Store.NO, Field.Index.TOKENIZED),
+						new SsfIndexAnalyzer(), docsel);
+			updater.close();
+			updater = null;
+		} catch (IOException ioe) {
+			throw new LuceneException("Could not update fields on the index ["
+					+ this.indexPath + " ], query is: " + q.toString()
+					+ " field: " + fieldname);
+		} finally {
+			try {
+				if (updater != null)
+					updater.close();
+			} catch (Exception e) {
 			}
 		}
 	}
+	
 }
