@@ -259,10 +259,13 @@ public class User extends Principal {
 	}
 	
 	public String getPasswordDigest() {
+		
 		Long digestSeed = getDigestSeed();
 		if(digestSeed == null)
 			digestSeed = 0L;
-		
+		//this sometimes happens if we don't sync correctly with portal
+		//on loggin
+		if (password == null) PasswordEncryptor.encrypt("", digestSeed);
 		return PasswordEncryptor.encrypt(getPassword(), digestSeed);
 	}
  

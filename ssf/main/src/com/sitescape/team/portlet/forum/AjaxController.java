@@ -31,6 +31,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
@@ -65,7 +66,7 @@ import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
-
+import com.sitescape.team.module.shared.MapInputData;
 /**
  * @author Peter Hurley
  *
@@ -1235,9 +1236,12 @@ public class AjaxController  extends SAbstractController {
 			ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-		List userIds = PortletRequestUtils.getLongListParameters(request, "users");
-		List groupIds = PortletRequestUtils.getLongListParameters(request, "groups");
-		Binder binder = getBinderModule().getBinder(binderId);
+		Set ids = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users"));
+		ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+		List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+		Map updates = new HashMap();
+		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, principals);
+		getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -1634,20 +1638,18 @@ public class AjaxController  extends SAbstractController {
 	
 	private ModelAndView ajaxGetGroup(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 		model.put(WebKeys.BINDER_ID, binderId);
-		model.put(WebKeys.ENTRY_ID, groupId);
-		Principal group = getProfileModule().getEntry(binderId, groupId);
+		Group group = (Group)getProfileModule().getEntry(binderId, groupId);		
 		model.put(WebKeys.GROUP, group);
-		List memberList = getProfileModule().getGroupMembers(groupId, user.getZoneId());
+		List memberList = group.getMembers();
 		Set ids = new HashSet();
 		Iterator itUsers = memberList.iterator();
 		while (itUsers.hasNext()) {
-			Membership member = (Membership) itUsers.next();
-			ids.add(member.getUserId());
+			Principal member = (Principal) itUsers.next();
+			ids.add(member.getId());
 		}
 		model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
 		model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));			

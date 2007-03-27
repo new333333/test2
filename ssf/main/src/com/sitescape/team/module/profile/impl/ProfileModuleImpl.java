@@ -273,14 +273,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Group> result = new TreeSet<Group>(c);
-		for (Iterator iter=entryIds.iterator(); iter.hasNext();) {
-			try {
-				// assuming users are cached
-				result.add(getProfileDao().loadGroup((Long)iter.next(), binder.getZoneId()));
-			} catch (NoGroupByTheIdException ex) {
-			}
-			
-		}
+       	result.addAll(getProfileDao().loadGroups(entryIds, user.getZoneId()));
 		return result;
 	}
 	public List getGroupMembers(Long groupId, Long zoneId) {
@@ -288,7 +281,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		checkAccess(binder, "getEntries");
 		return getProfileDao().getMembership(groupId, zoneId);
 	}
-	public List loadPrincipals(Set ids, Long zoneId) {
+	public List getPrincipals(Set ids, Long zoneId) {
 		ProfileBinder binder = getProfileBinder();
 		checkAccess(binder, "getEntries");
 		return getProfileDao().loadPrincipals(ids, zoneId, false);

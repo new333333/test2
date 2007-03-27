@@ -71,49 +71,6 @@ public class Group extends Principal implements WorkArea {
     	members.remove(member);
     	member.getMemberOf().remove(this);
     }
-    public void setUserMembers(Collection newMembers) {
-		if (members == null) members = new ArrayList();
-  		if (newMembers == null) newMembers = new ArrayList();
-   		//Remove users that are in the existing set, but not the new one
-  		for (Iterator iter=members.iterator();iter.hasNext();) {
-   			Principal p = (Principal)iter.next();
-   			//Existing user not in new set
-  			if ((p instanceof User) && !newMembers.contains(p)) {
-  				members.remove(p);
-   				p.getMemberOf().remove(this);
-   			}			
-   		}
-   		//Add new users
-  		for (Iterator iter=newMembers.iterator();iter.hasNext();) {
-   			User u = (User)iter.next();
-   			if (!members.contains(u)) {
-   				u.getMemberOf().add(this);
-   				members.add(u);
-   			}
-   		}	
-   	} 	
-
-    public void setGroupMembers(Collection newMembers) {
-		if (members == null) members = new ArrayList();
-  		if (newMembers == null) newMembers = new ArrayList();
-   		//Remove groups that are in the existing set, but not the new one
-  		for (Iterator iter=members.iterator();iter.hasNext();) {
-   			Principal p = (Principal)iter.next();
-   			//Existing group not in new set
-  			if ((p instanceof Group) && !newMembers.contains(p)) {
-  				members.remove(p);
-   				p.getMemberOf().remove(this);
-   			}			
-   		}
-   		//Add new groups
-  		for (Iterator iter=newMembers.iterator();iter.hasNext();) {
-   			Group g = (Group)iter.next();
-   			if (!members.contains(g)) {
-   				g.getMemberOf().add(this);
-   				members.add(g);
-   			}
-   		}	
-   	}
     
 	public Long getWorkAreaId() {
 		return getId();
