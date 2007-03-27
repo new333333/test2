@@ -29,6 +29,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
@@ -51,6 +52,15 @@ import com.sitescape.util.Validator;
 public class WorkspaceTreeController extends SAbstractController  {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		
+		if (op.equals(WebKeys.OPERATION_SET_DISPLAY_STYLE)) {
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, 
+					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
+		}
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
