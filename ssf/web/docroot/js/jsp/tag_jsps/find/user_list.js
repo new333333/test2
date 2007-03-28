@@ -85,7 +85,6 @@ function ss_userListRemove(prefix, obj) {
 
 
 function ss_saveUserListData(prefix, formName, elementName) {
-
 	this.prefix = prefix;
 	this.formName = formName;
 	this.elementName = elementName;
@@ -109,5 +108,5 @@ function ss_saveUserListData(prefix, formName, elementName) {
 
 function ss_findUserListInitializeForm(prefix, formName, elementName) {
 	var saveUserListData = new ss_saveUserListData(prefix, formName, elementName);
-	ss_createOnSubmitObj(prefix + 'onSubmit', formName, saveUserListData.invoke);
+	ss_createOnSubmitObj(prefix + 'onSubmit_user_list', formName, saveUserListData.invoke);
 }

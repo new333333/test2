@@ -62,7 +62,7 @@ function <portlet:namespace/>_getUnseenCounts() {
 </c:if>
 </td>
 <td align="right">
-  <a class="ss_linkButton ss_bold ss_smallprint" 
+  <a class="ss_linkButton ss_smallprint" 
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
@@ -72,7 +72,9 @@ function <portlet:namespace/>_getUnseenCounts() {
 </table>
 
 <c:if test="${empty ssFolderList}">
+<div style="padding:4px;">
   <ssf:nlt tag="portlet.notConfigured"/>
+</div>
 </c:if>
  
 <c:if test="${!empty ssFolderList}">

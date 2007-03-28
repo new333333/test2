@@ -662,12 +662,13 @@ function m_setSubmitRoutine(submitRoutine) {
 //  This function will call the desired routines at form submit time
 //  If any routine returns "false", then this routine returns false.
 function ss_onSubmit(obj) {
+    var result = true;
     for (var i = 0; i < ss_onSubmitList.length; i++) {
         if (ss_onSubmitList[i].formName == obj.name) {
-            if (!ss_onSubmitList[i].submitRoutine()) {return false;}
+            if (!ss_onSubmitList[i].submitRoutine()) {result = false;}
         }
     }
-    return true;
+    return result;
 }
 
 
@@ -2736,7 +2737,7 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
 	
-	alert("ss_gotoPermalink: url: "+url);
+	//alert("ss_gotoPermalink: url: "+url);
 	
 	self.location.href = url;
 	return false;

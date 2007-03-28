@@ -14,6 +14,7 @@
  * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 function ss_showGroupList<portlet:namespace/>(obj, id) {
@@ -51,18 +52,24 @@ function ss_size_group_iframe() {
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.groups" /></span>
 <br>
 <br>
-<div>
+<ssf:expandableArea title="<%= NLT.get("administration.add.group") %>">
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL><portlet:param 
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_groups"/></portlet:actionURL>">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.group"/></span>
-	<input type="text" class="ss_text" size="70" name="name"><br>
+	<span class="ss_bold"><ssf:nlt tag="administration.add.groupName"/></span><br/>
+	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
+		
+	<span class="ss_bold"><ssf:nlt tag="administration.add.groupTitle"/></span><br/>
+	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+		
+	<span class="ss_bold"><ssf:nlt tag="administration.add.groupDescription"/></span><br/>
+	<textarea name="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
 		
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
-</div>
+</ssf:expandableArea>
 <br/>
 <br/>
 
@@ -76,6 +83,7 @@ function ss_size_group_iframe() {
 		    binderId="${ssBinder.id}"
 		    entryId="${group._docId}">
     	    <ssf:param name="operation" value="modify_group"/>
+    	    <ssf:param name="namespace" value="${renderResponse.namespace}"/>
 			</ssf:url>" 
   	  onClick="ss_showGroupList<portlet:namespace/>(this, '${group._docId}');return false;"><span>${group.title}</span> <span class="ss_smallprint">(${group._groupName})</span></a><br/>
   </c:forEach>

@@ -1234,14 +1234,21 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxModifyGroup(ActionRequest request, 
 			ActionResponse response) throws Exception {
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-		Set ids = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users"));
-		ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
-		List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
-		Map updates = new HashMap();
-		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, principals);
-		getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
+		Map formData = request.getParameterMap();
+		if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+			String title = PortletRequestUtils.getStringParameter(request, "title", "");
+			String description = PortletRequestUtils.getStringParameter(request, "description", "");
+			Set ids = FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users"));
+			ids.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
+			List principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			Map updates = new HashMap();
+			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
+			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
+			updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, principals);
+			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
+		}
 	}
 	
 	private ModelAndView ajaxGetDashboardComponent(RenderRequest request, 
@@ -1641,6 +1648,8 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
+		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.BINDER_ID, binderId);
 		Group group = (Group)getProfileModule().getEntry(binderId, groupId);		
 		model.put(WebKeys.GROUP, group);
