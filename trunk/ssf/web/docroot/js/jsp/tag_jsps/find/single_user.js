@@ -199,7 +199,6 @@ function ss_saveFindUserData(prefix) {
 	var me = this;
 	
 	this.invoke = function() {
-		ss_debug('ss_saveFindUserData')
 		var ulObj = $('available_' + me.prefix)
 		var liObjs = ulObj.getElementsByTagName('li');
 		if (liObjs.length == 1) {
@@ -227,6 +226,6 @@ function ss_findUserClose(prefix) {
 function ss_findUserInitializeForm(formName, prefix) {
 	if (formName != '') {
 		var saveFindUserData = new ss_saveFindUserData(prefix);
-		ss_createOnSubmitObj(prefix + 'onSubmit', formName, saveFindUserData.invoke);
+		ss_createOnSubmitObj(prefix + 'onSubmit_single_user', formName, saveFindUserData.invoke);
 	}
 }
