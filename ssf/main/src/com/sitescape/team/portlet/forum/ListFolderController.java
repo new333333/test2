@@ -650,10 +650,6 @@ public class ListFolderController extends  SAbstractController {
 
 				Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-				Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-				currentDateCal.setTime(currentDate);
-				model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
-
 				
 				calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
@@ -812,9 +808,6 @@ public class ListFolderController extends  SAbstractController {
 
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-			Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-			currentDateCal.setTime(currentDate);
-			model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 			

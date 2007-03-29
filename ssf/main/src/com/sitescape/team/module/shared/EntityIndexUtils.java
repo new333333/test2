@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -18,6 +19,7 @@ import org.apache.lucene.document.Field;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -35,6 +37,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.TagUtil;
 
 /**
@@ -278,10 +281,12 @@ public class EntityIndexUtils {
     
     
 	private static Field getEntryEventDaysField(Set dates) {
+		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();
 		while (datesIt.hasNext()) {
-			sb.append(DateTools.dateToString(((Calendar)datesIt.next()).getTime(), DateTools.Resolution.DAY));
+			Calendar date = CalendarHelper.convertToTimeZone((Calendar)datesIt.next(), gmt);
+			sb.append(DateTools.dateToString(date.getTime(), DateTools.Resolution.DAY));
 			sb.append(" ");
 		}
 
@@ -292,10 +297,13 @@ public class EntityIndexUtils {
 	}
 	
 	private static Field getRecurrenceDatesField(Event event) {
+		TimeZone gmt = TimeZone.getTimeZone("GMT");
+		
 		StringBuilder sb = new StringBuilder();
 		Iterator it = event.getAllRecurrenceDates().iterator();
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
+			eventDates = new Calendar[] {CalendarHelper.convertToTimeZone(eventDates[0], gmt), CalendarHelper.convertToTimeZone(eventDates[1], gmt)};
 			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.SECOND));
 			sb.append(" ");
 			sb.append(DateTools.dateToString(eventDates[1].getTime(), DateTools.Resolution.SECOND));

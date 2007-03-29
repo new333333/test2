@@ -46,6 +46,7 @@ import java.util.Vector;
 import org.dom4j.Element;
 
 import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
 import com.sitescape.team.ObjectKeys;
@@ -238,6 +239,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	protected String name;
 	
+	protected TimeZone timeZone;
+	
 
 	/* Constructors */
 
@@ -286,7 +289,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		interval = 1;
 		// Everything else gets initialized to 0 or null, which is what we want.
 	}
-
+	
 	/**
 	 * @hibernate.component class="com.sitescape.team.domain.AnyOwner"
 	 * @return
@@ -1410,6 +1413,15 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return isInRecurrence(current, false);
 	}
 
+	public TimeZone getTimeZone() {
+		if (timeZone != null) return timeZone;
+		return TimeZone.getDefault();
+	}
+	
+	public void setTimeZone(TimeZone timeZone) {
+		this.timeZone = timeZone;
+	}
+	
 	/**
 	 * Debugging interface to {@link #isInRecurrence(java.util.Calendar)}.
 	 * 
@@ -2660,6 +2672,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			other.interval = interval;
 			other.until = (until != null ? (Calendar) until.clone() : null);
 			other.count = count;
+			other.timeZone = (TimeZone)timeZone.clone();
 
 			other.bySecond = (int[]) arrayclone(bySecond);
 			other.byMinute = (int[]) arrayclone(byMinute);
@@ -3018,7 +3031,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		return element;
 
 	}
-
+	
 	/**
 	 * Gets a list of all recurrences until <code>until</code> date (or <code>count</code>).
 	 * 
@@ -3031,6 +3044,23 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 				second one is end date
 	 */
 	public List getAllRecurrenceDates() {
+		Event eventClone = (Event)this.clone();
+		eventClone.convertToSavedTimeZone();
+		return eventClone.getAllRecurrenceDatesWithCurrentTimeZone();
+	}
+
+	/**
+	 * Gets a list of all recurrences until <code>until</code> date (or <code>count</code>).
+	 * 
+	 * If we do not reach <code>count</code> recurrences before we reach
+	 * <code>max_count_time</code>, or before we have tried
+	 * <code>max_count_loops</code> candidate start times, set
+	 * <code>until</code> to <code>max_count_time</code>.
+
+	 * @return "all" recurrences list. each list element is a 2-element long table, first table element is start date, 
+	 * 				second one is end date
+	 */
+	protected List getAllRecurrenceDatesWithCurrentTimeZone() {
 		boolean debug = false;
 		List result = new ArrayList();
 
@@ -3079,11 +3109,17 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	/**
-	 * Gets the list of all event recurrence days. 
+	 * Gets the list of all event recurrence days. All dates are calculated in given time zone.
 	 * 
 	 * @return list of Calendar object instances 
 	 */
 	public List getAllEventDays() {
+		Event eventClone = (Event)this.clone();
+		eventClone.convertToSavedTimeZone();
+		return eventClone.getAllEventDaysWithCurrentTimeZone();
+	}
+	
+	protected List getAllEventDaysWithCurrentTimeZone() {
 		boolean debug = false;
 		List result = new ArrayList();
 
@@ -3132,6 +3168,16 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		}
 
 		return result;
+	}
+
+	/**
+	 * Convert all intern keeped dates to given time zone.
+	 * 
+	 * @param timeZone
+	 */
+	private void convertToSavedTimeZone() {
+		this.dtStart = CalendarHelper.convertToTimeZone(this.dtStart, timeZone);
+		this.until = CalendarHelper.convertToTimeZone(this.until, timeZone);
 	}
 
 	private List getAllDatesBetween(Calendar start, Calendar end) {

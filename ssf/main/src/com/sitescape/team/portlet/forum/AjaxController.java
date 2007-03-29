@@ -1708,10 +1708,6 @@ public class AjaxController  extends SAbstractController {
 			
 			Date currentDate = EventsViewHelper.getCalendarDate(year, month, dayOfMonth);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-			Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-			currentDateCal.setTime(currentDate);
-			model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
-
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 

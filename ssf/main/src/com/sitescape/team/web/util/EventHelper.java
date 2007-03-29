@@ -8,7 +8,9 @@ import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.util.cal.DayAndPosition;
 
@@ -31,9 +33,12 @@ public class EventHelper {
     
     // basic method
     static public Event getEventFromMap (InputDataAccessor inputData, String id, 
-    		Boolean hasDuration, Boolean hasRecurrence) { 
+    		Boolean hasDuration, Boolean hasRecurrence) {
+    	User user = RequestContextHolder.getRequestContext().getUser();
+    	
         // we make the id match what the event editor would do
         Event e = new Event();
+        e.setTimeZone(user.getTimeZone());
         String prefix = id + "_";
         if (hasDuration.booleanValue()) {
             // duration present means there is a start and end id
