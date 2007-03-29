@@ -266,7 +266,7 @@ private static ArrayList xferFileListNames;
   }
   
   private void uploadNotSupported() {
-		makeJSCallWithAppletParam("fileUploadNotSupported");
+	makeJSCallWithAppletParam("fileUploadNotSupported");
   }
   
   private void makeJSCallWithAppletParam(String strAppletParam) {
