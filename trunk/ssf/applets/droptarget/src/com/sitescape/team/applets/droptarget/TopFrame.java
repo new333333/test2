@@ -106,7 +106,6 @@ public class TopFrame extends JApplet implements Runnable {
     ////////////////////////////////////////////////////////////////////////
     public String getParameter(String paramName) {
         String paramValue;
-
         // Java doc says we merely get null if param not given, but behavior
         // seems to be that if we start from class Main instead of
         // loadApplet.html, we get exception instead of quiet null.  Hence
@@ -176,6 +175,14 @@ public class TopFrame extends JApplet implements Runnable {
                paramValue = "";
            }
        if (paramName.equals("fileLoadingEnded"))
+           if (null == paramValue) {
+               paramValue = "";
+           }
+       if (paramName.equals("noFileAlertMessage"))
+           if (null == paramValue) {
+               paramValue = "";
+           }
+       if (paramName.equals("fileUploadNotSupported"))
            if (null == paramValue) {
                paramValue = "";
            }

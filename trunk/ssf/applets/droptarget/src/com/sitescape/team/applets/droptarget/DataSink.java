@@ -52,8 +52,7 @@ private static ArrayList xferFileListNames;
     // methods when drag-and-drop-related events occur.
     setDropTarget(new DropTarget(this, this));
 
-    KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_V,
-                                                     InputEvent.CTRL_MASK);
+    KeyStroke keyStroke = KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK);
     this.getInputMap().put(keyStroke, "PASTE");
     this.getActionMap().put("PASTE", paste);
     changeIcon(StaticGif);
@@ -167,6 +166,8 @@ private static ArrayList xferFileListNames;
         	files = stringListToFileList(strFiles);
         } else {
         	System.out.println("File Upload Not supported...........");
+        	uploadNotSupported();
+        	changeIcon(StaticGif);
         }
 	    
         for (int i = 0; i < files.size(); i++) {
@@ -262,6 +263,10 @@ private static ArrayList xferFileListNames;
   
   private void errorMsgOnDirectoryLoad() {
 	makeJSCallWithAppletParam("directoryLoadErrorMessage");
+  }
+  
+  private void uploadNotSupported() {
+		makeJSCallWithAppletParam("fileUploadNotSupported");
   }
   
   private void makeJSCallWithAppletParam(String strAppletParam) {
