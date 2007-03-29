@@ -3,17 +3,7 @@
 <definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="9" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
-    <item name="title" caption="__title" type="data" id="2">
-      <properties>
-        <property name="name" value="title"/>
-        <property name="caption" value="__title"/>
-        <property name="width" value="60"/>
-        <property name="inline" value=""/>
-        <property name="generated" value=""/>
-        <property name="itemSource" value=""/>
-      </properties>
-    </item>
-    <item name="description" caption="__description" type="data" id="3">
+     <item name="description" caption="__description" type="data" id="3">
       <properties>
         <property name="name" value="description"/>
         <property name="caption" value="__description"/>
