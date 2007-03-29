@@ -282,10 +282,6 @@ private static ArrayList xferFileListNames;
    * This method is invoked when the user drops something on us
    */
   public void drop(DropTargetDropEvent e){
-	  
-	  
-	//System.out.println("DataSink.drop()..........");  
-	  
     this.setBorder(null);                  // Restore the default border
     Transferable t = e.getTransferable();  // Get the data that was dropped
     xferFileList = new ArrayList();
