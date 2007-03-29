@@ -28,9 +28,15 @@
 %>
 <span class="ss_labelAbove"><%= caption %><%= required %></span>
 
-<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name]}" >
-<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />
-</c:if>
+<c:choose>
+	<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+		<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
+	</c:when>
+	<c:when test="${!empty ssInitialEvent}">
+		<c:set var="ev" value="${ssInitialEvent}" />	
+	</c:when>	
+</c:choose>
+
 <jsp:useBean id="ev" type="com.sitescape.team.domain.Event" class="com.sitescape.team.domain.Event" />
 
 <ssf:eventeditor id="<%= elementName %>" 

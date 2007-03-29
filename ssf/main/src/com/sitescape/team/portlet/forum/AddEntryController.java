@@ -1,13 +1,16 @@
 package com.sitescape.team.portlet.forum;
 
 import java.io.InputStream;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.ArrayList;
+import java.util.TimeZone;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -20,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.shared.FolderUtils;
@@ -35,6 +40,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
+import com.sitescape.util.cal.Duration;
 
 /**
  * @author Peter Hurley
@@ -276,6 +282,7 @@ public class AddEntryController extends SAbstractController {
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
+				parseInitialCalendarEventData(model, request);
 			} else {
 		    	Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 		    	request.setAttribute(WebKeys.URL_ENTRY_ID,entryId.toString());
@@ -319,6 +326,46 @@ public class AddEntryController extends SAbstractController {
 		}
 		return new ModelAndView(path, model);
 	}
+
+	private void parseInitialCalendarEventData(Map model, RenderRequest request) {
+		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
+		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
+		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
+
+		String time = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_TIME, null);
+		int duration = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_TIME_DURATION, -1);
+		
+		if (year != -1 && month != -1 && dayOfMonth != -1) {
+			TimeZone timeZone = RequestContextHolder.getRequestContext().getUser().getTimeZone();
+						
+			Calendar startDate = new GregorianCalendar(timeZone);
+			startDate.set(Calendar.YEAR, year);
+			startDate.set(Calendar.MONTH, month);
+			startDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+			
+			if (time != null) {
+				String[] timeS = time.split(":");
+				if (timeS != null) {
+					try {
+						if (timeS.length > 0) {
+							int hour = Integer.parseInt(timeS[0]);
+							startDate.set(Calendar.HOUR_OF_DAY, hour);
+						}
+						if (timeS.length > 1) {
+							int minute = Integer.parseInt(timeS[1]);
+							startDate.set(Calendar.MINUTE, minute);
+						}
+					} catch (NumberFormatException e) {
+						// do nothing, no hour, no minute
+					}
+				}
+			}
+		
+			Event event = new Event(startDate, new Duration(0, 0, duration, 0), 0);
+			
+			model.put(WebKeys.CALENDAR_INITIAL_EVENT, event);
+		}
+		
+	}
+
 }
-
-

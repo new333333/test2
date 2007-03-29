@@ -53,6 +53,7 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
@@ -914,13 +915,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
         } finally {
         	query.close();
-         }
+        }
  
     }
     protected void indexEntries_preIndex(Binder binder) {
     	indexDeleteEntries(binder); 
-    }
-    
+	    }
+ 
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
@@ -1040,6 +1041,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	
     	if (fieldName.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD))
     		return true;
+    	
+    	if (fieldName.equals(IndexUtils.LASTACTIVITY_FIELD))
+    		return true;    	
 
     	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_START_DATE))
     		return true;

@@ -12,18 +12,19 @@ span.tinyLabel {
 <span class="tinyLabel">Hours:</span>
 <a class="ss_linkButton ss_tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
 <span class="tinyLabel">Grid:</span>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('daydelta', 0); return false;">Single</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('3daydelta', 0); return false;">3-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('workweek'); return false;">5-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('week'); return false;">7-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchDayView('fortnight'); return false;">14-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset -= ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&lt;&lt;</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Grid.gridOffset += ss_cal_Grid.gridIncr; ss_cal_Grid.activateGrid('day'); ss_cal_Events.redrawAll(); return false;">&gt;&gt;</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Grid.activateGrid('month'); ss_cal_Events.redrawAll(); return false;">MonthGrid</a>
-<fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" />
-<ssf:nlt tag="calendar.views" text="Views"/>:&nbsp;
-<a href="${set_week_view}"><ssf:nlt tag="calendar.Week" text="Week"/></a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('daydelta'); return false;">Single</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('3daydelta'); return false;">3-day</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('workweek'); return false;">5-day</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('week'); return false;">7-day</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('fortnight'); return false;">14-day</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('month'); return false;">MonthGrid</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('prev'); return false;">&lt;&lt;</a>
+<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('next'); return false;">&gt;&gt;</a>
+<span id="ss_calViewDatesDescriptions"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
+<span class="tinyLabel">View type:</span>
+<span class="tinyLabel" id="ss_calViewEntryTypes">Events</span>
+<a class="ss_linkButton ss_tinyControl" id="ss_ViewTypeToggle" href="javascript: ;" onclick="ss_cal_Events.toggleViewType(); return false;">Change</a>
 </div>
 <div style="width: 100%"><%-- IE needs this for some stupid reason --%>
 <div id="ss_cal_DayGridMaster" style="display:none;">
@@ -99,4 +100,5 @@ ss_createOnLoadObj('ss_cal_hoverBox', function() {
 	ss_moveDivToBody("infoBox");
 	ss_moveDivToBody("infoBox2");
 });
+
 </script>

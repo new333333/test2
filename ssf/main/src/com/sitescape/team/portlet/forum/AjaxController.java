@@ -1,8 +1,12 @@
 package com.sitescape.team.portlet.forum;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +26,8 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.CalendarViewRangeDates;
+import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
@@ -301,7 +307,9 @@ public class AjaxController  extends SAbstractController {
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
-			return ajaxGetGroup(request, response);
+			return ajaxGetGroup(request, response);			
+		} else if (op.equals(WebKeys.OPERATION_FIND_CALENDAR_EVENTS)) {
+			return ajaxFindCalendarEvents(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -782,10 +790,11 @@ public class AjaxController  extends SAbstractController {
 		
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText);
+
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)
-				searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
+			searchTermFilter.addTitleFilter(FilterHelper.FilterTypeEntry, searchText);
 
 			List searchTerms = new ArrayList();
 			searchTerms.add(EntityIdentifier.EntityType.folderEntry.name());
@@ -1684,4 +1693,53 @@ public class AjaxController  extends SAbstractController {
 		return new ModelAndView("forum/clipboard_users", model);
 	}
 
+	private ModelAndView ajaxFindCalendarEvents(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			
+			int year = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_YEAR);
+			int month = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_MONTH);
+			int dayOfMonth = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH);
+			
+			Date currentDate = EventsViewHelper.getCalendarDate(year, month, dayOfMonth);
+			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+			Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+			currentDateCal.setTime(currentDate);
+			model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
+
+			
+			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
+
+			Map folderEntries = new HashMap();
+			Map options = new HashMap();
+			
+			User user = RequestContextHolder.getRequestContext().getUser();
+			UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+			options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+			
+			options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+	       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+	       	
+	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+	       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+	       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+		
+			
+			folderEntries = getFolderModule().getEntries(binderId, options);
+			List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
+			
+			EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response);
+		} else {
+			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);			
+		}
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/events", model);
+	}
+	
 }

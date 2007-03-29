@@ -7,16 +7,19 @@ public class WebKeys {
 	public static final String JAVAX_PORTLET_RESPONSE = "javax.portlet.response";
 
 	// Calendar view stuff
+	public static final String CALENDAR_INITIAL_EVENT = "ssInitialEvent";
+	// TODO: check what is in use (calendar beans)
 	public static final String CALENDAR_EVENTDATES = "ssEventDates";
-	public static final String CALENDAR_VIEWMODE = "ssCalendarViewMode";
+//	public static final String CALENDAR_VIEWMODE = "ssCalendarViewMode";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
 	public static final String CALENDAR_VIEW_MONTH = "month";
 	public static final String CALENDAR_CURRENT_DATE = "ssCurrentDate";
+	public static final String CALENDAR_CURRENT_DATE_DAY_OF_WEEK = "ssCurrentDateDayOfWeek";
 	public static final String CALENDAR_CURRENT_VIEW_STARTDATE = "ssCalStartDate";
 	public static final String CALENDAR_CURRENT_VIEW_ENDDATE = "ssCalEndDate";
-	public static final String CALENDAR_DOW = "cal_dow";
-	public static final String CALENDAR_DOM = "cal_dom";
+//	public static final String CALENDAR_DOW = "cal_dow";
+//	public static final String CALENDAR_DOM = "cal_dom";
 	public static final String CALENDAR_ENTRYTITLE = "cal_entrytitle";
 	public static final String CALENDAR_STARTTIMESTRING = "cal_starttimestring";
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
@@ -24,7 +27,9 @@ public class WebKeys {
 	public static final String CALENDAR_EVENTDATAMAP = "cal_eventdatamap";	
 	public static final String CALENDAR_URL_VIEWMODE = "cal_url_viewmode";	
 	public static final String CALENDAR_URL_NEWVIEWDATE = "cal_url_newviewdate";
-		
+	
+	
+	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";
     public static final String LOCALE = "ss_locale";
@@ -54,8 +59,11 @@ public class WebKeys {
 	public static final String URL_CSS_THEME="theme";
 	public static final String URL_DASHBOARD_ID="dashboardId";
 	public static final String URL_DATE_DAY="day";
+	public static final String URL_DATE_DAY_OF_MONTH="dayOfMonth";
 	public static final String URL_DATE_MONTH="month";
 	public static final String URL_DATE_YEAR="year";
+	public static final String URL_DATE_TIME="time";
+	public static final String URL_DATE_TIME_DURATION="duration";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
@@ -116,7 +124,6 @@ public class WebKeys {
 
 	//session attributes
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
-	
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
@@ -226,8 +233,8 @@ public class WebKeys {
 	public static final String OPERATION_SET_DASHBOARD_TITLE = "set_dashboard_title";
 	public static final String OPERATION_SET_DISPLAY_STYLE = "set_display_style";
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
-	public static final String OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
-	public static final String OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
+//	public static final String OPERATION_SET_CALENDAR_DISPLAY_MODE = "set_cal_display_mode";
+//	public static final String OPERATION_SET_CALENDAR_DISPLAY_DATE = "set_cal_display_date";
 	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
@@ -263,6 +270,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_TEAM_MEMBERS = "get_team_members";
 	public static final String OPERATION_GET_CLIPBOARD_USERS = "get_clipboard_users";
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
+	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	
 	public static final String OPERATION_SAVE_SEARCH_SORT_INFO="save_search_sort_info";
 	public static final String OPERATION_SAVE_SEARCH_PAGE_INFO="save_search_page_info";
