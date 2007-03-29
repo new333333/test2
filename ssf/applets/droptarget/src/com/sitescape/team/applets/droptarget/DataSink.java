@@ -16,6 +16,8 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.applet.AppletContext;
 import java.net.URL;
+import java.net.URLEncoder;
+
 import netscape.javascript.JSObject;
 
 
@@ -23,7 +25,7 @@ import netscape.javascript.JSObject;
  * This allows File objects to be pasted or dropped onto it.
  */
 public class DataSink extends JLabel implements DropTargetListener, ActionListener {
-public static DataSink sink;
+public static DataSink sink; 
 public TopFrame topframe;
 private JPopupMenu fPasteMenu;
 private MouseAdapter fAdapter;
@@ -78,6 +80,7 @@ private static ArrayList xferFileListNames;
    * a special border to tell the user that we're interested.
    */
   public void dragEnter(DropTargetDragEvent e) {
+	  //System.out.println("DataSink.dragEnter()..........");
     if (e.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
       e.acceptDrag(DnDConstants.ACTION_COPY_OR_MOVE);
       changeIcon(OpenGif);
@@ -89,6 +92,7 @@ private static ArrayList xferFileListNames;
    * The user is no longer dragging over us, so restore the default border
    */
   public void dragExit(DropTargetEvent e) {
+    //System.out.println("DataSink.dragExit()..........");
     changeIcon(StaticGif);
     this.setBorder(null);
   }
@@ -115,31 +119,54 @@ private static ArrayList xferFileListNames;
       return;
     }
     
+/*
+ * Code to check the data flavors supported    
     DataFlavor [] dataFlavor = t.getTransferDataFlavors();
-    
+    for (int i = 0; i < dataFlavor.length; i++) {
+    	DataFlavor dataFlavor1 = dataFlavor[i];
+    	System.out.println("\n dataFlavor ["+ i +"]"+ dataFlavor1);
+    	
+    	if (t.isDataFlavorSupported(dataFlavor1)) {
+    		System.out.println("Supported :) !!!!!: "+ dataFlavor1 + "\n\n");
+    		
+    		try {
+    			Object objData = t.getTransferData(dataFlavor1);
+    			System.out.println("objData: "+objData + "\n\n");
+    		} catch(Exception oe) {
+    			System.out.println("Error: "+ oe + "\n\n");
+    		}
+    		
+    	} else {
+    		System.out.println("Not Supported :( !!!!!: "+ dataFlavor1 + "\n\n");
+    	}
+    }
+*/    
     try {
-    	DataFlavor copiedFilesListFlavor = new DataFlavor("x-special/gnome-copied-files;class=java.io.InputStream");
+    	DataFlavor gnomeIODataFlavor = new DataFlavor("x-special/gnome-copied-files;class=java.io.InputStream");
+    	DataFlavor javaStringDataFlavor = new DataFlavor("application/x-java-serialized-object;class=java.lang.String");
     	
 	    List files = new ArrayList();
 	    // Code Got from Java Bug Database Bug Id: 4899516
 	    // Check for types of data that we support
 	    
 	    if (t.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-	      files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
-	    } else if (t.isDataFlavorSupported(copiedFilesListFlavor)) {
-	    	InputStream ips = (InputStream)t.getTransferData(copiedFilesListFlavor);
+	    	files = (List) t.getTransferData(DataFlavor.javaFileListFlavor);
+	    } else if (t.isDataFlavorSupported(gnomeIODataFlavor)) {
+	    	InputStream ips = (InputStream)t.getTransferData(gnomeIODataFlavor);
 	    	ByteArrayOutputStream ops = new ByteArrayOutputStream();
-            
+
 	    	int intReadValue;
-            while ((intReadValue = ips.read()) != -1) {
+	    	while ((intReadValue = ips.read()) != -1) {
             	ops.write(intReadValue);
             }
-            
+	    	
             String strFilesCopiedInformation = ops.toString();
             files = xSpecialListToFileList(strFilesCopiedInformation);
+        } else if (t.isDataFlavorSupported(javaStringDataFlavor)) {
+        	String strFiles = (String) t.getTransferData(javaStringDataFlavor);
+        	files = stringListToFileList(strFiles);
         } else {
         	System.out.println("File Upload Not supported...........");
-            return;
         }
 	    
         for (int i = 0; i < files.size(); i++) {
@@ -196,13 +223,38 @@ private static ArrayList xferFileListNames;
               java.io.File file = new java.io.File(uri);
               list.add(file);
           } catch (java.net.URISyntaxException e) {
+        	  System.out.println("xSpecialListToFileList: "+e);
               // malformed URI
           } catch (IllegalArgumentException e) {
+        	  System.out.println("xSpecialListToFileList: "+e);
+              // the URI is not a valid 'file:' URI
+          }
+          catch (Exception e) {
+        	  System.out.println("xSpecialListToFileList: "+e);
               // the URI is not a valid 'file:' URI
           }
       }
       return list;
   }  
+
+  private static java.util.List stringListToFileList(String data) {
+      java.util.List list = new java.util.ArrayList(1);
+      for (java.util.StringTokenizer st = new java.util.StringTokenizer(data, "\r\n"); st.hasMoreTokens();) {
+    	  String s = st.nextToken();
+          try {
+              java.io.File file = new java.io.File(s);
+              boolean blnDoesFileExist = file.exists();
+              if (blnDoesFileExist) list.add(file);
+          } catch (IllegalArgumentException e) {
+        	  System.out.println("stringListToFileList: "+e);
+              // the URI is not a valid 'file:' URI
+          } catch (Exception e) {
+        	  System.out.println("stringListToFileList: "+e);
+              // the URI is not a valid 'file:' URI
+          }
+      }
+      return list;
+  }    
   
   private void informNoFilesCopied() {
 	makeJSCallWithAppletParam("noFileAlertMessage");
@@ -225,6 +277,10 @@ private static ArrayList xferFileListNames;
    * This method is invoked when the user drops something on us
    */
   public void drop(DropTargetDropEvent e){
+	  
+	  
+	//System.out.println("DataSink.drop()..........");  
+	  
     this.setBorder(null);                  // Restore the default border
     Transferable t = e.getTransferable();  // Get the data that was dropped
     xferFileList = new ArrayList();
@@ -337,8 +393,12 @@ private static ArrayList xferFileListNames;
       }
   }
   // These are unused DropTargetListener methods
-  public void dragOver(DropTargetDragEvent e) {}
-  public void dropActionChanged(DropTargetDragEvent e) {}
+  public void dragOver(DropTargetDragEvent e) {
+	  //System.out.println("DataSink.dragOver()..........");
+  }
+  public void dropActionChanged(DropTargetDragEvent e) {
+	  //System.out.println("DataSink.dropActionChanged()..........");	  
+  }
 
   /**
    * This is a simple test program for DataSink

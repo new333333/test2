@@ -90,9 +90,7 @@ public class WorkflowViewer extends JApplet implements ActionListener {
 	private static final Object COLORKEY = "COLORKEY";
 	private static final Object THICKNESSKEY = "THICKNESSKEY";
 
-    public void init() {
-    	//System.out.println("Applet initialized!");
-    }
+    public void init() {}
     public void start()
     {
         getContentPane().add( startFunction() );

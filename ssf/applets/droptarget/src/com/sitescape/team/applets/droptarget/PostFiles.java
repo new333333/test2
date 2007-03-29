@@ -30,7 +30,6 @@ public class PostFiles extends Thread {
   String topDir;
   String spv = "savePreviousVersions";
 
-
     private static void writeParam(String name, String value, OutputStream out, String boundary) {
         try {
             out.write(new String("content-disposition: form-data; name=\"" + name + "\"\r\n\r\n").getBytes());

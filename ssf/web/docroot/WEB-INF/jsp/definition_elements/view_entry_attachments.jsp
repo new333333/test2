@@ -79,7 +79,7 @@ function ss_showAddAttachmentDropbox${ssDefinitionEntry.id}<portlet:namespace/>(
 	frameObj.style.visibility = "visible";
 
 	divObj.style.width = "300px";
-	divObj.style.height = "55px";
+	divObj.style.height = "75px";
 
 	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
 }

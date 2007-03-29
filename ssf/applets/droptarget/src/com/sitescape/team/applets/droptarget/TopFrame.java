@@ -15,7 +15,7 @@ import javax.swing.tree.*;
 import netscape.javascript.JSObject;
 
 
-public class TopFrame extends JApplet implements Runnable {
+public class TopFrame extends JApplet implements Runnable { 
 
     static TopFrame topFrame;  // the only instance of ourself
 
@@ -37,7 +37,8 @@ public class TopFrame extends JApplet implements Runnable {
     //
     ////////////////////////////////////////////////////////////////////////
     public void run () {
-
+    	String strJavaVersion  = System.getProperty("java.version");
+    	
         topFrame = this;
 
         Container cp = getContentPane();
