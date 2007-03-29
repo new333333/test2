@@ -32,6 +32,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
@@ -231,7 +232,7 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 	
-	public void updateDocuments(ArrayList queries, String fieldname, ArrayList values) {
+	public void updateDocuments(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
 
 		try {
 			updateDocs(queries, fieldname, values);
@@ -329,8 +330,8 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
 		;
-		TreeSet results = new TreeSet();
-		ArrayList resultTags = new ArrayList();
+		TreeSet<String> results = new TreeSet<String>();
+		ArrayList<String> resultTags = new ArrayList<String>();
 		User user = RequestContextHolder.getRequestContext().getUser();
 
 		// block until updateDocs is completed
@@ -417,7 +418,7 @@ public class LocalLuceneSession implements LuceneSession {
 
 				Iterator iter = results.iterator();
 				while (iter.hasNext())
-					resultTags.add(iter.next());
+					resultTags.add((String)iter.next());
 
 				return resultTags;
 			}
@@ -579,4 +580,118 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 	
+	/**
+	 * Get all the sort titles that this user can see, and return a skip list
+	 * 
+	 * @param query can be null for superuser
+	 * @param start
+	 * @param end
+	 * @return
+	 * @throws LuceneException
+	 */
+	
+	// This returns an arraylist of arraylists.  Each child arraylist has 2 strings, (RangeStart, RangeEnd)
+	// i.e. results[0] = {a, c}
+	//      results[1] = {d, g}
+	
+	public ArrayList getSortTitles(Query query, String start, String end, int skipsize)
+			throws LuceneException {
+		IndexReader indexReader = null;
+		IndexSearcher indexSearcher = null;
+		;
+		ArrayList<String> titles = new ArrayList<String>();
+		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
+		int count = 0;
+		String lastTerm = "";
+		//User user = RequestContextHolder.getRequestContext().getUser();
+
+		// block until updateDocs is completed
+		try {
+			synchronized (LocalLuceneSession.class) {
+
+				try {
+					indexReader = LuceneUtil.getReader(indexPath);
+					indexSearcher = LuceneUtil.getSearcher(indexReader);
+				} catch (IOException e) {
+					throw new LuceneException(
+							"Could not open reader on the index ["
+									+ this.indexPath + "]", e);
+				}
+				try {
+					final BitSet userDocIds = new BitSet(indexReader.maxDoc());
+					
+					indexSearcher.search(query, new HitCollector() {
+						public void collect(int doc, float score) {
+							userDocIds.set(doc);
+						}
+					});
+					
+					String field = EntityIndexUtils.SORT_TITLE_FIELD;
+						TermEnum enumerator = indexReader.terms(new Term(
+								field, start));
+
+						TermDocs termDocs = indexReader.termDocs();
+						if (enumerator.term() == null) {
+							// no matches
+							return null;
+						}
+						do {
+							Term term = enumerator.term();
+							// stop when the field is no longer the field we're
+							// looking for, or, when the term is beyond the end term
+							if (term.field().compareTo(field) != 0)
+								break;
+							if ((end != "") && (term.text().compareTo(end) <= 0)) {
+								break; // no longer in '_tagField' field
+							}
+							termDocs.seek(enumerator);
+							while (termDocs.next()) {
+								if (userDocIds.get((termDocs.doc()))) {
+									// Add term.text to results
+									count++;
+									// add terms in ranges, i.e. if the skipsize is 7, add 0,6,7,13,14,20,21
+									// so the ranges can be 0-6, 7-13, 14-20, etc
+									if ((count == 0) || (count%skipsize == skipsize-1) || (count%skipsize == 0))
+										titles.add((String)term.text());
+									lastTerm = (String) term.text();
+									break;
+								}
+							}
+						} while (enumerator.next());
+						// if the size is odd, then add the final term to the end of the list
+						// if the final range is just the last term itself, then drop 
+						// the final range, and modify the previous range to include the final
+						// term.
+						int tsize = titles.size();
+						if ((tsize%2 ==1) && (tsize > 2)) {
+							if (lastTerm.equals(titles.get(tsize-1))) {
+								titles.set(tsize-2, lastTerm);
+								titles.remove(tsize-1);
+							} else {
+								titles.add(lastTerm);
+							}
+						}
+
+				} catch (Exception e) {
+					System.out.println(e.toString());
+				}
+
+				Iterator iter = titles.iterator();
+				while (iter.hasNext()) {
+					ArrayList<String> tuple= new ArrayList<String>();
+					tuple.add((String)iter.next());
+					tuple.add((String)iter.next());
+					resultTitles.add(tuple);
+				}
+				return resultTitles;
+			}
+		} finally {
+			try {
+				indexReader.close();
+				indexSearcher.close();
+			} catch (Exception e) {
+			}
+
+		}
+	}
 }
