@@ -69,5 +69,6 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
+	<property name="timeZone" access="field" length="16"/>
   </class>
 </hibernate-mapping>

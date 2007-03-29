@@ -8,27 +8,16 @@ public class WebKeys {
 
 	// Calendar view stuff
 	public static final String CALENDAR_INITIAL_EVENT = "ssInitialEvent";
-	// TODO: check what is in use (calendar beans)
 	public static final String CALENDAR_EVENTDATES = "ssEventDates";
-//	public static final String CALENDAR_VIEWMODE = "ssCalendarViewMode";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
 	public static final String CALENDAR_VIEW_MONTH = "month";
 	public static final String CALENDAR_CURRENT_DATE = "ssCurrentDate";
-	public static final String CALENDAR_CURRENT_DATE_DAY_OF_WEEK = "ssCurrentDateDayOfWeek";
 	public static final String CALENDAR_CURRENT_VIEW_STARTDATE = "ssCalStartDate";
 	public static final String CALENDAR_CURRENT_VIEW_ENDDATE = "ssCalEndDate";
-//	public static final String CALENDAR_DOW = "cal_dow";
-//	public static final String CALENDAR_DOM = "cal_dom";
-	public static final String CALENDAR_ENTRYTITLE = "cal_entrytitle";
 	public static final String CALENDAR_STARTTIMESTRING = "cal_starttimestring";
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
-	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";	
-	public static final String CALENDAR_EVENTDATAMAP = "cal_eventdatamap";	
-	public static final String CALENDAR_URL_VIEWMODE = "cal_url_viewmode";	
-	public static final String CALENDAR_URL_NEWVIEWDATE = "cal_url_newviewdate";
-	
-	
+	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";
 	
 	// miscellaneous
 	public static final String DEFINITION_DEFAULT_FORM_NAME = "entryForm";

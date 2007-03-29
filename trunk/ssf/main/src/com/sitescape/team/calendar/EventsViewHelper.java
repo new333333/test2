@@ -45,7 +45,6 @@ public class EventsViewHelper {
 			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
 			List entrylist, Map model, RenderResponse response) {
 
-		// TODO: are those models in use?
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
 				calendarViewRangeDates.getStartViewCal().getTime());
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, calendarViewRangeDates

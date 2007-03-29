@@ -739,8 +739,7 @@ function ss_cal_newEventInfo(evt, gridControl) {
     
     var url = ss_addCalendarEntryUrl;
     url += "&year=" + currEventData.date.getFullYear();
-    var m = currEventData.date.getMonth() + 1;
-    url += "&month=" + m;
+    url += "&month=" + currEventData.date.getMonth();
     url += "&dayOfMonth=" + currEventData.date.getDate();
     url += "&time=" + currEventData.start.toString().replace(".5", ":30");
     url += "&duration=" + currEventData.dur;

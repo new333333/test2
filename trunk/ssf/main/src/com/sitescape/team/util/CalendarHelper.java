@@ -16,6 +16,9 @@ public class CalendarHelper {
 	 * @return
 	 */
 	public static Calendar convertToTimeZone(Calendar calendar, TimeZone newTimeZone) {
+		if (calendar == null) {
+			return null;
+		}
 		Calendar result = new GregorianCalendar(newTimeZone);
 		result.setTimeInMillis(calendar.getTimeInMillis());
 		return result;
