@@ -172,6 +172,19 @@ public interface LuceneSession {
 			throws LuceneException;
 
 	/**
+	 * Get all the unique sortTitles that this user can see, based on the range passed in.
+	 * 
+	 * @param query
+	 * @param wordroot
+	 * @param type  - if null or tags - all tags will be returnet, can be personalTags or communityTags
+	 * @return
+	 * @throws LuceneException
+	 */
+	public ArrayList getSortTitles(Query query, String start, String end, int skipsize)
+			throws LuceneException;
+
+	
+	/**
 	 * Force the <code>LuceneSession</code> to flush.
 	 * <p>
 	 * Flushing is the process of synchronizing the underlying persistent store
