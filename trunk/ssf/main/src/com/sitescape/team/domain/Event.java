@@ -237,6 +237,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	protected boolean timeZoneSensitive = false;
 
 	protected String name;
+	
 
 	/* Constructors */
 

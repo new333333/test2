@@ -32,6 +32,8 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.CalendarViewRangeDates;
+import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -77,7 +79,7 @@ import com.sitescape.util.Validator;
  */
 public class ListFolderController extends  SAbstractController {
 	
-	String[] monthNames = { 
+	public static final String[] monthNames = { 
 			NLT.get("calendar.january"),
 			NLT.get("calendar.february"),
 			NLT.get("calendar.march"),
@@ -91,98 +93,21 @@ public class ListFolderController extends  SAbstractController {
 			NLT.get("calendar.november"),
 			NLT.get("calendar.december")
 		};
-	
-	private static class CalendarViewRangeDates {
-		
-		Calendar startViewCal;
-		
-		Calendar endViewCal;
-		
-		/* starts on first day of the week */
-		Calendar startViewExtWindow;
-		
-		/* ends on the last day of the week */
-		Calendar endViewExtWindow;
 
-		public CalendarViewRangeDates(Date currentDate, String viewMode) {
-			super();
-			
-			User user = RequestContextHolder.getRequestContext().getUser();
-			TimeZone timeZone = user.getTimeZone();
-			
-			// calculate the start and end of the range as defined by current date and current view
-			this.startViewCal = new GregorianCalendar(timeZone);
-			this.endViewCal = new GregorianCalendar(timeZone);
-			
-			// Allow the pruning of events to extend beyond the prescribed dates so we 
-			// can display a grid.
-			this.startViewExtWindow = new GregorianCalendar(timeZone);
-			this.endViewExtWindow = new GregorianCalendar(timeZone);
-
-			// this trick zeros the low order parts of the time
-			this.startViewCal.setTimeInMillis(0);
-			this.startViewCal.setTime(currentDate);
-			this.startViewExtWindow.setTime(startViewCal.getTime());			
-			this.endViewCal.setTimeInMillis(0);
-			this.endViewCal.setTime(currentDate);
-			this.endViewExtWindow.setTime(endViewCal.getTime());
-			
-			if (viewMode.equals(WebKeys.CALENDAR_VIEW_DAY)) {
-				this.endViewCal.add(Calendar.DATE, 1);
-			} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK)) {
-				this.startViewCal.set(Calendar.DAY_OF_WEEK, this.startViewCal.getFirstDayOfWeek());
-				this.startViewExtWindow.setTime(startViewCal.getTime());
-				this.endViewCal.setTime(this.startViewCal.getTime());
-				this.endViewCal.add(Calendar.DATE, 7);
-				this.endViewExtWindow.setTime(endViewCal.getTime());
-			} else if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-				this.startViewCal.set(Calendar.DAY_OF_MONTH, 1);
-				this.startViewExtWindow.setTime(startViewCal.getTime());
-				this.startViewExtWindow.set(Calendar.DAY_OF_WEEK, this.startViewExtWindow.getFirstDayOfWeek());	
-				this.endViewCal.setTime(this.startViewCal.getTime());
-				this.endViewCal.add(Calendar.MONTH, 1);
-				this.endViewExtWindow.setTime(endViewCal.getTime());
-				if (this.endViewExtWindow.get(Calendar.DAY_OF_WEEK) != this.endViewExtWindow.getFirstDayOfWeek()) {
-					this.endViewExtWindow.set(Calendar.DAY_OF_WEEK, this.endViewExtWindow.getFirstDayOfWeek());
-					this.endViewExtWindow.add(Calendar.DATE, 7);
-				}
-			}
-			
-			setMidnight(startViewCal);
-			setMidnight(startViewExtWindow);
-			setMidnight(endViewCal);
-			setMidnight(endViewExtWindow);
-			
-			TimeZone zulu = TimeZone.getTimeZone("GMT");
-			this.startViewCal = CalendarHelper.convertToTimeZone(this.startViewCal, zulu);
-			this.endViewCal = CalendarHelper.convertToTimeZone(this.endViewCal, zulu);
-			this.startViewExtWindow = CalendarHelper.convertToTimeZone(this.startViewExtWindow, zulu);
-			this.endViewExtWindow = CalendarHelper.convertToTimeZone(this.endViewExtWindow, zulu);
-		}
-		
-		private void setMidnight(Calendar cal) {
-			cal.set(Calendar.HOUR_OF_DAY, 0);
-			cal.set(Calendar.MINUTE, 0);
-			cal.set(Calendar.SECOND, 0);
-		}
-
-		public List getExtViewDayDates() {
-			Calendar start = (Calendar)startViewExtWindow.clone();
-			Calendar end = (Calendar)endViewExtWindow.clone();
-						
-			List result = new ArrayList();
-			
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-			Calendar date = start;
-
-			while (date.getTimeInMillis() <= end.getTimeInMillis()) {
-				result.add(formatter.format(date.getTime()));
-				date.add(Calendar.DAY_OF_MONTH, 1);
-			}
-			
-			return result;
-		}
-	}
+	public static final String[] monthNamesShort = { 
+		NLT.get("calendar.abbreviation.january"),
+		NLT.get("calendar.abbreviation.february"),
+		NLT.get("calendar.abbreviation.march"),
+		NLT.get("calendar.abbreviation.april"),
+		NLT.get("calendar.abbreviation.may"),
+		NLT.get("calendar.abbreviation.june"),
+		NLT.get("calendar.abbreviation.july"),
+		NLT.get("calendar.abbreviation.august"),
+		NLT.get("calendar.abbreviation.september"),
+		NLT.get("calendar.abbreviation.october"),
+		NLT.get("calendar.abbreviation.november"),
+		NLT.get("calendar.abbreviation.december")
+	};
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -200,22 +125,6 @@ public class ListFolderController extends  SAbstractController {
 			getProfileModule().setUserProperty(user.getId(), binderId, 
 					ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION, 
 					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		
-		} else if (op.equals(WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE)) {
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, 
-					PortletRequestUtils.getStringParameter(request,WebKeys.URL_VALUE,""));
-		
-		} else if (op.equals(WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE)) {
-			PortletSession ps = WebHelper.getRequiredPortletSession(request);
-			String urldate = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_NEWVIEWDATE, "");
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd");
-			Date newdate = sdf.parse(urldate);
-			ps.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, newdate);
-			String viewMode = PortletRequestUtils.getStringParameter(request,WebKeys.CALENDAR_URL_VIEWMODE, "");
-			getProfileModule().setUserProperty(user.getId(), binderId, 
-					ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE, viewMode);
-		
 		} else if (op.equals(WebKeys.OPERATION_CALENDAR_GOTO_DATE)) {
 			PortletSession ps = WebHelper.getRequiredPortletSession(request);
 			Date dt = DateHelper.getDateFromInput(new MapInputData(formData), "ss_goto");
@@ -394,18 +303,8 @@ public class ListFolderController extends  SAbstractController {
 
 		Map options = new HashMap();		
 		
-		//Determine the Search Filter
-		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
-		Document searchFilter = null;
-		if (Validator.isNotNull(searchFilterName)) {
-			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
-			searchFilter = (Document)searchFilters.get(searchFilterName);
-		}
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
-		if (!searchTitle.equals("")) {
-			options.put(ObjectKeys.SEARCH_TITLE, searchTitle);
-		}
+		options.putAll(getSearchFilter(request, userFolderProperties));
+		
 		//determine page starts/ counts
 		initPageCounts(request, userProperties, tabOptions, options);
 
@@ -453,6 +352,26 @@ public class ListFolderController extends  SAbstractController {
 		
 		return new ModelAndView(view, model);
 	}
+	
+	public static Map getSearchFilter(RenderRequest request, UserProperties userFolderProperties) {
+		Map result = new HashMap();
+		
+		//Determine the Search Filter
+		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
+		Document searchFilter = null;
+		if (Validator.isNotNull(searchFilterName)) {
+			Map searchFilters = (Map) userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_SEARCH_FILTERS);
+			searchFilter = (Document)searchFilters.get(searchFilterName);
+		}
+		result.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
+		String searchTitle = PortletRequestUtils.getStringParameter(request, WebKeys.SEARCH_TITLE, "");
+		if (!searchTitle.equals("")) {
+			result.put(ObjectKeys.SEARCH_TITLE, searchTitle);
+		}
+		
+		return result;
+	}
+	
 	protected void initSortOrder(RenderRequest request, UserProperties userFolderProperties, Map tabOptions, Map options, String viewType) {
 		//Start - Determine the Sort Order
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
@@ -575,6 +494,8 @@ public class ListFolderController extends  SAbstractController {
 		return tabs;
 	}
 	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
+		// TODO: is this in use?
+		
 		//See if the url contains an ending date
 		Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
 		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
@@ -726,19 +647,20 @@ public class ListFolderController extends  SAbstractController {
 		} else {
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-				
-				String viewMode = ListFolderController.getCalendarViewMode(model);
-				model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 
-				Date currentDate = ListFolderController.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+				Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+				Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+				currentDateCal.setTime(currentDate);
+				model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
+
 				
-				calendarViewRangeDates = new CalendarViewRangeDates(currentDate, viewMode);
+				calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
 		       	
     	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.startViewExtWindow.getTime()));
-		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.endViewExtWindow.getTime()));
+		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
 			}
 			
 			folderEntries = getFolderModule().getEntries(folderId, options);
@@ -757,7 +679,7 @@ public class ListFolderController extends  SAbstractController {
 		//See if this folder is to be viewed as a calendar
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			//This is a calendar view, so get the event beans
-			buildCaledarView(calendarViewRangeDates, folder, entries, model, req, response);
+			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
 		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(folder, folderEntries, model, req, response);
@@ -887,18 +809,17 @@ public class ListFolderController extends  SAbstractController {
 			//Get the list of all entries to build the archive list
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 		} else 	if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-			CalendarViewRangeDates calendarViewRangeDates = null;
-			
-			String viewMode = ListFolderController.getCalendarViewMode(model);
-			model.put(WebKeys.CALENDAR_VIEWMODE, viewMode);
 
-			Date currentDate = ListFolderController.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+			Calendar currentDateCal = new GregorianCalendar(RequestContextHolder.getRequestContext().getUser().getTimeZone());
+			currentDateCal.setTime(currentDate);
+			model.put(WebKeys.CALENDAR_CURRENT_DATE_DAY_OF_WEEK, currentDateCal.get(Calendar.DAY_OF_WEEK));
 			
-			calendarViewRangeDates = new CalendarViewRangeDates(currentDate, viewMode);
+			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
 			
 			//This is a calendar view, so get the event beans
-			buildCaledarView(calendarViewRangeDates, folder, entries, model, req, response);
+			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
 		}
 		
 	}
@@ -1359,17 +1280,17 @@ public class ListFolderController extends  SAbstractController {
 			if (!viewType.equals(Definition.VIEW_STYLE_BLOG) && !viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) 
 					&& !viewType.equals(Definition.VIEW_STYLE_SEARCH)) {
 			
-				//vertical
-				qualifiers = new HashMap();
-				if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
-					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
-				entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
-						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
+			//vertical
+			qualifiers = new HashMap();
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true); 
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_VERTICAL);
+			entryToolbar.addToolbarMenuItem("3_display_styles", "styles", 
+					NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 			}
 			
 			//iframe
@@ -1552,170 +1473,14 @@ public class ListFolderController extends  SAbstractController {
 	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
 	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
 	 */
-	protected static void buildCaledarView(CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
+	protected static void buildCaledarView(CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderResponse response) {
 		Date currentDate = (Date)model.get(WebKeys.CALENDAR_CURRENT_DATE);
-		String viewMode = (String)model.get(WebKeys.CALENDAR_VIEWMODE);
 		
 		model.putAll(ListFolderController.getCalendarViewsURLs(folder.getId(), response));
 
-		getEvents(currentDate, viewMode, calendarViewRangeDates, folder, entrylist, model, req, response);
+		EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, folder, entrylist, model, response);
 	}
 	
-	 
-	
-	private static void getEvents(Date currentDate, String viewMode, CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderRequest req, RenderResponse response) {
-		
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE, calendarViewRangeDates.startViewCal.getTime());
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, calendarViewRangeDates.endViewCal.getTime());
-		
-		Map calendarEventDates = getCalendarEvents(entrylist, calendarViewRangeDates.startViewExtWindow, calendarViewRangeDates.endViewExtWindow);
-		model.put(WebKeys.CALENDAR_EVENTDATES, calendarEventDates);
-				
-		Calendar endDateViewCal = calendarViewRangeDates.endViewCal;
-		if (viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)) {
-			endDateViewCal = calendarViewRangeDates.endViewExtWindow;
-		} // else WEEK or DAY		
-		
-		if (isCalandarViewMode(viewMode)) {
-			getCalendarViewBean(folder, calendarViewRangeDates.startViewCal, endDateViewCal, response, calendarEventDates, viewMode, model);
-		}
-	}
-	
-	/**
-	 * Is day, week or month view mode?
-	 * 
-	 * @param viewMode
-	 * @return
-	 */
-	private static boolean isCalandarViewMode(String viewMode) {
-		return viewMode != null && 
-				(		
-				viewMode.equals(WebKeys.CALENDAR_VIEW_WEEK) ||
-				viewMode.equals(WebKeys.CALENDAR_VIEW_DAY) ||
-				viewMode.equals(WebKeys.CALENDAR_VIEW_MONTH)
-				);
-	}
-	
-	/*
-	 * Map:
-	 * 	key - event start date
-	 * 	value - list of maps:
-	 * 						key: "event", value: Event object (event start time and end time)
-	 * 						key: "entry", value: entry (from search result)
-	 * 
-	 * Entry modifications are also added as events (start date = modification date).
-	 */
-	private static Map getCalendarEvents(List entrylist, Calendar startViewDate, Calendar endViewDate) {
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		TimeZone timeZone = user.getTimeZone();
-		
-		long startMilis = startViewDate.getTime().getTime();
-		long endMilis = endViewDate.getTime().getTime();
-		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		sdf.setTimeZone(timeZone);
-		Map results = new HashMap();  
-		
-		Iterator entryIterator = entrylist.iterator();
-		while (entryIterator.hasNext()) {
-			Map e = (HashMap) entryIterator.next();
-			
-			// parse event counter field
-			String ec = (String)e.get(EntityIndexUtils.EVENT_COUNT_FIELD);
-			int count = 0;
-			if (ec == null || ec.equals("")) ec = "0";
-			count = new Integer(ec).intValue();
-			
-			if (count == 0) {
-				// don't show modification as event if entry has events
-				
-				// Add the modification date as an event
-				Date modifyDate = (Date)e.get(EntityIndexUtils.MODIFICATION_DATE_FIELD);
-				long thisDateMillis = modifyDate.getTime();
-				if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
-					Event ev = new Event();
-					Calendar gcal = new GregorianCalendar();
-					gcal.setTime(modifyDate);
-					gcal = CalendarHelper.convertToTimeZone(gcal, timeZone);
-					ev.setDtStart(gcal);
-					ev.setDtEnd(gcal);				
-					String dateKey = sdf.format(modifyDate);
-					ArrayList entryList;
-					// reslist is going to be a list of maps; each map will carry the entry and 
-					// also the event that caused this entry to be in range
-					ArrayList resList = new ArrayList();
-					Map res = new HashMap();
-					res.put("event", ev);
-					res.put("entry", e);
-					entryList  = (ArrayList) results.get(dateKey);
-					if (entryList == null) {
-						resList.add(res);
-					} else {
-						resList.addAll(entryList);
-						resList.add(res);
-					}
-					results.put(dateKey, resList);
-				}		
-			
-			}
-			
-			//Add the events 
-			// look through the custom attrs of this entry for any of type EVENT
-			for (int j = 0; j < count; j++) {
-				String name = (String)e.get(EntityIndexUtils.EVENT_FIELD + j);
-				
-				String recurrenceDatesField = (String)e.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
-				if (recurrenceDatesField != null) {
-					String[] recurrenceDates = recurrenceDatesField.split(",");
-					for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
-						String[] recurrenceStartEndTime = recurrenceDates[recCounter].split(" ");
-						Date evStartDate = null;
-						Date evEndDate = null;
-						try {
-							evStartDate = DateTools.stringToDate(recurrenceStartEndTime[0]);
-							evEndDate = DateTools.stringToDate(recurrenceStartEndTime[1]);
-						} catch (ParseException parseExc) { 
-							evStartDate = new Date();
-							evEndDate = new Date();
-	            		}
-
-						Event ev = new Event();
-						Calendar startCal = new GregorianCalendar();
-						startCal.setTime(evStartDate);
-						startCal = CalendarHelper.convertToTimeZone(startCal, timeZone);
-						ev.setDtStart(startCal);
-						
-						Calendar endCal = new GregorianCalendar();
-						endCal.setTime(evEndDate);
-						endCal = CalendarHelper.convertToTimeZone(endCal, timeZone);
-						ev.setDtEnd(endCal);
-
-						long thisDateMillis = evStartDate.getTime();
-						if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
-							String dateKey = sdf.format(evStartDate);
-							ArrayList entryList;
-							// reslist is going to be a list of maps; each map will carry the entry and 
-							// also the event that caused this entry to be in range
-							ArrayList resList = new ArrayList();
-							Map res = new HashMap(2);
-							res.put("event", ev);
-							res.put("entry", e);
-							entryList  = (ArrayList) results.get(dateKey);
-							if (entryList == null) {
-								resList.add(res);
-							} else {
-								resList.addAll(entryList);
-								resList.add(res);
-							}
-							results.put(dateKey, resList);
-						}
-					}
-				}
-			}
-		}
-		return results;
-	}
 	/**
 	 * Calendar navigation via nav bar; must be an action so form data is transmitted.
 	 * 
@@ -1725,248 +1490,14 @@ public class ListFolderController extends  SAbstractController {
 	 */
 	private static Map getCalendarViewsURLs(Long folderId, RenderResponse response) {
 		Map urls = new HashMap();
-		String folderIdAsString = folderId.toString();
 
 		PortletURL url = response.createActionURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderIdAsString);
+		url.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CALENDAR_GOTO_DATE);
 		urls.put("goto_form_url", url.toString());
-		
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderIdAsString);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_DAY);
-		urls.put("set_day_view", url.toString());
-
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderIdAsString);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_WEEK);
-		urls.put("set_week_view", url.toString());
-		
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderIdAsString);
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_MODE);
-		url.setParameter(WebKeys.URL_VALUE, WebKeys.CALENDAR_VIEW_MONTH);
-		urls.put("set_month_view", url.toString());
-		
+			
 		return urls;
-	}
-	
-	/**
-	 * View mode is one of day, week, or month. Default view is week.
-	 * 
-	 * @param model
-	 * @return
-	 */
-	private static String getCalendarViewMode(Map model) {
-		UserProperties userFolderProperties = (UserProperties)model.get(WebKeys.USER_FOLDER_PROPERTIES);
-		Map userFolderPropertiesMap = userFolderProperties.getProperties();
-		String viewMode = WebKeys.CALENDAR_VIEW_WEEK;
-		if (userFolderPropertiesMap.containsKey(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE)) {
-			viewMode = (String) userFolderPropertiesMap.get(ObjectKeys.USER_PROPERTY_CALENDAR_VIEWMODE);
-		}
-		return viewMode;
-	}
-	
-	/**
-	 * CurrentDate is the date selected by the user; we make sure this date is in view
-	 * whatever viewMode is set to. Current date is always saved in session.
-	 * 
-	 * Dafault current date is today.
-	 *    
-	 * @param portletSession
-	 * @return
-	 */
-	private static Date getCalendarCurrentDate(PortletSession portletSession) {
-
-		Date currentDate = (Date) portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_DATE);
-		if (currentDate == null) {
-			portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_DATE, new Date());	
-			currentDate = new Date();
-		} 
-		
-		return currentDate;
-	}
-	/**
-	 * populate the bean for weekly and monthly calendar view.
-	 * used by getEvents
-	 * returns a bean for the entire month, regardless of which view you are in
-	 * this bean contains month headers, and a list of weeks. Each week is a map which
-	 * contains the week number and a list of days.
-	 * Each entry in the dayss list is a daymap, 
-	 * a map with info about the day, such as the day of the week, day of the month, and a boolean 
-	 * indicating whether the day is today. The daymap also contains a sorted map of event info,
-	 * called eventdatamap, whose keys are the event times in millis; this is so that the interator
-	 * will return the day's events in chronological order. Each key-value is a list of events 
-	 * at that starting time (since you can have multiple events that start at the same time.
-	 * and each list entry is a dataMap, which contains both event and entry information for the event 
-	 * suitable for displaying on the view calendar page.
-	 * 
-	 * So the picture looks like this:
-	 *  monthBean -- map 
-	 *   dayHeaders -- list of day header strings for the month grid
-	 *   weekList -- list of week beans
-	 *     weekMap -- map
-	 *       weekNum -- string
-	 *       weekURL -- link to that week
-	 *       dayList -- list of days
-	 *         dayMap -- map for each day of the week
-	 *          day-of-wee  - string
-	 *          day-of-month - string
-	 *          isToday - Boolean
-	 *          dayEvents -- sorted map of event occurrences for the day, keyed by start time
-	 *            timeEvents -- list of event occurrences for a specific time
-	 *              dataMap -- for each occurrence, a map of stuff about the instance
-	 *                 eventid -- unique event id, entry doc id can not be used cause of event recurrences
-	 *                 entry
-	 *                 event
-	 *                 starttime -- string
-	 *                 endtime -- string
-	 *              
-	 */
-	private static void getCalendarViewBean (Binder folder, Calendar startCal, Calendar endCal, RenderResponse response, Map eventDates, String viewMode, Map model) {
-		String folderId = folder.getId().toString();
-		Map monthBean = new HashMap(2);
-		List dayheaders = new ArrayList();
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		TimeZone timeZone = user.getTimeZone();
-		
-		Calendar startUserLocalTime = CalendarHelper.convertToTimeZone(startCal, timeZone);
-		Calendar endUserLocalTime = CalendarHelper.convertToTimeZone(endCal, timeZone);
-		
-		Calendar loopCal = new GregorianCalendar(timeZone);
-		int j = loopCal.getFirstDayOfWeek();
-		for (int i=0; i< 7; i++) {
-			dayheaders.add(DateHelper.getDayAbbrevString(j));
-			// we don't know for sure that the d-o-w won't wrap, so prepare to wrap it
-			if (j++ == 7) {
-				j = 0;
-			}
-		}
-		monthBean.put("dayHeaders",dayheaders);
-		loopCal.setTime(startUserLocalTime.getTime());
-		// Move calendar to the beginning of the week
-		loopCal.set(Calendar.DAY_OF_WEEK, loopCal.getFirstDayOfWeek());
-
-		List weekList = new ArrayList();
-		
-		Map weekMap = null;
-		List dayList = null;
-		// this trick enables the main loop code to start a new week and reset/wrap dayCtr at same time
-		int dayCtr = 6;
-		// build string for date to stick in url -- note that it cannot contain "/"s so we use "_"
-		SimpleDateFormat urldatesdf = new SimpleDateFormat("yyyy_MM_dd");
-		String urldatestring;
-		String urldatestring2;
-		PortletURL url;
-		// main loop, loops through days in the range, periodically recycling the week stuff
-		while (loopCal.getTime().getTime() < endUserLocalTime.getTime().getTime()) {
-			urldatestring = urldatesdf.format(loopCal.getTime());
-			if (++dayCtr > 6) {
-				dayCtr = 0;
-				// before starting a new week, write out the old one (except first time through)
-				if (weekMap != null) {
-					weekMap.put("dayList", dayList);
-					weekList.add(weekMap);
-				}
-				weekMap = new HashMap();
-				// "w" is format pattern for week number in the year
-				SimpleDateFormat sdfweeknum = new SimpleDateFormat("w");
-				sdfweeknum.setTimeZone(timeZone);
-				String wn = sdfweeknum.format(loopCal.getTime());
-				weekMap.put("weekNum", wn);
-
-				dayList = new ArrayList();
-
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
-				url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "week");
-				url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
-				weekMap.put("weekURL", url.toString());
-			}
-			HashMap daymap = new HashMap();
-			daymap.put(WebKeys.CALENDAR_DOW, DateHelper.getDayAbbrevString(loopCal.get(Calendar.DAY_OF_WEEK)));
-			daymap.put(WebKeys.CALENDAR_DOM, Integer.toString(loopCal.get(Calendar.DAY_OF_MONTH)));
-			daymap.put("cal_dmgCalDate", loopCal.getTime());
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-			url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_CALENDAR_DISPLAY_DATE);
-			url.setParameter(WebKeys.CALENDAR_URL_VIEWMODE, "day");
-			url.setParameter(WebKeys.CALENDAR_URL_NEWVIEWDATE, urldatestring);
-			daymap.put("dayURL", url.toString());
-
-			
-			
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-			sdf.setTimeZone(timeZone);
-			String dateKey = sdf.format(loopCal.getTime());
-			// is this loop date today? We need to beanify that fact so that the calendar view can shade it
-			GregorianCalendar today = new GregorianCalendar(timeZone);
-			if (sdf.format(today.getTime()).equals(dateKey)) {
-				daymap.put("isToday", new Boolean(true));
-			} else {
-				daymap.put("isToday", new Boolean(false));
-			}
-			daymap.put("inView", new Boolean(true));
-			if (eventDates.containsKey(dateKey)) {
-				int eventCounter = 0;
-				List evList = (List) eventDates.get(dateKey);
-				Iterator evIt = evList.iterator();
-				Map dayEvents = new TreeMap();
-				while (evIt.hasNext()) {
-					// thisMap is the next entry, event pair
-					HashMap thisMap = (HashMap) evIt.next();
-					// dataMap is the map of data for the bean, to be keyed by the time
-					HashMap dataMap = new HashMap();
-					HashMap e = (HashMap) thisMap.get("entry");
-					Event ev = (Event) thisMap.get("event");
-					SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
-					sdf2.setTimeZone(timeZone);
-					// we build up the dataMap for this instance
-					dataMap.put("entry", e);
-					dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD) + "-" + dateKey + "-" + eventCounter);
-					dataMap.put("entry_tostring", e.get(BasicIndexUtils.UID_FIELD).toString());
-					dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2.format(ev.getDtStart().getTime()));
-					dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev.getDtEnd().getTime()));
-					dataMap.put("cal_starttime", ev.getDtStart().getTime());
-					dataMap.put("cal_endtime", ev.getDtEnd().getTime());
-					dataMap.put("cal_duration", ((ev.getDtEnd().getTime().getTime() - ev.getDtStart().getTime().getTime()) / 60000 ));
-					
-					// dayEvents is sorted by time in millis; must make a Long object though
-					Long millis = new Long(ev.getDtStart().getTime().getTime());
-					// must see if this key already has stuff; 
-					// build a list of all dataMaps that occur at the same time on this particular day
-					ArrayList thisTime = (ArrayList) dayEvents.get(millis);
-					ArrayList resList = new ArrayList();
-					if (thisTime == null) {
-						resList.add(dataMap);
-					} else {
-						resList.addAll(thisTime);
-						resList.add(dataMap);
-					}
-					dayEvents.put(millis, resList);
-					eventCounter++;
-				}
-				daymap.put(WebKeys.CALENDAR_EVENTDATAMAP, dayEvents);
-			}
-			
-			loopCal.add(Calendar.DATE, 1);
-			dayList.add(daymap);
-		}
-		
-		weekMap.put("dayList", dayList);
-		weekList.add(weekMap);
-		monthBean.put("weekList", weekList);
-		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
 	}
 
 	protected void getBlogEntries(Folder folder, Map folderEntries,  Map model, RenderRequest request, RenderResponse response) {

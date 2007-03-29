@@ -5,7 +5,6 @@
 <jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <jsp:useBean id="ssEventDates" type="java.util.HashMap" scope="request" />
-<jsp:useBean id="ssCalendarViewMode" type="java.lang.String" scope="request" />
 
 <%
 	String ssFolderTableHeight = "";
@@ -45,21 +44,4 @@
 
 </ssf:toolbar>
 
-
-<c:choose>
-<c:when test="${ssCalendarViewMode == 'day'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_day.jsp" %>
-</c:when>
-
-<c:when test="${ssCalendarViewMode == 'week'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_week.jsp" %>
-</c:when>
-
-<c:when test="${ssCalendarViewMode == 'month'}">
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_month.jsp" %>
-</c:when>
-
-<c:otherwise>
-Unknown view mode: ${ssCalendarViewMode}
-</c:otherwise>
-</c:choose>
+<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_content.jsp" %>

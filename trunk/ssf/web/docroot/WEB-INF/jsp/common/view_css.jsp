@@ -20,7 +20,9 @@ boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 <script type="text/javascript">
 // Dojo configuration
 djConfig = { 
-	isDebug: false
+	isDebug: false,
+	parseWidgets: false, // make dojo startup a little bit faster
+	searchIds: []
 };
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
@@ -239,6 +241,7 @@ var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param
 	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
 var ss_baseEntryUrl<portlet:namespace/> = ss_baseEntryUrl;
+	
 var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
