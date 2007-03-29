@@ -1731,7 +1731,18 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			delta -= fieldLength;
 		}
 		
+		int candidateTimeZoneOffset = candidate.getTimeZone().getOffset(candidate.getTime().getTime());
+		
 		candidate.add(field, delta);
+		
+
+		int candidateTimeZoneOffsetChange = candidate.getTimeZone().getOffset(candidate.getTime().getTime()) - candidateTimeZoneOffset;
+		
+		// adjust day light savings change
+		if (candidateTimeZoneOffsetChange != 0) {
+			candidate.setTimeInMillis(candidate.getTimeInMillis() - candidateTimeZoneOffsetChange);
+		}
+
 	}
 
 	/**
@@ -1769,27 +1780,28 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 */
 	protected static void adjust_day_of_month(Calendar start,
 			Calendar candidate, boolean is_forward) {
-		Calendar tempCal = (Calendar) candidate.clone();
+		// previouse implementation doesn't work correctly, try this one
 		int delta = start.get(Calendar.DATE) - candidate.get(Calendar.DATE);
-
-		if (is_forward && delta < 0) {
-			delta += candidate.getActualMaximum(Calendar.DATE);
-		} else if (!is_forward && delta > 0) {
-			tempCal.add(Calendar.MONTH, -1);
-			delta -= tempCal.getActualMaximum(Calendar.DATE);
+		int month = candidate.get(Calendar.MONTH);
+		
+		int startMonthOffset = 0;
+		if (!is_forward && delta > 0) {
+			startMonthOffset = -1;
+		} else if (is_forward && delta < 0) {
+			startMonthOffset = 1;
 		}
-
-		candidate.add(Calendar.DATE, delta);
-
+		
 		while (start.get(Calendar.DATE) != candidate.get(Calendar.DATE)) {
+						
+			candidate.set(Calendar.MONTH, month + startMonthOffset);
+			candidate.set(Calendar.DATE, start.get(Calendar.DATE));
+			
 			if (is_forward) {
-				delta = candidate.getActualMaximum(Calendar.DATE) - 1;
+				startMonthOffset++;
 			} else {
-				tempCal.add(Calendar.MONTH, -1);
-				delta = -tempCal.getActualMaximum(Calendar.DATE);
+				startMonthOffset--;
 			}
-
-			candidate.add(Calendar.DATE, delta);
+			
 		}
 	}
 
@@ -3071,9 +3083,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 
 	 * @return list of Calendar object instances 
 	 */
-	public Set getAllEventDays() {
+	public List getAllEventDays() {
 		boolean debug = false;
-		Set result = new HashSet();
+		List result = new ArrayList();
 
 		int starts_found = 0;
 		int loops;
