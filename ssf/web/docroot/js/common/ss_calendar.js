@@ -79,15 +79,9 @@ Date.getDayHeader = function(date) {
 
  */
 Date.prototype.compareByDate = function(date) {
-	var a = new Date(this.getFullYear(), this.getMonth(), this.getDate());
-	var b = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-	if (a < b) {
-		return 1;
-	} else if (a == b) {
-		return 0;
-	} else if (a > b) {
-		return -1;
-	}
+    var difference = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0) -
+    					Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
+   return difference;
 }
 
 Date.prototype.daysTillDate = function(date) {
