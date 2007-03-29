@@ -12,13 +12,12 @@ import java.io.FileWriter;
  * @version 1.0
  */
 
-public class Debug {
+public class Debug { 
 
   static File file = null;
   static FileWriter fw = null;
 
-  public Debug() {
-  }
+  public Debug() {}
 
   public static void debug(String text)
   {

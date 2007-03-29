@@ -111,6 +111,11 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 						</a>
 					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_<portlet:namespace/>('ss_recordsPerPage_<portlet:namespace/>', '1');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="1"/></ssf:nlt>
+						</a>
+					</li>
 					</ul>
 				</ssf:menu>
 

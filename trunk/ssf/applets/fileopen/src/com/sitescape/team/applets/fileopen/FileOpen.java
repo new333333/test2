@@ -55,7 +55,6 @@ public class FileOpen extends JApplet implements Runnable {
 			
 			boolean ifEditIsClicked = checkEditClicked();
 			resetEditClicked();
-			
 			String [] strEditorType = strEditorTypes.split(",");
 			
 			if (!strFileName.equals("") && !strEditorType.equals("") && ifEditIsClicked) {
