@@ -150,37 +150,14 @@ public class CalendarViewRangeDates {
 
 		result.put("year", startViewCalTemp.get(Calendar.YEAR));
 		result.put("month", startViewCalTemp.get(Calendar.MONTH));
-		result.put("numberOfDays", startViewCalTemp
-				.getActualMaximum(Calendar.DAY_OF_MONTH));
-
-		SimpleDateFormat sdfMonthShortName = new SimpleDateFormat("MMM");
-		sdfMonthShortName.setTimeZone(timeZone);
-		result.put("shortName", sdfMonthShortName.format(startViewCalTemp
-				.getTime()));
-
-		SimpleDateFormat sdfMonthName = new SimpleDateFormat("MMMM");
-		sdfMonthName.setTimeZone(timeZone);
-		result.put("name", sdfMonthName.format(startViewCalTemp.getTime()));
-
-		startViewCalTemp.set(Calendar.DAY_OF_MONTH, 1);
-		result.put("beginsOnDayOfWeek", startViewCalTemp
-				.get(Calendar.DAY_OF_WEEK));
 
 		Calendar startViewExtWindowTemp = CalendarHelper.convertToTimeZone(
 				startViewExtWindow, timeZone);
 		Map beginView = new HashMap();
 		beginView.put("year", startViewExtWindowTemp.get(Calendar.YEAR));
 		beginView.put("month", startViewExtWindowTemp.get(Calendar.MONTH));
-		beginView.put("dayOfWeek", startViewExtWindowTemp
-				.get(Calendar.DAY_OF_WEEK));
 		beginView.put("dayOfMonth", startViewExtWindowTemp
 				.get(Calendar.DAY_OF_MONTH));
-		beginView.put("daysInMonth", startViewExtWindowTemp
-				.getActualMaximum(Calendar.DAY_OF_MONTH));
-		beginView.put("shortName", sdfMonthShortName
-				.format(startViewExtWindowTemp.getTime()));
-		beginView.put("name", sdfMonthName.format(startViewExtWindowTemp
-				.getTime()));
 		result.put("beginView", beginView);
 
 		Calendar endViewExtWindowTemp = CalendarHelper.convertToTimeZone(
@@ -188,19 +165,8 @@ public class CalendarViewRangeDates {
 		Map endView = new HashMap();
 		endView.put("year", endViewExtWindowTemp.get(Calendar.YEAR));
 		endView.put("month", endViewExtWindowTemp.get(Calendar.MONTH));
-		endView
-				.put("dayOfWeek", endViewExtWindowTemp
-						.get(Calendar.DAY_OF_WEEK));
 		endView.put("dayOfMonth", endViewExtWindowTemp
 				.get(Calendar.DAY_OF_MONTH));
-		endView.put("daysInMonth", endViewExtWindowTemp
-				.getActualMaximum(Calendar.DAY_OF_MONTH));
-		endView.put("shortName", sdfMonthShortName.format(endViewExtWindowTemp
-				.getTime()));
-		endView
-				.put("name", sdfMonthName
-						.format(endViewExtWindowTemp.getTime()));
-
 		result.put("endView", endView);
 
 		result.put("numberOfDaysInView", calculateDifference(

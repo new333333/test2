@@ -220,7 +220,6 @@ public class EventsViewHelper {
 		
 		Map today = new HashMap();
 		today.put("date", new Date());
-		today.put("dayOfWeek", Calendar.getInstance(timeZone).get(Calendar.DAY_OF_WEEK));
 		monthBean.put("today", today);
 		
 		List eventsList = new ArrayList();
