@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_photoEntry" caption="__definition_default_photo_entry" type="1" nextId="27" definitionType="1" databaseId="402883c6115753d80111578720900010">
+<definition name="_photoEntry" caption="__definition_default_photo_entry" type="1" nextId="29" definitionType="1" databaseId="402883c6115753d80111578720900010">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -13,9 +13,11 @@
           <property name="name" value="title"/>
           <property name="caption" value="__title"/>
           <property name="width" value="60"/>
-          <property name="inline" value=""/>
-          <property name="generated" value=""/>
-          <property name="itemSource" value=""/>
+          <property name="inline" caption="__inline" type="boolean" value="false">
+            <help>__help_mark_as_inline</help>
+          </property>
+          <property name="generated" value="true"/>
+          <property name="itemSource" value="photo"/>
         </properties>
       </item>
       <item name="description" caption="__description" type="data" id="4">
@@ -34,16 +36,6 @@
           <property name="maxWidth" value=""/>
           <property name="maxHeight" value=""/>
           <property name="storage" value="simpleFileRepository"/>
-        </properties>
-      </item>
-      <item name="attachFiles" caption="__attach_files" type="data" id="5">
-        <properties>
-          <property name="name" value="ss_attachFile"/>
-          <property name="caption" value=""/>
-          <property name="width" value="60"/>
-          <property name="number" value=""/>
-          <property name="storage" value=""/>
-          <property name="hide" value=""/>
         </properties>
       </item>
       <item name="entryFormButtons" caption="__form_buttons" id="6">
@@ -90,6 +82,11 @@
         <property name="caption" value="__photo"/>
       </properties>
     </item>
+    <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="27">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
     <item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" id="25">
       <properties>
         <property name="caption" value="__entry_attachments"/>
@@ -119,6 +116,11 @@
       <properties>
         <property name="name" value="photo"/>
         <property name="caption" value="__photo"/>
+      </properties>
+    </item>
+    <item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" id="28">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
       </properties>
     </item>
     <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" id="26">

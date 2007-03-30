@@ -91,9 +91,6 @@
     </properties>
   </item>
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
-    <properties>
-      <property name="type" value="blog"/>
-    </properties>
     <item name="titleBlogView" caption="__title" id="17">
       <properties>
         <property name="caption" value="__title"/>
@@ -119,6 +116,9 @@
         <property name="caption" value="__entry_replies"/>
       </properties>
     </item>
+    <properties>
+      <property name="type" value="guestbook"/>
+    </properties>
   </item>
   <properties>
     <property name="name" value="_guestbookEntry"/>

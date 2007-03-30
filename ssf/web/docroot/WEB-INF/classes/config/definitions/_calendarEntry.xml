@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="25" definitionType="1" databaseId="402883c6115753d80111577dbe29000d">
+<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="29" definitionType="1" databaseId="402883c6115753d80111577dbe29000d">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -91,9 +91,19 @@
         <property name="caption" value="__event"/>
       </properties>
     </item>
+    <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="25">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
     <item name="entryAttachments" caption="__entry_attachments" id="14">
       <properties>
         <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryReplies" caption="__entry_replies" category="entryViewData" id="27">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
       </properties>
     </item>
   </item>
@@ -117,15 +127,25 @@
         <property name="caption" value="__event"/>
       </properties>
     </item>
+    <item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" id="26">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
     <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
       <properties>
         <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData" id="28">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
       </properties>
     </item>
   </item>
   <properties>
     <property name="name" value="_calendarEntry"/>
     <property name="caption" value="__definition_default_calendar_entry"/>
-    <property name="replyStyle" value=""/>
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
   </properties>
 </definition>

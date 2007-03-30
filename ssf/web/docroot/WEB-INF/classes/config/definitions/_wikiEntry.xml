@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="22" definitionType="1" databaseId="402883c6115753d80111578d0fea0011">
+<definition name="_wikiEntry" caption="__definition_default_wiki_entry" type="1" nextId="26" definitionType="1" databaseId="402883c6115753d80111578d0fea0011">
   <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
     <properties/>
     <item name="entryFormForm" caption="__form" id="2">
@@ -64,6 +64,16 @@
         <property name="caption" value="__description"/>
       </properties>
     </item>
+    <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="22">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
+    <item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" id="23">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
   </item>
   <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
     <properties>
@@ -77,6 +87,16 @@
     <item name="descriptionBlogView" caption="__description" id="18">
       <properties>
         <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" id="24">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" category="blogEntryViewData" id="25">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
       </properties>
     </item>
   </item>
