@@ -38,6 +38,6 @@ onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%=
 onMouseOver="<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
-onClick="setMenuGenericLinks('<%= linkMenuObj %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
+onClick="setMenuGenericLinks('<%= linkMenuObj %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>

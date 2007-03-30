@@ -1288,7 +1288,7 @@ public class ListFolderController extends  SAbstractController {
 			
 			//iframe
 			qualifiers = new HashMap();
-			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) 
+			if (userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) 
 				qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);

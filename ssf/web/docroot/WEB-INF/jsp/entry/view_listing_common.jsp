@@ -63,8 +63,6 @@ function ss_showForumEntryInPopupWindow() {
 }
 </script>
 
-
-
 <script type="text/javascript">
 
 //Define the url of this page in case the entry needs to reload this page
@@ -91,12 +89,12 @@ function ss_showForumEntry(url, callbackRoutine, isDashboard) {
 %>
 	if (isDashboard == "yes") {
 <%		
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME)) {
 %>		
 			return ss_showForumEntryInIframe_Overlay(url);
 <%		
-		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ) {
+		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)  ||
+					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
 %>		
 			return ss_showForumEntryInIframe_Popup(url);			
 <%
@@ -137,7 +135,7 @@ function ss_loadBinder(obj,id, entityType) {
 	}
 }
 
-function ss_loadEntry(obj, id, binderId, entityType) {
+function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
 	if (ss_displayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
@@ -161,7 +159,7 @@ function ss_loadEntry(obj, id, binderId, entityType) {
 		}
 	}
 	
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>, isDashboard);
 	return false;
 }
 
@@ -180,7 +178,6 @@ function ss_loadEntryUrl(url,id) {
 	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
 	return false;
 }
-
 </script>
 </c:if>
 

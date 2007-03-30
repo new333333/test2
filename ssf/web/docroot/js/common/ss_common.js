@@ -822,7 +822,6 @@ function ss_getDivWidth(divName) {
     return parseInt(obj.offsetWidth);
 }
 
-
 function ss_getAnchorTop(anchorName) {
     var top = 0;
     if (isNSN6 || isMoz5) {
@@ -2628,7 +2627,7 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 
 var menuLinkAdapterURL = "";
 
-function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL) {
+function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard) {
 
 	if (adapterURL) menuLinkAdapterURL = adapterURL;
 
@@ -2673,6 +2672,7 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL) {
 	linkMenuObj.binderUrl = binderUrl;
 	linkMenuObj.entryUrl = entryUrl;
 	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
+	linkMenuObj.isDashboardLink = isDashboard;
 }
 
 //Routine to go to a permalink without actually using the permalink
@@ -3361,6 +3361,7 @@ function ss_linkMenuObj() {
 	this.lastShownButton;       
 	this.menuLinkShowEntry;
 	this.menuLinkShowFile;
+	this.isDashboardLink;
 	
 	this.type_folderEntry = 'folderEntry';
 	this.type_folder = 'folder';
@@ -3482,7 +3483,7 @@ function ss_linkMenuObj() {
 	}
 	
 	this.showEntry = function() {
-		ss_loadEntry(this.lastShownButton, this.currentId)
+		ss_loadEntry(this.lastShownButton, this.currentId, "", "", this.isDashboardLink)
 		return false;
 	}
 	
@@ -3507,8 +3508,6 @@ function ss_linkMenuObj() {
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
-		
-		alert("this.buildBaseUrl: url: "+url);
 		
 		ss_debug('buildBaseUrl - '+ url);
 		return url;
