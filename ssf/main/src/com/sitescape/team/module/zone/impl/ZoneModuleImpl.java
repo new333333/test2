@@ -405,6 +405,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 //		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		
@@ -429,9 +430,11 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		function.addOperation(WorkAreaOperation.READ_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATE_ENTRIES);
 		function.addOperation(WorkAreaOperation.CREATOR_MODIFY);
+		function.addOperation(WorkAreaOperation.CREATOR_DELETE);
 		function.addOperation(WorkAreaOperation.ADD_REPLIES);
 //		function.addOperation(WorkAreaOperation.USER_SEE_ALL);
 		function.addOperation(WorkAreaOperation.TEAM_MEMBER);
+		function.addOperation(WorkAreaOperation.GENERATE_REPORTS);
 		
 		//generate functionId
 		getFunctionManager().addFunction(function);
