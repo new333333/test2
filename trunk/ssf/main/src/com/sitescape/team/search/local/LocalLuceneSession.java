@@ -646,13 +646,15 @@ public class LocalLuceneSession implements LuceneSession {
 							termDocs.seek(enumerator);
 							while (termDocs.next()) {
 								if (userDocIds.get((termDocs.doc()))) {
-									// Add term.text to results
-									count++;
 									// add terms in ranges, i.e. if the skipsize is 7, add 0,6,7,13,14,20,21
 									// so the ranges can be 0-6, 7-13, 14-20, etc
-									if ((count == 0) || (count%skipsize == skipsize-1) || (count%skipsize == 0))
+									if ((count == 0) || (count%skipsize == skipsize-1) || (count%skipsize == 0)) {
 										titles.add((String)term.text());
-									lastTerm = (String) term.text();
+										lastTerm = (String) term.text();
+										count++;
+										break;
+									}
+									count++;
 									break;
 								}
 							}
