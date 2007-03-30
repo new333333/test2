@@ -72,6 +72,7 @@
 		<property name="name">_libraryFolderConfig</property>
 		<property name="entryDef">_libraryFolder</property>
 		<property name="definition">_libraryFolder</property>
+		<property name="definition">_calendarFolder</property>
 		<property name="definition">_libraryEntry</property>
 		<property name="library">true</property>
 		<property name="uniqueTitles">true</property>
