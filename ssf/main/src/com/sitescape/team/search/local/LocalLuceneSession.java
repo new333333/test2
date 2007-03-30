@@ -598,7 +598,6 @@ public class LocalLuceneSession implements LuceneSession {
 			throws LuceneException {
 		IndexReader indexReader = null;
 		IndexSearcher indexSearcher = null;
-		;
 		ArrayList<String> titles = new ArrayList<String>();
 		ArrayList<ArrayList> resultTitles = new ArrayList<ArrayList>();
 		int count = 0;
