@@ -101,7 +101,6 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 	
 		var hrefSelectAllObj = document.createElement("a");
 		hrefSelectAllObj.href = "javascript: //";
-//		hrefSelectAllObj.setAttribute("onClick", "ss_clipboardUsersSelectAll('" + prefix + "')");
 		dojo.event.connect(hrefSelectAllObj, "onclick", function(evt) {
 			ss_clipboardUsersSelectAll(prefix);
 	    });		
@@ -111,7 +110,6 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 
 		var hrefDeselectAllObj = document.createElement("a");
 		hrefDeselectAllObj.href = "javascript: //";
-//		hrefDeselectAllObj.setAttribute("onClick", "ss_clipboardUsersDeselectAll('" + prefix + "')");
 		dojo.event.connect(hrefDeselectAllObj, "onclick", function(evt) {
 			ss_clipboardUsersDeselectAll(prefix);
 	    });

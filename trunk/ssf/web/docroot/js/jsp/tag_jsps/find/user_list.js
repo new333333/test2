@@ -13,18 +13,22 @@ function afterAddUser(prefix, obj) {
 	dojo.lfx.html.highlight(obj, "#FFFF33", 500).play();
 }
 
-function ss_addUserIdsToFormElement(prefix) {
-	for (var i = 1; i < ss_addUserIdsToFormElement.arguments.length; i++) {
-		var userId = ss_addUserIdsToFormElement.arguments[i];
-		var formObj = document.forms[ss_findUsersFormName[prefix]];
-		var hiddenUserIdObj = document.createElement('input');
-		hiddenUserIdObj.setAttribute("type", "hidden");
-		hiddenUserIdObj.setAttribute("name", ss_findUsersListElementName[prefix]);
-		hiddenUserIdObj.setAttribute("value", userId);
-		hiddenUserIdObj.setAttribute("id", "userIds_" + prefix + "_" + userId);
-		formObj.appendChild(hiddenUserIdObj);
+function ss_addUserIdToFormElement(prefix, userId) {
+
+	var hiddenUserIdObj = $("ss_usersListInput" + prefix);
+
+	var newValue = "";
+	if (hiddenUserIdObj.value) {
+		newValue = hiddenUserIdObj.value;
 	}
+
+	newValue += " ";
+	newValue += userId;
+	newValue += " ";
+
+	hiddenUserIdObj.value = newValue;
 }
+
 
 //Routine called when item is selected
 function ss_userListSelectItem(id, obj, prefix) {
@@ -38,7 +42,11 @@ function ss_userListSelectItem(id, obj, prefix) {
 	newLiObj.innerHTML = spanObj.innerHTML;
 	var newAnchorObj = document.createElement("a");
 	newAnchorObj.setAttribute("href", "javascript: ;");
-	newAnchorObj.setAttribute("onClick", "ss_userListRemove('" + prefix + "', this);");
+	// newAnchorObj.setAttribute("onClick", "ss_userListRemove('" + prefix + "', this);");
+	dojo.event.connect(newAnchorObj, "onclick", function(evt) {
+		ss_userListRemove(prefix, evt.target.parentNode);
+    });	
+	
 	var newImgObj = document.createElement("img");
 	newImgObj.setAttribute("src", ss_imagesPath + "pics/sym_s_delete.gif");
 	newImgObj.setAttribute("border", "0");
@@ -47,7 +55,7 @@ function ss_userListSelectItem(id, obj, prefix) {
 	newLiObj.appendChild(newAnchorObj);
 	ulObj.appendChild(newLiObj);
 
-	ss_addUserIdsToFormElement(prefix, id);
+	ss_addUserIdToFormElement(prefix, id);
 	
 	if (typeof ss_findUsersClickRoutine[prefix] != "undefined" && typeof window[ss_findUsersClickRoutine[prefix]] != "undefined") {
 		window[ss_findUsersClickRoutine[prefix]]();
@@ -75,12 +83,15 @@ function ss_userListRemove(prefix, obj) {
 	
 	var userId = liObj.id;
 	var userHiddenIdObj = document.getElementById("userIds_" + prefix + "_" + userId);
-	//var p = userHiddenIdObj.parentNode;
-	//p.removeChild(userHiddenIdObj);
 	liObj.parentNode.removeChild(liObj);
 	if (ss_findUsersClickRoutine[prefix] && window[ss_findUsersClickRoutine[prefix]]) {
 		window[ss_findUsersClickRoutine[prefix]]();
 	}
+		
+	var hiddenUserIdObj = $("ss_usersListInput" + prefix);
+	var value = hiddenUserIdObj.value;
+	value = value.replace(" " + userId + " ", " ");
+	hiddenUserIdObj.value = value;
 }
 
 
