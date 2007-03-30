@@ -7,6 +7,33 @@ String iframeBoxId = renderResponse.getNamespace() + "_dashboard_iframe_box_div"
 %>
 
 <script type="text/javascript">
+//Define the variables needed by the javascript routines
+var ss_iframe_box_div_name = '<portlet:namespace/>_iframe_box_div';
+
+<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
+	var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
+	var ss_entryWindowTop = ${ss_entryWindowTop};
+	var ss_entryWindowLeft = ${ss_entryWindowLeft};
+</c:if>
+<c:if test="${empty ss_entryWindowTop || empty ss_entryWindowLeft}">
+	var ss_entryWindowTopOriginal = -1;
+	var ss_entryWindowTop = -1;
+	var ss_entryWindowLeft = -1;
+</c:if>
+
+var ss_saveEntryWidthUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="true" >
+	<ssf:param name="operation" value="save_entry_width" />
+	</ssf:url>"
+
+var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
+var ss_entryWindowWidth = ${ss_entryWindowWidth};
+var ss_entryBackgroundColor = "${ss_style_background_color}";
+
+
 var ss_dashboardViewEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
@@ -35,6 +62,7 @@ function ss_showForumEntryInIframe_Overlay(url) {
 	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
+    
 	if (wObj1 == null) return true;
 	
     ss_hideSpannedAreas();
@@ -42,13 +70,16 @@ function ss_showForumEntryInIframe_Overlay(url) {
     wObj1.style.zIndex = ssEntryZ;
     wObj1.style.visibility = "visible";
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
-
+    
     if (wObj.src && wObj.src == url) {
+    	alert("first check");
     	ss_nextUrl = url
     	wObj.src = ss_forumRefreshUrl;
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
+    	alert("second check");
     	wObj.src = ss_forumRefreshUrl;
     } else {
+    	alert("third check");
     	wObj.src = url
     }
 
@@ -58,35 +89,6 @@ function ss_showForumEntryInIframe_Overlay(url) {
     return false;
 }
 </script>
-
-<div id="ss_showentrydiv_dashboard" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
-  style="position:absolute; visibility:hidden;
-  width:600px; height:80%; display:none;">
-  <ssf:box>
-    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
-    <ssf:param name="box_width" value="400" />
-    <ssf:param name="box_color" value="${ss_entry_border_color}" />
-    <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
-    <ssf:param name="box_title" useBody="true">
-      <div style="position:relative;">
-      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-      </div>
-    </ssf:param>
-    <ssf:param name="box_show_resize_icon" value="true" />
-    <ssf:param name="box_show_resize_routine" value="ss_startDragDiv('resize')" />
-    <ssf:param name="box_show_resize_gif" value="box/resize_east_west.gif" />
-    <ssf:param name="box_show_move_icon" value="true" />
-    <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
-    <ssf:param name="box_show_close_icon" value="true" />
-    <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <iframe id="ss_showentryframe_dashboard" name="ss_showentryframe_dashboard" style="width:100%; 
-    display:block; position:relative; left:5px;"
-    src="<html:rootPath/>js/forum/null.html" 
-    height="95%" width="100%" 
-    onLoad="if (self.ss_setEntryDivHeight) ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
-  </ssf:box>
-</div>
   
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig}">
