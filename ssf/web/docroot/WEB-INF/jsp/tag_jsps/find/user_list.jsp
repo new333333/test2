@@ -17,15 +17,18 @@
 <c:set var="binderId" value="<%= binderId %>"/>
 <c:set var="prefix" value="${form_name}_${form_element}_${iCount}" />
 
-<ssf:ifnotadapter>
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
-</ssf:ifnotadapter>
+
 
 <table class="ss_style" cellspacing="2px" cellpadding="5px">
 <tbody>
 <tr>
 <td valign="top">
-<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>'); <c:if test="${!empty userList}"> ss_addUserIdsToFormElement('${prefix}', <c:forEach var="item" items="${userList}" varStatus="status">'<c:out value="${item.id}"/>'<c:if test="${!status.last}">, </c:if></c:forEach>);</c:if>" />
+
+<input type="hidden" name="<%= userListElementName %>" id="ss_usersListInput${prefix}"/>		
+
+
+<img src="<html:imagesPath/>pics/1pix.gif" onload="ss_findUsersConfVariableForPrefix('${prefix}', '${clickRoutine}', '<%= userListFormName %>', '<%= userListElementName %>'); ss_findUserListInitializeForm('${prefix}', '<%= userListFormName %>', '<%= userListElementName %>');  <c:forEach var="item" items="${userList}" varStatus="status"> ss_addUserIdToFormElement('${prefix}', '<c:out value="${item.id}"/>');</c:forEach>" />
 
   <ssf:find formName="" 
     formElement="searchText" 
@@ -62,5 +65,4 @@
 </tr>
 </tbody>
 </table>
-<input type="hidden" name="<%= userListElementName %>"/>		
 

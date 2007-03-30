@@ -13,9 +13,10 @@
 <c:set var="leaveResultsVisible" value="<%= leaveResultsVisible %>"/>
 <c:set var="prefix" value="${renderResponse.namespace}_${iCount}" />
 
-<ssf:ifnotadapter>
+
+
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
-</ssf:ifnotadapter>
+
 
 
 <div class="ss_style">
