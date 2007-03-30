@@ -14,6 +14,7 @@ dojo.declare(
 	this.dataType = [];
 
 	this.getData = function(/*String*/ url){
+		url += "\&randomNumber="+ss_random++;
 		dojo.io.bind({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 

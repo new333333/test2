@@ -165,6 +165,7 @@ var ss_cal_CalData = {
 		url += "\&year=" + dateToLoad.getFullYear();
 		url += "\&month=" + m;
 		url += "\&dayOfMonth=" + dateToLoad.getDate();
+		url += "\&randomNumber="+ss_random++;
 
 		var bindArgs = {
 	    	url: url,
@@ -172,16 +173,14 @@ var ss_cal_CalData = {
 				alert(ss_not_logged_in);
 			},
 			load: function(type, data, evt) {
-				try {
-					ss_cal_CalData.setMonthViewInfo(data.monthViewInfo.year, data.monthViewInfo.month, data.monthViewInfo.numberOfDaysInView,
-						data.monthViewInfo.startViewDate, data.monthViewInfo.endViewDate);
-								
-					ss_cal_Events.set(data.events);
-					ss_cal_Grid.setCurrentDate(date);
-					ss_cal_Grid.setFirstDayToShow(date);
-					ss_cal_Grid.activateGrid(grid);
-			        ss_cal_Events.redrawAll();
-	        	} catch (e) {alert(e)}
+				ss_cal_CalData.setMonthViewInfo(data.monthViewInfo.year, data.monthViewInfo.month, data.monthViewInfo.numberOfDaysInView,
+					data.monthViewInfo.startViewDate, data.monthViewInfo.endViewDate);
+							
+				ss_cal_Events.set(data.events);
+				ss_cal_Grid.setCurrentDate(date);
+				ss_cal_Grid.setFirstDayToShow(date);
+				ss_cal_Grid.activateGrid(grid);
+		        ss_cal_Events.redrawAll();
 			},
 						
 			mimetype: "text/json",

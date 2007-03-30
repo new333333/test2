@@ -39,6 +39,7 @@ function ss_loadClipboardUsersList (url, prefix) {
 		ss_toggleClipboardUsersList(ajaxLoadingIndicatorPane);
 	} else {
 		ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
+		url += "\&randomNumber="+ss_random++;
 		var bindArgs = {
 	    	url: url,
 			error: function(type, data, evt) {
