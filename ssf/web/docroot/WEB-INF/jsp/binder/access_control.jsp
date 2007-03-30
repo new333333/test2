@@ -207,8 +207,10 @@ function ss_showAddUsersMenu<portlet:namespace/>(obj) {
 }
 
 function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
+	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>";
+	url += "\&randomNumber="+ss_random++;
 	var bindArgs = {
-    	url: "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"><ssf:param name="operation" value="get_clipboard_users" /></ssf:url>",
+    	url: url,
 		error: function(type, data, evt) {
 			
 		},
