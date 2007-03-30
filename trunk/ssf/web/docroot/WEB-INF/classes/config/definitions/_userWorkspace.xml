@@ -3,7 +3,7 @@
 <definition name="_userWorkspace" caption="__definition_default_user_workspace" type="12" nextId="9" definitionType="12" databaseId="402883b90cc53079010cc539bf26000b" internalId="402883b90cc53079010cc539bf26000b">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
-     <item name="description" caption="__description" type="data" id="3">
+    <item name="description" caption="__description" type="data" id="3">
       <properties>
         <property name="name" value="description"/>
         <property name="caption" value="__description"/>
@@ -20,14 +20,14 @@
   </item>
   <item name="userWorkspaceView" caption="__user_workspace_view" id="5">
     <properties/>
-    <item name="dashboardCanvas" caption="__dashboard_canvas" id="8">
-      <properties>
-        <property name="caption" value="__dashboard_canvas"/>
-      </properties>
-    </item>
     <item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" id="6">
       <properties>
         <property name="caption" value="__user_workspace_businessCard"/>
+      </properties>
+    </item>
+    <item name="dashboardCanvas" caption="__dashboard_canvas" id="8">
+      <properties>
+        <property name="caption" value="__dashboard_canvas"/>
       </properties>
     </item>
   </item>
