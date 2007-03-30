@@ -26,7 +26,7 @@ function ss_saveResults() {
 </script>
 
 <div class="ss_style ss_portlet">
-<span class="ss_bold ss_largerprint">${ssGroup.title}</span> <span class="ss+smallprint">(${ssGroup.name})</span>
+<span class="ss_bold ss_largerprint">${ssGroup.title}</span> <span class="ss_smallprint">(${ssGroup.name})</span>
 <br/>
 <br/>
 <form name="ss_groupForm" id="ss_groupForm" method="post"
