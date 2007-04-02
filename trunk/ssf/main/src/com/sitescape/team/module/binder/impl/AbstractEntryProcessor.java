@@ -953,16 +953,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Hits hits = getBinderEntries_doSearch(binder, entryTypes, options);
         //iterate through results
         List childEntries = SearchUtils.getSearchEntries(hits);
-		Set ids = getPrincipalIdsFromSearch(childEntries);
-		List users = getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-
-		// walk the entries, and stuff in the user object.
-		for (int i = 0; i < childEntries.size(); i++) {
-			HashMap child = (HashMap)childEntries.get(i);
-			if (child.get(getEntryPrincipalField()) != null) {
-				child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(getEntryPrincipalField()).toString()));
-	        }        	
-		}
+        SearchUtils.extendPrincipalsInfo(childEntries, getProfileDao());
 
        	Map model = new HashMap();
         model.put(ObjectKeys.BINDER, binder);      
@@ -974,10 +965,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
         return model;
    }
-
-    protected String getEntryPrincipalField() {
-    	return EntityIndexUtils.CREATORID_FIELD;
-    }
     
     protected int getBinderEntries_maxEntries(int maxChildEntries) {
         if (maxChildEntries == 0 || maxChildEntries == Integer.MAX_VALUE) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
