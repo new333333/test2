@@ -19,6 +19,8 @@ dojo.widget.defineWidget(
 			var id = this.stepsWidget.id+this.selectedResult[1];
 			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+this.selectedResult[1], id:id, name:this.searchFieldName};
 			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
+		},
+		setWorkflowValue: function(newValue, newLabel) {
 		}
 	}
 );
