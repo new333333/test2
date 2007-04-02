@@ -224,6 +224,19 @@ function ss_openTitleUrl(obj) {
 	return false;
 }
 
+//Routine to open a url in a new window
+function ss_openUrlInWindow(obj,windowName) {
+	if (windowName == "") {
+		//There is no window, so open it in this window
+		return true;
+	} else {
+		var url = obj.href
+		var win = self.window.open(url, windowName, 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no')
+		if (win.focus) win.focus();
+	}
+	return false;
+}
+
 //Routine to show the permalink url so it can by cut/pasted
 function ss_showPermalink(obj) {
 	//See if the div exists already
@@ -1565,19 +1578,6 @@ function ss_showSpannedAreas() {
     for (var i = 0; i < ss_spannedAreasList.length; i++) {
         ss_spannedAreasList[i].show()
     }
-}
-
-//Routine to open a url in a new window
-function ss_openUrlInWindow(obj,windowName) {
-	if (windowName == "") {
-		//There is no window, so open it in this window
-		return true;
-	} else {
-		var url = obj.href
-		var win = self.window.open(url, windowName, 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no')
-		if (win.focus) win.focus();
-	}
-	return false;
 }
 
 //Routine to pop up a window with a url (used in common toolbar code)
