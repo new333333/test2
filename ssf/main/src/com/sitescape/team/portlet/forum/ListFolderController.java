@@ -1263,10 +1263,11 @@ public class ListFolderController extends  SAbstractController {
 		entryToolbar.addToolbarMenuItem("2_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		
 		//Folder action menu
-		if (viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_BLOG) 
+		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				(viewType.equals(Definition.VIEW_STYLE_DEFAULT) || viewType.equals(Definition.VIEW_STYLE_BLOG) 
 				|| viewType.equals(Definition.VIEW_STYLE_GUESTBOOK) || viewType.equals(Definition.VIEW_STYLE_SEARCH) || 
-				viewType.equals("")) {
-			//Only show these options if in the folder table style
+				viewType.equals(""))) {
+			//Only show these options if in the folder table style and not in accessible mode
 			entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));
 
 			
