@@ -105,7 +105,8 @@
 </table>
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-  
+<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>">
+ 
 </form>
 </div>
 

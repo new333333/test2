@@ -618,7 +618,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		if (Validator.isNotNull(description)) entryData.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 		entryData.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.toString(cfg.isLibrary()));
 		entryData.put(ObjectKeys.FIELD_BINDER_UNIQUETITLES, Boolean.toString(cfg.isUniqueTitles()));
-		entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
+		//if not null, use icon from template.  Otherwise try icon from definition when binder is created.
+		if (Validator.isNotNull(cfg.getIconName())) entryData.put(ObjectKeys.FIELD_ENTITY_ICONNAME, cfg.getIconName());
 		if (Validator.isNull(name)) name = cfg.getName();	
 		entryData.put(ObjectKeys.FIELD_BINDER_NAME, name);
 		//get binder created

@@ -792,8 +792,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				} else {
 					if (type.equals("boolean") || type.equals("checkbox")) {
 						String value = "false";
-						Element newPropertyEle = configProperty.createCopy();
-						newPropertiesEle.add(newPropertyEle);
+						Element newPropertyEle = newPropertiesEle.addElement("property");
+						newPropertyEle.addAttribute("name", attrName);
 						newPropertyEle.addAttribute("value", value);
 					}
 				}

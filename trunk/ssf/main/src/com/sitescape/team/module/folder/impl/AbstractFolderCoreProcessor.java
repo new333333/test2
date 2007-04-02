@@ -268,6 +268,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         //use the optimized deleteEntry or hibernate deletes each collection entry one at a time
        	List entries = new ArrayList((List)ctx.get(this.getClass().getName()));
        	entries.add(entry);
+       	if (!entry.isTop()) {
+       		//remove from list of children
+       		FolderEntry fEntry = (FolderEntry)entry;
+       		fEntry.getParentEntry().removeReply(fEntry);
+       	}
        	getFolderDao().deleteEntries((Folder)parentBinder, entries);   
     }
     protected void deleteEntry_indexDel(Binder parentBinder, Entry entry, Map ctx) {

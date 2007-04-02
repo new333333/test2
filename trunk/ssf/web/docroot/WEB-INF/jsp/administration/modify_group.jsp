@@ -73,6 +73,7 @@ function ss_saveResults() {
 </table>
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
+<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete"/>">
 <input type="submit" style="margin-left:15px;" class="ss_submit" name="closeBtn" 
   value="<ssf:nlt tag="button.close" />"
   onClick="if (parent.ss_hideDivNone) parent.ss_hideDivNone('ss_groupsDiv${ss_namespace}'); return false;" />

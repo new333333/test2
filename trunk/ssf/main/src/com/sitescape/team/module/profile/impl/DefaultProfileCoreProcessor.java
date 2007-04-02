@@ -243,6 +243,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    		//$$$return getCoreDao().queryUsers(new FilterControls(), binder.getZoneName());
    		return getProfileDao().queryAllPrincipals(new FilterControls(), binder.getZoneId());
    	}
+   	protected boolean indexEntries_validate(Binder binder, Entry entry) {
+   		Principal p = (Principal)entry;
+   		//don't index job processor
+   		if (p.isReserved() && ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(p.getInternalId())) return false;
+   		return true;
+   	}
    	protected void indexEntries_load(Binder binder, List entries)  {
    		// bulkd load any collections that neeed to be indexed
    		getProfileDao().bulkLoadCollections((List<Principal>)entries);

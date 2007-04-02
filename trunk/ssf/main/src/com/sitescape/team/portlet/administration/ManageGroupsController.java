@@ -12,6 +12,9 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -19,9 +22,12 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.FindIdsHelper;
@@ -31,11 +37,10 @@ public class ManageGroupsController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
-		response.setRenderParameters(formData);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		if (formData.containsKey("addBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			//make sure it is present
-			String name = PortletRequestUtils.getRequiredStringParameter(request, "name");
 			MapInputData inputData = new MapInputData(formData);
 			Map fileMap=null;
 			if (request instanceof MultipartFileSupport) {
@@ -46,7 +51,6 @@ public class ManageGroupsController extends  SAbstractController {
 			getProfileModule().addGroup(binderId, null, inputData, fileMap);
 			
 		} else if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
-			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
@@ -58,9 +62,16 @@ public class ManageGroupsController extends  SAbstractController {
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, principals);
 			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
-		
+			response.setRenderParameter(WebKeys.URL_ENTRY_ID, groupId.toString());
+
+		} else if (formData.containsKey("deleteBtn")) {
+			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+			getProfileModule().deleteEntry(binderId, groupId);
+			
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
+		} else {
+			response.setRenderParameters(formData);
 		}
 	}
 
@@ -71,9 +82,18 @@ public class ManageGroupsController extends  SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
 		}
 		Binder binder = getProfileModule().getProfileBinder();
+		
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		//Exclude allUsers from the search 
+//		Document searchFilter = DocumentHelper.createDocument();
+//		Element rootElement = searchFilter.addElement(QueryBuilder.NOT_ELEMENT);
+//   	Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+//    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
+//    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+//    	child.setText("allUsers");
+//    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 
 		Map searchResults = getProfileModule().getGroups(binder.getId(), options);
 		List groups = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);

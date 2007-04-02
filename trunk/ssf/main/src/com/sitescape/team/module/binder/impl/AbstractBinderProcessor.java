@@ -44,6 +44,7 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -142,7 +143,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.end().print();
         
         final Map entryData = (Map) entryDataAll.get("entryData");
-        List fileUploadItems = (List) entryDataAll.get("fileData");
+        
+         List fileUploadItems = (List) entryDataAll.get("fileData");
         
     	try {
 	        sp.reset("addBinder_create").begin();
@@ -242,6 +244,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
             	List defs = new ArrayList();
             	defs.add(def);
             	binder.setDefinitions(defs);
+   	        	String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
+   	        	if (Validator.isNotNull(icon)) binder.setIconName(icon);
+            	
             } 
             return binder;
     	} catch (Exception ex) {
