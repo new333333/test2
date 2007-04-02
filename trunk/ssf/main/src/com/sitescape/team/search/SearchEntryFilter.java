@@ -71,7 +71,7 @@ public class SearchEntryFilter extends SearchFilter {
 	public void addCreatorById(String userId) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
-		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeEntry);
+		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeCreatorById);
 		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
 		Element newTerm = filterTerm.addElement(FilterHelper.FilterElementValue);
 		newTerm.setText(userId);
