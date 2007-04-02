@@ -32,6 +32,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -62,8 +63,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public static String SearchBlockTypeModificationDate = "modification_date";
 	public static String SearchBlockTypeWorkflow = "workflow";
 	public static String SearchBlockTypeEntry = "entry";
-	public static String SearchBlockTypeAuthor = "author";
+	public static String SearchBlockTypeAuthor = "creator_by_id";
 	public static String SearchBlockTypeTag = "tag";
+	public static String SearchBlockType = "type";
 		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
@@ -84,11 +86,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		
-        // User user = RequestContextHolder.getRequestContext().getUser();
         
         if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model = prepareSearchResultData(request);
+        	return new ModelAndView("search/search_result", model);
+        } else if (op.equals(WebKeys.SEARCH_VIEW_PAGE)) {
+        	model = prepareSearchResultPage(request);
         	return new ModelAndView("search/search_result", model);
         } else {
         	model = prepareSearchFormData(request);
@@ -96,6 +99,59 @@ public class AdvancedSearchController extends AbstractBinderController {
         }
 	}
 	
+	
+	private Map prepareSearchResultPage(RenderRequest request) throws PortletRequestBindingException {
+		Map model = new HashMap();
+
+		// get curent tab from tab
+		Tabs tabs = setupTabs(request);
+		int tabId = tabs.getCurrentTab();  
+		Map currentTab = tabs.getTab(tabId);
+		
+		// get query and options from tab
+		Document query = getQueryFromTab(currentTab);
+		Map options = getOptionsFromTab(currentTab);
+		
+		// get page no and actualize options
+		// execute query
+		// actualize tabs info
+		actualizeOptions(options, request);
+		prepareSearchResultPage(model, query, options, tabs, "");
+		
+		return model;
+	}
+	
+	private void actualizeOptions(Map options, RenderRequest request) {
+		int pageNo = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 1);
+		int defaultMaxOnPage = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		if (options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) defaultMaxOnPage = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		int maxOnPage = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, defaultMaxOnPage);
+		int userOffset = (pageNo - 1) * maxOnPage;
+		
+		Integer searchLuceneOffset = 0;
+		if (userOffset > 200) {
+				searchLuceneOffset = userOffset-200;
+				userOffset = searchLuceneOffset;
+		}
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
+	}
+	private Map getOptionsFromTab(Map tab) {
+		Map options = new HashMap();
+		if (tab.containsKey(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE)) options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, tab.get(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE));
+		if (tab.containsKey(ObjectKeys.SEARCH_OFFSET)) options.put(ObjectKeys.SEARCH_OFFSET, tab.get(ObjectKeys.SEARCH_OFFSET));
+		if (tab.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) options.put(ObjectKeys.SEARCH_USER_OFFSET, tab.get(ObjectKeys.SEARCH_USER_OFFSET));
+		if (tab.containsKey(ObjectKeys.SEARCH_MAX_HITS)) options.put(ObjectKeys.SEARCH_MAX_HITS, tab.get(ObjectKeys.SEARCH_MAX_HITS));
+		if (tab.containsKey(ObjectKeys.SEARCH_USER_MAX_HITS)) options.put(ObjectKeys.SEARCH_USER_MAX_HITS, tab.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+
+		return options;
+	}
+	
+	private Document getQueryFromTab(Map tab) {
+		Document query = (Document) tab.get(Tabs.QUERY_DOC);
+		return query;
+	}
 	
 	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
 		// TODO implement
@@ -111,25 +167,173 @@ public class AdvancedSearchController extends AbstractBinderController {
 		String tabType = tabs.getTabType(tabs.getCurrentTab());
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 
-		// Document searchQuery = FilterHelper.getSearchTextQuery(searchText);
 		Document searchQuery = getSearchQuery(request);
-		Map results =  getBinderModule().executeSearchQuery(searchQuery);
-		
-		// Map options = prepareSearchTextOptions(searchText);
 		Map options = prepareSearchOptions(request);
 
-		//Store the search query in a new tab
-		storeQueryInTabs(tabs, searchQuery, options, newTab);		
-		model.put(WebKeys.TABS, tabs.getTabs());
-		
-		// for test only
-		model.put("query", searchQuery.asXML());
-		model.put("options", options);
-		model.put("results", results);
-		
+		prepareSearchResultPage(model, searchQuery, options, tabs, newTab);
+
 		return model;
 	}
 
+	private void prepareSearchResultPage (Map model, Document query, Map options, Tabs tabs, String newTab) {
+
+		Map results =  getBinderModule().executeSearchQuery(query, options);
+		
+		//Store the search query in a new tab
+		storeQueryInTabs(tabs, query, options, newTab);
+		model.put(WebKeys.TABS, tabs.getTabs());
+
+		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
+		model.put("filterMap", convertedToDisplay(query));
+		
+		// for test only
+		model.put("query", query.asXML());
+		model.put("options", options);
+		model.put("results", results);
+		
+		BinderHelper.filterEntryAttachmentResults(results);
+	
+		prepareRatings(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		// this function puts also proper part of entries list into a model
+		preparePagination(model, results, options);
+
+		model.put("quickSearch", false);
+		// TODO implement - get values from user setup? options?
+		model.put("summaryWordCount", 20);		
+	}
+	
+	private void prepareRatings(Map model, List entries) {
+		List peoplesWithCounters = SearchController.sortPeopleInEntriesSearchResults(entries);
+		List placesWithCounters = SearchController.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE, SearchController.ratePeople(peoplesWithCounters));
+		model.put(WebKeys.FOLDER_ENTRYPLACES, SearchController.ratePlaces(placesWithCounters));		
+	}
+	private void preparePagination(Map model, Map results, Map options) {
+
+		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		int firstOnCurrentPage = 0;
+		if (options != null && options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
+		
+		int countReturned = (Integer) results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		int lastOnCurrentPage = firstOnCurrentPage + pageInterval;
+		if ((countReturned - firstOnCurrentPage)<pageInterval) lastOnCurrentPage = firstOnCurrentPage + (countReturned-firstOnCurrentPage);
+		
+		int currentPageNo = (firstOnCurrentPage + pageInterval)/pageInterval; 
+		
+		model.put(WebKeys.FOLDER_ENTRIES, ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage));
+		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
+		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
+		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
+		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
+	}
+	
+	private Map convertedToDisplay(Document searchQuery) {
+		Map searchFormData = new HashMap();
+		if (searchQuery != null) { 
+	    	Element rootElement = searchQuery.getRootElement();
+	    	List liFilterTerms = rootElement.selectNodes(FilterHelper.FilterTerms);
+
+	    	System.out.println("Query: "+searchQuery.asXML());
+	    	System.out.println("Terms size: "+liFilterTerms.size());
+
+	    	// read the joiner information, probably the size will be always 1 so it can be in loop
+	    	for (int i = 0; i < liFilterTerms.size(); i++) {
+	    		Element filterTerms = (Element) liFilterTerms.get(i);
+
+	    		String andJoiner = Boolean.FALSE.toString();
+	    		if (filterTerms.attributeValue(FilterHelper.FilterAnd, "").equals(Boolean.TRUE.toString())) {
+	    			andJoiner = Boolean.TRUE.toString();
+	    		}
+	    		
+	    		String searchedText = "";
+	    		String searchedTags = "";
+	    		String searchedAuthors = "";
+	    		Map blocks = new HashMap();
+	    		List liFilterTermsTerm = filterTerms.selectNodes("./" + FilterHelper.FilterTerm);
+	    		if (liFilterTermsTerm.size() > 0) {
+	            	for (int j = 0; j < liFilterTermsTerm.size(); j++) {
+	    	    		Element filterTerm = (Element) liFilterTermsTerm.get(j);
+	    	    		String filterType = filterTerm.attributeValue(FilterHelper.FilterType, "");
+	    	    		if (filterType.equals(FilterHelper.FilterTypeSearchText)) {
+	    	    			if (searchedText.equals("")) searchedText = filterTerm.getText(); 
+	    	    			else searchedText = searchedText.concat(" "+filterTerm.getText()); 
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeAuthor)) {
+	    	    			if (searchedAuthors.equals("")) searchedAuthors = filterTerm.getText(); 
+	    	    			else  searchedAuthors = searchedAuthors.concat(" "+filterTerm.getText());
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeTags)) {
+	    	    			if (searchedTags.equals("")) searchedTags = filterTerm.getText(); 
+	    	    			else  searchedTags = searchedTags.concat(" "+filterTerm.getText());
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeEntry)) {
+	    	    			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm));
+	    	    		} else if ( filterType.equals(FilterHelper.FilterTypeCreatorById)) {
+	    	    			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeAuthor)).add(createCreatorBlock(filterTerm));
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeWorkflow)) {
+	    	    			if (blocks.get(SearchBlockTypeWorkflow) == null) blocks.put(SearchBlockTypeWorkflow, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeWorkflow)).add(createWorkflowBlock(filterTerm));
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypeCommunityTagSearch)) {
+	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
+	    	    		} else if (filterType.equals(FilterHelper.FilterTypePersonalTagSearch)) {
+	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
+	    		    	} else if (filterType.equals(FilterHelper.FilterTypeDate)) {
+	    	    			if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
+	    	    			((List)blocks.get(SearchBlockTypeCreationDate)).add(createDateBlock(filterTerm));
+	    		    		// addDateRange(block, filterTerm.attributeValue(FilterHelper.FilterElementName, ""), filterTerm.attributeValue(FilterHelper.FilterStartDate, ""),filterTerm.attributeValue(FilterHelper.FilterEndDate, ""));
+	    		    	}
+	            	}
+	    		}
+	    		searchFormData.put(FilterHelper.SearchText, searchedText);
+	    		searchFormData.put(FilterHelper.SearchAuthors, searchedAuthors);
+	    		searchFormData.put(FilterHelper.SearchTags, searchedTags);
+	    		searchFormData.put(FilterHelper.SearchJoiner, andJoiner);
+	    		searchFormData.put(FilterHelper.SearchAdditionalFilters, blocks);
+	    	}
+		}
+		return searchFormData;
+	}
+	
+	private Map createEntryBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		
+		return block;
+	}
+	private Map createCreatorBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		return block;
+	}
+	private Map createWorkflowBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));	
+		block.put(FilterHelper.SearchWorkflowId, filterTerm.attributeValue(FilterHelper.FilterWorkflowDefId, ""));
+		
+		List steps = filterTerm.selectNodes(FilterHelper.FilterWorkflowStateName);
+		List modelSteps = new ArrayList();
+		for (int i = 0; i < steps.size(); i++) {
+			Element step = (Element) steps.get(i);
+			modelSteps.add(step.getText());
+		}
+		block.put(FilterHelper.FilterWorkflowStateName, modelSteps);
+		return block;
+	}
+	private Map createTagBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		return block;
+	}
+	private Map createDateBlock(Element filterTerm) {
+		Map block = new HashMap();
+		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		return block;
+	}
+	
 	private void storeQueryInTabs(Tabs tabs, Document query, Map options, String newTab) {
 		int targetTab;
 		if (newTab.equals(NEW_TAB_VALUE)) {
@@ -159,34 +363,54 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 
 	private Map prepareSearchOptions(RenderRequest request) {
+		
 		Map options = new HashMap();
 		
-		// Get the search text to use it for the tab title
-		String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
-		if (!searchText.equals("")) {
-			options.put(Tabs.TITLE, searchText);
-			options.put(Tabs.TAB_SEARCH_TEXT, searchText);
+		//If the entries per page is not present in the user properties, then it means the
+		//number of records per page is obtained from the ssf properties file, so we do not have 
+		//to worry about checking the old and new number or records per page.
+		
+		//Getting the entries per page from the user properties
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProp = getProfileModule().getUserProperties(user.getId());
+		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE);
+		if (entriesPerPage == null || "".equals(entriesPerPage)) {
+			options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(SPropsUtil.getString("search.records.listed")));
+		} else {
+			options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
 		}
 		
-		// Get authors
-		String authors = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchAuthors, "");
-		if (!authors.equals("")) {
-			options.put("authors", authors);
+		Integer searchUserOffset = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_USER_OFFSET, 0);
+			
+		// TODO - implement it better(?) this stuff is to get from lucene proper entries,  
+		// to get the ~ proper rankings we get from lucene 200 more hits as max on page
+		Integer searchLuceneOffset = 0;
+		if (searchUserOffset > 200) {
+				searchLuceneOffset = searchUserOffset-200;
+				searchUserOffset = searchLuceneOffset;
 		}
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
 		
-		// Get tags
-		String tags = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchTags, "");
-		if (!tags.equals("")) {
-			options.put("tags", tags);
-		}
+		Integer maxHits = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_DEFAULT);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		Integer pageNo = PortletRequestUtils.getIntParameter(request, Tabs.PAGE, 1);
+		options.put(Tabs.PAGE, pageNo);
+		
+		// TODO - if needed - implement dynamic
+//		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE.toString());
+//		options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
 		
 		return options;
 	}
 
 	
 	private Document getSearchQuery(RenderRequest request) {
-
-		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, FilterHelper.SearchJoiner, false);
+		Boolean joiner = PortletRequestUtils.getBooleanParameter(request, FilterHelper.SearchJoiner, true);
 		SearchEntryFilter searchFilter = new SearchEntryFilter(joiner);
 		
 		String searchText = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchText, "");
@@ -269,5 +493,4 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		return searchFilter.getFilter();
 	}
-
 }

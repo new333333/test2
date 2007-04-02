@@ -30,6 +30,8 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.impl.BinderModuleImpl;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -479,7 +481,7 @@ public class SearchController extends AbstractBinderController {
 	
 	// This class is used by the following method as a way to sort
 	// the values in a hashmap
-	public class Person implements Comparable {
+	public static class Person implements Comparable {
 		long id;
 		int count;
 		Principal user;
@@ -512,7 +514,7 @@ public class SearchController extends AbstractBinderController {
 	// This method reads thru the results from a search, finds the principals, 
 	// and places them into an array that is ordered by the number of times
 	// they show up in the results list.
-	protected List sortPeopleInEntriesSearchResults(List entries) {
+	protected static List sortPeopleInEntriesSearchResults(List entries) {
 		HashMap userMap = new HashMap();
 		ArrayList userList = new ArrayList();
 		// first go thru the original search results and 
@@ -546,14 +548,14 @@ public class SearchController extends AbstractBinderController {
 	}
 	
 	//This method rates the people
-	public List ratePeople(List entries) {
+	public static List ratePeople(List entries) {
 		//The same logic and naming has been followed for both people and placess
 		return ratePlaces(entries);
 	}
 	
 	// This class is used by the following method as a way to sort
 	// the values in a hashmap
-	public class Place implements Comparable {
+	public static class Place implements Comparable {
 		long id;
 		int count;
 
@@ -581,10 +583,7 @@ public class SearchController extends AbstractBinderController {
 			}
 	}	
 	
-	// This method reads thru the results from a search, finds the folder that 
-	// each entry is in, and places them into an array that is ordered by the 
-	// number of times they show up in the results list.
-	protected List sortPlacesInEntriesSearchResults(List entries) {
+	protected static List sortPlacesInEntriesSearchResults(BinderModule binderModule, List entries) {
 		HashMap placeMap = new HashMap();
 		ArrayList placeList = new ArrayList();
 		// first go thru the original search results and 
@@ -609,7 +608,7 @@ public class SearchController extends AbstractBinderController {
 		Arrays.sort(array);
 		
 		for (int j = 0; j < array.length; j++) {
-			Binder binder = getBinderModule().getBinder(((Place)array[j]).getId());
+			Binder binder = binderModule.getBinder(((Place)array[j]).getId());
 			int count = ((Place)array[j]).getCount();
 			Map place = new HashMap();
 			place.put(WebKeys.BINDER, binder);
@@ -617,10 +616,17 @@ public class SearchController extends AbstractBinderController {
 			placeList.add(place);
 		}
 		return placeList;
+
+	}
+	// This method reads thru the results from a search, finds the folder that 
+	// each entry is in, and places them into an array that is ordered by the 
+	// number of times they show up in the results list.
+	protected List sortPlacesInEntriesSearchResults(List entries) {
+		return sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 	}
 
 	//This method rates the places
-	public List ratePlaces(List entries) {
+	public static List ratePlaces(List entries) {
 		ArrayList ratedList = new ArrayList();
 		int intMaxHitsPerFolder = 0;
 		for (int i = 0; i < entries.size(); i++) {
