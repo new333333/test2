@@ -101,6 +101,7 @@ public class AccessUtils  {
 		readCheck(RequestContextHolder.getRequestContext().getUser(), entry);
 	}
 	public static void readCheck(User user, Entry entry) throws AccessControlException {
+        if (user.isSuper()) return;
     	if (entry instanceof WorkflowSupport)
     		readCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
     	else 
@@ -111,39 +112,46 @@ public class AccessUtils  {
 		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
     }
     private static void readCheck(User user, Binder binder, WorkflowSupport entry) throws AccessControlException {
-		if (!entry.hasAclSet()) readCheck(user, binder, (Entry)entry);
-       	try {
-       		//see if pass binder test
-       		readCheck(user, binder, (Entry)entry);
-    	    //see if binder default is enough
-    	    if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) return;
-		} catch (OperationAccessControlException ex) {
-			//at this point we can stop if workflow cannot widen access
-			// because the set cannot get any bigger
-	 		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
-     	}
-       //This basically AND's the binder and entry, since we already passed the binder
-		checkAccess(user, entry, WfAcl.AccessType.read);
- 	}
+		if (!entry.hasAclSet()) {
+			readCheck(user, binder, (Entry)entry);
+		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
+ 			//just check entry acl, ignore binder
+ 			try {
+ 				checkAccess(user, entry, WfAcl.AccessType.read);
+ 			} catch (AccessControlException ex) {
+ 				if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) { 		
+ 					readCheck(user, binder, (Entry)entry);
+ 				} else throw ex;
+ 			}
+ 			
+ 		} else {
+ 			//must have READ access to binder AND entry
+ 			//see if pass binder test
+ 			readCheck(user, binder, (Entry)entry);
+ 			//	see if binder default is enough
+ 			if (entry.isWorkAreaAccess(WfAcl.AccessType.read)) return;
+ 			//This basically AND's the binder and entry, since we already passed the binder
+ 			checkAccess(user, entry, WfAcl.AccessType.read);
+  		}
+	}
     
     private static void checkAccess(User user, WorkflowSupport entry, WfAcl.AccessType type) {
-        if (user.isSuper()) return;
-        Set allowedIds = entry.getStateMembers(type);
+         Set allowedIds = entry.getStateMembers(type);
         if (testAccess(user, allowedIds)) return;
         throw new AclAccessControlException(user.getName(), type.toString());
     }
     private static boolean testAccess(User user, Set allowedIds) {
-        if (user.isSuper()) return true;
      	Set principalIds = getInstance().getProfileDao().getPrincipalIds(user);
         for(Iterator i = principalIds.iterator(); i.hasNext();) {
             if (allowedIds.contains(i.next())) return true;
         }
-        return true;
+        return false;
     }
     public static void modifyCheck(Entry entry) throws AccessControlException {
 		modifyCheck(RequestContextHolder.getRequestContext().getUser(), entry);
     }
     public static void modifyCheck(User user, Entry entry) throws AccessControlException {
+        if (user.isSuper()) return;
 		if (entry instanceof WorkflowSupport)
     		modifyCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
     	else 
@@ -160,26 +168,40 @@ public class AccessUtils  {
       	}
     }
      private static void modifyCheck(User user, Binder binder, WorkflowSupport entry) {
-        if (!entry.hasAclSet()) modifyCheck(user, binder, (Entry)entry);
-		    //see if folder default is enabled.
-      	try {
-       		//see if pass binder test
-       		modifyCheck(user, binder, (Entry)entry);
-    	    //see if binder default is enough
-    	    if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) return;
-		} catch (OperationAccessControlException ex) {
-			//at this point we can stop if workflow cannot widen access
-			// because the set cannot get any bigger
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
-     	}
-	       //This basically AND's the binder and entry, since we already passed the binder
-		checkAccess(user, entry, WfAcl.AccessType.write);
+ 		if (!entry.hasAclSet()) {
+			modifyCheck(user, binder, (Entry)entry);
+		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
+ 			//just check entry acl, ignore binder
+ 			try {
+ 				//check explicit users
+ 				checkAccess(user, entry, WfAcl.AccessType.write);
+ 			} catch (AccessControlException ex) {
+ 				if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) { 		
+ 					modifyCheck(user, binder, (Entry)entry);
+ 				} else throw ex;
+ 			}
+ 			
+ 		} else {
+ 			//must have READ access to binder AND modify to the entry
+ 			if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) {
+ 				//optimzation: if pass modify binder check, don't need to do read binder check
+ 				try {
+					modifyCheck(user, binder, (Entry)entry);
+					return;
+ 				} catch (AccessControlException ex) {} //move on to next checks
+ 			}
+ 			//see if pass binder READ test
+ 			readCheck(user, binder, (Entry)entry);
+ 			//This basically AND's the binder and entry, since we already passed the binder
+ 			checkAccess(user, entry, WfAcl.AccessType.write);
+  		}
     }
 
      public static void deleteCheck(Entry entry) throws AccessControlException {
     	 deleteCheck(RequestContextHolder.getRequestContext().getUser(), entry);
      }
      public static void deleteCheck(User user, Entry entry) throws AccessControlException {
+        if (user.isSuper()) return;
      	if (entry instanceof WorkflowSupport)
      		deleteCheck(user, entry.getParentBinder(), (WorkflowSupport)entry);
      	else 
@@ -196,21 +218,34 @@ public class AccessUtils  {
       	}   
     }
     private static void deleteCheck(User user, Binder binder, WorkflowSupport entry)  throws AccessControlException {
-        if (!entry.hasAclSet()) deleteCheck(user, binder, (Entry)entry);
-	    //see if folder default is enabled.
-        try {
-        	//see if pass binder test
-        	deleteCheck(user, binder, (Entry)entry);
-        	//see if binder default is enough
-        	if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) return;
-        } catch (OperationAccessControlException ex) {
-        	//at this point we can stop if workflow cannot widen access
-        	// because the set cannot get any bigger
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
-        }
-        //This basically AND's the binder and entry, since we already passed the binder
-		checkAccess(user, entry, WfAcl.AccessType.delete);
-    }
+		if (!entry.hasAclSet()) {
+			deleteCheck(user, binder, (Entry)entry);
+		} else if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
+ 			//just check entry acl, ignore binder
+ 			try {
+ 				//check explicit users
+ 				checkAccess(user, entry, WfAcl.AccessType.delete);
+ 			} catch (AccessControlException ex) {
+ 				if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) { 		
+ 					deleteCheck(user, binder, (Entry)entry);
+ 				} else throw ex;
+ 			}
+ 			
+ 		} else {
+ 			//must have READ access to binder AND delete to the entry
+ 			if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) {
+ 				//optimzation: if pass delete binder check, don't need to do read binder check
+ 				try {
+ 					deleteCheck(user, binder, (Entry)entry);
+					return;
+ 				} catch (AccessControlException ex) {} //move on to next checks
+ 			}
+ 			//see if pass binder READ test
+ 			readCheck(user, binder, (Entry)entry);
+ 			//This basically AND's the binder and entry, since we already passed the binder
+ 			checkAccess(user, entry, WfAcl.AccessType.delete);
+  		}
+     }
      public static void overrideReserveEntryCheck(Entry entry) {
      	try {
      		getInstance().getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getUser(), entry.getParentBinder(), WorkAreaOperation.BINDER_ADMINISTRATION);
@@ -239,20 +274,34 @@ public class AccessUtils  {
       	throws AccessControlException {
       	User user = RequestContextHolder.getRequestContext().getUser();
         if (user.isSuper()) return;
-    	 try {
-       		//see if pass binder test
-       		modifyCheck(user, binder, (Entry)entry);
-    	    //see if binder default is enough
-       	    if (entry.isWorkAreaAccess(type)) return;
- 		} catch (OperationAccessControlException ex) {
-			//at this point we can stop if workflow cannot widen access
-			// because the set cannot get any bigger
-			// note: modify is defined per binder.
-    		if (!SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) throw ex;
-     	}
-    	 //see if user can transition
-		checkAccess(user, entry, type);
+  
+		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
+ 			//just check entry acl, ignore binder
+ 			try {
+ 				//check explicit users
+ 				checkAccess(user, entry, type);
+ 			} catch (AccessControlException ex) {
+ 				if (entry.isWorkAreaAccess(type)) { 		
+ 					modifyCheck(user, binder, (Entry)entry);
+ 				} else throw ex;
+ 			}
+ 			
+ 		} else {
+ 			//must have READ access to binder AND modify to the entry
+ 			if (entry.isWorkAreaAccess(type)) {
+ 				//optimzation: if pass modify binder check, don't need to do read binder check
+ 				try {
+					modifyCheck(user, binder, (Entry)entry);
+					return;
+ 				} catch (AccessControlException ex) {} //move on to next checks
+ 			}
+ 			//see if pass binder READ test
+ 			readCheck(user, binder, (Entry)entry);
+ 			//This basically AND's the binder and entry, since we already passed the binder
+ 			checkAccess(user, entry, type);
+  		}
      }
+     
      
   	public static boolean checkIfAllOperationsAllowed(Long functionId, WorkArea workArea) {
       	User user = RequestContextHolder.getRequestContext().getUser();

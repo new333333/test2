@@ -394,7 +394,7 @@ public class QueryBuilder {
 
 		
 		/*
-		 * if widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+		 * if !widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
 		 * 
 		 * else ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
 		 */
