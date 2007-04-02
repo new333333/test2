@@ -39,12 +39,13 @@ public class FilterHelper {
 	public final static String SearchText = "searchText";
 	public final static String SearchWorkflowId = "searchWorkflow";
 	public final static String SearchWorkflowStep ="searchWorkflowStep";
-	public final static String SearchJoiner = "searchJoiner";
+	public final static String SearchJoiner = "searchJoinerAnd";
 	public final static String SearchCommunityTags = "searchCommunityTags";
 	public final static String SearchPersonalTags = "searchPersonalTags";
 	public final static String SearchTextAndTags = "searchTextAndTags";
 	public final static String SearchTags = "searchTags";
 	public final static String SearchTagsOr = "searchTagsOr";
+	public final static String SearchAdditionalFilters = "additionalFilters";
 	public final static String TabTitle = "tabTitle";
 	
    	//Search filter document element names
@@ -65,6 +66,7 @@ public class FilterHelper {
    	public final static String FilterTypeCommunityTagSearch = "communityTag";
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntry = "entry";
+   	public final static String FilterTypeCreatorById = "creatorById";
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
@@ -394,7 +396,7 @@ public class FilterHelper {
     	    			addAuthorField(block, filterTerm.getText());
     	    		} else if (filterType.equals(FilterTypeTags)) {
     	    			addTagsField(block, filterTerm.getText());
-    	    		} else if (filterType.equals(FilterTypeEntry)) {	    			
+    	    		} else if (filterType.equals(FilterTypeEntry) || filterType.equals(FilterTypeCreatorById)) {	    			
     	    			parseAndAddEntryField(block, filterTerm);
     	    		} else if (filterType.equals(FilterTypeTopEntry)) {
     	    			addTopEntryField(block);
@@ -427,8 +429,6 @@ public class FilterHelper {
     		//System.out.println("AND IN OPTIONS: "+filter.asXML());
     	}
     	
-    	//System.out.println("BEFORE CONVERT: "+searchFilter.asXML());
-    	//System.out.println("AFTER CONVERT: "+qTree.asXML());
     	return qTree;
 	}
    	
