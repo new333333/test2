@@ -729,4 +729,19 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	UserEntityPK id = new UserEntityPK(userId, entityId);
         return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
 	}
+	public Map loadPrincipalsData(Collection ids, Long zoneId, boolean checkActive) {
+    	List<Principal> principles = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
+    	Map<Long,Principal> result = new HashMap();
+		//remove proxies
+		for (int i=0; i<principles.size(); ++i) {
+			Principal p = principles.get(i);
+			result.put(p.getId(), p);
+			if (!(p instanceof User) && !(p instanceof Group)) {
+				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+   				result.put(p.getId(), principal);
+            }
+        }
+		return result;
+	}
 }
