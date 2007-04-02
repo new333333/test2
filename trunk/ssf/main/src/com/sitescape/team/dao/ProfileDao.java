@@ -3,6 +3,7 @@ package com.sitescape.team.dao;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
@@ -89,6 +90,7 @@ public interface ProfileDao {
     public List loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);
     public List loadPrincipals(Collection ids, Long zoneId,  boolean checkActive);
+    public Map loadPrincipalsData(Collection ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
