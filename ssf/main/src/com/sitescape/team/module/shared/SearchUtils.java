@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
+import java.util.Set;
 
 import java.util.Calendar;
 import java.util.TimeZone;
@@ -22,9 +23,12 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.module.folder.index.IndexUtils;
 
@@ -215,6 +219,21 @@ public class SearchUtils {
     		}
     	}
   	}
- 
+    public static void extendPrincipalsInfo(List entries, ProfileDao profileDao) {
+		Set ids = EntityIndexUtils.getPrincipalsFromSearch(entries);
+		Map users = profileDao.loadPrincipalsData(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
+
+		// walk the entries, and stuff in the user object.
+		for (int i = 0; i < entries.size(); i++) {
+			HashMap entry = (HashMap)entries.get(i);
+			if (entry.get(getEntryPrincipalField()) != null) {
+				entry.put(WebKeys.PRINCIPAL, users.get(Long.parseLong((String)entry.get(getEntryPrincipalField()))));
+	        }        	
+		}		
+	}
   	
+	protected static String getEntryPrincipalField() {
+    	return EntityIndexUtils.CREATORID_FIELD;
+    }
+    
 }
