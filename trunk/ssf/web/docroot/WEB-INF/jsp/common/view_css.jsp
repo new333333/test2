@@ -234,6 +234,7 @@ if (!ss_js_files_loaded || ss_js_files_loaded == undefined || ss_js_files_loaded
 }
 var ss_js_files_loaded = 1;
 
+<c:if test="${empty ss_notAdapter}">
 <ssf:ifnotadapter>
 var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
@@ -251,6 +252,7 @@ var ss_baseFileUrl = '<ssf:url webPath="viewFile" folderId="ssBinderIdPlaceHolde
    	entryId="ssEntryIdPlaceHolder"></ssf:url>';
 var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
 </ssf:ifnotadapter>
+</c:if>
 
 </script>
 

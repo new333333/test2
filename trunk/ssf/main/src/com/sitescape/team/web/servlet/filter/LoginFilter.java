@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -51,9 +52,11 @@ public class LoginFilter  implements Filter {
 				// invoking the servlet. Instead simply redirect the user to 
 				// the portal login page.
 				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/portal_login.jsp");
-				request.setAttribute("ss_portalLoginUrl", "/c/portal/login");
-				request.setAttribute("ss_screens_to_login_screen", "1");
-				request.setAttribute("ss_screens_after_login_screen_to_logged_in", "2");
+				request.setAttribute("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
+				request.setAttribute("ss_screens_to_login_screen", 
+						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
+				request.setAttribute("ss_screens_after_login_screen_to_logged_in", 
+						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
 				dispatcher.forward(request, response);
 			}
 		}
