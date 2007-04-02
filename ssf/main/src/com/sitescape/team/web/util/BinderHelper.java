@@ -875,17 +875,18 @@ public class BinderHelper {
 	// contains all the attachments for that entry.
 	public static List filterEntryAttachmentResults(List entries) {
 
-		String docId = null;
 		for (int count = 0; count < entries.size(); count++) {
 			Map entry = (Map)entries.get(count);
 			String type = (String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD);
 			// if it's an entry, see if there's already an attachment in the list for it.
+			String docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
+			String entityType = (String)entry.get(EntityIndexUtils.ENTITY_FIELD);
 			if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ENTRY)) {
-				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
 				int i = 0;
 				for (i=0; i < count; i++) {
 					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
-					if (d.equalsIgnoreCase(docId)) {
+					String e = (String)((Map)entries.get(i)).get(EntityIndexUtils.ENTITY_FIELD);
+					if (d.equalsIgnoreCase(docId) && e.equalsIgnoreCase(entityType)) {
 						// if it's already in the list, then it's an attachment, 
 						// so insert ourselves in here, add the attachment to 
 						// the entry, and delete this attachment from the list.
@@ -906,11 +907,11 @@ public class BinderHelper {
 					entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
 				}
 			} else if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
-				docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
+
 				for (int i = 0; i < count; i++) {
-					String d = (String) ((Map) entries.get(i))
-							.get(EntityIndexUtils.DOCID_FIELD);
-					if (d.equalsIgnoreCase(docId)) {
+					String d = (String) ((Map) entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
+					String e = (String)((Map)entries.get(i)).get(EntityIndexUtils.ENTITY_FIELD);
+					if (d.equalsIgnoreCase(docId) && e.equalsIgnoreCase(entityType)) {
 						// if it's already in the list, then check if it's an
 						// entry. If it is an entry, then add this attachment to
 						// the entry, and delete this attachment from the list.
@@ -941,5 +942,15 @@ public class BinderHelper {
 			}
 		}
 		return entries;		
+	}
+	
+	public static void filterEntryAttachmentResults(Map results) {
+		List entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		filterEntryAttachmentResults(entries);
+		int newCountOfReturnedEntries = entries.size();
+		int newTotalCount = (Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)-((Integer)results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED) - newCountOfReturnedEntries);
+		
+		results.put(ObjectKeys.SEARCH_COUNT_TOTAL, newTotalCount);
+		results.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, newCountOfReturnedEntries);
 	}
 }
