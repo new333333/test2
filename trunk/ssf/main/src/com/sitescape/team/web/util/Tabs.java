@@ -10,6 +10,7 @@ import javax.portlet.PortletSession;
 
 import org.dom4j.Document;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
@@ -107,11 +108,11 @@ public class Tabs {
 		//Look for this tab
 		for (int i = 0; i < tabList.size(); i++) {
 			Map tab = (Map)tabList.get(i);
-			if ((tab.get(TYPE).equals(BINDER) || 
+			if ((tab.get(TYPE)!=null && (tab.get(TYPE).equals(BINDER) || 
 					tab.get(TYPE).equals(WORKSPACE) || 
 					tab.get(TYPE).equals(PROFILES)) && 
 					tab.containsKey(BINDER_ID) && 
-					((Long)tab.get(BINDER_ID)).equals(binder.getId())) {
+					((Long)tab.get(BINDER_ID)).equals(binder.getId()))) {
 				tabId = ((Integer)tab.get(TAB_ID)).intValue();
 				break;
 			}
@@ -411,6 +412,12 @@ public class Tabs {
 		tab.remove(BINDER_ID);
 		tab.remove(ENTRY_ID);
 
+		if (options.containsKey(ObjectKeys.SEARCH_USER_MAX_HITS)) tab.put(ObjectKeys.SEARCH_USER_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) tab.put(ObjectKeys.SEARCH_OFFSET, options.get(ObjectKeys.SEARCH_OFFSET));
+		if (options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) tab.put(ObjectKeys.SEARCH_USER_OFFSET, options.get(ObjectKeys.SEARCH_USER_OFFSET));
+		if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) tab.put(ObjectKeys.SEARCH_MAX_HITS, options.get(ObjectKeys.SEARCH_MAX_HITS));
+		if (options.containsKey(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE)) tab.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, options.get(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE));
+		
 		return ((Integer)tab.get(TAB_ID)).intValue();
 	}
 	
