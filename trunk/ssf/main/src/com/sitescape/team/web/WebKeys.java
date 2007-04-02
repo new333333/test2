@@ -312,6 +312,8 @@ public class WebKeys {
 	public static final String BLOG_REPLY="ssBlogReply";
 	public static final String IN_IFRAME_ADD_ENTRY="ssInIFrameAddEntry";
 	public static final String BLOG_REPLY_COUNT="ssBlogReplyCount"; 
+	public static final String CHANGE_LOGS="ss_changeLogs";
+	public static final String CHANGE_LOG_LIST="ss_changeLogList";
 	public static final String CLIPBOARD="ssClipboard";
 	public static final String CLIPBOARD_PRINCIPALS="ssClipboardPrincipals";
 	public static final String CLIPBOARD_PRINCIPALS_COUNT="ssClipboardPrincipalsCount";

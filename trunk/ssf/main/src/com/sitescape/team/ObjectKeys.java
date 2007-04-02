@@ -194,8 +194,8 @@ public interface ObjectKeys {
     public static final String XTAG_ATTRIBUTE_SET="attribute-set";
     public static final String XTAG_PROPERTY="property";
     public static final String XTAG_OPERATION="operation";
-    public static final String XTAG_MODIFIEDBY="modifedBy";
-    public static final String XTAG_MODIFIEDON="modifedOn";
+    public static final String XTAG_MODIFIEDBY="modifiedBy";
+    public static final String XTAG_MODIFIEDON="modifiedOn";
     
     
     public static final String XTAG_TYPE_STRING="string";

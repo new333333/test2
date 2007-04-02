@@ -17,6 +17,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.apache.lucene.search.SortField;
+import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -24,6 +25,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
@@ -942,6 +944,54 @@ public class BinderHelper {
 			}
 		}
 		return entries;		
+	}
+	
+	//Routine to build the beans for displaying entry versions
+	//  Each ChangeLog document is exploaded into a map of values
+	public static List BuildChangeLogBeans(List changeLogs) {
+		List changeList = new ArrayList();
+		if (changeLogs == null) return changeList;
+
+		for (int i = 0; i < changeLogs.size(); i++) {
+			ChangeLog log = (ChangeLog) changeLogs.get(i);
+			Document doc = log.getDocument();
+			Element root = doc.getRootElement();
+			Map changeMap = new HashMap();
+			changeList.add(changeMap);
+			
+			//Get name of rootElement (e.g., folderEntry) and build a map of its elements
+			Map rootMap = new HashMap();
+			changeMap.put(root.getName(), rootMap);
+			Map attributeMap = new HashMap();
+			rootMap.put("attributes", attributeMap);
+			Iterator itAttr = root.attributeIterator();
+			while (itAttr.hasNext()) {
+				Attribute attr = (Attribute) itAttr.next();
+				attributeMap.put(attr.getName(),attr.getValue());
+			}
+
+			Iterator itRoot = root.elementIterator();
+			while (itRoot.hasNext()) {
+				Element ele = (Element) itRoot.next();
+				Map eleMap = (Map) rootMap.get(ele.getName());
+				if (eleMap == null) {
+					eleMap = new HashMap();
+					rootMap.put(ele.getName(), eleMap);
+				}
+				//Add the attributes
+				String name = ele.attributeValue("name");
+				attributeMap = new HashMap();
+				eleMap.put("attributes", attributeMap);
+				itAttr = ele.attributeIterator();
+				while (itAttr.hasNext()) {
+					Attribute attr = (Attribute) itAttr.next();
+					attributeMap.put(attr.getName(), attr.getValue());
+				}
+				//Add the data
+				eleMap.put(name, ele.getData());
+			}
+		}
+		return changeList;
 	}
 	
 	public static void filterEntryAttachmentResults(Map results) {

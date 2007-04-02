@@ -19,19 +19,14 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-changes
+
 <table class="ss_style" cellpadding="10" width="100%"><tr><td>
-<c:forEach var="change" items="${changeLogs}">
-	<c:set var="rootElement" value="${change.document.rootElement}" />
-	<jsp:useBean id="rootElement" type="org.dom4j.Element" />
-	<%
-		String text = "";
-		Element description = (Element) rootElement.selectSingleNode("//folderEntry/attribute[@name='description']");
-		if (description != null) {
-			text = description.getText();
-		}
-	%>
-	<%= text %><br/>
+<c:forEach var="change" items="${ss_changeLogList}">
+  modifiedOn: ${change.folderEntry.attributes.modifedOn}<br/>
+  modifiedBy: ${change.folderEntry.attributes.modifedBy}<br/>
+  title: ${change.folderEntry.attribute.title}<br/>
+  description: ${change.folderEntry.attribute.description}<br/>
+  <br/>
 </c:forEach>
 </td></tr></table>
 
