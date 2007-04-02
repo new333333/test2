@@ -38,6 +38,7 @@ import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.EntryProcessor;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -283,7 +284,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	try {
     		Entry entry = (Entry)clazz.newInstance();
            	entry.setEntryDef(def);
-        	if (def != null) entry.setDefinitionType(new Integer(def.getType()));
+        	if (def != null) {
+        		entry.setDefinitionType(new Integer(def.getType()));
+  	        	String icon = DefinitionUtils.getPropertyValue(def.getDefinition().getRootElement(), "icon");
+   	        	if (Validator.isNotNull(icon)) entry.setIconName(icon);
+         	}
         	return entry;
     	} catch (Exception ex) {
     		return null;
@@ -865,27 +870,29 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			Map tags = indexEntries_loadTags(binder, batch);
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
-       				List entryTags = (List)tags.get(entry.getEntityIdentifier());
-       				// 	Create an index document from the entry object.
-       				org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, entryTags);
-      				docs.add(indexDoc);
-            		if (logger.isDebugEnabled())
-            			logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
-       		        //Create separate documents one for each attached file and index them.
-       				List atts = entry.getFileAttachments();
-       		        for (int j = 0; j < atts.size(); j++) {
-       		        	FileAttachment fa = (FileAttachment)atts.get(j);
-       		        	try {
-       		        		indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null, entryTags);
-      		        		// Register the index document for indexing.
-       		        		docs.add(indexDoc);
-      		        	} catch (Exception ex) {
-      		        		//log error but continue
-      		        		logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
-       		        	}
-       		        }
-      				getCoreDao().evict(entry);
+       				if (indexEntries_validate(binder, entry)) {
+       					List entryTags = (List)tags.get(entry.getEntityIdentifier());
+       					// 	Create an index document from the entry object.
+       					org.apache.lucene.document.Document indexDoc = buildIndexDocumentFromEntry(binder, entry, entryTags);
+       					docs.add(indexDoc);
+       					if (logger.isDebugEnabled())
+       						logger.debug("Indexing entry: " + entry.toString() + ": " + indexDoc.toString());
+       					//Create separate documents one for each attached file and index them.
+       					List atts = entry.getFileAttachments();
+       					for (int j = 0; j < atts.size(); j++) {
+       						FileAttachment fa = (FileAttachment)atts.get(j);
+       						try {
+       							indexDoc = buildIndexDocumentFromEntryFile(binder, entry, fa, null, entryTags);
+       							// Register the index document for indexing.
+       							docs.add(indexDoc);
+       						} catch (Exception ex) {
+       							//log error but continue
+       							logger.error("Error indexing file for entry " + entry.getId() + " attachment " + fa, ex);
+       						}
+       					}
       				indexEntries_postIndex(binder, entry);
+       				}
+       				getCoreDao().evict(entry);
        			}
        			IndexSynchronizationManager.addDocuments(docs);
        			IndexSynchronizationManager.applyChanges();
@@ -909,6 +916,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    }
  
    	protected abstract SFQuery indexEntries_getQuery(Binder binder);
+   	protected boolean indexEntries_validate(Binder binder, Entry entry) {
+   		return true;
+   	}
    	protected void indexEntries_postIndex(Binder binder, Entry entry) {
    	}
    	protected void indexEntries_load(Binder binder, List entries)  {
@@ -988,7 +998,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
            	//Forget any other data and just get the desired entry
        		queryTree = SearchUtils.getInitalSearchDocument(null,null);
-       		getBinderEntries_getSearchDocument(binder, entryTypes, null);
+       		getBinderEntries_getSearchDocument(binder, entryTypes, queryTree);
        		Element rootElement = queryTree.getRootElement();
        		if (rootElement != null) {
         		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
@@ -1007,7 +1017,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	getBinderEntries_getSearchDocument(binder, entryTypes, queryTree);
         	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
-       	//queryTree.asXML();
+       	//System.out.println(queryTree.asXML());
        	
        	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
