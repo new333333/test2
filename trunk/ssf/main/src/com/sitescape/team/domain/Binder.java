@@ -60,7 +60,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
 		 functionMembershipInherited=source.functionMembershipInherited;
-//		 inheritAclFromParent=source.inheritAclFromParent;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
 		 defaultPostingDef = source.defaultPostingDef;

@@ -24,7 +24,6 @@ import com.sitescape.team.security.AccessControlException;
 public interface EntryProcessor extends BinderProcessor {
  
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
-	public ArrayList getBinderEntries_entriesArray(Hits hits);
     
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
     	throws WriteFilesException;

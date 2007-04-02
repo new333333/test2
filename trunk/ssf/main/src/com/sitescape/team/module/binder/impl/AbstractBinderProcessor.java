@@ -8,12 +8,16 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -37,7 +41,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
-import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
@@ -49,13 +53,16 @@ import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.pipeline.Pipeline;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
+import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
@@ -72,7 +79,7 @@ import com.sitescape.util.Validator;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-    
+
    protected DefinitionModule definitionModule;
    private static final String TEXT_SUBDIR = "text",
    							   XML_EXT = ".xml";
@@ -454,6 +461,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void removeAttachments(Binder binder, DefinableEntity entity, 
     		Collection deleteAttachments, List<FileAttachment> filesToDeindex,
     		List<FileAttachment> filesToReindex) {
+    	if (deleteAttachments == null) return;
     	for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
     		Attachment a = (Attachment)iter.next();
     		//see if associated with a customAttribute
@@ -596,7 +604,92 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	indexTree(source, null);
 
     }
+    //********************************************************************************************************
+    public Map getBinders(Binder binder, Map options) {
+        //search engine will only return binder you have access to
+         //validate entry count
+    	//do actual search index query
+        Hits hits = getBinders_doSearch(binder, options);
+        //iterate through results
+        List childBinders = SearchUtils.getSearchEntries(hits);
 
+       	Map model = new HashMap();
+        model.put(ObjectKeys.BINDER, binder);      
+        model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
+        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        //Total number of results found
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        //Total number of results returned
+        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        return model;
+   }
+
+    protected int getBinders_maxEntries(int maxChildEntries) {
+        return maxChildEntries;
+    }
+     
+    protected Hits getBinders_doSearch(Binder binder, Map options) {
+    	int maxResults = 0;
+    	int searchOffset = 0;
+    	if (options != null) {
+    		if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+    			maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+        
+    		if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
+    	}
+    	maxResults = getBinders_maxEntries(maxResults); 
+        
+       	Hits hits = null;
+       	org.dom4j.Document queryTree = null;
+       	org.dom4j.Document searchFilter = null;
+       	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
+       		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+      	queryTree = SearchUtils.getInitalSearchDocument(searchFilter, options);
+      	getBinders_getSearchDocument(binder, queryTree);
+      	SearchUtils.getQueryFields(queryTree, options); 
+       	
+       	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	SearchObject so = qb.buildQuery(queryTree);
+    	
+    	//Set the sort order
+    	SortField[] fields = SearchUtils.getSortFields(options); 
+    	so.setSortBy(fields);
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+    	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
+    	
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        hits = luceneSession.search(soQuery, so.getSortBy(), searchOffset, maxResults);
+        }
+        finally {
+            luceneSession.close();
+        }
+    	
+        return hits;
+     
+    }
+    protected void getBinders_getSearchDocument(Binder binder, org.dom4j.Document qTree) {
+  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
+  		
+		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(binder.getId().toString());
+   	
+		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+    	
+    
+    }    
     
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
@@ -714,6 +807,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         
     	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder);
+    	//index parentBinder - used to locate sub-binders - attachments shouldn't need this
+        EntityIndexUtils.addParentBinder(indexDoc, binder);
 
     	// Add search document type
         BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER);
@@ -875,6 +970,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void fillInIndexDocWithCommonPartFromBinder(org.apache.lucene.document.Document indexDoc, 
     		Binder binder) {
     	EntityIndexUtils.addReadAccess(indexDoc, binder);
+
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
 
@@ -1009,5 +1105,28 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		getCoreDao().save(changes);
 		return changes;
 	}
+	/*************************************************************************************************/
 
+    protected Set getPrincipalIdsFromSearch(List<Map> pList) {
+    	return EntityIndexUtils.getPrincipalsFromSearch(pList);
+    }   
+
+    public Set getPrincipalIds(List<DefinableEntity> results) {
+    	Set ids = new HashSet();
+    	for (DefinableEntity entry: results) {
+            if (entry.getCreation() != null)
+                ids.add(entry.getCreation().getPrincipal().getId());
+            if (entry.getModification() != null)
+                ids.add(entry.getModification().getPrincipal().getId());
+    	}
+    	return ids;
+    }	     
+    public Set getPrincipalIds(DefinableEntity entity) {
+    	Set ids = new HashSet();
+    	if (entity.getCreation() != null)
+    		ids.add(entity.getCreation().getPrincipal().getId());
+        if (entity.getModification() != null)
+        	ids.add(entity.getModification().getPrincipal().getId());
+    	return ids;
+    }	     	  
 }

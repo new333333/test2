@@ -1,27 +1,17 @@
 package com.sitescape.team.module.binder.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
-import org.apache.lucene.document.DateTools;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -47,9 +37,7 @@ import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.EntryProcessor;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -58,22 +46,20 @@ import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchObject;
-import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.security.acl.AclContainer;
+import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
 /**
@@ -966,7 +952,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//do actual search index query
         Hits hits = getBinderEntries_doSearch(binder, entryTypes, options);
         //iterate through results
-        ArrayList childEntries = getBinderEntries_entriesArray(hits);
+        List childEntries = SearchUtils.getSearchEntries(hits);
+		Set ids = getPrincipalIdsFromSearch(childEntries);
+		List users = getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
+
+		// walk the entries, and stuff in the user object.
+		for (int i = 0; i < childEntries.size(); i++) {
+			HashMap child = (HashMap)childEntries.get(i);
+			if (child.get(getEntryPrincipalField()) != null) {
+				child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(getEntryPrincipalField()).toString()));
+	        }        	
+		}
+
        	Map model = new HashMap();
         model.put(ObjectKeys.BINDER, binder);      
         model.put(ObjectKeys.SEARCH_ENTRIES, childEntries);
@@ -977,86 +974,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
         return model;
    }
- 
-    public ArrayList getBinderEntries_entriesArray(Hits hits) {
-        //Iterate through the search results and build the entries array
-        ArrayList childEntries = new ArrayList(hits.length());
-        try {
-            int count=0;
-            Field fld;
- 	        while (count < hits.length()) {
-	            HashMap ent = new HashMap();
-	            Document doc = hits.doc(count);
-	            //enumerate thru all the returned fields, and add to the map object
-	            Enumeration flds = doc.fields();
-	            while (flds.hasMoreElements()) {
-	            	fld = (Field)flds.nextElement();
-	            	//TODO This hack needs to go.
-	            	if (isDateField(fld.name())) {
-	            		try {
-	            			ent.put(fld.name(),DateTools.stringToDate(fld.stringValue()));
-	            		} catch (ParseException e) {ent.put(fld.name(),new Date());
-	            		}
-	            	} else if (!ent.containsKey(fld.name())) {
-	            		ent.put(fld.name(), fld.stringValue());
-	            	} else {
-	            		Object obj = ent.get(fld.name());
-	            		SearchFieldResult val;
-	            		if (obj instanceof String) {
-	            			val = new SearchFieldResult();
-	            			//replace
-	            			ent.put(fld.name(), val);
-	            			val.addValue((String)obj);
-	            		} else {
-	            			val = (SearchFieldResult)obj;
-	            		}
-	            		val.addValue(fld.stringValue());
-	            	} 
-	            }
-	            childEntries.add(ent);
-	            ++count;
-	            
-	        }
-        } finally {
-        }
-        List users = loadEntryHistoryLuc(childEntries);
-        // walk the entries, and stuff in the user object.
-        for (int i = 0; i < childEntries.size(); i++) {
-        	HashMap child = (HashMap)childEntries.get(i);
-        	if (child.get(getEntryPrincipalField()) != null) {
-        		child.put(WebKeys.PRINCIPAL, getPrincipal(users,child.get(getEntryPrincipalField()).toString()));
-        	}        	
-        }
-        return childEntries;
-   }
- 
-    
-    private boolean isDateField(String fieldName) {
-    	
-    	if (fieldName == null)
-    		return false;
-    	
-    	if (fieldName.equals(EntityIndexUtils.CREATION_DATE_FIELD))
-    		return true;
-    	
-    	if (fieldName.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD))
-    		return true;
-    	
-    	if (fieldName.equals(IndexUtils.LASTACTIVITY_FIELD))
-    		return true;    	
 
-    	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_START_DATE))
-    		return true;
-
-    	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_END_DATE))
-    		return true;
-    	
-    	return false;
+    protected String getEntryPrincipalField() {
+    	return EntityIndexUtils.CREATORID_FIELD;
     }
     
-    protected abstract String getEntryPrincipalField();
-    
-
     protected int getBinderEntries_maxEntries(int maxChildEntries) {
         if (maxChildEntries == 0 || maxChildEntries == Integer.MAX_VALUE) maxChildEntries = DEFAULT_MAX_CHILD_ENTRIES;
         return maxChildEntries;
@@ -1065,105 +987,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected Hits getBinderEntries_doSearch(Binder binder, String [] entryTypes, 
     		Map options) {
     	int maxResults = 0;
-    	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
-    		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
-    	maxResults = getBinderEntries_maxEntries(maxResults); 
+       	int searchOffset = 0;
+        if (options != null) {
+        	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+        		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
         
-    	int searchOffset = 0;
     	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
-    		searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-        
-        org.dom4j.Document searchFilter = null;
-    	if (options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
-    		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
-
+    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
+        }
+    	maxResults = getBinderEntries_maxEntries(maxResults); 
        	Hits hits = null;
-       	// Build the query
-    	if (searchFilter == null) {
-    		//If there is no search filter, assume the caller wants everything
-    		searchFilter = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-        	rootElement.addElement(FilterHelper.FilterTerms);
-    		Element filterTerms = rootElement.addElement(FilterHelper.FilterTerms);
-    	}
-       	org.dom4j.Document queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, searchFilter);
-
-       	//See if there is a title field search request
-       	if (options.containsKey(ObjectKeys.SEARCH_TITLE)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.TITLE_FIELD);
-	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_TITLE));
-        		}
-        	}
-       	}
-
-       	//See if there is an end date
-       	if (options.containsKey(ObjectKeys.SEARCH_END_DATE)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element range = boolElement.addElement(QueryBuilder.RANGE_ELEMENT);
-        			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DAY_FIELD);
-        			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-        			Element start = range.addElement(QueryBuilder.RANGE_START);
-        	        Calendar cal = Calendar.getInstance();
-        	        cal.set(1970, 0, 1);
-        	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-        	        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-        	        String s = formatter.format(cal.getTime());
-        			start.addText((String) s);
-        			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
-        			finish.addText((String) options.get(ObjectKeys.SEARCH_END_DATE));
-        		}
-        	}
-       	}
-
-       	//See if there is a year/month
-       	if (options.containsKey(ObjectKeys.SEARCH_YEAR_MONTH)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
-	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_YEAR_MONTH));
-        		}
-        	}
-       	}
-       	//See if there is a tag
-       	if (options.containsKey(ObjectKeys.SEARCH_COMMUNITY_TAG)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
-	    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    	    	child.setText((String) options.get(ObjectKeys.SEARCH_COMMUNITY_TAG));
-        		}
-        	}
-       	}
-       	if (options.containsKey(ObjectKeys.SEARCH_PERSONAL_TAG)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (boolElement != null) {
-        			Element field = boolElement.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
-	    	    	Element child = field.addElement(QueryBuilder.TAG_ELEMENT);
-        			child.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, (String)options.get(ObjectKeys.SEARCH_PERSONAL_TAG));
-        		}
-        	}
-       	}
-       	if (options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
-           	//Forget all of the above and just get the desired entry
-       		queryTree = getBinderEntries_getSearchDocument(binder, entryTypes, null);
+       	org.dom4j.Document queryTree = null;
+       	if ((options != null) && options.containsKey(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN)) {
+           	//Forget any other data and just get the desired entry
+       		queryTree = SearchUtils.getInitalSearchDocument(null,null);
+       		getBinderEntries_getSearchDocument(binder, entryTypes, null);
        		Element rootElement = queryTree.getRootElement();
        		if (rootElement != null) {
         		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
@@ -1174,62 +1012,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    	    	child.setText((String) options.get(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN));
         		}
         	}
-       	}
-
-       	//See if there are event days (modification is also an event)
-       	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
-        	Element rootElement = queryTree.getRootElement();
-        	if (rootElement != null) {
-        		Element andBoolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-        		if (andBoolElement != null) {
-        			Element orEventOrMofidifactionBoolElement = andBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-        			
-	        		Element orBoolElement = orEventOrMofidifactionBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-	        		Iterator it = ((List)options.get(ObjectKeys.SEARCH_EVENT_DAYS)).iterator();
-	        		while (it.hasNext()) {
-	        			String eventDay = (String)it.next();
-		    			Element field = orBoolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
-		    	    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		    	    	child.setText(eventDay);
-	        		}
-	        			        		
-	        		Element orModificationDateBoolElement = orEventOrMofidifactionBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-	        		Element andStartAndEndModificationDate = orModificationDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
-	        			        		
-	               	//See if there is a modification start date
-	               	if (options.containsKey(ObjectKeys.SEARCH_MODIFICATION_DATE_START)) {
-            			Element range = andStartAndEndModificationDate.addElement(QueryBuilder.RANGE_ELEMENT);
-            			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
-            			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-            			Element start = range.addElement(QueryBuilder.RANGE_START);
-            			start.addText((String) options.get(ObjectKeys.SEARCH_MODIFICATION_DATE_START));
-            			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
-            	        Calendar cal = Calendar.getInstance();
-            	        cal.set(2999, 0, 1);
-            	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            	        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            	        String s = formatter.format(cal.getTime());
-            	        finish.addText((String) s);
-	               	}
-	               	
-	               	//See if there is a modification end date
-	               	if (options.containsKey(ObjectKeys.SEARCH_MODIFICATION_DATE_END)) {
-            			Element range = andStartAndEndModificationDate.addElement(QueryBuilder.RANGE_ELEMENT);
-            			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.MODIFICATION_DAY_FIELD);
-            			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-            			Element start = range.addElement(QueryBuilder.RANGE_START);
-            	        Calendar cal = Calendar.getInstance();
-            	        cal.set(1970, 0, 1);
-            	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-            	        formatter.setTimeZone(TimeZone.getTimeZone("GMT"));
-            	        String s = formatter.format(cal.getTime());
-            			start.addText((String) s);
-            			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
-            			finish.addText((String) options.get(ObjectKeys.SEARCH_MODIFICATION_DATE_END));
-	               	}  
-        		}
-        	}
+       	} else {
+       		org.dom4j.Document searchFilter = null;
+        	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) 
+        		searchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+      		queryTree = SearchUtils.getInitalSearchDocument(searchFilter, options);
+        	getBinderEntries_getSearchDocument(binder, entryTypes, queryTree);
+        	SearchUtils.getQueryFields(queryTree, options); 
        	}       	
        	//queryTree.asXML();
        	
@@ -1238,7 +1027,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
-    	SortField[] fields = BinderHelper.getBinderEntries_getSortFields(options); 
+    	SortField[] fields = SearchUtils.getSortFields(options); 
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
@@ -1259,33 +1048,37 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return hits;
      
     }
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
-    		String [] entryTypes, org.dom4j.Document searchFilter) {
-    	if (searchFilter == null) {
-    		searchFilter = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-        	rootElement.addElement(FilterHelper.FilterTerms);
-    	}
-    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
-    	Element rootElement = qTree.getRootElement();
-    	if (rootElement == null) return qTree;
-    	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-    	if (boolElement == null) return qTree;
-    	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
+    protected void getBinderEntries_getSearchDocument(Binder binder, 
+    		String [] entryTypes, org.dom4j.Document qTree) {
+  		Element boolElement = (Element) qTree.getRootElement().selectSingleNode(QueryBuilder.AND_ELEMENT);
      	
     	//Look only for binderId=binder and doctype = entry (not attachement)
-    	if (binder != null) {
-    		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	child.setText(binder.getId().toString());
+   		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+       	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       	child.setText(binder.getId().toString());
         	
-        	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+       	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+ 
+    	//Look only for entryType=entry
+    	if (entryTypes.length == 1) {
+    		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		child.setText(entryTypes[0]);
+    	} else {
+    		Element orField = boolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		for (int i=0; i<entryTypes.length; ++i) {
+    			field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
+    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    			child.setText(entryTypes[i]);
+    		}
     	}
-    	return qTree;
+    
     }
 
     //***********************************************************************************************************
@@ -1293,7 +1086,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//get the entry
     	Entry entry = entry_load(parentBinder, entryId);
         //Initialize users
-        loadEntryHistory(entry);
+    	getProfileDao().loadPrincipals(getPrincipalIds(entry), RequestContextHolder.getRequestContext().getZoneId(), false);
         return entry;
     }
           
@@ -1304,46 +1097,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * This is a performance optimization for display.
      */
     protected abstract Entry entry_load(Binder parentBinder, Long entryId);
-        
-    protected void loadEntryHistory(Entry entry) {
-        Set ids = new HashSet();
-        if (entry.getCreation() != null)
-            ids.add(entry.getCreation().getPrincipal().getId());
-        if (entry.getModification() != null)
-            ids.add(entry.getModification().getPrincipal().getId());
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-     } 
-
-    protected List loadEntryHistoryLuc(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        HashMap entry;
-        while (iter.hasNext()) {
-            entry = (HashMap)iter.next();
-            if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
-            	try {ids.add(new Long(entry.get(EntityIndexUtils.CREATORID_FIELD).toString()));
-        	    } catch (Exception ex) {}
-            if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
-        		} catch (Exception ex) {}
-        }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-     }   
-
-    protected void loadEntryHistory(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        Entry entry;
-        while (iter.hasNext()) {
-            entry = (Entry)iter.next();
-            if (entry.getCreation() != null)
-                ids.add(entry.getCreation().getPrincipal().getId());
-            if (entry.getModification() != null)
-                ids.add(entry.getModification().getPrincipal().getId());
-        }
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(),false);
-     }     
-    
+            
 
     public void indexEntry(Entry entry) {
     	indexEntry(entry.getParentBinder(), entry, null, null, false);
@@ -1475,10 +1229,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add ACL field. We only need to index ACLs for read access.
    		EntityIndexUtils.addReadAccess(indexDoc, binder, entry);
       		
-        //add parent binder - this isn't added for binders because it is used
-        //in delete terms for entries in a binder. 
-        //
-        EntityIndexUtils.addBinder(indexDoc, binder);
+        EntityIndexUtils.addParentBinder(indexDoc, entry);
 
         fillInIndexDocWithCommonPart(indexDoc, binder, entry);
     }

@@ -419,7 +419,7 @@ public class FilterHelper {
     		}
     	}
     	//Add in any additional fields from the options map
-    	if (options.containsKey(ObjectKeys.SEARCH_FILTER_AND)) {
+    	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_FILTER_AND)) {
     		Document filter = (Document) options.get(ObjectKeys.SEARCH_FILTER_AND);
     		Element filterRoot = filter.getRootElement();
     		qTreeAndElement.add((Element)filterRoot.clone());

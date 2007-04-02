@@ -42,10 +42,10 @@ import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
@@ -344,45 +344,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
 	}
- 	protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, 
-    		String [] entryTypes, org.dom4j.Document searchFilter) {
-    	  
-    	if (searchFilter == null) {
-    		//Build a null search filter
-    		searchFilter = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-        	rootElement.addElement(FilterHelper.FilterTerms);
-    	}
-    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
-    	Element rootElement = qTree.getRootElement();
-    	if (rootElement == null) return qTree;
-    	//Find the first "and" element and add to it
-    	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
-    	if (boolElement == null) {
-    		//If there isn't one, then create one.
-    		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-    	}
-    	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
  
-    	//Look only for entryType=entry
-       	Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-       	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-       	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-       	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
- 
-       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
-
-    	//Look only for binderId=binder
-    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
-    	return qTree;
- 
-    }
     //***********************************************************************************************************
           
     protected Entry entry_load(Binder parentBinder, Long entryId) {
@@ -563,65 +525,38 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    	
     }
     //***********************************************************************************************************
-    protected void loadEntryHistory(Entry entry) {
-    	FolderEntry fEntry = (FolderEntry)entry;
-        Set ids = new HashSet();
-        if (fEntry.getCreation() != null)
-            ids.add(fEntry.getCreation().getPrincipal().getId());
-        if (fEntry.getModification() != null)
-            ids.add(fEntry.getModification().getPrincipal().getId());
-        if (fEntry.getReservation() != null) 
-            ids.add(fEntry.getReservation().getPrincipal().getId());
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-     } 
+    public Set getPrincipalIds(DefinableEntity entity) {
+    	Set ids = super.getPrincipalIds(entity);
+    	if (entity instanceof FolderEntry) {
+    		FolderEntry fEntry = (FolderEntry)entity;
+    		if (fEntry.getReservation() != null) 
+    			ids.add(fEntry.getReservation().getPrincipal().getId());
+    	}
+    	return ids;
+    } 
 
-    protected void loadEntryHistory(HashMap entry) {
-        Set ids = new HashSet();
-        if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
-    	    try {ids.add(new Long((String)entry.get(EntityIndexUtils.CREATORID_FIELD)));
-    	    } catch (Exception ex) {};
-    	if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
-    		try {ids.add(new Long((String)entry.get(EntityIndexUtils.MODIFICATIONID_FIELD)));
-    		} catch (Exception ex) {};
-        if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
-    		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
-    	    } catch (Exception ex) {};
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(),false);
-     } 
-    protected List loadEntryHistoryLuc(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        HashMap entry;
-        while (iter.hasNext()) {
-            entry = (HashMap)iter.next();
-            if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
-        	    try {ids.add(new Long((String)entry.get(EntityIndexUtils.CREATORID_FIELD)));
-           	    } catch (Exception ex) {};
-           if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
-        		try {ids.add(new Long((String)entry.get(EntityIndexUtils.MODIFICATIONID_FIELD)));
-        		} catch (Exception ex) {};
-   	       if (entry.get(IndexUtils.RESERVEDBYID_FIELD) != null) 
-        		try {ids.add(new Long((String)entry.get(IndexUtils.RESERVEDBYID_FIELD)));
-	    	} catch (Exception ex) {};
-        }
-        return getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(),false);
-     }   
-
-    protected void loadEntryHistory(List pList) {
-        Set ids = new HashSet();
-        Iterator iter=pList.iterator();
-        FolderEntry entry;
-        while (iter.hasNext()) {
-            entry = (FolderEntry)iter.next();
-            if (entry.getCreation() != null)
-                ids.add(entry.getCreation().getPrincipal().getId());
-            if (entry.getModification() != null)
-                ids.add(entry.getModification().getPrincipal().getId());
-            if (entry.getReservation() != null) 
-                ids.add(entry.getReservation().getPrincipal().getId());
-        }
-        getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
+    public Set getPrincipalIds(List<DefinableEntity> results) {
+    	Set ids = super.getPrincipalIds(results);
+    	for (DefinableEntity entity: results) {
+        	if (entity instanceof FolderEntry) {
+        		FolderEntry fEntry = (FolderEntry)entity;
+        		if (fEntry.getReservation() != null) 
+        			ids.add(fEntry.getReservation().getPrincipal().getId());
+        	}
+       }
+    	return ids;
      }     
+
+    protected Set getPrincipalIdsFromSearch(HashMap entity) {
+    	List<Map> results = new ArrayList();
+    	results.add(entity);
+    	return getPrincipalIdsFromSearch(results);
+    } 
+    
+    protected Set getPrincipalIdsFromSearch(List<Map> searchResults) {
+       	return IndexUtils.getPrincipalsFromSearch(searchResults);
+    }   
+
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
@@ -647,7 +582,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     public Map getEntryTree(Folder parentFolder, FolderEntry entry) {
     	int entryLevel;
-    	List lineage;
+    	List<FolderEntry> lineage;
     	Map model = new HashMap();   	
         //load tree including parent chain and all replies and entry
         lineage = getFolderDao().loadEntryTree(entry);
@@ -662,17 +597,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         model.put(ObjectKeys.FOLDER_ENTRY_ANCESTORS, lineage.subList(0,entryLevel-1));
         model.put(ObjectKeys.FOLDER_ENTRY_DESCENDANTS, lineage.subList(entryLevel-1,lineage.size()));
         //Initialize users
-        List allE = new ArrayList(lineage);
+        List<DefinableEntity> allE = new ArrayList(lineage);
         allE.add(entry);
-        loadEntryHistory(allE);
+    	getProfileDao().loadPrincipals(getPrincipalIds(allE), RequestContextHolder.getRequestContext().getZoneId(), false);
         return model;
     }
          
     //***********************************************************************************************************   
 
-    protected String getEntryPrincipalField() {
-    	return EntityIndexUtils.CREATORID_FIELD;
-    }
 
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);

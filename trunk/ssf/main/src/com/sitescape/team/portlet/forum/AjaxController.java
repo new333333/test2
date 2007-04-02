@@ -836,15 +836,15 @@ public class AjaxController  extends SAbstractController {
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
 		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
+			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_places_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
-			List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
-			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(WebKeys.ENTRY_SEARCH_COUNT));
+			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_entries_search";
 		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS) || findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
 			

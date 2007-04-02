@@ -3,7 +3,6 @@ package com.sitescape.team.portlet.workspaceTree;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -11,7 +10,6 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -31,7 +29,6 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -43,7 +40,6 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
-import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley

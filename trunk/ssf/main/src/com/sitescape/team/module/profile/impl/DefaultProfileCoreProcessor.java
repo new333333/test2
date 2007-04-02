@@ -17,7 +17,6 @@ import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
@@ -27,19 +26,23 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.UserTitleChange;
+import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.ProfileCoreProcessor;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.CollectionUtil;
@@ -106,13 +109,29 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
    		Map entryData, Map<FileAttachment,String> fileRenamesTo, Map ctx) {
 	   super.modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	   if (entry instanceof User) {
-		   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
 		   //need to schedule a reindex of entries with my title
-		   if (!entry.getTitle().equals(originalTitle)) {
-			   scheduleTitleUpdate((User)entry);
-		   }
+		   checkUserTitle((User)entry, ctx);
 	   }
 		   
+   }
+   protected void checkUserTitle(User user, Map ctx) {
+	   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
+	   if (!user.getTitle().equals(originalTitle)) {
+		   //need to update user workspace
+		   if (user.getWorkspaceId() != null) {
+			   Workspace ws = (Workspace)getCoreDao().load(Workspace.class, user.getWorkspaceId());
+			   if (ws != null) {
+				   BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(ws, ws.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+				   Map updates = new HashMap();
+				   updates.put(ObjectKeys.FIELD_ENTITY_TITLE, user.getTitle());
+				   try {
+					   processor.modifyBinder(ws, new MapInputData(updates), null, null);
+				   } catch (WriteFilesException wf) {};
+			   }
+		   }
+		   scheduleTitleUpdate(user);
+	   }
+	   
    }
    protected void scheduleTitleUpdate(User user) {
 	   List entryIds = getCoreDao().loadObjects("select id from com.sitescape.team.domain.FolderEntry where creation.principal=" +
@@ -245,56 +264,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		return result;
 	}
 
-    //***********************************************************************************************************
-    protected org.dom4j.Document getBinderEntries_getSearchDocument(Binder binder, String [] entryTypes, org.dom4j.Document searchFilter) {
-  
-    	if (searchFilter == null) {
-    		//Build a null search filter
-    		searchFilter = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
-        	rootElement.addElement(FilterHelper.FilterTerms);
-    	}
-    	org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
-    	Element rootElement = qTree.getRootElement();
-    	Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
-    	if (boolElement == null) return qTree;
-    	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-    	Element field,child;
-    	//Look only for entryType=entry
-    	if (entryTypes.length == 1) {
-    		field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    		child.setText(entryTypes[0]);
-    	} else {
-    		Element orField = boolElement.addElement(QueryBuilder.OR_ELEMENT);
-    		for (int i=0; i<entryTypes.length; ++i) {
-    			field = orField.addElement(QueryBuilder.FIELD_ELEMENT);
-    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    			child.setText(entryTypes[i]);
-    		}
-
-    	}
-      	
-    	//Look only for binderId=binder and type = entry
-       	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
-       	
-    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
-   	
-    	return qTree;
- 
-    }
-
-
-    //***********************************************************************************************************
-           
+    //***********************************************************************************************************           
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
         return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), false);        
     }
@@ -382,11 +352,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
   		if (entry.isTop() && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, 
   				(String)ctx.get(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE), entry.getNormalTitle());		
   		if (entry instanceof User) {
-  			String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
   			//need to schedule a reindex of entries with my title
-  			if (!entry.getTitle().equals(originalTitle)) {
-  				scheduleTitleUpdate((User)entry);
-  			}
+  			checkUserTitle((User)entry, ctx);
   		}
   		return false;		
 	}

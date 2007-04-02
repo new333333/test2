@@ -36,9 +36,11 @@
 	</definition>
 	
 	<definition name="profileEntryViewDefinition" definitionType="7" caption="__profile_entry_view" canBeDeleted="false">
-		<operations>
+		<operations/>
+<!-- only one 
 			<operation name="addDefinition" item="profileEntryViewType" caption="__add_a_new_profile_entry_view" />
 		</operations>
+-->	
 	</definition>
 
 	<definition name="groupEntryViewDefinition" definitionType="11" caption="__group_entry_view" canBeDeleted="false">
@@ -1041,7 +1043,8 @@
 	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
 		multipleAllowed="false" >		
 		<options optionCaption="__standard_entry_options">
-			<option name="title" initial="true" />
+		<!-- no title modifications on user workspaces -->
+			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />

@@ -61,7 +61,7 @@ public interface CoreDao {
      * @param zoneId
      * @return
      * @throws DataAccessException
-     * @throws NoFolderByTheIdException
+     * @throws NoBinderByTheIdException
      */
     public Binder loadBinder(Long binderId, Long zoneId);
 	public List loadCommunityTagsByEntity(EntityIdentifier entityId);

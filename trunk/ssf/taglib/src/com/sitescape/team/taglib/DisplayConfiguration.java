@@ -100,6 +100,7 @@ public class DisplayConfiguration extends TagSupport {
 									if (propertyConfigType.equals("selectbox")) {
 										//get all items with same name
 										List<Element> selProperties = nextItem.selectNodes("properties/property[@name='"+propertyName+"']");
+										if (selProperties == null) continue;
 										//There might be multiple values so bulid a list
 										List propertyValues = new ArrayList();
 										for (Element selItem:selProperties) {
@@ -111,6 +112,7 @@ public class DisplayConfiguration extends TagSupport {
 										propertyValuesMap.put("property_"+propertyName, "");
 									} else {
 										Element selItem = (Element)nextItem.selectSingleNode("properties/property[@name='"+propertyName+"']");
+										if (selItem == null) selItem=property;
 										if (propertyConfigType.equals("textarea")) {
 											propertyValue = selItem.getText();
 										} else {										
