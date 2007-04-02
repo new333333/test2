@@ -1352,7 +1352,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
-	<item name="attachFiles" caption="__attach_files" type="data"
+	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
 			multipleAllowed="false" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
