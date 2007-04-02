@@ -40,6 +40,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
@@ -1494,6 +1495,7 @@ public class ListFolderController extends  SAbstractController {
 	}
 
 	protected void getBlogEntries(Folder folder, Map folderEntries,  Map model, RenderRequest request, RenderResponse response) {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map entries = new TreeMap();
 		model.put(WebKeys.BLOG_ENTRIES, entries);
 		List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
@@ -1503,6 +1505,7 @@ public class ListFolderController extends  SAbstractController {
 		while (entryIterator.hasNext()) {
 			FolderEntry entry  = (FolderEntry) entryIterator.next();
 			Map entryMap = new HashMap();
+			Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
 			entries.put(entry.getId().toString(), entryMap);
 			entryMap.put("entry", entry);
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), entryMap, "//item[@name='entryBlogView']") == false) {
@@ -1513,6 +1516,7 @@ public class ListFolderController extends  SAbstractController {
 			entryMap.put(WebKeys.REPLY_BLOG_URL, "");
 			Definition def = entry.getEntryDef();
 			if (getFolderModule().testAccess(entry, "addReply")) {
+				accessControlEntryMap.put("addReply", new Boolean(true));
 				Document defDoc = def.getDefinition();
 				List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
 				if (!replyStyles.isEmpty()) {
@@ -1529,6 +1533,35 @@ public class ListFolderController extends  SAbstractController {
 					}
 				}
 			}
+			//See if the user can modify this entry
+			boolean reserveAccessCheck = false;
+			boolean isUserBinderAdministrator = false;
+			boolean isEntryReserved = false;
+			boolean isLockedByAndLoginUserSame = false;
+
+			if (getFolderModule().testAccess(entry, "reserveEntry")) {
+				reserveAccessCheck = true;
+			}
+			if (getFolderModule().testAccess(entry, "overrideReserveEntry")) {
+				isUserBinderAdministrator = true;
+			}
+			
+			HistoryStamp historyStamp = entry.getReservation();
+			if (historyStamp != null) isEntryReserved = true;
+
+			if (isEntryReserved) {
+				Principal lockedByUser = historyStamp.getPrincipal();
+				if (lockedByUser.getId().equals(user.getId())) {
+					isLockedByAndLoginUserSame = true;
+				}
+			}
+			if (getFolderModule().testAccess(entry, "modifyEntry")) {
+				if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+				} else {
+					accessControlEntryMap.put("modifyEntry", new Boolean(true));
+				}
+			}
+			
 
 			entryMap.put(WebKeys.COMMUNITY_TAGS, publicTags.get(entry.getId()));
 			entryMap.put(WebKeys.PERSONAL_TAGS, privateTags.get(entry.getId()));
