@@ -24,6 +24,7 @@ import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
@@ -48,6 +49,7 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -583,6 +585,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    }
 	       
 	    entries = SearchUtils.getSearchEntries(hits);
+	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
+               
         Map retMap = new HashMap();
         retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
         retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
