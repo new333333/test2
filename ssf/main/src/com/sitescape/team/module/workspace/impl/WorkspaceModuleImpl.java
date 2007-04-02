@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -26,6 +28,7 @@ import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -33,9 +36,14 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.LuceneSession;
+import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 
 /**
@@ -215,13 +223,17 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		List binders = top.getBinders();
 		List searchBinders = null;
 		if (binders.size() > 10) {  //what is the best number to avoid search??
+			//do search
 			BinderProcessor processor = loadProcessor(top);
 			Map searchResults = processor.getBinders(top, null);
 			searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-		}
-		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
-			//get folders
-			if (searchBinders != null) {
+			int results = (Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+			if (results > 10) { //just to get started
+				buildVirtualTree(current, top, domTreeHelper);
+//keep going for now //return;
+			}
+			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
+				//get folders
 				for (int i=0; i<searchBinders.size(); ++i) {
 					Map search = (Map)searchBinders.get(i);
 					String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
@@ -233,26 +245,17 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 						} catch (Exception ex) {continue;}					
 					}				
 				}
-			} else {
-				Set<Folder> folders = top.getFolders();
-				for (Folder f: folders) {
-					if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
-		 				continue;
-					 ws.add(f);
-				}
-			}
-			for (Iterator iter=ws.iterator(); iter.hasNext();) {
- 				Folder f = (Folder)iter.next();
- 	      		if (f.isDeleted()) continue;
- 				// 	Check if the user has "read" access to the folder.
- 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
- 				if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
- 					current.remove(next);
- 			}
-        }
-    	ws.clear();
-		//get workspaces
-		if (searchBinders != null) {
+				for (Iterator iter=ws.iterator(); iter.hasNext();) {
+	 				Folder f = (Folder)iter.next();
+	 	      		if (f.isDeleted()) continue;
+	 				// 	Check if the user has "read" access to the folder.
+	 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
+	 				if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
+	 					current.remove(next);
+	 			}
+	        }
+	    	ws.clear();
+			//get workspaces
 			for (int i=0; i<searchBinders.size(); ++i) {
 				Map search = (Map)searchBinders.get(i);
 				String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
@@ -264,25 +267,84 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 					} catch (Exception ex) {continue;}					
 				}				
 			}
-		} else {
-			Set<Workspace> workspaces = top.getWorkspaces();
-			for (Workspace w: workspaces) {
+	    	
+	      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
+	     		Workspace w = (Workspace)iter.next();
+	      		if (w.isDeleted()) continue;
+	      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+	   			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
+	       	}    
+      	} else {
+			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
+				//get folders sorted
+				ws.addAll(top.getFolders());
+				for (Iterator iter=ws.iterator(); iter.hasNext();) {
+	 				Folder f = (Folder)iter.next();
+	 	      		if (f.isDeleted()) continue;
+	 				// 	Check if the user has "read" access to the folder.
+					if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+		 				continue;
+	 				next = current.addElement(DomTreeBuilder.NODE_CHILD);
+	 				if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
+	 					current.remove(next);
+				}
+			} 
+			ws.clear();
+			//handle sorted workspaces
+			ws.addAll(top.getWorkspaces());
+	      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
+	     		Workspace w = (Workspace)iter.next();
+	      		if (w.isDeleted()) continue;
 	     		// Check if the user has "read" access to the workspace.
 				if(!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES))
 	 				continue;
-				 ws.add(w);
+	      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+	   			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
 			}
-			
+				
 		}
-    	
-      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
-     		Workspace w = (Workspace)iter.next();
-      		if (w.isDeleted()) continue;
-      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-   			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
-       	}    	
+	
     }
+    protected void buildVirtualTree(Element current, Workspace top, DomTreeBuilder domTreeHelper) {
+    	int skipLength=10;
+
+    	
+    	Document queryTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = queryTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		
+		Element field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(top.getId().toString());
+   	
+		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+      	//Create the Lucene query
+    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	SearchObject so = qb.buildQuery(queryTree);
+    	
+    	//Set the sort order
+   		SortField[] fields = new SortField[1];
+   		String sortBy = EntityIndexUtils.SORT_TITLE_FIELD;   		
+    	
+    	fields[0] = new SortField(sortBy,  SortField.AUTO, true);
+    	so.setSortBy(fields);
+    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice   	
  
+    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+        
+        try {
+	        List results = luceneSession.getSortTitles(soQuery, "", "", skipLength);
+        }
+        finally {
+            luceneSession.close();
+        }
+
+    	
+    }
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
