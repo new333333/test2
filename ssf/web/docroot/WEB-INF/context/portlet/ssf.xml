@@ -22,6 +22,7 @@
 	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
 	<bean id="searchController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.SearchController" />
 	<bean id="advancedSearchController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.AdvancedSearchController" />	
+	<bean id="entryVersionController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.EntryVersionController" />
 
 	<bean id="profileModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.profile.ModifyEntryController" />
 	<bean id="folderModifyEntryController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.ModifyEntryController" />
@@ -85,6 +86,7 @@
 						<entry key="send_email"><ref bean="sendEmailController"/></entry>
 						<entry key="add_meeting"><ref bean="meetingController"/></entry>					
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
+						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">
