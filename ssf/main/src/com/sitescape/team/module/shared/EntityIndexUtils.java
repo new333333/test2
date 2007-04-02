@@ -1,4 +1,4 @@
-package com.sitescape.team.module.shared;
+	package com.sitescape.team.module.shared;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -6,12 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.Document;
@@ -37,7 +37,6 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.TagUtil;
 
 /**
@@ -88,7 +87,8 @@ public class EntityIndexUtils {
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
-    public static final String BINDER_ID_FIELD = "_binderId";
+    public static final String BINDER_ID_FIELD = "_binderId"; // used on binder contents (not sub-binders)
+    public static final String BINDERS_PARENT_ID_FIELD = "_binderParentId";  //used only on binders
     public static final String FILENAME_FIELD = "_fileName";
     public static final String FILE_EXT_FIELD = "_fileExt";
     public static final String FILE_TYPE_FIELD = "_fileType";
@@ -281,12 +281,10 @@ public class EntityIndexUtils {
     
     
 	private static Field getEntryEventDaysField(Set dates) {
-		TimeZone gmt = TimeZone.getTimeZone("GMT");
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();
 		while (datesIt.hasNext()) {
-			Calendar date = CalendarHelper.convertToTimeZone((Calendar)datesIt.next(), gmt);
-			sb.append(DateTools.dateToString(date.getTime(), DateTools.Resolution.DAY));
+			sb.append(DateTools.dateToString(((Calendar)datesIt.next()).getTime(), DateTools.Resolution.DAY));
 			sb.append(" ");
 		}
 
@@ -297,13 +295,10 @@ public class EntityIndexUtils {
 	}
 	
 	private static Field getRecurrenceDatesField(Event event) {
-		TimeZone gmt = TimeZone.getTimeZone("GMT");
-		
 		StringBuilder sb = new StringBuilder();
 		Iterator it = event.getAllRecurrenceDates().iterator();
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
-			eventDates = new Calendar[] {CalendarHelper.convertToTimeZone(eventDates[0], gmt), CalendarHelper.convertToTimeZone(eventDates[1], gmt)};
 			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.SECOND));
 			sb.append(" ");
 			sb.append(DateTools.dateToString(eventDates[1].getTime(), DateTools.Resolution.SECOND));
@@ -362,13 +357,17 @@ public class EntityIndexUtils {
         doc.add(docIdField);
     }
 
-    public static void addBinder(Document doc, Binder binder) {
+    public static void addParentBinder(Document doc, DefinableEntity entry) {
     	Field binderIdField;
-    	if (binder != null)
-    		binderIdField = new Field(BINDER_ID_FIELD, binder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	else
+    	if (entry instanceof Binder) {
+    		if (entry.getParentBinder() == null) return;
+       		binderIdField = new Field(BINDERS_PARENT_ID_FIELD, entry.getParentBinder().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+       	    		
+    	} else if (entry != null) {
+    		binderIdField = new Field(BINDER_ID_FIELD, entry.getParentBinder().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	} else {
     		binderIdField = new Field(BINDER_ID_FIELD, "", Field.Store.YES, Field.Index.UN_TOKENIZED);
-    		
+    	}
        	doc.add(binderIdField);
     }   
     
@@ -405,24 +404,24 @@ public class EntityIndexUtils {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
     		//get principals given read access 
          	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
-		// I'm not sure if putting together a long string value is more
-		// efficient than processing multiple short strings... We will see.
-		StringBuffer pIds = new StringBuffer();
-		for (Iterator i = ids.iterator(); i.hasNext();) {
-			pIds.append(i.next()).append(" ");
-		}
+         	// I'm not sure if putting together a long string value is more
+         	// 	efficient than processing multiple short strings... We will see.
+         	StringBuffer pIds = new StringBuffer();
+         	for (Iterator i = ids.iterator(); i.hasNext();) {
+         		pIds.append(i.next()).append(" ");
+         	}
        		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
        			//add all => folder check
        			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
        		}
-		// Add the Entry_ACL field
-		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-		doc.add(entryAclField);
-    		//add binder access
+       		// Add the Entry_ACL field
+       		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
+       		doc.add(entryAclField);
+       		//add binder access
     		doc.add(getBinderAccess(binder));
 
     	} else addReadAccess(doc, binder);
-			}
+	}
 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
     	List pubTags = new ArrayList<Tag>();
@@ -549,4 +548,18 @@ public class EntityIndexUtils {
     		parentBinder = ((Binder)parentBinder).getParentBinder();
     	}
     }
+
+    public static Set getPrincipalsFromSearch(List<Map> searchResults) {
+    	Set ids = new HashSet();
+    	for (Map entry: searchResults) {
+    		if (entry.get(EntityIndexUtils.CREATORID_FIELD) != null)
+    			try {ids.add(new Long(entry.get(EntityIndexUtils.CREATORID_FIELD).toString()));
+    			} catch (Exception ex) {}
+    		if (entry.get(EntityIndexUtils.MODIFICATIONID_FIELD) != null) 
+    			try {ids.add(new Long(entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString()));
+    			} catch (Exception ex) {}
+    	}
+    	return ids;
+    }
+
 }

@@ -775,10 +775,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
         	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 		}		
 		Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
-		List entries = (List)retMap.get(WebKeys.FOLDER_ENTRIES);
+		List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 		entries = BinderHelper.filterEntryAttachmentResults(entries);
 		searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
-		Integer searchCount = (Integer)retMap.get(WebKeys.ENTRY_SEARCH_COUNT);
+		Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
 		searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
 		//Also get the folder titles
 		Set ids = new HashSet();

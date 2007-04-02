@@ -73,6 +73,13 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
     /**
+     * Search for child binders - 1 level
+     * @param binder
+     * @param options
+     * @return
+     */
+    public Map getBinders(Binder binder, Map options);
+    /**
      * Get the list of community tags on the binder
      * @param binderId
      * @return

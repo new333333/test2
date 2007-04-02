@@ -19,11 +19,13 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.binder.BinderComparator;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -204,37 +206,79 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  
     protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
     	Element next; 
-    	Folder f;
-    	Workspace w;
     	
  		//callback to setup tree
     	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_WORKSPACE, top, current);
  		if (levels == 0) return;
     	--levels;
 		TreeSet ws = new TreeSet(c);
+		List binders = top.getBinders();
+		List searchBinders = null;
+		if (binders.size() > 10) {  //what is the best number to avoid search??
+			BinderProcessor processor = loadProcessor(top);
+			Map searchResults = processor.getBinders(top, null);
+			searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		}
 		if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
- 			//	order result
- 			ws.addAll(top.getFolders());
- 			for (Iterator iter=ws.iterator(); iter.hasNext();) {
- 				f = (Folder)iter.next();
+			//get folders
+			if (searchBinders != null) {
+				for (int i=0; i<searchBinders.size(); ++i) {
+					Map search = (Map)searchBinders.get(i);
+					String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
+					if (EntityType.folder.name().equals(entityType)) {
+						String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
+						try {
+							Long id = Long.valueOf(sId);
+							ws.add(getCoreDao().load(Folder.class, id));
+						} catch (Exception ex) {continue;}					
+					}				
+				}
+			} else {
+				Set<Folder> folders = top.getFolders();
+				for (Folder f: folders) {
+					if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
+		 				continue;
+					 ws.add(f);
+				}
+			}
+			for (Iterator iter=ws.iterator(); iter.hasNext();) {
+ 				Folder f = (Folder)iter.next();
  	      		if (f.isDeleted()) continue;
  				// 	Check if the user has "read" access to the folder.
- 				if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
- 					continue;
  				next = current.addElement(DomTreeBuilder.NODE_CHILD);
  				if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, f, next) == null) 
  					current.remove(next);
  			}
         }
     	ws.clear();
-    	ws.addAll(top.getWorkspaces());
-     	for (Iterator iter=ws.iterator(); iter.hasNext();) {
-     		w = (Workspace)iter.next();
+		//get workspaces
+		if (searchBinders != null) {
+			for (int i=0; i<searchBinders.size(); ++i) {
+				Map search = (Map)searchBinders.get(i);
+				String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
+				if (!EntityType.folder.name().equals(entityType)) {
+					String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
+					try {
+						Long id = Long.valueOf(sId);
+						ws.add(getCoreDao().load(Folder.class, id));
+					} catch (Exception ex) {continue;}					
+				}				
+			}
+		} else {
+			Set<Workspace> workspaces = top.getWorkspaces();
+			for (Workspace w: workspaces) {
+	     		// Check if the user has "read" access to the workspace.
+				if(!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES))
+	 				continue;
+				 ws.add(w);
+			}
+			
+		}
+    	
+      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
+     		Workspace w = (Workspace)iter.next();
       		if (w.isDeleted()) continue;
-      		// Check if the user has "read" access to the folder.
-            if(!getAccessControlManager().testOperation(w, WorkAreaOperation.READ_ENTRIES))
-            	continue;
-     		next = current.addElement(DomTreeBuilder.NODE_CHILD);
+      		next = current.addElement(DomTreeBuilder.NODE_CHILD);
    			buildWorkspaceDomTree(next, w, c, domTreeHelper, levels);
        	}    	
     }

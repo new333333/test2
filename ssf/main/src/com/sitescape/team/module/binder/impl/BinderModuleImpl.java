@@ -3,7 +3,6 @@ package com.sitescape.team.module.binder.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -49,23 +48,21 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderProcessor;
-import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
+import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.WorkArea;
-import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
@@ -188,6 +185,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		// Check if the user has "read" access to the binder.
 		checkAccess(binder, "getBinder"); 
         return binder;        
+	}
+	// Use search engine
+	public Map getBinders(Binder binder, Map options) {
+		//assume have access to binder cause have a reference
+		BinderProcessor processor = loadBinderProcessor(binder);
+		return processor.getBinders(binder, options);
 	}
     public boolean hasBinders(Binder binder) {
     	List binders = binder.getBinders();
@@ -539,70 +542,52 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (s != null) getCoreDao().delete(s);
     }
 	public Map executeSearchQuery(Document searchQuery) {
-		Map options = new HashMap();
-		return executeSearchQuery(searchQuery, options);
+		return executeSearchQuery(searchQuery, null);
 	}
 	public Map executeSearchQuery(Document searchQuery, Map options) {
         List entries = new ArrayList();
         Hits hits = new Hits(0);
        
-        if (searchQuery != null) {
-        	Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchQuery, options);
-        	Element rootElement = qTree.getRootElement();
-        	if (rootElement != null) {
-	        	//Find the first "and" element and add to it
-	        	Element boolElement = (Element) rootElement.selectSingleNode(QueryBuilder.AND_ELEMENT);
-	        	if (boolElement == null) {
-	        		//If there isn't one, then create one.
-	        		boolElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
-	        	}
-	        	//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
-
-	        	//Create the Lucene query
-		    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
-		    	SearchObject so = qb.buildQuery(qTree);
+       	Document qTree = SearchUtils.getInitalSearchDocument(searchQuery, options);
+ 
+       	//Create the Lucene query
+	   	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+	   	SearchObject so = qb.buildQuery(qTree);
 		    	
-		    	//Set the sort order
-		    	SortField[] fields = BinderHelper.getBinderEntries_getSortFields(options); 
-		    	so.setSortBy(fields);
+	   	//Set the sort order
+	   	SortField[] fields = SearchUtils.getSortFields(options); 
+	   	so.setSortBy(fields);
 		    	
-		    	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
+	   	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
 		    	
-		    	if(logger.isDebugEnabled()) {
-		    		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
-		    		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
-		    	}
+	   	if(logger.isDebugEnabled()) {
+	   		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
+	   		logger.debug("Query is in executeSearchQuery: " + soQuery.toString());
+	   	}
 		    	
-		    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-		    	int maxResults = 10;
-		    	int offset = 0;
-		    	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
-		    		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
-		    	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
-		    		offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
-		        try {
-			        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
-		        }
-		        catch(Exception e) {
-		        	System.out.println("Exception:" + e);
-		        }
-		        finally {
-		            luceneSession.close();
-		        }
-        	}
-        } else {
-			// TODO: temporary, remove later
-        	// System.out.println("SEARCHQUERY IS NULL");
-        }
-		EntryProcessor processor = 
-			(EntryProcessor) getProcessorManager().getProcessor("com.sitescape.team.domain.Folder", 
-						EntryProcessor.PROCESSOR_KEY);
-        entries = (List) processor.getBinderEntries_entriesArray(hits);
+	   	int maxResults = 10;
+	   	int offset = 0;
+	   	if (options != null) {
+	   		if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+	   			maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+	   		if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+	   			offset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);
+	   	}
+	   	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+	   	try {
+	        hits = luceneSession.search(soQuery,so.getSortBy(),offset,maxResults);
+	   	} catch(Exception e) {
+	   		System.out.println("Exception:" + e);
+	   	} finally {
+	   		luceneSession.close();
+	    }
+	       
+	    entries = SearchUtils.getSearchEntries(hits);
         Map retMap = new HashMap();
-        retMap.put(WebKeys.FOLDER_ENTRIES,entries);
-        retMap.put(WebKeys.ENTRY_SEARCH_COUNT, new Integer(hits.getTotalHits()));
-        retMap.put(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
-        
+        retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
+        retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        retMap.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+ 
     	return retMap; 
 	}	
 	

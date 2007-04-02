@@ -867,7 +867,7 @@ public class ListFolderController extends  SAbstractController {
         	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
     	}
 		Map entriesMap = getBinderModule().executeSearchQuery(searchFilter, options2);
-		List entries = (List) entriesMap.get(WebKeys.FOLDER_ENTRIES);
+		List entries = (List) entriesMap.get(ObjectKeys.SEARCH_ENTRIES);
 		LinkedHashMap monthHits = new LinkedHashMap();
 		Map monthTitles = new HashMap();
 		Map monthUrls = new HashMap();

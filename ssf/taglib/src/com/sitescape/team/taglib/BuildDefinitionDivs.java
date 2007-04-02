@@ -341,7 +341,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
 			this.divNames.put("operations_"+rootElementId, "1");
-			sb.append("<table cellpadding=\"0\" cellspacing=\"0\"><tbody>\n");
 
 			//Add the list of operations
 			Element operations = rootConfigElement.element("operations");
@@ -379,8 +378,12 @@ public class BuildDefinitionDivs extends TagSupport {
 					}
 				 **/
 				
-			}
+			} 
+			
 			Iterator itOperations = operations.elementIterator("operation");
+			
+			if (!itOperations.hasNext()) return;  //empty is legal and different then none at all
+			sb.append("<table cellpadding=\"0\" cellspacing=\"0\"><tbody>\n");
 			while (itOperations.hasNext()) {
 				sb.append("<tr><td>\n");
 				operationElement = (Element) itOperations.next();

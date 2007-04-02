@@ -332,7 +332,7 @@ public class SearchController extends AbstractBinderController {
 			//Do the search and store the search results in the bean
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			//peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
-			entries = (List) entryMap.get(WebKeys.FOLDER_ENTRIES);
+			entries = (List) entryMap.get(ObjectKeys.SEARCH_ENTRIES);
 			entries = BinderHelper.filterEntryAttachmentResults(entries);
 			//people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
 			
@@ -371,8 +371,8 @@ public class SearchController extends AbstractBinderController {
 			newEntries = new ArrayList();
 		}
 		
-		Integer entrySearchTotalCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_COUNT);
-		Integer entrySearchReturnedCount = (Integer)entryMap.get(WebKeys.ENTRY_SEARCH_RECORDS_RETURNED);
+		Integer entrySearchTotalCount = (Integer)entryMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		Integer entrySearchReturnedCount = (Integer)entryMap.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		Integer peopleSearchTotalCount = (Integer)peopleMap.get(WebKeys.PEOPLE_RESULTCOUNT);
 		
 		model.put(WebKeys.FOLDER_ENTRIES, newEntries);

@@ -38,7 +38,7 @@
 
   <xsd:complexType name="operationsType">
     <xsd:sequence>
-      <xsd:element name="operation" type="operationType"  minOccurs="1" maxOccurs="unbounded"/>
+      <xsd:element name="operation" type="operationType"  minOccurs="0" maxOccurs="unbounded"/>
    </xsd:sequence>
   </xsd:complexType>
 
