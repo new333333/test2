@@ -2470,7 +2470,7 @@ function ss_toggle_dashboard_hidden_controls(prefix) {
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
-function ss_showHideDashboardComponent(obj, componentId, divId, idStr) {
+function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace) {
 	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj)
 	var url = ss_dashboardAjaxUrl;
@@ -2515,6 +2515,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr) {
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
+	url += "\&namespace="+namespace;
 	url += "\&" + idStr;
 	url += "\&rn=" + ss_dbrn++;
 	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, divId);
@@ -2532,7 +2533,7 @@ function ss_showComponentCallback(s, divId) {
 }
 function ss_hideComponentCallback(s, divId) {
 }
-function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr) {
+function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace) {
 	var formObj = ss_getContainingForm(obj)
 	var confirmText = "";
 	if (formObj._scope.value == "local") {
@@ -2546,7 +2547,7 @@ function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr) {
 	}
 	var confirmText2 = ss_dashboardConfirmDelete;
 	if (!confirm(confirmText + "\n" + confirmText2)) return false;
-	ss_showHideDashboardComponent(obj, componentId, divId, idStr)
+	ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace)
 	if (divId2 && document.getElementById(divId2)) {
 		ss_hideDiv(divId2)
 	}

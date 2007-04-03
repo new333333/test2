@@ -1265,7 +1265,9 @@ public class AjaxController  extends SAbstractController {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		String componentId = op2;
+		model.put(WebKeys.NAMESPACE, namespace);
 
 		if (op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 			if (!componentId.equals("")) {
