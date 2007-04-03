@@ -68,13 +68,13 @@ if (displayStyle == null || displayStyle.equals("")) {
 			<ul class="ss_title_bar_icons">
 			  <c:if test="${ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}');return false;"
 				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/hide.gif" 
 				  alt="<ssf:nlt tag="button.hide"/>" /></a></li>
 			  </c:if>
 			  <c:if test="${!ss_dashboard_visible}">
 				<li><a href="#"
-				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}');return false;"
+				  onClick="ss_showHideDashboardComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_dashboard_component_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}');return false;"
 				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/show.gif" 
 				  alt="<ssf:nlt tag="button.show"/>" /></a></li>
 			  </c:if>
@@ -93,7 +93,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  ><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
 				    alt="<ssf:nlt tag="button.modify"/>" /></a></li>
 				<li><a href="#"
-				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}'); return false;"
+				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}'); return false;"
 				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete-component.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
 			</ul>
