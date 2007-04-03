@@ -52,13 +52,20 @@ renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight
 <script type="text/javascript">
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInPopupWindow() {
+function ss_showForumEntryInPopupWindow(definitionType) {
+	var strAddWindowOpenParams = "";
+	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
+		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
+		strAddWindowOpenParams = ",toolbar,menubar";
+	}
+
     ss_debug('popup width = ' + ss_viewEntryPopupWidth)
     ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
 	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
 	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
-    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
+	
+    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
     return false;
 }
 </script>
@@ -129,8 +136,14 @@ function ss_loadBinder(obj,id, entityType) {
 	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the binder
 		ss_linkMenu.showingMenu = 0;
+		
+		alert("ss_loadBinder: false");
+		
 		return false;
 	} else {
+	
+		alert("ss_loadBinder: true");
+	
 		return true;
 	}
 }

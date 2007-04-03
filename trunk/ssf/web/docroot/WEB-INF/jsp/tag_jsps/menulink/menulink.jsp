@@ -31,10 +31,14 @@ String namespace = ParamUtil.get(request, "namespace", "");
 String entryCallbackRoutine = ParamUtil.get(request, "entryCallbackRoutine", "");
 String url = ParamUtil.get(request, "url", "");
 String isDashboard = ParamUtil.get(request, "isDashboard", "no");
+String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 %>
-
 <a class="ss_title_menu" href="<%= url %>" 
-onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
+<% if (useBinderFunction.equals("no")) {  %>
+	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
+<% } else { %>
+	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
+<% } %>
 onMouseOver="<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 

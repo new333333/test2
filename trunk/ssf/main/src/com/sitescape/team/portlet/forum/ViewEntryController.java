@@ -181,6 +181,10 @@ public class ViewEntryController extends  SAbstractController {
 		buildEntryToolbar(request, response, model, fe, userProperties);
 
 		//Set up the tabs
+		//What do the newTab values mean?
+		//newTab == 1 means if the Tab already exists use it, if not create another one
+		//newTab == 2 means create a new Tab always
+		//newTab == 3 If the entry is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.  
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
@@ -188,6 +192,8 @@ public class ViewEntryController extends  SAbstractController {
 			tabs.setCurrentTab(tabs.findTab(fe));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(fe));
+		}  else if (newTab.equals("3")) {
+			tabs.setCurrentTab(tabs.findTab(fe, new HashMap(), tabs.getCurrentTab()));
 		} else if (tabId != null) {
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), fe));
 		} else {

@@ -477,10 +477,13 @@ public class ListFolderController extends  SAbstractController {
 		//What do the newTab values mean?
 		//newTab == 1 means if the Tab already exists use it, if not create another one
 		//newTab == 2 means create a new Tab always
+		//newTab == 3 If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
 		if (newTab.equals("1")) {
 			tabs.setCurrentTab(tabs.findTab(binder, true));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(binder));
+		} else if (newTab.equals("3")) {
+			tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
 		} else if (tabId != null) {
 			//Do not set the page number to zero
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));

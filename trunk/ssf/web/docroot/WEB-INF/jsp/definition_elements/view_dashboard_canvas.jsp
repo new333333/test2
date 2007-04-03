@@ -30,7 +30,7 @@ var ss_saveEntryWidthUrl = "<ssf:url
 	</ssf:url>"
 
 var ss_forumRefreshUrl = "<html:rootPath/>js/forum/refresh.html";
-var ss_entryWindowWidth = ${ss_entryWindowWidth};
+var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 var ss_entryBackgroundColor = "${ss_style_background_color}";
 
 
