@@ -254,6 +254,13 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
+	String strUseBinderMethod = "yes";
+	String strEntityType = (String) entry1.get("_entityType");
+	if (strEntityType == null) strEntityType = "";
+	if ( strEntityType.equals("folderEntry") || strEntityType.equals("reply") ) {
+		strUseBinderMethod = "no";
+	}
+
 	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
@@ -268,16 +275,6 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	<table class="ss_searchviewDashboardContainer" cellspacing="0" cellpadding="0" width="100%" border="0" align="center">
   	<tr>
 		<td valign="top" class="ss_searchviewDashboardContainer">
-		  <c:if test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'reply'}">
-		    <a href="<ssf:url     
-		      adapter="<%= useAdaptor2 %>" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._binderId}" 
-		      action="view_folder_entry" 
-		      entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    			onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
-		  </c:if>
-		  
 		  <c:if test="${entry1._entityType == 'user'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.users" />"/>
@@ -285,17 +282,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>icons/user_profile.png" alt="<ssf:nlt tag="general.users" />"/>
 	    	</c:if>
-
-		    <a href="<ssf:url 
-		      adapter="false" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._binderId}" 
-		      action="view_ws_listing" 
-		      entryId="<%= entry1.get("_docId").toString() %>" 
-		      actionUrl="true" />" 
-				onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}'); return false;" >
-		  </c:if>
-		  
+	      </c:if>
+	    	
 		  <c:if test="${entry1._entityType == 'profiles'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.profiles" />"/>
@@ -303,16 +291,8 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>icons/profiles.gif" alt="<ssf:nlt tag="general.profiles" />"/>
 	    	</c:if>
-		    <a href="<ssf:url     
-		      portletName="ss_forum" 
-		      binderId="${entry1._docId}" 
-		      action="view_profile_listing" 
-		      actionUrl="true">
-			  	<ssf:param name="newTab" value="1"/>
-			  </ssf:url>" 
-				onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}'); return false;" >
-		  </c:if>
-		  
+	      </c:if>
+			
 		  <c:if test="${entry1._entityType == 'folder'}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.folder" />"/>
@@ -320,38 +300,17 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>icons/folder.gif" alt="<ssf:nlt tag="general.type.folder" />"/>
 	    	</c:if>
-		  
-		    <a href="<ssf:url     
-		      adapter="false" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._docId}" 
-		      action="view_folder_listing"
-		      actionUrl="true" >
-			  <ssf:param name="binderId" value="${entry1._docId}"/>
-			  <ssf:param name="newTab" value="1"/>
-			  </ssf:url>" 
-			  	onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
-		  </c:if>
-		  
+	      </c:if>
+			
 		  <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType != 12}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
-	    	</c:if>
-		    <a href="<ssf:url 
-		      adapter="false" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._docId}" 
-		      action="view_ws_listing"
-		      actionUrl="true" >
-			  <ssf:param name="binderId" value="${entry1._docId}"/>
-			  <ssf:param name="newTab" value="1"/>
-			  </ssf:url>" 
-		    	onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
+	    	</c:if>			
 		  </c:if>
-		  
+			
 		  <c:if test="${entry1._entityType == 'workspace' && entry1._definitionType == 12}">
 	    	<c:if test="${!empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>${ssBinderData[entry1._docId].iconName}" alt="<ssf:nlt tag="general.type.workspace" />"/>
@@ -359,50 +318,79 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 	    	<c:if test="${empty ssBinderData[entry1._docId].iconName}">
 	    		<img border="0" src="<html:imagesPath/>icons/workspace.gif" alt="<ssf:nlt tag="general.type.workspace" />"/>
 	    	</c:if>
-		    <a href="<ssf:url     
-		      adapter="false" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._docId}" 
-		      action="view_ws_listing"
-		      actionUrl="true" >
-			  <ssf:param name="binderId" value="${entry1._docId}"/>
-			  <ssf:param name="newTab" value="1"/>
-			  </ssf:url>" 
-		    	onClick="return ss_loadBinder(this, '${entry1._docId}', '${entry1._entityType}');" 
-		  </c:if>
-		  
-		  <c:if test="${entry1._entityType == 'group'}">
-		    <a href="<ssf:url     
-		      adapter="false" 
-		      portletName="ss_forum" 
-		      folderId="${entry1._binderId}" 
-		      entryId="${entry1._docId}" 
-		      action="view_group"
-		      actionUrl="true" />" 
-		      onClick="//ss_loadGroup(this, '${entry1._docId}');return false;">
-		  </c:if>
+	      </c:if>
+	      
+			<ssf:menuLink 
+				displayDiv="false" entryId="${entry1._docId}" 
+				folderId="${entry1._binderId}" binderId="${entry1._binderId}" 
+				entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
+		    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+				namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+				isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>">
+				
+				<ssf:param name="url" useBody="true">
+				  	<c:choose>
+					  	<c:when test="${entry1._entityType == 'folderEntry' || entry1._entityType == 'reply'}">
+							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry1._binderId}" 
+      						action="view_folder_entry" entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />
+					    </c:when>
+					    
+					    <c:when test="${entry1._entityType == 'user'}">
+							<ssf:url adapter="false" portletName="ss_forum" folderId="${entry1._docId}" action="view_ws_listing" actionUrl="true">
+								<ssf:param name="binderId" value="${entry1._binderId}"/>
+								<ssf:param name="entryId" value="${entry1._docId}"/>
+								<ssf:param name="newTab" value="1"/>
+							</ssf:url>
+					    </c:when>
+					    
+					    <c:when test="${entry1._entityType == 'profiles'}">
+							<ssf:url portletName="ss_forum" binderId="${entry1._docId}" action="view_profile_listing" actionUrl="true">
+			  					<ssf:param name="newTab" value="1"/>
+			  				</ssf:url>
+					    </c:when>
 
-		  <c:if test="${entry1._entityType != 'user' && entry1._entityType != 'profiles'}">
-		  
-			    onMouseOver="ss_linkMenu.showButton(this, 'menuimg_${entry1._docId}_${renderResponse.namespace}');"
-			    onMouseOut="ss_linkMenu.hideButton(this, 'menuimg_${entry1._docId}_${renderResponse.namespace}');">
-		    
-			    <img border="0" class="ss_title_menu" id="menuimg_${entry1._docId}_${renderResponse.namespace}" name="menuimg_${entry1._docId}_${renderResponse.namespace}"
-	    		onClick="ss_linkMenu.showMenu(this, '${entry1._docId}', '${entry1._binderId}', '${entry1._entityType}');"
-	    		src="<html:imagesPath/>pics/downarrow_off.gif"/>
+					    <c:when test="${entry1._entityType == 'folder'}">
+							<ssf:url adapter="false" portletName="ss_forum" folderId="${entry1._docId}" 
+							action="view_folder_listing" actionUrl="true">
+			  					<ssf:param name="binderId" value="${entry1._docId}"/>
+			  					<ssf:param name="newTab" value="1"/>
+			  				</ssf:url>
+					    </c:when>
 
-		  </c:if>
-			  
-			    <c:if test="${empty entry1.title}">
-			    	<span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle"/>)</i></span>
-			    </c:if>
-		    	<span class="ss_entryTitle ss_underline"><c:out value="${entry1.title}"/></span></a>
+					    <c:when test="${entry1._entityType == 'workspace' && entry1._definitionType != 12}">
+							<ssf:url adapter="false" portletName="ss_forum" folderId="${entry1._docId}" action="view_ws_listing" actionUrl="true">
+								<ssf:param name="binderId" value="${entry1._docId}"/>
+								<ssf:param name="newTab" value="1"/>
+							</ssf:url>
+					    </c:when>
+
+					    <c:when test="${entry1._entityType == 'workspace' && entry1._definitionType == 12}">
+							<ssf:url adapter="false" portletName="ss_forum" folderId="${entry1._docId}" action="view_ws_listing" actionUrl="true" >
+			  					<ssf:param name="binderId" value="${entry1._docId}"/>
+			  					<ssf:param name="newTab" value="1"/>
+			  				</ssf:url>					    
+					    </c:when>
+
+
+					    <c:when test="${entry1._entityType == 'group'}">
+					    	<ssf:url adapter="false" portletName="ss_forum" folderId="${entry1._binderId}" entryId="${entry1._docId}" 
+		      					action="view_group" actionUrl="true" />
+					    </c:when>
+				 	</c:choose>
+				</ssf:param>
+				    <c:if test="${empty entry1.title}">
+				    	(<ssf:nlt tag="entry.noTitle"/>)
+				    </c:if>
+			    	<c:out value="${entry1.title}"/>
+			</ssf:menuLink>
+
 			<c:if test="${entry1._entryHasMetaHit}">
 			  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasFoundInTheMetaData"/>]</span>
 			</c:if>
 			<c:if test="${empty entry1._entryHasMetaHit || !entry1._entryHasMetaHit}">
 			  <span class="ss_fineprint">[<ssf:nlt tag="search.textWasNotFoundInTheMetaData"/>]</span>
 			</c:if>
+			
 		</td>
 	</tr>
 	
@@ -510,18 +498,10 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 </c:forEach>
 
 
-<div id="ss_tmd" class="ss_link_menu">
-<ul class="ss_dropdownmenu">
-<li><a href="#" onClick="ss_linkMenu.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li>
-<li><a href="#" onClick="ss_linkMenu.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li>
-</ul>
-</div>
-<script type="text/javascript">
-function ss_initLinkMenu() {
-	ss_linkMenu.menuDiv = "ss_tmd";
-	ss_linkMenu.binderUrl = ss_placeholderBinderUrl;
-	ss_linkMenu.entryUrl = ss_placeholderEntryUrl;
-}
-ss_createOnLoadObj('ss_initLinkMenu', ss_initLinkMenu);
-</script>
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
 
+<script type="text/javascript">
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+</script>

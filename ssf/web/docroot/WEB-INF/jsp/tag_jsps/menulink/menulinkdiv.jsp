@@ -12,10 +12,10 @@ String namespace = ParamUtil.get(request, "namespace", "");
 	<ssf:nlt tag="linkMenu.showFile"/></a></li></ul>
 <ul id="ss_folderMenuShowEntryLink_<%= namespace %>" class="ss_title_menu"><li><a href="#" onClick="<%= linkMenuObj %>.showEntry(); return false;">
 	<ssf:nlt tag="linkMenu.showEntry"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="<%= linkMenuObj %>.currentTab(); return false;"><ssf:nlt tag="linkMenu.currentTab"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="<%= linkMenuObj %>.newTab(); return false;"><ssf:nlt tag="linkMenu.newTab"/></a></li></ul>
-<ul class="ss_title_menu"><li><a href="#" 
-  onClick="<%= linkMenuObj %>.newWindow(); return false;"><ssf:nlt tag="linkMenu.newWindow"/></a></li></ul>
+<ul class="ss_title_menu"><li><a href="#" onClick="<%= linkMenuObj %>.currentTab(); return false;">
+	<ssf:nlt tag="linkMenu.currentTab"/></a></li></ul>
+<ul class="ss_title_menu"><li><a href="#" onClick="<%= linkMenuObj %>.newTab(); return false;">
+	<ssf:nlt tag="linkMenu.newTab"/></a></li></ul>
+<ul id="ss_folderMenuShowNewWindow_<%= namespace %>" class="ss_title_menu"><li><a href="#" onClick="<%= linkMenuObj %>.newWindow(); return false;">
+	<ssf:nlt tag="linkMenu.newWindow"/></a></li></ul>
 </div>

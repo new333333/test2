@@ -2593,8 +2593,18 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
+function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
+	var linkMenuObj = eval(linkMenu+"");
+	
+	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the binder
+		linkMenuObj.showingMenu = 0;
+		return false;
+	}
+	self.location.href = obj.href;
+}
 
+function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
 	var linkMenuObj = eval(linkMenu+"");
 	
 	if (ss_displayStyle == "accessible") {
@@ -2671,7 +2681,9 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 	linkMenuObj.menuDiv = menuDivId;
 	linkMenuObj.binderUrl = binderUrl;
 	linkMenuObj.entryUrl = entryUrl;
+	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + namespace;
 	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
+	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + namespace;
 	linkMenuObj.isDashboardLink = isDashboard;
 }
 
@@ -3361,6 +3373,7 @@ function ss_linkMenuObj() {
 	this.lastShownButton;       
 	this.menuLinkShowEntry;
 	this.menuLinkShowFile;
+	this.menuLinkShowNewWindow;
 	this.isDashboardLink;
 	
 	this.type_folderEntry = 'folderEntry';
@@ -3387,7 +3400,12 @@ function ss_linkMenuObj() {
 	this.showMenu = function(obj, id, binderId, definitionType) {
 		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', definition = '+definitionType)
 		if (binderId != null) this.binderId = binderId;
+		
 		if (definitionType != null) this.definitionType = definitionType;
+		
+		
+		//alert("id: "+ id + ", binderId: " + binderId);
+		
 		if (this.showingMenu) {
 			ss_hideDiv(this.menuDiv)
 			this.showingMenu = 0;
@@ -3396,6 +3414,7 @@ function ss_linkMenuObj() {
 		this.currentId = id;
 		this.currentBinderId = this.binderId;
 		this.currentDefinitionType = this.definitionType;
+		
 		if (this.definitionType == this.type_folder || this.definitionType == this.type_workspace) {
 			this.currentBinderId = id;
 		}
@@ -3411,15 +3430,16 @@ function ss_linkMenuObj() {
 			menuObj.style.top = y + "px";
 			menuObj.style.left = x + "px";
 			menuObj.style.zIndex = ssMenuZ;
+			
 			if (this.menuLinkShowEntry != null) {
 				var menuLinkObj = document.getElementById(this.menuLinkShowEntry);
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
-					if (this.currentDefinitionType == this.type_folderEntry || 
-					        this.currentDefinitionType == this.type_profileFolder) 
+					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) 
 						menuLinkObj.style.display = 'block';
 				}
 			}
+			
 			if (this.menuLinkShowFile != null) {
 				var menuLinkObj = document.getElementById(this.menuLinkShowFile);
 				if (menuLinkObj != null) {
@@ -3428,6 +3448,16 @@ function ss_linkMenuObj() {
 						menuLinkObj.style.display = 'block';
 				}
 			}
+
+			if (this.menuLinkShowNewWindow != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowNewWindow);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'none';
+					if (this.currentDefinitionType == this.type_folderEntry) 
+						menuLinkObj.style.display = 'block';
+				}
+			}
+			
 			ss_ShowHideDivXY(this.menuDiv, x, y)
 			ss_HideDivOnSecondClick(this.menuDiv)
 		}
@@ -3457,7 +3487,10 @@ function ss_linkMenuObj() {
 	this.currentTab = function() {
 		ss_debug('current tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
-		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
+		//url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
+		//Hemanth: New Code 3 has been introduced for opening in the current tab.
+		//This is used for overcoming the search tab check
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "3");
 		self.location.href = url;
 	}
 	
@@ -3470,7 +3503,7 @@ function ss_linkMenuObj() {
 
 	this.newWindow = function() {
 		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		ss_showForumEntryInPopupWindow();
+		ss_showForumEntryInPopupWindow(this.currentDefinitionType);
 		return false;
 	}
 	
@@ -3497,17 +3530,24 @@ function ss_linkMenuObj() {
 	
 	this.buildBaseUrl = function() {
 		var url;
-		if (this.currentDefinitionType == this.type_folderEntry || 
-		        this.currentDefinitionType == this.type_profileFolder) {
+		if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
 			url = this.entryUrl;
 		} else if (this.currentDefinitionType == this.type_folder) {
 			url = this.binderUrl;
 		} else if (this.currentDefinitionType == this.type_workspace) {
-			url = this.binderUrl
+			url = this.binderUrl;
+		} else if (this.currentDefinitionType == this.type_profileEntry) {
+			url = this.entryUrl;
 		}
+		
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
-		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+		
+		if (this.currentDefinitionType == this.type_profileEntry) {
+			url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
+		} else {
+			url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
+		}
 		
 		ss_debug('buildBaseUrl - '+ url);
 		return url;

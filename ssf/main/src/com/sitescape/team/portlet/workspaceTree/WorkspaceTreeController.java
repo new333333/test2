@@ -140,6 +140,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 			tabs.setCurrentTab(tabs.findTab(binder));
 		} else if (newTab.equals("2")) {
 			tabs.setCurrentTab(tabs.addTab(binder));
+		}  else if (newTab.equals("3")) {
+			tabs.setCurrentTab(tabs.findTab(binder, new HashMap(), true, tabs.getCurrentTab()));
 		} else if (tabId != null) {
 			tabs.setCurrentTab(tabs.setTab(tabId.intValue(), binder));
 		} else {

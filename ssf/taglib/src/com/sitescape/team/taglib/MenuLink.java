@@ -35,6 +35,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String namespace = "";
 	private String entryCallbackRoutine = "";
 	private String isDashboard = "";
+	private String useBinderFunction = "";
 	
 	private Map _params;
     
@@ -80,6 +81,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("namespace", new String[] {this.namespace});
 				_params.put("entryCallbackRoutine", new String[] {this.entryCallbackRoutine});
 				_params.put("isDashboard", new String[] {this.isDashboard});
+				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -94,6 +96,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("linkMenuObj", new String[] {this.linkMenuObj});
 				_params.put("namespace", new String[] {this.namespace});
 				_params.put("isDashboard", new String[] {this.isDashboard});
+				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				
 				ServletRequest req = null;
 				req = new DynamicServletRequest(httpReq, _params);
@@ -122,6 +125,8 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			linkMenuObj = "";
 			namespace = "";
 			entryCallbackRoutine = "";
+			isDashboard = "";
+			useBinderFunction = "";
 			if (_params != null) {
 				_params.clear();
 			}
@@ -209,5 +214,9 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setIsDashboard(String isDashboard) {
 	    this.isDashboard = isDashboard;
-	}	
+	}
+
+	public void setUseBinderFunction(String useBinderFunction) {
+	    this.useBinderFunction = useBinderFunction;
+	}
 }
