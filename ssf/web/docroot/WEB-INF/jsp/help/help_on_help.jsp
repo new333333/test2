@@ -22,4 +22,5 @@
 <div align="center">
 <a class="ss_linkButton ss_smallprint" href="#" onClick="ss_hideDiv('ss_help_on_help'); return false;"><ssf:nlt tag="button.close"/></a>
 </div>
+<br />
 </div>
