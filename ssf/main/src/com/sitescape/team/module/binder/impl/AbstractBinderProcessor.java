@@ -653,6 +653,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       	queryTree = SearchUtils.getInitalSearchDocument(searchFilter, options);
       	getBinders_getSearchDocument(binder, queryTree);
       	SearchUtils.getQueryFields(queryTree, options); 
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
+    	}
        	
        	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
@@ -664,7 +667,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	
     	if(logger.isDebugEnabled()) {
-    		logger.debug("Query is: " + queryTree.asXML());
     		logger.debug("Query is: " + soQuery.toString());
     	}
     	
