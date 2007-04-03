@@ -19,6 +19,9 @@ public class CalendarHelper {
 		if (calendar == null) {
 			return null;
 		}
+		if (newTimeZone == null) { 
+			newTimeZone = TimeZone.getTimeZone("GMT");
+		}
 		Calendar result = new GregorianCalendar(newTimeZone);
 		result.setTimeInMillis(calendar.getTimeInMillis());
 		return result;
