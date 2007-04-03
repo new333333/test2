@@ -21,6 +21,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.LcsAlgorithm;
+import com.sitescape.util.StringDiffUtil;
 
 
 public class EntryVersionController extends  SAbstractController {
@@ -66,8 +67,8 @@ public class EntryVersionController extends  SAbstractController {
 				Map attributesMap = (Map) entityTypeMap.get("attributes");
 				if (attributesMap.get("logVersion").equals(item1)) {
 					Map attributeMap = (Map) entityTypeMap.get("attribute");
-					title1 = (String) attributeMap.get("title");
-					description1 = (String) attributeMap.get("description");
+					title1 = ((String)attributeMap.get("title")).trim();
+					description1 = ((String)attributeMap.get("description")).trim();
 				}
 				if (attributesMap.get("logVersion").equals(item2)) {
 					Map attributeMap = (Map) entityTypeMap.get("attribute");
@@ -75,16 +76,16 @@ public class EntryVersionController extends  SAbstractController {
 					description2 = ((String)attributeMap.get("description")).trim();
 				}
 			}
-			LcsAlgorithm titleDiff = new LcsAlgorithm(title1, title2);
-			LcsAlgorithm descriptionDiff = new LcsAlgorithm(description1, description2);
+			StringDiffUtil titleDiff = new StringDiffUtil();
+			StringDiffUtil descriptionDiff = new StringDiffUtil();
 			model.put("item1", item1);
 			model.put("item2", item2);
 			model.put("title1", title1);
 			model.put("title2", title2);
-			model.put("titleDiff", titleDiff.getString());
+			model.put("titleDiff", titleDiff.getComparison(title1, title2));
 			model.put("description1", description1);
 			model.put("description2", description2);
-			model.put("descriptionDiff", descriptionDiff.getString());
+			model.put("descriptionDiff", descriptionDiff.getComparison(description1, description2));
 		}
 
 		return new ModelAndView(viewPath, model);

@@ -140,6 +140,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_tag_color" value="blue" scope="request"/>
 <c:set var="ss_tag_pane_background_color" value="#cecece" scope="request"/>
 
+<c:set var="ss_diff_color_added" value="yellow" scope="request"/>
+<c:set var="ss_diff_color_deleted" value="red" scope="request"/>
+<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>
+
 <%
 //Color theme: "black and white"
 %>
@@ -282,6 +286,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<c:set var="ss_tag_color" value="#999966" scope="request"/>
 	<c:set var="ss_tag_pane_background_color" value="transparent" scope="request"/>
+
+	<c:set var="ss_diff_color_added" value="yellow" scope="request"/>
+	<c:set var="ss_diff_color_deleted" value="red" scope="request"/>
+	<c:set var="ss_diff_color_same" value="lightblue" scope="request"/>
 </c:if>
 
 <c:if test="${empty ss_skipCssStyles || ss_skipCssStyles != true}">
@@ -3276,6 +3284,17 @@ form.inline {
 
 div.ss_teamMembersList, div.ss_clipboardUsersList {
 	padding-left: 20px; 
+}
+
+/* styles used in the version history comparisons */
+.ss_diff_added {
+	background-color:${ss_diff_color_added};
+}
+.ss_diff_deleted {
+	background-color:${ss_diff_color_deleted};
+}
+.ss_diff_same {
+	background-color:${ss_diff_color_same};
 }
 
 <% // Place all CSS code above this line %>

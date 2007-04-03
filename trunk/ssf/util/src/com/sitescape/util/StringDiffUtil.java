@@ -17,6 +17,11 @@ import java.util.ArrayList;
 public class StringDiffUtil
 {
 	private List _processResult = null;	// List of DiffSegment(s) that indicate differences between the two text items
+	private static String diffBegin = "<span class='ss_diff_added'>";
+	private static String sameBegin = "<span class='ss_diff_same'>";
+	private static String missingBegin = "<span class='ss_diff_deleted'>";
+	private static String end = "</span>";
+	
 
 	public StringDiffUtil()
 	{
@@ -247,6 +252,38 @@ public class StringDiffUtil
 		return _processResult;
 	}
 	
+	public String getComparison(String text1, String text2) {
+		StringDiffUtil d = new StringDiffUtil();
+        List result = new ArrayList();
+        String diffText = "";
+        try {
+        	result = d.runDiff(text1, text2);
+        } catch(Exception e) {
+        	//These strings are too different; mark them as a complete replacement
+        	diffText = diffBegin + text1 + end + missingBegin + text2 + end;
+        	return diffText;
+        }
+        for (int x=0; x < result.size(); x++)
+        {
+        	StringDiffSegment ds = (StringDiffSegment)result.get(x);
+        	switch (ds.getType())
+        	{
+        		case StringDiffSegment.SAME:
+        			diffText += sameBegin + ds.getContent() + end;
+        		break;
+        		case StringDiffSegment.ADDITION:
+        			diffText += diffBegin + ds.getContent() + end;
+	        	break;
+        		case StringDiffSegment.SUBTRACTION:
+        			diffText += missingBegin + ds.getContent() + end;
+	        	break;
+        		default:
+        			diffText += ds.getContent();
+        	}
+        }
+        return diffText;
+	}
+	
 	/**
 	 * Used for testing purposes.
 	 * 
@@ -261,11 +298,7 @@ public class StringDiffUtil
 		String file1 = "diff1.txt",
 			   file2 = "Scenario1.txt",
 			   text1 = "",
-			   text2 = "",
-			   diffBegin = "<span style='background-color:yellow'>",
-		   	   sameBegin = "<span style='background-color:lightblue'>",
-		   	   missingBegin = "<span style='background-color:red'>",
-		   	   end = "</span>";
+			   text2 = "";
 		
 		try
 		{
