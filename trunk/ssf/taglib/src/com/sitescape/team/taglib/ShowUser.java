@@ -57,7 +57,7 @@ public class ShowUser extends BodyTagSupport {
 
 			httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
 			httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);	
-			if (user.isActive())
+			if (user != null && user.isActive())
 				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
 			else
 				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
