@@ -6,7 +6,7 @@
 
 <p><ssf:nlt tag="help.favoritesicon.content.intro.explainIcon"/></p>
 
-<p><a href="javascript: ss_showFavoritesPane();"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
+<p><a href="javascript: ss_showFavoritesPane('<portlet:namespace/>');"><ssf:nlt tag="help.favoritesicon.content.intro.viewFavoritesPanel"/></a></p>
 
 <p><a href="javascript: ss_helpSystem.showHelpPanel('personal_toolbar/favorites_button', 'ss_help_panel', '', '', 'left');"><ssf:nlt tag="help.favoritesicon.content.intro.moveHelpPanel"/></a></p>
 
@@ -27,7 +27,7 @@
 <br/>
 
 <script type="text/javascript">
-ss_helpSystem.highlight('ss_navbarFavoritesButton');
+ss_helpSystem.highlight('ss_navbarFavoritesButton<portlet:namespace/>');
 </script>
 
 <div align="center">
