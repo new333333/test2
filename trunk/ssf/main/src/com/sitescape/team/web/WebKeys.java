@@ -376,6 +376,7 @@ public class WebKeys {
     public static final String ELEMENT_NAME="ssElementName";
     public static final String EMAIL_ADDRESSES="ssEmailAddresses";
     public static final String EMAIL_ALIASES="ssEmailAliases";
+	public static final String ENTITY_ID = "ss_entityId";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
