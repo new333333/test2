@@ -3292,6 +3292,7 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 .ss_diff_deleted {
 	background-color:${ss_diff_color_deleted};
+	text-decoration:line-through;
 }
 .ss_diff_same {
 	background-color:${ss_diff_color_same};
