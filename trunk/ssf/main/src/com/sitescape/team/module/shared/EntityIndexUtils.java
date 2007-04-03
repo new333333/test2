@@ -314,7 +314,7 @@ public class EntityIndexUtils {
 		List atts = entry.getFileAttachments();
         for (int j = 0; j < atts.size(); j++) {
         	FileAttachment fa = (FileAttachment)atts.get(j);
-        	addFileAttachmentUid(doc, fa);
+        	appendFileAttachmentUid(doc, fa);
         }
     }
         
@@ -511,6 +511,11 @@ public class EntityIndexUtils {
     
     public static void addFileAttachmentUid(Document doc, FileAttachment fa) {
     	doc.removeFields(FILE_ID_FIELD);
+    	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	doc.add(fileIDField); 
+    }
+
+    public static void appendFileAttachmentUid(Document doc, FileAttachment fa) {
     	Field fileIDField = new Field(FILE_ID_FIELD, fa.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	doc.add(fileIDField); 
     }

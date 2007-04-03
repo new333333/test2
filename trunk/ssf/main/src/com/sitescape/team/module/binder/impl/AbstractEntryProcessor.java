@@ -1197,7 +1197,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the workflows
         EntityIndexUtils.addWorkflow(indexDoc, entry);
         
-       
+        // Add attached file ids
+        EntityIndexUtils.addAttachedFileIds(indexDoc, entry);
+        
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
@@ -1206,6 +1208,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         // Add the workflows - different for files
         EntityIndexUtils.addWorkflow(indexDoc, entry);
    		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
+   		// Add attached file id
+        EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
+        
    		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
    		return indexDoc;
  
