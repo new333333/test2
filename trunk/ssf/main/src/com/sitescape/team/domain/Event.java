@@ -2672,7 +2672,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			other.interval = interval;
 			other.until = (until != null ? (Calendar) until.clone() : null);
 			other.count = count;
-			other.timeZone = (TimeZone)timeZone.clone();
+			if (timeZone != null) {
+				other.timeZone = (TimeZone)timeZone.clone();
+			}
 
 			other.bySecond = (int[]) arrayclone(bySecond);
 			other.byMinute = (int[]) arrayclone(byMinute);
