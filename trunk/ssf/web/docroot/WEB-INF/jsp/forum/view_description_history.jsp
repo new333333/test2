@@ -35,7 +35,8 @@
 <th><ssf:nlt tag="entry.Version"/></th><th><ssf:nlt tag="entry.data"/></th>
 <c:forEach var="change" items="${ss_changeLogList}">
 <tr>
-<td valign="top" width="50"><input type="radio" name="item1" 
+<td valign="top" width="10%" nowrap>
+  <input type="radio" name="item1" 
   value="${change.folderEntry.attributes.logVersion}" 
   <c:if test="${change.folderEntry.attributes.logVersion == item1}"> checked="checked" </c:if> >
   <input style="padding-left:10px;" type="radio" name="item2" 
@@ -43,7 +44,7 @@
   <c:if test="${change.folderEntry.attributes.logVersion == item2}"> checked="checked" </c:if> >
   <span style="padding-left:10px;">${change.folderEntry.attributes.logVersion}</span>
 </td>
-<td valign="top">
+<td valign="top" width="90%">
   <ssf:expandableArea title="${change.folderEntry.attributes.modifiedOn}">
   <div><span class="ss_largeprint">${change.folderEntry.attribute.title}</span></div>
   <div><span class="ss_smallprint">${change.folderEntry.attributes.modifiedBy}</span></div>
