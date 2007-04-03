@@ -185,9 +185,9 @@ public class QueryBuilder {
 				System.out.println("Problem in the NOT element");
 			}
 			Node node = (Node) elements.get(0);
-			qString += "( NOT (";
+			qString += " NOT (";
 			qString += parseElement((Element) node, operator, so);
-			qString += "))";
+			qString += ")";
 		} else if (operator.equals(LIKE_ELEMENT)) {
 			List elements = element.elements();
 			if (elements.size() > 1) {
