@@ -3,6 +3,7 @@ package com.sitescape.team.web.portlet;
 import org.springframework.web.portlet.mvc.SimpleFormController;
 
 import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -31,6 +32,7 @@ implements AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
 	private ICBroker icBroker;
 
@@ -117,6 +119,14 @@ implements AllBusinessServicesInjected {
 	
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
+	}
+	
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
+	}
+	
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
 	}
 	
 	public void setDashboardModule(DashboardModule dashboardModule) {

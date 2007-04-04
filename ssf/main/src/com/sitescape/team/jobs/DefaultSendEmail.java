@@ -1,19 +1,23 @@
 
 package com.sitescape.team.jobs;
 
-import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Map;
-import java.io.IOException;
+
 import javax.activation.DataSource;
 import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,10 +27,10 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
+import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -35,6 +39,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.mail.MailManager;
 import com.sitescape.team.mail.MimeMessagePreparator;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -195,6 +200,24 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 								entry, fAtt.getFileItem().getName(), helper.getFileTypeMap());
 						
 						helper.addAttachment(fAtt.getFileItem().getName(), ds);
+					}
+				}
+				
+				Collection<net.fortuna.ical4j.model.Calendar> iCals = (Collection)details.get(SendEmail.ICALENDARS);
+				if (iCals != null) {
+					int c = 0;
+					for (final net.fortuna.ical4j.model.Calendar ical : iCals) {
+						ByteArrayOutputStream out = new ByteArrayOutputStream();
+						CalendarOutputter calendarOutputter = new CalendarOutputter();
+						try {
+							calendarOutputter.output(ical, out);
+						} catch (IOException e) {
+							logger.error(e);
+						} catch (ValidationException e) {
+							logger.error(e);
+						}
+						helper.addAttachment("iCalendar" + c + ".ics", new ByteArrayResource( out.toByteArray()));
+						c++;
 					}
 				}
 	

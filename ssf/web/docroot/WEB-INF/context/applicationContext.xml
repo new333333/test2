@@ -58,7 +58,8 @@
 		<property name="workflowModule"><ref bean="workflowModule"/></property>
 		<property name="workspaceModule"><ref bean="workspaceModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
-		<property name="rssGenerator"><ref bean="rssGenerator"/></property>	
+		<property name="rssGenerator"><ref bean="rssGenerator"/></property>
+		<property name="icalGenerator"><ref bean="icalGenerator"/></property>	
 		<property name="dashboardModule"><ref bean="dashboardModule"/></property>	
 		<property name="icBroker"><ref bean="icBroker"/></property>			
 	</bean>
@@ -331,6 +332,10 @@
 		<property name="profileDao"><ref local="profileDao"/></property>
     </bean>
 	
+    <!-- ============================== ical Generator ============================ -->
+	
+    <bean id="icalGenerator" class="com.sitescape.team.ical.IcalGenerator" />	
+	
 	<!-- ================================ Security Service =============================== -->
 	
 	<bean id="accessControlManager" class="com.sitescape.team.security.impl.AccessControlManagerImpl">
@@ -427,6 +432,7 @@
 		<property name="luceneSessionFactory"><ref local="luceneSessionFactory"/></property>
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="rssGenerator"><ref local="rssGenerator"/></property>
+		<property name="icalGenerator"><ref local="icalGenerator"/></property>
 	</bean>
 	
 	<bean id="employeeModule" parent="moduleDependencyTemplate" class="com.sitescape.team.module.sample.impl.EmployeeModuleImpl">
@@ -794,7 +800,10 @@
 	        <entry key="SiteScape:type=Other,name=rssGenerator">
 	          <ref local="rssGenerator"/>
 	        </entry>
-	        <entry key="SiteScape:type=Repository,name=simpleFileRepository">
+	        <entry key="SiteScape:type=Other,name=icalGenerator">
+	          <ref local="icalGenerator"/>
+	        </entry>
+			<entry key="SiteScape:type=Repository,name=simpleFileRepository">
 	          <ref local="simpleFileRepository"/>
 	        </entry>
 	        <entry key="SiteScape:type=Repository,name=jackrabbitRepository">

@@ -60,16 +60,14 @@ public class SendEntryMailController extends SAbstractController {
 			if (formData.containsKey("users")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(FindIdsHelper.getIdsAsLongSet(request.getParameterValues("groups")));
 			
+			boolean sendAttachments = PortletRequestUtils.getBooleanParameter(request, "attachments", false);
+			Map folderEntries  = getFolderModule().getEntryTree(folderId, entryId);
+			List entries = (List)folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS);
+			entries.add(0, folderEntries.get(ObjectKeys.FOLDER_ENTRY));
 			
-			List entries = null;
-			//if want attachments load entries
-			if (PortletRequestUtils.getBooleanParameter(request, "attachments", false)) {
-				Map folderEntries  = getFolderModule().getEntryTree(folderId, entryId);
-				entries = (List)folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS);
-				entries.add(0, folderEntries.get(ObjectKeys.FOLDER_ENTRY));
-			}
 			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, 
-					new Description(body, Description.FORMAT_HTML), entries);
+					new Description(body, Description.FORMAT_HTML), entries, sendAttachments);
+			
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);

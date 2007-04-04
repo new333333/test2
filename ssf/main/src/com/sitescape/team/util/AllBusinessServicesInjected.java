@@ -1,6 +1,7 @@
 package com.sitescape.team.util;
 
 import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -67,6 +68,10 @@ public interface AllBusinessServicesInjected {
 	void setRssGenerator(RssGenerator rssGenerator);
 
 	RssGenerator getRssGenerator();
+	
+	void setIcalGenerator(IcalGenerator icalGenerator);
+
+	IcalGenerator getIcalGenerator();
 
 	void setDashboardModule(DashboardModule dashboardModule);
 

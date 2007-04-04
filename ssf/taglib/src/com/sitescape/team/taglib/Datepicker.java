@@ -34,6 +34,8 @@ public class Datepicker extends TagSupport {
     private String callbackRoutine = "";
     private Boolean showSelectors = new Boolean(true);
     private Boolean immediateMode = new Boolean(false);
+    // used for all day events - they don't have time zone
+    private Boolean ignoreTimeZone = Boolean.FALSE;
     private String popupDivId = "";
     private String calendarDivId = "";
     
@@ -68,7 +70,9 @@ public class Datepicker extends TagSupport {
 	    User user = RequestContextHolder.getRequestContext().getUser();
 	    GregorianCalendar cal = new GregorianCalendar();
 	    cal.setTime(initDate);
-	    cal.setTimeZone(user.getTimeZone());
+	    if (!ignoreTimeZone) {
+	    	cal.setTimeZone(user.getTimeZone());
+	    }
 	    
 	    try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
@@ -400,13 +404,14 @@ public class Datepicker extends TagSupport {
 
 			
 			
-			
-			TimeZone tz = user.getTimeZone();
-			sb.append("<input type=\"hidden\" name=\"")
-			  .append(prefix)
-			  .append("_timezoneid\" value=\"")
-			  .append(tz.getID())
-			  .append("\" />\n");
+			if (!ignoreTimeZone) {
+				TimeZone tz = user.getTimeZone();
+				sb.append("<input type=\"hidden\" name=\"")
+				  .append(prefix)
+				  .append("_timezoneid\" value=\"")
+				  .append(tz.getID())
+				  .append("\" />\n");
+			}
 			
 			jspOut.print(sb.toString());
 	    }
@@ -422,6 +427,7 @@ public class Datepicker extends TagSupport {
             callbackRoutine = "";
             showSelectors = new Boolean(true);
             immediateMode = new Boolean(false);
+            ignoreTimeZone = Boolean.FALSE;
         }
 	   return SKIP_BODY;
 	}
@@ -489,6 +495,10 @@ public class Datepicker extends TagSupport {
 
 	public void setImmediateMode(Boolean value) {
 		this.immediateMode = value;
+	}
+
+	public void setIgnoreTimeZone(Boolean ignoreTimeZone) {
+		this.ignoreTimeZone = ignoreTimeZone;
 	}
 
 }

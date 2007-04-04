@@ -72,24 +72,17 @@
  </c:when>
  <c:otherwise>
 
- <tr>
-   <td class="contentbold"><ssf:nlt tag="event.when" />:</td>
-   <td>
-   <ssf:datepicker 
-       formName="<%= formName %>"
-       initDate="<%= startDate %>"
-       id="<%= dateId3 %>" />
-   </td>
-</tr>
- <tr>
-   <td class="contentbold">&nbsp;</td>
-   <td>
-   <ssf:timepicker 
-       formName="<%= formName %>"
-       initDate="<%= startDate %>"
-       id="<%= dateId3 %>" />
-   </td>
-</tr>
+	<% // all events without duration are 'all day' events, so don't have start time (only date) %>
+	 <tr>
+	   <td class="contentbold"><ssf:nlt tag="event.when" />:</td>
+	   <td>
+	   <ssf:datepicker 
+	       formName="<%= formName %>"
+	       initDate="<%= startDate %>"
+	       id="<%= dateId3 %>" 
+	       ignoreTimeZone="true" />
+	   </td>
+	</tr>
 
 </c:otherwise>
 </c:choose>

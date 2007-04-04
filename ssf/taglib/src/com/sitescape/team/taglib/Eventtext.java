@@ -119,8 +119,16 @@ public class Eventtext extends TagSupport {
       nums[4] = NLT.get("calendar.fourth");
       nums[5] = NLT.get("calendar.last");
 
-      SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a z");
-      sdf.setTimeZone(user.getTimeZone());
+      SimpleDateFormat sdf = null;
+      if (event.hasDuration()) {
+    	  sdf = new SimpleDateFormat("dd MMM yyyy, hh:mm a z");
+    	  sdf.setTimeZone(user.getTimeZone());
+      } else {
+    	  // no duration -> all day event -> no time, no time zone
+    	  sdf = new SimpleDateFormat("dd MMM yyyy");
+    	  sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+      }
+      
       String startString = sdf.format(st.getTime());
       String endString = sdf.format(en.getTime());
 

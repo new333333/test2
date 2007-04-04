@@ -7,6 +7,7 @@ package com.sitescape.team.web.util;
 import java.util.Date;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
@@ -38,9 +39,9 @@ public class EventHelper {
     	
         // we make the id match what the event editor would do
         Event e = new Event();
-        e.setTimeZone(user.getTimeZone());
         String prefix = id + "_";
         if (hasDuration.booleanValue()) {
+        	e.setTimeZone(user.getTimeZone());
             // duration present means there is a start and end id
             String startId = "dp_" + id;
             String endId = "dp2_" + id;
@@ -59,15 +60,23 @@ public class EventHelper {
             e.setDtStart(startc);
             e.setDtEnd(endc);
         } else {
+        	// all day events don't have time zone
+        	e.setTimeZone(TimeZone.getTimeZone("GMT"));
             String whenId = "dp3_" + id;
-            Date when = DateHelper.getDateFromInput(inputData, whenId);
+            Date when = DateHelper.getDateFromInput_IgnoreTimeZone(inputData, whenId);
             if (when == null) {
                 return null;
             }
             GregorianCalendar whenc = new GregorianCalendar();
             whenc.setTime(when);
+            
+            // no duration => all day event (we don't need the time)
+            whenc.set(Calendar.HOUR, 0);
+            whenc.set(Calendar.MINUTE, 0);
+            whenc.set(Calendar.SECOND, 0);
+            whenc.set(Calendar.MILLISECOND, 0);
+            
             e.setDtStart(whenc);
-            e.setDtEnd(whenc);
         }
         if (hasRecurrence.booleanValue()) {
             String repeatUnit = inputData.getSingleValue(prefix+"repeatUnit");

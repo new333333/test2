@@ -7,6 +7,7 @@ import org.quartz.Scheduler;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceService;
 import com.sitescape.team.rss.RssGenerator;
@@ -42,6 +43,7 @@ public abstract class CommonDependencyInjection {
 	protected LuceneSessionFactory luceneSessionFactory;
 	protected PresenceService presenceService;
 	protected RssGenerator rssGenerator;
+	protected IcalGenerator icalGenerator;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
@@ -77,6 +79,9 @@ public abstract class CommonDependencyInjection {
 	public void setRssGenerator(RssGenerator rssGenerator) {
 		this.rssGenerator = rssGenerator;
 	}
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
+	}
 	protected LuceneSessionFactory getLuceneSessionFactory() {
 		return luceneSessionFactory;
 	}
@@ -109,6 +114,9 @@ public abstract class CommonDependencyInjection {
 	}
 	public RssGenerator getRssGenerator() {
 		return rssGenerator;
+	}
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
 	}
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
 		this.workAreaFunctionMembershipManager=workAreaFunctionMembershipManager;

@@ -158,18 +158,28 @@ public class EventsViewHelper {
 						}
 
 						Event ev = new Event();
+						
 						Calendar startCal = new GregorianCalendar();
 						startCal.setTime(evStartDate);
-						startCal = CalendarHelper.convertToTimeZone(startCal,
-								timeZone);
-						ev.setDtStart(startCal);
-
+						
 						Calendar endCal = new GregorianCalendar();
 						endCal.setTime(evEndDate);
-						endCal = CalendarHelper.convertToTimeZone(endCal,
-								timeZone);
-						ev.setDtEnd(endCal);
 
+						long duration = ((endCal.getTime()
+								.getTime() - startCal.getTime()
+								.getTime()) / 60000);
+						
+						if (duration > 0) {
+							// no duration -> all day event, no time, no time zone
+							startCal = CalendarHelper.convertToTimeZone(startCal,
+									timeZone);						
+							endCal = CalendarHelper.convertToTimeZone(endCal,
+									timeZone);
+						}
+						
+						ev.setDtStart(startCal);
+						ev.setDtEnd(endCal);
+						
 						thisDateMillis = evStartDate.getTime();
 						if (startMilis < thisDateMillis
 								&& thisDateMillis < endMilis) {
@@ -242,6 +252,11 @@ public class EventsViewHelper {
 				SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
 				sdf2.setTimeZone(timeZone);
 				// we build up the dataMap for this instance
+				
+				long duration = ((ev.getDtEnd().getTime()
+						.getTime() - ev.getDtStart().getTime()
+						.getTime()) / 60000);
+				
 				dataMap.put("entry", e);
 				dataMap.put("eventType", thisMap.get("eventType"));
 				dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD)
@@ -255,9 +270,7 @@ public class EventsViewHelper {
 				dataMap.put("cal_starttime", ev.getDtStart().getTime());
 				dataMap.put("cal_endtime", ev.getDtEnd().getTime());
 				dataMap
-						.put("cal_duration", ((ev.getDtEnd().getTime()
-								.getTime() - ev.getDtStart().getTime()
-								.getTime()) / 60000));
+						.put("cal_duration", duration);
 				
 				eventsList.add(dataMap);
 				eventCounter++;

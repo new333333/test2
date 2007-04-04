@@ -34,6 +34,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.ical.util.UrlUtil;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
@@ -178,6 +179,7 @@ public class ViewEntryController extends  SAbstractController {
 		} else {
 			fe = getShowEntry(entryId, formData, request, response, folderId, model);
 		}
+				
 		buildEntryToolbar(request, response, model, fe, userProperties);
 
 		//Set up the tabs
@@ -222,6 +224,7 @@ public class ViewEntryController extends  SAbstractController {
 		return new ModelAndView(viewPath, model);
 	} 
 
+	
 	protected Toolbar buildEntryToolbar(RenderRequest request, RenderResponse response, 
 			Map model, FolderEntry entry, Map userProperties) {
 
@@ -455,6 +458,11 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
 		footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 
+		
+		if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
+			qualifiers = new HashMap();
+			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), UrlUtil.getICalURL(request, folderId, entryId), qualifiers);
+		}
 		
 		model.put(WebKeys.FOLDER_ENTRY_TOOLBAR,  toolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());

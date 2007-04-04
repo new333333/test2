@@ -31,7 +31,17 @@ public class DateHelper {
   */
     static public Date getDateFromInput(InputDataAccessor inputData, String id) 
     throws ConfigurationException {
-        return getDateFromInput (inputData, id, "0");
+        return getDateFromInput (inputData, id, "0", true);
+    }
+    
+    /**
+     * Use to get all day events date.
+     * All days ivents have no time zone.
+     * 
+     */
+    static public Date getDateFromInput_IgnoreTimeZone(InputDataAccessor inputData, String id) 
+    throws ConfigurationException {
+        return getDateFromInput (inputData, id, "0", false);
     }
     
 /*
@@ -39,7 +49,7 @@ public class DateHelper {
  * datepicker tag -- for example, to specify the start and end time on the same day.
  * In this case, the sequence number is passed in to select which timepicker tag is to be used.
  */
-    static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber) 
+    static public Date getDateFromInput (InputDataAccessor inputData, String id, String sequenceNumber, boolean applyTimeZone) 
     throws ConfigurationException {
         Date d = new Date();
         // date fields don't have a sequence number; time fields do
@@ -65,8 +75,12 @@ public class DateHelper {
         if (!inputData.exists(datePrefix+"date")) {
             throw new ConfigurationException("Cannot find required date field: date.");
         }
-
+        
         GregorianCalendar cal = new GregorianCalendar();
+        if (!applyTimeZone) {
+        	cal = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+        }
+        
         cal.setTimeInMillis(0);
         cal.set(Calendar.YEAR, Integer.parseInt(year));
         String month = inputData.getSingleValue(datePrefix + "month");
@@ -99,7 +113,8 @@ public class DateHelper {
                 cal.set(Calendar.MINUTE, mm);
             }
         }
-        if (inputData.exists(datePrefix + "timezoneid")) {
+        
+        if (applyTimeZone && inputData.exists(datePrefix + "timezoneid")) {
             String tzs = inputData.getSingleValue(datePrefix + "timezoneid");
             TimeZone tz = TimeZone.getTimeZone(tzs);
             cal.setTimeZone(tz);
