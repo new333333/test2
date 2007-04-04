@@ -994,13 +994,5 @@ public class BinderHelper {
 		return changeList;
 	}
 	
-	public static void filterEntryAttachmentResults(Map results) {
-		List entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-		filterEntryAttachmentResults(entries);
-		int newCountOfReturnedEntries = entries.size();
-		int newTotalCount = (Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)-((Integer)results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED) - newCountOfReturnedEntries);
-		
-		results.put(ObjectKeys.SEARCH_COUNT_TOTAL, newTotalCount);
-		results.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, newCountOfReturnedEntries);
-	}
+
 }
