@@ -236,4 +236,55 @@ public class SearchUtils {
     	return EntityIndexUtils.CREATORID_FIELD;
     }
     
+	public static void filterEntryAttachmentResults(Map results) {
+		List entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		entries = filterEntryAttachments(entries);
+		int newCountOfReturnedEntries = entries.size();
+		int newTotalCount = (Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)-((Integer)results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED) - newCountOfReturnedEntries);
+		
+		results.put(ObjectKeys.SEARCH_COUNT_TOTAL, newTotalCount);
+		results.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, newCountOfReturnedEntries);
+	}
+	
+	private static String ATTACHMENTS="attachments";
+	private static String ENTRY="entry";
+	
+	public static List filterEntryAttachments(List entries) {
+		List result = new ArrayList();
+		// combine all entries related attachments with entry
+		Map entriesCombined = new HashMap();
+		Iterator it = entries.iterator();
+		while (it.hasNext()) {
+			Map entry = (Map) it.next();
+			String uniqueId = entry.get(EntityIndexUtils.ENTITY_FIELD)+"_"+entry.get(EntityIndexUtils.DOCID_FIELD);
+			Map entryValues = (Map)entriesCombined.get(uniqueId);
+			if (entryValues == null) entryValues = new HashMap();
+			if (((String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD)).equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+				List attachments = (List) entryValues.get(ATTACHMENTS);
+				if (attachments == null) attachments = new ArrayList();
+				attachments.add(entry);
+				System.out.println("Attachment:"+attachments.toString());
+				
+				entryValues.put(ATTACHMENTS, attachments);
+			} else {
+				entryValues.put(ENTRY, entry);
+			}
+			entriesCombined.put(uniqueId, entryValues);				
+		}
+		Iterator entryIt = entriesCombined.values().iterator();
+		while (entryIt.hasNext()) {
+			Map entryMap = (Map) entryIt.next();
+			Map resultEntry = (Map) entryMap.get(ENTRY);
+			if (resultEntry == null) {
+				resultEntry = new HashMap();
+				resultEntry.put(WebKeys.ENTITY_TYPE, WebKeys.ATTACHMENTS_TYPE);
+				resultEntry.put(WebKeys.ENTRY_HAS_META_HIT, Boolean.FALSE);
+			} else {
+				resultEntry.put(WebKeys.ENTRY_HAS_META_HIT, Boolean.TRUE);
+			} 
+			resultEntry.put(WebKeys.ENTRY_ATTACHMENTS, entryMap.get(ATTACHMENTS));
+			result.add(resultEntry);
+		}
+		return result;
+	}
 }
