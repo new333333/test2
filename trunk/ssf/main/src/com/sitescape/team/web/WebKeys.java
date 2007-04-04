@@ -291,6 +291,7 @@ public class WebKeys {
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
 	public static final String ADD_ENTRY_URLS="ssAddEntryUrls";
 	public static final String ADMIN_TREE="ssAdminDomTree";
+	public static final String ATTACHMENTS_TYPE="attachments";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
 	public static final String BINDER_IS_LIBRARY="ssBinderIsLibrary";
@@ -377,6 +378,7 @@ public class WebKeys {
     public static final String EMAIL_ADDRESSES="ssEmailAddresses";
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
+	public static final String ENTITY_TYPE="_entityType";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
