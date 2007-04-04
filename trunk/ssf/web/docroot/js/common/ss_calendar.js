@@ -628,7 +628,7 @@ var ss_cal_CalAllDayEvent = {
     reset: function() {    
 		// it doesn't work correctly for maps or objects
         // while (this.allDayCount.length) { this.allDayCount.pop() };
-        this.allDayCount.length = 0;
+        this.allDayCount = new Array();
     }
 
 }
@@ -949,8 +949,10 @@ var ss_cal_Events = {
             this.sortEvent(nei);
         }
 
-		for (var i in this.eventsTypes) {        
-        	this.order[this.eventsTypes[i]].sort();
+		for (var i in this.eventsTypes) {
+			if (this.order[this.eventsTypes[i]]) {        
+        		this.order[this.eventsTypes[i]].sort();
+        	}
         }
     },
 
@@ -1053,7 +1055,7 @@ var ss_cal_Events = {
                 continue;
             }
 
-            if (e.start < 0) {
+            if (e.dur == 0) {
                 var grid = "ss_cal_dayGridAllDay";
                 this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
                        gridDay, ss_cal_CalAllDayEvent.recordHourOffset(e.date.getFullYear(), e.date.getMonth(), e.date.getDate()), -1, e.title, e.text,
@@ -1063,7 +1065,7 @@ var ss_cal_Events = {
                 var grid = "ss_cal_dayGridHour";
                 this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
                        this.collisionCount(e.eventType, e.date.getFullYear(), e.date.getMonth(), e.date.getDate(), e.start),
-                       this.collisionIndex(e.eventType, e.date.getFullYear(), e.date.getMonth, e.date.getDate(), e.start),
+                       this.collisionIndex(e.eventType, e.date.getFullYear(), e.date.getMonth(), e.date.getDate(), e.start),
                        gridDay, e.start, e.dur, e.title, e.text,
                        ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid);
 				this.dayGridEvents.push(eid);

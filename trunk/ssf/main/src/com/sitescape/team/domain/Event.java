@@ -397,6 +397,13 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	public Duration getDuration() {
 		return duration;
 	}
+	
+	/**
+	 * Has event any duration?
+	 */
+	public boolean hasDuration() {
+		return duration.getInterval() != 0;
+	}
 
 	/**
 	 * Set the duration of the recurrence.
@@ -667,11 +674,18 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @see #computeUntilFromCount()
 	 */
 	public Calendar getUntil() {
-		computeUntilFromCount();
+		computeUntilFromCount(false);
 		return until;
 		// return (until != null ? (Calendar)until.clone() : null);
 	}
 
+	public Calendar getUntilWithMaxLoopsIfNeeded() {
+		computeUntilFromCount(true);
+		return until;
+		// return (until != null ? (Calendar)until.clone() : null);
+	}
+
+	
 	/**
 	 * Get a string representing the upper bound of the recurrence, or the empty
    * string if unbounded.
@@ -681,7 +695,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    * <code>null</code> if unbounded.
 	 */
 	public String getUntilString() {
-		computeUntilFromCount();
+		computeUntilFromCount(false);
 
 		if (until == null) {
 			return null;
@@ -1454,7 +1468,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		}
 
 		/* If we have 'count' and not 'until', compute 'until' now. */
-		computeUntilFromCount();
+		computeUntilFromCount(false);
 
 		Calendar candidate = internalGetCandidateStartTime(myCurrent, false,
 				debug);
@@ -1613,7 +1627,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		Calendar myCurrent = (Calendar) current.clone();
 		setCalendarWeekStart(myCurrent, dtStart.getFirstDayOfWeek());
 
-		computeUntilFromCount();
+		computeUntilFromCount(false);
 
 		return internalGetCandidateStartTime(current, is_forward, debug);
 	}
@@ -1909,7 +1923,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @see #computeUntilFromCount()
 	 * @see #strict_count_bounds
 	 */
-	public static long max_count_loops = 1000;
+	public static int max_count_loops = 1000;
 
 	/**
 	 * Whether to throw an exception if a conversion from <code>count</code>
@@ -1942,8 +1956,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @see #max_count_loops
 	 * @see #strict_count_bounds
 	 */
-	public void computeUntilFromCount() {
-		computeUntilFromCount(false);
+	public void computeUntilFromCount(boolean useMaxCountLoops) {
+		computeUntilFromCount(false, useMaxCountLoops);
 	}
 
 	/**
@@ -1953,18 +1967,20 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
    *         <code>strict_count_bounds</code> is in effect.
 	 * @see #computeUntilFromCount()
 	 */
-	public void computeUntilFromCount(boolean debug) {
+	public void computeUntilFromCount(boolean debug, boolean useMaxCountLoops) {
 		if (until != null) {
 			return;
 		}
-		if (count == 0) {
+		if (!useMaxCountLoops && count == 0) {
 			until = null;
 			return;
 		}
-
+		
+		int intCount = count != 0 ? count : max_count_loops;
+		
 		int starts_found = 0;
 		int loops;
-
+		
 		Calendar candidate;
 
 		for (loops = 0, candidate = (Calendar) dtStart.clone(); loops < max_count_loops
@@ -1988,7 +2004,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 			if (candidateIsInRecurrence(candidate, debug)) {
 				starts_found++;
-				if (starts_found == count) {
+				if (starts_found == intCount) {
 					candidate.add(Calendar.SECOND, 1);
 					until = candidate;
 					return;
@@ -2673,7 +2689,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			other.until = (until != null ? (Calendar) until.clone() : null);
 			other.count = count;
 			if (timeZone != null) {
-				other.timeZone = (TimeZone)timeZone.clone();
+			other.timeZone = (TimeZone)timeZone.clone();
 			}
 
 			other.bySecond = (int[]) arrayclone(bySecond);
@@ -3046,9 +3062,14 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * 				second one is end date
 	 */
 	public List getAllRecurrenceDates() {
-		Event eventClone = (Event)this.clone();
-		eventClone.convertToSavedTimeZone();
-		return eventClone.getAllRecurrenceDatesWithCurrentTimeZone();
+		if (this.hasDuration()) {
+			Event eventClone = (Event)this.clone();
+			eventClone.convertToSavedTimeZone();
+			return eventClone.getAllRecurrenceDatesWithCurrentTimeZone();
+		} else {
+			// all day events (without duration) have no time zone
+			return getAllRecurrenceDatesWithCurrentTimeZone();	
+		}
 	}
 
 	/**
@@ -3116,9 +3137,14 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @return list of Calendar object instances 
 	 */
 	public List getAllEventDays() {
-		Event eventClone = (Event)this.clone();
-		eventClone.convertToSavedTimeZone();
-		return eventClone.getAllEventDaysWithCurrentTimeZone();
+		if (this.hasDuration()) {
+			Event eventClone = (Event)this.clone();
+			eventClone.convertToSavedTimeZone();
+			return eventClone.getAllEventDaysWithCurrentTimeZone();
+		} else {
+			// all day events (without duration) have no time zone
+			return getAllEventDaysWithCurrentTimeZone();
+		}
 	}
 	
 	protected List getAllEventDaysWithCurrentTimeZone() {

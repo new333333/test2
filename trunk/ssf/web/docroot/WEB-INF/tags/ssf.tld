@@ -194,6 +194,12 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>ignoreTimeZone</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
 			<name>calendarDivId</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

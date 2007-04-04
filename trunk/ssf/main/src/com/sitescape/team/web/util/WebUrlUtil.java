@@ -171,6 +171,31 @@ public class WebUrlUtil {
 	}
 	
 	/**
+	 * Returns URL up to the SSF's iCal root. The returned URL ends
+	 * with a "/" character (e.g. http://abc.com:8080/ssf/ical/).
+	 * <p>
+	 * If <code>req</code> is null, it uses system config information stored 
+	 * in ssf.properties (which is static) to construct the URL as opposed to 
+	 * the dynamic data available in the <code>HttpServletRequest</code>.   
+	 *  
+	 * @param req may be null
+	 * @return
+	 */
+	public static String getIcalRootURL(HttpServletRequest req) {
+		if(req == null)
+			return getIcalRootURL(req, false);
+		else
+			return getIcalRootURL(req, req.isSecure());
+	}
+	
+	public static String getIcalRootURL(PortletRequest req) {
+		if(req == null)
+			return getIcalRootURL(req, false);
+		else
+			return getIcalRootURL(req, req.isSecure());
+	}
+	
+	/**
 	 * Returns URL up to the SSF's RSS root. The returned URL ends
 	 * with a "/" character (e.g. http://abc.com:8080/ssf/rss/).
 	 * <p>
@@ -188,6 +213,26 @@ public class WebUrlUtil {
 	
 	public static String getRssRootURL(PortletRequest req, boolean secure) {
 		return getContextRootURL(req, secure).append("rss/").toString();
+	}
+	
+	/**
+	 * Returns URL up to the SSF's iCal root. The returned URL ends
+	 * with a "/" character (e.g. http://abc.com:8080/ssf/ical/).
+	 * <p>
+	 * If <code>req</code> is null, it uses system config information stored 
+	 * in ssf.properties (which is static) to construct the URL as opposed to 
+	 * the dynamic data available in the <code>HttpServletRequest</code>.   
+	 * 
+	 * @param req may be null
+	 * @param secure
+	 * @return
+	 */
+	public static String getIcalRootURL(HttpServletRequest req, boolean secure) {
+		return getContextRootURL(req, secure).append("ical/").toString();
+	}
+	
+	public static String getIcalRootURL(PortletRequest req, boolean secure) {
+		return getContextRootURL(req, secure).append("ical/").toString();
 	}
 	
 	public static String getEntryViewURL(FolderEntry entry) {

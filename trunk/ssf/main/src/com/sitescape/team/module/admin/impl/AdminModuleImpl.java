@@ -1001,7 +1001,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    return wa;
 	    
     }
-    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries) throws Exception {
+    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries, boolean sendAttachments) throws Exception {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Set userIds = getProfileDao().explodeGroups(ids, user.getZoneId());
 		//TODO is there accesschecking on sending email address
@@ -1066,14 +1066,32 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	message.put(SendEmail.SUBJECT, subject);
  		message.put(SendEmail.TO, emailSet);
  		if (entries != null) {
- 			List attachments = new ArrayList();
- 			for (int i=0; i<entries.size(); ++i) {
- 				DefinableEntity entry = (DefinableEntity)entries.get(i);
- 				attachments.addAll(entry.getFileAttachments());
+
+			if (sendAttachments) {
+	 			List attachments = new ArrayList();
+	 			
+	 			Iterator entriesIt = entries.iterator();
+	 			while (entriesIt.hasNext()) {
+	 				DefinableEntity entry = (DefinableEntity)entriesIt.next();
+					attachments.addAll(entry.getFileAttachments());
+	 			}
+				message.put(SendEmail.ATTACHMENTS, attachments);
+			}
+ 			
+ 			
+ 			List iCalendars = new ArrayList();
+ 			Iterator entriesIt = entries.iterator();
+ 			while (entriesIt.hasNext()) {
+ 				DefinableEntity entry = (DefinableEntity)entriesIt.next();
+ 				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
+ 					iCalendars.add(getIcalGenerator().getICalendarForEntryEvents(entry));
+ 				}
  			}
- 			message.put(SendEmail.ATTACHMENTS, attachments);
+ 			if (!iCalendars.isEmpty()) {
+ 				message.put(SendEmail.ICALENDARS, iCalendars);
+ 			}
  		}
-		
+ 				
 		boolean sent = getMailManager().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
 		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
 		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);

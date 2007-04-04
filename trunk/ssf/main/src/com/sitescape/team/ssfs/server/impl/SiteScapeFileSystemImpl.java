@@ -10,6 +10,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -49,7 +50,8 @@ AllBusinessServicesInjected {
 	private BinderModule binderModule;
 	private LdapModule ldapModule;
 	private FileModule fileModule;
-	private RssGenerator rssGenerator;	
+	private RssGenerator rssGenerator;
+	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
 	private ICBroker icBroker;
 
@@ -64,6 +66,14 @@ AllBusinessServicesInjected {
 
 	public void setRssGenerator(RssGenerator rssGenerator) {
 		this.rssGenerator = rssGenerator;
+	}
+	
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
 	}
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {

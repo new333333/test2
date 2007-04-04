@@ -34,6 +34,11 @@
 		<filter-name>rssAuthenticationFilter</filter-name>
 		<servlet-name>rss</servlet-name>
 	</filter-mapping>
+	
+	<filter-mapping>
+		<filter-name>rssAuthenticationFilter</filter-name>
+		<servlet-name>ical</servlet-name>
+	</filter-mapping>
 
 	<listener>
 		<listener-class>org.springframework.web.util.WebAppRootListener</listener-class>
@@ -90,6 +95,16 @@
 	</servlet>
 	
 	<servlet>
+		<servlet-name>ical</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>namespace</param-name>
+			<param-value>context/ical-servlet</param-value>
+		</init-param>
+		<load-on-startup>5</load-on-startup>
+	</servlet>	
+	
+	<servlet>
 		<servlet-name>CCDispatcher</servlet-name>
 		<servlet-class>com.sitescape.team.web.crosscontext.server.DispatchServer</servlet-class>
 		<init-param>
@@ -128,6 +143,11 @@
 		<servlet-name>rss</servlet-name>
 		<url-pattern>/rss/*</url-pattern>
 	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>ical</servlet-name>
+		<url-pattern>/ical/*</url-pattern>
+	</servlet-mapping>	
 
 	<!-- Do NOT ever change this timeout value -->
 	<session-config>

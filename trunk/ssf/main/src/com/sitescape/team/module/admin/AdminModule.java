@@ -52,7 +52,7 @@ public interface AdminModule {
     public void modifyPosting(String postingId, Map updates);
 	public void modifyTemplate(Long id, Map updates);
  
-    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries) throws Exception;
+    public Map sendMail(Set ids, Set emailAddresses, String subject, Description body, List entries, boolean sendAttachments) throws Exception;
 
     public void setPostingSchedule(ScheduleInfo config) throws ParseException;
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map functionMemberships);

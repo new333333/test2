@@ -30,6 +30,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -107,6 +108,7 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
 	private ICBroker icBroker;
 	
@@ -128,6 +130,16 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	 */
 	public void setRssGenerator(RssGenerator rssGenerator) {
 		this.rssGenerator = rssGenerator;
+	}
+	
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+	/**
+	 * @param rssGenerator The rssGenerator to set.
+	 */
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
 	}
 
 	public void setEmployeeModule(EmployeeModule employeeModule) {

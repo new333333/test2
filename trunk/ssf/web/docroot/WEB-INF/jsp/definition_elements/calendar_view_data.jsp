@@ -49,9 +49,20 @@ ss_cal_Events.set([<%--
     --%><jsp:useBean id="evim" type="java.util.Map" /><%--
     --%><% java.util.HashMap e = (java.util.HashMap) evim.get("entry"); %><%--
     --%>
-		  {eventId: "${evim.eventid}", year : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="yyyy"/>, month : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="M"/>, dayOfMonth : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="d"/>, 
+		  {eventId: "${evim.eventid}", 
 		  	entryId : "<%= e.get("_docId").toString() %>",
-		  	start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm"/>",  dur: ${evim.cal_duration}, title: "${evim.entry.title}", text: "${evim.cal_endtimestring} // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${ssUser.timeZone.ID}" pattern="HH:mm z"/>  ", calsrc: "cal1",
+		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
+		  	<c:if test="${evim.cal_duration == 0}">
+		  		<c:set var="timeZone" value="GMT"/>
+		  	</c:if>
+		  	year : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyy"/>, 
+		  	month : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="M"/>, 
+		  	dayOfMonth : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="d"/>, 		  	
+		  	start: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm"/>",
+		  	text: "${evim.cal_endtimestring} // <fmt:formatDate value="${evim.cal_starttime}" pattern="HH:mm z"/>  // <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH:mm z"/>  ",
+		  	dur: ${evim.cal_duration},
+		  	title: "${evim.entry.title}", 
+		  	calsrc: "cal1",
 		  	eventType: "${evim.eventType}",
 			viewOnClick: "ss_loadEntry(this,'<c:out value="${evim.entry._docId}"/>');"},<%--
 	--%></c:forEach>]);

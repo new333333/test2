@@ -60,7 +60,8 @@
 				<entry key="/downloadFile"><ref local="downloadFile"/></entry>				
 				<entry key="/uploadFile"><ref local="uploadFile"/></entry>				
 				<entry key="/viewFile"><ref local="viewFile"/></entry>
-				<entry key="/rssFeed"><ref local="rssFeed"/></entry>				
+				<entry key="/rssFeed"><ref local="rssFeed"/></entry>
+				<entry key="/viewiCal"><ref local="viewiCal"/></entry>				
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				
 				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
 				<entry key="/viewFragment"><ref local="viewFragment"/></entry>
@@ -98,6 +99,7 @@
 	<bean id="uploadFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.sample.UploadFileController"/>
 	<bean id="viewFile" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewFileController"/>
 	<bean id="rssFeed" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewRssController"/>
+	<bean id="viewiCal" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewICalController"/>
 	<bean id="viewCss" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.forum.ViewCssController"/>
 	<bean id="viewDefinitionXml" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.definition.ViewDefinitionXmlController"/>
 	<bean id="viewFragment" parent="controllerDependencyTemplate" class="com.sitescape.team.servlet.widget_test.FragmentController"/>

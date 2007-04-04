@@ -20,6 +20,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.ic.ICBroker;
+import com.sitescape.team.ical.IcalGenerator;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.dashboard.DashboardModule;
@@ -64,6 +65,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	private LdapModule ldapModule;
 	private FileModule fileModule;
 	private RssGenerator rssGenerator;
+	private IcalGenerator icalGenerator;
 	private DashboardModule dashboardModule;
 	private ICBroker icBroker;
 
@@ -75,6 +77,13 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		this.rssGenerator = rssGenerator;
 	}
 
+	public IcalGenerator getIcalGenerator() {
+		return icalGenerator;
+	}
+
+	public void setIcalGenerator(IcalGenerator icalGenerator) {
+		this.icalGenerator = icalGenerator;
+	}
 	public void setEmployeeModule(EmployeeModule employeeModule) {
 		this.employeeModule = employeeModule;
 	}

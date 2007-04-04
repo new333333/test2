@@ -96,7 +96,7 @@ public class Timepicker extends TagSupport {
 				m = m - mm;
 				minute = new Integer(m);
 			}
-			;
+			
 
 			// any attributes we might want to pass into the jsp go here
 			req.setAttribute("tpid", id);

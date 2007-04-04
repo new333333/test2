@@ -192,8 +192,6 @@ function getTimeMilliseconds(formName, id) {
    <option class="content" value="${i+12}"<c:if test="${hour==i+12}"> selected</c:if>> ${i}PM</option> 
 </c:forEach>  
  
- <option class="content" value="00" >All day</option>
-
  </select></td><td class="contentbold">&nbsp;:&nbsp;</td>
  <td class="content">
   <select name="${prefix}_minute" id="${prefix}_minute" size="1" 
