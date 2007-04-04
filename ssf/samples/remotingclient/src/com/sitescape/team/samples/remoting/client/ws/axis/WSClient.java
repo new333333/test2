@@ -20,23 +20,31 @@ import org.apache.ws.security.message.token.UsernameToken;
 import com.sitescape.team.samples.remoting.client.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
-/**
- * This sample program fetches workspace tree as XML string from the server
- * through a SOAP-based Web Services interface and print them to the console.
- *
- */
-public class PrintWorkspaceTree
+public class WSClient
 {
 	public static void main(String[] args) {
+		if(args.length == 0) {
+			printUsage();
+			return;
+		}
+
 		try {
-			printWorkspaceTree(new Long(1), new Integer(-1));
+			if(args[0].equals("printWorkspaceTree")) {
+				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2])});
+			} else if(args[0].equals("printPrincipal")) {
+				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});			
+			} else {
+				System.out.println("Invalid arguments");
+				printUsage();
+				return;
+			}
 		}
 		catch(Exception e) {
-			System.out.println(e.toString());
+			e.printStackTrace();
 		}
 	}
 	
-	static void printWorkspaceTree(Long id, Integer depth) throws Exception {
+	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
 		String endpoint = "http://localhost:8080/ssf/ws/Facade";
 
@@ -49,9 +57,9 @@ public class PrintWorkspaceTree
 
 		call.setTargetEndpointAddress(new URL(endpoint));
 
-		// We are going to invoke the remote operation to fetch from the top
-		// workspace all the way down to top-level folders.
-		call.setOperationName(new QName("getWorkspaceTreeAsXML"));
+		// We are going to invoke the remote operation to fetch the workspace
+		//  or folder to print.
+		call.setOperationName(new QName(operation));
 
 		// Programmatically set the username. Alternatively you can specify
 		// the username in the WS deployment descriptor client_deploy.wsdd
@@ -59,18 +67,14 @@ public class PrintWorkspaceTree
 		// between calls, which is rarely the case in Aspen.
 		call.setProperty(WSHandlerConstants.USER, "liferay.com.1");
 
-		String wsTreeAsXML = (String) call.invoke(new Object[] {id, depth});
+		String wsTreeAsXML = (String) call.invoke(args);
 
 		FacadeClientHelper.printXML(wsTreeAsXML);
+	}
 
-		System.out.println("***************************************************************");
-
-		// This time, we are going to fetch only one level deep from the top
-		// workspace. You can fetch the tree starting from different workspace
-		// or folder by specifying its id as the first argument.
-
-		wsTreeAsXML = (String) call.invoke(new Object[] {new Long(1), new Integer(1)});
-
-		FacadeClientHelper.printXML(wsTreeAsXML);
+	private static void printUsage() {
+		System.out.println("Usage:");
+		System.out.println("printWorkspaceTree <workspace id> <depth>");
+		System.out.println("printPrincipalTree <workspace id> <depth>");
 	}
 }
