@@ -305,7 +305,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	getHibernateTemplate().execute(
         	new HibernateCallback() {
         		public Object doInHibernate(Session session) throws HibernateException {
-        			session.createQuery("UPDATE Principal set disabled = :disable where zoneId = :zoneId and internalId is null and id in (:pList)")
+        			session.createQuery("UPDATE com.sitescape.team.domain.Principal set disabled = :disable where zoneId = :zoneId and internalId is null and id in (:pList)")
         			.setBoolean("disable", true)
         			.setLong("zoneId", zoneId)
         			.setParameterList("pList", ids)
