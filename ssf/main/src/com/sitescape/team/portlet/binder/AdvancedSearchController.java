@@ -406,17 +406,16 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// TODO - implement it better(?) this stuff is to get from lucene proper entries,  
 		// to get the ~ proper rankings we get from lucene 200 more hits as max on page
 		Integer searchLuceneOffset = 0;
-		if (searchUserOffset > 200) {
-				searchLuceneOffset = searchUserOffset-200;
-				searchUserOffset = searchLuceneOffset;
-		}
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
 		
 		Integer maxHits = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_DEFAULT);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
-		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
+		Integer intInternalNumberOfRecordsToBeFetched = searchUserOffset + maxHits + 200;
+		if (searchUserOffset > 200) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
 		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
 
 		Integer pageNo = PortletRequestUtils.getIntParameter(request, Tabs.PAGE, 1);
