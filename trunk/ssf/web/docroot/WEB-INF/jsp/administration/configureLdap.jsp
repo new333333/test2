@@ -99,6 +99,9 @@
 <fieldset class="ss_fieldset"><legend class="ss_legend"><ssf:nlt tag="ldap.groups" /></legend>
 <table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
 	   <tr>
+	   <td><input type="checkbox" name="groupSync" <c:if test="${ssLdapConfig.groupSync}">checked</c:if>>
+	   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.sync"/></span></input></td>
+	   </tr><tr>
 	   <td><input type="checkbox" name="groupRegister" <c:if test="${ssLdapConfig.groupRegister}">checked</c:if>>
 	   <span class="ss_labelRight ss_normal"><ssf:nlt tag="ldap.schedule.group.register"/></span></input></td>
 	   </tr><tr>

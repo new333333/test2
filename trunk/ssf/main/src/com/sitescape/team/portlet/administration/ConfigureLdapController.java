@@ -35,7 +35,7 @@ public class ConfigureLdapController extends  SAbstractController {
 				config.setMembershipSync(PortletRequestUtils.getBooleanParameter(request, "membershipSync", false));
 				config.setUserUrl(PortletRequestUtils.getStringParameter(request, "userUrl", ""));
 				config.setUserPrincipal(PortletRequestUtils.getStringParameter(request, "userPrincipal", ""));
-				config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredential", ""));
+				config.setUserCredential(PortletRequestUtils.getStringParameter(request, "userCredentials", ""));
 				config.setUserIdMapping(PortletRequestUtils.getStringParameter(request, "userIdMapping", ""));
 				String[] mappings = StringUtil.split(PortletRequestUtils.getStringParameter(request, "userMappings", ""), "\n");
 				Map maps = new HashMap();
