@@ -9,7 +9,7 @@
 	<mailConfiguration>	
 		<notify session="java:comp/env/mail/SiteScape"/>
 		<posting session="java:comp/env/mail/SiteScapePosting"/>
-		<property name="notify.timezone">EST</property>
+		<property name="notify.timezone">America/New_York</property>
 	</mailConfiguration>	
 	<ldapConfiguration>	
 		<property name="java.naming.provider.url">ldap://localhost:389/dc=sitescape,dc=com</property>
