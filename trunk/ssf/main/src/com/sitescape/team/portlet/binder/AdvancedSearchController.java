@@ -35,6 +35,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchEntryFilter;
@@ -191,7 +192,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put("options", options);
 		model.put("results", results);
 		
-		BinderHelper.filterEntryAttachmentResults(results);
+		SearchUtils.filterEntryAttachmentResults(results);
 	
 		prepareRatings(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
 
@@ -207,8 +208,28 @@ public class AdvancedSearchController extends AbstractBinderController {
 		List peoplesWithCounters = SearchController.sortPeopleInEntriesSearchResults(entries);
 		List placesWithCounters = SearchController.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, SearchController.ratePeople(peoplesWithCounters));
-		model.put(WebKeys.FOLDER_ENTRYPLACES, SearchController.ratePlaces(placesWithCounters));		
+		model.put(WebKeys.FOLDER_ENTRYPLACES, SearchController.ratePlaces(placesWithCounters));
+		
+		// TODO check and make it better, copied from SearchController
+		List entryCommunityTags = BinderHelper.sortCommunityTags(entries);
+		List entryPersonalTags = BinderHelper.sortPersonalTags(entries);
+		
+		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
+		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
+		
+		int intMaxHits = intMaxHitsForCommunityTags;
+		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
+		
+		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
+		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
+
+		entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, "");
+		entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, "");
+
+		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
+		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
 	}
+	
 	private void preparePagination(Map model, Map results, Map options) {
 
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
