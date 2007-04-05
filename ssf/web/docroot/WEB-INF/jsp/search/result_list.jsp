@@ -4,12 +4,7 @@
 				<c:choose>
 		  		<c:when test="${entry._entityType == 'folderEntry'}">
 						<div class="ss_thumbnail">
-							<c:if test="${!empty entry._fileID}"><img src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >
-												<ssf:param name="fileId" value="${entry._fileID}"/>
-											    <ssf:param name="viewType" value="thumbnail"/>
-											    </ssf:url>" />
-							</c:if>
-							<c:if test="${empty entry._fileID}"><img src="<html:imagesPath/>pics/entry_icon.gif"/></c:if>
+							<img src="<html:imagesPath/>pics/entry_icon.gif"/>
 						</div>
 						<div class="ss_entry">
 							<div class="ss_entryHeader">
@@ -47,7 +42,6 @@
 											</c:if>
 											<a target="_blank" href="<ssf:url webPath="viewFile" binderId="${entry._binderId}"><ssf:param name="entryId" value="${entry._docId}"/><ssf:param name="fileId" value="${attachment._fileID}"/></ssf:url>">
 											${attachment._fileName}</a>
-											${attachment}
 										</li>
 									</c:forEach>
 									</ul>
