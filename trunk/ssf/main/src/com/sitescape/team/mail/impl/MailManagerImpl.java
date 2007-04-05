@@ -1,7 +1,9 @@
 
 package com.sitescape.team.mail.impl;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -27,6 +29,10 @@ import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 
+import net.fortuna.ical4j.data.CalendarOutputter;
+import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.ValidationException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -40,6 +46,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -54,6 +61,7 @@ import com.sitescape.team.mail.MimeMessagePreparator;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.PortabilityUtil;
@@ -378,6 +386,9 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
     public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = (JavaMailSender)mailSenders.get(mailSenderName);
     	try {
+    		if (mailSender == null) {// TODO: test only, remove this!
+    			logger.error("MAIL SENDER ["+mailSenderName+"] IS NULL!");
+    		}
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
@@ -495,6 +506,41 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 //currently not implemented 			
 //			helper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML));
 			helper.setText((String)result.get(FolderEmailFormatter.HTML),true);
+			
+			prepareAttachments(notify, helper);
+			prepareICalendars(notify, helper);
+			
+			//save message incase cannot connect and need to resend;
+			message = mimeMessage;
+		}
+		
+		private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
+			int c = 0;
+			Iterator entryEventsIt = notify.getEvents().values().iterator();
+			while (entryEventsIt.hasNext()) {
+				Calendar iCal = getIcalGenerator().createICalendar();
+				Iterator eventsIt = ((List)entryEventsIt.next()).iterator();
+				while (eventsIt.hasNext()) {
+					Event event = (Event)eventsIt.next();
+					getIcalGenerator().addEventToICalendar(iCal, event.getOwner().getEntity(), event);
+				}
+				
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				CalendarOutputter calendarOutputter = new CalendarOutputter();
+				try {
+					calendarOutputter.output(iCal, out);
+				} catch (IOException e) {
+					logger.error(e);
+				} catch (ValidationException e) {
+					logger.error(e);
+				}
+				helper.addAttachment("iCalendar" + c + ".ics", new ByteArrayResource(out.toByteArray()));
+			
+				c++;
+			}	
+			notify.clearEvents();
+		}
+		private void prepareAttachments(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			if (sendAttachments) {
 				Set atts = notify.getAttachments();
 				for (Iterator iter=atts.iterator(); iter.hasNext();) {
@@ -507,8 +553,6 @@ public class MailManagerImpl extends CommonDependencyInjection implements MailMa
 				}
 			}
 			notify.clearAttachments();
-			//save message incase cannot connect and need to resend;
-			message = mimeMessage;
 		}
 
 	}
