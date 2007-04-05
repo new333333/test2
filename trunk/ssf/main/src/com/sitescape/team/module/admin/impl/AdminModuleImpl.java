@@ -440,24 +440,39 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 if (def != null) template.setEntryDef(def);
 		 else template.setEntryDef(getDefinitionModule().addDefaultDefinition(type));
 		 List definitions = new ArrayList();
+		 Map workflows = new HashMap();
 		 //get default definitions for this template
-		 List nodes = config.selectNodes("./property[@name='definition']");
+		 List nodes = config.selectNodes("./definition");
 		 if (nodes.isEmpty()) {
 			 template.setDefinitionsInherited(true);
 		 } else {
 			 for (int i=0; i<nodes.size(); ++i) {
 				 Element element = (Element)nodes.get(i);
-				 String name = element.getStringValue();
+				 String name = element.attributeValue("name");
 				 if (Validator.isNull(name)) continue;
 				 FilterControls fc = new FilterControls();
 				 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
 				 fc.add("name", name);
-				 List results = getCoreDao().loadObjects(Definition.class, fc);
+				 List<Definition> results = getCoreDao().loadObjects(Definition.class, fc);
 				 if (results.isEmpty()) continue;
-				 definitions.add(results.get(0));
+				 Definition cDef = results.get(0);
+				 definitions.add(cDef);
+				 name=element.attributeValue("workflow");
+				 if (Validator.isNotNull(name)) {
+					 //lookup workflow
+					 fc = new FilterControls();
+					 fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
+					 fc.add("name", name);
+					 results = getCoreDao().loadObjects(Definition.class, fc);
+					 if (!results.isEmpty()) {
+						 workflows.put(cDef.getId(), results.get(0));
+					 }
+					 
+				 }
 			 }
 			 template.setDefinitionsInherited(false);
 			 template.setDefinitions(definitions);
+			 template.setWorkflowAssociations(workflows);
 		 }
 		 
 		 getCoreDao().save(template);

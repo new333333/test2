@@ -83,7 +83,7 @@ import com.sitescape.team.util.FileStore;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.ThumbnailException;
-import com.sitescape.team.web.util.FilterHelper;
+import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.UncheckedIOException;
@@ -1131,9 +1131,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		// We use search engine to get the list of file names in the specified folder.
 		
 		// create empty search filter
-		org.dom4j.Document searchFilter = DocumentHelper.createDocument();
-		Element sfRoot = searchFilter.addElement(FilterHelper.FilterRootName);
-		sfRoot.addElement(FilterHelper.FilterTerms);
+		org.dom4j.Document qTree = SearchUtils.getInitalSearchDocument(null, null);
 		
 		/*
 		Element filterTerms = sfRoot.addElement(FilterHelper.FilterTerms);
@@ -1143,7 +1141,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		filterTermValueEle.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 		*/
 		
-		org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
 		
 		Element rootElement = qTree.getRootElement();
 		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);

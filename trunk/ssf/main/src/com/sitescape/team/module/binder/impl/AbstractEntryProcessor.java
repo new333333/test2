@@ -963,8 +963,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         Hits hits = getBinderEntries_doSearch(binder, entryTypes, options);
         //iterate through results
         List childEntries = SearchUtils.getSearchEntries(hits);
-        SearchUtils.extendPrincipalsInfo(childEntries, getProfileDao());
-
+        SearchUtils.extendPrincipalsInfo(childEntries, getProfileDao(), getEntryPrincipalField());
        	Map model = new HashMap();
         model.put(ObjectKeys.BINDER, binder);      
         model.put(ObjectKeys.SEARCH_ENTRIES, childEntries);

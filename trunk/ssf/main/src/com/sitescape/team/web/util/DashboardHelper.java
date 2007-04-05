@@ -919,10 +919,10 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 			if (componentMap != null) {
 				Map originalComponentData = new HashMap();
 				if (componentMap.containsKey(Data)) originalComponentData = (Map) componentMap.get(Data);
-				
+				String cName = (String)componentMap.get(DashboardHelper.Name);
 				//Get any component specific data
-				if (componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
-				    componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY)) {
+				if (ObjectKeys.DASHBOARD_COMPONENT_SEARCH.equals(cName) ||
+				    ObjectKeys.DASHBOARD_COMPONENT_GALLERY.equals(cName)) {
 					//Get the search query
 					try {
 						Document query = FilterHelper.getSearchFilter(request);
@@ -936,9 +936,9 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 					if (componentData.containsKey("groups")) {
 					componentData.put("groups", FindIdsHelper.getIdsAsString((String[])componentData.get("groups")));
 					}
-				} else if (componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
-						componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY) ||
-						componentMap.get(DashboardHelper.Name).equals(ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY)) {
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
+						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 					//Get the folderIds out of the formData
 					Iterator itFormData = formData.keySet().iterator();
 					List folderIds = new ArrayList();
@@ -1182,7 +1182,55 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 		}
 		return dashboard;
 	}
-
+	public void toXml(Dashboard dashboard, Element parent) {
+		Element d = parent.addElement("dashboard");
+		d.addAttribute("nextComponentId", String.valueOf(dashboard.getNextComponentId()));
+		d.addAttribute("showComponents", String.valueOf(dashboard.isShowComponents()));
+		Object val = dashboard.getProperty(DashboardHelper.Title);
+		Element p;
+		if (val != null) {
+			p = d.addElement("property");
+			p.addAttribute("name", DashboardHelper.Title);
+			p.addCDATA(val.toString());
+		}
+		val = dashboard.getProperty(DashboardHelper.IncludeBinderTitle);
+		if (val != null) {
+			p = d.addElement("property");
+			p.addAttribute("name", DashboardHelper.IncludeBinderTitle);
+			p.addText(val.toString());
+		}
+		layoutToXml(d, dashboard, DashboardHelper.Wide_Top);
+		layoutToXml(d, dashboard, DashboardHelper.Narrow_Fixed);
+		layoutToXml(d, dashboard, DashboardHelper.Narrow_Variable);
+		layoutToXml(d, dashboard, DashboardHelper.Wide_Bottom);
+		Map components = (Map)dashboard.getProperty(Dashboard.Components);
+		for (Iterator iter=components.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			Map cMap = (Map)me.getValue();
+			if (cMap == null) continue;
+			Element component = d.addElement("component");
+			component.addAttribute("name", me.getKey().toString());
+		}
+		
+	}
+	private void layoutToXml(Element parent, Dashboard dashboard, String name) {
+		List<Map> contents = (List)dashboard.getProperty(name);
+		for (Map cMap:contents) {
+			Element layout = parent.addElement("layout");
+			layout.addAttribute("name", name);
+			for (Iterator iter=cMap.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry me = (Map.Entry)iter.next();
+				Object val = me.getValue();
+				if (val == null) continue;
+				Element p=layout.addElement("property");
+				p.addAttribute("name", (String)me.getKey());
+				p.addText(me.getValue().toString());
+			}
+		}		
+	}
+	private void componentToXml(Element parent, Map component, String name) {
+		
+	}
 
 	private boolean checkDashboardList(Map ssDashboard, Map dashboard, String listName) {
 		boolean changesMade = false;

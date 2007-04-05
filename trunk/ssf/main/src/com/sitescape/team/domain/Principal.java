@@ -32,7 +32,6 @@ public abstract class Principal extends Entry  {
     protected String name;
     protected String foreignName="";
     protected List memberOf;//initialized by hiberate access=field
-    protected String signature="";    
     protected Long zoneId;
     protected Long workspaceId;
     protected List iMemberOf;
@@ -117,16 +116,6 @@ public abstract class Principal extends Entry  {
     	this.zoneId = zoneId;
     }
 
-	/**
-     * @hibernate.property length="256"
-	 * @return
-	 */	
-	public String getSignature() {
-	    return this.signature;
-	}
-	public void setSignature(String signature) {
-	    this.signature = signature;
-	} 
  
     /**
      * @hibernate.property length="82"

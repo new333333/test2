@@ -66,7 +66,7 @@ public class ManageGroupsController extends  SAbstractController {
 
 		} else if (formData.containsKey("deleteBtn")) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			getProfileModule().deleteEntry(binderId, groupId);
+			getProfileModule().deleteEntry(binderId, groupId, false);
 			
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");
@@ -86,17 +86,20 @@ public class ManageGroupsController extends  SAbstractController {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+		//get them all
+		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 		//Exclude allUsers from the search 
-//		Document searchFilter = DocumentHelper.createDocument();
-//		Element rootElement = searchFilter.addElement(QueryBuilder.NOT_ELEMENT);
-//   	Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-//    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
-//    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-//    	child.setText("allUsers");
-//    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+		Document searchFilter = DocumentHelper.createDocument();
+		Element rootElement = searchFilter.addElement(QueryBuilder.NOT_ELEMENT);
+		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText("allUsers");
+    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 
 		Map searchResults = getProfileModule().getGroups(binder.getId(), options);
 		List groups = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		//remove allUsers from list
 		Map model = new HashMap();
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.GROUP_LIST, groups);

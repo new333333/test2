@@ -29,7 +29,6 @@
     <property name="disabled"/>
     <property name="zoneId" not-null="true"/>
 	<property name="logVersion"/>
-    <property name="signature" length="256"/>
     <property name="name" length="82" not-null="true"/>
     <property name="foreignName" length="128" not-null="true"/>
     <bag inverse="true" access="field" cascade="persist,merge,save-update,refresh,evict" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">

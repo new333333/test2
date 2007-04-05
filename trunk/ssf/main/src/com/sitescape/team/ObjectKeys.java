@@ -182,7 +182,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
-    public static final String FIELD_PRINCIPAL_DELETED="disabled";
+    public static final String FIELD_PRINCIPAL_DELETED="deleted";
     public static final String FIELD_GROUP_MEMBERS="members";
  
     
