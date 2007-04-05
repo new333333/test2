@@ -1,17 +1,13 @@
 <%
 /**
- * Copyright (c) 2005 SiteScape, Inc. All rights reserved.
+ * The contents of this file are governed by the terms of your license
+ * with SiteScape, Inc., which includes disclaimers of warranties and
+ * limitations on liability. You may not use this file except in accordance
+ * with the terms of that license. See the license for the specific language
+ * governing your rights and limitations under the license.
  *
- * The information in this document is subject to change without notice 
- * and should not be construed as a commitment by SiteScape, Inc.  
- * SiteScape, Inc. assumes no responsibility for any errors that may appear 
- * in this document.
+ * Copyright (c) 2007 SiteScape, Inc.
  *
- * Restricted Rights:  Use, duplication, or disclosure by the U.S. Government 
- * is subject to restrictions as set forth in subparagraph (c)(1)(ii) of the
- * Rights in Technical Data and Computer Software clause at DFARS 252.227-7013.
- *
- * SiteScape and SiteScape Forum are trademarks of SiteScape, Inc.
  */
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
