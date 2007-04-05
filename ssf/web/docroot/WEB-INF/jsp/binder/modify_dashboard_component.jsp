@@ -51,6 +51,19 @@
   onSubmit="return ss_onSubmit(this);">
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>
+	<br/>
+	<span class="ss_fineprint" style="padding-left:10px;">
+	  <ssf:nlt tag="dashboard.componentScope"/>: 
+	  <c:if test="${ssDashboard.scope == 'local'}">
+	    <ssf:nlt tag="dashboard.componentScope.local"/>
+	  </c:if>
+	  <c:if test="${ssDashboard.scope == 'global'}">
+	    <ssf:nlt tag="dashboard.componentScope.global"/>
+	  </c:if>
+	  <c:if test="${ssDashboard.scope == 'binder'}">
+	    <ssf:nlt tag="dashboard.componentScope.binder"/>
+	  </c:if>
+	</span>
 	<c:set var="id" value="${ssDashboard.ssComponentId}"/>
 	<div class="ss_dashboard_config">
 		<p class="ss_bold"><ssf:nlt checkIfTag="true" tag="${ssDashboard.component_titles[ssDashboard.dashboard.components[id].name]}"/></p>
