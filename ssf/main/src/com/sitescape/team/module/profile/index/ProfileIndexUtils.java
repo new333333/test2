@@ -8,6 +8,7 @@ import org.apache.lucene.document.Field;
 
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.Validator;
 /**
@@ -24,6 +25,7 @@ public class ProfileIndexUtils  {
     public static final String EMAIL_FIELD="_email";
     public static final String ORGANIZATION_FIELD="_org";
     public static final String ZONNAME_FIELD="_zonName";
+    public static final String RESERVEDID_FIELD="_reservedId";
 //    public static final String MEMBEROF_FIELD="_memberOf";
     
     
@@ -46,6 +48,12 @@ public class ProfileIndexUtils  {
     public static void addEmail(Document doc, User user) {
     	if (Validator.isNotNull(user.getEmailAddress())) {
     		Field docNumField =  new Field(EMAIL_FIELD, user.getEmailAddress(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(docNumField);
+    	}
+    } 
+    public static void addReservedId(Document doc, Principal principal) {
+    	if (Validator.isNotNull(principal.getInternalId())) {
+    		Field docNumField =  new Field(RESERVEDID_FIELD, principal.getInternalId(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     	}
     } 

@@ -551,7 +551,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         Hits hits = new Hits(0);
        
        	Document qTree = SearchUtils.getInitalSearchDocument(searchQuery, options);
- 
+    	SearchUtils.getQueryFields(qTree, options); 
+
        	//Create the Lucene query
 	   	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
 	   	SearchObject so = qb.buildQuery(qTree);
@@ -585,7 +586,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    }
 	       
 	    entries = SearchUtils.getSearchEntries(hits);
-	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
+	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), EntityIndexUtils.CREATORID_FIELD);
                
         Map retMap = new HashMap();
         retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);

@@ -26,11 +26,14 @@ public class LdapConfig extends ScheduleInfo {
 //	public static final String GROUPS_URL = "ldap.groups.url";
 //	public static final String GROUPS_PRINCIPAL = "ldap.groups.princiapl";
 //	public static final String GROUPS_CREDENTIAL = "ldap.groups.credentials";
-	public static final String DISABLE_USERS = "ldap.users.disable";
+//	public static final String DISABLE_USERS = "ldap.users.disable";
+	public static final String DELETE_USERS = "ldap.users.delete";
+	public static final String DELETE_USERS_WORKSPACE = "ldap.users.workspace.delete";
 	public static final String REGISTER_USERS = "ldap.users.register";
 	public static final String SYNC_USERS = "ldap.users.sync";
 	public static final String SYNC_MEMBERSHIP = "ldap.membership.sync";
-	public static final String DISABLE_GROUPS = "ldap.groups.disable";
+//	public static final String DISABLE_GROUPS = "ldap.groups.disable";
+	public static final String DELETE_GROUPS = "ldap.groups.delete";
 	public static final String REGISTER_GROUPS = "ldap.groups.register";
 	public static final String SYNC_GROUPS = "ldap.groups.sync";
 	
@@ -91,17 +94,23 @@ public class LdapConfig extends ScheduleInfo {
 //	public void setSessionSync(boolean loginSync) {
 //		details.put(SESSION_SYNC, Boolean.toString(loginSync));
 //	}
-	public boolean isUserDisable() {
-		return GetterUtil.get((String)details.get(DISABLE_USERS), false);
+	public boolean isUserDelete() {
+		return GetterUtil.get((String)details.get(DELETE_USERS), false);
 	}
-	public void setUserDisable(boolean disable) {
-		details.put(DISABLE_USERS, Boolean.toString(disable));
+	public void setUserDelete(boolean disable) {
+		details.put(DELETE_USERS, Boolean.toString(disable));
 	}
-	public boolean isGroupDisable() {
-		return GetterUtil.get((String)details.get(DISABLE_GROUPS), false);
+	public boolean isUserWorkspaceDelete() {
+		return GetterUtil.get((String)details.get(DELETE_USERS_WORKSPACE), false);
 	}
-	public void setGroupDisable(boolean disable) {
-		details.put(DISABLE_GROUPS, Boolean.toString(disable));			
+	public void setUserWorkspaceDelete(boolean disable) {
+		details.put(DELETE_USERS_WORKSPACE, Boolean.toString(disable));
+	}
+	public boolean isGroupDelete() {
+		return GetterUtil.get((String)details.get(DELETE_GROUPS), false);
+	}
+	public void setGroupDelete(boolean disable) {
+		details.put(DELETE_GROUPS, Boolean.toString(disable));			
 	}
 	public boolean isUserRegister() {
 		return  GetterUtil.get((String)details.get(REGISTER_USERS), false);
@@ -123,7 +132,8 @@ public class LdapConfig extends ScheduleInfo {
 		details.put(SYNC_USERS, Boolean.toString(create));
 	}
 	public boolean isGroupSync() {
-		return  GetterUtil.get((String)details.get(SYNC_GROUPS), false);			
+		//default to true
+		return  GetterUtil.get((String)details.get(SYNC_GROUPS), true);			
 	}
 	public void setGroupSync(boolean create) {
 		details.put(SYNC_GROUPS, Boolean.toString(create));

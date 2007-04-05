@@ -552,16 +552,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return ids;
      }     
 
-    protected Set getPrincipalIdsFromSearch(HashMap entity) {
-    	List<Map> results = new ArrayList();
-    	results.add(entity);
-    	return getPrincipalIdsFromSearch(results);
-    } 
-    
-    protected Set getPrincipalIdsFromSearch(List<Map> searchResults) {
-       	return IndexUtils.getPrincipalsFromSearch(searchResults);
-    }   
-
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        

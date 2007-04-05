@@ -33,7 +33,6 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -114,7 +113,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		} else if ("addWorkspace".equals(operation)) { 	
 	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_BINDERS);
 		} else if (operation.startsWith("add")) {
-	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_ENTRIES);
+	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
 		} else {
 	    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.READ_ENTRIES);
 		}
@@ -176,7 +175,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return p;
     }
     //RW transaction
-  public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
+	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		UserProperties uProps=null;
    		User user = RequestContextHolder.getRequestContext().getUser();
   		if (userId == null) userId = user.getId();
@@ -492,15 +491,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
     //RW transaction
-    public void deleteEntry(Long binderId, Long principalId) {
+    public void deleteEntry(Long binderId, Long principalId, boolean deleteWS) {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, principalId);
         checkAccess(entry, "deleteEntry");
        	if (entry.isReserved()) 
-    		throw new NotSupportedException(NLT.get("errorcode.group.reserved", new Object[]{entry.getName()}));       	
-/* Don't automatically delete user workspace - to dangerous
- *        if (entry instanceof User) {
+    		throw new NotSupportedException(NLT.get("errorcode.principal.reserved", new Object[]{entry.getName()}));       	
+       	processor.deleteEntry(binder, entry); 
+        if (deleteWS && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;
         	Long wsId = u.getWorkspaceId();
@@ -509,8 +508,6 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
            		u.setWorkspaceId(null);       		
         	} catch (Exception ue) {}       	
         }
-*/
-       	processor.deleteEntry(binder, entry); 
      }
     
     //RO transaction

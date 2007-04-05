@@ -1,23 +1,20 @@
 package com.sitescape.team.portlet.profile;
 
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-
-
-import org.springframework.web.servlet.ModelAndView;
-
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
+import org.springframework.web.servlet.ModelAndView;
+
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
@@ -38,7 +35,7 @@ public class ModifyEntryController extends SAbstractController {
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_DELETE)) {
-			getProfileModule().deleteEntry(binderId, entryId);			
+			getProfileModule().deleteEntry(binderId, entryId, false);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);

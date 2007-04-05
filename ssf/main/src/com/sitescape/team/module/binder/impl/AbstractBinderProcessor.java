@@ -1114,10 +1114,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	/*************************************************************************************************/
 
-    protected Set getPrincipalIdsFromSearch(List<Map> pList) {
-    	return EntityIndexUtils.getPrincipalsFromSearch(pList);
-    }   
-
+ 
     public Set getPrincipalIds(List<DefinableEntity> results) {
     	Set ids = new HashSet();
     	for (DefinableEntity entry: results) {
@@ -1135,5 +1132,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         if (entity.getModification() != null)
         	ids.add(entity.getModification().getPrincipal().getId());
     	return ids;
-    }	     	  
+    }	     
+	protected String getEntryPrincipalField() {
+    	return EntityIndexUtils.CREATORID_FIELD;
+    }
+
 }

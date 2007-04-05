@@ -287,7 +287,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    						.setParameterList("tList", types)
    						.executeUpdate();
  		   			//only delete groups; leave users around
- 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='G'")
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='group'")
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
 		   			//this flushes secondary cache

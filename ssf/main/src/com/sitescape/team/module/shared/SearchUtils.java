@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Iterator;
@@ -117,7 +118,7 @@ public class SearchUtils {
   			Element rootElement = searchFilter.addElement(FilterHelper.FilterRootName);
   			rootElement.addElement(FilterHelper.FilterTerms);
   		}
-  		org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter, options);
+  		org.dom4j.Document qTree = FilterHelper.convertSearchFilterToSearchBoolean(searchFilter);
    		return qTree;
   	}
   	public static void getQueryFields(org.dom4j.Document queryTree, Map options) {
@@ -125,6 +126,13 @@ public class SearchUtils {
 		Element rootElement = queryTree.getRootElement();
    		//assume this document was setup in getInitalSearchDocument
 		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+    	//Add in any additional fields from the options map
+    	if (options.containsKey(ObjectKeys.SEARCH_FILTER_AND)) {
+    		org.dom4j.Document filter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_FILTER_AND);
+    		Element filterRoot = filter.getRootElement();
+    		boolElement.add((Element)filterRoot.clone());
+     	}
+		
        	//See if there is a title field search request
    		if (options.containsKey(ObjectKeys.SEARCH_TITLE)) {
    			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
@@ -219,22 +227,26 @@ public class SearchUtils {
     		}
     	}
   	}
-    public static void extendPrincipalsInfo(List entries, ProfileDao profileDao) {
-		Set ids = EntityIndexUtils.getPrincipalsFromSearch(entries);
+    public static void extendPrincipalsInfo(List<Map> entries, ProfileDao profileDao, String userField) {
+    	Set ids = new HashSet();
+    	//build list of user ids to load
+    	for (Map entry: entries) {
+    		if (entry.get(userField) != null)
+    			try {
+    				ids.add(Long.parseLong((String)entry.get(userField)));
+    			} catch (Exception ex) {}
+    	}
 		Map users = profileDao.loadPrincipalsData(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
 
-		// walk the entries, and stuff in the user object.
+		// walk the entries, and stuff in the requested user object.
 		for (int i = 0; i < entries.size(); i++) {
 			HashMap entry = (HashMap)entries.get(i);
-			if (entry.get(getEntryPrincipalField()) != null) {
-				entry.put(WebKeys.PRINCIPAL, users.get(Long.parseLong((String)entry.get(getEntryPrincipalField()))));
+			if (entry.get(userField) != null) {
+				entry.put(WebKeys.PRINCIPAL, users.get(Long.parseLong((String)entry.get(userField))));
 	        }        	
 		}		
 	}
   	
-	protected static String getEntryPrincipalField() {
-    	return EntityIndexUtils.CREATORID_FIELD;
-    }
     
 	public static void filterEntryAttachmentResults(Map results) {
 		List entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);

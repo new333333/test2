@@ -43,7 +43,7 @@ public interface ProfileModule {
    public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 		throws AccessControlException, WriteFilesException;
   
-   public void deleteEntry(Long binderId, Long id)
+   public void deleteEntry(Long binderId, Long id, boolean deleteWS)
 		throws AccessControlException, WriteFilesException;
 
    public ProfileBinder getProfileBinder();

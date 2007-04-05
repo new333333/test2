@@ -333,7 +333,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	
 	public void deletePrincipal(long binderId, long principalId) {
 		try {
-			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId));
+			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), false);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

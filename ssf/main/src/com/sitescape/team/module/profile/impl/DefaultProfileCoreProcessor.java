@@ -282,7 +282,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        		//mark deleted, cause their ids are used all over
        		//profileDao will delete all associations and groups
        		p.setDeleted(true);
-       		p.setTitle(NLT.get("profile.deleted.label") + " " + p.getTitle());
+       		Map updatesCtx = new HashMap();
+       		updatesCtx.put(ObjectKeys.FIELD_ENTITY_TITLE, p.getTitle());
+       		p.setTitle(p.getTitle() + " " + NLT.get("profile.deleted.label") + " " + entry.getModification().getDate().toString());
+       		checkUserTitle(p, updatesCtx);
        	}
     	getProfileDao().delete((Principal)entry);   
     }
@@ -301,6 +304,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		} else {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry);	
 		}
+        ProfileIndexUtils.addReservedId(indexDoc, (Principal)entry);	
 		
        return indexDoc;
     }

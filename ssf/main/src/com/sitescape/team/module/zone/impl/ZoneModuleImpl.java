@@ -298,11 +298,12 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		group.setModification(stamp);
 		return group;
 	}
-	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String id) {
+	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String title, String id) {
 		
 		User user = new User();
 		user.setName(name);
 		user.setForeignName(name);
+		user.setLastName(title);
 		user.setZoneId(parent.getZoneId());
 		user.setParentBinder(parent);
 		user.setInternalId(id);
@@ -313,10 +314,10 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_postingAgent", ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
+		return addReservedUser(parent, stamp, "_postingAgent", NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_jobProcessingAgent", ObjectKeys.JOB_PROCESSOR_INTERNALID);
+		return addReservedUser(parent, stamp, "_jobProcessingAgent", NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
 		Workspace team = new Workspace();
