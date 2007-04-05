@@ -4,6 +4,9 @@
 /* ss_style is specified in view_css so its colors can be set up
 .ss_style {}
 */
+.portlet-minimum-height {
+		height: auto;
+}
 
 
 /* This style triggers the Nifty Corners rounding effect. 
