@@ -2636,6 +2636,18 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 	return false;
 }
 
+function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, namespace) {
+	var linkMenuObj = eval(linkMenu+"");
+	
+	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the binder
+		linkMenuObj.showingMenu = 0;
+		return false;
+	}
+	
+	ss_gotoPermalink(binderId, entryId, entityType, namespace, "yes");
+}
+
 var menuLinkAdapterURL = "";
 
 function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard) {
@@ -2650,19 +2662,19 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 		eval("binderUrl = ss_baseBinderUrl" + namespace)
 		eval("entryUrl = ss_baseEntryUrl" + namespace)
 	} catch(e) {}
-	if (binderUrl == "" || entryUrl == "") {
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
-	if (binderUrl == "" || entryUrl == "") {
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
-	if (binderUrl == "" || entryUrl == "") {
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
 			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
 				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
@@ -2689,7 +2701,7 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 }
 
 //Routine to go to a permalink without actually using the permalink
-function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
+function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 
 	var binderUrl = "";
 	var entryUrl = "";
@@ -2698,19 +2710,22 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 		eval("binderUrl = ss_baseBinderUrl" + namespace)
 		eval("entryUrl = ss_baseEntryUrl" + namespace)
 	} catch(e) {}
-	if (binderUrl == "" || entryUrl == "") {
+	
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
-	if (binderUrl == "" || entryUrl == "") {
+
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
-	if (binderUrl == "" || entryUrl == "") {
+	
+	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
 			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
 				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
@@ -2749,8 +2764,10 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace) {
 		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
-	
-	//alert("ss_gotoPermalink: url: "+url);
+
+	if (useNewTab && useNewTab == "yes") {
+		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
+	}
 	
 	self.location.href = url;
 	return false;

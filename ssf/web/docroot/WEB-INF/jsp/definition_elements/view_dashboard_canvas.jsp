@@ -72,14 +72,11 @@ function ss_showForumEntryInIframe_Overlay(url) {
     //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
     
     if (wObj.src && wObj.src == url) {
-    	alert("first check");
     	ss_nextUrl = url
     	wObj.src = ss_forumRefreshUrl;
     } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
-    	alert("second check");
     	wObj.src = ss_forumRefreshUrl;
     } else {
-    	alert("third check");
     	wObj.src = url
     }
 

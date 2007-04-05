@@ -48,6 +48,7 @@ import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.module.shared.SearchUtils;
 
 /**
  * @author Peter Hurley
@@ -334,8 +335,11 @@ public class SearchController extends AbstractBinderController {
 			//Do the search and store the search results in the bean
 			entryMap = getBinderModule().executeSearchQuery(searchQuery, options);
 			//peopleMap = getBinderModule().executePeopleSearchQuery(searchQuery);
+			SearchUtils.filterEntryAttachmentResults(entryMap);
+			
 			entries = (List) entryMap.get(ObjectKeys.SEARCH_ENTRIES);
-			entries = BinderHelper.filterEntryAttachmentResults(entries);
+			//This method is not needed as it is done as part of the SearchUtils.filterEntryAttachmentResults call 
+			//entries = BinderHelper.filterEntryAttachmentResults(entries);
 			//people = (List) peopleMap.get(WebKeys.PEOPLE_RESULTS);
 			
 			int intEntriesLength = entries.size();

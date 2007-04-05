@@ -40,6 +40,15 @@
 <jsp:useBean id="fileEntry" type="java.util.HashMap" />
 <%
 	if (!entriesSeen.containsKey(fileEntry.get("_docId"))) {
+
+		String strUseBinderMethod = "yes";
+		String strEntityType = (String) fileEntry.get("_entityType");
+		if (strEntityType == null) strEntityType = "";
+		if ( strEntityType.equals("folderEntry") || strEntityType.equals("reply") ) {
+			strUseBinderMethod = "no";
+		} else if (strEntityType.equals("user") || strEntityType.equals("folder") || strEntityType.equals("workspace") || strEntityType.equals("profiles")) {
+			strUseBinderMethod = "permalink";
+		}
 %>
 <c:set var="hitCount" value="${hitCount + 1}"/>
 	<div class="ss_blog_summary_title">
@@ -84,13 +93,13 @@
 			 	</c:choose>
 
 				<span class="ss_entryTitle ss_underline">
-
 				<ssf:menuLink 
 					displayDiv="false" entryId="${fileEntry._docId}" 
 					folderId="${fileEntry._binderId}" binderId="${fileEntry._binderId}" 
-					entityType="${fileEntry._entityType}" imageId='menuimg_${fileEntry._docId}_${renderResponse.namespace}' 
-			    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
-					namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="yes">
+					entityType="${fileEntry._entityType}" imageId='menuimg_${fileEntry._docId}_${ss_namespace}' 
+			    	menuDivId="ss_emd_${ss_namespace}" linkMenuObj="ss_linkMenu${ss_namespace}" 
+					namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="yes"
+					useBinderFunction="<%= strUseBinderMethod %>">
 					
 					<ssf:param name="url" useBody="true">
 					  	<c:choose>
@@ -121,6 +130,7 @@
 						    	    <ssf:param name="newTab" value="1"/>
 								</ssf:url>
 						    </c:when>
+						    
 					 	</c:choose>
 					</ssf:param>
 					    <c:if test="${empty fileEntry.title}">
@@ -299,10 +309,7 @@
 	</table>
 </div>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}" linkMenuObj="ss_linkMenu${ss_namespace}" 
+	namespace="${ss_namespace}">
 </ssf:menuLink>
 
-<script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
-</script>

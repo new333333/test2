@@ -13,6 +13,10 @@ if (displayStyle == null || displayStyle.equals("")) {
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
 <!-- Start of component -->
+<script type="text/javascript">
+var ss_linkMenu<portlet:namespace/>_${ssComponentId} = new ss_linkMenuObj();
+</script>
+
 <div id="<portlet:namespace/>_component_${ss_component_count}"
   <c:if test="${hideDashboardControls}">
     class="ss_content_window_compact" 
