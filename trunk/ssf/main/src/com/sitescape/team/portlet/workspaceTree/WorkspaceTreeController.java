@@ -106,6 +106,18 @@ public class WorkspaceTreeController extends SAbstractController  {
 				User entry = (User)getProfileModule().getEntry(binderId, entryId);
 				if (entry.getWorkspaceId() == null) {
 					binder = getProfileModule().addUserWorkspace(entry);
+					if (binder == null) {
+						//reserved users don't have workspaces.  Redirect to
+						// profile list
+						PortletURL reloadUrl = response.createRenderURL();
+						reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+						reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+						reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
+						model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
+						return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+
+					}
 				} else {
 					try {
 						binder = getBinderModule().getBinder(entry.getWorkspaceId());
