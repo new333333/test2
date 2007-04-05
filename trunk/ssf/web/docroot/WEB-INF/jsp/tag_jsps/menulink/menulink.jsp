@@ -36,9 +36,11 @@ String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 <a class="ss_title_menu" href="<%= url %>" 
 <% if (useBinderFunction.equals("no")) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
-<% } else { %>
+<% } else if (useBinderFunction.equals("yes")) { %>
 	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
-<% } %>
+<% } else if (useBinderFunction.equals("permalink")) { %>
+	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuObj %>', '<%= entryId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
+<% }%>
 onMouseOver="<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 

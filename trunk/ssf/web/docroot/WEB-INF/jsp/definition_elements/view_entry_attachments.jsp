@@ -169,7 +169,7 @@ function ss_openWebDAVFile${ssDefinitionEntry.id}<portlet:namespace/>(strURLValu
 	var divId = "ss_div_fileopen${ssDefinitionEntry.id}<portlet:namespace/>";
 	var divObj = document.getElementById(divId);
 	
-	var frameId = 'ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>';	
+	var frameId = 'ss_iframe_fileopen${ssDefinitionEntry.id}<portlet:namespace/>';
 	var frameObj = document.getElementById(frameId);
 	
 	editClicked = "true";
