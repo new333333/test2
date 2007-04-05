@@ -52,7 +52,6 @@
         <property name="length" column="fileLength"/>
       </component>
       <property name="lastVersion"/>
-	  <property name="uniqueName"/>
 
       <bag inverse="true" access="field" cascade="all,delete-orphan" optimistic-lock="false" lazy="true" batch-size="4" name="fileVersions">
         <key column="parentAttachment" />

@@ -136,7 +136,7 @@ public class CustomAttribute  {
         }
     }
     /**
-     * @hibernate.property length="4000"
+     * @hibernate.property length="2000"
      */
     private String getStringValue() {
         return this.stringValue;
@@ -264,7 +264,7 @@ public class CustomAttribute  {
             valueType = STRING;
             String val = (String) value;
             // this is returning unicode-16 lengths
-            if (val.length() <= 2000) {
+            if (val.length() <= 1000) {
                 stringValue=val;
                 description = null;
             } else {

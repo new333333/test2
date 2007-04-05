@@ -1731,7 +1731,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		//if we are adding a new version of an existing attachment to 
 		//a uniqueName item, set flag - (will already be set if originally added
 		//through a unique element.  In other works, once unique always unique
-		if (fui.isUniqueName()) fAtt.setUniqueName(true);
 		long fileSize = session.getContentLength(binder, entry, relativeFilePath);
 		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate());
     }
@@ -1860,7 +1859,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	fAtt.setRepositoryName(fui.getRepositoryName());
     	//set attribute name - null if not not named
     	fAtt.setName(fui.getName());
-    	fAtt.setUniqueName(fui.isUniqueName());
     	FileItem fItem = new FileItem();
     	fItem.setName(relativeFilePath);
     	// Optimization: Do NOT try to get the file size directly from the 
@@ -1894,7 +1892,6 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		vAtt.setCreation(fAtt.getCreation());
 		vAtt.setModification(fAtt.getModification());
 		vAtt.setFileItem(fAtt.getFileItem());
-		vAtt.setUniqueName(false);
 		vAtt.setVersionNumber(1);
 		vAtt.setVersionName(versionName);
 		vAtt.setRepositoryName(fAtt.getRepositoryName());

@@ -29,7 +29,7 @@
       <property name="owningBinderId"/>
     </component>
     <property name="name" length="64"/>
-    <property name="stringValue" length="4000"/>
+    <property name="stringValue" length="2000"/>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
