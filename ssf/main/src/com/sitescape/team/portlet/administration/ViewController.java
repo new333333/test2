@@ -228,19 +228,6 @@ public class ViewController extends  SAbstractController {
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
 		}
-
-		//Notification configuration
-		if (getBinderModule().testAccess(top, "setNotificationConfig")) {
-			element = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.configure_email"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-		}
 		
 		//Posting schedule
 		if (getAdminModule().testAccess("addPosting")) {

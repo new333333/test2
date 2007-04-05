@@ -455,6 +455,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
         	} catch (Exception ex) {};
         }
+        if (entry.isReserved()) {
+        	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) ||
+        			ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId())) {
+        		return null;
+        	}
+        }
    		List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
    		try {
    			if (!templates.isEmpty()) {

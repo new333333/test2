@@ -16,7 +16,6 @@
 	<bean id="adminImportProfilesController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
 	<bean id="adminManageGroupsController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
 	<bean id="adminViewChangeLogController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
-	<bean id="emailConfigController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.EmailConfigController" />
 	<bean id="accessControlController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
 	<bean id="configureController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
 	<bean id="dashboardModifyController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
@@ -31,7 +30,6 @@
 						<entry key="viewDefinitionXml"><ref bean="definitionBuilderXmlController"/></entry>
 						<entry key="configure_ldap"><ref bean="adminConfigureLdapController"/></entry>
 						<entry key="configure_roles"><ref bean="adminConfigureRolesController"/></entry>
-						<entry key="config_email"><ref bean="emailConfigController"/></entry>
 						<entry key="configure_posting_job"><ref bean="adminConfigurePostingJobController"/></entry>
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
