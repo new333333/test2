@@ -148,14 +148,8 @@ function ss_loadBinder(obj,id, entityType) {
 	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the binder
 		ss_linkMenu.showingMenu = 0;
-		
-		alert("ss_loadBinder: false");
-		
 		return false;
 	} else {
-	
-		alert("ss_loadBinder: true");
-	
 		return true;
 	}
 }
