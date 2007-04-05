@@ -1,11 +1,18 @@
 package com.sitescape.team.module.definition.notify;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 import java.text.DateFormat;
 import java.util.Date;
 import java.sql.Timestamp;
 
+import net.fortuna.ical4j.model.Calendar;
+
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 
 public class Notify {
@@ -15,7 +22,8 @@ public class Notify {
 	protected boolean full=false;
 	protected Locale locale;
 	protected DateFormat dateFormat;
-	protected HashSet files= null;
+	protected Set files= null;
+	protected Map events= null;// sorted by entry id
 	protected Timestamp startTs;
 	protected boolean includeAttachments=false;
 	
@@ -35,7 +43,21 @@ public class Notify {
 	public void setAttachmentsIncluded(boolean includeAttachments) {
 		this.includeAttachments = includeAttachments;
 	}
-	
+	public Map getEvents() {
+		if (events == null) events = new HashMap();
+		return events;
+	}
+	public void addEvent(Long entryId, Event event) {
+		Map events = getEvents();
+		if (events.get(entryId) == null) {
+			events.put(entryId, new ArrayList());
+		}
+		List entryEventsList = (List)events.get(entryId);
+		entryEventsList.add(event);
+	}
+	public void clearEvents() {
+		if (events != null) events.clear();
+	}
 	public String getType() {
 		if (isFull()) return FULL;
 		return SUMMARY;

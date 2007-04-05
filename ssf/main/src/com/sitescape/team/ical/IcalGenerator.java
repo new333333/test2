@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.fortuna.ical4j.model.Calendar;
+import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
@@ -91,49 +92,54 @@ public class IcalGenerator extends CommonDependencyInjection {
 	protected Log logger = LogFactory.getLog(getClass());
 
 	/**
+	 * Creates new iCalendar object and sets fields.
+	 */
+	public Calendar createICalendar() {
+		Calendar calendar = new Calendar();
+		calendar.getProperties().add(IcalGenerator.PROD_ID);
+		calendar.getProperties().add(Version.VERSION_2_0);
+		calendar.getProperties().add(CalScale.GREGORIAN);
+		return calendar;
+	}
+	
+	public void addEventToICalendar (Calendar calendar, DefinableEntity entry, Event event) {
+
+		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+
+		// there is probably a bug in iCal4j or in Java: for some time zones
+		// the date after setting the time zone is wrong, it means: the other
+		// time offset is supplied as it should be...
+		TimeZone timeZone = getTimeZone(event.getTimeZone(), registry);
+		if (timeZone != null) {
+			VTimeZone tz = timeZone.getVTimeZone();
+			if (!calendar.getComponents(Component.VTIMEZONE).contains(tz)) {
+				calendar.getComponents().add(tz);
+			}
+		}
+
+		VEvent vEvent = createVEvent(entry, event, timeZone);
+		calendar.getComponents().add(vEvent);
+	}
+	
+	/**
 	 * Generates iCalendar for all events in given entry. If entry has no events then output object doesn't contains any events.
 	 * 
 	 * @param entry 
 	 * @return 
 	 */
 	public Calendar getICalendarForEntryEvents(DefinableEntity entry) {
-		Calendar calendar = new Calendar();
-		calendar.getProperties().add(IcalGenerator.PROD_ID);
-		calendar.getProperties().add(Version.VERSION_2_0);
-		calendar.getProperties().add(CalScale.GREGORIAN);
+		Calendar calendar = createICalendar();
 
 		if (entry.getEvents() == null || entry.getEvents().isEmpty()) {
 			return calendar;
 		}
-		
-		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance()
-				.createRegistry();
-
-		Set timeZoneIds = new HashSet();
-		Set timeZones = new HashSet();
-		Set vevents = new HashSet();
 
 		Iterator eventsIt = entry.getEvents().iterator();
 		while (eventsIt.hasNext()) {
 			Event event = (Event) eventsIt.next();
-
-			// there is probably a bug in iCal4j or in Java: for some time zones
-			// date string after setting time zone is wrong, it means: the other
-			// time offset is supplied as it should be...
-			TimeZone timeZone = getTimeZone(event.getTimeZone(), registry);
-			if (timeZone != null && !timeZoneIds.contains(timeZone.getID())) {
-				VTimeZone tz = timeZone.getVTimeZone();
-				timeZones.add(tz);
-				timeZoneIds.add(timeZone.getID());
-			}
-
-			VEvent vEvent = createVEvent(entry, event, timeZone);
-			vevents.add(vEvent);
+			addEventToICalendar (calendar, entry, event);
 		}
-
-		calendar.getComponents().addAll(timeZones);
-		calendar.getComponents().addAll(vevents);
-
+		
 		return calendar;
 	}
 
@@ -147,7 +153,10 @@ public class IcalGenerator extends CommonDependencyInjection {
 		VEvent vEvent = null;
 		if (event.hasDuration()) {
 			DateTime dt = new DateTime(event.getDtStart().getTime());
-			dt.setTimeZone(timeZone);
+			if (timeZone != null) {
+				// must be if has duration...
+				dt.setTimeZone(timeZone);
+			}
 
 			Dur duration = null;
 			if (event.getDuration().getWeeks() > 0) {
