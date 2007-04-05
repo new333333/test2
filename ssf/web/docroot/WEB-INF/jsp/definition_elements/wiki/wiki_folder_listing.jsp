@@ -65,7 +65,7 @@
 		    action="view_folder_entry" 
 		    entryId="${ss_wikiHomepageEntryId}" 
 		    actionUrl="true" />" 
-		    onClick="ss_loadEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
+		    onClick="ss_loadWikiEntry(this, '${ss_wikiHomepageEntryId}');return false;" 
 		><ssf:nlt tag="wiki.homePage"/></a>
 	    </span>
 	    <br/>
@@ -149,7 +149,7 @@
 		    folderId="${ssFolder.id}" 
 		    action="view_folder_entry" 
 		    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-		    onClick="ss_loadEntry(this, '${entry1._docId}');return false;" 
+		    onClick="ss_loadWikiEntry(this, '${entry1._docId}');return false;" 
 		    ><c:if test="${empty entry1.title}"
 		    ><span id="folderLine_${entry1._docId}" class="ss_normal"
 		      style="margin:-8px;" <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span

@@ -29,6 +29,10 @@
 <c:set var="portletNamespace" value="${renderResponse.namespace}"/>
 </ssf:ifnotadapter>
 
+<c:if test="${empty ss_namespace}">
+<c:set var="ss_namespace" value="${portletNamespace}_${componentId}" />
+</c:if>
+
 <%
 	Map entriesSeen = new HashMap();
 %>

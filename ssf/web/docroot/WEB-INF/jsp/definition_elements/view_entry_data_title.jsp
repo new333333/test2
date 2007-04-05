@@ -11,30 +11,99 @@
  */
 %>
 <% //Title view %>
+
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+
+<%
+String displayStyle = ssUser.getDisplayStyle();
+if (displayStyle == null || displayStyle.equals("")) {
+	displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
+}
+%>
+
 <div class="ss_entryContent">
 <span class="ss_entryTitle">
-<c:if test="${!empty ssDefinitionEntry.docNumber}">
-  <c:out value="${ssDefinitionEntry.docNumber}"/>.
-</c:if>
-  <c:if test="${ssConfigJspStyle != 'mail'}">
-  <a style="text-decoration: none;"   href="<ssf:url 
-    folderId="${ssDefinitionEntry.parentFolder.id}" 
-    action="view_folder_entry"
-    entryId="${ssDefinitionEntry.id}"/>">
-   </c:if> 
-     <c:if test="${ssConfigJspStyle == 'mail'}">
-  <a href="<ssf:url 
-  		adapter="true" 
-    	portletName="ss_forum" 
-   		action="view_permalink"
-		binderId="${ssDefinitionEntry.parentFolder.id}"
-		entryId="${ssDefinitionEntry.id}">
-		<ssf:param name="entityType" value="${ssEntry.entityType}" />
-    	<ssf:param name="newTab" value="1"/>
- 	  	</ssf:url>">
-   </c:if> 
+	<c:if test="${!empty ssDefinitionEntry.docNumber}">
+	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
+	</c:if>
 
-<c:if test="${empty ssDefinitionEntry.title}">
-  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
-</c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>
+	<c:if test="${ssConfigJspStyle != 'mail'}">
+
+		<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
+		folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
+		imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}' 
+	    menuDivId="ss_emd_${renderResponse.namespace}"
+		linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+		namespace="${renderResponse.namespace}"
+		entryCallbackRoutine="${showEntryCallbackRoutine}">
+	
+			<ssf:param name="url" useBody="true">
+				<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
+				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" />
+			</ssf:param>
+	
+			<c:if test="${empty ssDefinitionEntry.title}">
+			  <span class="ss_light">
+			    --<ssf:nlt tag="entry.noTitle"/>--
+			  </span>
+			</c:if>
+	
+			<c:out value="${ssDefinitionEntry.title}"/>
+		</ssf:menuLink>
+
+	</c:if>
+
+	<c:if test="${ssConfigJspStyle == 'mail'}">
+		<a href="<ssf:url 
+  			adapter="true" 
+    		portletName="ss_forum" 
+   			action="view_permalink"
+			binderId="${ssDefinitionEntry.parentFolder.id}"
+			entryId="${ssDefinitionEntry.id}">
+			<ssf:param name="entityType" value="${ssEntry.entityType}" />
+    		<ssf:param name="newTab" value="1"/>
+ 	  		</ssf:url>">
+		<c:if test="${empty ssDefinitionEntry.title}">
+		  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
+		</c:if><c:out value="${ssDefinitionEntry.title}"/></a>
+	</c:if> 
+
+</span>
+
 </div>
+
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+	namespace="${renderResponse.namespace}">
+</ssf:menuLink>
+
+<script type="text/javascript">
+var ss_displayStyle = "<%= displayStyle %>";
+var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+var ss_baseEntryUrl = '';
+var ss_baseBinderUrl = '';
+
+//This function just reloads the current link
+function ss_showForumEntry(url, callbackRoutine, isDashboard) {
+	self.location.href = url;
+}
+
+var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
+var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
+
+function ss_showForumEntryInPopupWindow(definitionType) {
+	var strAddWindowOpenParams = "";
+	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
+		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
+		strAddWindowOpenParams = ",toolbar,menubar";
+	}
+
+    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    var wObj = self.document.getElementById('ss_showfolder')
+	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
+	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
+	
+    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
+    return false;
+}
+</script>

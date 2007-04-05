@@ -17,7 +17,7 @@
 
 <script type="text/javascript">
 var ss_columnCount = 0;
-function ss_loadEntry(obj,id) {
+function ss_loadWikiEntry(obj,id) {
 	ss_highlightLineById('folderLine_' + id);
 	var iframeDiv = document.getElementById('ss_wikiIframe<portlet:namespace/>')
 	iframeDiv.src = obj.href;

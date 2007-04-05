@@ -3519,14 +3519,31 @@ function ss_linkMenuObj() {
 		//Hemanth: New Code 3 has been introduced for opening in the current tab.
 		//This is used for overcoming the search tab check
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "3");
-		self.location.href = url;
+		
+		if (self.opener) {
+			self.opener.location.href = url;
+			self.opener.focus();
+		} else if (self.parent) {
+			self.parent.location.href = url;
+			self.parent.focus();
+		} else {
+			self.location.href = url;
+		}
 	}
 	
 	this.newTab = function() {
 		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
 		var url = this.buildBaseUrl();
 		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
-		self.location.href = url;
+		if (self.opener) {
+			self.opener.location.href = url;
+			self.opener.focus();
+		} else if (self.parent) {
+			self.parent.location.href = url;
+			self.parent.focus();
+		} else {
+			self.location.href = url;
+		}
 	}
 
 	this.newWindow = function() {
