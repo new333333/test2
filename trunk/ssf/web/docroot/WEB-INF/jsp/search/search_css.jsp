@@ -26,6 +26,7 @@ div.ss_searchContainer {	background: transparent url(<html:imagesPath/>pics/top_
 #ss_searchForm {
 	background: #e8eff7 url(<html:imagesPath/>pics/left_border.gif) repeat-y top left;
 	padding:6px;
+	border-bottom:1px solid #afc8e3;
 }
 #ss_searchForm input { width: 150px;}
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
@@ -55,7 +56,7 @@ div.ss_entry {float: left; width:430px;}
 div.ss_more {float: right; width:72px; text-align:right;}
 div.ss_entryDetails {  padding:6px;}
 div.ss_entryDetails p {margin:0px 0px 6px 0px;}
-img.ss_attachment_thumbnail {width:68px;height:62px;padding:0px margin:0px;}
+img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px margin:0px;}
 .ss_label {}
 
 .ss_rating_box {
@@ -85,4 +86,14 @@ div.ss_rating_box_content td {text-align:center;}
 div.ss_rating_box_content h5 {margin:0px; border-bottom: 1px solid #afc8e3; }
 div.ss_rating_box_content p {margin:6px 0px 12px 0px; }
 span.ss_pageNumber{margin:0px 24px 0px 24px;}
+#ss_searchForm_additionalFilters {background-color:#ffffff;}
+
+div.ss_options_container {border-bottom:1px solid #afc8e3; margin:0px 0px 0px 0px;padding:0px 12px 12px 12px;}
+div.ss_options {padding: 6px 0px 12px 0px;}
+div.ss_options_container h4 {margin:6px 0px 6px 0px;}
+a.ss_button {
+	background-color: #dbe6f2;
+	border: 1px solid #afc8e3;
+	padding: 0px 6px 0px 12px;
+}
 </style>

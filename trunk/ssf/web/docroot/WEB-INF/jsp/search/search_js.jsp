@@ -41,12 +41,11 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 //	alert(wfIdValue+" steps:"+stepsValue);
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.setAttribute("style", "border: 1px solid yellow;padding:5px;margin:5px;");
-	var removeLink = document.createElement('a');
-	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
-	removeLink.appendChild(document.createTextNode("remove "));
-	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" <ssf:nlt tag="filter.workflows"/>: "));
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.workflow"/>: "));
 
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
@@ -55,7 +54,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	sDiv.id = "workflowSteps"+orderNo;
 	sDiv.setAttribute("style", "display:inline;");
 	div.appendChild(sDiv);
-	document.getElementById('ss_searchForm_additionalFilters').appendChild(div);
+	document.getElementById('ss_workflows_options').appendChild(div);
 		
 	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:baseUrl+"&operation=get_workflows_widget", nestedUrl:baseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo};
@@ -69,12 +68,11 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 function ss_addEntry(orderNo) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.setAttribute("style", "border: 1px solid blue;padding:5px;margin:5px;");
-	var removeLink = document.createElement('a');
-	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
-	removeLink.appendChild(document.createTextNode("remove "));
-	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.entry"/>: "));
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.entry"/>: "));
 	
 	var eDiv = document.createElement('div');
 	eDiv.id = "placeholderEntry"+orderNo;
@@ -83,7 +81,7 @@ function ss_addEntry(orderNo) {
 	sDiv.id = "entryFields"+orderNo;
 	sDiv.setAttribute("style", "display:inline;");
 	div.appendChild(sDiv);
-	document.getElementById('ss_searchForm_additionalFilters').appendChild(div);
+	document.getElementById('ss_entries_options').appendChild(div);
 		
 	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:baseUrl+"&operation=get_entry_types_widget", nestedUrl:baseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo};
@@ -94,11 +92,10 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.setAttribute("style", "border: 1px solid red;padding:5px;margin:5px;");
-	var removeLink = document.createElement('a');
-	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
-	removeLink.appendChild(document.createTextNode("remove "));
-	div.appendChild(removeLink);
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
+	div.appendChild(remover);
 
 	var pDiv = document.createElement('div');
 	pDiv.id = "placeholderPersonal"+orderNo;
@@ -109,7 +106,7 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.appendChild(cDiv);
 	div.appendChild(document.createTextNode(" <ssf:nlt tag="tags.personalTags"/>: "));
 	div.appendChild(pDiv);
-	document.getElementById('ss_searchForm_additionalFilters').appendChild(div);
+	document.getElementById('ss_tags_options').appendChild(div);
 	
 	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	url += "&operation=get_tags_widget";
@@ -123,18 +120,17 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 function ss_addAuthor(orderNo, author) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.setAttribute("style", "border: 1px solid pink;padding:5px;margin:5px;");
-	var removeLink = document.createElement('a');
-	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
-	removeLink.appendChild(document.createTextNode("remove "));
-	div.appendChild(removeLink);
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
+	div.appendChild(remover);
 
 	var aDiv = document.createElement('div');
 	aDiv.id = "placeholderAuthor"+orderNo;
 
-	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.author"/>: "));
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.author"/>: "));
 	div.appendChild(aDiv);
-	document.getElementById('ss_searchForm_additionalFilters').appendChild(div);
+	document.getElementById('ss_authors_options').appendChild(div);
 	
 	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	url += "&operation=get_users_widget";
@@ -145,12 +141,11 @@ function ss_addAuthor(orderNo, author) {
 function ss_addDate(orderNo, type) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
-	div.setAttribute("style", "border: 1px solid green;padding:5px;margin:5px;");
-	var removeLink = document.createElement('a');
-	dojo.event.connect(removeLink, "onclick", ss_callRemove(orderNo));
-	removeLink.appendChild(document.createTextNode("remove "));
-	div.appendChild(removeLink);
-	div.appendChild(document.createTextNode(" <ssf:nlt tag="label.Date"/>: "));
+	var remover = document.createElement('img');
+	dojo.event.connect(remover, "onclick", ss_callRemove(orderNo));
+	remover.setAttribute("src", "<html:imagesPath/>pics/delete.gif");
+	div.appendChild(remover);
+	div.appendChild(document.createTextNode(" <ssf:nlt tag="searchForm.label.date"/>: "));
 	
 	var sdDiv = document.createElement('div');
 	sdDiv.id = "placeholderStartDate"+orderNo;
@@ -159,15 +154,17 @@ function ss_addDate(orderNo, type) {
 	edDiv.id = "placeholderEndDate"+orderNo;
 	div.appendChild(edDiv);
 	
-	document.getElementById('ss_searchForm_additionalFilters').appendChild(div);
-	
+	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
+	else document.getElementById('ss_modificationDates_options').appendChild(div);
+		
 	dojo.widget.createWidget("DropDownDatePicker", {value:'', id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
 	dojo.widget.createWidget("DropDownDatePicker", {value:'today', id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 
 function ss_removeOption(orderNo) {
 	ss_optionsArray[orderNo]="";
-	document.getElementById('ss_searchForm_additionalFilters').removeChild(document.getElementById('block'+orderNo));
+	var parent = document.getElementById('block'+orderNo).parentNode;
+	parent.removeChild(document.getElementById('block'+orderNo));
 }
 
 function prepareAdditionalOptions() {
@@ -183,6 +180,11 @@ function prepareAdditionalOptions() {
 	document.getElementById("searchTypes").value = types.join(" ");
 	return true;
 }
+function ss_search() {
+	prepareAdditionalOptions();
+	document.getElementById('advSearchForm').submit();
+}
+
 // TODO find the same method somewhere in common....
 function ss_showHide(objId){
 	var obj = document.getElementById(objId);
