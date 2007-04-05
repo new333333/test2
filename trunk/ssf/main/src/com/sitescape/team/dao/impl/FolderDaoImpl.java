@@ -11,12 +11,11 @@
 package com.sitescape.team.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Collection;
 
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -35,16 +34,12 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
-import com.sitescape.team.domain.HistoryMap;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Tag;
-import com.sitescape.team.domain.TitleException;
-import com.sitescape.team.domain.UserPerFolderPK;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 /**
@@ -283,17 +278,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
         	throw new NoFolderByTheIdException(folderId);
         }
     }
-
-	public HistoryMap loadHistoryMap(Long userId, Long folderId) {
-   		UserPerFolderPK id = new UserPerFolderPK(userId, folderId);
-   		HistoryMap history =(HistoryMap)getHibernateTemplate().get(HistoryMap.class, id);
-   		if (history == null) {
-   			history = new HistoryMap(id);
-   			//quick write
-   			history = (HistoryMap)getCoreDao().saveNewSession(history);
-   		}
-   		return history;
-	}	
+	
 
 	/**
 	 * Delete the folder object and its assocations.

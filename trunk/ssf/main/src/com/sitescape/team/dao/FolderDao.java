@@ -21,7 +21,6 @@ import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.HistoryMap;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 
 /**
@@ -64,7 +63,6 @@ public interface FolderDao {
 	
 	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
   
-    public HistoryMap loadHistoryMap(Long userId, Long folderId);
     public void delete(Folder folder);
     public void deleteEntries(Folder folder);
     public void deleteEntries(Folder folder, List entries);
