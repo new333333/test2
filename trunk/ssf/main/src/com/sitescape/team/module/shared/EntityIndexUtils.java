@@ -309,9 +309,9 @@ public class EntityIndexUtils {
 		Iterator it = event.getAllRecurrenceDates().iterator();
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
-			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.SECOND));
+			sb.append(DateTools.dateToString(eventDates[0].getTime(), DateTools.Resolution.MINUTE));
 			sb.append(" ");
-			sb.append(DateTools.dateToString(eventDates[1].getTime(), DateTools.Resolution.SECOND));
+			sb.append(DateTools.dateToString(eventDates[1].getTime(), DateTools.Resolution.MINUTE));
 			sb.append(",");
 		}
 		if (sb.length() > 0)
