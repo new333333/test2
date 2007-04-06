@@ -78,7 +78,7 @@ public class WorkflowResponse {
  	   this.definitionId = definitionId;
     }
    /**
-     * @hibernate.property length="4000"
+     * @hibernate.property length="2000"
      */
     public String getResponse() {
         return this.response;
