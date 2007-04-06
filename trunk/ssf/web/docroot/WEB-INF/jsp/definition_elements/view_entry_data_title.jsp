@@ -79,12 +79,20 @@ if (displayStyle == null || displayStyle.equals("")) {
 <script type="text/javascript">
 var ss_displayStyle = "<%= displayStyle %>";
 var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
-var ss_baseEntryUrl = '';
-var ss_baseBinderUrl = '';
+
+if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
+	var ss_baseEntryUrl = '';
+	var ss_baseBinderUrl = '';
+}
 
 //This function just reloads the current link
 function ss_showForumEntry(url, callbackRoutine, isDashboard) {
-	self.location.href = url;
+	//self.location.href = url;
+	self.location.reload(true);
+}
+
+function ss_loadEntry() {
+	self.location.reload(true);
 }
 
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";

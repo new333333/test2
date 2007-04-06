@@ -2138,6 +2138,38 @@ a.ss_breadcrumb {
 	background-position:bottom;
 }
 
+/* title menu: */
+
+.ss_title_menu_dd {
+	background-color: #CECECE;
+	font-weight: normal;
+	font-size: 11px;
+	font-family: Arial;
+    text-align:left;
+	position:absolute;
+	display:none;
+	z-index:500;
+	border: 1px solid #999999;
+}
+
+.ss_title_menu_dd li {
+  list-style-type:none;
+}
+
+.ss_title_menu_dd ul {
+  margin:5px 0pt 10px 20px;
+  padding:0pt;  
+}
+
+.ss_title_menu_dd a:hover {
+  text-decoration:underline;
+}
+
+.ss_title_menu_dd a {
+  color: #000000;
+  text-decoration:none;
+}
+
 /* actions: */
 
 .ss_actions_bar1 {
