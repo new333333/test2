@@ -60,6 +60,10 @@ Date.prototype.getDaysInMonth = function() {
 	return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate();
 }
 
+Date.prototype.getMinutesOfTheDay = function() {
+	return (60 * this.getHours()) + this.getMinutes();
+}
+
 Date.shortTime = function(t) {
     var hour = Math.floor(t);
     var min = Math.round((t - hour) * 60);
@@ -183,6 +187,7 @@ var ss_cal_CalData = {
 				alert(ss_not_logged_in);
 			},
 			load: function(type, data, evt) {
+			try {
 				ss_cal_CalData.setMonthViewInfo(data.monthViewInfo.year, data.monthViewInfo.month, data.monthViewInfo.numberOfDaysInView,
 					data.monthViewInfo.startViewDate, data.monthViewInfo.endViewDate);
 							
@@ -191,6 +196,7 @@ var ss_cal_CalData = {
 				ss_cal_Grid.setFirstDayToShow(date);
 				ss_cal_Grid.activateGrid(grid);
 		        ss_cal_Events.redrawAll();
+		       } catch (e) {alert(e);}
 			},
 						
 			mimetype: "text/json",
@@ -675,10 +681,15 @@ var ss_cal_CalEvent = {
 		var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
 
 		var currDay = firstDayOnGrid.addDays(dayOffset);
+		currDay.setHours(Math.floor(hourOffset));
+		currDay.setMinutes(0);
+		if ((gridY % 42) > 21) {
+			currDay.setMinutes(30);
+		}
         this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, 30, "", "", "#CCCCCC", "#CCCCCC", "");
         evt.cancelBubble = true;
         this.currEventData = new Object();
-        this.currEventData.date = currDay;
+        this.currEventData.startDate = currDay;
         this.currEventData.start = hourOffset;
         this.currEventData.dur = 30;
     },
@@ -747,9 +758,9 @@ function ss_cal_newEventInfo(evt, gridControl) {
     var currEventData = ss_cal_CalEvent.currEventData;
     
     var url = ss_addCalendarEntryUrl;
-    url += "&year=" + currEventData.date.getFullYear();
-    url += "&month=" + currEventData.date.getMonth();
-    url += "&dayOfMonth=" + currEventData.date.getDate();
+    url += "&year=" + currEventData.startDate.getFullYear();
+    url += "&month=" + currEventData.startDate.getMonth();
+    url += "&dayOfMonth=" + currEventData.startDate.getDate();
     url += "&time=" + currEventData.start.toString().replace(".5", ":30");
     url += "&duration=" + currEventData.dur;
     
@@ -766,7 +777,7 @@ function ss_cal_eventInfo(evt, eventId) {
 }
 
 
-function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, boxColor, borderColor, eventId) {
+function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, boxColor, borderColor, eventId, continues) {
     var container = dojo.byId(containerId);
     var dayOffsetSize = (1.0 / gridDays) * 100.0;
     var e;
@@ -781,7 +792,7 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
 
     if (eventId != "") {
         dojo.event.connect(ebox, "onmousedown", function(evt) { ss_cal_eventInfo(evt, eventId); evt.cancelBubble = true; });
-        dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId); });
+        dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
     }
 
 
@@ -814,7 +825,9 @@ function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, 
    	eHtml += '<a href="javascript: //">' + title + '</a>';
     
     eHtml += "<br/>" + text;
-    e.innerHTML = eHtml;
+    // ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?"<":"") +
+    e.innerHTML =  eHtml; 
+    // ((continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?">":"");
     ebox.appendChild(e);
 
     e = document.createElement("div");
@@ -919,6 +932,10 @@ function ss_cal_drawMonthEventBlock(containerId, date, eventCount, eventList) {
 
 var ss_cal_Events = {
 	eventsTypes : ["event", "creation", "activity"],
+	CONTINUES_LEFT : 0,
+	CONTINUES_RIGHT : 1,
+	CONTINUES_LEFT_AND_RIGHT : 2,
+	
 	eventsType : 0,
 	
     displayId: 0,
@@ -928,10 +945,11 @@ var ss_cal_Events = {
     collisions: new Array(),
     collisionI: new Array(),
     collisionM: new Array(),
-    order: new Array(),
+    order: new Array(),// eventType -> date(YYYY/MM/DD) -> events key
     
     monthGridEvents: new Array(),
     dayGridEvents: new Array(),
+    
             
     set: function(newEvents) {
         for (var i in newEvents) {
@@ -942,27 +960,22 @@ var ss_cal_Events = {
             	continue;
             }
             
-            // Normalize times
-            if (nei.start.toString().indexOf(":") > 0) {
-                var tarray = nei.start.split(":");
-                start = parseFloat(tarray[0]);
-                if (tarray.length > 1) { start += (parseFloat(tarray[1])/60) }
-            } else {
-                start = parseFloat(nei.start);
-            }
-            nei.start = start;
-            nei.date = new Date(nei.year, nei.month - 1, nei.dayOfMonth);
-            this.eventData[nei.eventId] = nei;
+            nei.start = nei.startDate.hour + (nei.startDate.minutes/60);
+            nei.startDate = new Date(nei.startDate.year, nei.startDate.month - 1, nei.startDate.dayOfMonth, nei.startDate.hour, nei.startDate.minutes);
+            nei.endDate = new Date(nei.endDate.year, nei.endDate.month - 1, nei.endDate.dayOfMonth, nei.endDate.hour, nei.endDate.minutes);
+
+           	this.eventData[nei.eventId] = nei;
             
             this.setupDayDisplayRules(nei);
             this.setupMonthDisplayRules(nei);
             this.sortEvent(nei);
+            
         }
 
-		for (var i in this.eventsTypes) {
-			if (this.order[this.eventsTypes[i]]) {        
-        		this.order[this.eventsTypes[i]].sort();
-        	}
+		for (var i in this.order) {
+			for (var j in this.order[i]) {		
+    			this.order[i][j].sort();
+    		}
         }
     },
 
@@ -978,18 +991,32 @@ var ss_cal_Events = {
     },
     
     setupDayDisplayRules: function(event) {
-		this.incrCollision(event.eventType, event.date.getFullYear() + "/" + event.date.getMonth()  + "/" + event.date.getDate() + "/" + Math.floor(event.start)); 
+    	var date = event.startDate;
+    	
+    	this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/" + date.getHours());
+    	date = date.addDays(1);
+    	while (date.daysTillDate(event.endDate) >= 0) {
+    		this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
+    		date = date.addDays(1);
+    	}
     },
 
     setupMonthDisplayRules: function(event) {
-        this.incrCollision(event.date.getFullYear() + "/" + event.date.getMonth()  + "/" + event.date.getDate());
-        if (typeof this.collisionM[event.eventType] == "undefined") { 
-        	this.collisionM[event.eventType] = new Array(); 
-        }
-        if (typeof this.collisionM[event.eventType][event.date.getFullYear() + "/" + this.fullWithZeros(event.date.getMonth() ) + "/" + event.date.getDate()] == "undefined") { 
-        	this.collisionM[event.eventType][event.date.getFullYear() + "/" + this.fullWithZeros(event.date.getMonth() ) + "/" + event.date.getDate()] = new Array(); 
-        }
-        this.collisionM[event.eventType][event.date.getFullYear() + "/" + this.fullWithZeros(event.date.getMonth() ) + "/" + event.date.getDate()].push(event.eventId);
+        var date = event.startDate;
+
+    	while (date.daysTillDate(event.endDate) >= 0) {
+
+	        this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
+	        if (typeof this.collisionM[event.eventType] == "undefined") { 
+	        	this.collisionM[event.eventType] = new Array(); 
+	        }
+	        if (typeof this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] == "undefined") { 
+	        	this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] = new Array(); 
+	        }
+	        this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()].push(event.eventId);
+
+			date = date.addDays(1);
+    	}
     },
 
     collisionCount: function(eventType, year, month, dayOfMonth, start) {
@@ -1011,7 +1038,23 @@ var ss_cal_Events = {
     	if (typeof this.order[event.eventType] == "undefined") {
     		this.order[event.eventType] = new Array();
     	}
-		this.order[event.eventType].push(event.date.getFullYear() + "/" + this.fullWithZeros(event.date.getMonth() ) + "/" + this.fullWithZeros(event.date.getDate()) + "/" + (Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
+    	
+    	var date = event.startDate;
+    	var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+    	if (!this.order[event.eventType][key]) {
+    		this.order[event.eventType][key] = new Array();
+    	}    		
+    	this.order[event.eventType][key].push((Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
+
+    	date = date.addDays(1);
+    	while (date.daysTillDate(event.endDate) >= 0) {
+    		key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+    		if (!this.order[event.eventType][key]) {
+    			this.order[event.eventType][key] = new Array();
+    		}  
+			this.order[event.eventType][key].push((0 + 1011) + "/" + event.eventId);
+			date = date.addDays(1);
+    	}
     },    
     
     undrawEvents: function() {
@@ -1029,8 +1072,13 @@ var ss_cal_Events = {
 		while (this.dayGridEvents.length) {
 			var eventId = this.dayGridEvents.pop();
 			var event = this.eventData[eventId];
-            dojo.dom.removeNode(dojo.byId("calevt" + event.displayId).parentNode);
-            event.displayId = "";
+			
+			while (event.displayIds.length) {
+				var displayId = event.displayIds.pop();
+				if (displayId) {
+	            	dojo.dom.removeNode(dojo.byId("calevt" + displayId).parentNode);
+	           	}
+            }
         }	
     },
     
@@ -1044,42 +1092,71 @@ var ss_cal_Events = {
     redrawDay: function() {
         ss_cal_CalAllDayEvent.reset();
         this.undrawEvents();
-        for (var i in this.order[this.eventsTypes[this.eventsType]]) {
-            var eid = this.order[this.eventsTypes[this.eventsType]][i].substr(16);
-            var e = this.eventData[eid];
-            
-            if (ss_cal_Grid.firstDayToShow.compareByDate(e.date) < 0) {
-            	// event in past
-            	continue;
-            }
-            
-            var gridDay = -1;
-            if (ss_cal_Grid.firstDayToShow.getMonth()  == e.date.getMonth()) {
-            	gridDay = e.date.getDate() - ss_cal_Grid.firstDayToShow.getDate();
-            } else if ((ss_cal_Grid.firstDayToShow.getMonth() + 1)  == e.date.getMonth() + 1) {
-            	 var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
-            	 gridDay = e.date.getDate() + (monthViewInfo.daysInMonth - ss_cal_Grid.firstDayToShow.getDate());
-            }
-             
-            if (gridDay < 0 || gridDay >= ss_cal_Grid.gridSize) {
-                continue;
-            }
-
-            if (e.dur == 0) {
-                var grid = "ss_cal_dayGridAllDay";
-                this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
-                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(e.date.getFullYear(), e.date.getMonth(), e.date.getDate()), -1, e.title, e.text,
-                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid); 
-				this.dayGridEvents.push(eid);
-            } else {
-                var grid = "ss_cal_dayGridHour";
-                this.eventData[eid].displayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
-                       this.collisionCount(e.eventType, e.date.getFullYear(), e.date.getMonth(), e.date.getDate(), e.start),
-                       this.collisionIndex(e.eventType, e.date.getFullYear(), e.date.getMonth(), e.date.getDate(), e.start),
-                       gridDay, e.start, e.dur, e.title, e.text,
-                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid);
-				this.dayGridEvents.push(eid);
-            }
+        
+        var lastDayToShow = ss_cal_Grid.firstDayToShow.addDays(ss_cal_Grid.gridSize - 1);
+        var date = ss_cal_Grid.firstDayToShow;
+		for (var gridDay = 0; gridDay < ss_cal_Grid.gridSize; gridDay++) {
+			var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+			
+			for (var i in this.order[this.eventsTypes[this.eventsType]][key]) {
+			           
+            	var eid = this.order[this.eventsTypes[this.eventsType]][key][i].substr(5);
+            	var e = this.eventData[eid];
+			
+				var start;
+				var duration;
+				var continues = null;
+						
+				if (date.compareByDate(e.endDate) < 0) {
+					// event finshed, go to next event
+					break;
+				} else if (date.compareByDate(e.startDate) == 0) {
+					// event begins
+					start = e.startDate.getHours() +  (e.startDate.getMinutes() / 60);
+					if (date.daysTillDate(e.endDate) == 0) {
+						// one day event
+						duration = e.dur;
+					} else {
+						// duration to the end of the day
+						duration = 1440 - e.startDate.getMinutesOfTheDay();
+						continues = this.CONTINUES_RIGHT;
+					}
+				} else if (date.compareByDate(e.endDate) > 0 ||
+						date.compareByDate(e.startDate) < 0) {
+					// event continues
+					start = 0;
+					duration = 1440;
+					continues = this.CONTINUES_LEFT_AND_RIGHT;
+				} else if (date.compareByDate(e.startDate) != 0 &&
+						date.compareByDate(e.endDate) == 0) {
+					// event ends
+					start = 0;
+					duration = e.endDate.getMinutesOfTheDay();
+					continues = this.CONTINUES_LEFT;
+				}
+						
+			
+	            if (e.eventType == "event" &&
+	            	(e.endDate.compareByDate(e.startDate) != 0 || e.dur == 0)) {
+	                var grid = "ss_cal_dayGridAllDay";
+	                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
+	                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
+	                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
+	                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid, continues);
+	            } else {
+	                var grid = "ss_cal_dayGridHour";
+	                if (duration == 0) duration = 30;
+	                if (!this.eventData[eid].displayIds) this.eventData[eid].displayIds = new Array();
+	                this.eventData[eid].displayIds[gridDay] = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
+	                       this.collisionCount(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
+	                       this.collisionIndex(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
+	                       gridDay, start, duration, e.title, e.text,
+	                       ss_cal_CalData.box(e.calsrc), ss_cal_CalData.border(e.calsrc), eid);
+	            }
+	            this.dayGridEvents.push(eid);
+			}
+		
+			date = date.addDays(1);
         }
         this.collisionI = new Array();
         ss_cal_CalAllDayEvent.resetGridHeight();
@@ -1090,13 +1167,12 @@ var ss_cal_Events = {
         for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
             var grid = "ss_cal_monthGrid";
                         
-            var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
             var year = 1 * d.substring(0, 4);
             var month = 1 * d.substring(5, 7);
             var dayOfMonth = 1 * d.substring(8, d.length);
             var date = new Date(year, month, dayOfMonth);
- 			
-			var end = new Date(year, month, dayOfMonth);
+
+			var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
 			if (monthViewInfo.startViewDate <= date && date <= monthViewInfo.endViewDate) {
 	            var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
 	            while (dids.length) { this.monthGridEvents.push(dids.pop()); }
@@ -1116,13 +1192,13 @@ var ss_cal_Events = {
     hoverEventId: "",
     hoverTimer: 0,
 
-    requestHover: function(evt, eventId) {
-        if (this.overEventId != eventId) {
-            this.overEventId = eventId;
+    requestHover: function(evt, eventId, gridDay) {
+        if (this.overEventId != (eventId + "-" + gridDay)) {
+            this.overEventId = eventId + "-" + gridDay;
             //console.log("requestHover", eventId);
-            this.hoverTimer = setTimeout(function(){ss_cal_Events.displayHover(eventId);}, 1000);
+            this.hoverTimer = setTimeout(function(){ss_cal_Events.displayHover(eventId, gridDay);}, 1000);
             var e = this.eventData[eventId];
-            var n = dojo.byId("calevt" + e.displayId).parentNode;
+            var n = dojo.byId("calevt" + e.displayIds[gridDay]).parentNode;
             n.onmouseout = function() { ss_cal_Events.cancelHover(true)};
         }
     },
@@ -1145,19 +1221,19 @@ var ss_cal_Events = {
         this.overEventId = '';
     },
 
-    displayHover: function(eventId) {
+    displayHover: function(eventId, gridDay) {
         //console.log("display?", eventId, this.hoverEventId);
-        if (this.overEventId == eventId) {
+        if (this.overEventId == eventId + "-" + gridDay) {
             var e = this.eventData[eventId];
-            var n = dojo.byId("calevt" + e.displayId).parentNode;
+            var n = dojo.byId("calevt" + e.displayIds[gridDay]).parentNode;
             //console.log("Hover: " + eventId);
-            this.hoverEventId = eventId;
+            this.hoverEventId = eventId + "-" + gridDay;
 
             var hb = dojo.byId("hoverBox");
             var ebox = dojo.html.abs(n);
             var eboxm = dojo.html.getBorderBox(n);
             hb.style.visibility = "visible";
-            hb.innerHTML = dojo.byId("calevt" + e.displayId).innerHTML;
+            hb.innerHTML = dojo.byId("calevt" + e.displayIds[gridDay]).innerHTML;
             hb.style.backgroundColor = ss_cal_CalData.box(e.calsrc);
             hb.style.borderColor = ss_cal_CalData.border(e.calsrc);
             dojo.html.setOpacity(hb,0);

@@ -1376,14 +1376,6 @@ ul.ss_dropdownmenu li {
   padding-left: 2px;
 } 
 
-.ss_calendar_today {
-  background-color: ${ss_calendar_today_background_color};
-}
-
-.ss_calendar_notInView {
-  background-color: ${ss_calendar_today_background_color};
-}
-
 .ss_dashboard_component {
 }
 .ss_dashboard_component_title {
@@ -3234,6 +3226,20 @@ div.ss_cal_monthEventBody {
 /* Used to render the short-form time of the event */
 span.ss_cal_eventTime {
   padding-right: 3px;
+}
+
+.ss_calendar_today {
+  background-color: ${ss_calendar_today_background_color};
+}
+
+.ss_calendar_notInView {
+  background-color: ${ss_calendar_today_background_color};
+}
+
+div#ss_calendarNaviBar {
+	background-color: #759DB9;
+	border: 1px solid #CCCCCC;
+	height: 30px;
 }
 
 div.ss_buddies {

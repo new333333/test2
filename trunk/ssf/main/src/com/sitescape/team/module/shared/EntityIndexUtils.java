@@ -94,6 +94,7 @@ public class EntityIndexUtils {
     public static final String EVENT_COUNT_FIELD = "_eventCount";
     public static final String EVENT_DATES_FIELD = "_eventDates";
     public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
+    public static final String EVENT_ID = "ID";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
@@ -258,7 +259,6 @@ public class EntityIndexUtils {
 	 */
     public static void addEvents(Document doc, DefinableEntity entry) {
     	int count = 0;
-    	Field eventName;
 		Map customAttrs = entry.getCustomAttributes();
 		Set keyset = customAttrs.keySet();
 		Iterator attIt = keyset.iterator();
@@ -274,8 +274,8 @@ public class EntityIndexUtils {
 				entryEventsDates.addAll(event.getAllEventDays());
 								
 				if (att.getValue() != null) {
-					eventName = new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-					doc.add(eventName);
+					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 					count++;
 				}
 				doc.add(getRecurrenceDatesField(event));
