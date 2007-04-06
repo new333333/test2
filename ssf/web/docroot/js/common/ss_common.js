@@ -2672,22 +2672,29 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 		eval("binderUrl = ss_baseBinderUrl" + namespace)
 		eval("entryUrl = ss_baseEntryUrl" + namespace)
 	} catch(e) {}
+	
 	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
+	
 	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
 		try {
 			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
 			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
 		} catch(e) {}
 	}
+	
 	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
+	
 		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
+		
 			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
+			
 				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
+				
 					binderUrl = self.opener.ss_baseBinderUrl;
 					entryUrl = self.opener.ss_baseEntryUrl;
 				}
@@ -2708,6 +2715,7 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
 	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + namespace;
 	linkMenuObj.isDashboardLink = isDashboard;
+
 }
 
 //Routine to go to a permalink without actually using the permalink
@@ -3584,7 +3592,6 @@ function ss_linkMenuObj() {
 		} else if (this.currentDefinitionType == this.type_profileEntry) {
 			url = this.entryUrl;
 		}
-		
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
 		

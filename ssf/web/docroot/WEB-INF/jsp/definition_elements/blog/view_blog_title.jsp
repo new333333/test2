@@ -54,10 +54,10 @@
 	<%= docNumber %>
 	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
 	folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
-	imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}' 
-    menuDivId="ss_emd_${renderResponse.namespace}"
-	linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}"
+	imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}_${ssDefinitionEntry.id}' 
+    menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}"
+	linkMenuObj="ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id}" 
+	namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}"
 	entryCallbackRoutine="${showEntryCallbackRoutine}">
 
 		<ssf:param name="url" useBody="true">
@@ -128,10 +128,10 @@
 
 </c:if>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}" linkMenuObj="ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id}" 
+	namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
 </ssf:menuLink>
 
 <script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
+var ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id} = new ss_linkMenuObj();
 </script>
