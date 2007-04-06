@@ -116,7 +116,7 @@ public class EventsViewHelper {
 				}
 				
 				Map creation = new HashMap();
-				creation.put("event", createEvent(creationDate, timeZone));
+				creation.put("event", createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, (String)e.get(EntityIndexUtils.DOCID_FIELD)));
 				creation.put("entry", e);
 				creation.put("eventType", EVENT_TYPE_CREATION);
 				entryList.add(creation);
@@ -133,7 +133,7 @@ public class EventsViewHelper {
 				}
 				
 				Map activity = new HashMap();
-				activity.put("event", createEvent(lastActivityDate, timeZone));
+				activity.put("event", createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, (String)e.get(EntityIndexUtils.DOCID_FIELD)));
 				activity.put("entry", e);
 				activity.put("eventType", EVENT_TYPE_ACTIVITY);
 				entryList.add(activity);
@@ -150,6 +150,9 @@ public class EventsViewHelper {
 				String recurrenceDatesField = (String) e.get(name
 						+ BasicIndexUtils.DELIMITER
 						+ EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
+				String eventId = (String) e.get(name
+						+ BasicIndexUtils.DELIMITER
+						+ EntityIndexUtils.EVENT_ID);
 				if (recurrenceDatesField != null) {
 					String[] recurrenceDates = recurrenceDatesField.split(",");
 					for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
@@ -168,7 +171,7 @@ public class EventsViewHelper {
 						}
 
 						Event ev = new Event();
-						
+						ev.setId(eventId);
 						Calendar startCal = new GregorianCalendar();
 						startCal.setTime(evStartDate);
 						
@@ -190,9 +193,10 @@ public class EventsViewHelper {
 						ev.setDtStart(startCal);
 						ev.setDtEnd(endCal);
 						
-						thisDateMillis = evStartDate.getTime();
-						if (startMilis < thisDateMillis
-								&& thisDateMillis < endMilis) {
+						long startDateMillis = evStartDate.getTime();
+						long endDateMillis = evEndDate.getTime();
+						if (!(endDateMillis < startMilis ||
+								endMilis < startDateMillis)) {
 							String dateKey = sdf.format(evStartDate);
 							List entryList = (List) results.get(dateKey);
 							if (entryList == null) {
@@ -214,13 +218,14 @@ public class EventsViewHelper {
 		return results;
 	}
 
-	private static Event createEvent(Date eventDate, TimeZone timeZone) {
+	private static Event createEvent(Date eventDate, TimeZone timeZone, String type, String entryId) {
 		Event event = new Event();
-		Calendar gcal = new GregorianCalendar();
+		Calendar gcal = Calendar.getInstance();
 		gcal.setTime(eventDate);
 		gcal = CalendarHelper.convertToTimeZone(gcal, timeZone);
 		event.setDtStart(gcal);
 		event.setDtEnd(gcal);
+		event.setId(entryId + "-" + type);
 		return event;
 	}
 
@@ -249,7 +254,7 @@ public class EventsViewHelper {
 			String dateKey = (String)mapEntry.getKey();
 			List evList = (List) mapEntry.getValue();
 				
-			int eventCounter = 0;
+//			int eventCounter = 0;
 			Iterator evIt = evList.iterator();
 			while (evIt.hasNext()) {
 				// thisMap is the next entry, event pair
@@ -269,8 +274,8 @@ public class EventsViewHelper {
 				
 				dataMap.put("entry", e);
 				dataMap.put("eventType", thisMap.get("eventType"));
-				dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD)
-						+ "-" + dateKey + "-" + eventCounter);
+//				dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD) + "-" + dateKey + "-" + eventCounter);
+				dataMap.put("eventid", ev.getId());
 				dataMap.put("entry_tostring", e.get(
 						BasicIndexUtils.UID_FIELD).toString());
 				dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
@@ -283,7 +288,7 @@ public class EventsViewHelper {
 						.put("cal_duration", duration);
 				
 				eventsList.add(dataMap);
-				eventCounter++;
+//				eventCounter++;
 			}
 		}
 		monthBean.put("events", eventsList);

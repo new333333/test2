@@ -20,7 +20,7 @@ span.tinyLabel {
   font-family: sans-serif;
 }
 </style>
-<div style="margin-bottom: 5px;">
+<div id="ss_calendarNaviBar" style="margin-bottom: 5px;">
 <span class="tinyLabel">Hours:</span>
 <a class="ss_linkButton ss_tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
 <span class="tinyLabel">Grid:</span>
