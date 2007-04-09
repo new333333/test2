@@ -277,7 +277,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
+			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
 	</item>
 	

@@ -24,6 +24,7 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AclAccessControlException;
@@ -195,6 +196,7 @@ public class AccessUtils  {
  			//must have READ access to binder AND modify to the entry
  			if (entry.isWorkAreaAccess(WfAcl.AccessType.write)) {
  				//optimzation: if pass modify binder check, don't need to do read binder check
+ 				// all done if binder access is enough
  				try {
 					modifyCheck(user, binder, (Entry)entry);
 					return;
@@ -245,7 +247,8 @@ public class AccessUtils  {
  			//must have READ access to binder AND delete to the entry
  			if (entry.isWorkAreaAccess(WfAcl.AccessType.delete)) {
  				//optimzation: if pass delete binder check, don't need to do read binder check
- 				try {
+ 				// all done if binder access is enough
+				try {
  					deleteCheck(user, binder, (Entry)entry);
 					return;
  				} catch (AccessControlException ex) {} //move on to next checks
@@ -274,32 +277,44 @@ public class AccessUtils  {
      
      public static void checkTransitionIn(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
      	throws AccessControlException {
-     	checkTransitionAcl(binder, entry, WfAcl.AccessType.transitionIn);
+    	 WorkflowState ws = new WorkflowState();
+    	 ws.setDefinition(definition);
+    	 ws.setState(toState);
+    	 checkTransitionAcl(binder, entry, ws, WfAcl.AccessType.transitionIn);
      }
      public static void checkTransitionOut(Binder binder, WorkflowSupport entry, Definition definition, String toState)  
      	throws AccessControlException {
-     	checkTransitionAcl(binder, entry, WfAcl.AccessType.transitionOut);
+       	 WorkflowState ws = new WorkflowState();
+    	 ws.setDefinition(definition);
+    	 ws.setState(toState);
+    	 checkTransitionAcl(binder, entry, ws, WfAcl.AccessType.transitionOut);
      }
-     private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WfAcl.AccessType type)  
+     private static void checkTransitionAcl(Binder binder, WorkflowSupport entry, WorkflowState state, WfAcl.AccessType type)  
       	throws AccessControlException {
       	User user = RequestContextHolder.getRequestContext().getUser();
         if (user.isSuper()) return;
-  
+		WfAcl acl = state.getAcl(type);
+		if (acl == null) {
+			modifyCheck(user, binder, (Entry)entry);
+			return;
+		}
 		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
  			//just check entry acl, ignore binder
- 			try {
- 				//check explicit users
- 				checkAccess(user, entry, type);
- 			} catch (AccessControlException ex) {
- 				if (entry.isWorkAreaAccess(type)) { 		
- 					modifyCheck(user, binder, (Entry)entry);
- 				} else throw ex;
- 			}
+ 			//check explicit users
+ 			Set allowedIds = acl.getPrincipals();   
+ 			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
+ 			if (testAccess(user, allowedIds)) return;
+ 			
+ 			if (acl.isUseDefault()) { 		
+ 				modifyCheck(user, binder, (Entry)entry);
+ 			} else throw new AclAccessControlException(user.getName(), type.toString());
+
  			
  		} else {
  			//must have READ access to binder AND modify to the entry
- 			if (entry.isWorkAreaAccess(type)) {
- 				//optimzation: if pass modify binder check, don't need to do read binder check
+			if (acl.isUseDefault()) { 		
+				 //optimzation: if pass modify binder check, don't need to do read binder check
+ 				// all done if binder access is enough
  				try {
 					modifyCheck(user, binder, (Entry)entry);
 					return;
@@ -308,8 +323,11 @@ public class AccessUtils  {
  			//see if pass binder READ test
  			readCheck(user, binder, (Entry)entry);
  			//This basically AND's the binder and entry, since we already passed the binder
- 			checkAccess(user, entry, type);
-  		}
+			Set allowedIds = acl.getPrincipals();   
+ 			if (allowedIds.remove(ObjectKeys.OWNER_USER_ID)) allowedIds.add(entry.getOwnerId());
+ 			if (testAccess(user, allowedIds)) return;
+ 			 throw new AclAccessControlException(user.getName(), type.toString());
+   		}
      }
      
      

@@ -12,7 +12,7 @@
 %>
 <% // View entry attachments %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <div class="ss_entryContent">
 
 <span class="ss_labelLeft"><c:out value="${property_caption}"/></span><br/>
@@ -23,3 +23,4 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments_list.jsp" %>
 
 </div>
+</c:if>

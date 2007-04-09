@@ -27,7 +27,6 @@ if (displayStyle == null || displayStyle.equals("")) {
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>
 
-	<c:if test="${ssConfigJspStyle != 'mail'}">
 
 		<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
 		folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
@@ -51,22 +50,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 			<c:out value="${ssDefinitionEntry.title}"/>
 		</ssf:menuLink>
 
-	</c:if>
 
-	<c:if test="${ssConfigJspStyle == 'mail'}">
-		<a href="<ssf:url 
-  			adapter="true" 
-    		portletName="ss_forum" 
-   			action="view_permalink"
-			binderId="${ssDefinitionEntry.parentFolder.id}"
-			entryId="${ssDefinitionEntry.id}">
-			<ssf:param name="entityType" value="${ssEntry.entityType}" />
-    		<ssf:param name="newTab" value="1"/>
- 	  		</ssf:url>">
-		<c:if test="${empty ssDefinitionEntry.title}">
-		  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
-		</c:if><c:out value="${ssDefinitionEntry.title}"/></a>
-	</c:if> 
 
 </span>
 
