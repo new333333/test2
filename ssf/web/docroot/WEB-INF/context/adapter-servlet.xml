@@ -59,8 +59,6 @@
 	<bean id="adaptedPortlets" class="com.sitescape.team.portletadapter.support.AdaptedPortlets">
 		<property name="portletNames">
 			<list>
-				<value>ss_employees</value>
-				<value>ss_widgettest</value>
 				<value>ss_forum</value>
 				<value>ss_workspacetree</value>
 				<value>ss_administration</value>
