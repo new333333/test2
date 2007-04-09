@@ -13,6 +13,7 @@ package com.sitescape.team.portlet.administration;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -28,20 +29,26 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.servlet.forum.ViewFileController;
+
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 public class ExportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		HashSet<String> uniqueFilenames = new HashSet<String>();
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();
 			//Get the forums to be indexed
@@ -59,7 +66,9 @@ public class ExportDefinitionController extends  SAbstractController {
 							def = getDefinitionModule().getDefinition(defId);
 							// explicity set encoding so their is not mistake.
 							//cannot guarentee default will be set to UTF-8
-							XmlFileUtil.writeFile(def.getDefinition(), dirPath + File.separator +  def.getName() + ".xml");
+							String filePath = dirPath + File.separator +  def.getName() + ".xml";
+							XmlFileUtil.writeFile(def.getDefinition(), filePath);
+							uniqueFilenames.add(filePath);
 						} catch (Exception ex) {
 							errors.add(ex.getLocalizedMessage());
 						}
@@ -67,6 +76,17 @@ public class ExportDefinitionController extends  SAbstractController {
 				}
 			}
 			
+			Document listOfFiles = ViewFileController.createFileListingForZipDownload("definitions.zip");
+			Element listOfFilesRoot = listOfFiles.getRootElement();
+			for(String path : uniqueFilenames) {
+				ViewFileController.addFileToList(listOfFiles, path);
+			}
+			File listOfFilesTempFile = TempFileUtil.createTempFile("exportDefinitions");
+			XmlFileUtil.writeFile(listOfFiles, listOfFilesTempFile.getAbsolutePath());
+
+			response.setRenderParameter(WebKeys.DOWNLOAD_URL, 
+					WebUrlUtil.getServletRootURL() + WebKeys.SERVLET_VIEW_FILE + "?viewType=zipped&fileId=" +
+					listOfFilesTempFile.getName());
 			response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			response.setRenderParameter("redirect", "true");
 			
@@ -78,10 +98,11 @@ public class ExportDefinitionController extends  SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();			
+		Map model = new HashMap();
 		if (!Validator.isNull(request.getParameter("redirect"))) {
 			String [] errors = request.getParameterValues(WebKeys.ERROR_LIST);
 			model.put(WebKeys.ERROR_LIST, errors);
+			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
 			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
 		}
 		Document definitionConfig = getDefinitionModule().getDefinitionConfig();

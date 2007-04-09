@@ -53,3 +53,8 @@ if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() 
 </ssf:ifadapter>
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
+<c:if test="${!empty ssDownloadURL}">
+<script type="text/javascript">
+window.open("${ssDownloadURL}", "session", "directories=no,height=10,location=no,menubar=no,resizable=no,scrollbars=no,status=no,toolbar=no,width=10")
+</script>
+</c:if>
