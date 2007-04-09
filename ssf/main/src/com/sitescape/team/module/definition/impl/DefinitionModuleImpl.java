@@ -74,6 +74,7 @@ import com.sitescape.util.Validator;
  */
 public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
 	private Document definitionConfig;
+	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneId", "type"};
 
@@ -87,6 +88,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
     public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
+		this.configRoot = this.definitionConfig.getRootElement();
 
     }
     /*
@@ -319,9 +321,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Store the properties in the definition document
 			Document defDoc = def.getDefinition();
 			
-			Element configRoot = this.definitionConfig.getRootElement();
 			String type = String.valueOf(def.getType());
-			Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
+			Element definition = (Element) this.configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 			if (definition != null) {
 				//Add the properties
 				processProperties(def.getId(), definition, defDoc.getRootElement(), inputData);
@@ -349,14 +350,13 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private boolean updateDefinitionAttributes(Document defDoc) {
 		boolean defChanged = false;
 		Element defRoot = defDoc.getRootElement();
-		Element configRoot = this.definitionConfig.getRootElement();
 		
 		//Look at all of the items to see if any of their attributes are missing
 		Iterator itDefItems = defRoot.elementIterator("item");
 		while (itDefItems.hasNext()) {
 			Element defItem = (Element) itDefItems.next();
 			//Find the matching element in the configuration xml file
-			Element configItem = (Element) configRoot.selectSingleNode("item[@name='"+defItem.attributeValue("name", "")+"']");
+			Element configItem = (Element) this.configRoot.selectSingleNode("item[@name='"+defItem.attributeValue("name", "")+"']");
 			if (configItem != null) {
 				//Check to see if there are new attributes from the config file that should be copied into the definition
 				Iterator itConfigItemAttributes = configItem.attributeIterator();
@@ -533,8 +533,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 */
 	
 	protected Document getInitialDefinition(String name, String title, int type, InputDataAccessor inputData) {
-		Element configRoot = this.definitionConfig.getRootElement();
-		Element definition = (Element) configRoot.selectSingleNode("item[@definitionType='"+type+"']");
+		Element definition = (Element) this.configRoot.selectSingleNode("item[@definitionType='"+type+"']");
 		if (definition == null) {return null;}
 		
 		//We found the definition. Now build the default definition
@@ -544,7 +543,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		ntRoot.addAttribute("caption", title);
 		ntRoot.addAttribute("type", String.valueOf(type));
 		int id = 1;
-		id = populateNewDefinitionTree(definition, ntRoot, configRoot, id, true);
+		id = populateNewDefinitionTree(definition, ntRoot, this.configRoot, id, true);
 		ntRoot.addAttribute("nextId", Integer.toString(id));
 		
 		//Add the properties
@@ -625,9 +624,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Element newItem = null;
 		
 		if (definitionTree != null) {
-			Element configRoot = this.definitionConfig.getRootElement();
 			Element root = definitionTree.getRootElement();
-			Map uniqueNames = getUniqueNameMap(configRoot, root, itemNameToAdd);
+			Map uniqueNames = getUniqueNameMap(this.configRoot, root, itemNameToAdd);
 			if (inputData.exists("propertyId_name")) {
 				String name = inputData.getSingleValue("propertyId_name");
 				if (uniqueNames.containsKey(name)) {
@@ -640,7 +638,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
 				//Find the requested new item in the configuration document
-				Element itemEleToAdd = (Element) configRoot.selectSingleNode("item[@name='"+itemNameToAdd+"']");
+				Element itemEleToAdd = (Element) this.configRoot.selectSingleNode("item[@name='"+itemNameToAdd+"']");
 				if (itemEleToAdd != null) {
 					//Add the item 
 					newItem = item.addElement("item");
@@ -678,7 +676,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						checkDataView(root, newItem);
 					}
 					int nextItemId = Integer.valueOf(root.attributeValue("nextId")).intValue();;
-					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, configRoot, nextItemId, false);
+					nextItemId = populateNewDefinitionTree(itemEleToAdd, newItem, this.configRoot, nextItemId, false);
 					root.addAttribute("nextId", Integer.toString(nextItemId));
 				}
 			}
@@ -817,7 +815,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		Document definitionTree = def.getDefinition();
 		
 		if (definitionTree != null) {
-			Element configRoot = this.definitionConfig.getRootElement();
 			Element root = definitionTree.getRootElement();
 			//Find the element to modify
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
@@ -827,41 +824,34 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
-				Map uniqueNames = getUniqueNameMap(configRoot, root, itemType);
+				Map uniqueNames = getUniqueNameMap(this.configRoot, root, itemType);
 				if (inputData.exists("propertyId_name")) {
 					String name = inputData.getSingleValue("propertyId_name");
+					if (Validator.isNull(name)) throw new DefinitionInvalidException("definition.error.nullname");
 					//See if the item name is being changed
-					if (!name.equals("") && 
-							!name.equals(itemNamePropertyValue) && 
+					if (!name.equals(itemNamePropertyValue) && 
 							uniqueNames.containsKey(name)) {
 						//This name is not z
 						throw new DefinitionInvalidException("definition.error.nameNotUnique", new Object[] {defId, name});
-					} else if (!name.equals("") && !name.equals(itemNamePropertyValue)) {
+					} else if (!name.equals(itemNamePropertyValue)) {
 						//The name is being changed. Check if this is a workflow state
-						if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
-								item.attributeValue("name", "").equals("state")) {
-							//This is a workflow state. Make sure no entries are using that state
-							//TODO ???Add code to check if any entries are in this state
-							//  If code is added to support changing state names, make sure to fix up
-							//  the toState property, the initialState property, and the startState property.
-							throw new DefinitionInvalidException("???", new Object[] {defId});
-
-							//throw new DefinitionInvalidException(defId, 
-							//		"Error: this state name cannot be changed because some entries are in this state.");
+						if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
+							if (checkStateInUse(def, itemNamePropertyValue)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
+						} else if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) {
+							if (checkThreadInUse(def, itemNamePropertyValue)) throw new DefinitionInvalidException("definition.error.cannotModifyThread", new Object[] {def.getId()});
 						}
 					}
 				}
-				Element itemTypeEle = (Element) configRoot.selectSingleNode("item[@name='"+itemType+"']");
+				Element itemTypeEle = (Element) this.configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				if (itemTypeEle != null) {
 					//Set the values of each property from the form data
 					processProperties(defId, itemTypeEle, item, inputData);
 										
 					//See if this is a "dataView" type
-					if (item.attributeValue("type", "").equals("dataView")) {
+					if ("dataView".equals(item.attributeValue("type"))) {
 						checkDataView(root, item);
 					}
 					setDefinition(def, definitionTree);
-					//definitionTree.asXML();
 				}
 			}
 		}
@@ -895,6 +885,26 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		
 	}
+	private boolean checkStateInUse(Definition def, String state) {
+		//This is a workflow state. Make sure no entries are using that state
+		FilterControls fc = new FilterControls();
+		fc.add("definition", def);
+		fc.add("state", state);
+		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
+		if (!inUse.isEmpty()) return true;
+		return false;
+		
+	}
+	private boolean checkThreadInUse(Definition def, String threadName) {
+		//This is a workflow state. Make sure no entries are using that state
+		FilterControls fc = new FilterControls();
+		fc.add("definition", def);
+		fc.add("threadName", threadName);
+		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
+		if (!inUse.isEmpty()) return true;
+		return false;
+	}
+
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 		checkAccess(def.getType(), "deleteItem");
@@ -905,22 +915,23 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			//Find the element to delete
 			Element item = (Element) root.selectSingleNode("//item[@id='"+itemId+"']");
 			if (item != null) {
-				if (item.getParent().attributeValue("name", "").equals("workflowProcess") && 
-						item.attributeValue("name", "").equals("state")) {
-					//This is a workflow state. Make sure no entries are using that state
-					FilterControls fc = new FilterControls();
-					fc.add("definition", def);
-					fc.add("state", DefinitionUtils.getPropertyValue(item, "name"));
-					List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
-					if (!inUse.isEmpty()) throw new DefinitionInvalidException("definition.error.cannotDelete", new Object[] {defId});
-				}
-
 				//Find the selected item type in the configuration document
 				String itemType = item.attributeValue("name", "");
+				if (itemType.equals("state") && "workflowProcess".equals(item.getParent().attributeValue("name"))) { 
+					//This is a workflow state. Make sure no entries are using that state
+					String state = DefinitionUtils.getPropertyValue(item, "name");
+					if (checkStateInUse(def, state)) throw new DefinitionInvalidException("definition.error.cannotModifyState", new Object[] {def.getId()});
+				}
+				if (itemType.equals("parallelThread") && "workflowProcess".equals(item.getParent().attributeValue("name"))) { 
+					//This is a workflow state. Make sure no entries are using that state
+					String threadName = DefinitionUtils.getPropertyValue(item, "name");
+					if (checkThreadInUse(def, threadName)) throw new DefinitionInvalidException("definition.error.cannotModifyThread", new Object[] {def.getId()});
+				}
+
 				
-				Element itemTypeEle = (Element) definitionTree.selectSingleNode("item[@name='"+itemType+"']");
+				Element itemTypeEle = (Element) this.configRoot.selectSingleNode("item[@name='"+itemType+"']");
 				//Check that this element is allowed to be deleted
-				if (itemTypeEle == null || (itemTypeEle != null && !itemTypeEle.attributeValue("canBeDeleted", "true").equalsIgnoreCase("false"))) {
+				if (itemTypeEle == null || !itemTypeEle.attributeValue("canBeDeleted", "true").equalsIgnoreCase("false")) {
 					Element parent = item.getParent();
 					//Delete the item from the definition tree
 					item.detach();
@@ -931,7 +942,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							Element item2 = (Element) itItems.next();
 							String itemType2 = item2.attributeValue("name", "");
 							//Element itemTypeEle2 = (Element) this.definitionConfig.getRootElement().selectSingleNode("item[@name='"+itemType2+"']");
-							Element itemTypeEle2 = (Element) definitionTree.selectSingleNode("item[@name='"+itemType2+"']");
+							Element itemTypeEle2 = (Element) this.configRoot.selectSingleNode("item[@name='"+itemType2+"']");
 							if (itemTypeEle2 != null && itemTypeEle2.attributeValue("canBeDeleted", "true").equalsIgnoreCase("false")) {
 								//This item cannot be deleted. Add it back on the parent
 								parent.add(item2.detach());
@@ -1009,9 +1020,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	//Routine to check that the source item is allowed to be added to the target item type
 	private boolean checkTargetOptions(Document definitionTree, String targetItemType, String sourceItemType) {
 		//check against base config document
-		Element configRoot = definitionConfig.getRootElement();
-		Element targetItem = (Element) configRoot.selectSingleNode("item[@name='"+targetItemType+"']");
-		Element sourceItem = (Element) configRoot.selectSingleNode("item[@name='"+sourceItemType+"']");
+		Element targetItem = (Element) this.configRoot.selectSingleNode("item[@name='"+targetItemType+"']");
+		Element sourceItem = (Element) this.configRoot.selectSingleNode("item[@name='"+sourceItemType+"']");
 		if (targetItem == null || sourceItem == null) {return false;}
 		
 		//Check the list of options (types: "option" and "option_select")
@@ -1029,7 +1039,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			while (itOptions.hasNext()) {
 				Element option = (Element) itOptions.next();
 				String optionPath = option.attributeValue("path", "");
-				Iterator itOptionsSelect = configRoot.selectNodes(optionPath).iterator();
+				Iterator itOptionsSelect = this.configRoot.selectNodes(optionPath).iterator();
 				while (itOptionsSelect.hasNext()) {
 					Element optionSelect = (Element) itOptionsSelect.next();
 					if (optionSelect.attributeValue("name").equals(sourceItemType)) {
@@ -1127,20 +1137,19 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		int startingId = Integer.valueOf(defRoot.attributeValue("nextId", "1")).intValue();
 		int nextId = startingId;
 
-		Element configRoot = this.definitionConfig.getRootElement();
 		
 		//Get the definition root element to check it
-		Element configRootDefinitionEle = (Element) configRoot.selectSingleNode("//definition[@definitionType='"+
+		Element configRootDefinitionEle = (Element) this.configRoot.selectSingleNode("//definition[@definitionType='"+
 				defRoot.attributeValue("definitionType")+"']");
 		if (configRootDefinitionEle != null) {
 			//See if there are any items missing from the top definition item
-			nextId = updateDefinitionTreeElement("definition", defRoot, defRoot, configRoot, nextId);
+			nextId = updateDefinitionTreeElement("definition", defRoot, defRoot, this.configRoot, nextId);
 			
 			//Look at all of the items to see if any of their options are missing
 			Iterator itDefItems = defRoot.elementIterator("item");
 			while (itDefItems.hasNext()) {
 				Element defItem = (Element) itDefItems.next();
-				nextId = updateDefinitionTreeElement("item", defItem, defItem, configRoot, nextId);
+				nextId = updateDefinitionTreeElement("item", defItem, defItem, this.configRoot, nextId);
 			}
 			if (nextId != startingId) defChanged = true;
 		}
@@ -1262,8 +1271,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
     public Map getEntryData(Document definitionTree, InputDataAccessor inputData, Map fileItems) {
 		//access check not needed = have tree already
-		//Get the base configuration definition file root (i.e., not the entry's definition file)
-		//Element configRoot = this.definitionConfig.getRootElement();
 		
     	// entryData will contain the Map of entry data as gleaned from the input data
 		Map entryDataAll = new HashMap();
@@ -1295,8 +1302,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					Element nextItem = (Element) itItems.next();
 					String itemName = (String) nextItem.attributeValue("name", "");
 					
-					//Find the item in the base configuration definition to see if it is a data item
-					//Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 					Element configItem = (Element) nextItem.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 					if (configItem != null) {
 						//Get the form element name (property name)
@@ -1449,7 +1454,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
             DefinableEntity entry) {
 		//access check not needed = assumed okay from entry
 
-		Element configRoot = getDefinitionConfig().getRootElement();
         Definition def = entry.getEntryDef();
         if (def != null) {
 	        Field[] fields;
@@ -1471,7 +1475,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							String itemName = (String) nextItem.attributeValue("name", "");
 							
 							//Find the item in the base configuration definition to see if it is a data item
-							Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+							Element configItem = (Element) this.configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 							if (configItem != null) {
 								//Get the form element name (property name)
 								String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
@@ -1542,9 +1546,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public void getNotifyElementForEntity(Element element, Notify notifyDef, 
 			DefinableEntity entry) {
 		//access check not needed = assumed okay from entry
-        //Element configRoot = this.definitionConfig.getRootElement();
         Definition def = entry.getEntryDef();
-		Element configRoot = getDefinitionConfig().getRootElement();
 
         Document definitionTree = def.getDefinition();
         if (definitionTree != null) {
@@ -1562,8 +1564,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						String itemName = (String) nextItem.attributeValue("name", "");
 						
 						//Find the item in the base configuration definition to see if it is a data item
-						//Find the item in the base configuration definition to see if it is a data item
-						Element configItem = (Element) configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
+						Element configItem = (Element) this.configRoot.selectSingleNode("//item[@name='" + itemName + "' and @type='data']");
 						if (configItem != null) {
 							//Get the form element name (property name)
 							String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");									
@@ -1632,8 +1633,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Map dataElements = new TreeMap();
 		
 		Definition def = getDefinition(id);
-		//Get the base configuration definition file root (i.e., not the entry's definition file)
-		//Element configRoot = this.definitionConfig.getRootElement();
 		
 		Document definitionTree = def.getDefinition();
 		if (definitionTree != null) {

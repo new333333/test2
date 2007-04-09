@@ -74,6 +74,7 @@ import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.LongIdComparator;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
 /**
  * @author Jong Kim
@@ -779,11 +780,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            	List results;
 	               	if (def.getType() != Definition.WORKFLOW) {
 	               		int count = countObjects(com.sitescape.team.domain.FolderEntry.class, new FilterControls("entryDef", def));
-	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 	               		count = countObjects(com.sitescape.team.domain.Principal.class, new FilterControls("entryDef", def));
-	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 	               		count = countObjects(com.sitescape.team.domain.Binder.class, new FilterControls("entryDef", def));
-	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("definitions")
 	               			.add(Expression.eq("id", def.getId()))
@@ -796,7 +797,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		               	}
 	               	} else {
 	               		int count = countObjects(com.sitescape.team.domain.WorkflowState.class, new FilterControls("definition", def));
-	               		if (count > 0) throw new DefinitionInvalidOperation("Definition in use");
+	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 
 	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("workflowAssociations")
