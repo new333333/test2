@@ -459,7 +459,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         //See if we are at the end of the bucket search
         if (hits != null) {
     	    List entries = SearchUtils.getSearchEntries(hits);
-    	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
+    	    //SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
                    
             Map retMap = new HashMap();
             retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
