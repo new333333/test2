@@ -486,12 +486,12 @@ public class TreeTag extends TagSupport {
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					if (this.multiSelect != null) {
 						if (s_id.equals("") || displayOnly) {
-							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
 						} else {
 							String checked = "";
 							if (this.multiSelect.contains(s_binderId)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
-							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
+							jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
 							jspOut.print(mPrefix + s_id + "\" id=\"");
 							jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 							jspOut.print(checked + "/>");
@@ -500,12 +500,12 @@ public class TreeTag extends TagSupport {
 						//can only select one item from tree, but probably other things going on
 						//ie) don't want link to submit form
 						if (s_id.equals("") || displayOnly) {
-							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
 						} else {
 							String checked = "";
 							if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"radio\" class=\"ss_text\"");
-							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
+							jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
 							jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
 						}
 						
