@@ -127,8 +127,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	    	if ((a != null) && a.isUseDefault()) return true;
 	       }
        return false;
-   }
-
+	}
 	public Set getStateMembers(WfAcl.AccessType type) {
 	   	Set result = new HashSet();
 	   	Set states = getWorkflowStates();

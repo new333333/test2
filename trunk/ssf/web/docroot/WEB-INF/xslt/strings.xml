@@ -28,5 +28,8 @@
    <str name="folderPermalink">
 	   <lang name="en">Folder permalink</lang>
     </str>
+   <str name="reply">
+	   <lang name="en">Reply</lang>
+    </str>
 
 </strings>

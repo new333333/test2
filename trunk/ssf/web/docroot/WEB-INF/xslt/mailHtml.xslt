@@ -140,7 +140,10 @@ font-family: arial, helvetica,
 margin-left: 0px; margin-right: 6px; margin-bottom,
   margin-top: 2px;
 line-height: 200%; text-decoration:
-  none;" >ReplyTo</a></xsl:if>
+  none;" >		<xsl:call-template name="getString">
+  			<xsl:with-param name="stringName" select="'reply'"/>
+		</xsl:call-template>
+</a></xsl:if>
 </td>
 </tr></table>
 		</xsl:if>
