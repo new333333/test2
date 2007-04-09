@@ -354,7 +354,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	Element next;
     	int maxBucketSize = SPropsUtil.getInt("wsTree.maxBucketSize");
     	int skipLength = maxBucketSize;
-    	if (totalHits > maxBucketSize) skipLength = totalHits / maxBucketSize;
+    	if (totalHits > maxBucketSize) {
+    		skipLength = totalHits / maxBucketSize;
+    		if (skipLength < maxBucketSize) skipLength = maxBucketSize;
+    	}
 
     	//See if this has a page already set
     	List tuple = domTreeHelper.getTuple();
@@ -445,10 +448,14 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		if (totalHits == 0) {
     			//We have to figure out the size of the pool before building the buckets
     			Hits testHits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, maxBucketSize);
-    			if (testHits.getTotalHits() > maxBucketSize) skipLength = testHits.getTotalHits() / maxBucketSize;
+    			totalHits = testHits.getTotalHits();
+    			if (totalHits > maxBucketSize) {
+    				skipLength = testHits.getTotalHits() / maxBucketSize;
+    				if (skipLength < maxBucketSize) skipLength = maxBucketSize;
+    			}
     		}
-	        results = luceneSession.getSortTitles(soQuery, tuple1, tuple2, skipLength);
-	        if (results == null || results.size() == 0) {
+	        if (totalHits > skipLength) results = luceneSession.getSortTitles(soQuery, tuple1, tuple2, skipLength);
+	        if (results == null || results.size() <= 1) {
 	        	//We must be at the end of the buckets; now get the real entries
 	        	hits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, -1);
 	        }
