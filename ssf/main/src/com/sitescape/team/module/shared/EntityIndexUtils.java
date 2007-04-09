@@ -47,7 +47,9 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
+import com.sitescape.util.Validator;
 
 /**
  * Index the fields common to all Entry types.
@@ -387,15 +389,7 @@ public class EntityIndexUtils {
     	sf.applyPattern("yyyyMMdd");
     	return(df.format(date));
     }
-    public static void addReadAccess(Document doc, Binder binder) {
-    	//set entryAcl to all
-		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED);
-		doc.add(entryAclField);
-		//get real binder access
-		doc.add(getBinderAccess(binder));
-    }
-    
-    private static Field getBinderAccess(Binder binder) {
+    private static String getBinderAccess(Binder binder) {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
 		StringBuffer bIds = new StringBuffer();
 		if (!binderIds.isEmpty()) {
@@ -405,34 +399,69 @@ public class EntityIndexUtils {
 		} else {
 			bIds.append(BasicIndexUtils.READ_ACL_ALL);
 		}   		
-		return new Field(BasicIndexUtils.FOLDER_ACL_FIELD, bIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-
+		return bIds.toString();
+    }
+    public static void addReadAccess(Document doc, Binder binder) {
+    	//set entryAcl to all
+		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+		//get real binder access
+		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getBinderAccess(binder), Field.Store.NO, Field.Index.TOKENIZED));
+    }
+    
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder) {
+		//add binder access
+    	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
+   		acl.setText(getBinderAccess(binder));
+    	//set entryAcl to all
+		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
+ 		acl.setText(BasicIndexUtils.READ_ACL_ALL);
+    }
+    private static String getWfEntryAccess(WorkflowSupport wEntry) {
+		//get principals given read access 
+     	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
+     	// I'm not sure if putting together a long string value is more
+     	// 	efficient than processing multiple short strings... We will see.
+     	StringBuffer pIds = new StringBuffer();
+     	for (Iterator i = ids.iterator(); i.hasNext();) {
+     		pIds.append(i.next()).append(" ");
+     	}
+   		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
+   			//add all => folder check
+   			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
+   		}
+   		return pIds.toString();
+   	
     }
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry) {
 		// Add ACL field. We only need to index ACLs for read access.
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
-    		//get principals given read access 
-         	Set ids = wEntry.getStateMembers(WfAcl.AccessType.read);
-         	// I'm not sure if putting together a long string value is more
-         	// 	efficient than processing multiple short strings... We will see.
-         	StringBuffer pIds = new StringBuffer();
-         	for (Iterator i = ids.iterator(); i.hasNext();) {
-         		pIds.append(i.next()).append(" ");
-         	}
-       		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
-       			//add all => folder check
-       			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
-       		}
        		// Add the Entry_ACL field
-       		Field entryAclField = new Field(BasicIndexUtils.ENTRY_ACL_FIELD, pIds.toString(), Field.Store.NO, Field.Index.TOKENIZED);
-       		doc.add(entryAclField);
+       		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
        		//add binder access
-    		doc.add(getBinderAccess(binder));
+    		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getBinderAccess(binder), Field.Store.NO, Field.Index.TOKENIZED));
 
-    	} else addReadAccess(doc, binder);
+    	} else {
+    		addReadAccess(doc, binder);
+    	}
 	}
-
+    //This is used to store the "read" acls in a document that is not a search document
+    public static void addReadAccess(org.dom4j.Element parent, Binder binder, DefinableEntity entry) {
+		// Add ACL field. We only need to index ACLs for read access.
+  		//add binder access
+   		if (entry instanceof WorkflowSupport) {
+   		   	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
+   	   		acl.setText(getBinderAccess(binder));
+   	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
+       		// Add the Entry_ACL field
+       		acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
+       		acl.setText(getWfEntryAccess(wEntry));
+ 
+    	} else {
+     		addReadAccess(parent, binder);
+    	}
+	}
+ 
     public static void addTags(Document doc, DefinableEntity entry, List allTags) {
     	List pubTags = new ArrayList<Tag>();
     	List privTags = new ArrayList<Tag>();

@@ -12,20 +12,17 @@ package com.sitescape.team.rss;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.text.ParseException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
@@ -34,15 +31,15 @@ import org.dom4j.Node;
 
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.ConfigPropertyNotFoundException;
 import com.sitescape.team.util.Constants;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
@@ -177,7 +174,7 @@ implements RssGeneratorMBean {
 		}
 	}
 	
-	public void updateRssFeed(Entry entry, Set ids) {
+	public void updateRssFeed(Entry entry) {
 		// See if the feed already exists
 		String rssFileName = getRssFileName(entry.getParentBinder());
 		File rf = new File(rssFileName);
@@ -196,7 +193,7 @@ implements RssGeneratorMBean {
 		if (entryNode != null)
 			entryNode.detach();
 		
-		channelNode.add(this.createElementFromEntry(entry, ids));
+		channelNode.add(this.createElementFromEntry(entry));
 		
 		writeRssFile(entry.getParentBinder(), doc);
 	}
@@ -215,26 +212,27 @@ implements RssGeneratorMBean {
 		List aclNodes = rssRoot.selectNodes("/rss/channel/item/sitescapeAcl");
 
 		// get the current users acl set
-		Set userAclSet = getProfileDao().getPrincipalIds(user);
+		Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
+		Set userStringSet = new HashSet();
+		for (Long id:userAclSet) {
+			userStringSet.add(id.toString());
+		}
 		// Walk thru the nodes with ACL's and find the ones this
 		// user has read access to, and delete the rest.
 		for (Iterator i = aclNodes.iterator(); i.hasNext();) {
-			access = false;
-			Node thisAcl = (Node)i.next();
- 	       	String[] acls = thisAcl.getStringValue().split(" ");
- 	       	for (int j = 0; j < acls.length; j++) {
- 	       		if (userAclSet.contains(new Long(acls[j]))) {
- 	       			access = true;
- 	       			break;
+			Element thisAcl = (Element)i.next();
+			if (user.isSuper()) {
+				// need to delete the acl before we send it to the client
+				thisAcl.detach();
+			} else {
+				access = AccessUtils.checkAccess(thisAcl, userStringSet); 	       	
+				if (!access) {
+ 	       			thisAcl.getParent().detach();
+ 	       		} else {
+ 	       			// need to delete the acl before we send it to the client
+ 	       			thisAcl.detach();
  	       		}
- 	       	}
- 	       	
- 	       	if (!access) {
- 	       		thisAcl.getParent().detach();
- 	       	} else {
- 	       		// need to delete the acl before we send it to the client
- 	       		thisAcl.detach();
- 	       	}
+			}
         }
 		
 		//detach the age before sending the xml to the user
@@ -261,7 +259,7 @@ implements RssGeneratorMBean {
         return document;
     }
     
-    public Element createElementFromEntry(Entry entry, Set ids) 
+    public Element createElementFromEntry(Entry entry) 
     {
     	Element entryElement = DocumentHelper.createElement("item");
     	//Title needs to change for some readers to display it
@@ -285,15 +283,10 @@ implements RssGeneratorMBean {
     	entryElement.addElement("guid")
     		.addAttribute("isPermaLink", "false")
     		.addText(entry.getId().toString());
-    	if (ids != null) {
-    		//enumerate the acls
-    		StringBuffer pIds = new StringBuffer();
-       		for (Iterator i = ids.iterator(); i.hasNext();) {
-        		pIds.append(i.next()).append(" ");
-        	}
-    		entryElement.addElement("sitescapeAcl")
-    			.addText(pIds.toString());
-    	}
+
+    	Element acl = entryElement.addElement("sitescapeAcl");
+    	//add same acls as search engine uses
+    	EntityIndexUtils.addReadAccess(acl, entry.getParentBinder(), entry);
     	return entryElement;
     	
     }

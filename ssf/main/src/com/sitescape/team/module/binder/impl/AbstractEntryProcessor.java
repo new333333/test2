@@ -52,7 +52,6 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;

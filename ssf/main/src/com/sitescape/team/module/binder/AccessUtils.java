@@ -12,7 +12,10 @@ package com.sitescape.team.module.binder;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+
+import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.SingletonViolationException;
@@ -25,6 +28,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AclAccessControlException;
@@ -35,6 +39,7 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.util.Validator;
 
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
@@ -70,43 +75,70 @@ public class AccessUtils  {
 		return profileDao;
 	}
 
-    public static Set getReadAccessIds(Entry entry) {
-        Set binderIds = getInstance().getAccessControlManager().getWorkAreaAccessControl(entry.getParentBinder(), WorkAreaOperation.READ_ENTRIES);
-	       
-		Set<Long> entryIds = new HashSet<Long>();
-	    if (entry instanceof WorkflowSupport) {
-			WorkflowSupport wEntry = (WorkflowSupport)entry;
-			if (wEntry.hasAclSet()) {
-				//index binders access
-				if (wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
-					entryIds.addAll(binderIds);
+	/**
+	 * Check Access based on the acl that the search engine would store.
+	 * This is used for Rss and changeLogs which store those acls
+	 * @param parent
+	 * @param userIds - List of String ids
+	 * @return
+	 */
+	public static boolean checkAccess(Element parent, Set<String> userIds) {			
+		/*
+		 * if !widen, then acl query is: (folderACL:1,2,3 AND entryAcl:all,1,2,3)
+		 * 
+		 * else ((folderAcl:1,2,3 AND entryAcl:all) OR (entryAcl:1,2,3))
+		 */
+		Element acl = (Element)parent.selectSingleNode(BasicIndexUtils.FOLDER_ACL_FIELD);
+		String folderAcl = null;
+		if (acl != null) folderAcl = acl.getText();
+		if (folderAcl == null) folderAcl = "";
+		String[] folderAclArray = folderAcl.split(" ");
+	 
+		acl = (Element)parent.selectSingleNode(BasicIndexUtils.ENTRY_ACL_FIELD);   	
+		String entryAcl=null;
+		if (acl != null) entryAcl = acl.getText();
+		if (Validator.isNull(entryAcl)) entryAcl = BasicIndexUtils.READ_ACL_ALL;
+		String []entryAclArray = entryAcl.split(" ");
+		boolean widen = SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false);
+		if (widen) {
+			//((folderAcl:1 2 3 AND entryAcl:all) OR (entryAcl:1 2 3))
+			if (entryAcl.equals(BasicIndexUtils.READ_ACL_ALL)) {
+				//check folder for match
+				for (int i=0; i<folderAclArray.length; ++i) {
+					if (userIds.contains(folderAclArray[i])) return true;
 				}
-				entryIds.addAll(wEntry.getStateMembers(WfAcl.AccessType.read));
-		        //replaces reserved ownerId with entry owner
-				
-	    		if (SPropsUtil.getBoolean(SPropsUtil.WIDEN_ACCESS, false)) {
-	    			//only index ids in both sets ie(AND)
-	    			//remove ids in entryIds but not in binderIds
-	    			entryIds.removeAll(CollectionUtil.differences(entryIds, binderIds));
-	    		}
-
-				//	no access specified, add binder default
-				if (entryIds.isEmpty())
-					entryIds.addAll(binderIds);
-        		return entryIds;
+				return false;				
 			} else {
-				//doesn't have any active workflow, use binder access
-				return binderIds;
+				//check entry for match
+				for (int i=0; i<entryAclArray.length; ++i) {
+					if (userIds.contains(entryAclArray[i])) return true;
+				}
+				return false;
 			}
 		} else {
-			//use binder access
-			return binderIds;
+			//(folderACL:1,2,3 AND entryAcl:all,1,2,3)
+			//check folder for match
+			boolean found = false;
+			for (int i=0; i<folderAclArray.length; ++i) {
+				if (userIds.contains(folderAclArray[i])) {
+					found = true;
+					break;
+				}
+			}
+			//done if didn't pass folderAcl
+			if (!found) return false;				
+			//check entry for match
+			for (int i=0; i<entryAclArray.length; ++i) {
+				if (userIds.contains(entryAclArray[i])) return true;
+			}
+			return false;
+				
 		}
-    	 
-     }
-     public static Set getReadAccessIds(Binder binder) {
+	}	
+
+	public static Set getReadAccessIds(Binder binder) {
         return getInstance().getAccessControlManager().getWorkAreaAccessControl(binder, WorkAreaOperation.READ_ENTRIES);     	 
-      }     	
+	}     	
 	
 	public static void readCheck(Entry entry) throws AccessControlException {
 		readCheck(RequestContextHolder.getRequestContext().getUser(), entry);
@@ -118,7 +150,7 @@ public class AccessUtils  {
     	else 
     		readCheck(user, entry.getParentBinder(), (Entry)entry);
     		
-   }
+	}
 	private static void readCheck(User user, Binder binder, Entry entry) {
 		getInstance().getAccessControlManager().checkOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
     }

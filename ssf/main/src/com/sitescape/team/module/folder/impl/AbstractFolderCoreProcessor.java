@@ -12,13 +12,10 @@ package com.sitescape.team.module.folder.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -50,14 +47,9 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.ChangeLogUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
 /**
  *
@@ -85,7 +77,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     protected void addEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
        	super.addEntry_done(binder, entry, inputData, ctx);
-   		getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAccessIds(entry)); 
+   		getRssGenerator().updateRssFeed(entry); 
      }
 
     //***********************************************************************************************************
@@ -228,10 +220,14 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		fEntry.updateLastActivity(fEntry.getModification().getDate());
    }
 	protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
-    	getRssGenerator().updateRssFeed(entry, AccessUtils.getReadAccessIds(entry));
+    	getRssGenerator().updateRssFeed(entry);
  	}
     //***********************************************************************************************************
-
+    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState) {
+    	super.modifyWorkflowState(binder, entry, tokenId, toState);
+       	getRssGenerator().updateRssFeed(entry);
+           	
+    }
     protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
     	if (ctx == null) ctx = new HashMap();

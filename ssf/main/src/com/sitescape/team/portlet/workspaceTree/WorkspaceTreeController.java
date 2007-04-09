@@ -283,28 +283,23 @@ public class WorkspaceTreeController extends SAbstractController  {
 
 		//	The "Add" menu
 		PortletURL url;
-		Binder parent = workspace.getParentBinder();
 		//Add Workspace except to top or a user workspace
-		if (parent != null) {
-			if (getWorkspaceModule().testAccess(workspace, "addWorkspace")) {
-				adminMenuCreated=true;
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
-			}
+		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, "addWorkspace")) {
+			adminMenuCreated=true;
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
+			toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspace"), url);
 		}
 		//Add Folder except to top
-		if (parent != null) {
-			if (getWorkspaceModule().testAccess(workspace, "addFolder")) {
-				adminMenuCreated=true;
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
-				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
-			}
+		if (!workspace.isRoot() && getWorkspaceModule().testAccess(workspace, "addFolder")) {
+			adminMenuCreated=true;
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
+			toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
 		}
 	
 		//Configuration
@@ -315,10 +310,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
-		}
-		
-		//Modify
-		if (getBinderModule().testAccess(workspace, "modifyBinder")) {
+			
+			//Modify
+			
 			adminMenuCreated=true;
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);

@@ -844,46 +844,6 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
      	entry.setPopularity(Long.valueOf(result));		
 	}
 	
-	public List<String> getFolderIds(Integer type) {
-    	// TODO 
-    	// NOTE: This implementation utilizes database lookup to fetch the
-    	// entire list of folders in the system and then test each one against
-    	// access control. This is unacceptably inefficient especially when
-    	// there are large number of folders in the system. This MUST be
-    	// re-implemented to use search engine index in the same way that
-    	// the index is used for querying for a list of entries. When this
-    	// reimplementation is done, the type of the return object will need
-    	// to change from the simple List<String> to something more involving
-    	// (eg. Map) to accomodate the various pieces of information returned 
-    	// from the search index lookup (similar to getBinderEntries method
-    	// in AbstractEntryProcessor class).  
-    	
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	
-    	FilterControls filter = null;
-    	
-    	if(type != null) {
-    		filter = new FilterControls(new String[]{"zoneId", "definitionType"}, new Object[]{zoneId, Integer.valueOf(type)});
-    	}
-    	else {
-    		filter = new FilterControls("zoneId", zoneId);
-    	}
-    	
-    	List folders = getCoreDao().loadObjects(Folder.class, filter);
-    	
-    	List<String> result = new ArrayList<String>(folders.size());
-    	for(int i = 0; i < folders.size(); i++) {
-    		Folder folder = (Folder) folders.get(i);
-	    	if (folder.isDeleted()) continue;
-    		// Check if the user has "read" access to the folder.
-    		if(getAccessControlManager().testOperation(folder, WorkAreaOperation.READ_ENTRIES))
-    			result.add(folder.getId().toString());
-    		else
-    			continue;
-    	}
-    	
-    	return result;
-    }
 
     public void reserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException,

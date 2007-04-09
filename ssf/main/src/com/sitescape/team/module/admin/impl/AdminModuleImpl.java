@@ -1135,7 +1135,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return getCoreDao().loadObjects(ChangeLog.class, filter); 
+	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter));
+	   //need to filter for access
    }
    public List getChanges(Long entityId, String entityType, String operation) {
 	   FilterControls filter = new FilterControls();
@@ -1148,8 +1149,28 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return getCoreDao().loadObjects(ChangeLog.class, filter); 
+	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter)); 
    	
+   }
+   private List filterChangeLogs(List<ChangeLog> changeLogs) {
+	   User user = RequestContextHolder.getRequestContext().getUser();
+	   if (user.isSuper()) return changeLogs;
+	   // get the current users acl set
+	   Set<Long> userAclSet = getProfileDao().getPrincipalIds(user);
+	   Set userStringIds = new HashSet();
+	   for (Long id:userAclSet) {
+		   userStringIds.add(id.toString());
+	   }
+	   List result = new ArrayList();
+	   for (ChangeLog log: changeLogs) {
+		   Document doc = log.getDocument();
+		   if (doc == null) continue;
+		   Element root = doc.getRootElement();
+		   if (root == null) continue;
+		   if (AccessUtils.checkAccess(root, userStringIds)) result.add(log);
+	   }
+	   return result;
+
    }
 
 }
