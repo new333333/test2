@@ -495,10 +495,6 @@ public class TreeTag extends TagSupport {
 							jspOut.print(mPrefix + s_id + "\" id=\"");
 							jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 							jspOut.print(checked + "/>");
-							if (this.startingId != null && !this.startingId.equals("")) {
-								jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-								//recursedNodes.add(0, "1");
-							}
 						}
 					} else if (this.singleSelectName != null) {
 						//can only select one item from tree, but probably other things going on
