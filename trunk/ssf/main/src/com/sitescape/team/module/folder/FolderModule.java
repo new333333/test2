@@ -89,12 +89,6 @@ public interface FolderModule {
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
     public Folder getFolder(Long folderId);
 	public Collection getFolders(List folderIds);
-    /**
-     * Returns a list of ids of all folders that the user has read access to. 
-     * 
-     * @return
-     */
-    public List<String> getFolderIds(Integer type);
     public Set getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
 	public Map getFullEntries(Long folderId) throws AccessControlException;
 	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;

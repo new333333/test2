@@ -24,6 +24,7 @@ import java.util.Set;
 import javax.activation.FileTypeMap;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.InternalException;
@@ -40,10 +41,13 @@ import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.file.LockIdMismatchException;
 import com.sitescape.team.module.file.LockedByAnotherUserException;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
@@ -55,6 +59,7 @@ import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
 import com.sitescape.team.util.DatedMultipartFile;
+import com.sitescape.util.Validator;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
@@ -360,7 +365,25 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		Binder binder = (Binder) objMap.get(BINDER);
 		if (binder == null) {
 			// Get a list binders (all folders)
-			List<String> folderIds = bs.getFolderModule().getFolderIds(null);
+			Map options = new HashMap();
+			//get them all
+			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+			Document searchFilter = DocumentHelper.createDocument();
+			Element field = searchFilter.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+			
+	    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+			
+			Map searchResults = bs.getBinderModule().executeSearchQuery(null, options);
+			List<Map> groups = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+			List<String> folderIds = new ArrayList();
+			for (Map groupMap: groups) {
+				String fId = (String)groupMap.get(EntityIndexUtils.DOCID_FIELD);
+				if (Validator.isNotNull(fId)) folderIds.add(fId);
+				
+			}
 			return folderIds.toArray(new String[folderIds.size()]);
 		}
 
@@ -378,7 +401,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 				Map ent = (Map) entries.get(i);
 				String entryIdString = (String) ent
 						.get(EntityIndexUtils.DOCID_FIELD);
-				if (entryIdString != null && !entryIdString.equals(""))
+				if (Validator.isNotNull(entryIdString))
 					children.add(entryIdString);
 			}
 			return children.toArray(new String[children.size()]);

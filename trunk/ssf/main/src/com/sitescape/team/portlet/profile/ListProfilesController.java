@@ -416,28 +416,16 @@ public class ListProfilesController extends   SAbstractController {
 */
 		
 		//The "Administration" menu
-		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.administration"));
-		//Access control
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
-		//Configuration
-		url = response.createRenderURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
-		//Definition builder
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.URL_BINDER_ID, binderId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.definition_builder"), url);
-		
-		//Modify
+		boolean adminMenuCreated=false;
+		toolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisWorkspace"));
 		if (getBinderModule().testAccess(binder, "modifyBinder")) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
+			//Modify
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
@@ -445,8 +433,23 @@ public class ListProfilesController extends   SAbstractController {
 			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
 			Map qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_workspace"), url, qualifiers);
 		}
+		//if no menu items were added, remove the empty menu
+		if (!adminMenuCreated) toolbar.deleteToolbarMenu("1_administration");
+
+		//Access control
+		if (getBinderModule().testAccess(binder, "accessControl")) {
+			adminMenuCreated = true;
+			Map qualifiers = new HashMap();
+			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
+			url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+			url.setParameter(WebKeys.URL_BINDER_TYPE, binder.getEntityType().name());
+			toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.menu.accessControl"), url, qualifiers);
+			}
+
 		//	The "Display styles" menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			toolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_actions"));

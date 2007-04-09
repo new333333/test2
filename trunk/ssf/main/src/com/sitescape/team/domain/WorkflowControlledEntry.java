@@ -146,6 +146,7 @@ public abstract class WorkflowControlledEntry extends Entry
 	}
 	/**
 	 * Hold change document.  Must be saved by some other mechanism.
+	 * This allows a string of state changes to be handled by one log entry
 	 * @param ws
 	 */
 	public void setStateChange(WorkflowState ws) {

@@ -18,6 +18,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -33,6 +34,11 @@ public class ChangeLogUtils {
 
 	public static Element buildLog(ChangeLog changes, DefinableEntity entry) {
 		Element element = changes.getEntityRoot();
+		if (entry instanceof Binder)
+			EntityIndexUtils.addReadAccess(element, (Binder)entry);
+		else
+			EntityIndexUtils.addReadAccess(element, entry.getParentBinder(), entry);
+		
 		if (entry.getCreation() != null)
 			entry.getCreation().addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);
 		if (entry.getModification() != null)

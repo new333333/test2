@@ -10,7 +10,7 @@
  */
 package com.sitescape.team.module.zone.impl;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +30,6 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoGroupByTheNameException;
@@ -50,10 +49,8 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
-import com.sitescape.util.Validator;
 
 public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
@@ -215,7 +212,16 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        		getDefinitionModule().setDefaultBinderDefinition(top);
 	        		getDefinitionModule().setDefaultBinderDefinition(profiles);
 	        		getDefinitionModule().setDefaultEntryDefinition(user);
-			
+
+	        		//fill in config form profiles
+	        		List defs = profiles.getDefinitions();
+	        		defs.add(profiles.getEntryDef());
+	        		defs.add(user.getEntryDef());
+	        		
+	        		defs = top.getDefinitions();
+	        		defs.add(top.getEntryDef());
+	        		
+	        		
 	        		//fill in timestampes
 	        		HistoryStamp stamp = new HistoryStamp(user);
 	        		top.setCreation(stamp);
@@ -340,6 +346,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
 		getDefinitionModule().setDefaultBinderDefinition(team);
 		top.addBinder(team);
+		team.setDefinitionsInherited(false);
+		List defs = team.getDefinitions();
+		defs.add(team.getEntryDef());
 		
 		//generate id for top and profiles
 		getCoreDao().save(team);
@@ -359,6 +368,9 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		global.setInternalId(ObjectKeys.GLOBAL_ROOT_INTERNALID);
 		getDefinitionModule().setDefaultBinderDefinition(global);
 		top.addBinder(global);
+		global.setDefinitionsInherited(false);
+		List defs = global.getDefinitions();
+		defs.add(global.getEntryDef());
 		
 		//generate id for top and profiles
 		getCoreDao().save(global);
@@ -373,7 +385,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		profiles.setZoneId(top.getId());
 		profiles.setInternalId(ObjectKeys.PROFILE_ROOT_INTERNALID);
 		top.addBinder(profiles);
-		
+		profiles.setDefinitionsInherited(false);
 		//generate id for top and profiles
 		getCoreDao().save(profiles);
 		getCoreDao().updateFileName(top, profiles, null, profiles.getTitle());
