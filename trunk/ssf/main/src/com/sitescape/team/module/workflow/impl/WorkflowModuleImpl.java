@@ -368,7 +368,7 @@ public class WorkflowModuleImpl extends CommonDependencyInjection implements Wor
 //    	Writer writer = new StringWriter();
 //	    JpdlXmlWriter jpdl = new JpdlXmlWriter(writer);
 //	    jpdl.write(pD);
-	    logger.info("Workflow process definition created: " + pD.getName());
+//	    logger.info("Workflow process definition created: " + pD.getName());
 //	    logger.info(writer.toString());
 	}
 	private Event addTimer(JbpmContext context, Node node, String name, String timeout, String toState) {
