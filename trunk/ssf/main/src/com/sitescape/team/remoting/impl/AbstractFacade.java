@@ -13,7 +13,10 @@ package com.sitescape.team.remoting.impl;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,7 +27,10 @@ import org.dom4j.Element;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
@@ -197,6 +203,29 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 
+	public String getFolderEntriesAsXML(long binderId) {
+		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
+
+		Document doc = DocumentHelper.createDocument();
+		Element folderElement = doc.addElement("folder");
+		folderElement.addAttribute("title", binder.getTitle());
+		folderElement.addAttribute("id", binder.getId().toString());
+
+			if (binder instanceof Folder) {
+			Map options = new HashMap();
+			Map folderEntries = getFolderModule().getFullEntries(binder.getId(), options);
+			List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
+			Iterator entryIterator = entrylist.listIterator();
+			while (entryIterator.hasNext()) {
+				FolderEntry entry  = (FolderEntry) entryIterator.next();
+				Element entryElem = folderElement.addElement("entry");
+				addEntryAttributes(entryElem, entry);
+			}
+		}
+		
+		return doc.getRootElement().asXML();
+	}
+
 	public String getFolderEntryAsXML(long binderId, long entryId) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
@@ -208,16 +237,9 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		Document doc = DocumentHelper.createDocument();
 		
 		Element entryElem = doc.addElement("entry");
-		
+
 		// Handle structured fields of the entry known at compile time. 
-		entryElem.addAttribute("id", entry.getId().toString());
-		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
-		entryElem.addAttribute("title", entry.getTitle());
-		entryElem.addAttribute("docNumber", entry.getDocNumber());
-		entryElem.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
-		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
-		entryElem.addAttribute("href", entryUrl);
+		addEntryAttributes(entryElem, entry);
 		
 		// Handle custom fields driven by corresponding definition. 
 		addCustomElements(entryElem, entry);
@@ -234,6 +256,17 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 		return xml;
 	}
 	
+	private void addEntryAttributes(Element entryElem, FolderEntry entry)
+	{
+		entryElem.addAttribute("id", entry.getId().toString());
+		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
+		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		entryElem.addAttribute("title", entry.getTitle());
+		entryElem.addAttribute("docNumber", entry.getDocNumber());
+		entryElem.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
+		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
+		entryElem.addAttribute("href", entryUrl);
+	}
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML) {
 		Document doc = getDocument(inputDataAsXML);
 		
@@ -352,7 +385,13 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 	}
 	
 	public String getWorkspaceTreeAsXML(long binderId, int levels) {
-		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
+		com.sitescape.team.domain.Binder binder = null;
+		
+		if(binderId == -1) {
+			binder = getWorkspaceModule().getTopWorkspace();
+		} else {
+			binder = getBinderModule().getBinder(new Long(binderId));
+		}
 
 		Document tree;
 		String treeKey = "";
@@ -369,6 +408,7 @@ public abstract class AbstractFacade implements Facade, AllBusinessServicesInjec
 
 		String xml = tree.getRootElement().asXML();
 		//System.out.println(xml);
+
 		return xml;
 	}
 	

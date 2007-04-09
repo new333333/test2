@@ -27,6 +27,8 @@ public interface Facade {
 	// 
 	// Folder operations
 	// 	
+	public String getFolderEntriesAsXML(long folderId);
+
 	public String getFolderEntryAsXML(long folderId, long entryId);
 	
 	public long addFolderEntry(long folderId, String definitionId, String inputDataAsXML);

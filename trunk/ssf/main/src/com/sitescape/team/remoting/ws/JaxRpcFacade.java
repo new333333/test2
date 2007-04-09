@@ -38,6 +38,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.getDefinitionConfigAsXML();
 	}
 	
+	public String getFolderEntriesAsXML(long binderId) {
+		return this.facade.getFolderEntriesAsXML(binderId);
+	}
+
 	public String getFolderEntryAsXML(long binderId, long entryId) {
 		return this.facade.getFolderEntryAsXML(binderId, entryId);
 	}
