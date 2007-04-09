@@ -3,42 +3,6 @@
 <portlet-app xmlns="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd" version="1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd http://java.sun.com/xml/ns/portlet/portlet-app_1_0.xsd">	
 
     <portlet>
-        <description xml:lang="en">ICEcorps Sample Employees Portlet</description>
-        <portlet-name>ss_employees</portlet-name>
-        <display-name xml:lang="en">ICEcorps Employees</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/employees.xml</value>
-		</init-param>
-        <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-            <portlet-mode>help</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.employees</resource-bundle>
-    </portlet>
-
-    <portlet>
-        <description xml:lang="en">ICEcorps Widget Tester Portlet</description>
-        <portlet-name>ss_widgettest</portlet-name>
-        <display-name xml:lang="en">Widget tester</display-name>
-        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
-		<init-param>
-			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/widgetTest.xml</value>
-		</init-param>
-        <expiration-cache>0</expiration-cache>
-        <supports>
-            <mime-type>text/html</mime-type>
-            <portlet-mode>view</portlet-mode>
-        </supports>
-        <supported-locale>en</supported-locale>
-        <resource-bundle>content.widgettest</resource-bundle>
-    </portlet>
-    <portlet>
         <description xml:lang="en">ICEcorps Workspace Tree Portlet</description>
         <portlet-name>ss_workspacetree</portlet-name>
         <display-name xml:lang="en">Workspace Tree</display-name>
