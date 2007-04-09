@@ -18,6 +18,7 @@ public class MailTreeHelper implements DomTreeHelper {
 	public boolean supportsType(int type, Object source) {
 		if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
 		if (type == DomTreeBuilder.TYPE_FOLDER) {return true;}
+		if (type == DomTreeBuilder.TYPE_SKIPLIST) {return true;}
 		return false;
 	}
 	public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
