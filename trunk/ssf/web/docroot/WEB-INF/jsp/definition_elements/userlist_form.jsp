@@ -13,5 +13,8 @@
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
 <ssf:find formName="${formName}" formElement="${property_name}" 
   type="user" userList="${ssDefinitionEntry.customAttributes[property_name].valueSet}"/>
+</div>

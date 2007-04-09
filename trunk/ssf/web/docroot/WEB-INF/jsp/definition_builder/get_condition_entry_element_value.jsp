@@ -92,8 +92,9 @@
 		       </c:forEach>
 		     </select>
 		   </c:if>
+		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
-		       -- user and group selection goes here --<br/>
+			 <ssf:find formName="" formElement="searchPersonalTags${ss_filterTermNumber}" type="personalTags" width="70px" singleItem="true" />
 		   </c:if>
 		</c:if>
 		</div></taconite-replace>
