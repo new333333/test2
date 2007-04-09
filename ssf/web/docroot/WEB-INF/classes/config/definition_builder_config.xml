@@ -1430,7 +1430,7 @@
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
 			</property>
@@ -1451,7 +1451,7 @@
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>__help_data_name</help>
 			</property>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="inline" caption="__inline" type="boolean">
 				<help>__help_mark_as_inline</help>
 			</property>
@@ -1565,7 +1565,7 @@
 		
 	<item name="expandableDiv" caption="__expandable_div" category="generalLayout">
 		<properties>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
 				<option name="rounded" caption="__box_rounded" />
 				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
@@ -1635,7 +1635,7 @@
 	<item name="table2" caption="__two_column_table" category="generalLayout">
 		<properties>
 			<property name="name" caption="__name" type="text"/>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1667,7 +1667,7 @@
 	<item name="table3" caption="__three_column_table" category="generalLayout">
 		<properties>
 			<property name="name" caption="__name" type="text"/>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1782,7 +1782,7 @@
 	</item>
 	<item name="expandableDivView" caption="__expandable_div" category="generalViewLayout">
 		<properties>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
 				<option name="rounded" caption="__box_rounded" />
 				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
@@ -1848,7 +1848,7 @@
 	<item name="table2View" caption="__two_column_table" category="generalViewLayout">
 		<properties>
 			<property name="name" caption="__name" type="text"/>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>
@@ -1878,7 +1878,7 @@
 	<item name="table3View" caption="__three_column_table" category="generalViewLayout">
 		<properties>
 			<property name="name" caption="__name" type="text"/>
-			<property name="caption" caption="__text" type="text"/>
+			<property name="caption" caption="__caption" type="text"/>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>__help_required</help>
 			</property>

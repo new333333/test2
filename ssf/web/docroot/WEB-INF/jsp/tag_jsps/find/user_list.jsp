@@ -32,7 +32,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
 
 
-<table class="ss_style" cellspacing="2px" cellpadding="5px">
+<table class="ss_style" cellspacing="0px" cellpadding="0px" style="padding-bottom:5px;">
 <tbody>
 <tr>
 <td valign="top">
@@ -58,7 +58,7 @@
     </c:if>
 
 </td>
-<td valign="top">
+<td valign="top" style="padding-left:10px;">
 <div style="float: left;">
   <div style="border:solid black 1px;">
     <ul id="added_${prefix}" class="ss_userlist">

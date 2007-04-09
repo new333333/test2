@@ -155,8 +155,6 @@ public class TreeTag extends TagSupport {
 			if (this.initOnly) {
 				jspOut.print(sb.toString());
 			} else {
-				List recursedNodes = new ArrayList();
-	
 				//Mark that the root is the last item in its list
 				treeRoot.addAttribute("treeLS","1");
 				if (this.rootOpen || this.allOpen || treeRoot.attributeValue("id", "-1").equals(this.nodeOpen)) {
@@ -237,13 +235,13 @@ public class TreeTag extends TagSupport {
 				String indentKey = this.indentKey;
 				if (this.flat) {
 					//This user is in accessibility mode, output a flat version of the tree
-					outputTreeNodesFlat(treeRoot, recursedNodes, indentKey);
+					outputTreeNodesFlat(treeRoot, indentKey);
 					
 				} else {
 					jspOut.print(sb.toString());
 					
 					//Output the tree
-					outputTreeNodes(treeRoot, recursedNodes, indentKey);
+					outputTreeNodes(treeRoot, indentKey);
 					
 					//Close the sortable table if needed
 					if (this.tableOpened) {
@@ -278,7 +276,7 @@ public class TreeTag extends TagSupport {
 		return SKIP_BODY;
 	}
 	
-	private void outputTreeNodes(Element e, List recursedNodes, String indentKey) throws JspException {
+	private void outputTreeNodes(Element e, String indentKey) throws JspException {
 		//If processing is finished, just exit.
 		if (this.finished) return;
 		
@@ -369,9 +367,6 @@ public class TreeTag extends TagSupport {
 					this.tableOpened = true;
 				
 					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						for (int j = recursedNodes.size() - 1; j >= 0; j--) {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-						}
 						jspOut.print("</td>\n");
 						jspOut.print("<td>\n");
 					}
@@ -380,7 +375,6 @@ public class TreeTag extends TagSupport {
 					jspOut.print("<ul id=\"ul_"+s_id+"\"");
 					jspOut.print(" class=\"ss_dragableLink "+listStyle+"\">\n");
 				}
-				recursedNodes.add(0, "0");
 				
 				jspOut.print("<li id=\""+s_id+"\">");
 				
@@ -427,7 +421,8 @@ public class TreeTag extends TagSupport {
 				jspOut.print("</li>\n");
 				
 				//See if this is the starting id
-				if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+				if (this.topId.equals("") || s_id.equals(this.topId) || 
+						(this.startingId != null && this.startingId.equals(s_id))) this.startingIdSeen = true;
 				
 				// Recurse if node has children
 				if (hcn || hhcn || 
@@ -456,7 +451,7 @@ public class TreeTag extends TagSupport {
 		
 					ListIterator it2 = e.elements("child").listIterator();
 					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), recursedNodes, indentKey);
+						outputTreeNodes((Element) it2.next(), indentKey);
 					}
 		
 					if (this.tableOpened) {
@@ -472,9 +467,6 @@ public class TreeTag extends TagSupport {
 					}
 				}
 		
-				// Pop last line or empty icon
-				recursedNodes.remove(0);
-
 				// See if it is time to stop
 				if (this.startingId != null && this.startingId.equals(s_id)) {
 					this.finished = true;
@@ -510,13 +502,8 @@ public class TreeTag extends TagSupport {
 						}
 						
 					}
-					for (int j = recursedNodes.size() - 1; j >= 0; j--) {
-						if ((String) recursedNodes.get(j) != "1") {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-						} else {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
-						}
-					}
+				}
+				if (this.startingIdSeen) {
 					//Add the spacer gifs passed in from the tag
 					for (int j = 0; j < indentKey.length(); j++) {
 						if (indentKey.substring(j, j+1).equals("s")) {
@@ -527,18 +514,11 @@ public class TreeTag extends TagSupport {
 					}
 				}
 			
-				// Line and empty icons
-				if (ls) {
-					recursedNodes.add(0, "0");
-				} else {
-					recursedNodes.add(0, "1");
-				}
-			
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					// Write out join icons
 					if (hcn || hhcn) {
 						if (ls) {
-							if (!s_parentId.equals("")) indentKey += "s";
+							indentKey += "s";
 							String classField = "";
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
@@ -566,7 +546,7 @@ public class TreeTag extends TagSupport {
 							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
 						}
 						else {
-							if (!s_parentId.equals("")) indentKey += "l";
+							indentKey += "l";
 							String classField = "";
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
@@ -588,7 +568,7 @@ public class TreeTag extends TagSupport {
 					}
 					else {
 						if (!this.topId.equals(s_id)) {
-							if (!s_parentId.equals("")) indentKey += "s";
+							indentKey += "s";
 							if (ls) {
 								jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
 							} else {
@@ -643,7 +623,8 @@ public class TreeTag extends TagSupport {
 				}
 				
 				//See if this is the starting id
-				if (this.startingId != null && this.startingId.equals(s_id)) this.startingIdSeen = true;
+				if (this.topId.equals("") || s_id.equals(this.topId) || 
+						(this.startingId != null && this.startingId.equals(s_id))) this.startingIdSeen = true;
 				
 				// Recurse if node has children
 				if (hcn) {
@@ -662,7 +643,7 @@ public class TreeTag extends TagSupport {
 		
 					ListIterator it2 = e.elements("child").listIterator();
 					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), recursedNodes, indentKey);
+						outputTreeNodes((Element) it2.next(), indentKey);
 					}
 		
 					if (divHasBeenOutput) {
@@ -674,9 +655,6 @@ public class TreeTag extends TagSupport {
 					}
 				}
 		
-				// Pop last line or empty icon
-				recursedNodes.remove(0);
-
 				// See if it is time to stop
 				if (this.startingId != null && this.startingId.equals(s_id)) {
 					this.finished = true;
@@ -688,7 +666,7 @@ public class TreeTag extends TagSupport {
 	    }
 	}
 
-	private void outputTreeNodesFlat(Element e, List recursedNodes, String indentKey) throws JspException {
+	private void outputTreeNodesFlat(Element e, String indentKey) throws JspException {
 		//If processing is finished, just exit.
 		if (this.finished) return;
 
@@ -759,13 +737,6 @@ public class TreeTag extends TagSupport {
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 			String action = e.attributeValue("action", "");
 	
-			for (int j = recursedNodes.size() - 1; j >= 0; j--) {
-				if ((String) recursedNodes.get(j) != "1") {
-					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-				} else {
-					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
-				}
-			}
 			//Add the spacer gifs passed in from the tag
 			for (int j = 0; j < indentKey.length(); j++) {
 				if (indentKey.substring(j, j+1).equals("s")) {
@@ -773,13 +744,6 @@ public class TreeTag extends TagSupport {
 				} else if (indentKey.substring(j, j+1).equals("l")) {
 					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
 				}
-			}
-	
-			// Line and empty icons
-			if (ls) {
-				recursedNodes.add(0, "0");
-			} else {
-				recursedNodes.add(0, "1");
 			}
 	
 			// Write out join icons
@@ -874,15 +838,12 @@ public class TreeTag extends TagSupport {
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
-					outputTreeNodesFlat((Element) it2.next(), recursedNodes, indentKey);
+					outputTreeNodesFlat((Element) it2.next(), indentKey);
 				}
 				jspOut.print("</div>\n");
 			} else if (hhcn) {
 				jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\" class=\"ss_twDiv\"></div>\n");
 			}
-	
-			// Pop last line or empty icon
-			recursedNodes.remove(0);
 		}
 	    catch(Exception ex) {
 	        throw new JspException(ex);
