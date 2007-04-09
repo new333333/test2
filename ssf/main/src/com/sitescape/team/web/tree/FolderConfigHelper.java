@@ -35,5 +35,6 @@ public class FolderConfigHelper implements DomTreeHelper {
 	}
 	//each name must be unqiue
 	public String getTreeNameKey() {return "editForum";}
+	public String getPage() {return "";}
 			
 }

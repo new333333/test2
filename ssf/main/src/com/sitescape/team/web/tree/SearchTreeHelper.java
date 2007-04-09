@@ -38,6 +38,7 @@ public class SearchTreeHelper implements DomTreeHelper {
 	public String getDisplayOnly(int type, Object source) {return "false";}
 	//each name must be unqiue
 	public String getTreeNameKey() {return "search";}
+	public String getPage() {return "";}
 	
 }
 

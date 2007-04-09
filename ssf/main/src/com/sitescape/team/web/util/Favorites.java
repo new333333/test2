@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -340,6 +342,9 @@ public class Favorites {
 		public boolean supportsWorkspace() {return false;}
 		public boolean supportsFavorites(){return true;}
 		public boolean supportsPeople() {return false;}
+		public String getPage() {return "";}
+		public void setPage(String page) {}
+		public List getTuple() {return new ArrayList(Arrays.asList("", ""));}
 		public Element setupDomElement(int type, Object source, Element element) {
 			if (type == DomTreeBuilder.TYPE_FAVORITES) {
 				Element e = (Element)source;

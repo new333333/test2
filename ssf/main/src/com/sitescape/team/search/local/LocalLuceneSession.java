@@ -650,7 +650,7 @@ public class LocalLuceneSession implements LuceneSession {
 							// looking for, or, when the term is beyond the end term
 							if (term.field().compareTo(field) != 0)
 								break;
-							if ((end != "") && (term.text().compareTo(end) <= 0)) {
+							if ((end != "") && (term.text().compareTo(end) > 0)) {
 								break; // no longer in '_tagField' field
 							}
 							termDocs.seek(enumerator);
@@ -690,7 +690,9 @@ public class LocalLuceneSession implements LuceneSession {
 				Iterator iter = titles.iterator();
 				while (iter.hasNext()) {
 					ArrayList<String> tuple= new ArrayList<String>();
+					if (!iter.hasNext()) break;
 					tuple.add((String)iter.next());
+					if (!iter.hasNext()) break;
 					tuple.add((String)iter.next());
 					resultTitles.add(tuple);
 				}

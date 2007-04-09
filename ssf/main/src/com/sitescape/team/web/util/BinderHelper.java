@@ -830,8 +830,13 @@ public class BinderHelper {
 	}
 	public static class ConfigHelper implements DomTreeHelper {
 		String action;
+		String page;
 		public ConfigHelper(String action) {
 			this.action = action;
+		}
+		public ConfigHelper(String action, String page) {
+			this.action = action;
+			this.page = page;
 		}
 		public boolean supportsType(int type, Object source) {
 			if (type == DomTreeBuilder.TYPE_TEMPLATE) {return true;}
@@ -850,6 +855,7 @@ public class BinderHelper {
 			return "false";
 		}
 		public String getTreeNameKey() {return null;}
+		public String getPage() {return page;}
 		
 	}
 	public static void buildAccessControlRoleBeans(AllBusinessServicesInjected bs, Map model) {

@@ -33,5 +33,6 @@ public class WorkspaceConfigHelper implements DomTreeHelper {
 	}
 	//each name must be unqiue
 	public String getTreeNameKey() {return "editWs";}
+	public String getPage() {return "";}
 
 }

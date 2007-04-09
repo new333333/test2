@@ -383,11 +383,11 @@ public class QueryBuilder {
 			}
 		}
 		if (inclusive)
-			termText = new String(fieldName + ":[ " + startText + " TO "
-					+ finishText + " ]");
+			termText = new String(fieldName + ":[ \"" + startText + "\" TO \""
+					+ finishText + "\" ]");
 		else
-			termText = new String(fieldName + ":{ " + startText + " TO "
-					+ finishText + " }");
+			termText = new String(fieldName + ":{ \"" + startText + "\" TO \""
+					+ finishText + "\" }");
 
 		return termText;
 	}

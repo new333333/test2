@@ -34,5 +34,6 @@ public class MailTreeHelper implements DomTreeHelper {
 	}
 	//each name must be unqiue
 	public String getTreeNameKey() {return "email";}
+	public String getPage() {return "";}
 }
 
