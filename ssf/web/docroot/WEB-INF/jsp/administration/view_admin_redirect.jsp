@@ -14,7 +14,12 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${empty ssErrorList}">
 <script type="text/javascript">
-self.location.replace('<portlet:renderURL windowState="normal" portletMode="view"/>')
+var url_str = '<portlet:renderURL windowState="normal" portletMode="view"/>';
+var timeout = 0;
+<c:if test="${!empty ssDownloadURL}">
+timeout = 200;
+</c:if>
+setTimeout("self.location.replace(url_str)", 0);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">

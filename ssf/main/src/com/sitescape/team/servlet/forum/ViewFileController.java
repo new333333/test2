@@ -11,16 +11,25 @@
 package com.sitescape.team.servlet.forum;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import javax.activation.FileTypeMap;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -31,6 +40,8 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.util.TempFileUtil;
+import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.util.WebHelper;
@@ -47,6 +58,10 @@ public class ViewFileController extends SAbstractController {
 		String viewType = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_VIEW_TYPE, ""); 
 		String fileId = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, ""); 
 		String fileTitle = RequestUtils.getStringParameter(request, WebKeys.URL_FILE_TITLE, ""); 
+		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_ZIPPED)) {
+			streamZipFile(request, response, fileId, fileTitle);
+		}
+		else
 		if (viewType.equals(WebKeys.FILE_VIEW_TYPE_UPLOAD_FILE)) {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
@@ -222,5 +237,61 @@ public class ViewFileController extends SAbstractController {
 			}
 		}
 		return null;
+	}
+	
+	private void streamZipFile(HttpServletRequest request,
+            				   HttpServletResponse response,
+            				   String fileId, String fileTitle)
+		throws Exception
+	{
+		int n;
+		byte[] buf = new byte[1024];
+		
+		try {
+			ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream());
+			Document listOfFiles = XmlFileUtil.readStream(TempFileUtil.openTempFile(fileId));
+
+			String filename = listOfFiles.getRootElement().attributeValue("filename");
+			response.setContentType("application/zip");
+			response.setHeader("Cache-Control", "private");
+			response.setHeader("Pragma", "no-cache");
+			if(filename != null && filename != "") {
+				String attachment = "attachment; ";
+				response.setHeader(
+						"Content-Disposition",
+						attachment + "filename=\"" + filename + "\"");
+			}
+			for(Object o : listOfFiles.selectNodes("//file")) {
+				Element e = (Element) o;
+				String path = e.attributeValue("path");
+				zipOut.putNextEntry(new ZipEntry(path));
+				FileInputStream in = new FileInputStream(path);
+				while((n = in.read(buf, 0, buf.length)) > 0) {
+					zipOut.write(buf, 0, n);
+				}
+				in.close();
+			}
+			zipOut.finish();
+		}
+		catch(Exception e) {
+			response.getOutputStream().print(NLT.get("file.error") + ": " + e.getMessage());
+		}
+
+		response.getOutputStream().flush();
+	}
+	
+	public static Document createFileListingForZipDownload(String zipFileName)
+	{
+		Document listOfFiles = DocumentHelper.createDocument();
+		Element listOfFilesRoot = listOfFiles.addElement("root");
+		if(zipFileName != null) {
+			listOfFilesRoot.addAttribute("filename", zipFileName);
+		}
+		return listOfFiles;
+	}
+	
+	public static void addFileToList(Document listOfFiles, String path)
+	{
+		listOfFiles.getRootElement().addElement("file").addAttribute("path", path);
 	}
 }

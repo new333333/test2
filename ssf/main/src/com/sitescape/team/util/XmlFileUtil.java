@@ -12,6 +12,7 @@ package com.sitescape.team.util;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ByteArrayInputStream;
 
@@ -38,28 +39,47 @@ public class XmlFileUtil {
 	}
 	
 	public static Document readFile(String path) 
-		throws Exception {
-		Document document = null;
-        SAXReader reader = new SAXReader();
-        InputStreamReader fIn=null;
-        try {
-        	if (FILE_ENCODING.equals(""))
-        		fIn = new InputStreamReader(new FileInputStream(path));
-        	else
-        		fIn = new InputStreamReader(new FileInputStream(path), FILE_ENCODING);
-        	document = reader.read(fIn);
-        } catch (Exception ex) {
-        	logger.error("Cannot read XML fiel " + path + ":error is: " + ex.getLocalizedMessage());
-        	throw ex;
-        } finally {
-        	if (fIn != null) {
-        		try {
-        			fIn.close(); 
-        		} catch (Exception ex) {}
-        	}
-        }
-        return document;
+	throws Exception {
+	Document document = null;
+    SAXReader reader = new SAXReader();
+    InputStreamReader fIn=null;
+    try {
+    	if (FILE_ENCODING.equals(""))
+    		fIn = new InputStreamReader(new FileInputStream(path));
+    	else
+    		fIn = new InputStreamReader(new FileInputStream(path), FILE_ENCODING);
+    	document = reader.read(fIn);
+    } catch (Exception ex) {
+    	logger.error("Cannot read XML file " + path + ":error is: " + ex.getLocalizedMessage());
+    	throw ex;
+    } finally {
+    	if (fIn != null) {
+    		try {
+    			fIn.close(); 
+    		} catch (Exception ex) {}
+    	}
     }
+    return document;
+	}
+	
+	public static Document readStream(InputStream fIn) 
+	throws Exception {
+	Document document = null;
+    SAXReader reader = new SAXReader();
+    try {
+    	document = reader.read(fIn);
+    } catch (Exception ex) {
+    	logger.error("Cannot read XML from stream. error is: " + ex.getLocalizedMessage());
+    	throw ex;
+    } finally {
+    	if (fIn != null) {
+    		try {
+    			fIn.close(); 
+    		} catch (Exception ex) {}
+    	}
+    }
+    return document;
+}
 	public static void writeFile(Document doc, String path)
 		throws Exception {
 		FileOutputStream fOut = null;

@@ -382,6 +382,7 @@ public class WebKeys {
     public static final String DISPLAY_STYLE_WIKI="wiki";
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
+    public static final String DOWNLOAD_URL="ssDownloadURL";
     public static final String ERROR_LIST="ssErrorList";
     public static final String EXCEPTION="ssException";
     public static final String ELEMENT_NAME="ssElementName";
@@ -420,6 +421,7 @@ public class WebKeys {
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
     public static final String FILE_VIEW_TYPE_UPLOAD_FILE = "ss_viewUploadFile";
+    public static final String FILE_VIEW_TYPE_ZIPPED = "zipped";
     public static final String FILTER_ENTRY_DEF_ID = "ss_entry_def_id";
     public static final String FILTER_ENTRY_ELEMENT_NAME = "ss_filter_entry_element_name";
     public static final String FILTER_ENTRY_FILTER_TERM_NUMBER="ss_filterTermNumber";

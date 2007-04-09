@@ -12,6 +12,7 @@ package com.sitescape.team.util;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -184,6 +185,19 @@ public class TempFileUtil {
 		}
 	}
 
+	/*
+	 * Opens a previously created temporary file and returns a stream to it.
+	 * 
+	 * @param fileHandle The name of the file as returned by File.getName().
+	 */
+	public static InputStream openTempFile(String fileHandle) throws UncheckedIOException {
+		try {
+			return new FileInputStream(new File(getTempFileDirPath(), fileHandle));
+		} catch(IOException e) {
+			throw new UncheckedIOException(e);
+		}
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(new File("").getAbsolutePath());
 	}
