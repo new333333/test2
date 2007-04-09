@@ -10,10 +10,10 @@
  */
 //Routines to display an expandable/contractable tree
 //
-function ss_treeToggle(treeName, id, parentId, bottom, type, page) {
+function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 	if (page == null) page = "";
 	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
-		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page);
+		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey);
 	}
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
@@ -28,6 +28,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page) {
 		ajaxRequest.addKeyValue("binderId", id)
 		ajaxRequest.addKeyValue("treeName", treeName)
 		ajaxRequest.addKeyValue("page", page)
+		ajaxRequest.addKeyValue("indentKey", indentKey)
 		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
  		eval("var treeKey = ss_treeKey_"+treeName);
 		if (treeKey != null)
@@ -39,6 +40,8 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page) {
 	    }
 		ajaxRequest.setData("treeName", treeName)
 		ajaxRequest.setData("id", id)
+		ajaxRequest.setData("page", page)
+		ajaxRequest.setData("indentKey", indentKey)
 		ajaxRequest.setData("parentId", parentId)
 		ajaxRequest.setData("bottom", bottom)
 		ajaxRequest.setData("type", type)
@@ -102,7 +105,7 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page) {
 	}
 }
 
-function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page) {
+function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey) {
 	if (page == null) page = "";
     var tempObj = self.document.getElementById(treeName + "temp" + id);
     var tempObjParent = self.parent.document.getElementById(treeName + "temp" + id);
@@ -153,6 +156,8 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page) {
 	url += "&parentId=" + parentId;
 	url += "&bottom=" + bottom;
 	url += "&type=" + type;
+	url += "&page=" + page;
+	url += "&indentKey=" + indentKey;
 	eval("var seObj = ss_treeSelected_"+treeName); 	    
 	//add single select id
 	if (seObj != null) {
@@ -193,7 +198,7 @@ function ss_positionAccessibleIframe(treeName, id) {
 function ss_postTreeDivRequest(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_treeNotLoggedInMsg);
+		alert(ss_treeNotLoggedInMsg); 
 	} else {
 		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('parentId'), obj.getData('bottom'), obj.getData('type'));
 	}
@@ -243,16 +248,16 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 	}
 }
 
-function ss_treeToggleAll(treeName, id, parentId, bottom, type, page) {
+function ss_treeToggleAll(treeName, id, parentId, bottom, type, page, indentKey) {
 	if (page == null) page = "";
     var tObj = self.document.getElementById(treeName + "div" + id);
     if (tObj == null) {
     	//The div hasn't been loaded yet. Only load one div at a time
-    	ss_treeToggle(treeName, id, parentId, bottom, type, page)
+    	ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey)
     	return
     }
 	if (tObj.style.display == "none") {
-		ss_treeToggle(treeName, id, parentId, bottom, type, page)
+		ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey)
 	}
     var children = tObj.childNodes;
     for (var i = 0; i < children.length; i++) {
@@ -260,9 +265,9 @@ function ss_treeToggleAll(treeName, id, parentId, bottom, type, page) {
 			var nodeRoot = treeName + "div";
 			var childnode = children[i].id.substr(nodeRoot.length)
     		if (children[i].style.display == "none") {
-    			ss_treeToggle(treeName, childnode, id, bottom, type, "")
+    			ss_treeToggle(treeName, childnode, id, bottom, type, "", indentKey)
     		}
-    		ss_treeToggleAll(treeName, childnode, id, bottom, type, "")
+    		ss_treeToggleAll(treeName, childnode, id, bottom, type, "", indentKey)
     	}
     }
 }

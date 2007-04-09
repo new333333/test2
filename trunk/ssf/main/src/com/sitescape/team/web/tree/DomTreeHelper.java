@@ -18,6 +18,7 @@ public interface DomTreeHelper {
 	public String getURL(int type, Object source);
 	public String getDisplayOnly(int type, Object source);
 	public String getTreeNameKey();
+	public String getPage();
 	public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type);
 
 }

@@ -24,14 +24,15 @@
 <%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
 <c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
-	<taconite-insert-after contextNodeID="${ss_tree_treeName}temp${ss_tree_binderId}" parseInBrowser="true">
+	<taconite-insert-after contextNodeID="${ss_tree_treeName}temp${ss_tree_id}" parseInBrowser="true">
 
 	<c:choose>
 	<c:when test="${ss_tree_select_type == '0'}">	
 		<ssf:tree treeName="${ss_tree_treeName}" 
 		  treeDocument="<%= ssWsDomTree %>"  
-		  startingId="${ss_tree_binderId}"
+		  startingId="${ss_tree_id}"
 		  topId="${ss_tree_topId}"
+		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
 		/>
@@ -39,8 +40,9 @@
 	<c:when test="${ss_tree_select_type == '1'}">
 		<ssf:tree treeName="${ss_tree_treeName}" 
 		  treeDocument="<%= ssWsDomTree %>"  
-		  startingId="${ss_tree_binderId}"
+		  startingId="${ss_tree_id}"
 		  topId="${ss_tree_topId}"
+		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
 		  singleSelect="${ss_tree_select}"
@@ -51,8 +53,9 @@
 <jsp:useBean id="ss_tree_select" type="java.util.List" scope="request" />
 		<ssf:tree treeName="${ss_tree_treeName}" 
 		  treeDocument="<%= ssWsDomTree %>"  
-		  startingId="${ss_tree_binderId}"
+		  startingId="${ss_tree_id}"
 		  topId="${ss_tree_topId}"
+		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
 		  multiSelect="<%= ss_tree_select %>"

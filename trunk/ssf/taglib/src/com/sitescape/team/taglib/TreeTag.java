@@ -35,6 +35,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
@@ -47,6 +48,7 @@ import com.sitescape.util.Validator;
  */
 public class TreeTag extends TagSupport {
     private String treeName;
+    private String indentKey;
     private String topId;
     private String startingId;
     private Document tree;
@@ -86,6 +88,7 @@ public class TreeTag extends TagSupport {
 	    this.startingIdSeen = false;
 	    this.lastListStyle = "";
 	    if (this.topId == null) this.topId = "";
+	    if (this.indentKey == null) this.indentKey = "";
 	    if (this.displayStyle == null) this.displayStyle = "";
 	    if (this.multiSelectPrefix == null) this.multiSelectPrefix = "";
 	    if (this.showIdRoutine.equals("")) this.showIdRoutine = this.treeName + "_showId";
@@ -111,7 +114,7 @@ public class TreeTag extends TagSupport {
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, singleSelectName);
 			}
 			if (!this.topId.equals("")) {
-				adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
+				//adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
 			}
 			String aUrl = adapterUrl.toString().replaceAll("&", "&amp;");
 		    
@@ -231,15 +234,16 @@ public class TreeTag extends TagSupport {
 				if (this.startingId == null || this.startingId.equals("")) {
 					sb.append("<div class=\"ss_treeWidget\">\n");
 				}
+				String indentKey = this.indentKey;
 				if (this.flat) {
 					//This user is in accessibility mode, output a flat version of the tree
-					outputTreeNodesFlat(treeRoot, recursedNodes);
+					outputTreeNodesFlat(treeRoot, recursedNodes, indentKey);
 					
 				} else {
 					jspOut.print(sb.toString());
 					
 					//Output the tree
-					outputTreeNodes(treeRoot, recursedNodes);
+					outputTreeNodes(treeRoot, recursedNodes, indentKey);
 					
 					//Close the sortable table if needed
 					if (this.tableOpened) {
@@ -264,6 +268,7 @@ public class TreeTag extends TagSupport {
 	    	multiSelect=null;
 	    	multiSelectPrefix=null;
 	    	topId="";
+	    	indentKey = "";
 	    	showIdRoutine="";
 	    	initOnly=false;
 	    	noInit=false;
@@ -273,7 +278,7 @@ public class TreeTag extends TagSupport {
 		return SKIP_BODY;
 	}
 	
-	private void outputTreeNodes(Element e, List recursedNodes) throws JspException {
+	private void outputTreeNodes(Element e, List recursedNodes, String indentKey) throws JspException {
 		//If processing is finished, just exit.
 		if (this.finished) return;
 		
@@ -294,12 +299,18 @@ public class TreeTag extends TagSupport {
 	
 			//id
 			String s_id = e.attributeValue("id", "");
+			String s_binderId = s_id;
+			if (s_id.indexOf(".") >= 0) s_binderId = s_id.substring(0, s_id.indexOf("."));
 			String s_parentId = e.attributeValue("parentId", "");
+			String s_tuple = e.attributeValue("pageTuple", "");
 			String s_page = e.attributeValue("page", "");
+			if (!s_page.equals("")) {
+				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "''");
+			}
 			String titleClass = "";
 			String s_showIdRoutine = showIdRoutine;
 			if (s_showIdRoutine.equals("")) s_showIdRoutine = this.treeName + "_showId";
-			if (!s_id.equals("") && s_id.equals(this.highlightNode)) {
+			if (!s_binderId.equals("") && s_binderId.equals(this.highlightNode)) {
 				titleClass = "class=\"ss_tree_highlight\"";
 			} else {
 				if (!className.equals("")) titleClass = "class=\""+className+"\"";
@@ -376,13 +387,14 @@ public class TreeTag extends TagSupport {
 				// Write out plus/minus icons
 				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
 					if (hcn || hhcn) {
+						if (!s_parentId.equals("")) indentKey += "l";
 						String classField = "";
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
@@ -401,9 +413,9 @@ public class TreeTag extends TagSupport {
 					jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 					if (s_id != null && !s_id.equals("")) {
 						if (action.equals(""))
-							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this);}\" ");
+							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
 						else
-							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this,'"+action+"');}\" ");
+							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
 					}
 					jspOut.print(">");
 				}
@@ -444,7 +456,7 @@ public class TreeTag extends TagSupport {
 		
 					ListIterator it2 = e.elements("child").listIterator();
 					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), recursedNodes);
+						outputTreeNodes((Element) it2.next(), recursedNodes, indentKey);
 					}
 		
 					if (this.tableOpened) {
@@ -477,7 +489,7 @@ public class TreeTag extends TagSupport {
 							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
 						} else {
 							String checked = "";
-							if (this.multiSelect.contains(s_id)) checked = "checked=\"checked\"";
+							if (this.multiSelect.contains(s_binderId)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
 							jspOut.print(mPrefix + s_id + "\" id=\"");
@@ -495,10 +507,10 @@ public class TreeTag extends TagSupport {
 							jspOut.print("<img src=\"" + this.commonImg + "/pics/1pix.gif\" width=\"15px\"/>");
 						} else {
 							String checked = "";
-							if (s_id.equals(this.singleSelect)) checked = "checked=\"checked\"";
+							if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
 							jspOut.print("<input type=\"radio\" class=\"ss_text\"");
 							jspOut.print(" style=\"margin:0px; padding:0px; width:15px;\" name=\"");
-							jspOut.print(singleSelectName + "\" value=\""+s_id + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
+							jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
 						}
 						
 					}
@@ -506,6 +518,14 @@ public class TreeTag extends TagSupport {
 						if ((String) recursedNodes.get(j) != "1") {
 							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
 						} else {
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
+						}
+					}
+					//Add the spacer gifs passed in from the tag
+					for (int j = 0; j < indentKey.length(); j++) {
+						if (indentKey.substring(j, j+1).equals("s")) {
+							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+						} else if (indentKey.substring(j, j+1).equals("l")) {
 							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
 						}
 					}
@@ -522,13 +542,14 @@ public class TreeTag extends TagSupport {
 					// Write out join icons
 					if (hcn || hhcn) {
 						if (ls) {
+							if (!s_parentId.equals("")) indentKey += "s";
 							String classField = "";
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
 							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
@@ -549,13 +570,14 @@ public class TreeTag extends TagSupport {
 							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
 						}
 						else {
+							if (!s_parentId.equals("")) indentKey += "l";
 							String classField = "";
 							if (!className.equals("")) classField = "class=\""+className+"\"";
 							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"');return false;\" ");
+							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 							jspOut.print("style=\"text-decoration: none;\">");
 							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 			
@@ -570,6 +592,7 @@ public class TreeTag extends TagSupport {
 					}
 					else {
 						if (!this.topId.equals(s_id)) {
+							if (!s_parentId.equals("")) indentKey += "s";
 							if (ls) {
 								jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
 							} else {
@@ -608,9 +631,9 @@ public class TreeTag extends TagSupport {
 						jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 						if (s_id != null && !s_id.equals("")) {
 							if (action.equals(""))
-								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this);}\" ");
+								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
 							else
-								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this,'"+action+"');}\" ");
+								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
 											}
 						jspOut.print(">");
 					}
@@ -643,7 +666,7 @@ public class TreeTag extends TagSupport {
 		
 					ListIterator it2 = e.elements("child").listIterator();
 					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), recursedNodes);
+						outputTreeNodes((Element) it2.next(), recursedNodes, indentKey);
 					}
 		
 					if (divHasBeenOutput) {
@@ -669,7 +692,7 @@ public class TreeTag extends TagSupport {
 	    }
 	}
 
-	private void outputTreeNodesFlat(Element e, List recursedNodes) throws JspException {
+	private void outputTreeNodesFlat(Element e, List recursedNodes, String indentKey) throws JspException {
 		//If processing is finished, just exit.
 		if (this.finished) return;
 
@@ -690,10 +713,17 @@ public class TreeTag extends TagSupport {
 	
 			//id
 			String s_id = e.attributeValue("id", "");
+			String s_binderId = s_id;
+			if (s_id.indexOf(".") >= 0) s_binderId = s_id.substring(0, s_id.indexOf("."));
 			String s_parentId = e.attributeValue("parentId", "");
-			
+			String s_tuple = e.attributeValue("pageTuple", "");
+			String s_page = e.attributeValue("page", "");
+
+			if (!s_page.equals("")) {
+				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "''");
+			}
 			String titleClass = "class=\"ss_twSpan\"";
-			if (!s_id.equals("") && s_id.equals(this.highlightNode)) {
+			if (!s_binderId.equals("") && s_binderId.equals(this.highlightNode)) {
 				titleClass = "class=\"ss_twSpan ss_tree_highlight\"";
 			} else {
 				if (!className.equals("")) titleClass = "class=\"ss_twSpan "+className+"\"";
@@ -740,6 +770,14 @@ public class TreeTag extends TagSupport {
 					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
 				}
 			}
+			//Add the spacer gifs passed in from the tag
+			for (int j = 0; j < indentKey.length(); j++) {
+				if (indentKey.substring(j, j+1).equals("s")) {
+					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+				} else if (indentKey.substring(j, j+1).equals("l")) {
+					jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
+				}
+			}
 	
 			// Line and empty icons
 			if (ls) {
@@ -753,6 +791,7 @@ public class TreeTag extends TagSupport {
 				if (ls) {
 					jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 	
+					if (!s_parentId.equals("")) indentKey += "s";
 					if (ino) {
 						if (s_parentId.equals("")) {
 							jspOut.print("ss_twMinusTopBottom");	// minus_top_bottom.gif
@@ -772,6 +811,7 @@ public class TreeTag extends TagSupport {
 				else {
 					jspOut.print("<img id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 	
+					if (!s_parentId.equals("")) indentKey += "l";
 					if (ino) {
 						jspOut.print("ss_twMinus");	// minus.gif
 					} else {
@@ -782,6 +822,7 @@ public class TreeTag extends TagSupport {
 				}
 			} else {
 				if (!this.topId.equals(s_id)) {
+					if (!s_parentId.equals("")) indentKey += "s";
 					if (ls) {
 						jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
 					} else {
@@ -815,9 +856,9 @@ public class TreeTag extends TagSupport {
 				jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
 					if (action.equals("")) {
-						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this);}\" ");
+						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
 					} else {
-						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_id+"', this,'"+action+"');}\" ");
+						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
 					}
 				}
 				jspOut.print(">");
@@ -837,7 +878,7 @@ public class TreeTag extends TagSupport {
 	
 				ListIterator it2 = e.elements("child").listIterator();
 				while (it2.hasNext()) {
-					outputTreeNodesFlat((Element) it2.next(), recursedNodes);
+					outputTreeNodesFlat((Element) it2.next(), recursedNodes, indentKey);
 				}
 				jspOut.print("</div>\n");
 			} else if (hhcn) {
@@ -858,6 +899,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setTreeName(String treeName) {
 	    this.treeName = treeName;
+	}
+	
+	public void setIndentKey(String indentKey) {
+	    this.indentKey = indentKey;
 	}
 	
 	public void setTopId(String topId) {

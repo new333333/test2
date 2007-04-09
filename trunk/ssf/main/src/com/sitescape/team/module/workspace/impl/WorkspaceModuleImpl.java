@@ -12,14 +12,18 @@ package com.sitescape.team.module.workspace.impl;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
@@ -37,6 +41,7 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.binder.BinderComparator;
@@ -52,6 +57,7 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.util.Validator;
@@ -62,6 +68,7 @@ import com.sitescape.util.Validator;
  */
 public class WorkspaceModuleImpl extends CommonDependencyInjection implements WorkspaceModule {
 
+	protected Log logger = LogFactory.getLog(getClass());
     protected DefinitionModule definitionModule;
 	/*
 	 * Check access to folder.  If operation not listed, assume read_entries needed
@@ -182,7 +189,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     public org.dom4j.Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
        	return getDomWorkspaceTree(null, domTreeHelper, -1);
     }
-    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException {
+    public org.dom4j.Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) 
+    		throws AccessControlException {
     	//getWorkspace does access check
     	Workspace top = getWorkspace(id);
  
@@ -194,7 +202,8 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	return wsTree;
     }
     
-    public org.dom4j.Document getDomWorkspaceTree(Long topId, Long bottomId, DomTreeBuilder domTreeHelper) throws AccessControlException {
+    public org.dom4j.Document getDomWorkspaceTree(Long topId, Long bottomId, DomTreeBuilder domTreeHelper) 
+    		throws AccessControlException {
         User user = RequestContextHolder.getRequestContext().getUser();
        	//getWorkspace does access check
     	Workspace top = getWorkspace(topId);
@@ -216,13 +225,27 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		buildWorkspaceDomTree(rootElement, (Workspace)ancestors.get(i), c, domTreeHelper, 1);
     		if (i != 0) {
     			parent = ancestors.get(i-1);
-    			rootElement = (Element)rootElement.selectSingleNode("./" + DomTreeBuilder.NODE_CHILD + "[@id='" + parent.getId() + "']");
+    			String parentId = parent.getId().toString();
+    			Iterator itRootElements = rootElement.selectNodes("./" + DomTreeBuilder.NODE_CHILD).iterator();
+    			rootElement = null;
+    			while (itRootElements.hasNext()) {
+    				Element childNode = (Element)itRootElements.next();
+    				String id = childNode.attributeValue("id");
+    				int n = id.indexOf(".");
+    				if (n >= 0) id = id.substring(0, n);
+    				if (id.equals(parentId)) {
+    					rootElement = childNode;
+    					break;
+    				}
+    			}
+    			if (rootElement == null) break;
     		}
     	}
     	return wsTree;
     }
  
-    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
+    protected void buildWorkspaceDomTree(Element current, Workspace top, Comparator c, 
+    		DomTreeBuilder domTreeHelper, int levels) {
     	Element next; 
     	
  		//callback to setup tree
@@ -230,17 +253,28 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
  		if (levels == 0) return;
     	--levels;
 		TreeSet ws = new TreeSet(c);
-		List binders = top.getBinders();
 		List searchBinders = null;
-		if (binders.size() > 10) {  //what is the best number to avoid search??
+		if (!domTreeHelper.getPage().equals("") || top.getBinders().size() > 10) {  //what is the best number to avoid search??
 			//do search
 			BinderProcessor processor = loadProcessor(top);
-			Map searchResults = processor.getBinders(top, null);
-			searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-			int results = (Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT);
-			if (results > 10) { //just to get started
-				buildVirtualTree(current, top, domTreeHelper);
-//keep going for now //return;
+			if (domTreeHelper.getPage().equals("")) {
+				Map options = new HashMap();
+				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(SPropsUtil.getInt("wsTree.maxBucketSize")));
+				Map searchResults = processor.getBinders(top, options);
+				searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+				int results = (Integer)searchResults.get(ObjectKeys.TOTAL_SEARCH_COUNT);
+				if (results > SPropsUtil.getInt("wsTree.maxBucketSize")) { //just to get started
+					searchResults = buildVirtualTree(current, top, domTreeHelper, results);
+					//If no results are returned, the work was completed in buildVirtualTree and we can exit now
+					if (searchResults == null) return;
+					searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+				}
+			} else {
+				//We are looking for a virtual page
+				Map searchResults = buildVirtualTree(current, top, domTreeHelper, 0);
+				//If no results are returned, the work was completed in buildVirtualTree and we can exit now
+				if (searchResults == null) return;
+				searchBinders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 			}
 			if (domTreeHelper.supportsType(DomTreeBuilder.TYPE_FOLDER, null)) {
 				//get folders
@@ -273,7 +307,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 					String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
-						ws.add(getCoreDao().load(Folder.class, id));
+						ws.add(getCoreDao().load(Workspace.class, id));
 					} catch (Exception ex) {continue;}					
 				}				
 			}
@@ -315,9 +349,21 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		}
 	
     }
-    protected void buildVirtualTree(Element current, Workspace top, DomTreeBuilder domTreeHelper) {
-    	int skipLength=10;
+    //Build a list of buckets (or get the final page)
+    protected Map buildVirtualTree(Element current, Workspace top, DomTreeBuilder domTreeHelper, int totalHits) {
+    	Element next;
+    	int maxBucketSize = SPropsUtil.getInt("wsTree.maxBucketSize");
+    	int skipLength = maxBucketSize;
+    	if (totalHits > maxBucketSize) skipLength = totalHits / maxBucketSize;
 
+    	//See if this has a page already set
+    	List tuple = domTreeHelper.getTuple();
+    	String tuple1 = "";
+    	String tuple2 = "";
+    	if (tuple != null && tuple.size() >= 2) {
+    		tuple1 = (String) tuple.get(0);
+    		tuple2 = (String) tuple.get(1);
+    	}
     	
     	Document queryTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = queryTree.addElement(QueryBuilder.QUERY_ELEMENT);
@@ -333,8 +379,12 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
       	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	Set pids = getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser());
+    	QueryBuilder qb = new QueryBuilder(pids);
     	SearchObject so = qb.buildQuery(queryTree);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + queryTree.asXML());
+    	}
     	
     	//Set the sort order
    		SortField[] fields = new SortField[1];
@@ -343,17 +393,95 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	fields[0] = new SortField(sortBy,  SortField.AUTO, true);
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice   	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + soQuery.toString());
+    	}
  
+    	//Before doing the search, create another query in case the buckets are exhausted
+    	Document queryTreeFinal = DocumentHelper.createDocument();
+		qTreeRootElement = queryTreeFinal.addElement(QueryBuilder.QUERY_ELEMENT);
+		qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		
+		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(top.getId().toString());
+   	
+		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+
+   		Element range = qTreeAndElement.addElement(QueryBuilder.RANGE_ELEMENT);
+   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.SORT_TITLE_FIELD);
+   		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
+		Element start = range.addElement(QueryBuilder.RANGE_START);
+		start.setText(tuple1);
+		Element end = range.addElement(QueryBuilder.RANGE_FINISH);
+		end.setText(tuple2);
+
+		//Create the Lucene query
+    	QueryBuilder qbFinal = new QueryBuilder(pids);
+    	SearchObject soFinal = qbFinal.buildQuery(queryTreeFinal);
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Final query is: " + queryTreeFinal.asXML());
+    	}
+    	
+    	//Set the sort order
+   		SortField[] fieldsFinal = new SortField[1];
+   		String sortByFinal = EntityIndexUtils.SORT_TITLE_FIELD;   		
+    	
+    	fieldsFinal[0] = new SortField(sortByFinal,  SortField.AUTO, true);
+    	soFinal.setSortBy(fieldsFinal);
+    	Query soQueryFinal = soFinal.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice   	
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Query is: " + soQueryFinal.toString());
+    	}
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
         
-        try {
-	        List results = luceneSession.getSortTitles(soQuery, "", "", skipLength);
+    	List results = new ArrayList();
+    	Hits hits = null;
+    	try {
+    		if (totalHits == 0) {
+    			//We have to figure out the size of the pool before building the buckets
+    			Hits testHits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, maxBucketSize);
+    			if (testHits.getTotalHits() > maxBucketSize) skipLength = testHits.getTotalHits() / maxBucketSize;
+    		}
+	        results = luceneSession.getSortTitles(soQuery, tuple1, tuple2, skipLength);
+	        if (results == null || results.size() == 0) {
+	        	//We must be at the end of the buckets; now get the real entries
+	        	hits = luceneSession.search(soQueryFinal, soFinal.getSortBy(), 0, -1);
+	        }
         }
         finally {
             luceneSession.close();
         }
-
-    	
+        //See if we are at the end of the bucket search
+        if (hits != null) {
+    	    List entries = SearchUtils.getSearchEntries(hits);
+    	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao());
+                   
+            Map retMap = new HashMap();
+            retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
+            retMap.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+            retMap.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+     
+            domTreeHelper.setPage("");
+        	return retMap; 
+        }
+        //Build the virtual tree
+        String page = domTreeHelper.getPage();
+        if (!page.equals("")) page += ".";
+        for (int i = 0; i < results.size(); i++) {
+        	List result = (List) results.get(i);
+        	Map skipMap = new HashMap();
+        	skipMap.put(DomTreeBuilder.SKIP_TUPLE, result);
+        	skipMap.put(DomTreeBuilder.SKIP_PAGE, page + String.valueOf(i));
+        	skipMap.put(DomTreeBuilder.SKIP_BINDER_ID, top.getId().toString());
+			next = current.addElement(DomTreeBuilder.NODE_CHILD);
+			if (domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_SKIPLIST, skipMap, next) == null) current.remove(next);
+        }
+        return null;
     }
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
