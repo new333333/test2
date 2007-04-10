@@ -111,13 +111,6 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" portletM
 	</ssHelpSpot>
 	</div>
   </td>
-  <td valign="top" rowspan="2" width="20px"><!-- Show/hide portal -->
-    <ssHelpSpot helpId="personal_toolbar/maximize_button" offsetX="-10" offsetY="6"
-       title="<ssf:nlt tag="helpSpot.maximizeButton"/>">
-	  <div class="ss_global_toolbar_hide_portal" onClick="ss_toggleShowHidePortal(this);return false;"
-           onMouseOver="this.style.cursor = 'pointer';"><img src="<html:imagesPath/>pics/1pix.gif" width="20" /></div>
-	  </ssHelpSpot>
-  </td>
 </tr>
 <tr>
   <td align="left" valign="top"><!-- Search form 
