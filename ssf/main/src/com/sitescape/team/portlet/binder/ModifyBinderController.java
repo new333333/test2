@@ -79,8 +79,8 @@ public class ModifyBinderController extends AbstractBinderController {
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
-				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
-				getBinderModule().moveBinder(binderId, destinationId);
+				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				if (destinationId != null) getBinderModule().moveBinder(binderId, new Long(destinationId));
 			}
 			setupViewBinder(response, binderId, binderType);
 			
