@@ -65,7 +65,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <c:set var="ss_style_header_bar_background" value="#787D60" scope="request"/>
 <c:set var="ss_style_header_bar_title_color" value="#000000" scope="request"/>
-<c:set var="ss_style_header_bar_timestamp_color" value="#FFFFFF" scope="request"/>
+<c:set var="ss_style_metadata_color" value="#FFFFFF" scope="request"/>
 
 <c:set var="ss_style_background_color" value="#FFFFCC" scope="request"/>
 <c:set var="ss_style_component_background_color" value="#FFFFAA" scope="request"/>
@@ -97,7 +97,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 <c:set var="ss_form_text_color" value="#3333FF" scope="request"/>
 <c:set var="ss_form_element_color" value="#FFCCFF" scope="request"/>
-<c:set var="ss_form_element_border_color" value="#669966" scope="request"/>
+<c:set var="ss_generic_border_color" value="#669966" scope="request"/>
 <c:set var="ss_form_element_text_color" value="#0033FF" scope="request"/>
 <c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 
@@ -186,18 +186,22 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <c:set var="ss_style_header_bar_background" value="#DEE7C6" scope="request"/>
     <c:set var="ss_style_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_style_header_bar_title_link_color" value="#333333" scope="request"/>
-    <c:set var="ss_style_header_bar_timestamp_color" value="#666666" scope="request"/>
+
+    <c:set var="ss_style_metadata_color" value="#666666" scope="request"/>
 
     <c:set var="ss_dashcomp_header_bar_background" value="#CCCCCC" scope="request"/>
     <c:set var="ss_dashcomp_header_bar_title_color" value="#333333" scope="request"/>
     <c:set var="ss_dashcomp_header_bar_title_link_color" value="#666666" scope="request"/>
+
+	<c:set var="ss_style_drop_highlight" value="#FFFFFF" scope="request"/>
+	<c:set var="ss_style_drop_shadow" value="#666666" scope="request"/>
 
 
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
 	<c:set var="ss_style_border_color" value="#999999" scope="request"/>
-	<c:set var="ss_style_border_color_light" value="#cecece" scope="request"/>
+	<c:set var="ss_style_border_color_light" value="#CECECE" scope="request"/>
 	<c:set var="ss_style_text_color" value="#333333" scope="request"/>
     <c:set var="ss_style_footer_text_color" value="blue" scope="request"/>
     <c:set var="ss_style_footer_font" value=" normal 11px Arial, Helvetica" scope="request"/>
@@ -209,7 +213,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_text_field_border_color" value="#F0E0C0" scope="request"/>
 	<c:set var="ss_style_muted_foreground_color" value="#333333" scope="request"/>
 	<c:set var="ss_style_muted_label_color" value="#666666" scope="request"/>
-	<c:set var="ss_style_tags_color" value="#666666" scope="request"/>
 	
 	<c:set var="ss_table_font_family" value="Lucida Sans Unicode, Arial, Helvetica, sans-serif" scope="request"/>
 	<c:set var="ss_table_background_color_background" value="#FFFFFF" scope="request"/>
@@ -234,10 +237,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_form_element_header_color" value="#66CCCC" scope="request"/>
 	<c:set var="ss_form_text_color" value="#000000" scope="request"/>
 	<c:set var="ss_form_element_color" value="#EEEEEE" scope="request"/>
-	<c:set var="ss_form_element_border_color" value="#CCCCCC" scope="request"/>
 	<c:set var="ss_form_element_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 	
+	<c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/>
+
 
 	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
@@ -432,7 +436,7 @@ body.ss_style_body {
   }
 
 .ss_shadowbox {
-  background: #ccc;
+  background: #CCCCCC;
   position: relative;
   top: 2px;
   left: 2px;
@@ -579,7 +583,7 @@ div.ss_blockquote_start p, div.ss_blockquote_watermark_content p {
 }
       
 table.ss_guestbook {
-	background: #E8EFF7;
+	background: ${ss_entry_description_background_color};
 	margin-bottom: 3px;
 	padding: 5px 0px 0px 5px;
 }
@@ -825,7 +829,7 @@ div.ss_popup_body {
   width:300px;
 }
 .ss_helpToc {
-  border: 1px solid #cecece;
+  border: 1px solid ${ss_style_border_color_light};
   background-color:${ss_help_spot_background_color} !important;
   visibility:hidden;
   display:none;
@@ -834,11 +838,15 @@ div.ss_popup_body {
   list-style-type: square;
 }
 
+.ss_help_bullets li {
+	list-style-type: disc;
+}
+
 .ss_inlineHelp {
   visibility:hidden; 
   display:none; 
   border:1px solid black; 
-  background:#ffffff;
+  background: #ffffff;
 }
 
 .ss_lightBox {
@@ -884,7 +892,7 @@ div.ss_blog_sidebar_container {
 
 div.ss_blog_content {
 	padding-bottom: 30px;
-	border-left: 1px solid #CCCCCC;
+	border-left: 1px solid ${ss_generic_border_color};
 }
 
 </c:if>
@@ -911,7 +919,7 @@ div.ss_blog_sidebar_container {
 
 div.ss_blog_content {
 	padding-bottom: 30px;
-	border-right: 1px solid #CCCCCC;
+	border-right: 1px solid ${ss_generic_border_color};
 }
 
 
@@ -959,7 +967,7 @@ div.ss_blog_title  {
 div.ss_header_bar_timestamp {
 	font-family: ${ss_style_title_font_family};
 	font-size: 11px;
-	color: ${ss_style_header_bar_timestamp_color};
+	color: ${ss_style_metadata_color};
 	margin-top: 3px;
 	margin-right: 5px;
 	float: right;
@@ -967,11 +975,11 @@ div.ss_header_bar_timestamp {
 }
 
 div.ss_header_bar_timestamp a, div.ss_header_bar_timestamp a:visited {
-	color: ${ss_style_header_bar_timestamp_color};
+	color: ${ss_style_metadata_color};
 }
 
 div.ss_header_bar_timestamp a:hover, div.ss_header_bar_timestamp a:visited:hover {
-	color: ${ss_style_header_bar_timestamp_color};
+	color: ${ss_style_metadata_color};
 	text-decoration: underline;
 }
 
@@ -1025,7 +1033,7 @@ div.ss_blog_sidebar_hole {
 
 
 a.ss_displaytag {
-	color: ${ss_style_tags_color};
+	color: ${ss_style_metadata_color};
 }
 
 div.ss_blog_sidebar_subhead {
@@ -1195,7 +1203,7 @@ table.ss_mouseOverInfo {
   color: ${ss_toolbar_link_hover_color};
 }
 .ss_toolbar_inactive { 
-  color:#999999; 
+  color: #999999; 
 }
 
 .ss_entry_toolbar {
@@ -1254,7 +1262,7 @@ table.ss_attachments_list td.ss_att_title {
 }
 
 table.ss_attachments_list hr.ss_att_divider {
-	border-top: 1px solid #CCCCCC;
+	border-top: 1px solid ${ss_generic_border_color};
 	border-bottom: none;
 	height: 0px;
 }
@@ -1263,14 +1271,14 @@ table.ss_attachments_list td.ss_att_meta, .ss_att_meta {
 	font-size: 10px;
 	white-space: nowrap;
 	padding-left: 5px;
-	color: #666666;
+	color: ${ss_style_metadata_color};
 }
 table.ss_attachments_list td.ss_att_space {
     padding-left: 10px;
 }
 
 .ss_subhead2 {
-	color: #333333;
+	color: ${ss_style_text_color};
 }
 
 .ss_footer_toolbar {
@@ -1685,92 +1693,6 @@ div.ss_dashboardProtoDropTarget {
     background: ${ss_form_element_color}; 
 }
 
-/* Tab div styling */
-
-div.ss_activeTabcontainer {
-  margin-right: 0px;
-  margin-left: 0px;
-  margin-top: 4px;
-  margin-bottom: 0px;
-  background-color: #ceddf2;
-  float: left;
-  border-bottom: #ceddf2 1px solid;
-  }  
-  
-div.ss_inactiveTabcontainer {
-  margin-right: 0px;
-  margin-left: 0px;
-  margin-top: 4px;
-  margin-bottom: 0px;
-  background-color: #e5e5e5;
-  float: left;
-  border-bottom: #c1c1c1 1px solid;
-  }  
-
-div.ss_disabledTabcontainer {
-  margin-right: 0px;
-  margin-left: 0px;
-  margin-top: 4px;
-  margin-bottom: 0px;
-  background-color: #e5e5e5;
-  float: left;
-  text-align: center;
-  color: #666666;
-  font-weight: bold; 
-  border-bottom: #c1c1c1 1px solid;
-  }  
-
-div.ss_upperleft {
-  background: url(<html:imagesPath/>pics/sym_s_upperleft.gif) no-repeat top left;
-}
-
-div.ss_upperright { 
-  background: url(<html:imagesPath/>pics/sym_s_upperright.gif) no-repeat top right;
-  }
-
-div.ss_inactiveTab, div.ss_disabledTab {
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-top: 4px;
-  padding-bottom: 3px;
-  }
-
-
-div.ss_activeTab {
-  padding-left: 7px;
-  padding-right: 7px;
-  padding-top: 4px;
-  padding-bottom: 3px;
-  font-weight: bold;
-  color: #3366cc;
-  }
-  
-div.ss_activeTab a:link, div.ss_activeTab a:visited {
-  font-weight: bold;
-  color: #3366cc;
-  text-decoration: none;
-  }
-
-div.ss_activeTab a:focus, div.ss_activeTab a:hover, div.ss_activeTab a:active {
-  font-weight: bold;
-  color: #ff0000;
-  text-decoration: none;
-  }
-
-div.ss_inactiveTab a:link, div.ss_inactiveTab a:visited {
-  font-weight: bold;
-  color: #3366cc;
-  text-decoration: none;
-  }
-
-div.ss_inactiveTab a:focus, div.ss_inactiveTab a:hover, div.ss_inactiveTab a:active { 
-  font-weight: bold;
-  color: #ff0000;
-  text-decoration: none;
-  } 
-
-/* end of Tab div styling */
-
 
 /* -------------------Skins-------------------- */
 .ss_content_outer {
@@ -1979,7 +1901,7 @@ div.ss_global_toolbar_findUser_text span {
 }
 .ss_global_toolbar_search .form-text {
 	width:100px;
-	background:#FFF;
+	background:#FFFFFF;
 }
 div.ss_global_toolbar_search_text {
     width:100px;
@@ -2006,9 +1928,9 @@ div.ss_tab_canvas {
     margin:0px;
     padding:0px;
     width:100%;
-    border-right: 1px #CCCCCC solid;
-    border-left: 1px #CCCCCC solid;
-    border-bottom: 1px #CCCCCC solid;
+    border-right: 1px ${ss_generic_border_color} solid;
+    border-left: 1px ${ss_generic_border_color} solid;
+    border-bottom: 1px ${ss_generic_border_color} solid;
 }
 div.ss_tabs {
     position:relative;
@@ -2073,14 +1995,12 @@ div.ss_tabs {
 
 /* breadcrumbs */
 .ss_breadcrumb {
-	color:#5A3C68;
 	margin:0px 5px;
 	padding:0px 5px 0px 9px;
 	font-size: ${ss_style_font_smallprint};
 	float:left;
 }
 a.ss_breadcrumb {
-	color:#5A3C68;
 	font-size: ${ss_style_font_smallprint};
 }
 
@@ -2100,7 +2020,7 @@ a.ss_breadcrumb {
 }
 .ss_title_bar_history_bar {
 	background:inherit;
-	color:#333333;
+	color:${ss_style_text_color};
 }
 .ss_title_bar_inner1 {
 	background:url(<html:imagesPath/>skins/${ss_user_skin}/roundcorners3/corner1.gif) no-repeat left;
@@ -2190,7 +2110,7 @@ ul.ss_actions_bar2 {
 }
 
 .ss_actions_bar2 {
-	background-color: #CECECE;
+	background-color: ${ss_toolbar2_background_color};
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
@@ -2223,15 +2143,13 @@ ul.ss_actions_bar2 {
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
 }
-.ss_actions_bar_history_bar * {
-	color:#5A3C68;
-}
+
 .ss_actions_bar li {
 	float:left;
-	border-top:    1px solid #FFFFFF;
-	border-left:   1px solid #FFFFFF;
-	border-bottom: 1px solid #666666;
-	border-right:  1px solid #666666;
+	border-top:    1px solid ${ss_style_drop_highlight};
+	border-left:   1px solid ${ss_style_drop_highlight};
+	border-bottom: 1px solid ${ss_style_drop_shadow};
+	border-right:  1px solid ${ss_style_drop_shadow};
 	margin-right: 3px;
 	background-color: inherit;
 	height: 100%;
@@ -2241,13 +2159,13 @@ ul.ss_actions_bar2 {
 	border-right:none;
 }
 .ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color:#333333 !important;
+	color:${ss_style_text_color} !important;
 	display:block;
 	padding:0px 15px;
 }
 
 .ss_actions_bar1 li a:hover {
-	background-color: #DEE7C6;
+	background-color: ${ss_style_header_bar_background};
 	text-decoration:none;
 }
 
@@ -2269,7 +2187,7 @@ div.ss_actions_bar_submenu {
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar1 {
-  background-color: #BFCA8A;
+  background-color: ${ss_toolbar1_dropdown_menu_color};
   background-image: none;
   opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -2278,7 +2196,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar1 {
 }
 
 div.ss_actions_bar_submenu ul.ss_actions_bar2 {
-  background-color: #CECECE;
+  background-color: ${ss_toolbar2_background_color};
   background-image: none;
   opacity: 0.95;
  <c:if test="<%= isIE %>">
@@ -2302,7 +2220,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 }
 .ss_actions_bar_submenu li  {
 	float:none;
-	border-bottom:1px solid #CCCCCC;
+	border-bottom:1px solid ${ss_generic_border_color};
 	border-right-style:none;
     line-height:18px;
 }
@@ -2319,7 +2237,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 }
 
 .ss_actions_bar1 li:hover, .ss_actions_bar1 a:hover {
-	background-color:#DEE7C6;
+	background-color: ${ss_style_header_bar_background};
 }
 
 .ss_actions_bar2 li:hover, .ss_actions_bar1 a:hover {
@@ -2328,15 +2246,15 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 
 .ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
 	text-decoration:underline;
-	color:#333333;
+	color:${ss_style_text_color};
 }
 .ss_actions_bar_submenu a, .ss_actions_bar_submenu a:visited {
-	color:#333333;
+	color:${ss_style_text_color};
 }
 /* utils bar (dashboard)  */
 div.ss_dashboardContainer {
-	border-top: 1px solid #CCCCCC;
-	border-bottom: 1px solid #CCCCCC;
+	border-top: 1px solid ${ss_generic_border_color};
+	border-bottom: 1px solid ${ss_generic_border_color};
 	width: 100%;
 	margin: 0px;
 	padding: 0px 0px 0px 0px;
@@ -2639,7 +2557,7 @@ div.ss_thumbnail_small_buddies_list, div.ss_thumbnail_small_buddies_list img {
     width: 35px;
     height: 35px;
     background-color: ${ss_gallery_background_color};
-    color: #666666;    
+    color: ${ss_style_metadata_color};    
     vertical-align: middle;
 	text-align:center;
 	font-weight:bold;
@@ -2669,7 +2587,7 @@ div.ss_thumbnail_gallery div {
 }
     
 .noImg {
-	color: #666666;   
+	color: ${ss_style_metadata_color};   
     vertical-align: middle;
 	font-weight: bold;
 }
@@ -2780,7 +2698,7 @@ white-space: nowrap !important;
 }
 /*cell and row border*/
 .ss_table td, .ss_table th {
-	border: 1px dotted #CCCCCC;
+	border: 1px dotted ${ss_generic_border_color};
 }
 .ss_table tbody td {
 	padding: 0.5em;
@@ -2811,25 +2729,25 @@ white-space: nowrap !important;
 
 .ss_table_paragraph_bld{
 	font-size: ${ss_style_font_normalprint};
-	color: #333333;
+	color: ${ss_style_text_color};
 	font-weight: bold;
 	margin-left: 25px;
 	}
 .ss_table_paragraph{
 	font-size: ${ss_style_font_smallprint};
-	color: #333333;
+	color: ${ss_style_text_color};
 	margin-left: 0px;
 }
 .ss_table_header{
 	font-size: ${ss_style_font_normalprint};
-	color: #333333;
+	color: ${ss_style_text_color};
 	font-weight: bold;
 	margin-left: 0px;
 }
 .ss_table_smheaders {
 	font-size: ${ss_style_font_fineprint};
 	font-weight: bold;
-	color: #333333;
+	color: ${ss_style_text_color};
 	line-height: normal;
 }
 .ss_table_paragraph_red {
@@ -3097,7 +3015,7 @@ div.ss_cal_monthGridDayBadge {
 
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
-  background-color: #CCCCCC;
+  background-color: ${ss_generic_border_color};
   color: #FFFFFF;
 }
 
@@ -3169,21 +3087,21 @@ div.ss_smallRBoxBody {
 
 
 div.ss_profileBox1 {
-  background: #DEE7C6;
+  background: ${ss_style_header_bar_background};
 }
 
 div.ss_profileBox2 {
-  background: #DBE6F2;
+  background: ${ss_replies_background_color};
 }
 
 div.ss_profile_box_title {
   font-size: 15px;
-  color: #666666;
+  color: ${ss_style_metadata_color};
   height: 20px;
 }
 
 div.ss_profile_matte {
-  background: #ffffff;
+  background: #FFFFFF;
   padding: 5px;
 }
 div.ss_profile_picture_frame {
@@ -3290,7 +3208,7 @@ table.ss_buddiesList {
 	width: 100%; 
 	empty-cells: show;
 	padding: 0px; 
-	border-top: 1px solid #333333;
+	border-top: 1px solid ${ss_style_text_color};
 }
 
 table.ss_buddiesList td {
@@ -3307,7 +3225,7 @@ table.ss_buddiesList td.selectable {
 }
 
 table.ss_buddiesList td.picture {
-	border-bottom: 1px solid #333333;
+	border-bottom: 1px solid ${ss_style_text_color};
 	padding: 6px 15px 7px 8px; 
 	width: 35px;
 }
