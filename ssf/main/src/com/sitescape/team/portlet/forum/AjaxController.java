@@ -1054,7 +1054,7 @@ public class AjaxController  extends SAbstractController {
 			model.put(WebKeys.CONDITION_ELEMENT_NAME, name);
 		}
 		
-		String value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_OPERATION);
+		String value = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_OPERATION, "");
 		if (Validator.isNotNull(value)) {
 			model.put(WebKeys.CONDITION_ELEMENT_OPERATION, value);
 		}

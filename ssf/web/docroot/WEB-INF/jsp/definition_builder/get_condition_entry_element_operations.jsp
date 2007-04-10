@@ -31,7 +31,7 @@
 	   name="conditionElementOperation" 
 	   onChange="getConditionSelectbox(this, 'get_condition_entry_element_values')">
 	     <option value="" selected="selected"><ssf:nlt 
-	       tag="filter.selectElementOperation" text="--select an operation--"/></option>
+	       tag="filter.selectElementOperation"/></option>
 		     <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'event'}">
 		       <option value="started"><ssf:nlt tag="definition.operation_started" text="Start date passed"/></option>
 		       <option value="ended"><ssf:nlt tag="definition.operation_ended" text="End date passed"/></option>

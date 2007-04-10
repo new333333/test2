@@ -13,8 +13,18 @@
 <% // User list %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
+<c:set var="userlist_entry" value="${ssDefinitionEntry}"/>
+<jsp:useBean id="userlist_entry" type="com.sitescape.team.domain.Entry" />
+<%
+	String propertyName = (String) request.getAttribute("property_name");
+	java.util.List userList = new java.util.ArrayList();
+	java.util.Set userListSet = new java.util.HashSet();
+	if (propertyName != null && !propertyName.equals("")) 
+		userList = com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(propertyName));
+	userListSet.addAll(userList);
+%>
 <div class="ss_entryContent">
 <div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
-<ssf:find formName="${formName}" formElement="${property_name}" 
-  type="user" userList="${ssDefinitionEntry.customAttributes[property_name].valueSet}"/>
+<ssf:find formName="${formName}" formElement="${property_name}" type="user" 
+  userList="<%= userListSet %>"/>
 </div>
