@@ -111,13 +111,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemRequestInProgress = 0;
 	var ss_helpSystemPanelMarginOffset = 4;
 	
-	var ss_favoritesListArray = new Array();
-	var ss_favoritesListCount = 0;
-	var ss_lastDropped = null;
-	var ss_savedFavoriteClassNames = new Array();
-	var ss_lastHighlightedFavorite = null;
-	var ss_pauseTreeIdClick = 0;
-	var ss_pauseTreeIdClickTimer = null;
 	var ss_favoritesPaneTopOffset = 0;
 	var ss_favoritesPaneLeftOffset = 4;
 	var ss_favoritesMarginW = 4;
@@ -2791,92 +2784,42 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 	return false;
 }
 
-function ss_enableFavoritesList(id, namespace) {
-	ss_debug('enable drag: '+id +', '+namespace)
-	ss_favoritesListArray[ss_favoritesListCount] = id;
-	ss_favoritesListCount++;
-
-    var idObj = document.getElementById(id)
-	ss_debug(id + ' = '+idObj + ', idObj.id= '+idObj.id)
-	ss_DragDrop.makeListContainer(idObj);
-    eval("idObj.onDragOver = function() {ss_highlightFavorites('"+idObj.id+"');}");
-    eval("idObj.onDragOut = function() {ss_unhighlightFavorites('"+idObj.id+"');}");
-    eval("idObj.onDragDrop = function() {ss_saveFavorites('"+idObj.id+"', '"+namespace+"');}");
-
-    var items = idObj.getElementsByTagName( "li" );
-	for (var i = 0; i < items.length; i++) {
-		eval("items[i].onDragEndCallback = function() {ss_saveDragId('"+items[i].id+"');}");
-	}
-}
-
 function ss_saveDragId(id) {
     ss_lastDropped = id
     return false;
 }
 
-function ss_highlightFavorites(id) {
-	ss_unhighlightFavorites();
-	var idObj = document.getElementById(id);
-	//document.getElementById('debugLog').innerHTML += 'Highlight '+idObj.id+'  '
-	if (!ss_savedFavoriteClassNames[idObj.id] || 
-			ss_savedFavoriteClassNames[idObj.id] == "undefined" || 
-			ss_savedFavoriteClassNames[idObj.id] == "") {
-		ss_savedFavoriteClassNames[idObj.id] = idObj.className;
-	}
-	idObj.className = ss_savedFavoriteClassNames[idObj.id] + " ss_sortableHighlighted"
-	//document.getElementById('debugLog').innerHTML += ' ('+idObj.className+') '
-	ss_lastHighlightedFavorite = idObj;
-}
+// Favorites Management
 
-function ss_unhighlightFavorites() {
-	if (ss_lastHighlightedFavorite != null) {
-		//document.getElementById('debugLog').innerHTML += ' unHighlight '+ss_lastHighlightedFavorite.id+'  '
-		var id = ss_lastHighlightedFavorite.id;
-		if (ss_savedFavoriteClassNames[id] && 
-				ss_savedFavoriteClassNames[id] != "undefined" && 
-				ss_savedFavoriteClassNames[id] != "") {
-			var idObj = document.getElementById(id);
-			idObj.className = ss_savedFavoriteClassNames[id];
-			//document.getElementById('debugLog').innerHTML += ' ok '
-		}
-	}
-	ss_lastHighlightedFavorite = null;
-}
+var ss_deletedFavorites = new Array();
 
-function ss_saveFavorites(id, namespace) {
-	ss_setupStatusMessageDiv()
-	ss_unhighlightFavorites(id)
-	if (ss_lastDropped == null) return;
-	
-	//The list was sorted, so turn off the click
-	ss_noClickTreeId();
-	
-	var s = "";
-	for (var i = 0; i < ss_favoritesListCount; i++) {
-		var ulObj = self.document.getElementById(ss_favoritesListArray[i]);
-    	var items = ulObj.getElementsByTagName( "li" );
-		for (var j = 0; j < items.length; j++) {
-			s += items[j].id + " "
-		}
-	}
+function ss_saveFavorites(namespace) {
 	var url = ss_saveFavoritesUrl;
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("movedItemId", ss_lastDropped)
-	ss_lastDropped = null;
-	ajaxRequest.addKeyValue("favorites", s)
-	ajaxRequest.addKeyValue("namespace", namespace)
-	ajaxRequest.setData("namespace", namespace)
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+	var saveArgs = new Array();
+	saveArgs["deletedIds"] = ss_deletedFavorites.join(" ");
+	saveArgs["favorites"] = ss_readFavoriteList(namespace);
+	ss_showDiv("ss_favorites_loading" + namespace);
+	var bindArgs = {
+    	url: url,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		content: saveArgs,
+		load: function(type, data, evt) {
+  		  try {
+			ss_setFavoritesList(data, namespace);
+			ss_hideDiv("ss_favorites_loading" + namespace);
+	      } catch (e) {alert(e);}
+		},					
+		mimetype: "text/json",
+		method: "post"
+	};   
+	dojo.io.bind(bindArgs);
 }
 
 //Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
 function ss_treeShowId(id, obj, action) {
-	if (ss_pauseTreeIdClick == 1) return false;
-	
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -2888,48 +2831,13 @@ function ss_treeShowId(id, obj, action) {
 	var url = ss_treeShowIdUrl;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	//console.log(url);
 	self.location.href = url;
 	return false;
 }
 
-function ss_noClickTreeId() {
-	ss_pauseTreeIdClick = 1;
-	if (ss_pauseTreeIdClickTimer != null) clearTimeout(ss_pauseTreeIdClickTimer);
-	ss_pauseTreeIdClickTimer = setTimeout("ss_clickTreeId();", 500)
-}
-function ss_clickTreeId() {
-	ss_pauseTreeIdClick = 0;
-	if (ss_pauseTreeIdClickTimer != null) clearTimeout(ss_pauseTreeIdClickTimer);
-	ss_pauseTreeIdClickTimer = null;
-}
-
-function ss_addForumToFavorites(namespace) {
-	ss_setupStatusMessageDiv()
-	var url = ss_addFavoriteBinderUrl;
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("namespace", namespace)
-	ajaxRequest.setData("namespace", namespace)
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
-}
-
-function ss_addFavoriteCategory(namespace) {
-	ss_setupStatusMessageDiv()
-	var formObj = self.document.getElementById('ss_favorites_form'+namespace);
-	var s = formObj.new_favorites_category.value;
-	if (s == "") return;
-	formObj.new_favorites_category.value = "";
-	var url = ss_addFavoritesCategoryUrl;
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("category", s)
-	ajaxRequest.addKeyValue("namespace", namespace)
-	ajaxRequest.setData("namespace", namespace)
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+function ss_addBinderToFavorites(namespace) {
+	ss_loadFavorites(namespace, ss_addFavoriteBinderUrl);
 }
 
 function ss_showFavoritesPane(namespace) {
@@ -2948,59 +2856,142 @@ function ss_showFavoritesPane(namespace) {
 	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	ss_showDiv("ss_favorites_pane" + namespace);
 	ss_hideObj("ss_favorites_form_div" + namespace);
-
-	var url = ss_getFavoritesTreeUrl;
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("namespace", namespace)
-	ajaxRequest.setData("namespace", namespace)
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postFavoritesRequest);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
+	ss_loadFavorites(namespace, ss_getFavoritesTreeUrl);
 }
-function ss_postFavoritesRequest(obj) {
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_not_logged_in);
-	}
-	var namespace = obj.getData("namespace");
-	ss_hideObj("ss_favorites_form_div" + namespace);
-	ss_setFavoritesPaneSize(namespace);
 
-	ss_favoritesListArray = new Array();
-	ss_favoritesListCount = 0;
-	var uls = self.document.getElementsByTagName("ul");
-	for (var i = 0; i < uls.length; i++) {
-		if (uls[i].id.indexOf("ul_ss_favorites") == 0) {
-			ss_enableFavoritesList(uls[i].id, namespace)
+function ss_loadFavorites(namespace, url) {
+	ss_showDiv("ss_favorites_loading" + namespace);
+	var postArgs = new Array();
+	postArgs["IEcacheBuster"] = Math.random();
+	var bindArgs = {
+    	url: url,
+		content: postArgs,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+  		  try {
+			ss_setFavoritesList(data, namespace);
+			ss_hideDiv("ss_favorites_loading" + namespace);
+	      } catch (e) {alert(e);}
+		},
+		preventCache: true,				
+		mimetype: "text/json",
+		method: "post"
+	};   
+	dojo.io.bind(bindArgs);
+}
+
+function ss_setFavoritesList(favList, namespace) {
+	var d = dojo.byId("ss_favorites_list" + namespace);
+	var t = '<ul style="margin: 0px 0px 0px 5px; list-style-type: none;">';
+	for (var i = 0; i < favList.length; i++) {
+		var f = favList[i];
+		if (f.eletype != 'favorite') continue
+		t += '<li id ="ss_favorite_' + f.id + '">';
+		t += '<input type="checkbox" style="display: none;" />';
+		t += '<a href="javascript:;" onClick="ss_treeShowId(' + "'" + f.value + "', this";
+		if (typeof f.action == "undefined") {
+			f.action = "view_ws_listing";
 		}
+		t += ", '" + f.action + "'";
+		t += ');">' + f.name + '</a>';
+		t += '</li>';
 	}
-	if (document.getElementById("ul_ss_delete") != null) ss_enableFavoritesList("ul_ss_delete", namespace);
+	t += '</ul>';
+	d.innerHTML = t;
 }
+
+
+function ss_setFavoriteListEditable(namespace, enable) {
+	var container = dojo.byId("ss_favorites_list" + namespace);
+	// Clear any prior activity
+	while (ss_deletedFavorites.length) { ss_deletedFavorites.pop() };
+	// Get the ul inside
+    var ul = dojo.dom.getFirstChildElement(container);
+    // Walk the list items
+    var li = dojo.dom.getFirstChildElement(ul);
+    while (li) {
+    	var cb = dojo.dom.getFirstChildElement(li);
+    	if (enable) {
+	    	dojo.html.show(cb);
+	    } else {
+	    	dojo.html.hide(cb);
+	    }
+	    li = dojo.dom.getNextSiblingElement(li);
+    }    
+}
+
+function ss_getSelectedFavorites(namespace) {
+	var container = dojo.byId("ss_favorites_list" + namespace);
+	// Get the ul inside
+    var ul = dojo.dom.getFirstChildElement(container);
+    // Walk the list items
+    var li = dojo.dom.getFirstChildElement(ul);
+    var selected = new Array();
+    while (li) {
+    	var cb = dojo.dom.getFirstChildElement(li);
+    	if (cb.checked) {
+    		selected.push(li);
+    	}
+	    li = dojo.dom.getNextSiblingElement(li);
+    }    
+    return selected;
+}
+
+
+function ss_deleteSelectedFavorites(namespace) {
+    var toDelete = ss_getSelectedFavorites(namespace);
+    dojo.lang.forEach(toDelete, ss_recordDeletedFavorite) 
+    dojo.lang.forEach(toDelete, dojo.dom.removeNode)
+}
+
+function ss_recordDeletedFavorite(node) {
+  	ss_deletedFavorites.push(node.id.substr(12));
+}
+
+function ss_moveSelectedFavorites(namespace, upDown) {
+    var toMove = ss_getSelectedFavorites(namespace);
+    if (upDown == 'up') {
+	    dojo.lang.forEach(toMove, ss_moveElementUp);
+	} else {
+	    dojo.lang.forEach(toMove.reverse(), ss_moveElementDown);
+	}
+}
+
+function ss_moveElementUp(node) {
+	var prior = dojo.dom.getPreviousSiblingElement(node);
+	if (prior) {
+		dojo.dom.insertBefore(dojo.dom.removeNode(node), prior);
+	}
+}
+function ss_moveElementDown(node) {
+	var next = dojo.dom.getNextSiblingElement(node);
+	if (next) {
+		dojo.dom.insertAfter(dojo.dom.removeNode(node), next);
+	}
+}
+
+function ss_readFavoriteList(namespace) {
+	var container = dojo.byId("ss_favorites_list" + namespace);
+	// Get the ul inside
+    var ul = dojo.dom.getFirstChildElement(container);
+    // Walk the list items
+    var li = dojo.dom.getFirstChildElement(ul);
+    var favs = new Array();
+    while (li) {
+    	// Ids = "ss_favorite_N"
+    	favs.push(li.id.substr(12));
+	    li = dojo.dom.getNextSiblingElement(li);
+    }    
+    return favs.join(" ");
+}
+
 
 function ss_hideFavoritesPane(namespace) {
-	ss_hideDivFadeOut('ss_favorites_pane'+namespace, 0);
+	ss_hideDivFadeOut('ss_favorites_pane'+namespace, 20);
 }
 
-function ss_setFavoritesPaneSize(namespace) {
-	var fObj = self.document.getElementById("ss_favorites_pane" + namespace)
-	var fObj2 = self.document.getElementById("ss_favorites" + namespace)
-	var fObj22 = self.document.getElementById("ss_favorites2" + namespace)
-	ss_setObjectWidth(fObj, parseInt(ss_getObjectWidth(fObj2) + ss_favoritesMarginW));
-	var height = parseInt(ss_getObjectHeight(fObj2) + ss_getObjectHeight(fObj22) + ss_favoritesMarginH * 2);
-	if (height < 400) height = "400px";
-	//ss_setObjectHeight(fObj, height);
-	var fObj3 = self.document.getElementById("ss_favorites_table" + namespace)
-	var fObj4 = self.document.getElementById("ss_favorites_table2" + namespace)
-	ss_debug(fObj3 + ', '+fObj4)
-	var tableWidth = ss_getObjectWidth(fObj3);
-	var table2Width = ss_getObjectWidth(fObj4);
-	if (tableWidth > table2Width) {
-		ss_setObjectWidth(fObj4, ss_getObjectWidth(fObj3));
-	} else {
-		ss_setObjectWidth(fObj3, ss_getObjectWidth(fObj4));
-	}
-}
 
 //Routine to show/hide portal
 function ss_toggleShowHidePortal(obj) {

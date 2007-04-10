@@ -14,10 +14,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
+
+import net.sf.json.*;
+import net.sf.json.util.*;
 
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -93,7 +99,31 @@ public class Favorites {
 		return this.favorites;
 	}
 	
-	public Document saveOrder(String movedItemId, String newItemOrder) {
+	public Document saveOrder(String deletedIdList, String newItemOrder) {
+		//Nodes start with "ss_favorites_"
+		String[] deletedIds = deletedIdList.split(" ");
+		String[] itemIds = newItemOrder.split(" ");
+		getFavorites();
+		Element root = this.favorites.getRootElement();
+		for (int i = 0; i < deletedIds.length; i++) {
+			Node favorite = root.selectSingleNode("//favorite[@id='"+deletedIds[i]+"']");
+			if (favorite != null) {
+				favorite.getParent().remove(favorite);
+			}
+		}
+
+		for (int i = 0; i < itemIds.length; i++) {
+			Node favorite = root.selectSingleNode("//favorite[@id='"+itemIds[i]+"']");
+			if (favorite != null) {
+				favorite.detach();
+				root.add(favorite);
+			}
+		}
+		
+		return this.favorites;
+	}
+
+	public Document saveOrderOld(String movedItemId, String newItemOrder) {
 		//Nodes start with "ss_favorites_"
 		String[] nodeData = movedItemId.substring(13).split("_");
 		String movedId = nodeData[0];
@@ -387,5 +417,42 @@ public class Favorites {
 			return element;
 		}
 	}
+
+
+
+
+
+
+	public JSONArray getFavoritesTreeJson() {
+		getFavorites();
+		JSONArray favData = new JSONArray();
+		Document favTree = DocumentHelper.createDocument();
+    	Element srcRoot = this.favorites.getRootElement();
+    	buildFavoritesJson(srcRoot, favData);
+    	return favData;
+	}
+	
+	private void buildFavoritesJson(Element srcElement, JSONArray favData) {
+       	Iterator itFavorites = srcElement.selectNodes("favorite|category").iterator();
+       	while (itFavorites.hasNext()) {
+       		Element e = (Element) itFavorites.next();
+
+       		Map map = new HashMap();
+       		map.put("eletype", e.getName());
+       		map.put("id", e.attributeValue("id"));
+       		map.put("name", e.attributeValue("name"));
+       		if (!e.attributeValue("type", "").equals("")) 
+				map.put("type", e.attributeValue("type"));
+       		if (!e.attributeValue("value", "").equals("")) 
+				map.put("value", e.attributeValue("value"));
+       		if (!e.attributeValue("action", "").equals("")) 
+				map.put("action", e.attributeValue("action"));
+       		favData.put(map);
+       		if (e.getName().equals("category")) {
+       			buildFavoritesJson(e, favData);
+       		}
+    	}
+	}
+
 
 }
