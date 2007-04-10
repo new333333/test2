@@ -128,7 +128,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			String page = (String) ((Map)source).get(DomTreeBuilder.SKIP_PAGE);
 			String binderId = (String) ((Map)source).get(DomTreeBuilder.SKIP_BINDER_ID);
 			String icon = "/icons/range.gif";
-			String imageClass = "ss_twImg";
+			String imageClass = "ss_twImg8";
 			element.addAttribute("title", title);
 			element.addAttribute("id", binderId + "." + page);
 			element.addAttribute("hasChildren", "true");

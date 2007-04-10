@@ -1584,6 +1584,13 @@ div.ss_dashboardProtoDropTarget {
   margin:0px;
   padding:0px;
   }
+.ss_twImg8 {
+  width:8px;
+  height:20px;
+  border:none;
+  margin:0px;
+  padding:0px;
+  }
 .ss_twIcon {
   width:16px;
   height:16px;
