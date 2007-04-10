@@ -31,7 +31,7 @@
 
 
 
-<div class="ss_style">
+<div class="ss_style_trans">
 <div style="margin:0px; padding:0px;"><textarea 
     class="ss_text" style="height:17px; width:<%= findUserElementWidth %>; overflow:hidden;" 
     name="<%= findUserElementName %>" 
