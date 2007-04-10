@@ -34,12 +34,24 @@
 		caption = caption;
 	}
 %>
+<script type="text/javascript">
+var ss_findEntryForFileUrl = "<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="__ajax_request" 
+	actionUrl="false" >
+	<ssf:param name="operation" value="find_entry_for_file" />
+	<ssf:param name="folderId" value="${ssFolder.id}" />
+	</ssf:url>"
+</script>
+
 <div class="ss_entryContent" >
+<div id="ss_duplicateFileCheck" style="display:none"><span class="ss_formError"/></div>
 <span class="ss_labelAbove">${property_caption}</span>
 <%
 	for (int i = 1; i <= count; i++) {
 %>
-<input type="file" class="ss_text" name="<%= elementName + Integer.toString(i) %>" <%= width %> ><br>
+<input type="file" class="ss_text" name="<%= elementName + Integer.toString(i) %>" <%= width %> onchange="javascript:ss_checkForDuplicateFileAjax(this)"/><br>
 <%
 	}
 %>
