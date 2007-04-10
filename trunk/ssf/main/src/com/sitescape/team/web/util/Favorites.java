@@ -52,13 +52,6 @@ public class Favorites {
 	public Document addFavorite(String name, String type, String value, String action, String categoryId) {
 		getFavorites();
 		Element root = this.favorites.getRootElement();
-		
-		// JJD: Fix issue 334
-		if(root.selectSingleNode("//favorite[@value='"+value+"']") != null) {
-			// already exists
-			return this.favorites;
-		}
-		
 		int id = Integer.parseInt((String)root.attributeValue("nextId"));
 		Element newFavorite = null;
 		if (categoryId.equals("")) {
