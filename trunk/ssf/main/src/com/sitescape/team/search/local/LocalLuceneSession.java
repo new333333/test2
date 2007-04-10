@@ -664,6 +664,7 @@ public class LocalLuceneSession implements LuceneSession {
 										count++;
 										break;
 									}
+									lastTerm = (String) term.text();
 									count++;
 									break;
 								}
