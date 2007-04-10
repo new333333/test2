@@ -198,7 +198,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
             	    	if (inputData.exists(nameValue + "_repos" + Integer.toString(intFileCount))) 
             	    		repositoryName = inputData.getSingleValue(nameValue + "_repos" + Integer.toString(intFileCount));
             	    	if (repositoryName == null) {
-            		    	repositoryName = "simpleFileRepository";
             		    	if (Validator.isNull(repositoryName)) repositoryName = RepositoryUtil.getDefaultRepositoryName();
             	    	}
             	    	FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_ATTACHMENT, null, myFile, repositoryName);
