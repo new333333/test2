@@ -1870,7 +1870,7 @@ div.ss_global_toolbar_hide_portal {
 }
 div.ss_global_toolbar_help {
 	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat center top;
-	padding-top: 16px;
+/*	padding-top: 16px; */
 	text-align: center;
 }
 .ss_global_toolbar_findUser {
