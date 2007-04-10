@@ -933,6 +933,7 @@ div.ss_blog_sidebar {
 
 div.ss_clear_float {
 	height: 0px;
+	line-height:0px;
 	clear: both;
 }
 
