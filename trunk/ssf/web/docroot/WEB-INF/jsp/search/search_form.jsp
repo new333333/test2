@@ -31,13 +31,14 @@
 
 <script type="text/javascript">
 // Init empty additional options
-/*
-ss_addOption('workflow');
-ss_addOption('entry');
-ss_addOption('tag');
-ss_addOption('creation_date');
-ss_addOption('modification_date');
-ss_addOption('creator_by_id');
-*/
+function init() {
+	ss_addOption('workflow');
+	ss_addOption('entry');
+	ss_addOption('tag');
+	ss_addOption('creation_date');
+	ss_addOption('modification_date');
+	ss_addOption('creator_by_id'); 
+	initialized = true;
+}
 </script>
 	
