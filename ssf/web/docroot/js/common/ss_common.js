@@ -4264,5 +4264,5 @@ function ss_putValueInto(objId, value) {
 var ss_launchFindUserWindowElement = null;
 function ss_launchFindUserWindow(elementId) {
 	ss_launchFindUserWindowElement = elementId;
-	alert('NYI')
+	alert('Not implemented yet. Entry user id directly into text box on the left.')
 }
