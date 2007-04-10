@@ -30,7 +30,15 @@ dojo.widget.defineWidget(
 			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+this.selectedResult[1], id:id, name:this.searchFieldName};
 			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
 		},
-		setWorkflowValue: function(newValue, newLabel) {
+		setDefaultValue: function(wfId, wfLabel, stepId, stepLabel) {
+			this.setLabel(wfLabel);
+			this.setValue(wfId);
+			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
+			var id = this.stepsWidget.id+wfId;
+			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+wfId, id:id, name:this.searchFieldName};
+			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
+			this.widgetStepsRef.setValue(stepId);
+			this.widgetStepsRef.setLabel(stepLabel);
 		}
 	}
 );
