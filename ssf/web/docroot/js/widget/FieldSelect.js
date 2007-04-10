@@ -119,6 +119,59 @@ dojo.widget.defineWidget(
 					this.nodeObj.appendChild(this.nextNodeRef);
 			}
 		},
+		initializeKids: function(fieldType, userValue) {
+			switch (fieldType) {
+				case "date":
+					this.nextNodeRef = document.createElement('select');
+					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
+					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
+					this.nodeObj.appendChild(this.nextNodeRef);
+					break;
+				case "event":
+					this.nextNodeRef = document.createElement('select');
+					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
+					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
+					this.nodeObj.appendChild(this.nextNodeRef);
+					break;
+				case "radio":
+					// TODO checkboxes
+					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.nextNodeRef.setValue(userValue);
+					this.nextNodeRef.setLabel(userValue);
+					break;
+				case "user_list":
+					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.nextNodeRef.setValue(userValue);
+					this.nextNodeRef.setLabel(userValue);
+					break;
+				case "checkbox":
+					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.nextNodeRef.setValue(userValue);
+					this.nextNodeRef.setLabel(userValue);
+					break;
+				case "selectbox":
+					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.nextNodeRef.setValue(userValue);
+					this.nextNodeRef.setLabel(userValue);
+					break;
+				case "radio":
+					var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+this.selectedResult[1], id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
+					this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+					this.nextNodeRef.setValue(userValue);
+					this.nextNodeRef.setLabel(userValue);
+					break;
+				default: /* input for title, text, description, attachFiles, textarea... */
+					this.nextNodeRef = document.createElement('input');
+					this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
+					this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
+					this.nextNodeRef.value = userValue;
+					this.nodeObj.appendChild(this.nextNodeRef);
+			}
+		},
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag) {
 			ss_widget.FieldSelect.superclass.fillInTemplate.call(this, args, frag);
 			this.setValue("");
@@ -127,6 +180,12 @@ dojo.widget.defineWidget(
 			this.removeKids();
 			ss_widget.FieldSelect.superclass.selectOption.call(this, evt);
 			this.addKids();
+		},
+		setDefaultValues: function(fieldId, fieldLabel, userValues, type){
+			this.setValue(fieldId);
+			this.setLabel(fieldLabel);
+			// initialize userValueInput;
+			this.initializeKids(type, userValues);
 		}
 	}
 );
