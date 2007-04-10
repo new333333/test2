@@ -28,15 +28,20 @@
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td><input type="text" name="searchTags" id="searchTags"/></td>
 						<td><img src="<html:imagesPath/>pics/search_icon.gif" onClick="ss_search();"/>
-							<a href="#" onClick="ss_showHide('ss_searchForm_additionalFilters');"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
+							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>
 				</table>
 				<!-- <ssf:nlt tag="searchForm.searchJoiner"/>: <input type="radio" name="searchJoinerAnd" value="true" id="searchJoinerAnd" checked="true"/><ssf:nlt tag="searchForm.searchJoiner.And"/>
 					<input type="radio" name="searchJoinerAnd" id="searchJoinerOr" value="false"/><ssf:nlt tag="searchForm.searchJoiner.Or"/> -->
 			</div>
-		</div>		
-		<div id="ss_searchForm_additionalFilters" style="visibility:hidden; display:none;">
+		</div>
+		<c:if test="${!empty filterMap.additionalFilters}">
+		<div id="ss_searchForm_additionalFilters" style="visibility:visible; display:block;">
+		</c:if>
+		<c:if test="${empty filterMap.additionalFilters}">
+		<div id="ss_searchForm_additionalFilters" style="visibility:hidden; display: none;">
+		</c:if>
 			<div id="ss_workflows_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4>
 				<div id="ss_workflows_options" class="ss_options"></div>

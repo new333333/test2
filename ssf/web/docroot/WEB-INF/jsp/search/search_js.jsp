@@ -21,6 +21,7 @@ dojo.require('dojo.widget.*');
 // TODO move this stuff to js file when ready
 var ss_userOptionsCounter = 0;
 var ss_optionsArray = new Array();
+var initialized = false;
 function ss_addOption(type) {
 	ss_optionsArray[ss_userOptionsCounter]=type;
 	switch (type){
@@ -49,8 +50,44 @@ function ss_addOption(type) {
 function ss_callRemove(orderNo) { 
 	return function(evt) {ss_removeOption(orderNo);};
 }
+
+var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+
+function ss_addInitializedWorkflow(wfIdValue, stepsValue) {
+	ss_optionsArray[ss_userOptionsCounter]='workflow';
+	var wfWidget = ss_addWorkflow(ss_userOptionsCounter, wfIdValue, stepsValue);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedEntry(entryId, fieldName, value) {
+	ss_optionsArray[ss_userOptionsCounter]='entry';
+	ss_addEntry(ss_userOptionsCounter, entryId, fieldName, value);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedCreationDate(startDate, endDate) {
+	ss_optionsArray[ss_userOptionsCounter]='creation_date';
+	ss_addDate(ss_userOptionsCounter, 'creation', startDate, endDate);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedModificationDate(startDate, endDate) {
+	ss_optionsArray[ss_userOptionsCounter]='modification_date';
+	ss_addDate(ss_userOptionsCounter, 'modification', startDate, endDate);
+	ss_userOptionsCounter++;
+}
+function ss_addInitializedTag(communityTag, personalTag) {
+	ss_optionsArray[ss_userOptionsCounter]='tag';
+	ss_addTag(ss_userOptionsCounter, communityTag, personalTag);
+	ss_userOptionsCounter++;
+}
+
+function ss_addInitializedAuthor(userId, userName) {
+	ss_optionsArray[ss_userOptionsCounter]='creator_by_id';
+	ss_addAuthor(ss_userOptionsCounter, userId, userName);
+	ss_userOptionsCounter++;
+}
+
 function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
-//	alert(wfIdValue+" steps:"+stepsValue);
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -68,16 +105,15 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
 	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"", dataUrl:baseUrl+"&operation=get_workflows_widget", nestedUrl:baseUrl+"&operation=get_workflow_step_widget", stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo};
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
-//	alert(wfWidget);
-	if (wfIdValue!=null && wfIdValue!="")
-		wfWidget.setWorkflowValue(wfIdValue, wfIdValue);
+	if (wfIdValue!=null && wfIdValue!=""){
+		wfWidget.setDefaultValue(wfIdValue, workflows[wfIdValue], stepsValue, steps[wfIdValue+"-"+stepsValue]);
+	}
 	return wfWidget;
 }
-function ss_addEntry(orderNo) {
+function ss_addEntry(orderNo, entryId, fieldName, value) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -94,14 +130,14 @@ function ss_addEntry(orderNo) {
 	sDiv.setAttribute("style", "display:inline;");
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
-		
-	var baseUrl = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
+
 	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:baseUrl+"&operation=get_entry_types_widget", nestedUrl:baseUrl+"&operation=get_entry_fields_widget", widgetContainer:sDiv, searchFieldIndex:orderNo};
-	dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
-	
+	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
+	if (entryId && entryId != "") {
+		entryWidget.setDefaultValue(entryId, entries[entryId], fieldName, fields[entryId+"-"+fieldName], value, fieldsTypes[entryId+"-"+fieldName]);
+	}
 }
 function ss_addTag(orderNo, communityTagValue, personalTagValue) {
-	
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -120,16 +156,22 @@ function ss_addTag(orderNo, communityTagValue, personalTagValue) {
 	div.appendChild(pDiv);
 	document.getElementById('ss_tags_options').appendChild(div);
 	
-	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
-	url += "&operation=get_tags_widget";
+	var url = baseUrl + "&operation=get_tags_widget";
 	var propertiesCommunity = {name:"searchCommunityTags"+orderNo+"", id:"searchCommunityTags"+orderNo+"", dataUrl:url+"&findType=communityTags"};
 	var propertiesPersonal = {name:"searchPersonalTags"+orderNo+"", id:"searchPersonalTags"+orderNo+"", dataUrl:url+"&findType=personalTags"};
-	dojo.widget.createWidget("ComboBox", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
-	dojo.widget.createWidget("ComboBox", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
-	
+	var communityTagWidget = dojo.widget.createWidget("Select", propertiesCommunity, document.getElementById("placeholderCommunity"+orderNo+""));
+	var personalTagWidget = dojo.widget.createWidget("Select", propertiesPersonal, document.getElementById("placeholderPersonal"+orderNo+""));
+	if (communityTagValue && communityTagValue != "") {
+		communityTagWidget.setValue(communityTagValue);
+		communityTagWidget.setLabel(communityTagValue);
+	}
+	if (personalTagValue && personalTagValue != "") {
+		personalTagWidget.setValue(personalTagValue);
+		personalTagWidget.setLabel(personalTagValue);
+	}
 }
 
-function ss_addAuthor(orderNo, author) {
+function ss_addAuthor(orderNo, authorId, authorName) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -144,13 +186,16 @@ function ss_addAuthor(orderNo, author) {
 	div.appendChild(aDiv);
 	document.getElementById('ss_authors_options').appendChild(div);
 	
-	var url = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true"></ssf:url>";
-	url += "&operation=get_users_widget";
+	var url = baseUrl + "&operation=get_users_widget";
 	var props = {name:"searchAuthors"+orderNo+"", id:"searchAuthors"+orderNo+"", dataUrl:url};
-	dojo.widget.createWidget("ComboBox", props, document.getElementById("placeholderAuthor"+orderNo+""));
+	var usersWidget = dojo.widget.createWidget("Select", props, document.getElementById("placeholderAuthor"+orderNo+""));
+	if (authorId && authorName && authorId!="" && authorName!="") {
+		usersWidget.setValue(authorId);
+		usersWidget.setLabel(authorName);
+	}
 }
 
-function ss_addDate(orderNo, type) {
+function ss_addDate(orderNo, type, startDate, endDate) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
 	var remover = document.createElement('img');
@@ -168,9 +213,17 @@ function ss_addDate(orderNo, type) {
 	
 	if (type == 'creation')	document.getElementById('ss_creationDates_options').appendChild(div);
 	else document.getElementById('ss_modificationDates_options').appendChild(div);
-		
-	dojo.widget.createWidget("DropDownDatePicker", {value:'', id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
-	dojo.widget.createWidget("DropDownDatePicker", {value:'today', id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
+	
+	if (startDate) 
+		dojo.widget.createWidget("DropDownDatePicker", {value:startDate, id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
+	else 
+		dojo.widget.createWidget("DropDownDatePicker", {value:'', id:'searchStartDate'+orderNo, name:'searchStartDate'+orderNo}, document.getElementById("placeholderStartDate"+orderNo+""));
+
+	if (endDate)
+		dojo.widget.createWidget("DropDownDatePicker", {value:endDate, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
+	else 
+		dojo.widget.createWidget("DropDownDatePicker", {value:'today', id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo}, document.getElementById("placeholderEndDate"+orderNo+""));
+	
 }
 
 function ss_removeOption(orderNo) {
@@ -210,6 +263,12 @@ function ss_showHide(objId){
 		}
 	}
 }
+
+function ss_showAdditionalOptions(objId) {
+	ss_showHide(objId);
+	init();
+}
+
 function ss_showHideDetails(ind){
 	ss_showHide("summary_"+ind);
 	ss_showHide("details_"+ind);
