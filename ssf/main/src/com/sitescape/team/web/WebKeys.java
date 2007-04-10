@@ -50,6 +50,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_FOLDER_ID = "folderId";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
     public static final String URL_BINDER_ID_PLACE_HOLDER="ss_binder_id_place_holder";
     public static final String URL_BINDER_TYPE="binderType";
@@ -206,6 +207,7 @@ public class WebKeys {
 	public static final String OPERATION_FIND_ENTRY_TYPES_WIDGET = "get_entry_types_widget";
 	public static final String OPERATION_FIND_USERS_WIDGET = "get_users_widget";
 	public static final String OPERATION_FIND_ENTRY_FIELDS_WIDGET = "get_entry_fields_widget";	
+	public static final String OPERATION_FIND_ENTRY_FOR_FILE = "find_entry_for_file";	
 	public static final String OPERATION_FIND_PLACES_SEARCH = "find_places_search";
 	public static final String OPERATION_FIND_TAG_SEARCH = "find_tag_search";
 	public static final String OPERATION_FIND_TAG_WIDGET = "get_tags_widget";	

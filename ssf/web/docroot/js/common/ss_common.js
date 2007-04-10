@@ -3211,11 +3211,12 @@ function ss_savePenletLayout() {
 	var url = ss_saveDashboardLayoutUrl;
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements("ss_dashboard_layout_form");
-	ajaxRequest.setPostRequest(ss_postSavePenletLayoutRequest);
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.setUsePOST();
 	ajaxRequest.sendRequest();  //Send the request
 }
-function ss_postSavePenletLayoutRequest(obj) {
+
+function ss_postRequestAlertError(obj) {
 	//See if there was an error
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
@@ -4258,6 +4259,17 @@ function ss_submitParentForm(htmlObj) {
 
 function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
+}
+
+function ss_checkForDuplicateFileAjax(obj) {
+	ss_setupStatusMessageDiv();
+ 	var url = ss_findEntryForFileUrl; 
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.addKeyValue("file",obj.value);
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.sendRequest();  //Send the request
+}
 }
 
 //Routine to pop-up a "find user" window

@@ -320,6 +320,9 @@ public class AjaxController  extends SAbstractController {
 			return ajaxGetGroup(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_FIND_CALENDAR_EVENTS)) {
 			return ajaxFindCalendarEvents(request, response);
+
+		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FOR_FILE)) {
+			return ajaxFindEntryForFile(request, response);
 		}
 
 		return ajaxReturn(request, response);
@@ -1771,5 +1774,22 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
 	}
-	
+
+	private ModelAndView ajaxFindEntryForFile(RenderRequest request, RenderResponse response) throws Exception
+	{
+		Map model = new HashMap();
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_FOLDER_ID);
+			String path = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_FILE);
+			String fileName = new java.io.File(path).getName();
+			Folder folder = getFolderModule().getFolder(binderId);
+	    	FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
+	    	if(entry != null) {
+	    		model.put(WebKeys.ENTRY_TITLE, entry.getTitle());
+	    	}
+		}
+		response.setContentType("text/xml");
+		return new ModelAndView("binder/find_entry_for_file_ajax_return", model);	
+	}
 }
