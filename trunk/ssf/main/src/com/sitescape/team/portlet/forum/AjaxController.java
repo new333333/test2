@@ -497,11 +497,11 @@ public class AjaxController  extends SAbstractController {
 	
 	private void ajaxSaveFavorites(ActionRequest request, ActionResponse response) throws Exception {
 		//Save the order of the favorites list
-		String movedItemId = PortletRequestUtils.getStringParameter(request, "movedItemId", "");
+		String deletedIds = PortletRequestUtils.getStringParameter(request, "deletedIds", "");
 		String favoritesList = PortletRequestUtils.getStringParameter(request, "favorites", "");
 		UserProperties userProperties = getProfileModule().getUserProperties(null);
 		Favorites f = new Favorites((String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_FAVORITES));
-		f.saveOrder(movedItemId, favoritesList);
+		f.saveOrder(deletedIds, favoritesList);
 		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_FAVORITES, f.toString());
 	}
 	
@@ -574,12 +574,14 @@ public class AjaxController  extends SAbstractController {
 			f = new Favorites((String)obj);
 		}
 		Document favTree = f.getFavoritesTree();
+		String favJson = (String)f.getFavoritesTreeJson().toString();
 		model.put(WebKeys.FAVORITES_TREE, favTree);
+		model.put("TreeJSON",favJson);
 		Document favTreeDelete = f.getFavoritesTreeDelete();
 		model.put(WebKeys.FAVORITES_TREE_DELETE, favTreeDelete);
 		model.put(WebKeys.NAMESPACE, namespace);
 
-		response.setContentType("text/xml");
+		response.setContentType("text/json");
 		return new ModelAndView("forum/favorites_tree", model);
 	}
 	

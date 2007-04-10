@@ -383,29 +383,14 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
   style="position:absolute; visibility:hidden;">
 
 <ssf:popupPane width="250px" titleTag="favorites"
-      closeScript="ss_hideFavoritesPane('<portlet:namespace/>');return false;">
+      closeScript="ss_hideFavoritesPane('${renderResponse.namespace}');return false;">
 
 
 
   <div>
   <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
-	<table id="ss_favorites_table<portlet:namespace/>" cellspacing="0" cellpadding="0">
-	<tbody>
-	<tr><td colspan="2"></td></tr>
-	<tr>
-	  <td colspan="2"><ssf:nlt tag="Loading"/></td>
-	</tr>
-	<tr>
-	  <td colspan="2">
-	  <c:set var="namespace" value="${renderResponse.namespace}"/>
-	  <ssf:tree treeName="favTree${namespace}" treeDocument="${ss_favoritesTree}"
-  		rootOpen="true" displayStyle="normal" nowrap="true" showIdRoutine="ss_treeShowId"
-  		initOnly="true" />
-	  
-	  </td>
-	</tr>
-	</tbody>
-	</table>
+	  <div id="ss_favorites_loading<portlet:namespace/>"><ssf:nlt tag="Loading"/></div>
+	  <div id="ss_favorites_list<portlet:namespace/>"></div>
   </div>
 
   <div id="ss_favorites2<portlet:namespace/>">
@@ -416,33 +401,44 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 		<tr>
 		<td nowrap="nowrap">
 		<a href="javascript: ;" 
-		 onClick="ss_addForumToFavorites('<portlet:namespace/>');return false;"
+		 onClick="ss_addBinderToFavorites('<portlet:namespace/>');return false;"
 		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
 		</td>
 		</tr>
 		<tr><td> </td></tr>
 	</c:if>
-	<tr>
-	<td nowrap="nowrap">
-	  <a href="#" onClick="ss_showObjBlock('ss_favorites_form_div<portlet:namespace/>');ss_setFavoritesPaneSize('<portlet:namespace/>');return false;">
-	    <span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCategory" 
-		  	text="Add a new favorites category..."/></span>
-	  </a>
-	  <br />
-	  <div id="ss_favorites_form_div<portlet:namespace/>" style="visibility:hidden; display:none; margin:4px;">
-		<form class="ss_style_trans" id="ss_favorites_form<portlet:namespace/>" 
-		  method="post" onSubmit="return false;" >
-		  <span class="ss_style_trans ss_labelAbove"><ssf:nlt tag="favorites.categoryName" 
-		  	text="Category name:"/></span>
-		  <input class="ss_style_color" type="text" size="20" name="new_favorites_category" />
-		  <input class="ss_style_color" type="submit" name="add_favorites_category" 
-		   value="<ssf:nlt tag="button.ok" text="OK"/>" 
-		   onClick="ss_addFavoriteCategory('<portlet:namespace/>');return false;" />
-		</form>
-	  </div>
-	</td>
-	</tr>
+
+		<tr>
+		<td nowrap="nowrap">
+		<a href="javascript: ;" 
+		 onClick="ss_setFavoriteListEditable('<portlet:namespace/>', true)"
+		>Edit Favorites</a> / 
+		<a href="javascript: ;" 
+		 onClick="ss_setFavoriteListEditable('<portlet:namespace/>', false)"
+		>Stop Editing Favorites</a>
+		<br/>
+		<a href="javascript: ;" 
+		 onClick="ss_deleteSelectedFavorites('<portlet:namespace/>')"
+		>Delete Selected Favs</a>
+		<br/>
+		Move selected favorites: 
+		<a href="javascript: ;" 
+		 onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'up')"
+		>Up</a>  /  
+		<a href="javascript: ;" 
+		 onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'down')"
+		>Down</a>
+		<br/>
+		<a href="javascript: ;" 
+		 onClick="ss_saveFavorites('<portlet:namespace/>')"
+		>Save Changes</a>
+
+		</td>
+		</tr>
+
+
+	
 	</tbody>
 	</table>
   </div>
