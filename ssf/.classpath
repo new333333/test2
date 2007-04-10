@@ -82,5 +82,6 @@
 	<classpathentry kind="lib" path="lib/portal-identity-lib.jar"/>
 	<classpathentry kind="lib" path="lib/ical4j-1.0-beta2.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-1.4.jar"/>
+	<classpathentry kind="lib" path="lib/ezmorph.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
