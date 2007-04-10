@@ -48,7 +48,9 @@ public class FilterHelper {
 	public final static String SearchTypes = "searchTypes";
 	public final static String SearchText = "searchText";
 	public final static String SearchWorkflowId = "searchWorkflow";
+	public final static String SearchWorkflowDefinition = "searchWorkflow";
 	public final static String SearchWorkflowStep ="searchWorkflowStep";
+	public final static String SearchWorkflowSteps ="searchWorkflowSteps";
 	public final static String SearchJoiner = "searchJoinerAnd";
 	public final static String SearchCommunityTags = "searchCommunityTags";
 	public final static String SearchPersonalTags = "searchPersonalTags";
@@ -59,6 +61,7 @@ public class FilterHelper {
 	public final static String TabTitle = "tabTitle";
 	
    	//Search filter document element names
+	public final static String FilterCreatorTitle = "creatorTitle";	
    	public final static String FilterRootName = "searchFilter";
    	public final static String FilterName = "filterName";
    	public final static String FilterTerms = "filterTerms";

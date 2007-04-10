@@ -79,10 +79,21 @@ public class SearchEntryFilter extends SearchFilter {
 	 * @param userId
 	 */
 	public void addCreatorById(String userId) {
+		addCreatorById(userId, null);
+	}
+	
+	/**
+	 * extends current search fiter to look for author by id
+	 * userTitle is only additional information to display in search form, not used for search
+	 * @param userId
+	 * @param userTitle
+	 */
+	public void addCreatorById(String userId, String userTitle) {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(FilterHelper.FilterTerm);
 		filterTerm.addAttribute(FilterHelper.FilterType, FilterHelper.FilterTypeCreatorById);
 		filterTerm.addAttribute(FilterHelper.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
+		if (userTitle != null && userTitle != "") filterTerm.addAttribute(FilterHelper.FilterCreatorTitle, userTitle);
 		Element newTerm = filterTerm.addElement(FilterHelper.FilterElementValue);
 		newTerm.setText(userId);
 	}
