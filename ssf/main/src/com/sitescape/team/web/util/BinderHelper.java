@@ -274,7 +274,7 @@ public class BinderHelper {
 			
 		if (config.getEntityType().equals(EntityType.workspace)) {
 			String icon = config.getIconName();
-			String imageClass = "ss_twIcon";
+			String imageClass = "ss_twImg";
 			if (icon == null || icon.equals("")) {
 				icon = "/icons/workspace.gif";
 				imageClass = "ss_twImg";

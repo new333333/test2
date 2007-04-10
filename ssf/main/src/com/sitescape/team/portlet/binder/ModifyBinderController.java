@@ -15,6 +15,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -26,9 +27,11 @@ import java.util.Iterator;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
@@ -101,6 +104,9 @@ public class ModifyBinderController extends AbstractBinderController {
 		if (op.equals(WebKeys.OPERATION_MOVE)) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			path = WebKeys.VIEW_MOVE_BINDER;
 		} else {
 			Binder binder = getBinderModule().getBinder(binderId);
