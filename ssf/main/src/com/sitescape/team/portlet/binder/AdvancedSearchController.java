@@ -10,48 +10,33 @@
  */
 package com.sitescape.team.portlet.binder;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchEntryFilter;
-import com.sitescape.team.search.SearchFilter;
-import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
@@ -59,7 +44,6 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.FilterHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
-import com.sitescape.team.web.util.Toolbar;
 
 /**
  * @author Renata Nowicka
@@ -70,25 +54,30 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	public static final String NEW_TAB_VALUE = "1";
 	
-	public static String SearchBlockTypeCreationDate = "creation_date";
-	public static String SearchBlockTypeModificationDate = "modification_date";
-	public static String SearchBlockTypeWorkflow = "workflow";
-	public static String SearchBlockTypeEntry = "entry";
-	public static String SearchBlockTypeAuthor = "creator_by_id";
-	public static String SearchBlockTypeTag = "tag";
-	public static String SearchBlockType = "type";
+	public static final String SearchBlockTypeCreationDate = "creation_date";
+	public static final String SearchBlockTypeModificationDate = "modification_date";
+	public static final String SearchBlockTypeWorkflow = "workflow";
+	public static final String SearchBlockTypeEntry = "entry";
+	public static final String SearchBlockTypeAuthor = "creator_by_id";
+	public static final String SearchBlockTypeTag = "tag";
+	public static final String SearchBlockType = "type";
+	public static final String SearchStartDate = "startDate";
+	public static final String SearchEndDate = "endDate";
+	
+	public static final String SearchEntryType="entryType";
+	public static final String SearchEntryElement="entryElement";
+	public static final String SearchEntryValues="entryValues";
+	public static final String SearchAuthor="authorId";
+	public static final String SearchAuthorTitle="authorTitle";
+	public static final String SearchTag="tag";
+	public static final String SearchPersonalTag="personalTag";
+	public static final String SearchCommunityTag="communityTag";
+	
+	public static final String SearchFilterMap = "filterMap";
+	private static int MoreEntriesCounter = 200;
 		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (op.equals(WebKeys.SEARCH_FORM_FORM)) {
-			// TODO: load saved query if necessary  
-		} else if (op.equals(WebKeys.SEARCH_RESULTS)) {
-			// TODO search
-			// prepare query from parameters
-			// save query
-			// do search
-			// put search result in model
-		}
 		
 		// set form data for the render method
 		Map formData = request.getParameterMap();
@@ -140,10 +129,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 		int userOffset = (pageNo - 1) * maxOnPage;
 		
 		Integer searchLuceneOffset = 0;
-		if (userOffset > 200) {
-				searchLuceneOffset = userOffset-200;
-				userOffset = searchLuceneOffset;
-		}
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
@@ -195,49 +180,271 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.TABS, tabs.getTabs());
 
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
-		model.put("filterMap", convertedToDisplay(query));
+		model.put(SearchFilterMap, convertedToDisplay(query));
+		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
+		prepareAdditionalFiltersDate(model);
 		
 		// for test only
 		model.put("query", query.asXML());
 		model.put("options", options);
 		model.put("results", results);
 		
-		SearchUtils.filterEntryAttachmentResults(results);
-	
-		prepareRatings(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
+		// SearchUtils.filterEntryAttachmentResults(results);
+		prepareRatingsAndFolders(model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		// this function puts also proper part of entries list into a model
 		preparePagination(model, results, options);
-
+		
 		model.put("quickSearch", false);
 		// TODO implement - get values from user setup? options?
 		model.put("summaryWordCount", 20);		
 	}
 	
-	private void prepareRatings(Map model, List entries) {
+
+	public class Workflow {
+		String id;
+		String title;
+		List<WorkflowStep> steps;
+		
+		public Workflow(String id, String title, List steps) {
+			this.id = id;
+			this.title = title;
+			this.steps = steps;
+		}
+		public Workflow(Definition definition, List steps) {
+			this.id = definition.getId();
+			this.title = definition.getTitle();
+			this.steps = steps;
+		}
+		public String getId() {
+			return this.id;
+		}
+		public String getTitle() {
+			return this.title;
+		}
+		public List getSteps() {
+			return steps;
+		}
+		public void setSteps(List steps) {
+			this.steps = steps;
+		}
+		public void addStep(WorkflowStep step){
+			if (steps == null) {
+				steps = new ArrayList();
+			}
+			steps.add(step);
+		}
+	}
+	
+	public static class WorkflowStep {
+		String name;
+		String title;
+		public WorkflowStep(String name, String title) {
+			this.name = name;
+			this.title = title;
+		}
+		
+		public static String TitleField = "caption";
+		
+		public String getName() {
+			return this.name;
+		}
+		public String getTitle() {
+			return this.title;
+		}		
+	}
+
+	public static class Entry {
+		String id;
+		String title;
+		List<EntryField> fields;
+		
+		public Entry(String id, String title, List fields) {
+			this.id = id;
+			this.title = title;
+			this.fields = fields;
+		}
+		public Entry(Definition definition, List fields) {
+			this.id = definition.getId();
+			this.title = definition.getTitle();
+			this.fields = fields;
+		}
+		public String getId() {
+			return this.id;
+		}
+		public String getTitle() {
+			return this.title;
+		}
+		public List getFields() {
+			return this.fields;
+		}
+		public void addField(EntryField field){
+			if (this.fields == null) {
+				fields = new ArrayList();
+			}
+			this.fields.add(field);
+		}		
+	}
+	public static class EntryField {
+		String name;
+		String title;
+		String type;
+		public static String TitleField = "caption";
+		public static String TypeField = "type";
+		
+		public EntryField(String name, String title, String type) {
+			this.name = name;
+			this.title = title;
+			this.type = type;
+		}
+		public String getName() {
+			return this.name;
+		}
+		public String getTitle() {
+			return this.title;
+		}
+		public String getType() {
+			return this.type;
+		}
+	}
+	
+	private void prepareAdditionalFiltersDate(Map model) {
+		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);
+		if (additionalOptions != null) {
+			prepareWorkflows(model);
+			prepareTags(model);
+			prepareEntries(model);
+		}
+	}
+	
+	private void prepareEntries(Map model) {
+		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);		
+		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
+		if (entryTypes != null && entriesFromSearch != null) {
+			Iterator entriesIt = entryTypes.iterator();
+			Map entriesMap = new HashMap(); 
+			while (entriesIt.hasNext()) {
+				Entry entry = new Entry((Definition) entriesIt.next(), null);
+				entriesMap.put(entry.getId(), entry);
+			}
+			Iterator entriesFromSearchIt = entriesFromSearch.iterator();
+			while (entriesFromSearchIt.hasNext()) {
+				Map entryMap = (Map) entriesFromSearchIt.next();
+				String entryType = (String) entryMap.get(SearchEntryType);
+				String fieldName = (String) entryMap.get(SearchEntryElement);
+				
+				Map fieldsMap = getDefinitionModule().getEntryDefinitionElements(entryType);
+				
+				if (fieldsMap != null) {
+					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
+					((Entry)entriesMap.get(entryType)).addField(entryField);
+				}
+			}
+			model.put(WebKeys.ENTRY_DEFINTION_MAP, entriesMap.values());
+		}
+	}
+	private void prepareTags(Map model) {
+		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);
+		List tagsFromFilter = (List) additionalOptions.get(SearchBlockTypeTag);
+		if (tagsFromFilter != null) {
+			Iterator it = tagsFromFilter.iterator();
+			List personalTags = new ArrayList();
+			List communityTags = new ArrayList();
+			while (it.hasNext()) {
+				Map tag = (Map)it.next();
+				if (tag.get(SearchBlockType).equals(FilterHelper.FilterTypePersonalTagSearch)) {
+					personalTags.add((String)tag.get(SearchTag));
+				} else {
+					communityTags.add((String)tag.get(SearchTag));
+				}
+			}
+			List tagsDuets = new ArrayList();
+			int maxSize = communityTags.size();
+			if (maxSize < personalTags.size()) maxSize = personalTags.size();
+			for (int i=0; i<maxSize; i++){
+				Map tagsDuet = new HashMap();
+				tagsDuet.put(SearchBlockType, SearchBlockTypeTag);
+				if (i < personalTags.size()) tagsDuet.put(SearchPersonalTag, personalTags.get(i));
+				else tagsDuet.put(SearchPersonalTag, "");
+				if (i < communityTags.size()) tagsDuet.put(SearchCommunityTag, communityTags.get(i));
+				else tagsDuet.put(SearchCommunityTag, "");
+				tagsDuets.add(tagsDuet);
+			}
+			additionalOptions.put(SearchBlockTypeTag, tagsDuets);
+		}
+	}
+	private void prepareWorkflows(Map model) {
+		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);		
+		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
+		if (workflows != null && wfFromSearch != null) {
+			Iterator wfIt = workflows.iterator();
+			Map wfMap = new HashMap();
+			while (wfIt.hasNext()) {
+				Workflow workflow = new Workflow((Definition)wfIt.next(), null); 
+				wfMap.put(workflow.getId(), workflow);
+			}
+			Iterator it = wfFromSearch.iterator();
+			while (it.hasNext()) {
+				Map wfFilter = (Map) it.next();
+				String wfId = (String)wfFilter.get(FilterHelper.SearchWorkflowId);
+				Map steps = getDefinitionModule().getWorkflowDefinitionStates(wfId);
+				
+				List selectedStepsNames = (List) wfFilter.get(FilterHelper.FilterWorkflowStateName);
+				Iterator filterSteps = selectedStepsNames.iterator();
+				while (filterSteps.hasNext()) {
+					String stepName = (String)filterSteps.next();
+					WorkflowStep wfStep = new WorkflowStep(stepName, (String)((Map)steps.get(stepName)).get(WorkflowStep.TitleField));
+					((Workflow)wfMap.get(wfId)).addStep(wfStep);
+				}
+			}
+			
+			model.put(WebKeys.WORKFLOW_DEFINTION_MAP, wfMap.values());
+		}
+	}
+	private void prepareRatingsAndFolders(Map model, List entries) {
 		List peoplesWithCounters = SearchController.sortPeopleInEntriesSearchResults(entries);
 		List placesWithCounters = SearchController.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
+		
 		model.put(WebKeys.FOLDER_ENTRYPEOPLE, SearchController.ratePeople(peoplesWithCounters));
 		model.put(WebKeys.FOLDER_ENTRYPLACES, SearchController.ratePlaces(placesWithCounters));
-		
+
+		Map folders = prepareFolderList(placesWithCounters);
+		extendEntriesInfo(entries, folders);
+
 		// TODO check and make it better, copied from SearchController
 		List entryCommunityTags = BinderHelper.sortCommunityTags(entries);
 		List entryPersonalTags = BinderHelper.sortPersonalTags(entries);
-		
 		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
 		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
-		
 		int intMaxHits = intMaxHitsForCommunityTags;
 		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
-		
 		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
 		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
 
-		entryCommunityTags = BinderHelper.determineSignBeforeTag(entryCommunityTags, "");
-		entryPersonalTags = BinderHelper.determineSignBeforeTag(entryPersonalTags, "");
-
 		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
 		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
+	}
+	
+	private void extendEntriesInfo(List entries, Map folders) {
+		Iterator it = entries.iterator();
+		while (it.hasNext()) {
+			Map entry = (Map) it.next();
+			if (entry.get(WebKeys.SEARCH_BINDER_ID) != null) {
+				entry.put(WebKeys.BINDER_TITLE, folders.get(Long.parseLong((String)entry.get(WebKeys.SEARCH_BINDER_ID))));
+			}
+		}
+	}
+	
+	private Map prepareFolderList(List placesWithCounters) {
+		Map folderMap = new HashMap();
+		Iterator it = placesWithCounters.iterator();
+		while (it.hasNext()) {
+			Map place = (Map) it.next();
+			folderMap.put(((Binder)place.get(WebKeys.BINDER)).getId(),((Binder)place.get(WebKeys.BINDER)).getTitle());
+		}
+		return folderMap;
 	}
 	
 	private void preparePagination(Map model, Map results, Map options) {
@@ -313,13 +520,17 @@ public class AdvancedSearchController extends AbstractBinderController {
 	    	    			if (blocks.get(SearchBlockTypeTag) == null) blocks.put(SearchBlockTypeTag, new ArrayList());
 	    	    			((List)blocks.get(SearchBlockTypeTag)).add(createTagBlock(filterTerm));
 	    		    	} else if (filterType.equals(FilterHelper.FilterTypeDate)) {
-	    	    			if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
-	    	    			((List)blocks.get(SearchBlockTypeCreationDate)).add(createDateBlock(filterTerm));
-	    		    		// addDateRange(block, filterTerm.attributeValue(FilterHelper.FilterElementName, ""), filterTerm.attributeValue(FilterHelper.FilterStartDate, ""),filterTerm.attributeValue(FilterHelper.FilterEndDate, ""));
+	    	    			Map dateBlock = createDateBlock(filterTerm);
+	    	    			if (SearchBlockTypeCreationDate.equals(dateBlock.get(SearchBlockType))) {
+	    	    				if (blocks.get(SearchBlockTypeCreationDate) == null) blocks.put(SearchBlockTypeCreationDate, new ArrayList());
+	    	    				((List)blocks.get(SearchBlockTypeCreationDate)).add(dateBlock);
+	    	    			} else {
+	    	    				if (blocks.get(SearchBlockTypeModificationDate) == null) blocks.put(SearchBlockTypeModificationDate, new ArrayList());
+	    	    				((List)blocks.get(SearchBlockTypeModificationDate)).add(dateBlock);	    	    				
+	    	    			}
 	    		    	}
 	            	}
 	    		}
-	    		searchFormData.put(FilterHelper.SearchText, searchedText);
 	    		searchFormData.put(FilterHelper.SearchAuthors, searchedAuthors);
 	    		searchFormData.put(FilterHelper.SearchTags, searchedTags);
 	    		searchFormData.put(FilterHelper.SearchJoiner, andJoiner);
@@ -332,12 +543,28 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private Map createEntryBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		block.put(SearchEntryType, filterTerm.attributeValue(FilterHelper.FilterEntryDefId, ""));
+		block.put(SearchEntryElement, filterTerm.attributeValue(FilterHelper.FilterElementName, ""));
+		block.put(SearchEntryValues, getElementValues(filterTerm).get(0));
 		
 		return block;
 	}
+	
+	private List getElementValues(Element filterTerm) {
+		List values = filterTerm.selectNodes(FilterHelper.FilterElementValue);
+		List modelValues = new ArrayList();
+		Iterator it = values.iterator(); 
+		while (it.hasNext()) {
+			modelValues.add(((Element) it.next()).getText());
+		}
+		return modelValues;
+	}
+	
 	private Map createCreatorBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		block.put(SearchAuthorTitle, filterTerm.attributeValue(FilterHelper.FilterCreatorTitle, ""));
+		block.put(SearchAuthor, getElementValues(filterTerm).get(0));
 		return block;
 	}
 	private Map createWorkflowBlock(Element filterTerm) {
@@ -347,9 +574,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		List steps = filterTerm.selectNodes(FilterHelper.FilterWorkflowStateName);
 		List modelSteps = new ArrayList();
-		for (int i = 0; i < steps.size(); i++) {
-			Element step = (Element) steps.get(i);
-			modelSteps.add(step.getText());
+		Iterator it = steps.iterator();
+		while (it.hasNext()) {
+			modelSteps.add(((Element)it.next()).getText());
 		}
 		block.put(FilterHelper.FilterWorkflowStateName, modelSteps);
 		return block;
@@ -357,11 +584,40 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private Map createTagBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		block.put(SearchTag, filterTerm.getTextTrim());
 		return block;
 	}
+	
 	private Map createDateBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(FilterHelper.FilterType, ""));
+		if (EntityIndexUtils.CREATION_DAY_FIELD.equalsIgnoreCase(filterTerm.attributeValue(FilterHelper.FilterElementName))) {
+			block.put(SearchBlockType, SearchBlockTypeCreationDate);
+		} else {
+			block.put(SearchBlockType, SearchBlockTypeModificationDate);
+		}
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+
+		String startDate = filterTerm.attributeValue(SearchStartDate, "");
+		String endDate = filterTerm.attributeValue(SearchEndDate, "");
+		
+		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyyMMdd");
+		inputFormater.setTimeZone(user.getTimeZone());
+		SimpleDateFormat outputFormater = new SimpleDateFormat("yyyy-MM-dd");
+		
+		Date startDateParsed = null;
+		try { startDateParsed = inputFormater.parse(startDate);} catch (ParseException e) {logger.error(e);}
+		String formatedStartDate = "";
+		if (startDateParsed != null) formatedStartDate = outputFormater.format(startDateParsed);
+		
+		Date endDateParsed=null;
+		try {endDateParsed = inputFormater.parse(endDate);} catch (ParseException e) {logger.error(e);}
+		String formatedEndDate = "";
+		if (endDateParsed != null) formatedEndDate = outputFormater.format(endDateParsed);
+		
+		block.put(SearchStartDate, formatedStartDate);
+		block.put(SearchEndDate, formatedEndDate);
 		return block;
 	}
 	
@@ -414,7 +670,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Integer searchUserOffset = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_USER_OFFSET, 0);
 			
 		// TODO - implement it better(?) this stuff is to get from lucene proper entries,  
-		// to get the ~ proper rankings we get from lucene 200 more hits as max on page
+		// to get the ~ proper rankings we get from lucene MoreEntriesCounter more hits as max on page
 		Integer searchLuceneOffset = 0;
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
@@ -422,7 +678,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Integer maxHits = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_DEFAULT);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
-		Integer intInternalNumberOfRecordsToBeFetched = searchUserOffset + maxHits + 200;
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
 		if (searchUserOffset > 200) {
 			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
 		}
@@ -501,9 +757,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 				Date startD = null;
 				Date endD = null;
 				if (!startDate.equals(""))
-					try {startD = inputFormater.parse(startDate);} catch (ParseException e) {System.out.println("Parse exception by date:"+startDate);}
+					try {startD = inputFormater.parse(startDate);} catch (ParseException e) {logger.error("Parse exception by date:"+startDate);}
 				if (!endDate.equals(""))	
-					try {endD = inputFormater.parse(endDate);} catch (ParseException e) {System.out.println("Parse exception by date:"+endDate);}
+					try {endD = inputFormater.parse(endDate);} catch (ParseException e) {logger.error("Parse exception by date:"+endDate);}
 				if (types[i].equals(SearchBlockTypeCreationDate))
 					searchFilter.addCreationDateRange(startD, endD);
 				else if (types[i].equals(SearchBlockTypeModificationDate))
@@ -511,8 +767,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 				
 			}
 			if (types[i].equals(SearchBlockTypeAuthor)) {
-				String author = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
-				if (!author.equals("")) searchFilter.addCreatorById(author);
+				String authorTitle = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchAuthors.concat(numbers[i]).concat("_selected"), "");
+				String authorId = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchAuthors.concat(numbers[i]), "");
+				if (!authorId.equals("")) searchFilter.addCreatorById(authorId, authorTitle);
+				else if (!authorTitle.equals("")) searchFilter.addCreator(authorTitle); 
 			}
 			if (types[i].equals(SearchBlockTypeTag)) {
 				String personalTag = PortletRequestUtils.getStringParameter(request, FilterHelper.SearchPersonalTags.concat(numbers[i]), "");
