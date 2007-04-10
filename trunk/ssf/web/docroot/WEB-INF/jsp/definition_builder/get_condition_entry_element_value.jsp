@@ -94,7 +94,11 @@
 		   </c:if>
 		   
 		   <c:if test="${ssEntryDefinitionElementData[conditionElementName].type == 'user_list'}">
-			 <ssf:find formName="" formElement="searchPersonalTags${ss_filterTermNumber}" type="personalTags" width="70px" singleItem="true" />
+			 <span class="ss_bold"><ssf:nlt tag="definition.select_user_names"/></span><br/>
+			 <input type="text" name="conditionElementValue" id="conditionElementValue" size="30"/>
+			 <a style="padding-left:15px;" class="ss_fineprint" href="javascript: ;"
+			   onClick="ss_launchFindUserWindow('conditionElementValue');return false;">
+			     <ssf:nlt tag="definition.find_user"/></a>
 		   </c:if>
 		</c:if>
 		</div></taconite-replace>

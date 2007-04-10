@@ -4259,3 +4259,10 @@ function ss_submitParentForm(htmlObj) {
 function ss_putValueInto(objId, value) {
 	document.getElementById(objId).value = value;
 }
+
+//Routine to pop-up a "find user" window
+var ss_launchFindUserWindowElement = null;
+function ss_launchFindUserWindow(elementId) {
+	ss_launchFindUserWindowElement = elementId;
+	alert('NYI')
+}
