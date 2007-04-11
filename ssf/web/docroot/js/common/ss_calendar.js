@@ -638,6 +638,7 @@ var ss_cal_CalAllDayEvent = {
     mouseIsUp: function(evt) {
         if (!dojo.html.selection.isCollapsed()) { dojo.html.selection.collapse(true); }
         dojo.event.disconnect(dojo.body(), "onmouseup",   this, "mouseIsUp");
+        
         ss_cal_newEventInfo(evt, this);
     },
 
@@ -786,8 +787,10 @@ function ss_cal_newEventInfo(evt, gridControl) {
     url += "&dayOfMonth=" + currEventData.startDate.getDate();
     url += "&time=" + currEventData.start.toString().replace(".5", ":30");
     url += "&duration=" + currEventData.dur;
-    
+        
     ss_openUrlInPortlet(url, true);
+    
+    gridControl.deleteCurrentEvent();
 }
 
 function ss_cal_eventInfo(evt, eventId) {
