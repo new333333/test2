@@ -17,6 +17,7 @@ import com.sitescape.team.util.AllBusinessServicesInjected;
 public class WorkspaceConfigHelper implements DomTreeHelper {
 	public boolean supportsType(int type, Object source) {
 		if (type == DomTreeBuilder.TYPE_WORKSPACE) {return true;}
+		if (type == DomTreeBuilder.TYPE_SKIPLIST) {return true;}
 		return false;
 	}
 	public boolean hasChildren(AllBusinessServicesInjected bs, Object source, int type) {
@@ -29,7 +30,8 @@ public class WorkspaceConfigHelper implements DomTreeHelper {
 	}
 	public String getURL(int type, Object source) {return null;}
 	public String getDisplayOnly(int type, Object source) {
-		return "false";
+		if (type == DomTreeBuilder.TYPE_WORKSPACE) return "false";
+		return "true";
 	}
 	//each name must be unqiue
 	public String getTreeNameKey() {return "editWs";}
