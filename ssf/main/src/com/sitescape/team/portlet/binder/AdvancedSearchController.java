@@ -25,6 +25,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -37,6 +38,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.SearchEntryFilter;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
@@ -140,6 +142,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (tab.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) options.put(ObjectKeys.SEARCH_USER_OFFSET, tab.get(ObjectKeys.SEARCH_USER_OFFSET));
 		if (tab.containsKey(ObjectKeys.SEARCH_MAX_HITS)) options.put(ObjectKeys.SEARCH_MAX_HITS, tab.get(ObjectKeys.SEARCH_MAX_HITS));
 		if (tab.containsKey(ObjectKeys.SEARCH_USER_MAX_HITS)) options.put(ObjectKeys.SEARCH_USER_MAX_HITS, tab.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		if (tab.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, tab.get(Tabs.TITLE));
+		if (tab.containsKey(Tabs.TYPE)) options.put(Tabs.TYPE, tab.get(Tabs.TYPE));
+		if (tab.containsKey(Tabs.TAB_SEARCH_TEXT)) options.put(Tabs.TAB_SEARCH_TEXT, tab.get(Tabs.TAB_SEARCH_TEXT));
 
 		return options;
 	}
@@ -150,9 +155,20 @@ public class AdvancedSearchController extends AbstractBinderController {
 	}
 	
 	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
-		// TODO implement
-		Map formData = request.getParameterMap();
+		Tabs tabs = setupTabs(request);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
+		if (tabId < 0) {
+			Map options = new HashMap();
+			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
+			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
+			options.put(Tabs.TYPE, "search");
+			int newTabId = tabs.addTab(DocumentHelper.createDocument(), options);
+			tabs.setCurrentTab(newTabId);
+		}		
 		Map model = new HashMap();
+		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
+		model.put("quickSearch", false);
 		
 		return model;
 	}
@@ -407,8 +423,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		List peoplesWithCounters = SearchController.sortPeopleInEntriesSearchResults(entries);
 		List placesWithCounters = SearchController.sortPlacesInEntriesSearchResults(getBinderModule(), entries);
 		
-		model.put(WebKeys.FOLDER_ENTRYPEOPLE, SearchController.ratePeople(peoplesWithCounters));
-		model.put(WebKeys.FOLDER_ENTRYPLACES, SearchController.ratePlaces(placesWithCounters));
+		List peoplesRating = SearchController.ratePeople(peoplesWithCounters);
+		if (peoplesRating.size() > 20) peoplesRating = peoplesRating.subList(0,20);
+		List placesRating = SearchController.ratePlaces(placesWithCounters);
+		if (placesRating.size() > 20) placesRating = placesRating.subList(0,20);
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRating);
+		model.put(WebKeys.FOLDER_ENTRYPLACES, placesRating);
 
 		Map folders = prepareFolderList(placesWithCounters);
 		extendEntriesInfo(entries, folders);
@@ -531,6 +551,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 	    		    	}
 	            	}
 	    		}
+	    		searchFormData.put(FilterHelper.SearchText, searchedText);
 	    		searchFormData.put(FilterHelper.SearchAuthors, searchedAuthors);
 	    		searchFormData.put(FilterHelper.SearchTags, searchedTags);
 	    		searchFormData.put(FilterHelper.SearchJoiner, andJoiner);
@@ -636,19 +657,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
 		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
+		
 		return tabs;
 	}
 	
-	private Map prepareSearchTextOptions(String searchText) {
-		Map options = new HashMap();
-		//Get the search text to use it for the tab title 
-		if (!searchText.equals("")) {
-			options.put(Tabs.TITLE, searchText);
-			options.put(Tabs.TAB_SEARCH_TEXT, searchText);
-		}
-		return options;
-	}
-
+	
 	private Map prepareSearchOptions(RenderRequest request) {
 		
 		Map options = new HashMap();
@@ -687,6 +700,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Integer pageNo = PortletRequestUtils.getIntParameter(request, Tabs.PAGE, 1);
 		options.put(Tabs.PAGE, pageNo);
 		
+		options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
+		options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
+
 		// TODO - if needed - implement dynamic
 //		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE.toString());
 //		options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
