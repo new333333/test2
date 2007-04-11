@@ -4261,7 +4261,7 @@ function ss_checkForDuplicateFileAjax(obj) {
 	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.sendRequest();  //Send the request
 }
-}
+
 
 //Routine to pop-up a "find user" window
 var ss_launchFindUserWindowElement = null;
