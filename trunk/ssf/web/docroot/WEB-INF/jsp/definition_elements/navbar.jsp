@@ -363,7 +363,8 @@ var ss_getFavoritesTreeUrl = "<ssf:url
 
 var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:param 
 		name="action" value="ssActionPlaceHolder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
+		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
+		name="newTab" value="1"/></portlet:renderURL>";
 
 </script>
 
