@@ -151,6 +151,11 @@ public class SearchController extends AbstractBinderController {
 		Map formData = request.getParameterMap();
         User user = RequestContextHolder.getRequestContext().getUser();
 
+		//Build a reload url
+        PortletURL reloadUrl = response.createActionURL();
+        reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_SEARCH_RESULTS_LISTING);
+		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+
 		//Set up the tabs
 		Tabs tabs = new Tabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
