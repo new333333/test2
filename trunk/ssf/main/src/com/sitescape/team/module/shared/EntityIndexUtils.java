@@ -219,9 +219,60 @@ public class EntityIndexUtils {
             // index the YYYY string
             String yearString = dayString.substring(0,4);
             Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
-            doc.add(modificationYearField);   	}
+            doc.add(modificationYearField);   	
+        }
     }
 
+    public static void addFileAttachmentModificationDate(Document indexDoc, FileAttachment fa)  {
+    	// Add modification-date field
+    	if (fa.getModification() != null ) {
+    		Date modDate = fa.getModification().getDate();
+        	Field modificationDateField = new Field(MODIFICATION_DATE_FIELD, DateTools.dateToString(modDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	indexDoc.removeField(MODIFICATION_DATE_FIELD);
+        	indexDoc.add(modificationDateField);        
+            // index the YYYYMMDD string
+            String dayString = formatDayString(modDate);
+            Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(MODIFICATION_DAY_FIELD);
+            indexDoc.add(modificationDayField);
+            // index the YYYYMM string
+            String yearMonthString = dayString.substring(0,6);
+            Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(MODIFICATION_YEAR_MONTH_FIELD);
+            indexDoc.add(modificationYearMonthField);
+            // index the YYYY string
+            String yearString = dayString.substring(0,4);
+            Field modificationYearField = new Field(MODIFICATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(MODIFICATION_YEAR_FIELD);
+            indexDoc.add(modificationYearField);   	
+        }
+    }
+    
+    public static void addFileAttachmentCreationDate(Document indexDoc, FileAttachment fa) {
+    	// Add modification-date field
+    	if (fa.getCreation() != null ) {
+    		Date cDate = fa.getCreation().getDate();
+        	Field creationDateField = new Field(CREATION_DATE_FIELD, DateTools.dateToString(cDate,DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	indexDoc.removeField(CREATION_DATE_FIELD);
+        	indexDoc.add(creationDateField);        
+            // index the YYYYMMDD string
+            String dayString = formatDayString(cDate);
+            Field creationDayField = new Field(CREATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(CREATION_DAY_FIELD);
+            indexDoc.add(creationDayField);
+            // index the YYYYMM string
+            String yearMonthString = dayString.substring(0,6);
+            Field creationYearMonthField = new Field(CREATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(CREATION_YEAR_MONTH_FIELD);
+            indexDoc.add(creationYearMonthField);
+            // index the YYYY string
+            String yearString = dayString.substring(0,4);
+            Field creationYearField = new Field(CREATION_YEAR_FIELD, yearString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+            indexDoc.removeField(CREATION_YEAR_FIELD);
+            indexDoc.add(creationYearField);   	
+        }
+    }
+    
     public static void addWorkflow(Document doc, DefinableEntity entry) {
     	// Add the workflow fields
     	if (entry instanceof WorkflowSupport) {

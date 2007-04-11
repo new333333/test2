@@ -1217,6 +1217,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry);
    		// Add attached file id
         EntityIndexUtils.addFileAttachmentUid(indexDoc, fa);
+        EntityIndexUtils.addFileAttachmentModificationDate(indexDoc, fa);
+        EntityIndexUtils.addFileAttachmentCreationDate(indexDoc, fa);
+        
         
    		indexDoc = EntityIndexUtils.addFileAttachmentAllText(indexDoc);
    		return indexDoc;
