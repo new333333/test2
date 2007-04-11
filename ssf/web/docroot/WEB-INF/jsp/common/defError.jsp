@@ -21,4 +21,6 @@
 
 <p><% ((Exception)request.getAttribute("exception")).printStackTrace(); %>
 
+<ssf:ifnotadapter>
 <p style="text-align:center;"><a href="<portlet:renderURL portletMode="view" windowState="normal"/>">- <spring:message code="button.home"/> -</a></p>
+</ssf:ifnotadapter>

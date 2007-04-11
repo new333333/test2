@@ -62,7 +62,7 @@ public abstract class CheckedCodedException extends CheckedException implements 
         this.errorArgs = errorArgs;
     }
 
-    private void setErrorCode(String errorCode) {
+    protected void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
 }
