@@ -16,22 +16,31 @@
 //treename must start with editForum
 String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
+<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
+
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
 <table class="ss_style" cellspacing="0" cellpadding="0">
-<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums" text="Currently selected forums:"/></th></tr>
+<tr><th align="left"><ssf:nlt tag="portlet.forum.selected.forums"/></th></tr>
 <tr><td>&nbsp;</td></tr>
 <c:forEach var="folder" items="${ssFolderList}">
-<tr><td><c:out value="${folder.title}" /></td></tr>
+<tr>
+  <td>
+    <input type="checkbox" name="del_${folder.id}"/>
+    <c:out value="${folder.title}" />
+  </td>
+</tr>
 </c:forEach>
 </table>
+<c:if test="${!empty ssFolderList}">
+  <span class="ss_fineprint" style="padding-left:4px;">[<ssf:nlt tag="portlet.forum.delete.select.forums"/>]</span>
+  <br/>
+</c:if>
 <br>
 </c:if>
 
-<form class="ss_style ss_form" action="<portlet:actionURL/>" method="post" name="<portlet:namespace />fm">
-
 <br>
-<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums" text="Select the forums to be shown:"/></span>
+<span class="ss_bold"><ssf:nlt tag="portlet.forum.select.forums"/></span>
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
@@ -52,8 +61,8 @@ function <%= wsTreeName %>_showId(forum, obj) {
 <input style="margin-left:15px;" type="submit" class="ss_submit" name="closeBtn"
  value="<ssf:nlt tag="button.close"/>"
  onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;"
-</form>
 <br>
 
 </td></tr></table>
+</form>
 
