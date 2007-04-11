@@ -159,7 +159,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
     	throws AccessControlException {
         if (!testOperation(user, workArea, workArea.getOwnerId(), workAreaOperation))
         	throw new OperationAccessControlException(user.getName(), 
-        			workAreaOperation.toString(), workArea.getWorkAreaId());
+        			workAreaOperation.toString(), workArea.toString());
     }
 
 	public void checkAcl(AclContainer parent, AclControlled aclControlledObj, AccessType accessType) throws AccessControlException {

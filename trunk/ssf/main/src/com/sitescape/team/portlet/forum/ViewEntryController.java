@@ -126,10 +126,7 @@ public class ViewEntryController extends  SAbstractController {
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		Map formData = request.getParameterMap();
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Binder binder = getBinderModule().getBinder(Long.valueOf(folderId));
-		
+				
 		String viewType = getViewType(folderId.toString());
 		
 		String viewPath = BinderHelper.getViewListingJsp(this, viewType);

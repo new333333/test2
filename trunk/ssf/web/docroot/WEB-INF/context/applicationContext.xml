@@ -268,7 +268,6 @@
 		<property name="defaultErrorView"><value>common/defError</value></property>
 		<property name="exceptionMappings">
 			<props>
-				<prop key="com.sitescape.team.module.file.WriteFilesException">error/fileUploadError</prop>
 				<prop key="com.sitescape.team.exception.CheckedCodedException">common/defCodedError</prop>
 				<prop key="com.sitescape.team.exception.UncheckedCodedException">common/defCodedError</prop>
 				<prop key="javax.portlet.PortletSecurityException">common/notAuthorized</prop>

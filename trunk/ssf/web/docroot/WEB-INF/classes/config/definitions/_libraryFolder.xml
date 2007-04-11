@@ -55,5 +55,6 @@
   <properties>
     <property name="name" value="_libraryFolder"/>
     <property name="caption" value="__definition_default_folder_library"/>
+	<property name="icon" value="/icons/folder_blue_document.gif" /> 
   </properties>
 </definition>

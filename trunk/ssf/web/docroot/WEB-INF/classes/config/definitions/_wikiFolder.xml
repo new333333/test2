@@ -55,5 +55,6 @@
   <properties>
     <property name="name" value="_wikiFolder"/>
     <property name="caption" value="__definition_default_folder_wiki"/>
+	<property name="icon" value="/icons/folder_blue_wiki.gif" /> 
   </properties>
 </definition>
