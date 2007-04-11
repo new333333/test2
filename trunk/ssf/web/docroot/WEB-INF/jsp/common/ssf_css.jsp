@@ -220,7 +220,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_table_background_color_even_row" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_table_background_color_row_hover" value="#FFFFB3" scope="request"/>
 
-	<c:set var="ss_folder_border_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_folder_border_color" value="#D9D9D9" scope="request"/>
 	<c:set var="ss_folder_line_highlight_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_border_color" value="#CECECE" scope="request"/>
 	<c:set var="ss_entry_description_background_color" value="#E8EFF7" scope="request"/>
@@ -249,7 +249,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_toolbar1_inactive" value="#BFCA8A" scope="request"/>
 
 
-	<c:set var="ss_toolbar2_background_color" value="#CECECE" scope="request"/>
+	<c:set var="ss_toolbar2_background_color" value="#D9D9D9" scope="request"/>
 	<c:set var="ss_toolbar2_text_color" value="#333333" scope="request"/>
 	<c:set var="ss_toolbar2_link_hover_color" value="${ss_style_link_hover_color}" scope="request"/>
 	<c:set var="ss_toolbar2_border_color" value="#3366CC" scope="request"/>
@@ -2106,7 +2106,7 @@ a.ss_breadcrumb {
 }
 
 .ss_actions_bar2 {
-	background-color: #CECECE;
+	background-color: ${ss_toolbar2_background_color};
 	font-weight: normal;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
@@ -2121,23 +2121,6 @@ a.ss_breadcrumb {
 
 ul.ss_actions_bar1  {
 	background-image: url(<html:imagesPath/>pics/background_actions_bar1.jpg);
-	background-repeat: repeat-x;
-}
-
-ul.ss_actions_bar2 {
-	background-image: url(<html:imagesPath/>pics/background_actions_bar2.jpg);
-	background-repeat: repeat-x;
-}
-
-.ss_actions_bar2 {
-	background-color: ${ss_toolbar2_background_color};
-	font-weight: normal;
-	font-size: 11px;
-	font-family: ${ss_style_title_font_family};
-}
-
-ul.ss_actions_bar3 {
-	background-image: url(<html:imagesPath/>pics/background_actions_bar3.jpg);
 	background-repeat: repeat-x;
 }
 
@@ -2168,9 +2151,23 @@ ul.ss_actions_bar3 {
 
 .ss_actions_bar li.ss_toolBarItem {
 	border: 0;
-	margin: 3px 0 0 0;
+	margin: 0;
 	padding: 0;
 	background-color: inherit;
+}
+
+
+
+.ss_actions_bar li.ss_toolBarItem ul {
+	float: left;
+	display: inline;
+	margin: 0;
+	padding: 0;
+}
+
+.ss_actions_bar li.ss_toolBarItem .ss_toolBarItemTxt {
+	float: left;
+	margin-top: 7px;
 }
 
 .ss_actions_bar li.ss_actions_bar_separator {
@@ -2190,8 +2187,8 @@ ul.ss_actions_bar3 {
 }
 
 .ss_actions_bar form label, ul.ss_actions_bar form input {
-	vertical-align: middle;
 	background-color: transparent;
+	margin-top: 5px;
 }
 
 .ss_actions_bar li.ss_actions_bar_last-child {
@@ -2210,6 +2207,7 @@ ul.ss_actions_bar3 {
 }
 
 .ss_actions_bar_history_bar {
+	margin-top: 5px;
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
 }
@@ -2272,7 +2270,6 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
  </c:if>
 }
 
-
 .ss_actions_bar_submenu {
 	position:absolute;
  <c:if test="<%= isIE %>">
@@ -2287,6 +2284,7 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 	border-top:none;
 	padding: 4px 1px;
 }
+
 .ss_actions_bar_submenu li  {
 	float:none;
 	border-bottom:1px solid ${ss_generic_border_color};
@@ -2310,6 +2308,17 @@ div.ss_actions_bar_submenu ul.ss_actions_bar3 {
 
 .ss_actions_bar_submenu div {
 	background:none;
+}
+
+.ss_actions_bar_filters {
+ <c:if test="<%= isIE %>">
+	top:-6px;
+	left:-45px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+	top: 5px;
+	left: -32px;
+ </c:if>
 }
 
 .ss_actions_bar1 li:hover, .ss_actions_bar1 a:hover {
