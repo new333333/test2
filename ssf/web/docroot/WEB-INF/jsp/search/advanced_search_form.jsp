@@ -27,8 +27,8 @@
 						<td><input type="text" name="searchAuthors" id="searchAuthors"/></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td><input type="text" name="searchTags" id="searchTags"/></td>
-						<td><img src="<html:imagesPath/>pics/search_icon.gif" onClick="ss_search();"/>
-							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
+						<td><img src="<html:imagesPath/>pics/search_icon.gif" onClick="ss_search();" class="ss_searchButton"/>
+							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>
 				</table>
@@ -45,32 +45,44 @@
 			<div id="ss_workflows_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4>
 				<div id="ss_workflows_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
 			</div>
 			<div id="ss_entries_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4>
 				<div id="ss_entries_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>				
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('entry');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>				
+				</div>
 			</div>
 			<div id="ss_tags_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Tag"/></h4>
 				<div id="ss_tags_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
 			</div>
 			<div id="ss_creationDates_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.CreationDate"/></h4>
 				<div id="ss_creationDates_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('creation_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
 			</div>
 			<div id="ss_modificationDates_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.ModificationDate"/></h4>
 				<div id="ss_modificationDates_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('modification_date');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
 			</div>
 			<div id="ss_authors_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Author"/></h4>
 				<div id="ss_authors_options" class="ss_options"></div>
-				<a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				<div class="ss_more">
+					<a href="javascript: ;" onClick="ss_addOption('creator_by_id');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
+				</div>
 			</div>
 		</div>
 		<div id="ss_buttonBar">

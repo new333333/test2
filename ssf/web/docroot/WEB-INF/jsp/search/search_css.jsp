@@ -47,6 +47,18 @@ div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_l
 #ss_searchForm th {text-align:left;padding: 0px 0px 0px 12px;}
 #ss_searchForm td {text-align:left;padding: 0px 12px 0px 12px;}
 #ss_searchForm h4 {margin:0px 0px 6px 0px;padding:0px;}
+img.ss_searchButton {vertical-align:top;}
+a.ss_advanced:link, a.ss_advanced:hover, a.ss_advanced:visited, a.ss_advanced:active {
+	color: #000099;
+	text-decoration:underline;
+	margin:0px 0px 0px 6px;
+}
+a.ss_parentPointer:link, a.ss_parentPointer:hover, a.ss_parentPointer:visited, a.ss_parentPointer:active {
+	color: #000099;
+	text-decoration:underline;
+	margin:0px 0px 0px 0px;
+}
+
 #ss_searchResult li {
 	border-bottom: 1px solid #cccccc;
 	display:block;
@@ -67,8 +79,12 @@ div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_l
 div.ss_thumbnail {float: left; width:62px; text-align:center;vertical-align:left;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px margin:0px;}
 div.ss_entry {float: left; width:418px;}
-.ss_entryTitle {float:left;margin:0px;}
-div.ss_more {float: right; width:72px; text-align:right;}
+h3.ss_entryTitle {float:left;margin:0px;}
+h3.ss_entryTitle a:link, ss_entryTitle a:hover, ss_entryTitle a:visited, ss_entryTitle a:active, ss_entryTitle a {
+	color: #000099;
+	text-decoration:underline;
+}
+div.ss_more {text-align:right;}
 div.ss_entryDetails {  padding:6px;}
 div.ss_entryDetails p {margin:0px 0px 6px 0px;}
 img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px margin:0px;}
