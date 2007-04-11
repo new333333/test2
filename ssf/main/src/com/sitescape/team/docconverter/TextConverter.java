@@ -11,6 +11,8 @@
 package com.sitescape.team.docconverter;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Locale;
 
@@ -37,6 +39,27 @@ public abstract class TextConverter
 	public abstract String convert(String ifp, String ofp, long timeout)
 		throws Exception;
 	
+	public String convert(File ifp, File ofp, long timeout)
+		throws Exception
+	{
+		return convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
+	}
+	
+	/**
+	 *  Run the conversion using the given input path, output path.
+	 *  Default the timeout to 0.
+	 *
+	 *  @param ifp     Input path.
+	 *  @param ofp     Output path.
+	 */
+
+	public void convert(String ifp, String ofp)
+		throws Exception
+	{
+		// default the timeout value to 0
+		convert(ifp,ofp,0);
+	}
+	
 	protected org.dom4j.Document getDomDocument(File textFile) {
     	// open the file with an xml reader
 		SAXReader reader = new SAXReader();
@@ -48,29 +71,33 @@ public abstract class TextConverter
 		}	
 	}
 	
-	protected String getTextFromXML(org.dom4j.Document tempfile, File transformFile)
+	protected String getTextFromXML(File ofile, File transformFile)
     {	
     	Locale l = Locale.getDefault();
 		Templates trans;
 		Transformer tranny = null;
-        
-        try {
-        	
-        	TransformerFactory transFactory = TransformerFactory.newInstance();
-        	
-			Source s = new StreamSource(transformFile);
-			trans = transFactory.newTemplates(s);
-			tranny =  trans.newTransformer();
-		} catch (TransformerConfigurationException tce) {}
-		
-		StreamResult result = new StreamResult(new StringWriter());
-		try {
-			tranny.setParameter("Lang", l);
-			tranny.transform(new DocumentSource(tempfile), result);
-		} catch (Exception ex) {
-			return ex.getMessage();
+		org.dom4j.Document tempfile = getDomDocument(ofile);
+		if(tempfile != null) {
+
+			try {
+
+				TransformerFactory transFactory = TransformerFactory.newInstance();
+
+				Source s = new StreamSource(transformFile);
+				trans = transFactory.newTemplates(s);
+				tranny =  trans.newTransformer();
+			} catch (TransformerConfigurationException tce) {}
+
+			StreamResult result = new StreamResult(new StringWriter());
+			try {
+				tranny.setParameter("Lang", l);
+				tranny.transform(new DocumentSource(tempfile), result);
+			} catch (Exception ex) {
+				return ex.getMessage();
+			}
+			return result.getWriter().toString();
 		}
-		return result.getWriter().toString();
+		return "";
 	}
 	
 	/**
@@ -99,6 +126,28 @@ public abstract class TextConverter
         	Log logger = LogFactory.getLog(getClass());
         	logger.error("DocConverter, transform file error: " + e.getLocalizedMessage());
         }
+		return null;
+	}
+	
+	protected String getCachedData(File ifile, File ofile)
+	{
+		
+		if (ofile != null
+		&& ofile.exists()
+		&& ofile.lastModified() >= ifile.lastModified())
+		{
+			try
+			{
+				char[] cbuf = new char[2048];
+				StringBuffer buffer = new StringBuffer("");
+				FileReader fr = new FileReader(ofile);
+				while (fr.read(cbuf, 0, cbuf.length) > -1)
+					buffer.append(cbuf);
+				 return buffer.toString().trim();
+			 }
+			 catch (IOException io) {}
+		}
+
 		return null;
 	}
 }

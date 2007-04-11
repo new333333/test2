@@ -88,12 +88,6 @@ public class TextOpenOfficeConverter
 		_port = port_in;
 	}
 
-	public void convert(File ifp, File ofp, long timeout)
-		throws Exception
-	{
-		convert(ifp.getAbsolutePath(), ofp.getAbsolutePath(),timeout);
-	}
-	
 	public String convertToUrl(File f, XComponentContext xComponentContext)
 		throws java.net.MalformedURLException 
 	{
@@ -134,6 +128,18 @@ public class TextOpenOfficeConverter
 		String url = "",
 			   convertType = "";
 	    
+		/**
+		 * If the output file exist an has a modified date equal or greating than incoming file
+		 * do not perform any conversion. 
+		 */
+		ifile = new File(ifp);
+		ofile = new File(ofp);
+
+		String cache = getCachedData(ifile, ofile);
+		if(cache != null) {
+			return cache;
+		}
+		
 		try
 		{
 			// OpenOffice can not conver these types of files. Will cause OpenOffice crash in some cases
@@ -141,20 +147,7 @@ public class TextOpenOfficeConverter
 			|| ifp.toLowerCase().endsWith(".jpeg")
 			|| ifp.toLowerCase().endsWith(".gif"))
 				return "";
-
-			/**
-			 * If the output file exist an has a modified date equal or greating than incoming file
-			 * do not perform any conversion. 
-			 */
-			ifile = new File(ifp);
-			ofile = new File(ofp);
 			
-			if (!ifile.exists()
-			|| (ofile != null
-			&& ofile.exists()
-			&& ofile.lastModified() >= ifile.lastModified()))
-				return "";
-				
 			/* Bootstraps a component context with the jurt base components
 			 * registered. Component context to be granted to a component for running.
 			 * Arbitrary values can be retrieved from the context.
@@ -252,14 +245,7 @@ public class TextOpenOfficeConverter
 			xstorable.storeToURL(url, propertyValues);
 			if (ofile.exists() && ofile.length() > 0)
 			{
-				doc = getDomDocument(ofile);
-				if(doc != null)
-				{
-					// Run the stylesheet to extract text from the xml. 
-					return getTextFromXML(doc, getNullTransformFile());
-					// Note: Roy, for some reason, the text coming out of the transformer
-					// always contain <?xml version="1.0" encoding="UTF-8"?> prefix??
-				}
+				return getTextFromXML(ofile, getNullTransformFile());
 			}
 		}
 		catch (Exception e)
@@ -288,21 +274,6 @@ public class TextOpenOfficeConverter
 	    
 		return "";
 	  }
-	
-	/**
-	 *  Run the conversion using the given input path, output path.
-	 *  Default the timeout to 0.
-	 *
-	 *  @param ifp     Input path.
-	 *  @param ofp     Output path.
-	 */
-
-	public void convert(String ifp, String ofp)
-		throws Exception
-	{
-		// default the timeout value to 0
-		convert(ifp,ofp,0);
-	}
 	
 	/**
 	 * @return Returns the configFileName.
