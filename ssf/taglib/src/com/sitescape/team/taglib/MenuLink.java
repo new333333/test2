@@ -41,7 +41,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	private String seenStyle = ""; 
 	private String seenStyleFine = "";
 	private String imageId = "";
-	private String linkMenuObj = "";
+	private String linkMenuObjIdx = "";
 	private String namespace = "";
 	private String entryCallbackRoutine = "";
 	private String isDashboard = "";
@@ -87,7 +87,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				_params.put("seenStyleFine", new String[] {this.seenStyleFine});
 				_params.put("imageId", new String[] {this.imageId});
 				_params.put("menuDivId", new String[] {this.menuDivId});
-				_params.put("linkMenuObj", new String[] {this.linkMenuObj});
+				_params.put("linkMenuObjIdx", new String[] {this.linkMenuObjIdx});
 				_params.put("namespace", new String[] {this.namespace});
 				_params.put("entryCallbackRoutine", new String[] {this.entryCallbackRoutine});
 				_params.put("isDashboard", new String[] {this.isDashboard});
@@ -103,7 +103,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menulink/menulinkdiv.jsp");
 				
 				_params.put("menuDivId", new String[] {this.menuDivId});
-				_params.put("linkMenuObj", new String[] {this.linkMenuObj});
+				_params.put("linkMenuObjIdx", new String[] {this.linkMenuObjIdx});
 				_params.put("namespace", new String[] {this.namespace});
 				_params.put("isDashboard", new String[] {this.isDashboard});
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
@@ -132,7 +132,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			seenStyle = "";
 			seenStyleFine = "";
 			imageId = "";
-			linkMenuObj = "";
+			linkMenuObjIdx = "";
 			namespace = "";
 			entryCallbackRoutine = "";
 			isDashboard = "";
@@ -210,8 +210,8 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	    this.imageId = imageId;
 	}
 	
-	public void setLinkMenuObj(String linkMenuObj) {
-	    this.linkMenuObj = linkMenuObj;
+	public void setLinkMenuObjIdx(String linkMenuObjIdx) {
+	    this.linkMenuObjIdx = linkMenuObjIdx;
 	}
 	
 	public void setNamespace(String namespace) {

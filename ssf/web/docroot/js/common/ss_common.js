@@ -2590,6 +2590,7 @@ function ss_moreDashboardSearchResults(binderId, pageNumber, pageSize, divId, co
 	url += "\&randomNumber="+ss_random++;
 	ss_fetch_url(url, ss_moreDashboardSearchResultsCallback, divId);
 }
+
 function ss_moreDashboardSearchResultsCallback(s, divId) {
 	var divObj = document.getElementById(divId);
 	divObj.innerHTML = s;
@@ -2597,8 +2598,197 @@ function ss_moreDashboardSearchResultsCallback(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+//Start: Add Attachment Related Functions
+
+//Browse Related Functions
+
+
+var browseURL = "";
+var browseHideAttachment = "";
+var browseHideAttachmentAndAjax = "";
+
+
+function setURLInIFrame(binderId, entryId, namespace) {
+	var url = ss_baseAppletFileUploadURL;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+
+	browseURL = url;
+	browseHideAttachment = "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')";
+	browseHideAttachmentAndAjax = "ss_hideAddAttachmentBrowseAndAJAXCall('"+ binderId +"', '"+ entryId + "', '" + namespace + "')";
+	//this.frames['ss_iframe_browse'+ entryId + namespace].setURL(url, ss_labelButtonOK, ss_labelButtonCancel, ss_labelEntryChooseFileWarning, "ss_hideAddAttachmentBrowse('"+ entryId + "', '" + namespace + "')", "ss_hideAddAttachmentBrowseAndAJAXCall('"+ binderId +"', '"+ entryId + "', '" + namespace + "')", ss_labelEntryBrowseAddAttachmentHelpText);
+}
+
+function ss_showAddAttachmentBrowse(binderId, entryId, namespace) {
+	//alert("Inside ss_showAddAttachmentBrowse...");
+
+	ss_hideAddAttachmentDropbox(entryId, namespace);
+	
+	setURLInIFrame(binderId, entryId, namespace);
+	
+	var divId = 'ss_div_browse' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+
+	var frameId = 'ss_iframe_browse' + entryId + namespace;
+	var frameObj = document.getElementById(frameId);
+	
+	//alert("ss_showAddAttachmentBrowse: frameObj.src: "+frameObj.src);
+	
+	frameObj.src = ss_htmlRootPath + "js/attachments/entry_attachment_browse.html";
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
+	
+	divObj.style.width = "360px";
+	divObj.style.height = "120px";
+}
+
+function ss_hideAddAttachmentBrowse(entryId, namespace) {
+	var divId = 'ss_div_browse' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+
+function ss_hideAddAttachmentBrowseAndAJAXCall(binderId, entryId, namespace) {
+	ss_hideAddAttachmentBrowse(entryId, namespace);
+	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+}
+
+function ss_selectEntryAttachmentAjax(binderId, entryId, namespace) {
+	ss_setupStatusMessageDiv();
+	
+	var url = ss_baseAjaxRequest;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "reload_entry_attachments");
+	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
+
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+
+	//These two values have been set to identify the entryid and namespace combination for which we need to throw the sucess/failure message
+	ajaxRequest.setData("ss_IDF_entryId", entryId);
+	ajaxRequest.setData("ss_IDF_namespace", namespace);
+
+	ajaxRequest.setPostRequest(ss_postSelectEntryAttachment);
+	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setUsePOST();
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_postSelectEntryAttachment(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	}
+	
+	//the objReturned is nothing but the ajaxRequest object
+	//we are getting the entryId and namespace we set to idenity the correct
+	//object to throw the correct success/failure message
+	var entryId = obj.getData("ss_IDF_entryId");
+	var namespace = obj.getData("ss_IDF_namespace");
+	
+	var divObj = document.getElementById('ss_divAttachmentList' + entryId + namespace);
+	var s = divObj.innerHTML;
+}
+
+//Dropbox Functionality
+function ss_hideAddAttachmentDropbox(entryId, namespace) {
+	var divId = 'ss_div_dropbox' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	divObj.style.display = "none";
+	ss_hideDiv(divId);
+}
+
+function ss_hideAddAttachmentDropboxAndAJAXCall(binderId, entryId, namespace) {
+	ss_hideAddAttachmentDropbox(entryId, namespace);
+	ss_selectEntryAttachmentAjax(binderId, entryId, namespace);
+}
+
+function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
+	ss_hideAddAttachmentBrowse(entryId, namespace);
+
+	var url = ss_baseAjaxRequest;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "add_attachment_options");
+	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
+	
+	var divId = 'ss_div_dropbox' + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	
+	var frameId = 'ss_iframe_dropbox' + entryId + namespace;
+	var frameObj = document.getElementById(frameId);
+	
+	if (frameObj.src == "") {
+		frameObj.src = url;
+	}
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
+
+	divObj.style.width = "300px";
+	divObj.style.height = "75px";
+
+	if (parent.ss_positionEntryDiv) parent.ss_positionEntryDiv();
+}
+
+var editClicked = "false";
+function ss_openWebDAVFile(binderId, entryId, namespace, OSInfo, strURLValue) {
+
+	var url = ss_baseAjaxRequestWithOS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+	url = ss_replaceSubStr(url, "ssOperationPlaceHolder", "open_webdav_file");
+	url = ss_replaceSubStr(url, "ssNameSpacePlaceHolder", namespace);
+	url = ss_replaceSubStr(url, "ssOSPlaceHolder", OSInfo);
+    url = url + "&ssEntryAttachmentURL="+strURLValue;
+
+	var divId = "ss_div_fileopen" + entryId + namespace;
+	var divObj = document.getElementById(divId);
+	
+	var frameId = 'ss_iframe_fileopen' + entryId + namespace;
+	var frameObj = document.getElementById(frameId);
+	
+	editClicked = "true";
+	
+	ss_showDiv(divId);
+	frameObj.style.visibility = "visible";
+
+	frameObj.src = url;
+	
+	divObj.style.width = "1px";
+	divObj.style.height = "1px";
+}
+
+function ss_checkEditClicked(entryId, namespace) {
+	return editClicked;
+}
+
+function ss_resetEditClicked(entryId, namespace) {
+	editClicked = "false";
+}
+
+var ss_linkMenu_arr = new Array();
+
+function checkAndCreateMenuObject(linkObj) {
+	var checkObj = ss_linkMenu_arr[linkObj];
+	
+	if (checkObj) {
+		//do nothing as object already exists
+	} else {
+		//create a new object
+		ss_linkMenu_arr[linkObj] = new ss_linkMenuObj();
+	}
+}
+
+//End: Add Attachment Related Functions
+
+
+//Link Menu Related Functions
 function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
-	var linkMenuObj = eval(linkMenu+"");
+	//var linkMenuObj = eval(linkMenu+"");
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 	
 	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the binder
@@ -2609,7 +2799,8 @@ function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
 }
 
 function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
-	var linkMenuObj = eval(linkMenu+"");
+	//var linkMenuObj = eval(linkMenu+"");
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 	
 	if (ss_displayStyle == "accessible") {
 		self.location.href = obj.href;
@@ -2640,7 +2831,8 @@ function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCall
 }
 
 function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, namespace) {
-	var linkMenuObj = eval(linkMenu+"");
+	//var linkMenuObj = eval(linkMenu+"");
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
 	
 	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the binder
@@ -2656,8 +2848,9 @@ var menuLinkAdapterURL = "";
 function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard) {
 
 	if (adapterURL) menuLinkAdapterURL = adapterURL;
-
-	var linkMenuObj = eval(linkMenu+"");
+	//var linkMenuObj = eval(linkMenu+"");
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
+	
 	var binderUrl = "";
 	var entryUrl = "";
 	//Try to find the base urls from this namespace or from the parent or the opener

@@ -37,7 +37,8 @@ String entityType = ParamUtil.get(request, "entityType", "");
 String seenStyle = ParamUtil.get(request, "seenStyle", "");
 String seenStyleFine = ParamUtil.get(request, "seenStyleFine", "");
 String imageId = ParamUtil.get(request, "imageId", "");
-String linkMenuObj = ParamUtil.get(request, "linkMenuObj", "");
+String linkMenuIdx = ParamUtil.get(request, "linkMenuObjIdx", "");
+String linkMenuObj = "ss_linkMenu_arr['"+ linkMenuIdx +"']";
 String menuDivId = ParamUtil.get(request, "menuDivId", "");
 String namespace = ParamUtil.get(request, "namespace", "");
 String entryCallbackRoutine = ParamUtil.get(request, "entryCallbackRoutine", "");
@@ -47,15 +48,15 @@ String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
 %>
 <a class="ss_title_menu" href="<%= url %>" 
 <% if (useBinderFunction.equals("no")) {  %>
-	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
+	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
 <% } else if (useBinderFunction.equals("yes")) { %>
-	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuObj %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
+	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
-	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuObj %>', '<%= entryId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
+	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuIdx %>', '<%= entryId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
 <% }%>
-onMouseOver="<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
+onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
-onClick="setMenuGenericLinks('<%= linkMenuObj %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
+onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>

@@ -35,7 +35,7 @@ function ss_blog_sidebar_date_callback() {
 	url += "\&rn=" + rn++
 	self.location.href = url;
 }
-function ss_showBlogReplies<portlet:namespace/>(id) {
+function ss_showBlogReplies<portlet:namespace/>(id, blogNamespace) {
 	var targetDiv = document.getElementById('<portlet:namespace/>ss_blog_replies_' + id)
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
@@ -54,6 +54,11 @@ function ss_showBlogReplies<portlet:namespace/>(id) {
 				<ssf:param name="operation" value="show_blog_replies" />
 		    	</ssf:url>"
 			url += "\&entryId=" + id
+			
+			if (blogNamespace && blogNamespace != '') {
+				url += "\&namespace=" + blogNamespace
+			}
+			
 			url += "\&rn=" + rn++
 			ss_fetch_url(url, ss_showBlogRepliesCallback<portlet:namespace/>, id);
 		}

@@ -13,12 +13,13 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
 <div id="${ss_viewEntryAttachmentDivId}">
-	<%
-	boolean isIECheck = BrowserSniffer.is_ie(request);
-	String strBrowserType = "nonie";
-	if (isIECheck) strBrowserType = "ie";
-	boolean isAppletSupportedCheck = SsfsUtil.supportApplets();
-	%>
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "nonie";
+if (isIECheck) strBrowserType = "ie";
+boolean isAppletSupportedCheck = SsfsUtil.supportApplets();
+String operatingSystem = BrowserSniffer.getOSInfo(request);
+%>
 
 <table class="ss_attachments_list" cellpadding="0" cellspacing="0">
 <tbody>
@@ -85,10 +86,14 @@
 			<ssf:ifSupportsEditInPlace relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 				
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="applet">
-					<a href="javascript: ;" onClick="javascript:ss_openWebDAVFile${ssDefinitionEntry.id}${ss_namespace_attach}('<ssf:ssfsInternalAttachmentUrl 
-							binder="${ssDefinitionEntry.parentBinder}"
-							entity="${ssDefinitionEntry}"
-							fileAttachment="${selection}"/>'); return false;"><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
+					<a href="javascript: ;" 
+						onClick="javascript:ss_openWebDAVFile('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_namespace_attach}', '<%= operatingSystem %>', 
+							'<ssf:ssfsInternalAttachmentUrl 
+								binder="${ssDefinitionEntry.parentBinder}"
+								entity="${ssDefinitionEntry}" 
+								fileAttachment="${selection}"/>');
+							return false;">
+						<span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="EDIT"/>]</span></a>
 				</ssf:editorTypeToUseForEditInPlace>
 				
 				<ssf:editorTypeToUseForEditInPlace browserType="<%=strBrowserType%>" editorType="webdav">

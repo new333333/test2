@@ -285,7 +285,7 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 		displayDiv="false" entryId="${entry1._docId}" 
 		folderId="${ssFolder.id}" binderId="${ssBinder.id}" 
 		entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
-		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no">
 		
 		<ssf:param name="url" useBody="true">
@@ -334,12 +334,8 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </div>
 
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 	namespace="${renderResponse.namespace}">
 </ssf:menuLink>
-
-<script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
-</script>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

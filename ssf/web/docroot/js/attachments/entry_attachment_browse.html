@@ -21,7 +21,8 @@
 <script type="text/javascript">
 var strNoFileWarningMessage = "";
 var strCloseDivFunction = "";
-function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, closeDivFunction, closeDivAndAjaxCallFunction, strBrowseFileAddAttachment) {
+function setURL() {
+	var url = parent.browseURL;
 
 	var formName = document.getElementById("browseForm");
 	formName.action = url;
@@ -31,12 +32,15 @@ function setURL(url, submitButtonName, cancelButtonName, noFileWarningMessage, c
 	var closeDivFunctionName = document.getElementById("ssCloseDivFunctionName");
 	var divObj = document.getElementById("ssBrowseAddAttachment");
 	
-	submitControl.value = submitButtonName;
-	closeControl.value = cancelButtonName;
+	submitControl.value = parent.ss_labelButtonOK;
+	closeControl.value = parent.ss_labelButtonCancel;
+	divObj.innerHTML = parent.ss_labelEntryBrowseAddAttachmentHelpText;
+	strNoFileWarningMessage = parent.ss_labelEntryChooseFileWarning;
+
+	var closeDivFunction = parent.browseHideAttachment;
+	var closeDivAndAjaxCallFunction = parent.browseHideAttachmentAndAjax;
+
 	closeDivFunctionName.value = closeDivAndAjaxCallFunction;
-	divObj.innerHTML = strBrowseFileAddAttachment;
-	
-	strNoFileWarningMessage = noFileWarningMessage;
 	strCloseDivFunction = closeDivFunction;
 }
 
@@ -56,7 +60,7 @@ function checkForFile() {
 }
 </script>
 </head>
-<body>
+<body onLoad="setURL();">
 <form action="" id="browseForm" name="browseForm" method="post" enctype="multipart/form-data">
 
 <table width="100%">

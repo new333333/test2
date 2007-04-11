@@ -266,6 +266,32 @@ var ss_baseFileUrl<portlet:namespace/> = ss_baseFileUrl;
 </ssf:ifnotadapter>
 </c:if>
 
+var ss_baseAppletFileUploadURL = "<ssf:url adapter="true" portletName="ss_forum" action="add_entry_attachment" actionUrl="true" >
+		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
+		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />
+		<ssf:param name="operation" value="add_files_by_browse_for_entry" />
+    </ssf:url>";
+
+var ss_baseAjaxRequest = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false">
+		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
+		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />
+		<ssf:param name="operation" value="ssOperationPlaceHolder" />
+		<ssf:param name="namespace" value="ssNameSpacePlaceHolder" />
+    </ssf:url>";
+
+var ss_baseAjaxRequestWithOS = "<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="false" >
+		<ssf:param name="binderId" value="ssBinderIdPlaceHolder" />
+		<ssf:param name="entryId" value="ssEntryIdPlaceHolder" />
+		<ssf:param name="operation" value="ssOperationPlaceHolder" />
+		<ssf:param name="namespace" value="ssNameSpacePlaceHolder" />
+		<ssf:param name="ssOSInfo" value="ssOSPlaceHolder" />
+    </ssf:url>";
+
+var ss_labelButtonOK = "<ssf:nlt tag="button.ok"/>";
+var ss_labelButtonCancel = "<ssf:nlt tag="button.cancel"/>";
+var ss_labelEntryChooseFileWarning = "<ssf:nlt tag="entry.chooseFileWarningMessage"/>";
+var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAttachmentHelpText"/>";
+var ss_htmlRootPath = "<html:rootPath/>";
 </script>
 
 <c:if test="${!empty ss_servlet && ss_servlet == 'true'}">

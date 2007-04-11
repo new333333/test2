@@ -15,7 +15,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/guestbook/guestbook_sign.jsp" %>
 
 
-	<c:forEach var="entry" items="${ssFolderEntries}" >
+<c:forEach var="entry" items="${ssFolderEntries}" >
 <table class="ss_guestbook" width="100%">
 		<jsp:useBean id="entry" type="java.util.HashMap" />
 		
@@ -29,7 +29,7 @@
 					folderId="${entry._binderId}" binderId="${entry._binderId}" entityType="${entry._entityType}" 
 					imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
 				    menuDivId="ss_emd_${renderResponse.namespace}"
-					linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+					linkMenuObjIdx="${renderResponse.namespace}" 
 					namespace="${renderResponse.namespace}"
 					entryCallbackRoutine="${showEntryCallbackRoutine}">
 					
@@ -58,14 +58,10 @@
 			</td>
 		</tr>
 </table>
-	</c:forEach>
+</c:forEach>
 
 </table>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 	namespace="${renderResponse.namespace}">
 </ssf:menuLink>
-
-<script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
-</script>

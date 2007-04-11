@@ -677,7 +677,7 @@
 		</attribute>
 
 		<attribute>
-			<name>linkMenuObj</name>
+			<name>linkMenuObjIdx</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>

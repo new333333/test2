@@ -23,12 +23,12 @@ function fileName() {
 }
 
 function ss_checkEditClickLocal${ssEntryId}${ss_namespace}() {
-	var strEditClickValue = parent.ss_checkEditClicked${ssEntryId}${ss_namespace}();
+	var strEditClickValue = parent.ss_checkEditClicked('${ssEntryId}', '${ss_namespace}');
 	return strEditClickValue;
 }
 
 function ss_resetEditClickLocal${ssEntryId}${ss_namespace}() {
-	parent.ss_resetEditClicked${ssEntryId}${ss_namespace}();
+	parent.ss_resetEditClicked('${ssEntryId}', '${ss_namespace}');
 }
 </script>
 
