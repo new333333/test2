@@ -218,4 +218,24 @@ public class CalendarViewRangeDates {
 		return difference;
 	}
 
+	public boolean dateInView(Date dateToTest) {
+		if (dateToTest == null) {
+			return false;
+		}
+		long dateToTestInMilis = dateToTest.getTime();
+		return startViewExtWindow.getTimeInMillis() < dateToTestInMilis && 
+				dateToTestInMilis < endViewExtWindow.getTimeInMillis();
+	}
+	
+	/**
+	 * 
+	 * @param startDate
+	 * @param endDate
+	 * @return true if at least a part of event is in view
+	 */
+	public boolean eventInView(long startDate, long endDate) {
+		return (!(endDate < startViewExtWindow.getTimeInMillis() ||
+				endViewExtWindow.getTimeInMillis() < startDate));
+	}
+
 }

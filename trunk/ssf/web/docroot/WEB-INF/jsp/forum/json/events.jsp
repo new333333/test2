@@ -32,9 +32,9 @@ monthNames : [<%--
 --%></c:forEach><%--
 --%>],
 
-today : {year : <fmt:formatDate value="${ssCalendarViewBean.today.date}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
-			month : <fmt:formatDate value="${ssCalendarViewBean.today.date}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
-			dayOfMonth : <fmt:formatDate value="${ssCalendarViewBean.today.date}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>},
+today : {year : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
+			month : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
+			dayOfMonth : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>},
 						
 currentDate : {year : <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
 				month : <fmt:formatDate value="${ssCurrentDate}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>,

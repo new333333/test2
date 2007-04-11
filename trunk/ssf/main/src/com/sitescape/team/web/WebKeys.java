@@ -18,7 +18,6 @@ public class WebKeys {
 
 	// Calendar view stuff
 	public static final String CALENDAR_INITIAL_EVENT = "ssInitialEvent";
-	public static final String CALENDAR_EVENTDATES = "ssEventDates";
 	public static final String CALENDAR_VIEW_DAY = "day";
 	public static final String CALENDAR_VIEW_WEEK = "week";
 	public static final String CALENDAR_VIEW_MONTH = "month";

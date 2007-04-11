@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -29,6 +30,9 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateTools;
 
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -46,6 +50,8 @@ import com.sitescape.team.web.util.DateHelper;
 
 public class EventsViewHelper {
 
+	private static Log logger = LogFactory.getLog(EventsViewHelper.class);
+	
 	public static final String[] monthNames = { 
 		NLT.get("calendar.january"),
 		NLT.get("calendar.february"),
@@ -91,162 +97,154 @@ public class EventsViewHelper {
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, calendarViewRangeDates
 				.getEndViewCal().getTime());
 
-		Map calendarEventDates = EventsViewHelper.getCalendarEvents(entrylist,
-				calendarViewRangeDates.getStartViewExtWindow(),
-				calendarViewRangeDates.getEndViewExtWindow());
-		model.put(WebKeys.CALENDAR_EVENTDATES, calendarEventDates);
 
-		EventsViewHelper.getCalendarViewBean(folder, calendarViewRangeDates, calendarEventDates, model);
+		List events = EventsViewHelper.getCalendarEvents(entrylist,
+				calendarViewRangeDates);
+		
+		Map calendarViewBean = new HashMap();
+		calendarViewBean.put("dayHeaders", getDayHeaders());
+		calendarViewBean.put("monthNames", Arrays.asList(EventsViewHelper.monthNames));
+		calendarViewBean.put("monthNamesShort", Arrays.asList(EventsViewHelper.monthNamesShort));
+		calendarViewBean.put("monthInfo", calendarViewRangeDates.getCurrentDateMonthInfo());
+		calendarViewBean.put("today", new Date());
+		calendarViewBean.put("events", events);
+		
+		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 	}
 
-	/*
-	 * Map: key - event start date value - list of maps: key: "event", value:
-	 * Event object (event start time and end time) key: "entry", value: entry
-	 * (from search result)
-	 * 
-	 * Entry modifications are also added as events (start date = modification
-	 * date).
-	 */
-	private static Map getCalendarEvents(List entrylist,
-			Calendar startViewDate, Calendar endViewDate) {
 
+	private static List getCalendarEvents(List entrylist,
+			CalendarViewRangeDates viewRangeDates) {
+		
+		List result = new ArrayList();
+		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 
-		long startMilis = startViewDate.getTime().getTime();
-		long endMilis = endViewDate.getTime().getTime();
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-		sdf.setTimeZone(timeZone);
-		Map results = new HashMap();
-
 		Iterator entryIterator = entrylist.iterator();
 		while (entryIterator.hasNext()) {
-			Map e = (HashMap) entryIterator.next();
-
-			// parse event counter field
-			String ec = (String) e.get(EntityIndexUtils.EVENT_COUNT_FIELD);
-			int count = 0;
-			if (ec == null || ec.equals(""))
-				ec = "0";
-			count = new Integer(ec).intValue();
-
-			// Add the modification date as an event
-			Date creationDate = (Date) e
-					.get(EntityIndexUtils.CREATION_DATE_FIELD);
+			Map entry = (HashMap) entryIterator.next();
+			int eventsCount = parseEventsCount((String) entry.get(EntityIndexUtils.EVENT_COUNT_FIELD));
 			
-			Date lastActivityDate = (Date) e
-					.get(IndexUtils.LASTACTIVITY_FIELD);
-			
-			long thisDateMillis = creationDate.getTime();
-			if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
-				String dateKey = sdf.format(creationDate);
-				List entryList = (List) results.get(dateKey);
-				if (entryList == null) {
-					entryList = new ArrayList();
-				}
-				
-				Map creation = new HashMap();
-				creation.put("event", createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, (String)e.get(EntityIndexUtils.DOCID_FIELD)));
-				creation.put("entry", e);
-				creation.put("eventType", EVENT_TYPE_CREATION);
-				entryList.add(creation);
+			// Add the creation date as an event
+			Date creationDate = (Date) entry.get(EntityIndexUtils.CREATION_DATE_FIELD);
+			if (viewRangeDates.dateInView(creationDate)) {
+				result.add(getEventBean(
+						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
+						entry, EVENT_TYPE_CREATION));
+			}
 
-				results.put(dateKey, entryList);
+			// Add the activity date as an event
+			Date lastActivityDate = (Date) entry.get(IndexUtils.LASTACTIVITY_FIELD);
+			if (viewRangeDates.dateInView(lastActivityDate)) {
+				result.add(getEventBean(
+						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, (String)entry.get(EntityIndexUtils.DOCID_FIELD)), 
+						entry, EVENT_TYPE_ACTIVITY));
 			}
 			
-			thisDateMillis = lastActivityDate.getTime();
-			if (startMilis < thisDateMillis && thisDateMillis < endMilis) {
-				String dateKey = sdf.format(creationDate);
-				List entryList = (List) results.get(dateKey);
-				if (entryList == null) {
-					entryList = new ArrayList();
-				}
-				
-				Map activity = new HashMap();
-				activity.put("event", createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, (String)e.get(EntityIndexUtils.DOCID_FIELD)));
-				activity.put("entry", e);
-				activity.put("eventType", EVENT_TYPE_ACTIVITY);
-				entryList.add(activity);
+			result.addAll(getEntryEvents(entry, eventsCount, viewRangeDates));
+		}
+		return result;
+	}
 
-				results.put(dateKey, entryList);
-			}			
+	private static List getEntryEvents(Map entry, int eventsCount, CalendarViewRangeDates viewRangeDates) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		TimeZone timeZone = user.getTimeZone();
+		
+		List events = new ArrayList();
+		
+		
+		// Add the events
+		// look through the custom attrs of this entry for any of type EVENT
+		for (int j = 0; j < eventsCount; j++) {
+			String name = (String) entry.get(EntityIndexUtils.EVENT_FIELD + j);
 
+			String recurrenceDatesField = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
+			String eventId = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID);
+			if (recurrenceDatesField != null) {
+				String[] recurrenceDates = recurrenceDatesField.split(",");
+				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
+					String[] recurrenceStartEndTime = recurrenceDates[recCounter].split(" ");
+					Date evStartDate = null;
+					Date evEndDate = null;
+					try {
+						evStartDate = DateTools
+								.stringToDate(recurrenceStartEndTime[0]);
+						evEndDate = DateTools
+								.stringToDate(recurrenceStartEndTime[1]);
+					} catch (ParseException parseExc) {
+						logger.warn("Event recurrence date in search index has wrong format [" + evStartDate + "] or [" + evEndDate + "].");
+						evStartDate = new Date();
+						evEndDate = new Date();
+					}
 
-			// Add the events
-			// look through the custom attrs of this entry for any of type EVENT
-			for (int j = 0; j < count; j++) {
-				String name = (String) e.get(EntityIndexUtils.EVENT_FIELD + j);
+					Event event = new Event();
+					event.setId(eventId);
+					Calendar startCal = Calendar.getInstance();
+					startCal.setTime(evStartDate);
+					
+					Calendar endCal = Calendar.getInstance();
+					endCal.setTime(evEndDate);
 
-				String recurrenceDatesField = (String) e.get(name
-						+ BasicIndexUtils.DELIMITER
-						+ EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
-				String eventId = (String) e.get(name
-						+ BasicIndexUtils.DELIMITER
-						+ EntityIndexUtils.EVENT_ID);
-				if (recurrenceDatesField != null) {
-					String[] recurrenceDates = recurrenceDatesField.split(",");
-					for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
-						String[] recurrenceStartEndTime = recurrenceDates[recCounter]
-								.split(" ");
-						Date evStartDate = null;
-						Date evEndDate = null;
-						try {
-							evStartDate = DateTools
-									.stringToDate(recurrenceStartEndTime[0]);
-							evEndDate = DateTools
-									.stringToDate(recurrenceStartEndTime[1]);
-						} catch (ParseException parseExc) {
-							evStartDate = new Date();
-							evEndDate = new Date();
-						}
-
-						Event ev = new Event();
-						ev.setId(eventId);
-						Calendar startCal = new GregorianCalendar();
-						startCal.setTime(evStartDate);
-						
-						Calendar endCal = new GregorianCalendar();
-						endCal.setTime(evEndDate);
-
-						long duration = ((endCal.getTime()
-								.getTime() - startCal.getTime()
-								.getTime()) / 60000);
-						
-						if (duration > 0) {
-							// no duration -> all day event, no time, no time zone
-							startCal = CalendarHelper.convertToTimeZone(startCal,
-									timeZone);						
-							endCal = CalendarHelper.convertToTimeZone(endCal,
-									timeZone);
-						}
-						
-						ev.setDtStart(startCal);
-						ev.setDtEnd(endCal);
-						
-						long startDateMillis = evStartDate.getTime();
-						long endDateMillis = evEndDate.getTime();
-						if (!(endDateMillis < startMilis ||
-								endMilis < startDateMillis)) {
-							String dateKey = sdf.format(evStartDate);
-							List entryList = (List) results.get(dateKey);
-							if (entryList == null) {
-								entryList = new ArrayList();
-							}							
-							
-							Map res = new HashMap();
-							res.put("event", ev);
-							res.put("entry", e);
-							res.put("eventType", EVENT_TYPE_EVENT);
-							entryList.add(res);
-
-							results.put(dateKey, entryList);
-						}
+					long duration = ((endCal.getTime()
+							.getTime() - startCal.getTime()
+							.getTime()) / 60000);
+					
+					if (duration > 0) {
+						// no duration -> all day event, no time, no time zone
+						startCal = CalendarHelper.convertToTimeZone(startCal,
+								timeZone);						
+						endCal = CalendarHelper.convertToTimeZone(endCal,
+								timeZone);
+					}
+					
+					event.setDtStart(startCal);
+					event.setDtEnd(endCal);
+					
+					if (viewRangeDates.eventInView(evStartDate.getTime(), evEndDate.getTime())) {
+						events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
 					}
 				}
 			}
 		}
-		return results;
+		
+		return events;
+	}
+
+
+	private static int parseEventsCount(String eventCountField) {
+		int count = 0;
+		if (eventCountField != null && !eventCountField.equals("")) {
+			count = Integer.parseInt(eventCountField);
+		}
+		return count;
+	}
+
+
+	private static Map getEventBean(Event event, Map entry, String eventType) {
+		Map eventBean = new HashMap();
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		TimeZone timeZone = user.getTimeZone();
+		
+		SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
+		sdf2.setTimeZone(timeZone);
+			
+		eventBean.put("entry", entry);
+		eventBean.put("eventType", eventType);
+		eventBean.put("eventid", event.getId());
+		eventBean.put("entry_tostring", entry.get(BasicIndexUtils.UID_FIELD).toString());
+		eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
+				.format(event.getDtStart().getTime()));
+		eventBean.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(event
+				.getDtEnd().getTime()));
+		eventBean.put("cal_starttime", event.getDtStart().getTime());
+		eventBean.put("cal_endtime", event.getDtEnd().getTime());
+		eventBean.put("cal_duration", (event.getDtEnd().getTime()
+				.getTime() - event.getDtStart().getTime()
+				.getTime()) / 60000);
+		
+		return eventBean;
 	}
 
 	private static Event createEvent(Date eventDate, TimeZone timeZone, String type, String entryId) {
@@ -258,77 +256,6 @@ public class EventsViewHelper {
 		event.setDtEnd(gcal);
 		event.setId(entryId + "-" + type);
 		return event;
-	}
-
-	/**
-	 * Populate the bean for monthly calendar view.
-	 * Bean contains: day headers, month info, today date and list of events.
-	 * 
-	 */
-	private static void getCalendarViewBean(Binder folder, CalendarViewRangeDates calendarViewRangeDates, Map eventDates, Map model) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		TimeZone timeZone = user.getTimeZone();
-
-		Map monthBean = new HashMap();
-		monthBean.put("dayHeaders", getDayHeaders());
-		monthBean.putAll(getMonthNames());
-		monthBean.put("monthInfo", calendarViewRangeDates.getCurrentDateMonthInfo());
-		
-		Map today = new HashMap();
-		today.put("date", new Date());
-		monthBean.put("today", today);
-		
-		List eventsList = new ArrayList();
-		Iterator eventsIt = eventDates.entrySet().iterator();
-		while (eventsIt.hasNext()) {
-			Map.Entry mapEntry = (Map.Entry)eventsIt.next(); 
-			String dateKey = (String)mapEntry.getKey();
-			List evList = (List) mapEntry.getValue();
-				
-			Iterator evIt = evList.iterator();
-			while (evIt.hasNext()) {
-				// thisMap is the next entry, event pair
-				HashMap thisMap = (HashMap) evIt.next();
-				// dataMap is the map of data for the bean, to be keyed by
-				// the time
-				HashMap dataMap = new HashMap();
-				HashMap e = (HashMap) thisMap.get("entry");
-				Event ev = (Event) thisMap.get("event");
-				SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
-				sdf2.setTimeZone(timeZone);
-				// we build up the dataMap for this instance
-				
-				long duration = ((ev.getDtEnd().getTime()
-						.getTime() - ev.getDtStart().getTime()
-						.getTime()) / 60000);
-				
-				dataMap.put("entry", e);
-				dataMap.put("eventType", thisMap.get("eventType"));
-				dataMap.put("eventid", ev.getId());
-				dataMap.put("entry_tostring", e.get(
-						BasicIndexUtils.UID_FIELD).toString());
-				dataMap.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
-						.format(ev.getDtStart().getTime()));
-				dataMap.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(ev
-						.getDtEnd().getTime()));
-				dataMap.put("cal_starttime", ev.getDtStart().getTime());
-				dataMap.put("cal_endtime", ev.getDtEnd().getTime());
-				dataMap
-						.put("cal_duration", duration);
-				
-				eventsList.add(dataMap);
-			}
-		}
-		monthBean.put("events", eventsList);
-		
-		model.put(WebKeys.CALENDAR_VIEWBEAN, monthBean);
-	}
-
-	private static Map getMonthNames() {
-		Map monthNames = new HashMap();
-		monthNames.put("monthNames", Arrays.asList(EventsViewHelper.monthNames));
-		monthNames.put("monthNamesShort", Arrays.asList(EventsViewHelper.monthNamesShort));
-		return monthNames;
 	}
 
 	private static List getDayHeaders() {
@@ -374,7 +301,7 @@ public class EventsViewHelper {
 		return currentDate;
 	}
 
-	public static Date getCalendarDate(int year, int month, int dayOfMonth, Date defaultValue) {
+	public static Date getDate(int year, int month, int dayOfMonth, Date defaultValue) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 		

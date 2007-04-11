@@ -1368,7 +1368,7 @@ public class AjaxController  extends SAbstractController {
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		model.put(WebKeys.NAMESPACE, namespace);
@@ -1681,7 +1681,7 @@ public class AjaxController  extends SAbstractController {
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
-		}
+			}
 			
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/access_control_binder_owner", model);
@@ -1743,7 +1743,7 @@ public class AjaxController  extends SAbstractController {
 			
 			
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(request));
-			currentDate = EventsViewHelper.getCalendarDate(year, month, dayOfMonth, currentDate);
+			currentDate = EventsViewHelper.getDate(year, month, dayOfMonth, currentDate);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
