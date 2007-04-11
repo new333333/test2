@@ -91,8 +91,16 @@ var ss_tabs_no_delete_last_tab = "<ssf:nlt tag="tabs.noDeleteLastTab"/>";
 		  </c:if>
 		  <c:if test="${tab.type == 'query'}">
 		    href="<ssf:url 
-  				action="view_search_results_listing">
+  				action="advanced_search">
   				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="operation" value="viewPage"/>
+  				</ssf:url>" 
+		  </c:if>
+		  <c:if test="${tab.type == 'search'}">
+		    href="<ssf:url 
+  				action="advanced_search">
+  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="operation" value="searchForm"/>  				
   				</ssf:url>" 
 		  </c:if>
 		>
