@@ -27,20 +27,21 @@ public class SearchObject {//implements Serializable {
 	protected Log logger = LogFactory.getLog(getClass());
 	private SortField[] sortBy = null;
 	private String queryString = null;
-	private static QueryParser qp = null;
+	
+	// QueryParser is not thread-safe, let try thread local variable, it should be fine
+	private static ThreadLocal queryParser = new ThreadLocal(); 
 	
 	/**
 	 * 
 	 */
 	public SearchObject() {
 		super();
-		//synchronized(SearchObject.class){
-		if (qp == null) {
+		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
-			qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
+			QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
+			queryParser.set(qp);
 		}
-		//}
 	}
 	
 	/**
@@ -73,10 +74,10 @@ public class SearchObject {//implements Serializable {
 	/**
 	 * @return Returns the query.
 	 */
-	public Query getQuery() {
+	public synchronized Query getQuery() {
 		try {
 			long startTime = System.currentTimeMillis();
-			Query retQ = qp.parse(queryString);
+			Query retQ = ((QueryParser)queryParser.get()).parse(queryString);
 			long endTime = System.currentTimeMillis();
 			return retQ;
 		} catch (ParseException pe){ 
