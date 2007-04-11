@@ -93,7 +93,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    protected DefinitionModule definitionModule;
    private static final String TEXT_SUBDIR = "text",
-   							   XML_EXT = ".xml";
+   							   TXT_EXT = ".txt";
 
  
 	protected DefinitionModule getDefinitionModule() {
@@ -900,7 +900,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			fos.flush();
 			
 			outFile = textfile.getAbsolutePath();
-			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + XML_EXT;
+			outFile = outFile.substring(0, outFile.lastIndexOf('.')) + TXT_EXT;
 			outFp = new File(outFile);
 			
 			// If the output text file already exists and the last modification time is >= to incoming file
