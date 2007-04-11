@@ -11,15 +11,17 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-String wsTreeName = renderResponse.getNamespace() + "_wsTree";
-%>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
 function ${wsTreeName}_showId(id, obj, action) {
 	var formObj = ss_getContainingForm(obj);
 	var r = formObj.destination;
-	r.value = id;
+	for (var i = 0; i < r.length; i++) {
+		r[i].checked = false;
+		if (r[i].value == id) {
+			r[i].checked = true;
+		}
+	}
 	return false;
 }
 

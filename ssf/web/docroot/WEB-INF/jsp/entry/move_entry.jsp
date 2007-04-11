@@ -14,23 +14,57 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
-<form class="ss_style ss_form" method="post" 
-		  action="<ssf:url
-		 action="modify_folder_entry"
-		 operation="move"
-		 folderId="${ssBinder.id}"
-		 entryId="${ssEntry.id}"/>" name="<portlet:namespace />fm">
+<c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
+<script type="text/javascript">
+function ${wsTreeName}_showId(id, obj, action) {
+	var formObj = ss_getContainingForm(obj);
+	var r = formObj.destination;
+	for (var i = 0; i < r.length; i++) {
+		r[i].checked = false;
+		if (r[i].value == id) {
+			r[i].checked = true;
+		}
+	}
+	return false;
+}
+</script>
+
 <div class="ss_style ss_portlet">
-<br>
+<div style="padding:4px;">
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="move.entry"/></span>
+<br/>
+<br/>
+<span><ssf:nlt tag="move.currentEntry"/>: </span>
+<span><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
+  //
+<span class="ss_bold">${ssEntry.title}</span>
+  
+<br/>
+<form class="ss_style ss_form" method="post" 
+	action="<ssf:url
+	action="modify_folder_entry"
+	operation="move"
+	folderId="${ssBinder.id}"
+	entryId="${ssEntry.id}"/>" name="<portlet:namespace />fm">
+<br/>
 
-EnterID:
-<input type="text" name="destination"/>
+<span class="ss_bold"><ssf:nlt tag="move.selectDestination"/></span>
+<br/>
+<div class="ss_indent_large">
+<ssf:tree treeName="${wsTreeName}"
+	treeDocument="${ssWsDomTree}"  
+ 	rootOpen="true"
+	singleSelect="true" 
+	singleSelectName="destination" />
+</div>
 
+<br/>
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
-</div>
 </form>
+</div>
+</div>
 <ssf:ifadapter>
 </body>
 </html>
