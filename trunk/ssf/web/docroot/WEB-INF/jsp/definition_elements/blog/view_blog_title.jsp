@@ -13,6 +13,11 @@
 <% //Blog title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
+
+<c:if test="${empty ss_namespace}">
+	<c:set var="ss_namespace" value="${renderResponse.namespace}" />
+</c:if>
+
 <jsp:useBean id="title_entry" type="com.sitescape.team.domain.FolderEntry" />
 
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
@@ -54,10 +59,10 @@
 	<%= docNumber %>
 	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
 	folderId="${ssDefinitionEntry.parentFolder.id}" binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
-	imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}_${ssDefinitionEntry.id}' 
-    menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}"
-	linkMenuObj="ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id}" 
-	namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}"
+	imageId='menuimg_${ssDefinitionEntry.id}_${ss_namespace}_${ssDefinitionEntry.id}' 
+    menuDivId="ss_emd_${ss_namespace}_${ssDefinitionEntry.id}"
+	linkMenuObjIdx="${ss_namespace}_${ssDefinitionEntry.id}" 
+	namespace="${ss_namespace}_${ssDefinitionEntry.id}"
 	entryCallbackRoutine="${showEntryCallbackRoutine}">
 
 		<ssf:param name="url" useBody="true">
@@ -98,6 +103,7 @@
 </div>
 
 <c:set var="entryIdString" value="<%= title_entry.getId().toString() %>"/>
+
 <div align="left" name="<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}" 
   id="<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden; padding:4px;" class="ss_popupMenu ss_indent_medium">
@@ -124,14 +130,11 @@
   <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
   onClick="ss_cancelPopupDiv('<portlet:namespace/>ss_subscription_entry${ssDefinitionEntry.id}');return false;">
 </form>
-</div>	
+</div>
 
 </c:if>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}" linkMenuObj="ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id}" 
-	namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${ssDefinitionEntry.id}" 
+	linkMenuObjIdx="${ss_namespace}_${ssDefinitionEntry.id}" 
+	namespace="${ss_namespace}_${ssDefinitionEntry.id}">
 </ssf:menuLink>
-
-<script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace}_${ssDefinitionEntry.id} = new ss_linkMenuObj();
-</script>

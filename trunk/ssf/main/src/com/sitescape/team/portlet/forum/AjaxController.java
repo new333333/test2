@@ -1368,7 +1368,11 @@ public class AjaxController  extends SAbstractController {
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
+		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
+
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		model.put(WebKeys.NAMESPACE, namespace);
+		
 		FolderEntry entry = null;
 		Map folderEntries = null;
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
@@ -1530,6 +1534,7 @@ public class AjaxController  extends SAbstractController {
 		Tabs tabs = new Tabs(request);
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.BINDER_ID, binderId);
 		model.put(WebKeys.ENTRY_ID, entryId);
 		model.put(WebKeys.ENTRY_ATTACHMENT_FILE_RECEIVER_URL, strURL);
 		

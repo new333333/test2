@@ -31,7 +31,7 @@
 </a>
 </c:if>
 
-<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}');return false;">
+<a href="javascript: ;" onClick="ss_showBlogReplies<portlet:namespace/>('${ssDefinitionEntry.id}', '<portlet:namespace/>');return false;">
 <div class="ss_iconed_label ss_view_something">
 <ssf:nlt tag="blog.viewComments"/> [<span id="<portlet:namespace/>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
 </div>

@@ -15,7 +15,8 @@
 <%
 // General variables
 String menuDivId = ParamUtil.get(request, "menuDivId", "");
-String linkMenuObj = ParamUtil.get(request, "linkMenuObj", "");
+String linkMenuIdx = ParamUtil.get(request, "linkMenuObjIdx", "");
+String linkMenuObj = "ss_linkMenu_arr['"+ linkMenuIdx +"']";
 String namespace = ParamUtil.get(request, "namespace", "");
 %>
 

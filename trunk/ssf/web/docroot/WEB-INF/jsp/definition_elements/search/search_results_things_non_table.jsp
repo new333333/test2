@@ -336,7 +336,7 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 				displayDiv="false" entryId="${entry1._docId}" 
 				folderId="${entry1._binderId}" binderId="${entry1._binderId}" 
 				entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
-		    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+		    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 				namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
 				isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>">
 				
@@ -510,10 +510,6 @@ function ss_changePageEntriesCount_<portlet:namespace/>(strFormName, pageCountVa
 </c:forEach>
 
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObj="ss_linkMenu${renderResponse.namespace}" 
+<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
 	namespace="${renderResponse.namespace}">
 </ssf:menuLink>
-
-<script type="text/javascript">
-var ss_linkMenu${renderResponse.namespace} = new ss_linkMenuObj();
-</script>

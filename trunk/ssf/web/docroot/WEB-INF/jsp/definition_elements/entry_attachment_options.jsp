@@ -14,10 +14,10 @@
 
 <script>
 function reloadUrlFromApplet${ssEntryId}${ss_namespace}() {
-	parent.ss_hideAddAttachmentDropboxAndAJAXCall${ssEntryId}${ss_namespace}();
+	parent.ss_hideAddAttachmentDropboxAndAJAXCall('${ssBinderId}', '${ssEntryId}', '${ss_namespace}');
 }
 function ss_hideDropTarget${ssEntryId}${ss_namespace}() {
-	parent.ss_hideAddAttachmentDropbox${ssEntryId}${ss_namespace}();
+	parent.ss_hideAddAttachmentDropbox('${ssEntryId}', '${ss_namespace}');
 }
 function getWindowBgColor${ssEntryId}${ss_namespace}() {
 	return "#ffffff";
