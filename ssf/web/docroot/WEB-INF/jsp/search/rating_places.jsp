@@ -21,7 +21,7 @@
 					<tr><th><ssf:nlt tag="search.Rating"/></th><th><ssf:nlt tag="search.Places"/></th></tr>
 					<c:forEach var="place" items="${ssFolderEntryPlaces}">
 						<tr>
-							<td><img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+							<td class="ss_star"><img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
 							<td><a href="<portlet:renderURL>
 								<portlet:param name="action" value="view_folder_listing"/>
 								<portlet:param name="binderId" value="${place.ssBinder.id}"/>

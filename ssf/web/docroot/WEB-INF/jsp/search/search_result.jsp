@@ -14,7 +14,20 @@
 
 <%@ include file="/WEB-INF/jsp/search/search_css.jsp" %>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
-<!-- div class='ss_style' -->
+
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+	<% // Tabs %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<div class="ss_clear"></div>
+
+<div id="ss_tabs_container">
+	<ssf:toolbar style="ss_actions_bar ss_actions_bar1"/>
+	
+	<div class="ss_clear"></div>
+
+  <div id="ss_tab_content">
 	<div id="ss_rankings">
 		<!-- Places rating - Moved to the new file -->
 		<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
@@ -49,28 +62,22 @@
 		</div>
 	</div>
 	<div class="ss_clear"></div>
-<!-- /div -->
-
-
+  </div>
+</div>
 
 
 
 <script type="text/javascript">
 
 // TODO find the same method somewhere in common....
-function fillMask(id, value) { 
+function ss_fillMask(id, value) { 
 	if (document.getElementById(id)) document.getElementById(id).value = value;
 }
 
-function createWorkflowContainer() {
-	alert("Create workflow container");
-}
-
-
 <% /* fill the search mask form*/ %>
-fillMask("searchText", "<ssf:escapeJavaScript value="${filterMap.searchText}"/>");
-fillMask("searchAuthors", "<ssf:escapeJavaScript value="${filterMap.searchAuthors}"/>");
-fillMask("searchTags", "<ssf:escapeJavaScript value="${filterMap.searchTags}"/>");
+ss_fillMask("searchText", "<ssf:escapeJavaScript value="${filterMap.searchText}"/>");
+ss_fillMask("searchAuthors", "<ssf:escapeJavaScript value="${filterMap.searchAuthors}"/>");
+ss_fillMask("searchTags", "<ssf:escapeJavaScript value="${filterMap.searchTags}"/>");
 // filterMap.searchJoinerAnd ${filterMap.searchJoinerAnd}
 <c:if test="${!empty filterMap.searchJoinerAnd && filterMap.searchJoinerAnd}">
 	if (document.getElementById("searchJoinerAnd")) document.getElementById("searchJoinerAnd").checked="true";

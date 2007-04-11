@@ -266,7 +266,7 @@ function ss_showHide(objId){
 
 function ss_showAdditionalOptions(objId) {
 	ss_showHide(objId);
-	init();
+	if (!initialized) init();
 }
 
 function ss_showHideDetails(ind){

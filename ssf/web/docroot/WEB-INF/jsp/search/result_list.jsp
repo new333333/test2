@@ -113,7 +113,34 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 						</div>
 			</c:when>
-				    
+			<c:when test="${entry._entityType == 'user' && entry._docType == 'attachment'}">
+						<div class="ss_thumbnail">
+							<img src="<html:imagesPath/>pics/attachment_icon.gif"/>
+						</div>
+						<div class="ss_entry">
+							<div class="ss_entryHeader">
+								<h3 class="ss_entryTitle">
+			    					<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}');">
+									<c:out value="${entry._fileName}"/>
+									</a>
+								</h3>
+								<div class="ss_clear">&nbsp;</div>
+							</div>
+						</div>
+						<div class="ss_clear">&nbsp;</div>
+										
+						<div id="details_${status.count}" class="ss_entryDetails">
+							<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" /></p>
+							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
+							<p><ssf:nlt tag="searchResult.label.user" />:
+								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>"
+									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}');">
+									<c:out value="${entry.title}"/>
+								</a>
+							</p>
+						</div>
+			</c:when>				    
 			<c:when test="${entry._entityType == 'group'}">
 						<div class="ss_thumbnail">
 							<c:if test="${!empty entry._fileID}"><img src="<ssf:url webPath="viewFile" folderId="${entry._binderId}" entryId="${entry._docId}" >

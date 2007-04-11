@@ -14,6 +14,19 @@
 
 <%@ include file="/WEB-INF/jsp/search/search_css.jsp" %>
 <%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
+
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
+	<% // Tabs %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<div class="ss_clear"></div>
+
+<div id="ss_tabs_container">
+	<ul class="ss_actions_bar ss_actions_bar1"></ul>
+	<div class="ss_clear"></div>
+
+  <div id="ss_tab_content">
 	<div class="ss_searchContainer">
 		<div id="ss_searchForm_spacer"></div>
 
@@ -28,17 +41,21 @@
 		</c:if>
 		</div>
 	</div>
+  </div>
+</div>
 
 <script type="text/javascript">
 // Init empty additional options
 function init() {
-	ss_addOption('workflow');
-	ss_addOption('entry');
-	ss_addOption('tag');
-	ss_addOption('creation_date');
-	ss_addOption('modification_date');
-	ss_addOption('creator_by_id'); 
-	initialized = true;
+	if (!initialized) {
+		ss_addOption('workflow');
+		ss_addOption('entry');
+		ss_addOption('tag');
+		ss_addOption('creation_date');
+		ss_addOption('modification_date');
+		ss_addOption('creator_by_id'); 
+		initialized = true;
+	}
 }
 </script>
 	
