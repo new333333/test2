@@ -47,6 +47,7 @@
 								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink"	binderId="${entry._binderId}">
 						    	<ssf:param name="entityType" value="folder" />
 				    	    	<ssf:param name="newTab" value="1"/></ssf:url>" 
+								class="ss_parentPointer"
 								onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}');">
 								${entry.binderTitle}
 								</a>
@@ -75,6 +76,7 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 							<p><ssf:nlt tag="searchResult.label.entry" />:
 								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="folderEntry" /><ssf:param name="newTab" value="1"/></ssf:url>"
+									class="ss_parentPointer"
 									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}');">
 									<c:out value="${entry.title}"/>
 								</a>
@@ -135,6 +137,7 @@
 							<p><span class="ss_label"><ssf:nlt tag="entry.modified" />:</span> <fmt:formatDate timeZone="${entry._principal.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" /></p>
 							<p><ssf:nlt tag="searchResult.label.user" />:
 								<a href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${entry._binderId}" entryId="${entry._docId}"><ssf:param name="entityType" value="${entry._entityType}" /><ssf:param name="newTab" value="1"/></ssf:url>"
+									class="ss_parentPointer"
 									onClick="return ss_gotoPermalink('${entry._binderId}','${entry._docId}', '${entry._entityType}', '${portletNamespace}');">
 									<c:out value="${entry.title}"/>
 								</a>
