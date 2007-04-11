@@ -3094,7 +3094,7 @@ div.ss_cal_monthGridDayBadge {
   position: absolute;
   height: 11px;
   width: 14.0%;
-  border-bottom: 1px solid #DDDDDD;
+  border-top: 1px solid #DDDDDD;
   text-align: right;
   padding-right: 3px;
   font-size: 9px;
