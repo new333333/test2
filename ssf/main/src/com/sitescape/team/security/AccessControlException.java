@@ -10,6 +10,8 @@
  */
 package com.sitescape.team.security;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import com.sitescape.team.exception.UncheckedCodedException;
 
 /**
@@ -21,4 +23,15 @@ public abstract class AccessControlException extends UncheckedCodedException {
     public AccessControlException(String errorCode, Object[] errorArgs) {
     	super(errorCode, errorArgs);
     }
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintStream s) {
+    	
+    }
+    //overload to remove stack trace filling log files
+    //This is because springs DispatcherPortlet calls the logger.warn method with the exception
+    public void printStackTrace(PrintWriter s) {
+    	
+    }
+
 }

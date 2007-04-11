@@ -17,7 +17,7 @@ public class OperationAccessControlException extends AccessControlException {
 	private static final String OperationAccessControlException_ErrorCode = "errorcode.operation.denied";
 	
 	public OperationAccessControlException(String username, String operationName, 
-			Long workAreaId) {
-		super(OperationAccessControlException_ErrorCode, new Object[] {username, operationName, workAreaId});
+			String workAreaName) {
+		super(OperationAccessControlException_ErrorCode, new Object[] {username, operationName, workAreaName});
 	}
 }

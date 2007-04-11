@@ -468,7 +468,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		ms.setZoneId(top.getId());
 		ms.setFunctionId(function.getId());
 		Set members = new HashSet();
-		members.add(group.getId());
+//		members.add(group.getId());
 		members.add(ObjectKeys.OWNER_USER_ID);
 		ms.setMemberIds(members);
 		getCoreDao().save(ms);				

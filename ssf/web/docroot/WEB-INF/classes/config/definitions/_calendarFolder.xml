@@ -55,5 +55,6 @@
   <properties>
     <property name="name" value="_calendarFolder"/>
     <property name="caption" value="__definition_default_folder_calendar"/>
+	<property name="icon" value="/icons/folder_blue_calendar.gif" /> 
   </properties>
 </definition>
