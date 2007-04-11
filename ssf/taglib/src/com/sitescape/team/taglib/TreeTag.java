@@ -352,55 +352,133 @@ public class TreeTag extends TagSupport {
 			}
 				
 
-			//Show the tree in the requested style (sortable or normal)
-			if (this.displayStyle.equals("sortable")) {
-				//"sortable" style shows the tree in a series of lists
-				String listStyle = e.attributeValue("listStyle", "ss_sortable");
-				if (this.tableOpened && !this.lastListStyle.equals("") && !this.lastListStyle.equals(listStyle)) {
-					//Switching styles, so close the table
-					jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
-					this.tableOpened = false;
-				}
-
-				if (!this.tableOpened) {
-					jspOut.print("<table class=\"ss_sortable\">\n<tbody>\n<tr>\n<td>\n");
-					this.tableOpened = true;
-				
-					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						jspOut.print("</td>\n");
-						jspOut.print("<td>\n");
+			//Show the tree 
+			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+				if (this.multiSelect != null) {
+					if (s_id.equals("") || displayOnly) {
+						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+					} else {
+						String checked = "";
+						if (this.multiSelect.contains(s_binderId)) checked = "checked=\"checked\"";
+						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
+						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
+						jspOut.print(mPrefix + s_id + "\" id=\"");
+						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
+						jspOut.print(checked + "/>");
+					}
+				} else if (this.singleSelectName != null) {
+					//can only select one item from tree, but probably other things going on
+					//ie) don't want link to submit form
+					if (s_id.equals("") || displayOnly) {
+						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+					} else {
+						String checked = "";
+						if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
+						jspOut.print("<input type=\"radio\" class=\"ss_text\"");
+						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
+						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
 					}
 					
-					// Link
-					jspOut.print("<ul id=\"ul_"+s_id+"\"");
-					jspOut.print(" class=\"ss_dragableLink "+listStyle+"\">\n");
 				}
-				
-				jspOut.print("<li id=\""+s_id+"\">");
-				
-				// Write out plus/minus icons
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-					if (hcn || hhcn) {
-						if (!s_parentId.equals("")) indentKey += "l";
+			}
+			if (this.startingIdSeen) {
+				//Add the spacer gifs passed in from the tag
+				for (int j = 0; j < indentKey.length(); j++) {
+					if (indentKey.substring(j, j+1).equals("s")) {
+						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
+					} else if (indentKey.substring(j, j+1).equals("l")) {
+						jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
+					}
+				}
+			}
+		
+			if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+				// Write out join icons
+				if (hcn || hhcn) {
+					if (ls) {
+						indentKey += "s";
 						String classField = "";
 						if (!className.equals("")) classField = "class=\""+className+"\"";
 						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
 						jspOut.print("onClick=\"");
-						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("onDblClick=\"");
-						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 2, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
 						jspOut.print("style=\"text-decoration: none;\">");
 						jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
 		
 						if (ino) {
-							jspOut.print("ss_minus");	// minus.gif
+							if (s_parentId.equals("")) {
+								jspOut.print("ss_twMinusTopBottom"); // minus_top_bottom.gif
+							} else {
+								jspOut.print("ss_twMinusBottom");	 // minus_bottom.gif
+							}
 						} else {
-							jspOut.print("ss_plus");	// plus.gif
+							if (s_parentId.equals("")) {
+								jspOut.print("ss_twPlusTopBottom");  // plus_top_bottom.gif
+							} else {
+								jspOut.print("ss_twPlusBottom");     // plus_bottom.gif
+							}
+						}
+		
+						jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
+					}
+					else {
+						indentKey += "l";
+						String classField = "";
+						if (!className.equals("")) classField = "class=\""+className+"\"";
+						jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
+						jspOut.print("onClick=\"");
+						jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("onDblClick=\"");
+						jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
+						jspOut.print("style=\"text-decoration: none;\">");
+						jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
+		
+						if (ino) {
+							jspOut.print("ss_twMinus");	// minus.gif
+						} else {
+							jspOut.print("ss_twPlus");	// plus.gif
 						}
 		
 						jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
 					}
 				}
+				else {
+					if (!this.topId.equals(s_id)) {
+						indentKey += "s";
+						if (ls) {
+							jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+						} else {
+							jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+						}
+					} else {
+						jspOut.print("<img class=\"ss_twNone\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
+					}
+				}
+		
+				// Link
+				if (this.showImages) {
+					if (hcn || hhcn) {
+						jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
+						jspOut.print(this.treeName);
+						jspOut.print("icon" + s_id + "\" src=\"");
+			
+						if (ino) {
+							jspOut.print(s_imageOpen); // e.g., folder_open.gif
+						} else {
+							jspOut.print(s_image);	// e.g., folder.gif
+						}
+			
+						jspOut.print("\"/>");
+					}
+					else {
+						jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
+						jspOut.print(this.treeName);
+						jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
+					}
+				}
+		
 				if (!displayOnly) {
 					String classField = "";
 					if (!className.equals("")) classField = "class=\""+className+"\"";
@@ -410,7 +488,7 @@ public class TreeTag extends TagSupport {
 							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
 						else
 							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
-					}
+										}
 					jspOut.print(">");
 				}
 				jspOut.print("<span " + titleClass + ">");
@@ -418,247 +496,46 @@ public class TreeTag extends TagSupport {
 				jspOut.print("</span>");
 				
 				if (!displayOnly) jspOut.print("</a>");
-				jspOut.print("</li>\n");
-				
-				//See if this is the starting id
-				if (this.topId.equals("") || s_id.equals(this.topId) || 
-						(this.startingId != null && this.startingId.equals(s_id))) this.startingIdSeen = true;
-				
-				// Recurse if node has children
-				if (hcn || hhcn || 
-						(!this.lastListStyle.equals("") && !this.lastListStyle.equals(listStyle))) {
-					//Close this table and reset listStyle so the next item is in its own table
-					if (this.tableOpened) {
-						jspOut.print("</ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
-						this.tableOpened = false;
-					}
-					listStyle = "";
-				}
-				this.lastListStyle = listStyle;
-				if (hcn) {
-					boolean divHasBeenOutput = false;
-					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
-						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
-			
-						if (!ino) {
-							jspOut.print(" style=\"display: none;\"");
-						}
-			
-						jspOut.print(">\n");
-						divHasBeenOutput = true;
-					}
-		
-					ListIterator it2 = e.elements("child").listIterator();
-					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), indentKey);
-					}
-		
-					if (this.tableOpened) {
-						jspOut.print("<li></li></ul>\n</td>\n</tr>\n</tbody>\n</table>\n");
-						this.tableOpened = false;
-					}
-					if (divHasBeenOutput) {
-						jspOut.print("</div>\n");
-					}
-				} else if (hhcn) {
-					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
-					}
-				}
-		
-				// See if it is time to stop
-				if (this.startingId != null && this.startingId.equals(s_id)) {
-					this.finished = true;
-				}
-			
-			
-			} else {
-				//The normal tree view
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-					if (this.multiSelect != null) {
-						if (s_id.equals("") || displayOnly) {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-						} else {
-							String checked = "";
-							if (this.multiSelect.contains(s_binderId)) checked = "checked=\"checked\"";
-							jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
-							jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
-							jspOut.print(mPrefix + s_id + "\" id=\"");
-							jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
-							jspOut.print(checked + "/>");
-						}
-					} else if (this.singleSelectName != null) {
-						//can only select one item from tree, but probably other things going on
-						//ie) don't want link to submit form
-						if (s_id.equals("") || displayOnly) {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-						} else {
-							String checked = "";
-							if (s_binderId.equals(this.singleSelect)) checked = "checked=\"checked\"";
-							jspOut.print("<input type=\"radio\" class=\"ss_text\"");
-							jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\" name=\"");
-							jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked + " onclick=\"return ss_clearSingleSelect('" + treeName +"');\"/>");
-						}
-						
-					}
-				}
-				if (this.startingIdSeen) {
-					//Add the spacer gifs passed in from the tag
-					for (int j = 0; j < indentKey.length(); j++) {
-						if (indentKey.substring(j, j+1).equals("s")) {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("spacer") + "\"/>");
-						} else if (indentKey.substring(j, j+1).equals("l")) {
-							jspOut.print("<img class=\"ss_twImg\" src=\"" + getImage("line") + "\"/>");
-						}
-					}
-				}
-			
-				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-					// Write out join icons
-					if (hcn || hhcn) {
-						if (ls) {
-							indentKey += "s";
-							String classField = "";
-							if (!className.equals("")) classField = "class=\""+className+"\"";
-							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
-							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
-							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 1, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
-							jspOut.print("style=\"text-decoration: none;\">");
-							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
-			
-							if (ino) {
-								if (s_parentId.equals("")) {
-									jspOut.print("ss_twMinusTopBottom"); // minus_top_bottom.gif
-								} else {
-									jspOut.print("ss_twMinusBottom");	 // minus_bottom.gif
-								}
-							} else {
-								if (s_parentId.equals("")) {
-									jspOut.print("ss_twPlusTopBottom");  // plus_top_bottom.gif
-								} else {
-									jspOut.print("ss_twPlusBottom");     // plus_bottom.gif
-								}
-							}
-			
-							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
-						}
-						else {
-							indentKey += "l";
-							String classField = "";
-							if (!className.equals("")) classField = "class=\""+className+"\"";
-							jspOut.print("<a "+classField+" href=\"javascript: ;\" ");
-							jspOut.print("onClick=\"");
-							jspOut.print("ss_treeToggle('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
-							jspOut.print("onDblClick=\"");
-							jspOut.print("ss_treeToggleAll('" + this.treeName + "', '" + s_id + "', '" + s_parentId + "', 0, '"+e.attributeValue("image")+"', '"+s_page+"', '"+indentKey+"');return false;\" ");
-							jspOut.print("style=\"text-decoration: none;\">");
-							jspOut.print("<img border=\"0\" id=\"" + this.treeName + "join" + s_id + "\" class=\"");
-			
-							if (ino) {
-								jspOut.print("ss_twMinus");	// minus.gif
-							} else {
-								jspOut.print("ss_twPlus");	// plus.gif
-							}
-			
-							jspOut.print("\" src=\"" + this.commonImg + "/pics/1pix.gif\"/></a>");
-						}
-					}
-					else {
-						if (!this.topId.equals(s_id)) {
-							indentKey += "s";
-							if (ls) {
-								jspOut.print("<img class=\"ss_twJoinBottom\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
-							} else {
-								jspOut.print("<img class=\"ss_twJoin\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
-							}
-						} else {
-							jspOut.print("<img class=\"ss_twNone\" src=\"" + this.commonImg + "/pics/1pix.gif\"/>");
-						}
-					}
-			
-					// Link
-					if (this.showImages) {
-						if (hcn || hhcn) {
-							jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
-							jspOut.print(this.treeName);
-							jspOut.print("icon" + s_id + "\" src=\"");
-				
-							if (ino) {
-								jspOut.print(s_imageOpen); // e.g., folder_open.gif
-							} else {
-								jspOut.print(s_image);	// e.g., folder.gif
-							}
-				
-							jspOut.print("\"/>");
-						}
-						else {
-							jspOut.print("<img class=\""+s_imageClass+"\" id=\"");
-							jspOut.print(this.treeName);
-							jspOut.print("icon" + s_id + "\" src=\"" + s_image + "\"/>");
-						}
-					}
-			
-					if (!displayOnly) {
-						String classField = "";
-						if (!className.equals("")) classField = "class=\""+className+"\"";
-						jspOut.print("<a "+classField+" href=\"" + s_url + "\" ");
-						if (s_id != null && !s_id.equals("")) {
-							if (action.equals(""))
-								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
-							else
-								jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
-											}
-						jspOut.print(">");
-					}
-					jspOut.print("<span " + titleClass + ">");
-					jspOut.print(s_text);
-					jspOut.print("</span>");
-					
-					if (!displayOnly) jspOut.print("</a>");
 
-					jspOut.print("<br/>\n");
-				}
-				
-				//See if this is the starting id
-				if (this.topId.equals("") || s_id.equals(this.topId) || 
-						(this.startingId != null && this.startingId.equals(s_id))) this.startingIdSeen = true;
-				
-				// Recurse if node has children
-				if (hcn) {
-					boolean divHasBeenOutput = false;
-					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
-						jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
+				jspOut.print("<br/>\n");
+			}
 			
-						if (!ino) {
-							jspOut.print(" style=\"display: none;\"");
-						}
+			//See if this is the starting id
+			if (this.topId.equals("") || s_id.equals(this.topId) || 
+					(this.startingId != null && this.startingId.equals(s_id))) this.startingIdSeen = true;
 			
-						jspOut.print(">\n");
-						divHasBeenOutput = true;
+			// Recurse if node has children
+			if (hcn) {
+				boolean divHasBeenOutput = false;
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
+					jspOut.print("\n<div class=\"ss_twDiv\" id=\"" + this.treeName + "div" + s_id + "\"");
+		
+					if (!ino) {
+						jspOut.print(" style=\"display: none;\"");
 					}
 		
-					ListIterator it2 = e.elements("child").listIterator();
-					while (it2.hasNext()) {
-						outputTreeNodes((Element) it2.next(), indentKey);
-					}
-		
-					if (divHasBeenOutput) {
-						jspOut.print("</div>\n");
-					}
-				} else if (hhcn) {
-					if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
-						jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
-					}
+					jspOut.print(">\n");
+					divHasBeenOutput = true;
 				}
-		
-				// See if it is time to stop
-				if (this.startingId != null && this.startingId.equals(s_id)) {
-					this.finished = true;
+	
+				ListIterator it2 = e.elements("child").listIterator();
+				while (it2.hasNext()) {
+					outputTreeNodes((Element) it2.next(), indentKey);
 				}
+	
+				if (divHasBeenOutput) {
+					jspOut.print("</div>\n");
+				}
+			} else if (hhcn) {
+				if (this.startingId == null || this.startingId.equals("") || this.startingIdSeen) {
+					jspOut.print("\n<div id=\"" + this.treeName + "temp" + s_id + "\"></div>\n");
+				}
+			}
+	
+			// See if it is time to stop
+			if (this.startingId != null && this.startingId.equals(s_id)) {
+				this.finished = true;
 			}
 		}
 	    catch(Exception ex) {
