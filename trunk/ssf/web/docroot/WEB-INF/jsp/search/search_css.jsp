@@ -11,14 +11,17 @@
  */
 %>
 <style type="text/css">
+#ss_tab_content {padding:6px 6px 12px 6px;}
+#ss_tabs_container {border-left:1px solid #cccccc;border-right:1px solid #cccccc;border-bottom:1px solid #cccccc;}
+
 #ss_rankings { float: left; width: 215px;}
 #ss_content_container {
     float: right;
-    width: 520px;
+    width: 508px;
     padding:0px;
     margin:0px;
 }
-div.ss_searchContainer {	background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;}
+div.ss_searchContainer {background: transparent url(<html:imagesPath/>pics/top_left.gif) no-repeat top left;}
 #ss_content { 
 	border-left:1px solid #afc8e3; 
 	border-right:1px solid #afc8e3;
@@ -63,7 +66,7 @@ div.ss_searchContainer {	background: transparent url(<html:imagesPath/>pics/top_
 
 div.ss_thumbnail {float: left; width:62px; text-align:center;vertical-align:left;}
 div.ss_thumbnail img {width:50px;height:50px;padding:0px margin:0px;}
-div.ss_entry {float: left; width:430px;}
+div.ss_entry {float: left; width:418px;}
 .ss_entryTitle {float:left;margin:0px;}
 div.ss_more {float: right; width:72px; text-align:right;}
 div.ss_entryDetails {  padding:6px;}
@@ -93,8 +96,9 @@ img.ss_attachment_thumbnail {width:80px;height:74px;padding:0px margin:0px;}
 img.ss_toogler {float:right;}
 div.ss_rating_box_title h4 {float:left;margin:0px;}
 div.ss_rating_box_content table {width:200px; border-collapse: collapse; border-spacing: 0;}
-div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:center;}
-div.ss_rating_box_content td {text-align:center;}
+div.ss_rating_box_content th {border-bottom: 1px solid #afc8e3;text-align:left;}
+div.ss_rating_box_content td {text-align:left;}
+div.ss_rating_box_content td.ss_star {padding-left:10px;}
 div.ss_rating_box_content h5 {margin:0px; border-bottom: 1px solid #afc8e3; }
 div.ss_rating_box_content p {margin:6px 0px 12px 0px; }
 span.ss_pageNumber{margin:0px 24px 0px 24px;}

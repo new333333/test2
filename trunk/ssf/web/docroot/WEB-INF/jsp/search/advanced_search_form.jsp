@@ -13,7 +13,7 @@
 <form action="<portlet:actionURL windowState="maximized" portletMode="view">
 					<portlet:param name="action" value="advanced_search"/>
 					<portlet:param name="tabTitle" value=""/>
-					<portlet:param name="newTab" value="1"/>
+					<portlet:param name="newTab" value="0"/>
 					</portlet:actionURL>" method="post" onSubmit="return prepareAdditionalOptions();" id="advSearchForm">
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">

@@ -21,7 +21,7 @@
 					<tr><th><ssf:nlt tag="search.Rating"/></th><th><ssf:nlt tag="search.People"/></th></tr>
 					<c:forEach var="user" items="${ssFolderEntryPeople}">
 						<tr>
-							<td><img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
+							<td class="ss_star"><img class="${place.searchResultsRatingCSS}" src="<html:imagesPath/>pics/sym_m_star.gif"/></td>
 							<td><ssf:showUser user="${user.ssUser}" /></td>
 						</tr>
 					</c:forEach>
