@@ -10,34 +10,43 @@
  *
  */
 %>
-<% // Calendar month view %>
-<style type="text/css">
+<%@ page import="com.sitescape.team.util.NLT" %>
+<script type="text/javascript">
 
+	var ss_findEventsUrl = "<ssf:url 
+		    	adapter="true" 
+		    	portletName="ss_forum" 
+		    	action="__ajax_request" 
+		    	actionUrl="true" >
+					<ssf:param name="binderId" value="${ssBinder.id}" />
+					<ssf:param name="operation" value="find_calendar_events" />
+		    	</ssf:url>";
 
-span.tinyLabel {
-  padding: 1px;
-  font-size: 9px;
-  font-family: sans-serif;
-}
-</style>
-<div id="ss_calendarNaviBar" style="margin-bottom: 5px;">
-<span class="tinyLabel">Hours:</span>
-<a class="ss_linkButton ss_tinyControl" id="dayGridToggle" href="javascript: ;" onclick="ss_cal_Grid.fullDayGrid(); return false;">Full Day</a>
-<span class="tinyLabel">Grid:</span>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('daydelta'); return false;">Single</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('3daydelta'); return false;">3-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('workweek'); return false;">5-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('week'); return false;">7-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('fortnight'); return false;">14-day</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('month'); return false;">MonthGrid</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('prev'); return false;">&lt;&lt;</a>
-<a class="ss_linkButton ss_tinyControl" href="javascript: ;" onclick="ss_cal_Events.switchView('next'); return false;">&gt;&gt;</a>
-<span id="ss_calViewDatesDescriptions"><fmt:formatDate value="${ssCalStartDate}" pattern="MMMM, yyyy" /></span>
+	var ss_viewEventUrl = "<ssf:url 
+				adapter="<%= useAdaptor %>" 
+				portletName="ss_forum" 
+				folderId="${ssFolder.id}" 
+				action="view_folder_entry" 
+				actionUrl="true" />";
+	
+	var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";
+	if (ss_addCalendarEntryUrl.indexOf("addEntryFromIFrame=1&") > -1) {
+		ss_addCalendarEntryUrl = ss_addCalendarEntryUrl.replace("addEntryFromIFrame=1&", "");
+	}
+					
+	var ss_calendarWorkDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
+	var ss_calendarFullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
+	
+	function ss_getMonthCalendarEvents() {
+		var formObj = document.getElementById("ssCalNavBar");
+		ss_cal_Events.switchView("monthdirect", formObj.ss_goto_year.value, formObj.ss_goto_month.value - 1, formObj.ss_goto_date.value);
+	}
+	
+</script>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar_nav_bar.jsp" %>
-<span class="tinyLabel">View type:</span>
-<span class="tinyLabel" id="ss_calViewEntryTypes">Events</span>
-<a class="ss_linkButton ss_tinyControl" id="ss_ViewTypeToggle" href="javascript: ;" onclick="ss_cal_Events.toggleViewType(); return false;">Change</a>
-</div>
+
+
 <div style="width: 100%"><%-- IE needs this for some stupid reason --%>
 <div id="ss_cal_DayGridMaster" style="display:none;">
   <table class="ss_cal_gridTable">
@@ -103,14 +112,13 @@ span.tinyLabel {
 
 <div class="ss_cal_eventBody" id="hoverBox" style="display: none; visibility: hidden; position: absolute; padding: 10px; background-color: #FFFFFF; z-index: 2003; border: 1px solid black;"></div>
 <script type="text/javascript">
-<%@ include file="/WEB-INF/jsp/definition_elements/calendar_view_data.jsp" %>
-ss_cal_Grid.activateGrid("month");
-ss_cal_Events.redrawAll();
-ss_createOnLoadObj('ss_cal_hoverBox', function() {
-	ss_moveDivToBody("hoverBox");
-	ss_moveDivToBody("infoLightBox");
-	ss_moveDivToBody("infoBox");
-	ss_moveDivToBody("infoBox2");
-});
-
+	ss_initializeCalendar();
+	ss_createOnLoadObj('ss_cal_hoverBox', function() {
+		ss_moveDivToBody("hoverBox");
+		ss_moveDivToBody("infoLightBox");
+		ss_moveDivToBody("infoBox");
+		ss_moveDivToBody("infoBox2");
+	});
+	
 </script>
+<div id="ss_loading"><img src="<html:imagesPath/>pics/ajax-loader.gif" /></div>

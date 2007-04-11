@@ -90,36 +90,6 @@ import com.sitescape.util.Validator;
  */
 public class ListFolderController extends  SAbstractController {
 	
-	public static final String[] monthNames = { 
-			NLT.get("calendar.january"),
-			NLT.get("calendar.february"),
-			NLT.get("calendar.march"),
-			NLT.get("calendar.april"),
-			NLT.get("calendar.may"),
-			NLT.get("calendar.june"),
-			NLT.get("calendar.july"),
-			NLT.get("calendar.august"),
-			NLT.get("calendar.september"),
-			NLT.get("calendar.october"),
-			NLT.get("calendar.november"),
-			NLT.get("calendar.december")
-		};
-
-	public static final String[] monthNamesShort = { 
-		NLT.get("calendar.abbreviation.january"),
-		NLT.get("calendar.abbreviation.february"),
-		NLT.get("calendar.abbreviation.march"),
-		NLT.get("calendar.abbreviation.april"),
-		NLT.get("calendar.abbreviation.may"),
-		NLT.get("calendar.abbreviation.june"),
-		NLT.get("calendar.abbreviation.july"),
-		NLT.get("calendar.abbreviation.august"),
-		NLT.get("calendar.abbreviation.september"),
-		NLT.get("calendar.abbreviation.october"),
-		NLT.get("calendar.abbreviation.november"),
-		NLT.get("calendar.abbreviation.december")
-	};
-	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
@@ -334,7 +304,6 @@ public class ListFolderController extends  SAbstractController {
 		//Checking the Sort Order that has been set. If not using the Default Sort Order
 		initSortOrder(request, userFolderProperties, tabOptions, options, viewType);
 
-		setupUrlCalendar(request, tabOptions, options, model);
 		setupUrlTags(request, tabOptions, options, model);
 
 		String view = null;
@@ -507,69 +476,7 @@ public class ListFolderController extends  SAbstractController {
 		}	
 		return tabs;
 	}
-	protected void setupUrlCalendar(RenderRequest request, Map tabOptions, Map options, Map model) {
-		// TODO: is this in use?
-		
-		//See if the url contains an ending date
-		Calendar cal = Calendar.getInstance(RequestContextHolder.getRequestContext().getUser().getTimeZone());
-		model.put(WebKeys.FOLDER_END_DATE, cal.getTime());
-		String day = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_DAY, "");
-		String month = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_MONTH, "");
-		String year = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_YEAR, "");
-		if (!day.equals("") || !month.equals("") || !year.equals("")) {
-			String strDate = DateHelper.getDateStringFromDMY(day, month, year);
-			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
-			tabOptions.put(Tabs.END_DATE, strDate);
-			tabOptions.put(Tabs.YEAR_MONTH, "");
-			tabOptions.put(Tabs.TAG_COMMUNITY, "");
-			tabOptions.put(Tabs.TAG_PERSONAL, "");	
-			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
-			model.put(WebKeys.URL_DATE_DAY, day);
-			model.put(WebKeys.URL_DATE_MONTH, month);
-			model.put(WebKeys.URL_DATE_YEAR, year);
-		}
-		else if (tabOptions.containsKey(Tabs.END_DATE)) {
-			String strEndDate = (String) tabOptions.get(Tabs.END_DATE);
-			if (strEndDate != null && !"".equals(strEndDate)) {
-				options.put(ObjectKeys.SEARCH_END_DATE, strEndDate);
-				model.put(WebKeys.URL_DATE_DAY, day);
-				model.put(WebKeys.URL_DATE_MONTH, month);
-				model.put(WebKeys.URL_DATE_YEAR, year);
-			}
-		}
-		
-		//See if this is a request for a specific year/month
-		String yearMonth = PortletRequestUtils.getStringParameter(request, WebKeys.URL_YEAR_MONTH, "");
-		if (!yearMonth.equals("")) {
-			options.put(ObjectKeys.SEARCH_YEAR_MONTH, yearMonth);
-			tabOptions.put(Tabs.END_DATE, "");
-			tabOptions.put(Tabs.YEAR_MONTH, yearMonth);
-			tabOptions.put(Tabs.TAG_COMMUNITY, "");
-			tabOptions.put(Tabs.TAG_PERSONAL, "");	
-			model.put(WebKeys.URL_YEAR_MONTH, yearMonth);
-
-			String strYear = yearMonth.substring(0, 4);
-			String strMonth = yearMonth.substring(4, 6);
-			int intMonth = Integer.parseInt(strMonth);
-			String strMonthName = monthNames[intMonth-1];
-			
-			model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
-		}
-		else if (tabOptions.containsKey(Tabs.YEAR_MONTH)) {
-			String strYearMonth = (String) tabOptions.get(Tabs.YEAR_MONTH);
-			if (strYearMonth != null && !"".equals(strYearMonth)) {
-				options.put(ObjectKeys.SEARCH_YEAR_MONTH, strYearMonth);
-				model.put(WebKeys.URL_YEAR_MONTH, strYearMonth);
-				String strYear = strYearMonth.substring(0, 4);
-				String strMonth = strYearMonth.substring(4, 6);
-				int intMonth = Integer.parseInt(strMonth);
-				String strMonthName = monthNames[intMonth-1];
-				
-				model.put(WebKeys.SELECTED_YEAR_MONTH, strMonthName + " " +strYear);
-			}
-		}
-		
-	}
+	
 	protected void setupUrlTags(RenderRequest request, Map tabOptions, Map options, Map model) {
 		//See if the url has tags 
 		String cTag = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TAG_COMMUNITY, "");
@@ -646,7 +553,7 @@ public class ListFolderController extends  SAbstractController {
 	protected String getShowFolder(Map formData, RenderRequest req, 
 			RenderResponse response, Folder folder, Map options, 
 			Map<String,Object>model, String viewType) throws PortletRequestBindingException {
-		Map folderEntries;
+		Map folderEntries = null;
 		Long folderId = folder.getId();
 		
 		CalendarViewRangeDates calendarViewRangeDates = null;
@@ -660,20 +567,20 @@ public class ListFolderController extends  SAbstractController {
 			buildBlogBeans(response, folder, options, model, folderEntries);
 		} else {
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-
-				Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
-				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-				
-				calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
-		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
-		       	
-    	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
-		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+//				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
+//
+//				Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
+//				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
+//				
+//				calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
+//		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+//		       	
+//    	        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+//		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
+//		       	options.put(ObjectKeys.SEARCH_MODIFICATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+			} else {
+				folderEntries = getFolderModule().getEntries(folderId, options);
 			}
-			
-			folderEntries = getFolderModule().getEntries(folderId, options);
 			if (viewType.equals(Definition.VIEW_STYLE_WIKI)) {
 				//Get the list of all entries to build the archive list
 				buildBlogBeans(response, folder, options, model, folderEntries);
@@ -682,14 +589,14 @@ public class ListFolderController extends  SAbstractController {
 		}
 
 		model.putAll(getSearchAndPagingModels(folderEntries, options));
-		
-		List entries = (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES);
-		model.put(WebKeys.FOLDER_ENTRIES, entries);
+		if (folderEntries != null) {
+			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
+		}
 		
 		//See if this folder is to be viewed as a calendar
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 			//This is a calendar view, so get the event beans
-			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
+//			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
 		} else if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, so get the extra blog beans
 			getBlogEntries(folder, folderEntries, model, req, response);
@@ -706,6 +613,11 @@ public class ListFolderController extends  SAbstractController {
 
 	protected Map getSearchAndPagingModels(Map folderEntries, Map options) {
 		Map model = new HashMap();
+		
+		if (folderEntries == null) {
+			// there is no paging to set
+			return model;
+		}
 		
 		String sortBy = (String) options.get(ObjectKeys.SEARCH_SORT_BY);
 		Boolean sortDescend = (Boolean) options.get(ObjectKeys.SEARCH_SORT_DESCEND);
@@ -819,14 +731,8 @@ public class ListFolderController extends  SAbstractController {
 			//Get the list of all entries to build the archive list
 			model.put(WebKeys.WIKI_HOMEPAGE_ENTRY_ID, folder.getProperty(ObjectKeys.BINDER_PROPERTY_WIKI_HOMEPAGE));
 		} else 	if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-
 			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(req));
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
-			
-			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
-			
-			//This is a calendar view, so get the event beans
-			buildCaledarView(calendarViewRangeDates, folder, entries, model, response);
 		}
 		
 	}
@@ -894,7 +800,7 @@ public class ListFolderController extends  SAbstractController {
 					String year = yearMonth.substring(0, 4);
 					String monthNumber = yearMonth.substring(4, 6);
 					int m = Integer.valueOf(monthNumber).intValue() - 1;
-					monthTitles.put(yearMonth, monthNames[m%12] + " " + year);
+					monthTitles.put(yearMonth, EventsViewHelper.monthNames[m%12] + " " + year);
 					PortletURL url = response.createRenderURL();
 					url.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
@@ -1472,40 +1378,6 @@ public class ListFolderController extends  SAbstractController {
 		String[] as = new String[principals.size()];
 		principals.toArray(as);
 		return as;
-	}
-	
-	/* 
-	 * Ripples through all the entries in the current entry list, finds their
-	 * associated events, checks each event against the session's current calendar view mode
-	 * and current selected date, and populates the bean with a list of dates that fall in range.
-	 * Returns: side-effects the bean "model" and adds a key called CALENDAR_EVENTDATES which is a
-	 * hashMap whose keys are dates and whose values are lists of events that occur on the given day.
-	 */
-	protected static void buildCaledarView(CalendarViewRangeDates calendarViewRangeDates, Binder folder, List entrylist, Map model, RenderResponse response) {
-		Date currentDate = (Date)model.get(WebKeys.CALENDAR_CURRENT_DATE);
-		
-		model.putAll(ListFolderController.getCalendarViewsURLs(folder.getId(), response));
-
-		EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, folder, entrylist, model, response);
-	}
-	
-	/**
-	 * Calendar navigation via nav bar; must be an action so form data is transmitted.
-	 * 
-	 * @param folderId
-	 * @param response uses to create action urls
-	 * @return view calemdar in different display modes (date, day, week, month) urls
-	 */
-	private static Map getCalendarViewsURLs(Long folderId, RenderResponse response) {
-		Map urls = new HashMap();
-
-		PortletURL url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		url.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_CALENDAR_GOTO_DATE);
-		urls.put("goto_form_url", url.toString());
-			
-		return urls;
 	}
 
 	protected void getBlogEntries(Folder folder, Map folderEntries,  Map model, RenderRequest request, RenderResponse response) {

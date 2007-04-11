@@ -26,6 +26,7 @@ import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -1159,6 +1160,7 @@ public class AjaxController  extends SAbstractController {
 								new WsDomTreeBuilder(topFolder, false, this, treeKey));
 						topBinderElement.setContent(folderTree.getRootElement().content());
 					}
+						
 				}
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
@@ -1741,11 +1743,13 @@ public class AjaxController  extends SAbstractController {
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			Binder binder = getBinderModule().getBinder(binderId);
 			
-			int year = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_YEAR);
-			int month = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_MONTH);
-			int dayOfMonth = PortletRequestUtils.getRequiredIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH);
+			int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
+			int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
+			int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 			
-			Date currentDate = EventsViewHelper.getCalendarDate(year, month, dayOfMonth);
+			
+			Date currentDate = EventsViewHelper.getCalendarCurrentDate(WebHelper.getRequiredPortletSession(request));
+			currentDate = EventsViewHelper.getCalendarDate(year, month, dayOfMonth, currentDate);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 			
 			CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
@@ -1776,7 +1780,7 @@ public class AjaxController  extends SAbstractController {
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
 	}
-
+	
 	private ModelAndView ajaxFindEntryForFile(RenderRequest request, RenderResponse response) throws Exception
 	{
 		Map model = new HashMap();
@@ -1789,7 +1793,7 @@ public class AjaxController  extends SAbstractController {
 	    	FolderEntry entry = getFolderModule().getLibraryFolderEntryByFileName(folder, fileName);
 	    	if(entry != null) {
 	    		model.put(WebKeys.ENTRY_TITLE, entry.getTitle());
-	    	}
+}
 		}
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/find_entry_for_file_ajax_return", model);	

@@ -40,11 +40,42 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.CalendarHelper;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DateHelper;
 
 public class EventsViewHelper {
 
+	public static final String[] monthNames = { 
+		NLT.get("calendar.january"),
+		NLT.get("calendar.february"),
+		NLT.get("calendar.march"),
+		NLT.get("calendar.april"),
+		NLT.get("calendar.may"),
+		NLT.get("calendar.june"),
+		NLT.get("calendar.july"),
+		NLT.get("calendar.august"),
+		NLT.get("calendar.september"),
+		NLT.get("calendar.october"),
+		NLT.get("calendar.november"),
+		NLT.get("calendar.december")
+	};
+	
+	public static final String[] monthNamesShort = { 
+		NLT.get("calendar.abbreviation.january"),
+		NLT.get("calendar.abbreviation.february"),
+		NLT.get("calendar.abbreviation.march"),
+		NLT.get("calendar.abbreviation.april"),
+		NLT.get("calendar.abbreviation.may"),
+		NLT.get("calendar.abbreviation.june"),
+		NLT.get("calendar.abbreviation.july"),
+		NLT.get("calendar.abbreviation.august"),
+		NLT.get("calendar.abbreviation.september"),
+		NLT.get("calendar.abbreviation.october"),
+		NLT.get("calendar.abbreviation.november"),
+		NLT.get("calendar.abbreviation.december")
+	};
+	
 	private static final String EVENT_TYPE_CREATION = "creation";
 	
 	private static final String EVENT_TYPE_ACTIVITY = "activity";
@@ -254,7 +285,6 @@ public class EventsViewHelper {
 			String dateKey = (String)mapEntry.getKey();
 			List evList = (List) mapEntry.getValue();
 				
-//			int eventCounter = 0;
 			Iterator evIt = evList.iterator();
 			while (evIt.hasNext()) {
 				// thisMap is the next entry, event pair
@@ -274,7 +304,6 @@ public class EventsViewHelper {
 				
 				dataMap.put("entry", e);
 				dataMap.put("eventType", thisMap.get("eventType"));
-//				dataMap.put("eventid", e.get(EntityIndexUtils.DOCID_FIELD) + "-" + dateKey + "-" + eventCounter);
 				dataMap.put("eventid", ev.getId());
 				dataMap.put("entry_tostring", e.get(
 						BasicIndexUtils.UID_FIELD).toString());
@@ -288,7 +317,6 @@ public class EventsViewHelper {
 						.put("cal_duration", duration);
 				
 				eventsList.add(dataMap);
-//				eventCounter++;
 			}
 		}
 		monthBean.put("events", eventsList);
@@ -298,8 +326,8 @@ public class EventsViewHelper {
 
 	private static Map getMonthNames() {
 		Map monthNames = new HashMap();
-		monthNames.put("monthNames", Arrays.asList(ListFolderController.monthNames));
-		monthNames.put("monthNamesShort", Arrays.asList(ListFolderController.monthNamesShort));
+		monthNames.put("monthNames", Arrays.asList(EventsViewHelper.monthNames));
+		monthNames.put("monthNamesShort", Arrays.asList(EventsViewHelper.monthNamesShort));
 		return monthNames;
 	}
 
@@ -346,14 +374,22 @@ public class EventsViewHelper {
 		return currentDate;
 	}
 
-	public static Date getCalendarDate(int year, int month, int dayOfMonth) {
+	public static Date getCalendarDate(int year, int month, int dayOfMonth, Date defaultValue) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 		
 		Calendar calendar = new GregorianCalendar(timeZone);
-		calendar.set(Calendar.YEAR, year);
-		calendar.set(Calendar.MONTH, month - 1);
-		calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+		if (year != -1) {
+			calendar.set(Calendar.YEAR, year);
+			if (month != -1) {
+				calendar.set(Calendar.MONTH, month - 1);
+				if (dayOfMonth != -1) {
+					calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+				}
+			}
+		} else {
+			return defaultValue;
+		}
 		
 		return calendar.getTime();
 	}

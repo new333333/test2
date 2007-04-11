@@ -26,6 +26,7 @@
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
 <c:if test="${ss_toolbar_item}">
+	</li><li class="ss_actions_bar_separator"></li>
   </li>
 <!-- End of toolbar item -->
 

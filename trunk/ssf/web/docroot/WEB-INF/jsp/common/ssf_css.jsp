@@ -196,7 +196,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_style_drop_highlight" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_drop_shadow" value="#666666" scope="request"/>
 
-
 	<c:set var="ss_style_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_background_color" value="#FFFFFF" scope="request"/>
 	<c:set var="ss_style_component_toolbar_background_color" value="#ECECEC" scope="request"/>
@@ -241,7 +240,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<c:set var="ss_form_element_readonly_color" value="InfoBackground" scope="request"/>
 	
 	<c:set var="ss_generic_border_color" value="#CCCCCC" scope="request"/>
-
 
 	<c:set var="ss_toolbar1_background_color" value="#BFCA8A" scope="request"/>
 	<c:set var="ss_toolbar1_text_color" value="#333333" scope="request"/>
@@ -846,7 +844,7 @@ div.ss_popup_body {
   visibility:hidden; 
   display:none; 
   border:1px solid black; 
-  background: #ffffff;
+  background:#ffffff;
 }
 
 .ss_lightBox {
@@ -1204,7 +1202,7 @@ table.ss_mouseOverInfo {
   color: ${ss_toolbar_link_hover_color};
 }
 .ss_toolbar_inactive { 
-  color: #999999; 
+  color:#999999; 
 }
 
 .ss_entry_toolbar {
@@ -2107,6 +2105,20 @@ a.ss_breadcrumb {
 	font-family: ${ss_style_title_font_family};
 }
 
+.ss_actions_bar2 {
+	background-color: #CECECE;
+	font-weight: normal;
+	font-size: 11px;
+	font-family: ${ss_style_title_font_family};
+}
+
+.ss_actions_bar3 {
+	background-color: #AFC8E3;
+	font-weight: normal;
+	font-size: 11px;
+	font-family: ${ss_style_title_font_family};
+}
+
 ul.ss_actions_bar1  {
 	background-image: url(<html:imagesPath/>pics/background_actions_bar1.jpg);
 	background-repeat: repeat-x;
@@ -2124,26 +2136,79 @@ ul.ss_actions_bar2 {
 	font-family: ${ss_style_title_font_family};
 }
 
-.ss_actions_bar {
-	list-style-type:none;
-<c:if test="<%= isIE %>">
-	width: 100%;
-</c:if>
-<c:if test="<%= !isIE %>">
-	width: 99.3%;
-</c:if>
-	margin:0px;
-	padding-left:6px;
-	padding-right:0px;
-	padding-top:4px;
-	padding-bottom:4px;
-	height:18px;
-	line-height:17px;
+ul.ss_actions_bar3 {
+	background-image: url(<html:imagesPath/>pics/background_actions_bar3.jpg);
+	background-repeat: repeat-x;
 }
+
+.ss_actions_bar {
+	<c:if test="<%= isIE %>">
+		width: 100%;
+	</c:if>
+	<c:if test="<%= !isIE %>">
+		width: 99.3%;
+	</c:if> 
+	list-style-type:none;	
+	margin: 0;
+	padding: 0 0 0 5px;
+	height: 26px;
+}
+
+.ss_actions_bar li {
+	float:left;
+	display: inline;
+	border-top:    1px solid ${ss_style_drop_highlight};
+	border-left:   1px solid ${ss_style_drop_highlight};
+	border-bottom: 1px solid ${ss_style_drop_shadow};
+	border-right:  1px solid ${ss_style_drop_shadow};	
+	background-color: inherit;
+	margin: 3px 3px 0 0;
+	padding: 2px 6px 3px 6px;
+}
+
+.ss_actions_bar li.ss_toolBarItem {
+	border: 0;
+	margin: 3px 0 0 0;
+	padding: 0;
+	background-color: inherit;
+}
+
+.ss_actions_bar li.ss_actions_bar_separator {
+	border-left: 1px dotted #FFFFFF;
+	border-right: 0;
+	border-top: 0;
+	border-bottom: 0;
+	height: 26px;
+	margin: 0 10px 0 10px;
+	width: 0;
+	padding: 0;
+}
+
+.ss_actions_bar form {
+	display: inline;
+	background-color: transparent;
+}
+
+.ss_actions_bar form label, ul.ss_actions_bar form input {
+	vertical-align: middle;
+	background-color: transparent;
+}
+
+.ss_actions_bar li.ss_actions_bar_last-child {
+	border-right:none;
+}
+
+.ss_actions_bar li a, .ss_actions_bar li a:visited {
+	color:${ss_style_text_color} !important;
+	display:block;
+	padding:0px 15px;
+}
+
 .ss_actions_bar_background {
 	margin:0px;
 	padding:0px;
 }
+
 .ss_actions_bar_history_bar {
 	font-size: 11px;
 	font-family: ${ss_style_title_font_family};
@@ -2151,25 +2216,8 @@ ul.ss_actions_bar2 {
 .ss_actions_bar_history_bar a {
 	padding:0px !important;
 }
-
-.ss_actions_bar li {
-	float:left;
-	border-top:    1px solid ${ss_style_drop_highlight};
-	border-left:   1px solid ${ss_style_drop_highlight};
-	border-bottom: 1px solid ${ss_style_drop_shadow};
-	border-right:  1px solid ${ss_style_drop_shadow};
-	margin-right: 3px;
-	background-color: inherit;
-	height: 100%;
-}
-
-.ss_actions_bar li.ss_actions_bar_last-child {
-	border-right:none;
-}
-.ss_actions_bar li a, .ss_actions_bar li a:visited {
-	color:${ss_style_text_color} !important;
-	display:block;
-	padding:0px 15px;
+.ss_actions_bar_history_bar * {
+	color:#5A3C68;
 }
 
 .ss_actions_bar1 li a:hover {
@@ -2181,9 +2229,12 @@ ul.ss_actions_bar2 {
 	background-color: #DFDFDF;
 	text-decoration:none;
 }
-.ss_actions_bar.ss_actions_bar_lower {
-	margin:0px 3px;
+
+.ss_actions_bar3 li a:hover {
+	background-color: #AFC8E3;
+	text-decoration:none;
 }
+
 div.ss_actions_bar_submenu {
 	background-color: inherit;
 	margin:0px;
@@ -2212,16 +2263,26 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
  </c:if>
 }
 
+div.ss_actions_bar_submenu ul.ss_actions_bar3 {
+  background-color: #AFC8E3;
+  background-image: none;
+  opacity: 0.95;
+ <c:if test="<%= isIE %>">
+  filter: alpha(opacity=95);
+ </c:if>
+}
+
 
 .ss_actions_bar_submenu {
 	position:absolute;
  <c:if test="<%= isIE %>">
-	top:-14px;
+	top:-12px;
+	left:-26px;
  </c:if>
  <c:if test="<%= !isIE %>">
-	top:-12px;
- </c:if>
-	left:-20px;
+	top:-14px;
+	left:-28px;
+ </c:if>	
 	border:1px solid #907FA3;
 	border-top:none;
 	padding: 4px 1px;
@@ -2229,6 +2290,13 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 .ss_actions_bar_submenu li  {
 	float:none;
 	border-bottom:1px solid ${ss_generic_border_color};
+	border-right-style:none;
+    line-height:18px;
+}
+
+.ss_actions_bar_submenu ul.ss_actions_bar3 li  {
+	float:none;
+	border-bottom:1px solid #AFC8E3;
 	border-right-style:none;
     line-height:18px;
 }
@@ -2250,6 +2318,10 @@ div.ss_actions_bar_submenu ul.ss_actions_bar2 {
 
 .ss_actions_bar2 li:hover, .ss_actions_bar1 a:hover {
 	background-color:#DFDFDF;
+}
+
+.ss_actions_bar3 li:hover, .ss_actions_bar1 a:hover {
+	background-color:#AFC8E3;
 }
 
 .ss_actions_bar_submenu li:hover, .ss_actions_bar_submenu a:hover {
@@ -3194,11 +3266,134 @@ span.ss_cal_eventTime {
   background-color: ${ss_calendar_today_background_color};
 }
 
-div#ss_calendarNaviBar {
-	background-color: #759DB9;
+ul#ss_calendarNaviBar {	
+	font-family: Arial;
 	border: 1px solid #CCCCCC;
+	background-color: #AFC8E3;
+	list-style-type: none;
 	height: 30px;
+	padding: 0;
+	margin: 0 0 5px 0;
 }
+
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOption, ul#ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+	position:relative;
+	vertical-align: middle;
+	float: left;
+	height: 30px;
+	line-height: 30px;
+	display: inline;
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOption {	
+	padding: 0 4px 0 4px;
+	margin: 0;	
+}
+
+ul#ss_calendarNaviBar .ss_calendarNaviBarSeparator {
+	border-left: 1px dotted #FFFFFF;
+	margin: 0 5px 0 5px;
+	padding: 0;
+	width: 0;
+}
+
+ul#ss_calendarNaviBar .ss_hoursSelectorTitle {
+	background-color: #AFC8E3;
+	color: #333333;
+	text-decoration: none;
+	border: 1px solid #FFFFFF;
+	font-size: 11px;
+}
+
+ul#ss_calendarNaviBar .ss_calHoursSelectorMenu {
+	height: 22px;
+	<c:if test="<%= isIE %>">
+		margin-top: 6px;
+	</c:if>
+	<c:if test="<%= !isIE %>">
+		margin-top: 4px;
+	</c:if>	
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
+	padding-top: 3px;
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOptionBigImg {
+	padding-top: 1px;
+	font-size: 0;
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
+	margin: 1px 0 1px 0;
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOption div.ss_toolbar_color {
+	background-color: #AFC8E3;
+}
+
+ul#ss_calendarNaviBar li.ss_calendarNaviBarOption a#anchor_ss_goto img {
+	margin: 7px 0 7px 0;
+}
+
+ul#ss_calendarNaviBar span#ss_calViewDatesDescriptions {	
+	color: #FFFFFF;
+}
+
+ul#ss_calendarNaviBar li.ss_calViewDatesDescriptionLi {
+	width: 208px;
+	text-align: center;
+	padding: 0;
+}
+
+ul#ss_calendarNaviBar li.ss_calSelectDate {
+	padding: 0 10px 0 7px;
+}
+
+.ss_hoursSelectorList li  {
+	float:none;
+	border-bottom:1px solid #CCCCCC;
+	border-right-style:none;
+    line-height:18px;
+}
+
+.ss_hoursSelectorList {
+	position:absolute;
+ <c:if test="<%= isIE %>">
+	top:-8px;
+	left:-25px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+	top:-8px;
+	left:-24px;
+ </c:if>	
+	border:1px solid #907FA3;
+	border-top:none;
+	padding: 4px 1px;
+}
+
+.ss_hoursSelectorList li a {
+  display: block;
+  padding-left: 10px;
+  padding-right: 10px;
+  text-decoration: none;
+}
+
+.ss_hoursSelectorList div {
+	background:none;
+}
+
+.ss_hoursSelectorList li:hover, .ss_hoursSelectorList a:hover {
+	text-decoration:underline;
+	color:#333333;
+}
+.ss_hoursSelectorList a, .ss_actions_bar_submenu a:visited {
+	color:#333333;
+}
+
+
+
 
 div.ss_buddies {
 	padding-bottom: 35px; 
@@ -3272,6 +3467,11 @@ div.ss_teamMembersList, div.ss_clipboardUsersList {
 }
 .ss_diff_same {
 	background-color:${ss_diff_color_same};
+}
+
+/* Ajax loading... */
+#ss_loading {
+	text-align: center;
 }
 
 <% // Place all CSS code above this line %>

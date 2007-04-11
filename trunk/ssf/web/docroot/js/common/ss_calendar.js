@@ -30,7 +30,6 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
 dojo.require("dojo.lfx");
 
-
 function ss_fadeAndDestroy(e, t) {
     dojo.lfx.fadeHide(e, t, dojo.lfx.easeIn, function(nodes) {
         dojo.lang.forEach(nodes, dojo.dom.removeNode);
@@ -150,7 +149,7 @@ var ss_cal_CalData = {
     },
 	    
     setToday : function (date) {
-    	this.today = new Date(date.year, date.month, date.dayOfMonth);
+    	this.today = new Date(date.year, date.month - 1, date.dayOfMonth);
     },
     
     isToday : function (date) {
@@ -159,10 +158,21 @@ var ss_cal_CalData = {
 				this.today.getDate() == date.getDate());
     },
     
+    loadInitial : function() {
+    	this.setMap([
+		  {calsrc: "cal1", box: "#8888CC", border: "#6666AA"},
+		  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
+		  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
+		  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
+		  {calsrc: "cal5", box: "#CCCC88", border: "#AAAA66"}]);
+    	
+		this.loadEventsByDate("month");
+    },
+    
     loadEventsByDate : function (grid, date, requiredDay) {
-	   	if (ss_cal_CalData.getMonthViewInfo(date) &&
+	   	if (date && ss_cal_CalData.getMonthViewInfo(date) &&
 	   		(!requiredDay || ss_cal_CalData.getMonthViewInfo(requiredDay))) {
-   			ss_cal_Grid.setCurrentDate(date);
+   			ss_cal_Grid.setCurrentDate({year : date.getFullYear(), month : (date.getMonth() + 1), dayOfMonth : date.getDate()});
    			ss_cal_Grid.setFirstDayToShow(date);
     		ss_cal_Grid.activateGrid(grid);
     		ss_cal_Events.redrawAll();
@@ -175,12 +185,13 @@ var ss_cal_CalData = {
     	if (requiredDay && !ss_cal_CalData.getMonthViewInfo(requiredDay)) {
     		dateToLoad = requiredDay;
     	}
-    	var m = dateToLoad.getMonth() + 1
-		url += "\&year=" + dateToLoad.getFullYear();
-		url += "\&month=" + m;
-		url += "\&dayOfMonth=" + dateToLoad.getDate();
-		url += "\&randomNumber="+ss_random++;
-
+    	if (dateToLoad) {
+	    	var m = dateToLoad.getMonth() + 1
+			url += "\&year=" + dateToLoad.getFullYear();
+			url += "\&month=" + m;
+			url += "\&dayOfMonth=" + dateToLoad.getDate();
+		}
+		url += "\&randomNumber="+ss_random++;		
 		var bindArgs = {
 	    	url: url,
 			error: function(type, data, evt) {
@@ -188,21 +199,34 @@ var ss_cal_CalData = {
 			},
 			load: function(type, data, evt) {
 			try {
+			    var loading = document.getElementById("ss_loading");
+		    	if (loading) {
+		    		loading.parentNode.removeChild(loading);
+		    	}
+		    	
+				Date.dayNamesShort = data.dayNamesShort;
+				Date.monthNamesShort = data.monthNamesShort;
+				Date.monthNames = data.monthNames;
+				
+				ss_cal_CalData.setToday(data.today);
+				ss_cal_Grid.setCurrentDate(data.currentDate);
+			
 				ss_cal_CalData.setMonthViewInfo(data.monthViewInfo.year, data.monthViewInfo.month, data.monthViewInfo.numberOfDaysInView,
 					data.monthViewInfo.startViewDate, data.monthViewInfo.endViewDate);
 							
 				ss_cal_Events.set(data.events);
-				ss_cal_Grid.setCurrentDate(date);
-				ss_cal_Grid.setFirstDayToShow(date);
+				if (date) {
+					ss_cal_Grid.setFirstDayToShow(date);
+				}
 				ss_cal_Grid.activateGrid(grid);
 		        ss_cal_Events.redrawAll();
 		       } catch (e) {alert(e);}
 			},
 						
 			mimetype: "text/json",
+			transport: "XMLHTTPTransport",
 			method: "get"
 		};
-	   
 		dojo.io.bind(bindArgs);
 		
 
@@ -225,7 +249,7 @@ var ss_cal_Grid = {
     currentDate: null,
     
 	setCurrentDate : function (date) {
-		this.currentDate = date;
+		this.currentDate = new Date(date.year, date.month - 1, date.dayOfMonth);
 	},
 	
 	setFirstDayToShow : function (date) {
@@ -539,8 +563,17 @@ var ss_cal_Grid = {
         //inner.style.top = "-3px";
         dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 500, end: 1008 }], 200).play();
         dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -255, end: -3 }], 200).play();
-        dojo.byId("dayGridToggle").innerHTML = "Work Day";
-        dojo.byId("dayGridToggle").onclick = ss_cal_Grid.workDayGrid;
+        
+        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
+        var children = celendarHoursSelector.childNodes;
+        var arrow;
+        for (var i = 0; i < children.length; i++) {
+        	var a = children[i].nodeValue;
+        	if (children[i].nodeValue && children[i].nodeValue.indexOf(ss_calendarWorkDayGridTitle) > -1) {
+        		children[i].nodeValue = ss_calendarFullDayGridTitle;
+        		break;
+        	}
+        }
     },
 
     workDayGrid: function() {
@@ -550,8 +583,16 @@ var ss_cal_Grid = {
         //inner.style.top = "-255px";
         dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
         dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -255 }], 200).play();
-        dojo.byId("dayGridToggle").innerHTML = "Full Day";
-        dojo.byId("dayGridToggle").onclick = ss_cal_Grid.fullDayGrid;
+        
+        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours");
+        var children = celendarHoursSelector.childNodes;
+        var arrow;
+        for (var i = 0; i < children.length; i++) {
+        	if (children[i].nodeValue && children[i].nodeValue.indexOf(ss_calendarFullDayGridTitle) > -1) {
+        		children[i].nodeValue = ss_calendarWorkDayGridTitle;
+        		break;
+        	}
+        }
     }
 }
 
@@ -1349,22 +1390,38 @@ var ss_cal_Events = {
 		
     },
     
-    toggleViewType: function() {
+    changeEventType: function() {
+    	var oldEventType = this.eventsType;
+    
 		if (this.eventsType < (this.eventsTypes.length - 1)) {
 			this.eventsType++;
 		} else {
 			this.eventsType = 0;
 		}
-		var ss_calViewEntryTypes = document.getElementById("ss_calViewEntryTypes");
-		if (this.eventsType == 0) {
-			ss_calViewEntryTypes.innerHTML = ss_calendarEntriesViewType_Events;
-		} else if (this.eventsType == 1) {
-			ss_calViewEntryTypes.innerHTML = ss_calendarEntriesViewType_Creation;
-		} else if (this.eventsType == 2) {
-			ss_calViewEntryTypes.innerHTML = ss_calendarEntriesViewType_Activity;
+		
+		var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose");
+		var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect");
+		if (!ss_calChooseEntryTypes || !ss_calSelectEntryTypes) {
+			return;
+		}
+		
+		if (ss_calChooseEntryTypes.checked) {
+			if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[1]) {
+				this.eventsType = 1;
+			} else if (ss_calSelectEntryTypes.options[ss_calSelectEntryTypes.selectedIndex].value == this.eventsTypes[2]) {
+				this.eventsType = 2;
+			}
+		} else {
+			this.eventsType = 0;
 		}
 
-		this.redrawAll();
+		if (oldEventType != this.eventsType) {
+			this.redrawAll();
+		}
     }
     
 };
+
+function ss_initializeCalendar () {
+	ss_cal_CalData.loadInitial();
+}
