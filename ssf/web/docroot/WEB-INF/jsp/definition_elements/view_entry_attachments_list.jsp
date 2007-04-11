@@ -26,7 +26,7 @@
 <c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
   <c:set var="selectionCount" value="${selectionCount + 1}"/>
   <c:set var="versionCount" value="0"/>
-  <c:forEach var="fileVersion" items="${selection.fileVersions}">
+  <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
   <c:set var="thumbRowSpan" value="${versionCount}"/>
@@ -106,7 +106,7 @@
 				     value="${selection.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="short" /></td>
 		<td class="ss_att_meta">${selection.fileItem.lengthKB}KB</td>
-		<td class="ss_att_meta ss_att_space">${selection.creation.principal.title}</td>
+		<td class="ss_att_meta ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
 	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
@@ -114,9 +114,7 @@
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8"><ssf:nlt tag="entry.PreviousVersions"/></td>
 		</tr>	
-		<c:set var="versionCount" value="0"/>
-		<c:forEach var="fileVersion" items="${selection.fileVersions}">
-			<c:if test="${versionCount > 0}">
+		<c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1">
 	          <tr>
 				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;"><a style="text-decoration: none;"
 				  href="<ssf:url 
@@ -137,11 +135,9 @@
 				     value="${fileVersion.modification.date}" type="both" 
 					 timeStyle="short" dateStyle="short" /></td>
 				<td class="ss_att_meta">${fileVersion.fileItem.lengthKB}KB</td>
-				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.creation.principal.title}</td>
+				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>
 			  </tr>
-			</c:if>
-			<c:set var="versionCount" value="${versionCount + 1}"/>
  	    </c:forEach>
 	</c:if>
 </c:forEach>
