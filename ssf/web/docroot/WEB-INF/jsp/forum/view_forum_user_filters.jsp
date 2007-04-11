@@ -16,7 +16,7 @@
 <%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
-	String filterName = NLT.get("select");
+	String filterName = NLT.get("Select");
 	if (userFolderProperties != null) {
 		Map searchFilters = (Map) userFolderProperties.getProperty("searchFilters");
 		if (searchFilters == null) searchFilters = new java.util.HashMap();
@@ -76,10 +76,10 @@
 				<portlet:param name="binderId" value="${ssBinder.id}"/>
 				<portlet:param name="binderType" value="${ssBinder.entityType}"/>
 				</portlet:renderURL>"
-		><ssf:nlt tag="edit" text="Edit"/></a>
+		><ssf:nlt tag="Edit" text="Edit"/></a>
 		</c:if>
 		<c:if test="${ssConfigJspStyle == 'template'}">
-		<ssf:nlt tag="edit" text="Edit"/>
+		<ssf:nlt tag="Edit" text="Edit"/>
 		</c:if>
 	</li>
 
