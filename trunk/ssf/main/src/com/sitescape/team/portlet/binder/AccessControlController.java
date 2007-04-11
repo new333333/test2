@@ -73,7 +73,6 @@ public class AccessControlController extends AbstractBinderController {
 			RenderResponse response) throws Exception {
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
-        User user = RequestContextHolder.getRequestContext().getUser();
 		
 		Map model = new HashMap();
 		setupAccess(this, request, response, binder, model);
@@ -81,11 +80,6 @@ public class AccessControlController extends AbstractBinderController {
 		BinderHelper.buildNavigationLinkBeans(this, binder, model);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-		Long ownerId = binder.getOwnerId();
-		if (ownerId != null) {
-			User owner = (User) getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), ownerId);
-			model.put(WebKeys.BINDER_OWNER, owner);
-		}
 		User superUser = AccessUtils.getZoneSuperUser();
 		model.put(WebKeys.ACCESS_SUPER_USER, superUser);
 

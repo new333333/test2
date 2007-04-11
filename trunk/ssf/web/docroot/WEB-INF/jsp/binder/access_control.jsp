@@ -258,8 +258,8 @@ function ss_addClipboardUsersToAccessControlList<portlet:namespace/>() {
   <span><ssf:nlt tag="access.workspaceOwner"/></span>
 </c:if>
 <span id="ss_accessControlOwner<portlet:namespace/>"
-  class="ss_bold">${ssBinderOwner.title} 
-  <span class="ss_normal ss_smallprint ss_italic">(${ssBinderOwner.name})</span></span>&nbsp;&nbsp;
+  class="ss_bold">${ssBinder.owner.title} 
+  <span class="ss_normal ss_smallprint ss_italic">(${ssBinder.owner.name})</span></span>&nbsp;&nbsp;
 <span class="ss_fineprint"><a href="javascript: ;" 
   onClick="ss_showChangeOwnerMenu<portlet:namespace/>(this);return false;">[<ssf:nlt tag="edit"/>]</a></span>
 </form>
