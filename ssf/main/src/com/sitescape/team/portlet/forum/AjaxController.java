@@ -12,11 +12,8 @@ package com.sitescape.team.portlet.forum;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,7 +37,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.CalendarViewRangeDates;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Definition;
@@ -49,7 +45,6 @@ import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
@@ -60,11 +55,10 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.ic.ICBroker;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFilter;
-import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -83,7 +77,6 @@ import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.team.module.shared.MapInputData;
 /**
  * @author Peter Hurley
  *
@@ -1683,10 +1676,6 @@ public class AjaxController  extends SAbstractController {
 		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
-			Principal owner = binder.getOwner(); 
-			if (owner != null) {
-				model.put(WebKeys.BINDER_OWNER, owner);
-			}
 		}
 			
 		response.setContentType("text/xml");

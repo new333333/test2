@@ -189,15 +189,6 @@ public class Folder extends Binder {
 	}
 
 
-    public Long getOwnerId() {
-    	HistoryStamp creation = getCreation();
-    	if(creation != null) {
-    		Principal principal = creation.getPrincipal();
-    		if(principal != null)
-    			return principal.getId();
-    	}
-    	return null;
-    }
     public List getEntryDefinitions() {
    		return getDefs(Definition.FOLDER_ENTRY);
     }
