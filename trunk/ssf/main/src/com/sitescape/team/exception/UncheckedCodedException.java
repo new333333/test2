@@ -66,7 +66,7 @@ public abstract class UncheckedCodedException extends UncheckedException impleme
         this.errorArgs = errorArgs;
     }
 
-    private void setErrorCode(String errorCode) {
+    protected void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
     }
 }

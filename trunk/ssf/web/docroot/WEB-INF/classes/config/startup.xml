@@ -49,6 +49,7 @@
 		<property name="templateDescription">__configuration_default_folder_wiki_description</property>
 		<property name="name">_wikiFolderConfig</property>
 		<property name="entryDef">_wikiFolder</property>
+		<property name="uniqueTitles">true</property>
 		<definition name="_wikiFolder"/>
 		<definition name="_blogFolder"/>
 		<definition name="_calendarFolder"/>
@@ -71,7 +72,6 @@
 		<property name="templateTitle">__configuration_default_folder_library</property>
 		<property name="templateDescription">__configuration_default_folder_library_description</property>
 		<property name="library">true</property>
-		<property name="uniqueTitles">true</property>
 		<property name="name">_libraryFolderConfig</property>
 		<property name="entryDef">_libraryFolder</property>
 		<definition name="_libraryFolder"/>
