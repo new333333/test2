@@ -70,18 +70,33 @@ public class EditController extends SAbstractController {
 			}
 			if (ViewController.FORUM_PORTLET.equals(displayType)) {
 				List forumPrefIdList = new ArrayList();
-				//	Get the forums to be displayed
+				String[] currentForumPrefIdList = PortletPreferencesUtil.getValues(prefs, 
+						WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+				
+				//	Build the jsp bean (sorted by folder title)
+				for (int i = 0; i < currentForumPrefIdList.length; i++) {
+					forumPrefIdList.add(currentForumPrefIdList[i]);
+				}
+				//	Get the forums to be deleted
 				Iterator itFormData = formData.entrySet().iterator();
+				while (itFormData.hasNext()) {
+					Map.Entry me = (Map.Entry) itFormData.next();
+					if (((String)me.getKey()).startsWith("del_")) {
+						String forumId = ((String)me.getKey()).substring(4);
+						if (forumPrefIdList.contains(forumId)) forumPrefIdList.remove(forumId);
+					}
+				}
+				//	Get the forums to be displayed
+				itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
 					Map.Entry me = (Map.Entry) itFormData.next();
 					if (((String)me.getKey()).startsWith("id_")) {
 						String forumId = ((String)me.getKey()).substring(3);
-						forumPrefIdList.add(forumId);
+						if (!forumPrefIdList.contains(forumId)) forumPrefIdList.add(forumId);
 					}
 				}
-				if (forumPrefIdList.size() > 0) {
-					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, (String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
-				}
+				prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, 
+						(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
 
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType) ||
