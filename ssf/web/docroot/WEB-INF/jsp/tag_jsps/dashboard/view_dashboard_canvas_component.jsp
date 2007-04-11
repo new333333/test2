@@ -100,6 +100,8 @@ if (displayStyle == null || displayStyle.equals("")) {
 				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/down.gif" 
 				  alt="<ssf:nlt tag="button.moveDown"/>" /></a></li>
 			  </c:if>
+			  
+			  <c:if test="${ssDashboard.sharedModificationAllowed}">
 				<li><a href="#" 
 				    onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}');ss_submitDashboardChange(this, '_modifyComponentData');return false;"
 				  ><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/modify.gif" 
@@ -108,6 +110,7 @@ if (displayStyle == null || displayStyle.equals("")) {
 				  onClick="ss_modifyDashboardComponent(this, '${ss_dashboard_componentScope}'); ss_confirmDeleteComponent(this, '${ss_dashboard_id}', '<portlet:namespace/>_component_${ss_component_count}', '<portlet:namespace/>_component2_${ss_component_count}', '${myId}', '<portlet:namespace/>_${ss_dashboard_id}'); return false;"
 				><img border="0" src="<html:imagesPath/>skins/${ss_user_skin}/iconset/delete-component.gif" 
 				  alt="<ssf:nlt tag="button.delete"/>" /></a></li>
+			  </c:if>
 			</ul>
 	</form>
 	<strong>${ssDashboard.dashboard.components[ssComponentId].title}&nbsp;</strong>

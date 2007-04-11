@@ -13,6 +13,7 @@ package com.sitescape.team.module.binder.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -680,8 +681,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	public Set getTeamMemberIds(Long binderId, boolean explodeGroups) {
 		Binder binder = loadBinder(binderId);
 		//give access to team members  or binder Admins.
-		checkAccess(binder, "getTeamMembers");
-		return getTeamMemberIds(binder, explodeGroups);
+		if (testAccess(binder, "getTeamMembers")) {
+			return getTeamMemberIds(binder, explodeGroups);
+		}
+		//Not privileged, send back an empty set
+		return new HashSet();
 	}
 	/*
 	 *  (non-Javadoc)

@@ -850,8 +850,12 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	
 	public static String addComponent(ActionRequest request, Binder binder, 
 			String listName, String scope) {
-		Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
-		return DashboardHelper.addComponent(request, dashboard, listName, scope);
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+			Dashboard dashboard = getInstance().getDashboardObj(binder, scope);
+			return DashboardHelper.addComponent(request, dashboard, listName, scope);
+		}
+		//User isn't privileged to do this
+		return "";
 	}
 	
 	public static String addComponent(ActionRequest request, Dashboard dashboard, 
@@ -889,12 +893,14 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 	}
 	public static void saveComponentData(ActionRequest request, Binder binder, String scope) {
 		//Get the dashboard component
-		String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
-		String componentScope = "";
-		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
-		if (!componentScope.equals("")) {
-			Dashboard d = getInstance().getDashboardObj(binder, componentScope);
-			DashboardHelper.saveComponentData(request, d, componentId);
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+			String componentId = PortletRequestUtils.getStringParameter(request, "_componentId", "");
+			String componentScope = "";
+			if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+			if (!componentScope.equals("")) {
+				Dashboard d = getInstance().getDashboardObj(binder, componentScope);
+				DashboardHelper.saveComponentData(request, d, componentId);
+			}
 		}
 	}
 	public static void saveComponentData(ActionRequest request, Dashboard d) {
@@ -989,14 +995,16 @@ public class DashboardHelper implements AllBusinessServicesInjected {
 
 	public static void deleteComponent(ActionRequest request, Binder binder, String componentId, 
 			String scope) {
-		//Get the dashboard component
-		String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
-		String componentScope = "";
-		if (componentId.contains("_")) componentScope = componentId.split("_")[0];
-		if (Validator.isNotNull(componentScope)) {
-			Dashboard d = getInstance().getDashboardObj(binder, componentScope);	
-			//Save the updated dashbord configuration 
-			getInstance().getDashboardModule().deleteComponent(d.getId(), dashboardListKey, componentId);
+		if (!scope.equals(DashboardHelper.Binder) || getInstance().getBinderModule().testAccess(binder, "setProperty")) {
+			//Get the dashboard component
+			String dashboardListKey = PortletRequestUtils.getStringParameter(request, "_dashboardList", "");
+			String componentScope = "";
+			if (componentId.contains("_")) componentScope = componentId.split("_")[0];
+			if (Validator.isNotNull(componentScope)) {
+				Dashboard d = getInstance().getDashboardObj(binder, componentScope);	
+				//Save the updated dashbord configuration 
+				getInstance().getDashboardModule().deleteComponent(d.getId(), dashboardListKey, componentId);
+			}
 		}
 	}
 
