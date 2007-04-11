@@ -81,24 +81,24 @@ var ss_confirmDeleteFolderText = "<ssf:nlt tag="folder.confirmDeleteFolder"/>";
 </table>
 
 </div>
-<div class="ss_folder_border" style="position:relative; top:2; margin:2px; padding:2px;">
+<div class="ss_folder_border" style="position:relative; top:2; margin:2px; ">
 
-<% // Add the toolbar with the navigation widgets, commands and filter %>
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
-<c:set var="ss_history_bar_table_class" value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
-</ssf:toolbar>
-
-<% // Entry toolbar %>
-<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
-
-<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
-</ssf:toolbar>
-
-</ssf:toolbar>
+	<% // Add the toolbar with the navigation widgets, commands and filter %>
+	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">
+	
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true">
+			<c:set var="ss_history_bar_table_class" value="ss_actions_bar_background ss_actions_bar_history_bar" scope="request"/>
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+		</ssf:toolbar>
+		
+		<% // Entry toolbar %>
+		<ssf:toolbar toolbar="${ssEntryToolbar}" style="ss_actions_bar2 ss_actions_bar" item="true" />
+		
+		<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
+			<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+		</ssf:toolbar>
+	
+	</ssf:toolbar>
 
 </div>
 </div>
