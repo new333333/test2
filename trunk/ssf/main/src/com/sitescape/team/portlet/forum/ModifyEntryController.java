@@ -25,10 +25,12 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
@@ -83,9 +85,13 @@ public class ModifyEntryController extends SAbstractController {
 				//response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
-				Long destinationId = new Long(PortletRequestUtils.getRequiredLongParameter(request, "destination"));
-				getFolderModule().moveEntry(folderId, entryId, destinationId);
-				setupViewFolder(response, folderId);		
+				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				if (destinationId != null) {
+					getFolderModule().moveEntry(folderId, entryId, new Long(destinationId));
+					setupViewFolder(response, folderId);		
+				} else {
+					setupViewEntry(response, folderId, entryId);
+				}
 			}
 			
 		} else if (formData.containsKey("editElementBtn")) {
@@ -95,7 +101,7 @@ public class ModifyEntryController extends SAbstractController {
 
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupCloseWindow(response);
+			setupViewEntry(response, folderId, entryId);
 		
 		} else {
 			response.setRenderParameters(formData);		
@@ -141,6 +147,9 @@ public class ModifyEntryController extends SAbstractController {
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.BINDER, entry.getParentFolder());
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			path = WebKeys.VIEW_MOVE_ENTRY;
 		} else {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
