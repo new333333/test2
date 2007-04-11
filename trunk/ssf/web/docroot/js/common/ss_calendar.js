@@ -183,7 +183,6 @@ var ss_cal_CalData = {
 				alert(ss_not_logged_in);
 			},
 			load: function(type, data, evt) {
-			try {
 			    var loading = document.getElementById("ss_loading");
 		    	if (loading) {
 		    		loading.parentNode.removeChild(loading);
@@ -205,11 +204,9 @@ var ss_cal_CalData = {
 				}
 				ss_cal_Grid.activateGrid(grid);
 		        ss_cal_Events.redrawAll();
-		       } catch (e) {alert(e);}
 			},
 						
 			mimetype: "text/json",
-			transport: "XMLHTTPTransport",
 			method: "get"
 		};
 		dojo.io.bind(bindArgs);
@@ -911,6 +908,7 @@ function ss_cal_drawMonthEventBlock(containerId, date, eventCount, eventList) {
     for (var i = 0; i < iterations; i++) {
         ss_cal_Events.displayId += 1;
         resultDisplayIds.push(ss_cal_Events.displayId);
+        
         var ebox = document.createElement("div");
         ebox.className = "ss_cal_eventBox ss_cal_monthEventBody";
 
@@ -927,7 +925,7 @@ function ss_cal_drawMonthEventBlock(containerId, date, eventCount, eventList) {
     	viewHref += "&entryId=" + e.entryId;
 		ebox.innerHTML = '<a href="'+viewHref+'" onClick="'+e.viewOnClick+' return false;">'+e.title+'</a>';
         container.appendChild(ebox);
-        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();
+        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        
     }
 
     if (eventCount > 3) {
@@ -1190,6 +1188,7 @@ var ss_cal_Events = {
 
     redrawMonth: function() {
         this.undrawEvents();
+        
         for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
             var grid = "ss_cal_monthGrid";
                         
@@ -1200,10 +1199,11 @@ var ss_cal_Events = {
 
 			var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
 			if (monthViewInfo.startViewDate <= date && date <= monthViewInfo.endViewDate) {
-	            var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
-	            while (dids.length) { this.monthGridEvents.push(dids.pop()); }
+	           var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
+	           while (dids.length) { this.monthGridEvents.push(dids.pop()); }
             }
         }
+        
     },
 
     redrawAll: function() {
