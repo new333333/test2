@@ -13,8 +13,9 @@
    </div>
   </td></tr>
   <tr>
-   <td width="30px"><div class="ss_popup_bottomleft"></div>
-  <td width="100%"><div class="ss_popup_bottomright"></div>
+   <td width="40px"><div class="ss_popup_bottomleft"></div>
+   <td width="100%"><div class="ss_popup_bottomcenter"></div>
+   <td width="40px"><div class="ss_popup_bottomright"></div>
   </tr>
  </tbody>
 </table>

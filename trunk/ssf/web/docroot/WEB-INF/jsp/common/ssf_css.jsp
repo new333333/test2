@@ -588,6 +588,36 @@ table.ss_guestbook {
 
 /* Text styled as buttons */
 
+.ss_inlineButton {
+  cursor: pointer;
+  display: block;
+ <c:if test="<%= isIE %>">
+  height: 20px;
+ </c:if>
+ <c:if test="<%= !isIE %>">
+  height: 18px;
+ </c:if>
+  line-height: 18px;
+  text-align: center;
+  padding: 0px 3px 0px 3px;
+  font-size: 9px !important;
+  font-family: Arial, sans-serif;
+  white-space: nowrap;
+  text-decoration: none !important;
+  border: 1px solid #AFC8E3;
+  background-image: url(<html:imagesPath/>pics/background_inline_button_blue.gif);
+  background-repeat: repeat-x;
+}
+.ss_inlineButton:hover {
+  border: 1px solid #666666;
+}
+.ss_inlineButton span {
+  padding: 0px 5px 0px 5px;
+  text-align: center;
+}
+.ss_inlineButton img {
+  margin: 0px 0px -5px 0px;
+}
 
 .ss_tinyControl {
   font-size: 9px !important;
@@ -728,9 +758,19 @@ div.ss_popup_topleft {
   background-repeat: no-repeat;
   background-position: top left;
   height: 24px;
-  width: 30px;
+  width: 40px;
   padding: 0px;
 }
+
+div.ss_popup_topcenter {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_top_blue.gif);
+  background-repeat: no-repeat;
+  background-position: -50 top;
+  height: 24px;
+  padding: 0px;
+}
+
 
 div.ss_popup_topright {
   position: relative;
@@ -738,6 +778,7 @@ div.ss_popup_topright {
   background-repeat: no-repeat;
   background-position: top right;
   height: 24px;
+  width: 40px;
   padding: 0px;
 }
 
@@ -747,7 +788,16 @@ div.ss_popup_bottomleft {
   background-repeat: no-repeat;
   background-position: top left;
   height: 16px;
-  width: 30px;
+  width: 40px;
+  padding: 0px;
+}
+
+div.ss_popup_bottomcenter {
+  position: relative;
+  background-image: url(<html:imagesPath/>pics/popup_btm_blue.gif);
+  background-repeat: no-repeat;
+  background-position: -50 top;
+  height: 16px;
   padding: 0px;
 }
 
@@ -757,6 +807,7 @@ div.ss_popup_bottomright {
   background-repeat: no-repeat;
   background-position: top right;
   height: 16px;
+  width: 40px;
   padding: 0px;
 }
 
@@ -765,8 +816,6 @@ div.ss_popup_title {
    font-weight: bold;
    color: ${ss_style_header_bar_title_color};
    position: relative;
-   margin-left: -25px;
-   margin-right: 25px;
    padding-top: 3px;
    text-align: center;
 }
@@ -777,9 +826,8 @@ div.ss_popup_close {
   background-repeat: no-repeat;
   width: 10px;
   height: 10px;
-  float: right;
-  margin-right: 11px;
   top: 7px;
+  left: 18px;
 }
 
 div.ss_popup_body {
