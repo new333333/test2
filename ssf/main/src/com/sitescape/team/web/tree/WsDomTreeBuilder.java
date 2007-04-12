@@ -141,7 +141,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("displayOnly", "true");
 		} else {
 			Binder binder = (Binder) source;
-			element.addAttribute("title", binder.getTitle());
+			element.addAttribute("title", binder.getSearchTitle());
 			if (getPage().equals("")) {
 				element.addAttribute("id", binder.getId().toString());
 			} else {

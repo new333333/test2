@@ -1009,7 +1009,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	    List wa = getCoreDao().loadObjects(ids, Binder.class, user.getZoneId());
 	    
 	    //can certainly see own memberships
-	    Set result = new TreeSet(new BinderComparator(current.getLocale()));
+	    Set result = new TreeSet(new BinderComparator(current.getLocale(),BinderComparator.SortByField.searchTitle));
 	    if (user == current) result.addAll(wa);
 	    else {
 	    	for (int i=0; i<wa.size(); ++i) {

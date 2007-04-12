@@ -276,7 +276,7 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 	
 	public Collection getFolders(List folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
-        Comparator c = new BinderComparator(user.getLocale());
+        Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (int i=0; i<folderIds.size(); ++i) {
 			try {//access check done by getFolder
@@ -440,7 +440,7 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
         checkAccess(top, "getDomFolderTree");
         
         User user = RequestContextHolder.getRequestContext().getUser();
-    	Comparator c = new BinderComparator(user.getLocale());
+    	Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
     	    	
     	org.dom4j.Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);

@@ -151,7 +151,6 @@
       <properties>
         <property name="_elements" value="name"/>
         <property name="_elements" value="title"/>
-        <property name="_elements" value="organization"/>
         <property name="_elements" value="phone"/>
         <property name="_elements" value="emailAddress"/>
         <property name="_elements" value="zonName"/>

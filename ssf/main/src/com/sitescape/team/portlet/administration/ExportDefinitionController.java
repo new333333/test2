@@ -51,7 +51,6 @@ public class ExportDefinitionController extends  SAbstractController {
 		HashSet<String> uniqueFilenames = new HashSet<String>();
 		if (formData.containsKey("okBtn")) {
 			List errors = new ArrayList();
-			//Get the forums to be indexed
 			String dirPath = SPropsUtil.getDirPath("data.root.dir") + File.separator + "definitions" +
 				File.separator + RequestContextHolder.getRequestContext().getZoneName();
 			FileHelper.mkdirsIfNecessary(dirPath);

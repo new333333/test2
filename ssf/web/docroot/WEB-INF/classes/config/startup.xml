@@ -112,7 +112,6 @@
 		<property name="template">_discussionFolderConfig</property>
 		<property name="template">_guestbookFolderConfig</property>
 		<property name="template">_photoFolderConfig</property>
-		<property name="template">_wikiFolderConfig</property>
 	</template>
 	
 </zoneConfiguration>

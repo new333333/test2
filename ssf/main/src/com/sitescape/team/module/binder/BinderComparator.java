@@ -24,8 +24,14 @@ import com.sitescape.team.domain.Binder;
  */
 public class BinderComparator implements Comparator {
    	private Collator c;
-	public BinderComparator(Locale locale) {
-		c = Collator.getInstance(locale);		
+   	private SortByField type;
+	public enum SortByField {
+		title ,
+		searchTitle };
+
+	public BinderComparator(Locale locale, SortByField type) {
+		c = Collator.getInstance(locale);
+		this.type = type;
 	}
 	public int compare(Object obj1, Object obj2) {
 		Binder f1,f2;
@@ -35,11 +41,18 @@ public class BinderComparator implements Comparator {
 		if (f1 == f2) return 0;
 		if (f1==null) return -1;
 		if (f2 == null) return 1;
-		String t1 = f1.getTitle();
-		String t2 = f2.getTitle();
+		String t1,t2;
+		if (type.equals(SortByField.title)) {
+			t1 = f1.getTitle().toLowerCase();
+			t2 = f2.getTitle().toLowerCase();
+		} else {
+			t1 = f1.getSearchTitle().toLowerCase();
+			t2 = f2.getSearchTitle().toLowerCase();
+			
+		}
 		int result=0;
 		if ((t1!=null) && (t2 != null)) {
-			result = c.compare(f1.getTitle(), f2.getTitle());
+			result = c.compare(t1, t2);
 			if (result != 0) return result;
 		} else if ((t1==null) && (t2 != null)) return -1;
 		else if ((t1 != null) && (t2 == null)) return 1;

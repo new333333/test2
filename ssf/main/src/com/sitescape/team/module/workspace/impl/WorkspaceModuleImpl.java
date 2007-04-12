@@ -151,7 +151,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
    	public Collection getWorkspaceTree(Workspace top) {
         User user = RequestContextHolder.getRequestContext().getUser();
       	//order result
-        Comparator c = new BinderComparator(user.getLocale());
+        Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
        	TreeSet<Binder> tree = new TreeSet<Binder>(c);
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
@@ -195,7 +195,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	Workspace top = getWorkspace(id);
  
         User user = RequestContextHolder.getRequestContext().getUser();
-        Comparator c = new BinderComparator(user.getLocale());
+        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.searchTitle);
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
     	buildWorkspaceDomTree(rootElement, top, c, domTreeHelper, levels);
@@ -218,7 +218,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
         }
         if (parent == null) throw new InternalException("Top is not a parent"); 
         ancestors.add(parent);
-        Comparator c = new BinderComparator(user.getLocale());
+        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.searchTitle);
     	Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
     	for (int i=ancestors.size()-1; i>=0; --i) {

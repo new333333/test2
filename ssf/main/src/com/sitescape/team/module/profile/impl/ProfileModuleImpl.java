@@ -150,6 +150,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			AccessUtils.deleteCheck(entry);   		
 		} else if ("modifyEntry".equals(operation)) {
 			AccessUtils.modifyCheck(entry);   		
+		} else if ("setUserProperty".equals(operation)) {
+			if (RequestContextHolder.getRequestContext().getUser().equals(entry)) return;
+			AccessUtils.modifyCheck(entry);   		
 	    } else {
 	    	AccessUtils.readCheck(entry);
 	    }
@@ -186,13 +189,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     //RW transaction
 	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
-   		UserProperties uProps=null;
-   		User user = RequestContextHolder.getRequestContext().getUser();
-  		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
-    		uProps = getProfileDao().loadUserProperties(userId, binderId);
-			uProps.setProperty(property, value); 	
-  		} else throw new NotSupportedException();
+   		User currentUser = RequestContextHolder.getRequestContext().getUser();
+   		User user;
+		if (userId == null) user = currentUser;
+		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+ 		checkAccess(user, "setUserProperty");
+ 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+		uProps.setProperty(property, value); 	
   		return uProps;
    }
 	//RO transaction
@@ -208,13 +211,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
    //RW transaction
    public UserProperties setUserProperty(Long userId, String property, Object value) {
-   		UserProperties uProps=null;
-   		User user = RequestContextHolder.getRequestContext().getUser();
-  		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
- 			uProps = getProfileDao().loadUserProperties(user.getId());
-			uProps.setProperty(property, value);			
-  		} else throw new NotSupportedException();
+  		User currentUser = RequestContextHolder.getRequestContext().getUser();
+   		User user;
+		if (userId == null) user = currentUser;
+		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+ 		checkAccess(user, "setUserProperty");
+ 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId());
+		uProps.setProperty(property, value); 	
 		return uProps;
     }
 	//RO transaction
@@ -470,7 +473,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    				//want the user to be the creator
    				RequestContextUtil.setThreadContext(entry);
   				try {
-   					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getTitle(), entry.getName());
+   					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), entry.getTitle() + " ("+ entry.getName()+")", entry.getName());
    					Binder ws = getCoreDao().loadBinder(wsId, entry.getZoneId());
    					entry.setWorkspaceId(wsId);
    					return (Workspace)ws;
