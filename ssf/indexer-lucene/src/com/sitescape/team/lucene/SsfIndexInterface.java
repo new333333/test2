@@ -69,6 +69,7 @@ public interface SsfIndexInterface extends java.rmi.Remote {
 	
 	public ArrayList getTags(String indexName, Query query, Long id, String tag, String type, boolean isSuper)
 		throws RemoteException;
-	public ArrayList getSortTitles(String indexName, Query query, String start, String end,
+	
+	public ArrayList getNormTitles(String indexName, Query query, String start, String end,
 			int skipsize) throws RemoteException;
 }
