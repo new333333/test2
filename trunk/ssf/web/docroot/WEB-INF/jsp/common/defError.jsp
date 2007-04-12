@@ -11,6 +11,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@page import="java.io.PrintWriter" %>
 
 <h1><spring:message code="exception.generalError.title"/></h1>
 
@@ -19,7 +20,8 @@
 
 <p>${exception.class}</p>
 
-<p><% ((Exception)request.getAttribute("exception")).printStackTrace(); %>
+<p>
+<%((Exception)request.getAttribute("exception")).printStackTrace(new PrintWriter(out)); %>
 
 <ssf:ifnotadapter>
 <p style="text-align:center;"><a href="<portlet:renderURL portletMode="view" windowState="normal"/>">- <spring:message code="button.home"/> -</a></p>
