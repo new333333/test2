@@ -1822,37 +1822,91 @@ div.ss_global_toolbar_maximized {
 	background:${ss_style_background_color} url(<html:imagesPath/>pics/background_global_toolbar.jpg) repeat-x;
 	height:45px;
 	padding-top:2px;
-	
-<c:if test="<%= isIE %>">
-	margin-bottom:2px;
-</c:if>
-<c:if test="<%= !isIE %>">
-	margin-bottom:4px;
-</c:if>
+	<c:if test="<%= isIE %>">
+		margin-bottom:2px;
+	</c:if>
+	<c:if test="<%= !isIE %>">
+		margin-bottom:4px;
+	</c:if>
 }
+
+div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
+ div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
+ div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help {
+	float: left;
+	white-space: nowrap;
+}
+
+.ss_global_toolbar_help {
+	text-align: center;
+	font-weight: bold;
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
+	width: 4px;
+	height: 45px;
+	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.jpg) no-repeat;	
+	margin: 0 10px 0 10px;	
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
+	width: 96px;
+	padding-top: 7px;
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
+	padding-top: 7px;
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_label_text {
+	text-align: left;	
+	vertical-align: bottom;
+}
+
+div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quick_advanced {
+	text-align: right;
+	font-size: 10px;
+	padding-left: 50px;
+	vertical-align: top;
+}
+
 div.ss_global_toolbar table {
 	background: transparent;
 }
+div.ss_global_toolbar table tr.ss_row_txt td {
+	padding-top: 10px;
+}
+div.ss_global_toolbar table tr.ss_row_last td {
+	height: 29px;
+}
 div.ss_global_toolbar table td {
 	white-space: nowrap;
-	padding-left: 5px;
-	padding-right: 5px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .ss_global_toolbar_portlet_box {
-	background: #EEEEEE !important;
+	background: #DBE6F2 !important;
 }
 
 .ss_global_toolbar a span, .ss_global_toolbar div span {
 	background:transparent;
 }
+
+
+
+.ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div {
+	padding: 25px 10px 10px 10px;
+	vertical-align: middle;
+}
+
 .ss_global_toolbar_favs div {
 	background:url(<html:imagesPath/>icons/toolbar_favorites.png) no-repeat top;
-	padding-top: 25px;
+	width: 45px;
 }
 .ss_global_toolbar_myworkspace div {
 	background:url(<html:imagesPath/>icons/toolbar_myworkspace.png) no-repeat top;
-	padding-top: 25px;
+	width: 73px;
 }
 
 .ss_global_toolbar_favs_big div {
@@ -1875,8 +1929,9 @@ div.ss_global_toolbar_hide_portal {
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 }
 div.ss_global_toolbar_help {
-	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat center top;
-/*	padding-top: 16px; */
+	background:url(<html:imagesPath/>icons/toolbar_help.gif) no-repeat top center;
+	width: 42px;
+	padding-right: 4px;
 	text-align: center;
 }
 .ss_global_toolbar_findUser {
@@ -1889,10 +1944,18 @@ div.ss_global_toolbar_help {
 .ss_global_toolbar_findUser .form-text {
 	width:40px;
 }
-span.ss_global_toolbar_label_text {
-	color:#484848;
-	font-size: 10px;
+span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch {
+	color:#333333;
 	background: transparent;
+	font-weight: bold;	
+	white-space: nowrap;
+}
+
+span.ss_global_toolbar_label_text_quickSearch {
+	font-size: 11px;
+}
+span.ss_global_toolbar_label_text {
+	font-size: 10px;
 }
 div.ss_global_toolbar_findUser_text span {
 }
@@ -1906,8 +1969,8 @@ div.ss_global_toolbar_findUser_text span {
 	background:transparent;
 }
 .ss_global_toolbar_search .form-text {
-	width:100px;
-	background:#FFFFFF;
+	width: 150px;
+	background: #FFFFFF;
 }
 div.ss_global_toolbar_search_text {
     width:100px;
@@ -1921,6 +1984,8 @@ div.ss_global_toolbar_search_text span {
 .ss_global_toolbar_search a {
 	background:inherit !important;
 }
+
+
 
 /* tabs: */
 div.ss_tab_canvas {
