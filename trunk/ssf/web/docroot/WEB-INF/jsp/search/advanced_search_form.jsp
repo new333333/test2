@@ -27,7 +27,15 @@
 						<td><input type="text" name="searchAuthors" id="searchAuthors"/></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td><input type="text" name="searchTags" id="searchTags"/></td>
-						<td><a href="javascript: ss_search();"><img src="<html:imagesPath/>pics/search_icon.gif" class="ss_searchButton"/></a>
+						<td>
+							<select name="ssMaxHits" id="ssMaxHits">
+								<option value="5" <c:if test="${ssMaxHits == 5}">selected="selected"</c:if>>5</option>							
+								<option value="10" <c:if test="${ssMaxHits == 10}">selected="selected"</c:if>>10</option>
+								<option value="25" <c:if test="${ssMaxHits == 25}">selected="selected"</c:if>>25</option>							
+								<option value="50" <c:if test="${ssMaxHits == 50}">selected="selected"</c:if>>50</option>
+								<option value="100" <c:if test="${ssMaxHits == 100}">selected="selected"</c:if>>100</option>								
+							</select>
+							<a href="javascript: ss_search();"><img src="<html:imagesPath/>pics/search_icon.gif" class="ss_searchButton"/></a>
 							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>

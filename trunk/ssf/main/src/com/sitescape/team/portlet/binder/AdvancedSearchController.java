@@ -134,6 +134,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
+		options.put(WebKeys.URL_PAGE_NUMBER, pageNo);
 	}
 	private Map getOptionsFromTab(Map tab) {
 		Map options = new HashMap();
@@ -157,10 +158,10 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private Map prepareSearchFormData(RenderRequest request) throws PortletRequestBindingException {
 		Tabs tabs = setupTabs(request);
 		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
+		Map options = prepareSearchOptions(request);
 		if (tabId < 0) {
-			Map options = new HashMap();
-			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
-			options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
+			if (!options.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title"));
+			if (!options.containsKey(Tabs.TAB_SEARCH_TEXT))options.put(Tabs.TAB_SEARCH_TEXT, NLT.get("searchForm.advanced.Title"));
 			options.put(Tabs.TYPE, "search");
 			int newTabId = tabs.addTab(DocumentHelper.createDocument(), options);
 			tabs.setCurrentTab(newTabId);
@@ -168,6 +169,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		model.put(WebKeys.TABS, tabs.getTabs());
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
+		model.put(WebKeys.SEARCH_FORM_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
 		model.put("quickSearch", false);
 		
 		return model;
@@ -198,7 +200,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.URL_TAB_ID, tabs.getCurrentTab());
 		model.put(SearchFilterMap, convertedToDisplay(query));
 		//this method check in model(SearchAdditionalOptions) which data are necessary to set search filters defined by user 
-		prepareAdditionalFiltersDate(model);
+		prepareAdditionalFiltersData(model);
 		
 		// for test only
 		model.put("query", query.asXML());
@@ -211,9 +213,12 @@ public class AdvancedSearchController extends AbstractBinderController {
 		// this function puts also proper part of entries list into a model
 		preparePagination(model, results, options);
 		
-		model.put("quickSearch", false);
+		model.put(WebKeys.SEARCH_FORM_MAX_HITS, options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		
 		// TODO implement - get values from user setup? options?
-		model.put("summaryWordCount", 20);		
+		model.put("summaryWordCount", 20);
+		model.put("quickSearch", false);
+		
 	}
 	
 
@@ -324,7 +329,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 	}
 	
-	private void prepareAdditionalFiltersDate(Map model) {
+	private void prepareAdditionalFiltersData(Map model) {
 		Map additionalOptions = (Map)((Map) model.get(SearchFilterMap)).get(FilterHelper.SearchAdditionalFilters);
 		if (additionalOptions != null) {
 			prepareWorkflows(model);
@@ -675,10 +680,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		UserProperties userProp = getProfileModule().getUserProperties(user.getId());
 		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE);
 		if (entriesPerPage == null || "".equals(entriesPerPage)) {
-			options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(SPropsUtil.getString("search.records.listed")));
-		} else {
-			options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+			entriesPerPage = SPropsUtil.getString("search.records.listed");
 		}
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
 		
 		Integer searchUserOffset = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_USER_OFFSET, 0);
 			
@@ -688,7 +692,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
 		
-		Integer maxHits = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.SEARCH_MAX_HITS_DEFAULT);
+		Integer maxHits = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, new Integer(entriesPerPage));
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
 		
 		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
