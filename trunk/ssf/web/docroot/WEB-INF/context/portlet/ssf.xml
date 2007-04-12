@@ -42,7 +42,6 @@
 	<bean id="meetingController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="sendEntryEmailController" parent="controllerDependencyTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
 		
-
  	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">

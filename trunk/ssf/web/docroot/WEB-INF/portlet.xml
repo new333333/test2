@@ -186,6 +186,23 @@
         <resource-bundle>content.gallery</resource-bundle>
     </portlet>
 
+    <portlet>
+        <description xml:lang="en">ICECorps Welcome</description>
+        <portlet-name>ss_welcome</portlet-name>
+        <display-name xml:lang="en">ICECorps Welcome</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/welcome.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+        </supports>
+        <supported-locale>en</supported-locale>
+        <resource-bundle>content.welcome</resource-bundle>
+    </portlet>
+
 <!-- Test portlet that throws exceptions on demand.  Uncomment it in liferay-portlet.xml, too.
     <portlet>
         <description xml:lang="en">SiteScape Exception Test Portlet</description>
