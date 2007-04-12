@@ -162,13 +162,13 @@ public class EntityIndexUtils {
     	        			normTitle = normTitle.substring(2);
     	        		if ("".equals(normTitle)) {
     	        			// try to use the sortTitle instead
-    	        			normTitle = title.toLowerCase();
+    	        			normTitle = title;
     	        		}
 
     	        } else {
-    	        	normTitle = title.toLowerCase();
+    	        	normTitle = title;
     	        }
-    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        doc.add(bucketTitleField);
             }
     	}
@@ -181,9 +181,9 @@ public class EntityIndexUtils {
 			String title = entry.getTitle();
 			title = title.trim();
 			if (title.length() > 0) {
-				normTitle = title.toLowerCase();
+				normTitle = title;
 				Field bucketTitleField = new Field(
-						EntityIndexUtils.NORM_TITLE_FIELD, normTitle,
+						EntityIndexUtils.NORM_TITLE_FIELD, normTitle.toLowerCase(),
 						Field.Store.YES, Field.Index.UN_TOKENIZED);
 				doc.add(bucketTitleField);
 			}
