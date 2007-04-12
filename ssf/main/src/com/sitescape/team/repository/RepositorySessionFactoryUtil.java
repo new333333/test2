@@ -10,7 +10,10 @@
  */
 package com.sitescape.team.repository;
 
+import com.sitescape.team.InternalException;
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.repository.fi.FIRepositorySessionFactoryAdapter;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class RepositorySessionFactoryUtil {
@@ -27,9 +30,15 @@ public class RepositorySessionFactoryUtil {
 		return factory;
 	}
 	
-	public static RepositorySession openSession(String repositoryName) 
+	public static RepositorySession openSession(Binder binder, String repositoryName) 
 	throws RepositoryServiceException, UncheckedIOException {
 		RepositorySessionFactory factory = getRepositorySessionFactory(repositoryName);
-		return factory.openSession();
+		
+		if(factory instanceof FIRepositorySessionFactoryAdapter)
+			return ((FIRepositorySessionFactoryAdapter) factory).openSession(binder.getResourceDriverName());
+		else if(factory instanceof ExclusiveRepositorySessionFactory)
+			return ((ExclusiveRepositorySessionFactory) factory).openSession();
+		else
+			throw new InternalException("This should not occur");
 	}
 }

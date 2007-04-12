@@ -38,6 +38,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileHelper;
 
@@ -49,9 +50,11 @@ public class FileRepositorySession implements RepositorySession {
 	private static final String VERSION_NAME_SUFFIX = "_";
 	private static final String TEMP_STRING = "_ssftempfile_";
 
+	private FileRepositorySessionFactory factory;
 	private String repositoryRootDir;
 	
-	public FileRepositorySession(String repositoryRootDir) {
+	public FileRepositorySession(FileRepositorySessionFactory factory, String repositoryRootDir) {
+		this.factory = factory;
 		this.repositoryRootDir = repositoryRootDir;
 	}
 	
@@ -874,5 +877,9 @@ public class FileRepositorySession implements RepositorySession {
 			logger.error("Error copyiing file [" + source.getAbsolutePath() + "] to [" + target.getAbsolutePath() + "]");			
 			throw new UncheckedIOException(e);
 		}
+	}
+
+	public RepositorySessionFactory getFactory() {
+		return factory;
 	}
 }

@@ -55,6 +55,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     //force child objects to have a unique normalized title.  This is an aide to 
     //wikis which link to titles
     protected boolean uniqueTitles=false;
+    protected boolean mirrored = false;
+    protected String resourceDriverName;
+    protected String resourcePath;
+    
     public Binder() {
     }
     public Binder(Binder source) {
@@ -114,6 +118,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	return library;
     }
     public void setLibrary(boolean library) {
+    	if(!library) {
+    		if(mirrored)
+    			throw new IllegalStateException("Can not make a mirror folder a non-library folder");
+    	}
     	this.library = library;
     }
     /**
@@ -448,4 +456,28 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public abstract List getEntryDefinitions();
     public abstract List getViewDefinitions();
   
+	public boolean isMirrored() {
+		return mirrored;
+	}
+	public void setMirrored(boolean mirrored) {
+		this.mirrored = mirrored;
+		if(mirrored) {
+			// We can not have a mirror folder that is not a library folder.
+			setLibrary(true);
+		}
+	}
+	public String getResourcePath() {
+		return resourcePath;
+	}
+	public void setResourcePath(String resourcePath) {
+		this.resourcePath = resourcePath;
+	}
+	
+	public String getResourceDriverName() {
+		return resourceDriverName;
+	}
+	public void setResourceDriverName(String resourceDriverName) {
+		this.resourceDriverName = resourceDriverName;
+	}
+
 }

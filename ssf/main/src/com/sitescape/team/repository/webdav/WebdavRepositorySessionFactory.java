@@ -17,12 +17,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class WebdavRepositorySessionFactory implements RepositorySessionFactory,
+public class WebdavRepositorySessionFactory implements ExclusiveRepositorySessionFactory,
 WebdavRepositorySessionFactoryMBean {
 
 	protected Log logger = LogFactory.getLog(getClass());
@@ -110,7 +111,7 @@ WebdavRepositorySessionFactoryMBean {
 			
 			//WebdavUtil.dump(wdr);
 			
-			return new WebdavRepositorySession(wdr, contextPath + docRootPath);
+			return new WebdavRepositorySession(this, wdr, contextPath + docRootPath);
 		}
 		catch(IOException e) {
 			throw new UncheckedIOException(e);
@@ -140,5 +141,8 @@ WebdavRepositorySessionFactoryMBean {
 
 	protected String getHttpUrl() {
 		return hostUrl + contextPath;
+	}
+	public boolean supportSmartCheckin() {
+		return true;
 	}	
 }

@@ -46,6 +46,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -66,6 +67,7 @@ import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
+import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
@@ -111,7 +113,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
         List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
-       
+        
+        if(binder.isMirrored()) {
+	        sp.reset("addEntry_mirrored").begin();
+	        addEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
+	        sp.end().print();
+        }
+        
         try {
         	
         	sp.reset("addEntry_create").begin();
@@ -134,6 +142,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         		}
         	});
         	sp.end().print();
+        	
            	// We must save the entry before processing files because it makes use
         	// of the persistent id of the entry. 
             sp.reset("addEntry_filterFiles").begin();
@@ -404,6 +413,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
 	    
+        if(binder.isMirrored()) {
+	        sp.reset("modifyEntry_mirrored").begin();
+	        modifyEntry_mirrored(binder, inputData, fileItems, fileUploadItems);
+	        sp.end().print();
+        }
+        
 	    try {	    	
 	    	sp.reset("modifyEntry_transactionExecute").begin();
 	    	// The following part requires update database transaction.
@@ -1252,5 +1267,33 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		getCoreDao().save(changes);
 		return changes;
 	}
+
+	protected void addEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
+			List fileUploadItems) {
+		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
+		if(mf == null)
+			throw new IllegalArgumentException("A mirrored entry can not be created without its initial file content");
+		
+		Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
 	
+		FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_EXTERNAL, 
+				ObjectKeys.EXTERNAL_FILE, mf, ObjectKeys.FI_ADAPTER);
+		
+		if(Boolean.FALSE.equals(synchToSource))
+			fui.setSynchToRepository(false);
+	}
+	
+	protected void modifyEntry_mirrored(Binder binder, InputDataAccessor inputData, Map fileItems,
+			List fileUploadItems) {
+		MultipartFile mf = (MultipartFile) fileItems.get(ObjectKeys.EXTERNAL_FILE);
+		if(mf != null) {
+			Boolean synchToSource = (Boolean) inputData.getSingleObject(ObjectKeys.SYNCH_TO_SOURCE);
+		
+			FileUploadItem fui = new FileUploadItem(FileUploadItem.TYPE_EXTERNAL, 
+					ObjectKeys.EXTERNAL_FILE, mf, ObjectKeys.FI_ADAPTER);
+			
+			if(Boolean.FALSE.equals(synchToSource))
+				fui.setSynchToRepository(false);
+		}
+	}
 }

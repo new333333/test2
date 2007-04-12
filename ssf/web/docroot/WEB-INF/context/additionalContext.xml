@@ -6,6 +6,11 @@
 	<!-- ============================== Modules ============================= -->
 
 	<bean id="ldapModule"  class="com.sitescape.team.module.ldap.impl.NullLdapModuleImpl"/>
+	
+	<bean id="folderModuleTarget" parent="moduleDependencyTemplate" class="com.sitescape.team.module.folder.impl.BaseFolderModule">
+		<property name="definitionModule"><ref bean="definitionModule"/></property>
+		<property name="fileModule"><ref bean="fileModule"/></property>
+	</bean>
 
 	<!-- ============================== Services ============================= -->
 
@@ -36,4 +41,10 @@
     	<property name="openOfficeConverter"><ref bean="imageOpenOfficeConverter"/></property>
     </bean>
     
+    <!-- ============================= File Integration Service ============================ -->
+    
+	<bean id="resourceDriverManager" class="com.sitescape.team.fi.connection.impl.NullResourceDriverManager"/>
+    
+    <bean id="fiAdapter" class="com.sitescape.team.repository.fi.impl.NullFIRepositorySessionFactoryAdapter"/>
+	
 </beans>

@@ -24,7 +24,7 @@ public class SimpleProfiler {
 	private static final Log logger = LogFactory.getLog(SimpleProfiler.class);
 
 	private boolean active = true; // defaults to true 
-	private String title;
+	private String title = "";
     private long t1; // nano time
     private long t2; // nano time
     private long total = 0;

@@ -88,8 +88,8 @@ import com.sitescape.util.Validator;
  *
  * @author Jong Kim
  */
-public class FolderModuleImpl extends CommonDependencyInjection 
-implements FolderModule, FolderModuleImplMBean, InitializingBean {
+public abstract class AbstractFolderModule extends CommonDependencyInjection 
+implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
    	private String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
     private String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
@@ -245,7 +245,7 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 		this.fileModule = fileModule;
 	}
 	
-	private Folder loadFolder(Long folderId)  {
+	Folder loadFolder(Long folderId)  {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
 		if (folder.isDeleted()) throw new NoBinderByTheIdException(folderId);
 		return folder;
@@ -276,7 +276,7 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 	
 	public Collection getFolders(List folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
-        Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
+        Comparator c = new BinderComparator(user.getLocale());
        	TreeSet<Binder> result = new TreeSet<Binder>(c);
 		for (int i=0; i<folderIds.size(); ++i) {
 			try {//access check done by getFolder
@@ -440,7 +440,7 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
         checkAccess(top, "getDomFolderTree");
         
         User user = RequestContextHolder.getRequestContext().getUser();
-    	Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
+    	Comparator c = new BinderComparator(user.getLocale());
     	    	
     	org.dom4j.Document wsTree = DocumentHelper.createDocument();
     	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
@@ -1094,4 +1094,4 @@ implements FolderModule, FolderModuleImplMBean, InitializingBean {
 	public int getAddReplyCount() {
 		return arCount.get();
 	}
- }
+}

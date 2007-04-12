@@ -11,12 +11,13 @@
 package com.sitescape.team.repository.file;
 
 import com.sitescape.team.UncheckedIOException;
+import com.sitescape.team.repository.ExclusiveRepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.util.Constants;
 
-public class FileRepositorySessionFactory implements RepositorySessionFactory,
+public class FileRepositorySessionFactory implements ExclusiveRepositorySessionFactory,
 FileRepositorySessionFactoryMBean {
 
 	private String repositoryRootDir;
@@ -39,7 +40,7 @@ FileRepositorySessionFactoryMBean {
 	}
 
 	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException {
-		return new FileRepositorySession(repositoryRootDir);
+		return new FileRepositorySession(this, repositoryRootDir);
 	}
 
 	public boolean supportVersioning() {
@@ -47,6 +48,10 @@ FileRepositorySessionFactoryMBean {
 	}
 
 	public boolean isVersionDeletionAllowed() {
+		return true;
+	}
+
+	public boolean supportSmartCheckin() {
 		return true;
 	}
 }

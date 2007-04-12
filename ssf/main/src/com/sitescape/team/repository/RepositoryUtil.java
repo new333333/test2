@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.UUID;
 
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
@@ -46,7 +47,7 @@ public class RepositoryUtil {
 	public static int fileInfo(String repositoryName,
 			Binder binder, DefinableEntity entry, String relativeFilePath)
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 		try {
 			return session.fileInfo(binder, entry, relativeFilePath);
 		} finally {
@@ -59,7 +60,7 @@ public class RepositoryUtil {
 			UncheckedIOException {
 		String repositoryName = fui.getRepositoryName();
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
@@ -86,7 +87,7 @@ public class RepositoryUtil {
 	public static void createUnversioned(String repositoryName,
 			Binder binder, DefinableEntity entry, String relativeFilePath, InputStream in) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			// TODO For now we ignore file path relative to the owning entry.
@@ -102,7 +103,7 @@ public class RepositoryUtil {
 			UncheckedIOException {
 		String repositoryName = fui.getRepositoryName();
 
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			InputStream is = fui.getInputStream();
@@ -127,7 +128,7 @@ public class RepositoryUtil {
 	public static void delete(String repositoryName, Binder binder,
 			DefinableEntity entry, String relativeFilePath) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.delete(binder, entry, relativeFilePath);
@@ -136,6 +137,7 @@ public class RepositoryUtil {
 		}		
 	}
 
+	/*
 	public static void delete(String repositoryName, Binder binder,
 			DefinableEntity entry) 
 		throws RepositoryServiceException, UncheckedIOException {
@@ -146,11 +148,11 @@ public class RepositoryUtil {
 		} finally {
 			session.close();
 		}		
-	}
+	}*/
 
 	public static void delete(String repositoryName, Binder binder) 
 		throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.delete(binder);
@@ -162,7 +164,7 @@ public class RepositoryUtil {
 	public static void read(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.read(binder, entry, relativeFilePath, out);
@@ -174,7 +176,7 @@ public class RepositoryUtil {
 	public static void readVersion(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName, OutputStream out)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.readVersion(binder, entry, relativeFilePath, versionName, out);
@@ -186,7 +188,7 @@ public class RepositoryUtil {
 	public static InputStream read(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
@@ -201,7 +203,7 @@ public class RepositoryUtil {
 	public static InputStream readVersion(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		InputStream in = null;
 		try {
@@ -217,7 +219,7 @@ public class RepositoryUtil {
 			DefinableEntity entity, String relativeFilePath, 
 			FileTypeMap fileTypeMap) throws RepositoryServiceException,
 			UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			return session.getDataSource(binder, entity, relativeFilePath, fileTypeMap);
@@ -229,7 +231,7 @@ public class RepositoryUtil {
 	public static void checkout(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.checkout(binder, entry, relativeFilePath);
@@ -241,7 +243,7 @@ public class RepositoryUtil {
 	public static void checkin(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.checkin(binder, entry, relativeFilePath);
@@ -253,7 +255,7 @@ public class RepositoryUtil {
 	public static void uncheckout(String repositoryName, Binder binder, 
 			DefinableEntity entry,String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.uncheckout(binder, entry, relativeFilePath);
@@ -308,7 +310,7 @@ public class RepositoryUtil {
 			DefinableEntity entry, String relativeFilePath, Binder destBinder, 
 			DefinableEntity destEntry, String destRelativeFilePath)
 	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.move(binder, entry, relativeFilePath, destBinder, destEntry, destRelativeFilePath);
@@ -320,7 +322,7 @@ public class RepositoryUtil {
 	public static void deleteVersion(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, String versionName)
 			throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			session.deleteVersion(binder, entry, relativeFilePath, versionName);
@@ -329,6 +331,7 @@ public class RepositoryUtil {
 		}
 	}
 
+	/*
 	public static List<String> getVersionNames(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath)
 			throws RepositoryServiceException, UncheckedIOException {
@@ -339,8 +342,9 @@ public class RepositoryUtil {
 		} finally {
 			session.close();
 		}
-	}
+	}*/
 	
+	/*
 	public static void copy(String repositoryName, Binder binder, 
 			DefinableEntity entry, String relativeFilePath, Binder destBinder, 
 			DefinableEntity destEntry, String destRelativeFilePath)
@@ -352,7 +356,13 @@ public class RepositoryUtil {
 		} finally {
 			session.close();
 		}
+	}*/
+
+	public static String generateRandomVersionName() {
+		// Generate a random version name using UUID generator. Since the
+		// only requirement is that version names must be unique within a
+		// particular file, this exceeds the requirement by being unique
+		// VM wide.
+		return UUID.randomUUID().toString();		
 	}
-
-
 }

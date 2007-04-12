@@ -189,7 +189,7 @@ public class AddEntryController extends SAbstractController {
 			        	    	
 			        	    	//Create a sub folder, if it does not exist
 			        	    	if (!doesFolderExist) {
-			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(this, folderObj, strFolderName);
+			        	    		lngFolderIdToUse = FolderUtils.createLibraryFolder(folderObj, strFolderName);
 			        	    	}
 	        	    		}
 	        	    	}
@@ -202,9 +202,9 @@ public class AddEntryController extends SAbstractController {
 	        	    	//If there is not pre-existing entry - we create a new entry
 	        	    	//If there is a pre-existing entry - we modify the entry
 	        	    	if (preExistingEntry == null) {
-	        	    		FolderUtils.createFolderEntry(this, entryCreationFolder, orginalFileName, myFile.getInputStream(), null);
+	        	    		FolderUtils.createFolderEntry(entryCreationFolder, orginalFileName, myFile.getInputStream(), null);
 	        	    	} else {
-	        	    		FolderUtils.modifyFolderEntry(this, preExistingEntry, orginalFileName, myFile.getInputStream(), null);
+	        	    		FolderUtils.modifyFolderEntry(preExistingEntry, orginalFileName, myFile.getInputStream(), null);
 	        	    	}
 	        	    	intFileCount++;
 	        		} else {

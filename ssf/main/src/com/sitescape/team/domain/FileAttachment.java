@@ -220,6 +220,7 @@ public class FileAttachment extends Attachment {
     	private Principal owner;
     	private Date expirationDate;
     	private String ownerInfo;
+    	private Boolean dirty;
 
     	public FileLock() {
     	}
@@ -271,6 +272,14 @@ public class FileAttachment extends Attachment {
     	
     	public void setOwnerInfo(String ownerInfo) {
     		this.ownerInfo = ownerInfo;
+    	}
+    	
+    	public void setDirty(Boolean dirty) {
+    		this.dirty = dirty;
+    	}
+    	
+    	public Boolean isDirty() {
+    		return dirty;
     	}
     	
     	public Object clone() {

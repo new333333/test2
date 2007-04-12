@@ -29,6 +29,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
+import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.Constants;
 
@@ -36,10 +37,13 @@ public class WebdavRepositorySession implements RepositorySession {
 
 	protected static Log logger = LogFactory.getLog(WebdavRepositorySession.class);
 
+	private WebdavRepositorySessionFactory factory;
 	private SWebdavResource wdr;
 	private String docRootPath; // This includes context path as well.
 	
-	public WebdavRepositorySession(SWebdavResource wdr, String docRootDir) {
+	public WebdavRepositorySession(WebdavRepositorySessionFactory factory, 
+			SWebdavResource wdr, String docRootDir) {
+		this.factory = factory;
 		this.wdr = wdr;
 		this.docRootPath = docRootDir;
 	}
@@ -775,5 +779,9 @@ public class WebdavRepositorySession implements RepositorySession {
 			return name;
 			
 		}
+	}
+
+	public RepositorySessionFactory getFactory() {
+		return factory;
 	}
 }

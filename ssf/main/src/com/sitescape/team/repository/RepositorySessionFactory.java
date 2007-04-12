@@ -25,8 +25,6 @@ public interface RepositorySessionFactory {
 	 */
 	public void shutdown();
 	
-	public RepositorySession openSession() throws RepositoryServiceException, UncheckedIOException;
-	
 	/**
 	 * Returns whether or not the repository supports versioning.
 	 * 
@@ -45,4 +43,21 @@ public interface RepositorySessionFactory {
 	 * @return
 	 */
 	public boolean isVersionDeletionAllowed();
+	
+	/**
+	 * Returns whether the repository supports smart checkin or not.
+	 * Smart checkin means that, when checkin() is invoked, it will create
+	 * a new version only if there has been any modification to the file
+	 * since the last checkout. If the file has not been checked out or
+	 * it has but there has been no modifications to it, then it will simply
+	 * return the name of the latest existing version. 
+	 * If smart checkin is not supported, the repository is not capable of
+	 * keeping track of such state. Consequently, there is a danger that
+	 * each invocation of checkin() may create a new version even when it
+	 * is not necessary or desirable. In such case, it becomes the client's
+	 * responsibility/burden to keep track of such state information and 
+	 * decide whether it must call checkin() or not based on that information. 
+	 * @return
+	 */
+	public boolean supportSmartCheckin();
 }

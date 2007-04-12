@@ -31,7 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import org.apache.commons.logging.Log;
@@ -264,7 +263,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	protected ArchiveStore getArchiveStore() {
 		return archiveStore;
 	}
-	
+		
 	public void afterPropertiesSet() throws Exception {
 		cacheFileStore = new FileStore(SPropsUtil.getString("cache.file.store.dir"));
 	}
@@ -997,7 +996,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     				// must test for expired lock here. 
     				if(isLockExpired(lock)) { // The lock has expired
     					// Commit any pending changes associated with the expired lock
-    					commitPendingChanges(binder, entity, fa, lock.getOwner()); 
+    					commitPendingChanges(binder, entity, fa, lock); 
     					// Set the new lock.
     					fa.setFileLock(new FileLock(lockId, lockSubject, 
     							user, expirationDate, lockOwnerInfo));
@@ -1029,7 +1028,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			
 			// Commit any pending changes associated with the lock. In this 
 			// case, we don't care if the lock is effective or expired.
-			commitPendingChanges(binder, entity, fa, lock.getOwner());
+			commitPendingChanges(binder, entity, fa, lock);
 			
 			fa.setFileLock(null); // Clear the lock
 			
@@ -1257,7 +1256,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			}
 		}
 		
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
 		try {
 			try {
@@ -1546,7 +1545,10 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	/// step4: update metadata in database
     	
 		int type = fui.getType();
-		if(type != FileUploadItem.TYPE_FILE && type != FileUploadItem.TYPE_ATTACHMENT && type != FileUploadItem.TYPE_TITLE) {
+		if(type != FileUploadItem.TYPE_FILE && 
+				type != FileUploadItem.TYPE_ATTACHMENT && 
+				type != FileUploadItem.TYPE_TITLE &&
+				type != FileUploadItem.TYPE_EXTERNAL) {
 			logger.error("Unrecognized file processing type " + type + " for ["
 					+ fui.getName() + ","
 					+ fui.getOriginalFilename() + "]");
@@ -1573,28 +1575,19 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 
     	boolean isNew = false;
     	
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(repositoryName);
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, repositoryName);
 
     	try {
-	    	// Determine if we need to generate secondary files from the primary file.
-    		// Unfortunately the scaling function we use expects byte array 
-    		// not input stream as input. In this case we read the file content
-    		// into a byte array once and reuse it for all repository operations
-    		// to avoid having to incur file I/O multiple times. 
-    		byte[] primaryContent = null;
-    		
     		try {
-	    		primaryContent = fui.getBytes();
-	    		
 	    		// Store primary file first, since we do not want to generate secondary
 	    		// files unless we could successfully store the primary file first. 
 	    		
 	    		if(fAtt == null) { // New file for the entry
 	    			isNew = true;
-	    			fAtt = createFile(session, binder, entry, fui, primaryContent);
+	    			fAtt = createFile(session, binder, entry, fui);
 	    		}
 	    		else { // Existing file for the entry
-	    			writeExistingFile(session, binder, entry, fui, primaryContent);
+	    			writeExistingFile(session, binder, entry, fui);
 	    		}
     		}
     		catch(Exception e) {
@@ -1674,8 +1667,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     }
     
     private void writeExistingFile(RepositorySession session,
-    		Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData)
-		throws LockedByAnotherUserException, RepositoryServiceException, UncheckedIOException {
+    		Binder binder, DefinableEntity entry, FileUploadItem fui)
+		throws LockedByAnotherUserException, RepositoryServiceException, IOException {
     	User user = RequestContextHolder.getRequestContext().getUser();
     	String relativeFilePath = fui.getOriginalFilename();
 		// flatten repository namespace to reduce confusion
@@ -1698,17 +1691,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	String versionName = null;
     	int fileInfo = session.fileInfo(binder, entry, relativeFilePath);
     	if(fileInfo == RepositorySession.VERSIONED_FILE) { // Normal condition
-    		// Attempt to check out the file. If the file was already checked out
-    		// this is noop. So no harm. 
-    		session.checkout(binder, entry, relativeFilePath);
-    		// Update the file content
-    		updateWithInputData(session, binder, entry, relativeFilePath, inputData);
-    		if(lock == null) {
-    			// This update request is being made without the user's prior 
-    			// obtaining lock. Since there's no lock to associate the 
-    			// checkout with, we must checkin the file here. 
-    			versionName = session.checkin(binder, entry, relativeFilePath);
-    		}
+    		versionName = updateVersionedFile(session, binder, entry, fui, lock);
     	}
     	else if(fileInfo == RepositorySession.NON_EXISTING_FILE) {
 			// For some reason the file doesn't exist in the repository.
@@ -1721,11 +1704,18 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			// and our metadata. Although not ideal, better response to
 			// this kind of situation appears to be the one that is more
 			// forgiving or self-curing. This part of code implements that.
-			versionName = createVersionedWithInputData(session, binder,
-					entry, relativeFilePath, inputData);
+    		versionName = createVersionedFile(session, binder, entry, fui);
     	}
     	else {
     		throw new InternalException();
+    	}
+    	
+    	if(lock != null && versionName == null) {
+    		// A lock existed at the time of writing the content and the writing
+    		// didn't create a new version as of yet. This means that we have a
+    		// pending change that we need to commit/checkin when we release the
+    		// lock later. So mark the lock as dirty.
+    		lock.setDirty(Boolean.TRUE);
     	}
     	
 		//if we are adding a new version of an existing attachment to 
@@ -1769,6 +1759,66 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 		}
 	}
     
+    private String updateVersionedFile(RepositorySession session, Binder binder, 
+    		DefinableEntity entity, FileUploadItem fui, FileAttachment.FileLock lock) 
+    throws IOException {
+    	String relativeFilePath = fui.getOriginalFilename();
+    	String versionName = null;
+		if(fui.isSynchToRepository()) {
+    		// Attempt to check out the file. If the file was already checked out
+    		// this is noop. So no harm. 
+    		session.checkout(binder, entity, relativeFilePath);
+    		// Update the file content
+    		InputStream in = fui.getInputStream();
+    		try {
+    			updateWithInputData(session, binder, entity, relativeFilePath, in);
+    		}
+    		finally {
+    			try {
+    				in.close();
+    			}
+    			catch(IOException e) {}
+    		}
+    		if(lock == null) {
+    			// This update request is being made without the user's prior 
+    			// obtaining lock. Since there's no lock to associate the 
+    			// checkout with, we must checkin the file here. 
+    			versionName = session.checkin(binder, entity, relativeFilePath);
+    		}
+		}
+		else {
+			versionName = RepositoryUtil.generateRandomVersionName();
+		}
+
+		return versionName;
+    }
+    
+    private String createVersionedFile(RepositorySession session, Binder binder, 
+    		DefinableEntity entity, FileUploadItem fui) 
+    throws IOException {
+    	String versionName = null;
+    	
+		if(fui.isSynchToRepository()) {
+			InputStream in = fui.getInputStream();
+			try {
+				versionName = createVersionedWithInputData(session, binder, entity,
+						fui.getOriginalFilename(), fui.isSynchToRepository(), in);
+			}
+			finally {
+				// Make sure to close the stream even when the above call fails. 
+				// In normal case, we will be closing it twice, but that should be ok.
+				try {
+					in.close();
+				}
+				catch(IOException e) {}
+			}
+		}
+		else {
+			versionName = RepositoryUtil.generateRandomVersionName();
+		}
+		return versionName;
+    }
+    
     /**
 	 * Creates a new file in the system.
 	 * <p>
@@ -1779,15 +1829,14 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	 * a responsibility of this method.  
 	 */
 	private FileAttachment createFile(RepositorySession session, 
-			Binder binder, DefinableEntity entry, FileUploadItem fui, Object inputData) 
-		throws RepositoryServiceException, UncheckedIOException {	
+			Binder binder, DefinableEntity entry, FileUploadItem fui) 
+		throws RepositoryServiceException, IOException {	
 		// Since we are creating a new file, file locking doesn't concern us.
 		
 		FileAttachment fAtt = createFileAttachment(entry, fui);
 		
-		String versionName = createVersionedWithInputData(session, binder, entry,
-				fui.getOriginalFilename(), inputData);
-		
+		String versionName = createVersionedFile(session, binder, entry, fui);
+						
 		long fileSize = session.getContentLength(binder, entry, fui.getOriginalFilename());
 		
 		fAtt.getFileItem().setLength(fileSize);
@@ -1798,7 +1847,8 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 	}
 	
 	private String createVersionedWithInputData(RepositorySession session,
-			Binder binder, DefinableEntity entry, String relativeFilePath, Object inputData)
+			Binder binder, DefinableEntity entry, String relativeFilePath, 
+			boolean synchToRepository, Object inputData)
 		throws RepositoryServiceException {
 		String versionName = null;
 		/*if(inputData instanceof MultipartFile) {
@@ -2112,7 +2162,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
 			if (commit) { 
 				// Commit pending changes if any. We don't care whether the 
 				// lock is currently effective or expired.
-				commitPendingChanges(binder, entity, fa, lock.getOwner());
+				commitPendingChanges(binder, entity, fa, lock);
 			} 
 			else { // Discard pending changes if any
 				RepositoryUtil.uncheckout(fa.getRepositoryName(), 
@@ -2161,7 +2211,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     private boolean closeExpiredLock(Binder binder, DefinableEntity entity, 
     		FileAttachment fa, boolean commit) throws RepositoryServiceException,
     		UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
 			return closeExpiredLock(session, binder, entity, fa, commit);
@@ -2181,7 +2231,7 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     	if(lock != null) {
         	if(isLockExpired(lock)) { // Lock expired
 				if(commit) { // Commit pending changes if any
-					commitPendingChanges(session, binder, entity, fa, lock.getOwner()); 
+					commitPendingChanges(session, binder, entity, fa, lock); 
 				}
 				else {	// Discard pending changes if any
 					session.uncheckout(binder, entity, fa.getFileItem().getName());
@@ -2197,13 +2247,13 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     }
     
     private boolean commitPendingChanges(Binder binder, DefinableEntity entity,
-    		FileAttachment fa, Principal changeOwner)
+    		FileAttachment fa, FileAttachment.FileLock lock)
     	throws RepositoryServiceException, UncheckedIOException {
-		RepositorySession session = RepositorySessionFactoryUtil.openSession(fa.getRepositoryName());
+		RepositorySession session = RepositorySessionFactoryUtil.openSession(binder, fa.getRepositoryName());
 
 		try {
 			return commitPendingChanges(session, binder, entity, fa,
-					changeOwner);
+					lock);
 		}
 		finally {
 			session.close();
@@ -2212,26 +2262,47 @@ public class FileModuleImpl implements FileModule, InitializingBean {
     
     private boolean commitPendingChanges(RepositorySession session,
     		Binder binder, DefinableEntity entity, FileAttachment fa, 
-    		Principal changeOwner)
+    		FileAttachment.FileLock lock)
     	throws RepositoryServiceException, UncheckedIOException {
     	String relativeFilePath = fa.getFileItem().getName();
 		
 		boolean metadataDirty = false; 
+		boolean tryCheckin = false;
 		
-		// Attempt to check in. If the file was previously checked out (and
-		// only if any change has made since checkout??), this will create 
-		// a new version and return the name of the new version. If not,
-		// it will return the name of the latest existing version.
-		String versionName = session.checkin(binder, entity, relativeFilePath);
-		VersionAttachment va = fa.findFileVersion(versionName);
-		if(va == null) {
-			// This means that the checkin above created a new version
-			// of the file. 
-			long contentLength = session.getContentLength(binder, entity, 
-					relativeFilePath, versionName);
-			updateFileAttachment(fa, changeOwner, versionName, contentLength, null);
-			metadataDirty = true;
-		}   			
+		if(session.getFactory().supportSmartCheckin()) {			
+			// Attempt to check in. If the file was previously checked out (and
+			// only if any change has made since checkout??), this will create 
+			// a new version and return the name of the new version. If not,
+			// it will return the name of the latest existing version.
+			
+			// Let the repository make the decision as to whether we should 
+			// create a new version or not. Although client has enough info
+			// to make this decision, I prefer delegating it to the repository
+			// to increase the chance of being in the right state after the
+			// call is finished (ie, post-condition is better met this way
+			// in an non-ideal world).
+			tryCheckin = true;
+		}
+		else {
+			// Let the client make the decision.
+			if(Boolean.TRUE.equals(lock.isDirty()))
+				tryCheckin = true;
+		}
+		
+		if(tryCheckin) {
+			String versionName = session.checkin(binder, entity, relativeFilePath);
+			VersionAttachment va = fa.findFileVersion(versionName);
+			if(va == null) {
+				// This means that the checkin above created a new version
+				// of the file. 
+				long contentLength = session.getContentLength(binder, entity, 
+						relativeFilePath, versionName);
+				updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null);
+				metadataDirty = true;
+			}   					
+		}
+		
+		lock.setDirty(Boolean.FALSE);
 		
 		return metadataDirty;
     }
@@ -2407,4 +2478,5 @@ public class FileModuleImpl implements FileModule, InitializingBean {
         
         return;
 	}
+
 }

@@ -54,6 +54,7 @@ import com.sitescape.team.ssfs.TypeMismatchException;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystem;
 import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.team.util.AllBusinessServicesInjected;
+import com.sitescape.team.util.LibraryPathUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 
@@ -559,12 +560,8 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				return CrossContextConstants.OBJECT_INFO_DIRECTORY;
 			}
 			
-			int index = libpath.lastIndexOf("/");
-			
-			String lastElemName = libpath.substring(index + 1);
-			String parentBinderPath = null;
-			if(index > 0)
-				parentBinderPath = libpath.substring(0, index);
+			String lastElemName = LibraryPathUtil.getName(libpath);
+			String parentBinderPath = LibraryPathUtil.getParentBinderPath(libpath);
 			
 			objMap.put(LAST_ELEM_NAME, lastElemName); // should be non-null
 			objMap.put(PARENT_BINDER_PATH, parentBinderPath); // may be null
@@ -715,7 +712,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate)
 	throws NoAccessException {
 		try {
-			FolderUtils.createFolderEntry(bs, folder, fileName, content, modDate);
+			FolderUtils.createFolderEntry(folder, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
@@ -732,7 +729,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			InputStream content, Date modDate) 
 	throws NoAccessException {
 		try {
-			FolderUtils.modifyFolderEntry(bs, entry, fileName, content, modDate);
+			FolderUtils.modifyFolderEntry(entry, fileName, content, modDate);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());
@@ -800,7 +797,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	private Long createLibraryFolder(Binder parentBinder, String folderName)
 	throws NoAccessException {
 		try {
-			return FolderUtils.createLibraryFolder(bs, parentBinder, folderName);
+			return FolderUtils.createLibraryFolder(parentBinder, folderName);
 		}
 		catch(ConfigurationException e) {
 			throw new SiteScapeFileSystemException(e.getMessage());

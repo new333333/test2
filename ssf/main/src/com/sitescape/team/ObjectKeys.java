@@ -290,6 +290,9 @@ public interface ObjectKeys {
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
+	// file related
+	public static final String SYNCH_TO_SOURCE = "_synchToSource";
+	public static final String EXTERNAL_FILE = "_externalFile";
+	public static final String FI_ADAPTER = "fiAdapter";
 
-     
 }
