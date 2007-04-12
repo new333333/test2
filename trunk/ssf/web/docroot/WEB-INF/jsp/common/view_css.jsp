@@ -10,6 +10,7 @@
  *
  */
 %>
+
 <c:if test="${!empty ss_portletInitialization}">
 <div class="ss_style">
 <br/>

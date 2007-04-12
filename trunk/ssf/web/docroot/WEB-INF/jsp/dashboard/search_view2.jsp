@@ -99,13 +99,13 @@
 					entityType="${fileEntry._entityType}" imageId='menuimg_${fileEntry._docId}_${ss_namespace}' 
 			    	menuDivId="ss_emd_${ss_namespace}" linkMenuObjIdx="${ss_namespace}" 
 					namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="yes"
-					useBinderFunction="<%= strUseBinderMethod %>">
+					useBinderFunction="<%= strUseBinderMethod %>" dashboardType="${ssDashboard.scope}">
 					
 					<ssf:param name="url" useBody="true">
 					  	<c:choose>
 						  	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-								<ssf:url adapter="true" portletName="ss_forum" folderId="${fileEntry._binderId}" 
-								action="view_folder_entry" entryId="${fileEntry._docId}" actionUrl="true" />						  	
+									<ssf:url adapter="true" portletName="ss_forum" folderId="${fileEntry._binderId}" 
+									action="view_folder_entry" entryId="${fileEntry._docId}" actionUrl="true" />						  	
 						    </c:when>
 						    
 						    <c:when test="${fileEntry._entityType == 'user'}">
@@ -310,6 +310,6 @@
 </div>
 
 <ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}" linkMenuObjIdx="${ss_namespace}" 
-	namespace="${ss_namespace}">
+	namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
 </ssf:menuLink>
 

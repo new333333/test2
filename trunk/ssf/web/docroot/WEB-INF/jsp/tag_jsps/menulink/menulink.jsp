@@ -45,18 +45,21 @@ String entryCallbackRoutine = ParamUtil.get(request, "entryCallbackRoutine", "")
 String url = ParamUtil.get(request, "url", "");
 String isDashboard = ParamUtil.get(request, "isDashboard", "no");
 String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
+String dashboardType = ParamUtil.get(request, "dashboardType", "");
 %>
 <a class="ss_title_menu" href="<%= url %>" 
-<% if (useBinderFunction.equals("no")) {  %>
+<% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
 	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');return false;" 
+<% } else if ( useBinderFunction.equals("no") && dashboardType.equals("portlet") ) { %>
+	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>');" 
 <% } else if (useBinderFunction.equals("yes")) { %>
 	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
-	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuIdx %>', '<%= entryId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
+	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuIdx %>', '<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
 <% }%>
 onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>');"
 onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
 ><img border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
-onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>');"
+onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= dashboardType %>');"
 src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
