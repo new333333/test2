@@ -213,7 +213,15 @@ public interface LuceneSession {
 	 *
 	 */
 	public void optimize() throws LuceneException;
-
+	
+	/**
+	 * Force the <code>LuceneSession</code> to clear the contents of the index.
+	 * 
+	 * @throws LuceneException
+	 *
+	 */
+	public void clearIndex() throws LuceneException;
+	
 	/**
 	 * End the <code>LuceneSession</code> by disconnecting from the Lucene
 	 * service and cleaning up. Note that this does NOT implicitly perform
