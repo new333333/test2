@@ -21,8 +21,11 @@
 <jsp:useBean id="userIdList" type="java.lang.String" />
 
 <div class="ss_portlet_style ss_portlet">
-
-<div>
+<c:if test="${ss_windowState == 'maximized'}">
+<% // Navigation bar %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+</c:if>
+<div class="ss_style" style="padding:4px;">
 
 <div class="ss_portlet_style ss_portlet">
 <table cellpadding="3" style="width:100%;">
@@ -92,6 +95,13 @@ type="time" /></span>
 	</td>
 </tr>
 </table>
+<div align="right">
+  <a class="ss_linkButton" href="<portlet:renderURL 
+      portletMode="edit" 
+      windowState="maximized" />">
+    <span><ssf:nlt tag="presence.addBuddy"/></span>
+  </a>
+</div>
 
 </div>
 <script type="text/javascript">
