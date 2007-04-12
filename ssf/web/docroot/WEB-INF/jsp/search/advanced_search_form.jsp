@@ -27,7 +27,7 @@
 						<td><input type="text" name="searchAuthors" id="searchAuthors"/></td></tr>
 					<tr><th><ssf:nlt tag="searchForm.searchTag"/>:</th>
 						<td><input type="text" name="searchTags" id="searchTags"/></td>
-						<td><img src="<html:imagesPath/>pics/search_icon.gif" onClick="ss_search();" class="ss_searchButton"/>
+						<td><a href="javascript: ss_search();"><img src="<html:imagesPath/>pics/search_icon.gif" class="ss_searchButton"/></a>
 							<a href="#" onClick="ss_showAdditionalOptions('ss_searchForm_additionalFilters');" class="ss_advanced"><ssf:nlt tag="searchForm.advanced.moreOptions"/></a>
 						</td>
 					</tr>
