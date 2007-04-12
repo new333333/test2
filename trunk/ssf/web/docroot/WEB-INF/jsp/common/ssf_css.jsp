@@ -1544,6 +1544,15 @@ div.ss_dashboardProtoDropTarget {
   font-weight: bold;
   color: ${ss_tree_highlight_line_color};
   }
+
+.ss_tree_bucket_text_div {
+  position:absolute;
+  border:1px solid black;
+  margin:0px;
+  padding:0px 4px;
+  background-color:#ffffff;
+  left:-4px;
+}
   
 .ss_titlebold {
   font-size: ${ss_style_font_largestprint};

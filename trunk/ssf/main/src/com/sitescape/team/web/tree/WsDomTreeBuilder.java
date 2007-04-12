@@ -124,7 +124,7 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			//This is a skiplist pair
 			List tuple = (List) ((Map)source).get(DomTreeBuilder.SKIP_TUPLE);
 			String pageTuple = tuple.get(0) + DomTreeBuilder.PAGE_DELIMITER + tuple.get(1);
-			String title = tuple.get(0) + " - " + tuple.get(1);
+			String title = tuple.get(0) + " <--> " + tuple.get(1);
 			String page = (String) ((Map)source).get(DomTreeBuilder.SKIP_PAGE);
 			String binderId = (String) ((Map)source).get(DomTreeBuilder.SKIP_BINDER_ID);
 			String icon = "/icons/range.gif";
@@ -137,6 +137,8 @@ public class WsDomTreeBuilder implements DomTreeBuilder {
 			element.addAttribute("imageClass", imageClass);
 			element.addAttribute("page", page);
 			element.addAttribute("pageTuple", pageTuple);
+			element.addAttribute("tuple1", (String)tuple.get(0));
+			element.addAttribute("tuple2", (String)tuple.get(1));
 			element.addAttribute("action", "");
 			element.addAttribute("displayOnly", "true");
 		} else {
