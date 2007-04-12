@@ -2784,7 +2784,6 @@ function checkAndCreateMenuObject(linkObj) {
 
 //End: Add Attachment Related Functions
 
-
 //Link Menu Related Functions
 function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
 	//var linkMenuObj = eval(linkMenu+"");
@@ -2798,14 +2797,51 @@ function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
 	self.location.href = obj.href;
 }
 
+function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
+	var linkMenuObj = ss_linkMenu_arr[linkMenu];
+
+	var url = ss_dashboardViewEntryUrl;
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", "view_folder_entry");
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", id);
+
+	if (ss_displayStyle == "accessible") {
+		self.location.href = url;
+		return false;
+	}
+
+	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
+		//The user wants to see the drop down options, don't show the entry
+		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
+		if (entityType != null && entityType != "") linkMenuObj.entityType = entityType;
+		linkMenuObj.showingMenu = 0;
+		return false;
+	}
+	
+	linkMenuObj.showingMenu = 0;
+	if (id == "") return false;
+	var folderLine = 'folderLine_'+id;
+	ss_currentEntryId = id;
+	if (window.ss_highlightLineById) {
+		ss_highlightLineById(folderLine);
+		if (window.swapImages && window.restoreImages) {
+			restoreImages(id);
+		}
+	}
+
+	self.location.href = url;
+	return false;
+}
+
 function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard) {
 	//var linkMenuObj = eval(linkMenu+"");
 	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-	
+
 	if (ss_displayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
+	
 	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
 		//The user wants to see the drop down options, don't show the entry
 		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
@@ -2897,11 +2933,14 @@ function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashb
 	linkMenuObj.menuDiv = menuDivId;
 	linkMenuObj.binderUrl = binderUrl;
 	linkMenuObj.entryUrl = entryUrl;
-	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + namespace;
-	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
-	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + namespace;
-	linkMenuObj.isDashboardLink = isDashboard;
 
+	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + namespace;
+	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + namespace;
+	linkMenuObj.menuLinkShowCurrentTab = 'ss_folderMenuShowCurrentTab_' + namespace;
+	linkMenuObj.menuLinkShowNewTab = 'ss_folderMenuShowNewTab_' + namespace;
+	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + namespace;
+
+	linkMenuObj.isDashboardLink = isDashboard;
 }
 
 //Routine to go to a permalink without actually using the permalink
@@ -2959,13 +2998,16 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab) {
 		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
 	} else if (entityType == 'folder') {
-		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_folder_listing');	
 	} else if (entityType == 'workspace') {
-		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');	
 	} else if (entityType == 'profiles') {
-		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		//url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(binderUrl, "ssBinderIdPlaceHolder", entryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_profile_listing');
 	} 
 
@@ -3592,9 +3634,13 @@ function ss_linkMenuObj() {
 	this.currentBinderId;
 	this.currentDefinitionType;
 	this.lastShownButton;       
-	this.menuLinkShowEntry;
+
 	this.menuLinkShowFile;
+	this.menuLinkShowEntry;
 	this.menuLinkShowNewWindow;
+	this.menuLinkShowCurrentTab;
+	this.menuLinkShowNewTab;
+
 	this.isDashboardLink;
 	
 	this.type_folderEntry = 'folderEntry';
@@ -3618,7 +3664,7 @@ function ss_linkMenuObj() {
 		this.lastShownButton = obj;
 	}	
 	
-	this.showMenu = function(obj, id, binderId, definitionType) {
+	this.showMenu = function(obj, id, binderId, definitionType, dashboardType) {
 		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', definition = '+definitionType)
 		if (binderId != null) this.binderId = binderId;
 		
@@ -3656,8 +3702,13 @@ function ss_linkMenuObj() {
 				var menuLinkObj = document.getElementById(this.menuLinkShowEntry);
 				if (menuLinkObj != null) {
 					menuLinkObj.style.display = 'none';
-					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) 
-						menuLinkObj.style.display = 'block';
+					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
+						if (dashboardType && dashboardType == 'portlet') {
+							//do nothing
+						} else {
+							menuLinkObj.style.display = 'block';
+						}
+					}
 				}
 			}
 			
@@ -3679,6 +3730,15 @@ function ss_linkMenuObj() {
 				}
 			}
 			
+			if (this.menuLinkShowCurrentTab != null) {
+				var menuLinkObj = document.getElementById(this.menuLinkShowCurrentTab);
+				if (menuLinkObj != null) {
+					menuLinkObj.style.display = 'block';
+					if ( (dashboardType && dashboardType == 'portlet') ) 
+						menuLinkObj.style.display = 'none';
+				}
+			}
+		
 			ss_ShowHideDivXY(this.menuDiv, x, y)
 			ss_HideDivOnSecondClick(this.menuDiv)
 		}
@@ -3744,6 +3804,12 @@ function ss_linkMenuObj() {
 		ss_showForumEntryInPopupWindow(this.currentDefinitionType);
 		return false;
 	}
+	
+	this.newWindowForPortlet = function() {
+		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
+		ss_showForumEntryInPopupWindowForPortlet(this.currentDefinitionType);
+		return false;
+	}	
 	
 	this.newWindowOld = function() {
 		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
