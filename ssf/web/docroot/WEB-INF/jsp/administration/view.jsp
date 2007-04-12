@@ -20,7 +20,7 @@
 	  <td>
 	    <ssHelpSpot helpId="admin_portlet/admin_portlet" 
 	      title="<ssf:nlt tag="helpSpot.adminPortlet"/>"
-	      offsetY="-40">
+	      offsetY="5" offsetX="-3">
 	    </ssHelpSpot>
 	  </td>
 	</tr>
