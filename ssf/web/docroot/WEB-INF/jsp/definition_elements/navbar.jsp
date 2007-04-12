@@ -396,60 +396,54 @@ var ss_treeShowIdUrl = "<portlet:renderURL windowState="maximized"><portlet:para
 
 
 
-  <div>
-  <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
-	  <div id="ss_favorites_loading<portlet:namespace/>"><ssf:nlt tag="Loading"/></div>
-	  <div id="ss_favorites_list<portlet:namespace/>"></div>
-  </div>
-
-  <div id="ss_favorites2<portlet:namespace/>">
-	<table id="ss_favorites_table2<portlet:namespace/>">
-	<tbody>
-	<tr><td><hr/></td></tr>
-	<c:if test="${!empty ssBinder}">
-		<tr>
-		<td nowrap="nowrap">
+<div style="padding: 5px 10px 5px 10px;">
+  <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ss_addBinderToFavorites('<portlet:namespace/>');return false;"
-		><span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
+		><img src="<html:imagesPath/>icons/button_new_bookmark.gif" />
+		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
-		</td>
-		</tr>
-		<tr><td> </td></tr>
-	</c:if>
+  </div>
+  <div class="ss_style_trans">
+		<a href="javascript: ;" 
+		 onClick="ss_showhideFavoritesEditor('<portlet:namespace/>')"
+		><img src="<html:imagesPath/>icons/button_edit_bookmark.gif" />
+		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
+			text="Edit Favorites"/></span></a>
 
-		<tr>
-		<td nowrap="nowrap">
-		<a href="javascript: ;" 
-		 onClick="ss_setFavoriteListEditable('<portlet:namespace/>', true)"
-		>Edit Favorites</a> / 
-		<a href="javascript: ;" 
-		 onClick="ss_setFavoriteListEditable('<portlet:namespace/>', false)"
-		>Stop Editing Favorites</a>
-		<br/>
-		<a href="javascript: ;" 
-		 onClick="ss_deleteSelectedFavorites('<portlet:namespace/>')"
-		>Delete Selected Favs</a>
-		<br/>
-		Move selected favorites: 
-		<a href="javascript: ;" 
-		 onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'up')"
-		>Up</a>  /  
-		<a href="javascript: ;" 
-		 onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'down')"
-		>Down</a>
-		<br/>
-		<a href="javascript: ;" 
+  </div>
+  <hr style="width: 90%" class="ss_att_divider"/>
+  <div class="ss_style_trans" id="ss_favorites<portlet:namespace/>" align="left">
+	  <div style="float: right;" id="ss_favorites_loading<portlet:namespace/>"><ssf:nlt tag="Loading"/></div>
+	  <div id="ss_favorites_list<portlet:namespace/>"></div>
+  </div>
+  <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor<portlet:namespace/>">
+     <div style="padding: 10px 0px 7px 0px;">
+
+	<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+	  <td>
+		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'down')"
+		><img src="<html:imagesPath/>icons/button_move_down.gif" /><span><ssf:nlt tag="favorites.movedown"/></span></a>
+  	  </td>	
+	  <td>		
+		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<portlet:namespace/>', 'up')"
+		><img src="<html:imagesPath/>icons/button_move_up.gif" /><span><ssf:nlt tag="favorites.moveup"/></span></a>
+  	  </td>
+	  <td>
+		
+		<a class="ss_inlineButton" onClick="ss_deleteSelectedFavorites('<portlet:namespace/>')"
+		><img src="<html:imagesPath/>icons/button_delete.gif" /><span><ssf:nlt tag="favorites.delete"/></span></a>
+	  </td>
+	 </tr></tbody></table>	
+     </div>
+     <div style="padding: 3px 0px 0px 135px; width: 40px;">
+		<a class="ss_inlineButton" href="javascript: ;" 
 		 onClick="ss_saveFavorites('<portlet:namespace/>')"
-		>Save Changes</a>
+		><span><ssf:nlt tag="button.ok"/></span></a>
+	 </div>
 
-		</td>
-		</tr>
+  </div>
 
-
-	
-	</tbody>
-	</table>
   </div>
   </div>
 

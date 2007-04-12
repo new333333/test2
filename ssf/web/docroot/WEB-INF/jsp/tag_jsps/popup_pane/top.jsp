@@ -26,11 +26,12 @@
 <table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: ${width};">
  <tbody>
   <tr>
-   <td width="30px"><div class="ss_popup_topleft"></td>
-   <td width="100%"><div class="ss_popup_topright">
+   <td width="40px"><div class="ss_popup_topleft"></td>
+   <td width="100%"><div class="ss_popup_topcenter">
+   <div class="ss_popup_title"><ssf:nlt tag="${titleTag}"/></div>
+   <td width="40px"><div class="ss_popup_topright">
     <div onClick="${closeScript}" class="ss_popup_close"></div>
-    <div class="ss_popup_title"><ssf:nlt tag="${titleTag}"/></div></div>
    </td>
   </tr>
-  <tr><td colspan="2">
+  <tr><td colspan="3">
    <div class="ss_popup_body">
