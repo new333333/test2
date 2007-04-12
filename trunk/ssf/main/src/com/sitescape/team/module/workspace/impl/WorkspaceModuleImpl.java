@@ -391,7 +391,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	
     	//Set the sort order
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.NORM_TITLE_FIELD;   		
+   		String sortBy = EntityIndexUtils.NORM_TITLE;   		
     	
     	fields[0] = new SortField(sortBy,  SortField.AUTO, true);
     	so.setSortBy(fields);
@@ -419,7 +419,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	SearchObject singleBucketSO = qbFinal.buildQuery(queryTreeFinal);
 		
    		Element range = qTreeAndElement.addElement(QueryBuilder.RANGE_ELEMENT);
-   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE_FIELD);
+   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE);
    		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
 		Element start = range.addElement(QueryBuilder.RANGE_START);
 		start.setText(tuple1);
@@ -434,7 +434,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	
     	//Set the sort order
    		SortField[] fieldsFinal = new SortField[1];
-   		String sortByFinal = EntityIndexUtils.NORM_TITLE_FIELD;   		
+   		String sortByFinal = EntityIndexUtils.NORM_TITLE;   		
     	
     	fieldsFinal[0] = new SortField(sortByFinal,  SortField.AUTO, true);
     	soFinal.setSortBy(fieldsFinal);

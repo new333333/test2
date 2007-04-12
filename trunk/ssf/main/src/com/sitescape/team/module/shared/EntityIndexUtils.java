@@ -82,7 +82,8 @@ public class EntityIndexUtils {
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
     public static final String SORT_TITLE_FIELD = "_sortTitle";
-    public static final String NORM_TITLE_FIELD = "_normTitle";
+    public static final String NORM_TITLE = "_normTitle";
+    public static final String NORM_TITLE_FIELD = "_normTitleField";
     public static final String TITLE1_FIELD = "_title1";
     public static final String EXTENDED_TITLE_FIELD = "_extendedTitle";
     public static final String NAME_FIELD = "_name";
@@ -168,7 +169,10 @@ public class EntityIndexUtils {
     	        } else {
     	        	normTitle = title;
     	        }
-    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	        Field bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE, normTitle.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	        doc.add(bucketTitleField);
+    	        // now add it without lowercasing
+    	        bucketTitleField = new Field(EntityIndexUtils.NORM_TITLE_FIELD, normTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        doc.add(bucketTitleField);
             }
     	}
@@ -183,7 +187,12 @@ public class EntityIndexUtils {
 			if (title.length() > 0) {
 				normTitle = title;
 				Field bucketTitleField = new Field(
-						EntityIndexUtils.NORM_TITLE_FIELD, normTitle.toLowerCase(),
+						EntityIndexUtils.NORM_TITLE, normTitle.toLowerCase(),
+						Field.Store.YES, Field.Index.UN_TOKENIZED);
+				doc.add(bucketTitleField);
+				// now add it without lowercasing
+				bucketTitleField = new Field(
+						EntityIndexUtils.NORM_TITLE_FIELD, normTitle,
 						Field.Store.YES, Field.Index.UN_TOKENIZED);
 				doc.add(bucketTitleField);
 			}
