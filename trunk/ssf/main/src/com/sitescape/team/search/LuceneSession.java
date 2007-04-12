@@ -190,7 +190,7 @@ public interface LuceneSession {
 	 * @return
 	 * @throws LuceneException
 	 */
-	public ArrayList getSortTitles(Query query, String start, String end, int skipsize)
+	public ArrayList getNormTitles(Query query, String start, String end, int skipsize)
 			throws LuceneException;
 
 	

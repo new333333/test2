@@ -988,6 +988,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		Binder binder) {
     	EntityIndexUtils.addReadAccess(indexDoc, binder);
 
+    	EntityIndexUtils.addNormTitle(indexDoc, binder);
+    	
     	fillInIndexDocWithCommonPart(indexDoc, binder.getParentBinder(), binder);
     }
 
@@ -1016,7 +1018,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         
         // Add Modification Principal Id
         EntityIndexUtils.addModificationPrincipalId(indexDoc,entity);
-        
         
         // Add Doc Id
         EntityIndexUtils.addDocId(indexDoc, entity);
